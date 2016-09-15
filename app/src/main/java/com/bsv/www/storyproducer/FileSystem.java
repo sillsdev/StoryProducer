@@ -25,14 +25,17 @@ class FileSystem {
     }
 
     public String[] getVideos() {
-        String path = getPath();
+        File a = Environment.getExternalStorageDirectory();
+        String p = a.getPath();
+        String path = p + "/BSVP/" + language;
         File f = new File(path);
         File file[] = f.listFiles();
         ArrayList<String> list = new ArrayList<>();
-        for (int i=0; i < file.length; i++)
-        {
-            if(!file[i].isHidden()) {
-                list.add(file[i].getName());
+        if(file != null) {
+            for (int i = 0; i < file.length; i++) {
+                if (!file[i].isHidden()) {
+                    list.add(file[i].getName());
+                }
             }
         }
         String[] temp = new String[list.size()];
