@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.bsv.www.storyproducer.MainActivity">
+    <item android:id="@+id/menu_lang"
+        android:title="@string/menu_search"
+        android:icon="@drawable/ic_menu_translate"
+        app:showAsAction="always"
+       />
+    <item android:id="@+id/menu_play"
+        android:title="@string/menu_search"
+        android:icon="@drawable/ic_menu_play"
+        app:showAsAction="always"
+        />
+
+</menu>
