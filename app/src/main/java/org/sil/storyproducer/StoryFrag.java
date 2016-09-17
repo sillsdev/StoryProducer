@@ -16,7 +16,6 @@ import android.widget.ListView;
 public class StoryFrag extends Fragment{
 
     ListView listView;
-    FileSystem fileSystem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -27,15 +26,13 @@ public class StoryFrag extends Fragment{
         // Get ListView object from xml
         listView = (ListView)getActivity().findViewById(R.id.story_list_view);
 
-        fileSystem = new FileSystem();
-
         // Defined Array values to show in ListView
-        final String[] values = fileSystem.getVideos();
+        final String[] values = FileSystem.getStoryNames();
         final ListFiles[] listFiles = new ListFiles[values.length];
 
         for(int i = 0; i < listFiles.length; i++) {
-            fileSystem.loadSlideContent(values[i], 1);
-            listFiles[i] = new ListFiles(fileSystem.getImage(values[i], 1), fileSystem.getTitle(), fileSystem.getSubTitle());
+            FileSystem.loadSlideContent(values[i], 1);
+            listFiles[i] = new ListFiles(FileSystem.getImage(values[i], 1), FileSystem.getTitle(), FileSystem.getSubTitle());
         }
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
@@ -54,7 +51,7 @@ public class StoryFrag extends Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int slideNum = fileSystem.getImageAmount(values[position]);
+                int slideNum = FileSystem.getImageAmount(values[position]);
                 ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
             }
         });

@@ -202,7 +202,7 @@ public class TransFrag extends Fragment {
             Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             MediaPlayer m = new MediaPlayer();
             try {
-                m.setDataSource(fileSystem.getPath("English") + "/" + getArguments().getString(STORY_NAME) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
+                m.setDataSource(fileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -13,6 +13,8 @@ public class Main extends Application {
     public void onCreate() {
         super.onCreate();
         Main.context = getApplicationContext();
+
+        FileSystem.init();
     }
 
     public static Context getAppContext() {
