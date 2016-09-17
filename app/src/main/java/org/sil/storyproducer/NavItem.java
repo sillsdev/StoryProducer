@@ -1,4 +1,4 @@
-package com.bsv.www.storyproducer;
+package org.sil.storyproducer;
 
 /**
  * Created by Jordan Skomer on 9/27/2015.

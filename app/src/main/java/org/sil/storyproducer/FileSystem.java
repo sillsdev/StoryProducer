@@ -1,4 +1,4 @@
-package com.bsv.www.storyproducer;
+package org.sil.storyproducer;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,9 +25,7 @@ class FileSystem {
     }
 
     public String[] getVideos() {
-        File a = Environment.getExternalStorageDirectory();
-        String p = a.getPath();
-        String path = p + "/BSVP/" + language;
+        String path = getPath();
         File f = new File(path);
         File file[] = f.listFiles();
         ArrayList<String> list = new ArrayList<>();
@@ -43,16 +41,14 @@ class FileSystem {
     }
 
     private String getPath() {
-        if(isExternalStorageReadable()) {
-            return System.getenv("SECONDARY_STORAGE") + "/BSVP/" + language;
-        } else {
-            return null;
-        }
+        return getPath(language);
     }
 
     public String getPath(String lang) {
         if(isExternalStorageReadable()) {
-            return System.getenv("SECONDARY_STORAGE") + "/BSVP/" + lang;
+            File listing[] = Main.getAppContext().getExternalFilesDirs(null);
+            String p = listing[1].getPath();
+            return p + "/" + lang;
         } else {
             return null;
         }

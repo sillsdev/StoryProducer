@@ -1,4 +1,4 @@
-package com.bsv.www.storyproducer;
+package org.sil.storyproducer;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;

@@ -1,4 +1,4 @@
-package com.bsv.www.storyproducer;
+package org.sil.storyproducer;
 
 import android.content.Intent;
 import android.os.Handler;
