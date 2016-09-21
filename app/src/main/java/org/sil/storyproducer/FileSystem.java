@@ -16,6 +16,13 @@ class FileSystem {
 
     private static Map<String, Map<String, String>> storyPaths = new HashMap<>();
 
+    private static final FilenameFilter directoryFilter = new FilenameFilter() {
+        @Override
+        public boolean accept(File current, String name) {
+            return new File(current, name).isDirectory();
+        }
+    };
+
     public static void init() {
         loadStories();
     }
@@ -47,37 +54,12 @@ class FileSystem {
         language = lang;
     }
 
-//    public String[] getVideos() {
-//        String path = getPath();
-//        File f = new File(path);
-//        File file[] = f.listFiles();
-//        ArrayList<String> list = new ArrayList<>();
-//        if(file != null) {
-//            for (int i = 0; i < file.length; i++) {
-//                if (!file[i].isHidden()) {
-//                    list.add(file[i].getName());
-//                }
-//            }
-//        }
-//        String[] temp = new String[list.size()];
-//        return list.toArray(temp);
-//    }
-
     private static File[] getStorageDirs() {
         return Main.getAppContext().getExternalFilesDirs(null);
     }
-
-    private static FilenameFilter directoryFilter = new FilenameFilter() {
-        @Override
-        public boolean accept(File current, String name) {
-            return new File(current, name).isDirectory();
-        }
-    };
-
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
     }
-
     private static File[] getStoryDirs(File langDir) {
         return langDir.listFiles(directoryFilter);
     }

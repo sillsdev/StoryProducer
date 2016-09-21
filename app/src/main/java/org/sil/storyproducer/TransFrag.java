@@ -198,11 +198,10 @@ public class TransFrag extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_play){
-            FileSystem fileSystem = new FileSystem();
             Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             MediaPlayer m = new MediaPlayer();
             try {
-                m.setDataSource(fileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
+                m.setDataSource(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -251,23 +250,22 @@ public class TransFrag extends Fragment {
         int currentSlide = getArguments().getInt(SLIDE_NUM);
         String storyName = getArguments().getString(STORY_NAME);
 
-        FileSystem fileSystem = new FileSystem();
-        fileSystem.loadSlideContent(storyName, currentSlide);
+        FileSystem.loadSlideContent(storyName, currentSlide);
 
         ImageView slideImage = (ImageView)view.findViewById(R.id.trans_image_slide);
-        slideImage.setImageBitmap(fileSystem.getImage(storyName, currentSlide));
+        slideImage.setImageBitmap(FileSystem.getImage(storyName, currentSlide));
 
         TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
-        slideTitle.setText(fileSystem.getTitle());
+        slideTitle.setText(FileSystem.getTitle());
 
         TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
-        slideSubTitle.setText(fileSystem.getSlideVerse());
+        slideSubTitle.setText(FileSystem.getSlideVerse());
 
         TextView slideVerse = (TextView)view.findViewById(R.id.trans_scripture_title);
-        slideVerse.setText(fileSystem.getSlideVerse());
+        slideVerse.setText(FileSystem.getSlideVerse());
 
         TextView slideContent = (TextView)view.findViewById(R.id.trans_scripture_body);
-        slideContent.setText(fileSystem.getSlideContent());
+        slideContent.setText(FileSystem.getSlideContent());
 
         TextView slideNum = (TextView)view.findViewById(R.id.trans_slide_indicator);
         slideNum.setText("#" + (getArguments().getInt(SLIDE_NUM) + 1));
