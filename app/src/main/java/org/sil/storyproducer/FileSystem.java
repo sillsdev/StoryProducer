@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
 class FileSystem {
     private static String language = "English";
 
-    private static Map<String, Map<String, String>> storyPaths = new HashMap<>();
+    //Paths to template directories from language and story name
+    private static Map<String, Map<String, String>> storyPaths;
 
     private static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -27,18 +28,25 @@ class FileSystem {
         loadStories();
     }
 
+    //Populate storyPaths from files in system
     public static void loadStories() {
+        //Reset storyPaths
+        storyPaths = new HashMap<>();
+
         File[] storeDirs = getStorageDirs();
         for(int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
             File sDir = storeDirs[storeIndex];
+
             File[] langDirs = getLanguageDirs(sDir);
             for(int langIndex = 0; langIndex < langDirs.length; langIndex++) {
                 File lDir = langDirs[langIndex];
                 String lang = lDir.getName();
+
                 if(!storyPaths.containsKey(lang)) {
                     storyPaths.put(lang, new HashMap<String, String>());
                 }
                 Map<String, String> storyMap = storyPaths.get(lang);
+
                 File[] storyDirs = getStoryDirs(lDir);
                 for(int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
                     File storyDir = storyDirs[storyIndex];
@@ -99,7 +107,7 @@ class FileSystem {
         File file[] = f.listFiles();
 
         for (int i=0; i < file.length; i++) {
-            if (file[i].getName().equals(number + ".jpg")) {
+            if (file[i].getName().equals(number + ".wav")) {
                 return BitmapFactory.decodeFile(path + "/" + file[i].getName());
             }
         }
@@ -140,13 +148,12 @@ class FileSystem {
 
         String text1 = text.toString();
         byte[] temp = text1.getBytes();
-        for(int i = 0; i < temp.length; i++) {
-            if(temp[i] == -17) {
-                if(temp[i+1] == -65 && temp[i+2] == -67) {
-                    text = text.replace(i, i+1, "'");
-                    text1 = text.toString();
-                    temp = text1.getBytes();
-                }
+        for(int i = 0; i < temp.length - 2; i++) {
+            //Swap out curly apostrophe with ASCII single quote
+            if(temp[i] == -17 && temp[i+1] == -65 && temp[i+2] == -67) {
+                text = text.replace(i, i+1, "'");
+                text1 = text.toString();
+                temp = text1.getBytes();
             }
         }
         content = text.toString().split(Pattern.quote("~"));
