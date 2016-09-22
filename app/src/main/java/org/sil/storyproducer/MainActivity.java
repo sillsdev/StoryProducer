@@ -1,4 +1,4 @@
-package com.bsv.www.storyproducer;
+package org.sil.storyproducer;
 
 import android.app.FragmentManager;
 import android.content.res.Configuration;
