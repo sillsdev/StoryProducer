@@ -1,0 +1,35 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+    <style name="menu_labels_style">
+        <item name="android:background">@drawable/fab_label_background</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!--<style name="SplashScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+    <!--</style>-->
+    <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+    <style name="setupEditText">
+        <item name="android:background">@null</item>
+        <item name="android:paddingTop">@dimen/setup_edittext_paddingTopBot</item>
+        <item name="android:paddingBottom">@dimen/setup_edittext_paddingTopBot</item>
+        <item name="android:paddingLeft">@dimen/setup_edittext_paddingLefRig</item>
+        <item name="android:paddingRight">@dimen/setup_edittext_paddingLefRig</item>
+        <item name="android:layout_width">@dimen/setup_edittext_width</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:cursorVisible">false</item>
+        <item name="android:textColorHint">@color/lightBlue</item>
+    </style>
+
+</resources>
