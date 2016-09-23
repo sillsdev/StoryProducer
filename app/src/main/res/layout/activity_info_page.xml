@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="org.sil.storyproducer.InfoPage">
+
+    <ScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/language_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/language" />
+
+            <TextView
+                android:id="@+id/language_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/language_text_view"
+                android:layout_toEndOf="@id/language_text_view"
+                 />
+
+            <TextView
+                android:id="@+id/language_code_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/language_text_view"
+                android:text="@string/language_code" />
+
+            <TextView
+                android:id="@+id/lcode_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/language_code_text_view"
+                android:layout_toEndOf="@id/language_code_text_view"
+               />
+
+            <TextView
+                android:id="@+id/country_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/language_code_text_view"
+                android:text="@string/country" />
+
+            <TextView
+                android:id="@+id/country_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/country_text_view"
+                android:layout_toEndOf="@id/country_text_view"
+                />
+
+            <TextView
+                android:id="@+id/translator_name_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/country_text_view"
+                android:text="@string/translator_team_name" />
+
+            <TextView
+                android:id="@+id/tname_tw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/translator_name_text_view"
+                android:layout_toEndOf="@id/translator_name_text_view"
+                 />
+
+            <TextView
+                android:id="@+id/team_contact_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/translator_name_text_view"
+                android:text="@string/translator_contact_name" />
+
+            <TextView
+                android:id="@+id/tcontact_tw"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/team_contact_text_view"
+                android:layout_toEndOf="@id/team_contact_text_view"
+                />
+
+            <TextView
+                android:id="@+id/consultant_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/team_contact_text_view"
+                android:text="@string/consultant_name" />
+
+            <TextView
+                android:id="@+id/cname_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/consultant_text_view"
+                android:layout_toEndOf="@id/consultant_text_view"
+                />
+
+            <TextView
+                android:id="@+id/consultant_email_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/consultant_text_view"
+                android:text="@string/consultant_email" />
+
+            <TextView
+                android:id="@+id/cemail_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/consultant_email_text_view"
+                android:layout_toEndOf="@id/consultant_email_text_view"
+                />
+
+            <TextView
+                android:id="@+id/consultant_phone_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/consultant_email_text_view"
+                android:text="@string/consultant_phone" />
+
+            <TextView
+                android:id="@+id/cphone_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/consultant_phone_text_view"
+                android:layout_toEndOf="@id/consultant_phone_text_view"
+                />
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

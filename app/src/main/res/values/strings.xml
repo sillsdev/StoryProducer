@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">Story Producer</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_info">Registration Info</string>
+    <string name="menu_search">Search</string>
+    <string name="setup_langcode_hint">Language Code</string>
+    <string name="setup_countries_hint">Country(s)</string>
+    <string name="setup_teamname_hint">Team Name</string>
+    <string name="setup_teamcontact_hint">Contact Name</string>
+    <string name="setup_consname_hint">Consultant Name</string>
+    <string name="setup_consphone_hint">Consultant Phone</string>
+    <string name="setup_consemail_hint">Consultant Email</string>
+    <string name="title_activity_story_templates">Story Templates</string>
+    <string name="title_activity_info_page">Information</string>
+    <string name="title_fragment_translate">Translate</string>
+    <string name="title_fragment_community">Community Check</string>
+    <string name="title_fragment_consultant">Consultant Check</string>
+
+    /*String names for Info Page*/
+    <string name="consultant_phone">"Consultant Phone:  "</string>
+    <string name="consultant_email">"Consultant Email:  "</string>
+    <string name="consultant_name">"Consultant Name:  "</string>
+    <string name="translator_contact_name">"Translation Team Contact:  "</string>
+    <string name="translator_team_name">"Translation Team Name:  "</string>
+    <string name="country">"Country:  "</string>
+    <string name="language_code">"Language Code:  "</string>
+    <string name="language">"Language:  "</string>
+    
+    /* Navigation Drawer Labels */
+    <string name="nav_open">Options</string>
+    <string-array name="nav_labels">
+        <item>Story Templates</item>
+        <item>Translate</item>
+        <item>Community Check</item>
+        <item>Consultant Check</item>
+        <item>Recording Studio</item>
+    </string-array>
+    <array name="nav_icons">
+        <item>@drawable/ic_list</item>
+        <item>@drawable/ic_translate</item>
+        <item>@drawable/ic_community</item>
+        <item>@drawable/ic_consultant</item>
+        <item>@drawable/ic_mic_white</item>
+    </array>
+
+
+    /* ListView */
+    <string name="playVideo">Play</string>
+    <string name="translateVideo">Translate</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_splash_screen">Story Producer</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
