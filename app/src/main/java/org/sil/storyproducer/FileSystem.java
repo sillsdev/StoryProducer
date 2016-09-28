@@ -3,6 +3,7 @@ package org.sil.storyproducer;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 
 import java.io.*;
 import java.util.*;
@@ -63,7 +64,7 @@ class FileSystem {
     }
 
     private static File[] getStorageDirs() {
-        return Main.getAppContext().getExternalFilesDirs(null);
+        return ContextCompat.getExternalFilesDirs(Main.getAppContext(), null);
     }
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
