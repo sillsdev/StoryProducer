@@ -1,18 +1,15 @@
 package org.sil.storyproducer;
 
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Environment;
+
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -34,7 +31,7 @@ public class TransFrag extends Fragment {
     private static final String STORY_NAME = "storyname";
     private String outputFile=null;
     private File output = null;
-    private String fileName = "recording";
+    private static final String FILE_BASE = "recording";
     private int record_count = 2;
     private int failure;
     private boolean isSpeakButtonLongPressed;
@@ -67,15 +64,8 @@ public class TransFrag extends Fragment {
         //stuff for saving and playing the audio
         //TODO test to see where exacly getPath is in our files and if we even need the directory path
 
-//        outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BSVP/";
-        final File output = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/BSVP/" +
-                getArguments().getString(STORY_NAME));
+        final File output = new File(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)));
 
-        if (output.exists()) {
-        }
-        else {
-            output.mkdirs();
-        }
         final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
         final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
         floatingActionButton2.setVisibility(View.INVISIBLE);
@@ -90,7 +80,7 @@ public class TransFrag extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 v.setPressed(true);
-                outputFile = fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
+                outputFile = FILE_BASE + getArguments().getInt(SLIDE_NUM) + ".mp3";
                 audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
                 startAudioRecorder(audioRecorder);
                 Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
@@ -131,7 +121,7 @@ public class TransFrag extends Fragment {
 
                     case MotionEvent.ACTION_DOWN:
                         v.setPressed(true);
-                        outputFile = fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
+                        outputFile = FILE_BASE + getArguments().getInt(SLIDE_NUM) + ".mp3";
                         audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
                         startAudioRecorder(audioRecorder);
                         Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
