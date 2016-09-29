@@ -1,6 +1,7 @@
 package org.sil.storyproducer;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.media.MediaPlayer;
