@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryFrag()).commit();
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
+        // For registration testing purposes
+        Intent intent = new Intent(this, RegistrationActivity.class);
+        startActivity(intent);
     }
 
     @Override
