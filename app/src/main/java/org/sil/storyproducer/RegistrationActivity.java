@@ -1,7 +1,12 @@
 package org.sil.storyproducer;
 
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -9,5 +14,71 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+    }
+
+    protected void onPostCreate(Bundle savedInstanceState){
+        super.onPostCreate(savedInstanceState);
+        this.traverseTextFields();
+    }
+
+    /*
+    Adds the text field watchers and adds parsing
+     */
+    private void traverseTextFields(){
+        View view = findViewById(R.id.scroll_view);
+        LinearLayout linearLayout = null;
+
+        //Find the top level linear layout
+        if(view instanceof ScrollView){
+            ScrollView scrollView = (ScrollView)view;
+            View tempView = scrollView.getChildAt(0);
+            if(tempView instanceof LinearLayout){
+                linearLayout = (LinearLayout)tempView;
+            }
+        }
+
+        //If the top level linear layout was found then LinearLayout should not equal null
+        if(linearLayout != null){
+            for(int i = 0; i < linearLayout.getChildCount(); i++){
+                View tempLinearLayout = linearLayout.getChildAt(i);
+                if(tempLinearLayout instanceof TextInputLayout){
+                    TextInputLayout textInputLayout =  (TextInputLayout)tempLinearLayout;
+                    final TextInputEditText inputtedTextField = (TextInputEditText)textInputLayout.getEditText();
+                    inputtedTextField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                        @Override
+                        public void onFocusChange(View v, boolean hasFocus){
+                            if(!hasFocus){
+                                //This convoluted statement below gets the integer id ( inputtedTextField.getId() )
+                                //and converts it to the actual string representation sourced from the activity_registration.xml...
+                                String id = inputtedTextField.getResources().getResourceEntryName(inputtedTextField.getId());
+                                String inputString = inputtedTextField.getText().toString();
+
+                                System.out.printf("%s says: %s %n", id, inputString);
+                                parseTextField(id, inputString);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+
+    //Used to validate the text field... may use an Enum instead of multiple strings... I don't know yet
+    //This may have to be a help class
+    //String TextFieldType is the "type" of the second parameter field
+    //String inputtedTextField is the textField to parse
+    private void parseTextField(String TextFieldType, String inputtedTextField){
+        switch(TextFieldType){
+            case "Regular text field":
+                //do something with inputtedTextField
+                break;
+            case "Phone number":
+                // do something with inputtedTextField
+                break;
+            default:
+                // do something special
+                break;
+        }
     }
 }
