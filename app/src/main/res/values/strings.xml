@@ -39,6 +39,7 @@
     <string name="person_location_hint">Location</string>
     <string name="education_hint">Education Level</string>
     <string name="communication_preference_hint">Communication Preference:</string>
+    <string name="submit">Submit</string>
 
     <string-array name="orthography_list">
         <item>None</item>
