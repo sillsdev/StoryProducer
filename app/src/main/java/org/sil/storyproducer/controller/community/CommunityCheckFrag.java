@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller.community;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,12 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.sil.storyproducer.R;
 
-public class ComCheckFrag extends Fragment {
+
+public class CommunityCheckFrag extends Fragment {
     private static final String SLIDE_NUM = "slidenum";
 
-    public static ComCheckFrag newInstance(int position){
-        ComCheckFrag frag = new ComCheckFrag();
+    public static CommunityCheckFrag newInstance(int position){
+        CommunityCheckFrag frag = new CommunityCheckFrag();
         Bundle args = new Bundle();
         args.putInt(SLIDE_NUM, position);
         frag.setArguments(args);

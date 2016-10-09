@@ -1,19 +1,20 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.content.Intent;
 
-/**
- * Created by hannahbrown on 9/25/15.
- */
-public class StoryFrag extends Fragment{
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.learn.LearnActivity;
+import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.model.ListFiles;
+
+public class StoryFrag extends Fragment {
 
     ListView listView;
 
@@ -52,7 +53,9 @@ public class StoryFrag extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int slideNum = FileSystem.getImageAmount(values[position]);
-                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
+//                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
+                ((MainActivity)getActivity()).changeActivity(0, values[position]);
+
             }
         });
 

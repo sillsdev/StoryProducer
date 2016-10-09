@@ -25,7 +25,7 @@
     <string name="country">"Country:  "</string>
     <string name="language_code">"Language Code:  "</string>
     <string name="language">"Language:  "</string>
-    
+
     /* Navigation Drawer Labels */
     <string name="nav_open">Options</string>
     <string-array name="nav_labels">
@@ -51,4 +51,8 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_splash_screen">Story Producer</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_learn">LearnActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.sil.storyproducer.R;
+
 import java.util.Map;
 
-public class InfoPage extends AppCompatActivity {
+public class InfoPageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

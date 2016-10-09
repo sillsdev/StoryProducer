@@ -1,7 +1,14 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
+
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.draft.PagerFrag;
+import org.sil.storyproducer.controller.learn.LearnActivity;
+import org.sil.storyproducer.model.*;
+import org.sil.storyproducer.tools.FileSystem;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -29,6 +36,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FileSystem.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -36,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
 
-        if (ContextCompat.checkSelfPermission(Main.getAppContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
@@ -184,6 +193,16 @@ public class MainActivity extends AppCompatActivity {
         if(pagerFrag != null) {
             pagerFrag.changeView(slidePosition);
         }
+    }
+
+    /**
+     * Changed the activity that the app is on
+     */
+    public void changeActivity(int slideNum, String storyName) {
+        //change to the learning activity
+        Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
+        startActivity(intent);
+        System.out.println("The storyname is " + storyName);
     }
 }
 

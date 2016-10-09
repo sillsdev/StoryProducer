@@ -8,6 +8,7 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
+
     <style name="menu_labels_style">
         <item name="android:background">@drawable/fab_label_background</item>
         <item name="android:textColor">@color/white</item>
@@ -19,6 +20,7 @@
         <item name="spinBars">true</item>
         <item name="color">@android:color/white</item>
     </style>
+
     <style name="setupEditText">
         <item name="android:background">@null</item>
         <item name="android:paddingTop">@dimen/setup_edittext_paddingTopBot</item>
@@ -30,6 +32,18 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:cursorVisible">false</item>
         <item name="android:textColorHint">@color/lightBlue</item>
+    </style>
+
+    <style name="FullscreenTheme" parent="AppTheme">
+        <item name="android:actionBarStyle">@style/FullscreenActionBarStyle</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+        <item name="metaButtonBarStyle">?android:attr/buttonBarStyle</item>
+        <item name="metaButtonBarButtonStyle">?android:attr/buttonBarButtonStyle</item>
+    </style>
+
+    <style name="FullscreenActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black_overlay</item>
     </style>
 
 </resources>

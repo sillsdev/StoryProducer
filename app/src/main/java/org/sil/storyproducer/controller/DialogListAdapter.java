@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
@@ -9,9 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-/**
- * Created by Jordan Skomer on 10/26/2015.
- */
+import org.sil.storyproducer.R;
+
 public class DialogListAdapter extends BaseAdapter  {
     private int[] slides;
     int currentSlide;

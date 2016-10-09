@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller.draft;
 
 import android.app.Dialog;
 import android.media.MediaPlayer;
@@ -20,6 +20,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.sil.storyproducer.controller.DialogListAdapter;
+import org.sil.storyproducer.controller.MainActivity;
+import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.R;
 
 import java.io.File;
 import java.io.IOException;

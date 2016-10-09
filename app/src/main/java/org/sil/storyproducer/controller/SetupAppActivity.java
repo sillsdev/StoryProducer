@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +18,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class SetupApp extends AppCompatActivity {
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.MainActivity;
+
+public class SetupAppActivity extends AppCompatActivity {
     GestureDetectorCompat gestureDetector;
     ViewFlipper settingFlipper;
     LinearLayout pageIndicatorLayout;
