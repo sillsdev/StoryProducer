@@ -10,10 +10,25 @@ import android.widget.ScrollView;
 
 public class RegistrationActivity extends AppCompatActivity {
 
+    View generalSection, translatorSection, consultantSection, trainerSection, databaseSection;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
+        generalSection = findViewById(R.id.general_section);
+        translatorSection = findViewById(R.id.translator_section);
+        consultantSection = findViewById(R.id.consultant_section);
+        trainerSection = findViewById(R.id.trainer_section);
+        databaseSection = findViewById(R.id.database_section);
+
+        setAccordionListener(findViewById(R.id.general_header), generalSection);
+        setAccordionListener(findViewById(R.id.translator_header), translatorSection);
+        setAccordionListener(findViewById(R.id.consultant_header), consultantSection);
+        setAccordionListener(findViewById(R.id.trainer_header), trainerSection);
+        setAccordionListener(findViewById(R.id.database_header), databaseSection);
+
     }
 
     protected void onPostCreate(Bundle savedInstanceState){
@@ -80,5 +95,25 @@ public class RegistrationActivity extends AppCompatActivity {
                 // do something special
                 break;
         }
+    }
+
+    /**
+     * This function sets the click listeners to implement the accordion functionality
+     * for each section of the registration page
+     * @param headerView a variable of type View denoting the field the user will click to open up
+     *                   a section of the registration
+     * @param sectionView a variable of type View denoting the section that will open up
+     */
+    private void setAccordionListener(View headerView, final View sectionView) {
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sectionView.getVisibility() == View.GONE) {
+                    sectionView.setVisibility(View.VISIBLE);
+                } else {
+                    sectionView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 }

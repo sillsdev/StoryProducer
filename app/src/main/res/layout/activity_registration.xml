@@ -20,441 +20,501 @@
         <!--*************************** General Information ********************************-->
 
         <TextView
+            android:id="@+id/general_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/general_header"
             android:textSize="@dimen/header_text"
             android:gravity="center"
+            android:background="@color/black_semi_transparent"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/general_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_language"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/language_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_ethnologue"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/etnologue_code_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_country"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/country_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_location"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/location_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_town"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/town_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_lwc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/lwc_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/orthography_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/input_orthography"
-                android:text="@string/orthography_hint"
-                android:textSize="@dimen/large_text"/>
-
-            <Spinner android:id="@+id/input_orthography"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/orthography_label"
-                android:layout_toRightOf="@+id/orthography_label"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:spinnerMode="dialog"
-                android:entries="@array/orthography_list"/>
-        </RelativeLayout>
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_language"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/language_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_ethnologue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/etnologue_code_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/country_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/location_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_town"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/town_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_lwc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/lwc_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/orthography_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/input_orthography"
+                    android:text="@string/orthography_hint"
+                    android:textSize="@dimen/large_text"/>
+
+                <Spinner android:id="@+id/input_orthography"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/orthography_label"
+                    android:layout_toRightOf="@+id/orthography_label"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/orthography_list"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
 
         <!-- *************************** Translator Info ********************************* -->
 
         <TextView
+            android:id="@+id/translator_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/translator_header"
             android:textSize="@dimen/header_text"
             android:gravity="center"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:background="@color/black_semi_transparent"
+            android:padding="8dp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/translator_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_name"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/name_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_education"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/education_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_languages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/spoken_language_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"
-                android:hint="@string/phone_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/translator_communication_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/input_translator_communication_preference"
-                android:text="@string/communication_preference_hint"
-                android:textSize="@dimen/large_text"/>
-
-            <Spinner android:id="@+id/input_translator_communication_preference"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/translator_communication_label"
-                android:layout_toRightOf="@+id/translator_communication_label"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:spinnerMode="dialog"
-                android:entries="@array/communication_list"/>
-        </RelativeLayout>
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/name_hint" />
+            </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_translator_location"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/person_location_hint" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_education"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/education_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_languages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/spoken_language_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:hint="@string/phone_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/email_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/translator_communication_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/input_translator_communication_preference"
+                    android:text="@string/communication_preference_hint"
+                    android:textSize="@dimen/large_text"/>
+
+                <Spinner android:id="@+id/input_translator_communication_preference"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/translator_communication_label"
+                    android:layout_toRightOf="@+id/translator_communication_label"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/communication_list"/>
+            </RelativeLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_translator_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/person_location_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
         <!-- ********************************  Consultant Info ************************** -->
 
         <TextView
+            android:id="@+id/consultant_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/consultant_header"
             android:textSize="@dimen/header_text"
             android:gravity="center"
+            android:background="@color/black_semi_transparent"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/consultant_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_consultant_name"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/name_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_consultant_languages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/spoken_language_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_consultant_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"
-                android:hint="@string/phone_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_consultant_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/consultant_communication_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/input_consultant_communication_preference"
-                android:text="@string/communication_preference_hint"
-                android:textSize="@dimen/large_text"/>
-
-            <Spinner android:id="@+id/input_consultant_communication_preference"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/consultant_communication_label"
-                android:layout_toRightOf="@+id/consultant_communication_label"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:spinnerMode="dialog"
-                android:entries="@array/communication_list"/>
-        </RelativeLayout>
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_consultant_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/name_hint" />
+            </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_consultant_location"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/person_location_hint" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_consultant_languages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/spoken_language_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_consultant_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:hint="@string/phone_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_consultant_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/email_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/consultant_communication_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/input_consultant_communication_preference"
+                    android:text="@string/communication_preference_hint"
+                    android:textSize="@dimen/large_text"/>
+
+                <Spinner android:id="@+id/input_consultant_communication_preference"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/consultant_communication_label"
+                    android:layout_toRightOf="@+id/consultant_communication_label"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/communication_list"/>
+            </RelativeLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_consultant_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/person_location_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
         <!-- *********************************** Trainer Info ********************************* -->
 
         <TextView
+            android:id="@+id/trainer_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/trainer_header"
             android:textSize="@dimen/header_text"
             android:gravity="center"
+            android:background="@color/black_semi_transparent"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/trainer_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_trainer_name"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/name_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_trainer_languages"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/spoken_language_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_trainer_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"
-                android:hint="@string/phone_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_trainer_email"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_hint" />
-        </android.support.design.widget.TextInputLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView android:id="@+id/trainer_communication_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/input_trainer_communication_preference"
-                android:text="@string/communication_preference_hint"
-                android:textSize="@dimen/large_text"/>
-
-            <Spinner android:id="@+id/input_trainer_communication_preference"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/trainer_communication_label"
-                android:layout_toRightOf="@+id/trainer_communication_label"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:spinnerMode="dialog"
-                android:entries="@array/communication_list"/>
-        </RelativeLayout>
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_trainer_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/name_hint" />
+            </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_trainer_location"
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="@string/person_location_hint" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_trainer_languages"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/spoken_language_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_trainer_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:hint="@string/phone_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_trainer_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/email_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView android:id="@+id/trainer_communication_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/input_trainer_communication_preference"
+                    android:text="@string/communication_preference_hint"
+                    android:textSize="@dimen/large_text"/>
+
+                <Spinner android:id="@+id/input_trainer_communication_preference"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/trainer_communication_label"
+                    android:layout_toRightOf="@+id/trainer_communication_label"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:spinnerMode="dialog"
+                    android:entries="@array/communication_list"/>
+            </RelativeLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_trainer_location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:hint="@string/person_location_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
         <!-- ************************ Database Contact Info ************************** -->
 
         <TextView
+            android:id="@+id/database_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/database_header"
             android:textSize="@dimen/header_text"
             android:gravity="center"
+            android:background="@color/black_semi_transparent"
             android:layout_marginTop="12dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:padding="8dp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <LinearLayout
+            android:id="@+id/database_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp">
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/input_database_email"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_hint" />
-        </android.support.design.widget.TextInputLayout>
-
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp">
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/input_database_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/email_hint" />
+            </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
         <Button
             android:id="@+id/submit_button"
             android:layout_width="wrap_content"
@@ -463,7 +523,6 @@
             android:layout_marginBottom="8dp"
             android:text="@string/submit"
             android:layout_gravity="center" />
-
     </LinearLayout>
 </ScrollView>
 
