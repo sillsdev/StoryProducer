@@ -20,6 +20,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import com.github.hiteshsondhi88.libffmpeg.*;
+import com.github.hiteshsondhi88.libffmpeg.exceptions.*;
+
+import org.sil.storyproducer.video.EncodeAndMuxTest;
+import org.sil.storyproducer.video.MyEncodeAndMuxTest;
 
 import java.util.ArrayList;
 
@@ -40,6 +45,89 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
+
+//        FFmpeg ffmpeg = FFmpeg.getInstance(Main.getAppContext());
+//        try {
+//            ffmpeg.loadBinary(new LoadBinaryResponseHandler() {
+//
+//                @Override
+//                public void onStart() {
+//                    System.out.println("FFMPEG Start!");
+//                }
+//
+//                @Override
+//                public void onFailure() {
+//                    System.out.println("FFMPEG FAIL!");
+//                }
+//
+//                @Override
+//                public void onSuccess() {
+//                    System.out.println("FFMPEG! Yay!");
+//                }
+//
+//                @Override
+//                public void onFinish() {
+//                    String dir = FileSystem.getStoryPath("Fiery Furnace");
+//                    String[] cmd = {
+//                            "-loop",
+//                            "1",
+//                            "-i",
+//                            dir + "/0.jpg",
+//                            "-i",
+//                            dir + "/narration0.wav",
+//                            "-c:v",
+//                            "libx264",
+//                            "-c:a",
+//                            "aac",
+//                            "-strict",
+//                            "experimental",
+//                            "-b:a",
+//                            "192k",
+//                            "-shortest",
+//                            dir + "/out.mp4"
+//                    };
+//                    try {
+//
+//                        FFmpeg ffmpeg = FFmpeg.getInstance(Main.getAppContext());
+//                        ffmpeg.execute(cmd, new FFmpegExecuteResponseHandler() {
+//
+//                            @Override
+//                            public void onStart() {
+//                                System.out.println("start!");
+//                            }
+//
+//                            @Override
+//                            public void onFinish() {
+//                                System.out.println("finish!");
+//                            }
+//
+//                            @Override
+//                            public void onSuccess(String message) {
+//                                System.out.println("success! " + message);
+//                            }
+//
+//                            @Override
+//                            public void onProgress(String message) {
+//                                System.out.println("progress! " + message);
+//                            }
+//
+//                            @Override
+//                            public void onFailure(String message) {
+//                                System.out.println("fail! " + message);
+//                            }
+//                        });
+//                    } catch (FFmpegCommandAlreadyRunningException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//        } catch (FFmpegNotSupportedException e) {
+//            // Handle if FFmpeg is not supported by device
+//            System.out.println("no FFMPEG!");
+//        }
+
+        MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
+        test.testEncodeVideoToMp4();
     }
 
     @Override

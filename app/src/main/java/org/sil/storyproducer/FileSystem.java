@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Created by hannahbrown on 9/27/15.
  */
-class FileSystem {
+public class FileSystem {
     private static String language = "English";
 
     //Paths to template directories from language and story name
