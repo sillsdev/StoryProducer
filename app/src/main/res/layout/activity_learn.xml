@@ -16,4 +16,14 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/learnImageView" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@null"
+        android:src="@drawable/ic_play_gray"
+        android:onClick="clickPlayPauseButton"
+        android:id="@+id/playButton" />
 </RelativeLayout>

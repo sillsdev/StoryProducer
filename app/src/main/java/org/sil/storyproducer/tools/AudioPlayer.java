@@ -52,6 +52,15 @@ public class AudioPlayer {
     }
 
     /**
+     * Resumes the audio from where it was last paused
+     */
+    public void resumeAudio() {
+        int pauseSpot = mPlayer.getCurrentPosition();
+        mPlayer.seekTo(pauseSpot);
+        mPlayer.start();
+    }
+
+    /**
      * Stops the audio if it is currenlty being played
      */
     public void stopAudio() {
@@ -85,5 +94,13 @@ public class AudioPlayer {
      */
     public void setVolume(float volume) {
         mPlayer.setVolume(volume, volume);
+    }
+
+    /**
+     * returns if the audio is being played or not
+     * @return :returns true or false based on if the audio is being played
+     */
+    public boolean isAudioPlaying() {
+        return mPlayer.isPlaying();
     }
 }

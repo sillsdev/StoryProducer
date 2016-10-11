@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.view.View;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.tools.AudioPlayer;
@@ -14,6 +15,7 @@ import java.io.IOException;
 public class LearnActivity extends AppCompatActivity {
 
     ImageView learnImageView;
+    AudioPlayer aPlayer;
     int slideNum = 0;
 
     @Override
@@ -36,9 +38,8 @@ public class LearnActivity extends AppCompatActivity {
      * Plays the video and runs everytime the audio is completed
      */
     void playVideo() {
-        System.out.println("The audio stopped");
         learnImageView.setImageBitmap(FileSystem.getImage("Fiery Furnace", slideNum));          //set the next image
-        AudioPlayer aPlayer = new AudioPlayer();                                                //set the next audio
+        aPlayer = new AudioPlayer();                                                //set the next audio
         aPlayer.playWithPath(FileSystem.getStoryPath("Fiery Furnace") + "/narration" + slideNum + ".wav");
         aPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -50,6 +51,18 @@ public class LearnActivity extends AppCompatActivity {
             }
         });
         slideNum++;         //move to the next slide
+    }
+
+    /**
+     * Button actin for playing/pausing the audio
+     * @param view
+     */
+    public void clickPlayPauseButton(View view) {
+        if(aPlayer.isAudioPlaying()) {
+            aPlayer.pauseAudio();
+        } else {
+            aPlayer.resumeAudio();
+        }
     }
 
 }
