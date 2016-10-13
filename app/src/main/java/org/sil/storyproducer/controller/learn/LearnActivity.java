@@ -11,7 +11,7 @@ import org.sil.storyproducer.tools.FileSystem;
 import java.io.IOException;
 
 public class LearnActivity extends AppCompatActivity {
-    
+
     private ImageView learnImageView;
 
     @Override
