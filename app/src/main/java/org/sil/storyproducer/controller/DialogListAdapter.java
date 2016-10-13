@@ -13,11 +13,11 @@ import org.sil.storyproducer.R;
 
 public class DialogListAdapter extends BaseAdapter  {
     private int[] slides;
-    int currentSlide;
-    int checkSlide;
-    Boolean firstRun = true;
+    private int currentSlide;
+    private int checkSlide;
+    private Boolean firstRun = true;
     private static LayoutInflater inflater;
-    Context context;
+    private Context context;
     public DialogListAdapter(FragmentActivity mainActivity, int[] slides, int currentSlide) {
         this.slides = slides;
         this.currentSlide = currentSlide;

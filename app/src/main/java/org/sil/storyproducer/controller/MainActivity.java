@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.draft.PagerFrag;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
@@ -161,23 +160,24 @@ public class MainActivity extends AppCompatActivity {
         switch (iFragNum) {
             case 0:
                 fragment = new StoryFrag();
-                title=getApplicationContext().getString(R.string.title_activity_story_templates);
+                title = getApplicationContext().getString(R.string.title_activity_story_templates);
                 hideIcon = false;
                 break;
             case 1:
                 pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
                 fragment = pagerFrag;
-                title=getApplicationContext().getString(R.string.title_fragment_translate);
+                title = getApplicationContext().getString(R.string.title_fragment_translate);
                 hideIcon = true;
                 break;
             case 2:
-                pagerFrag= PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_community);
+                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
+                fragment = pagerFrag;
+                title = getApplicationContext().getString(R.string.title_fragment_community);
                 hideIcon = true;
                 break;
             case 3:
                 fragment = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_consultant);
+                title = getApplicationContext().getString(R.string.title_fragment_consultant);
                 hideIcon = true;
                 break;
 
@@ -196,13 +196,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Changed the activity that the app is on
+     * Change the activity that the app is on
      */
-    public void changeActivity(int slideNum, String storyName) {
+    public void startLearnActivity(int slideNum, String storyName) {
         //change to the learning activity
         Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
         startActivity(intent);
-        System.out.println("The storyname is " + storyName);
     }
 }
 

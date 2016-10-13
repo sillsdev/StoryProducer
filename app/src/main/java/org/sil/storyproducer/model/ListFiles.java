@@ -2,9 +2,6 @@ package org.sil.storyproducer.model;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by noahbragg on 10/9/16.
- */
 public class ListFiles {
     public Bitmap icon;
     public String title;

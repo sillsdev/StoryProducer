@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.draft;
+package org.sil.storyproducer.controller;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

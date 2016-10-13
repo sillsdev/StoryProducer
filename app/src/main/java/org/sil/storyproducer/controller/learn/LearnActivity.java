@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class LearnActivity extends AppCompatActivity {
 
-    ImageView learnImageView;
+    private ImageView learnImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +23,7 @@ public class LearnActivity extends AppCompatActivity {
         learnImageView = (ImageView) findViewById(R.id.learnImageView);
         learnImageView.setImageBitmap(FileSystem.getImage("Fiery Furnace", 6));
 
+        //TODO: change this test to actually running the learn activity
         //play the audio for this scene
         MediaPlayer mPlayer = new MediaPlayer();
         try {

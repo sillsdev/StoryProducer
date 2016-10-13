@@ -22,9 +22,9 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.MainActivity;
 
 public class SetupAppActivity extends AppCompatActivity {
-    GestureDetectorCompat gestureDetector;
-    ViewFlipper settingFlipper;
-    LinearLayout pageIndicatorLayout;
+    private GestureDetectorCompat gestureDetector;
+    private ViewFlipper settingFlipper;
+    private LinearLayout pageIndicatorLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
