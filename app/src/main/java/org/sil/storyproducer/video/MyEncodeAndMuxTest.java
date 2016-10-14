@@ -40,6 +40,7 @@ import org.sil.storyproducer.FileSystem;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
 
 //20131106: removed hard-coded "/sdcard"
@@ -65,7 +66,7 @@ public class MyEncodeAndMuxTest {
 
     // parameters for the encoder
     private static final String MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
-    private static final String AUDIO_MIME_TYPE = "audio/x-wav";
+    private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
     private static final int FRAME_RATE = 15;               // 15fps
     private static final int IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
     private static final int NUM_FRAMES = 30;               // two seconds of video
@@ -114,6 +115,209 @@ public class MyEncodeAndMuxTest {
             prepareEncoder();
 //            mInputSurface.makeCurrent();
 
+
+            //handle audio
+            //        mAudioExtractor = new MediaExtractor();
+//        try {
+//            mAudioExtractor.setDataSource(OUTPUT_DIR.getPath() + "/recording1.mp3");
+//        } catch (IOException e) {
+//            System.out.println("failed to initialize mAudioExtractor with data source");
+//            e.printStackTrace();
+//            return;
+//        }
+//
+//        if(mAudioExtractor.getTrackCount() < 1) {
+//            System.out.println("No tracks in audio?");
+//            return;
+//        }
+//        else if(mAudioExtractor.getTrackCount() > 1) {
+//            System.out.println("More than one audio track?");
+//        }
+//
+//        mAudioExtractor.selectTrack(0);
+//        mAudioTrackIndex = mMuxer.addTrack(mAudioExtractor.getTrackFormat(0));
+
+
+
+
+            //                // Set up MediaExtractor to read from the source.
+////                AssetFileDescriptor srcFd = mResources.openRawResourceFd(srcMedia);
+//                MediaExtractor extractor = new MediaExtractor();
+//                try {
+////                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/recording1.mp3");
+////                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/narration0.wav");
+//                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/TestSound.mp3");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+////                extractor.setDataSource(srcFd.getFileDescriptor(), srcFd.getStartOffset(),
+////                        srcFd.getLength());
+//
+//                extractor.selectTrack(0);
+//                MediaFormat audioFormat = extractor.getTrackFormat(0);
+//                mAudioTrackIndex = mMuxer.addTrack(audioFormat);
+//
+////                int trackCount = extractor.getTrackCount();
+////                // Set up the tracks.
+////                HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>(trackCount);
+////                for (int i = 0; i < trackCount; i++) {
+////                    extractor.selectTrack(i);
+////                    MediaFormat format = extractor.getTrackFormat(i);
+////                    int dstIndex = muxer.addTrack(format);
+////                    indexMap.put(i, dstIndex);
+////                }
+//                // Copy the samples from MediaExtractor to MediaMuxer.
+//                boolean sawEOS = false;
+//                final int MAX_SAMPLE_SIZE = 256 * 1024;
+//                int bufferSize = MAX_SAMPLE_SIZE;
+//                int frameCount = 0;
+//                int offset = 100;
+//                ByteBuffer dstBuf = ByteBuffer.allocate(bufferSize);
+//                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+
+
+
+
+
+//            boolean extractorDone = false;
+//            boolean decoderDone = false;
+//            boolean encoderDone = false;
+//            while(!encoderDone) {
+//                if(!extractorDone) {
+//
+//                }
+//
+//                if(!decoderDone) {
+//
+//                }
+//
+//                if(!encoderDone) {
+//
+//                }
+//            }
+//
+//
+//
+//
+//
+//            MediaCodec.BufferInfo audioBufferInfo = new MediaCodec.BufferInfo();
+//
+//            MediaFormat audioFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, 1000, 1);
+//
+//            // Set some properties.  Failing to specify some of these can cause the MediaCodec
+//            // configure() call to throw an unhelpful exception.
+//            audioFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+//                    MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+//            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, mBitRate);
+//            audioFormat.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);
+//            audioFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
+//            if (VERBOSE) Log.d(TAG, "format: " + audioFormat);
+//
+//
+//
+//
+//
+//            short [] decoded = new short[0];
+//            int decodedIdx = 0;
+//            MediaExtractor audioExtractor;
+//            MediaCodec audioDecoder, audioEncoder;
+//            ByteBuffer[] codecInputBuffers;
+//            ByteBuffer[] codecOutputBuffers;
+//            audioExtractor = new MediaExtractor();
+//            try {
+//                audioExtractor.setDataSource(OUTPUT_DIR.getPath() + "/recording1.mp3");
+//            } catch (IOException e) {
+//                System.out.println("failed to initialize mAudioExtractor with data source");
+//                e.printStackTrace();
+//                return;
+//            }
+//            MediaFormat format = audioExtractor.getTrackFormat(0);
+//            String mime = format.getString(MediaFormat.KEY_MIME);
+//            try {
+//                audioDecoder = MediaCodec.createDecoderByType(mime);
+//
+//                audioEncoder = MediaCodec.createEncoderByType(AUDIO_MIME_TYPE);
+//                audioEncoder.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                return;
+//            }
+//            audioDecoder.configure(format, null /* surface */, null /* crypto */, 0 /* flags */);
+//            audioDecoder.start();
+//            codecInputBuffers = audioDecoder.getInputBuffers();
+//            codecOutputBuffers = audioDecoder.getOutputBuffers();
+//            audioExtractor.selectTrack(0);
+//            // start decoding
+//            final long kTimeOutUs = 5000;
+//            MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+//            boolean sawInputEOS = false;
+//            boolean sawOutputEOS = false;
+//            int noOutputCounter = 0;
+//            while (!sawOutputEOS && noOutputCounter < 50) {
+//                noOutputCounter++;
+//                if (!sawInputEOS) {
+//                    int inputBufIndex = audioDecoder.dequeueInputBuffer(kTimeOutUs);
+//                    if (inputBufIndex >= 0) {
+//                        ByteBuffer dstBuf = codecInputBuffers[inputBufIndex];
+//                        int sampleSize =
+//                                audioExtractor.readSampleData(dstBuf, 0 /* offset */);
+//                        long presentationTimeUs = 0;
+//                        if (sampleSize < 0) {
+//                            Log.d(TAG, "saw input EOS.");
+//                            sawInputEOS = true;
+//                            sampleSize = 0;
+//                        } else {
+//                            presentationTimeUs = audioExtractor.getSampleTime();
+//                        }
+//                        audioDecoder.queueInputBuffer(
+//                                inputBufIndex,
+//                                0 /* offset */,
+//                                sampleSize,
+//                                presentationTimeUs,
+//                                sawInputEOS ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
+//                        if (!sawInputEOS) {
+//                            audioExtractor.advance();
+//                        }
+//                    }
+//                }
+//                int res = audioDecoder.dequeueOutputBuffer(info, kTimeOutUs);
+//                if (res >= 0) {
+//                    //Log.d(TAG, "got frame, size " + info.size + "/" + info.presentationTimeUs);
+//                    if (info.size > 0) {
+//                        noOutputCounter = 0;
+//                    }
+//                    int outputBufIndex = res;
+//                    ByteBuffer buf = codecOutputBuffers[outputBufIndex];
+//                    if (decodedIdx + (info.size / 2) >= decoded.length) {
+//                        decoded = Arrays.copyOf(decoded, decodedIdx + (info.size / 2));
+//                    }
+//                    for (int i = 0; i < info.size; i += 2) {
+//                        decoded[decodedIdx++] = buf.getShort(i);
+//                    }
+//                    audioDecoder.releaseOutputBuffer(outputBufIndex, false /* render */);
+//                    if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+//                        Log.d(TAG, "saw output EOS.");
+//                        sawOutputEOS = true;
+//                    }
+//                } else if (res == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+//                    codecOutputBuffers = audioDecoder.getOutputBuffers();
+//                    Log.d(TAG, "output buffers have changed.");
+//                } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+//                    MediaFormat oformat = audioDecoder.getOutputFormat();
+//                    Log.d(TAG, "output format has changed to " + oformat);
+//                } else {
+//                    Log.d(TAG, "dequeueOutputBuffer returned " + res);
+//                }
+//            }
+//            audioDecoder.stop();
+//            audioDecoder.release();
+
+
+
+
+
+
+
             for (int i = 0; i < NUM_FRAMES; i++) {
                 // Feed any pending encoder output into the muxer.
                 drainEncoder(false);
@@ -136,6 +340,8 @@ public class MyEncodeAndMuxTest {
 
             // send end-of-stream to encoder, and drain remaining output
             drainEncoder(true);
+        } catch(Exception e) {
+            e.printStackTrace();
         } finally {
             // release encoder, muxer, and input Surface
             releaseEncoder();
@@ -288,43 +494,85 @@ public class MyEncodeAndMuxTest {
 
 
 
+                boolean encoderConfigured = false;
 
 
 
-//                // Set up MediaExtractor to read from the source.
-////                AssetFileDescriptor srcFd = mResources.openRawResourceFd(srcMedia);
-//                MediaExtractor extractor = new MediaExtractor();
-//                try {
-////                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/recording1.mp3");
-////                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/narration0.wav");
-//                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/TestSound.mp3");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
+                // Set up MediaExtractor to read from the source.
+//                AssetFileDescriptor srcFd = mResources.openRawResourceFd(srcMedia);
+                MediaExtractor extractor = new MediaExtractor();
+                try {
+//                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/recording1.mp3");
+//                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/narration0.wav");
+                    extractor.setDataSource(OUTPUT_DIR.getPath() + "/TestSound.mp3");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                extractor.setDataSource(srcFd.getFileDescriptor(), srcFd.getStartOffset(),
+//                        srcFd.getLength());
+
+                extractor.selectTrack(0);
+
+                MediaFormat audioFormat = extractor.getTrackFormat(0);
+                MediaCodec audioDecoder, audioEncoder;
+                try {
+                    audioDecoder = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
+                    audioDecoder.configure(audioFormat, null, null, 0);
+
+                    audioEncoder = MediaCodec.createEncoderByType(AUDIO_MIME_TYPE);
+
+
+
+//                    MediaFormat format  = new MediaFormat();
+//                    format.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
+//                    format.setInteger(
+//                            MediaFormat.KEY_AAC_PROFILE, kAACProfiles[k]);
+//                    format.setInteger(
+//                            MediaFormat.KEY_SAMPLE_RATE, kSampleRates[i]);
+//                    format.setInteger(MediaFormat.KEY_CHANNEL_COUNT, ch);
+//                    format.setInteger(MediaFormat.KEY_BIT_RATE, kBitRates[j]);
+
+
+                    final int MAX_SAMPLE_SIZE = 16 * 1024; //256 * 1024;
+                    int bufferSize = MAX_SAMPLE_SIZE;
+                    MediaFormat encoderFormat =
+                            MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, 8000, 1);
+                    encoderFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+                    encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, 64000);
+                    encoderFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, bufferSize);
+//                    encoderFormat.setByteBuffer("csd-0", decodedData);
+                    try {
+                        audioEncoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+                    }
+                    catch(Exception e) {
+                        e.printStackTrace();
+                    }
+//                    audioEncoder.start();
+                    encoderConfigured = true;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return;
+                }
+
+                //mAudioTrackIndex = mMuxer.addTrack(audioFormat);
+
+//                int trackCount = extractor.getTrackCount();
+//                // Set up the tracks.
+//                HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>(trackCount);
+//                for (int i = 0; i < trackCount; i++) {
+//                    extractor.selectTrack(i);
+//                    MediaFormat format = extractor.getTrackFormat(i);
+//                    int dstIndex = muxer.addTrack(format);
+//                    indexMap.put(i, dstIndex);
 //                }
-////                extractor.setDataSource(srcFd.getFileDescriptor(), srcFd.getStartOffset(),
-////                        srcFd.getLength());
-//
-//                extractor.selectTrack(0);
-//                MediaFormat audioFormat = extractor.getTrackFormat(0);
-//                mAudioTrackIndex = mMuxer.addTrack(audioFormat);
-//
-////                int trackCount = extractor.getTrackCount();
-////                // Set up the tracks.
-////                HashMap<Integer, Integer> indexMap = new HashMap<Integer, Integer>(trackCount);
-////                for (int i = 0; i < trackCount; i++) {
-////                    extractor.selectTrack(i);
-////                    MediaFormat format = extractor.getTrackFormat(i);
-////                    int dstIndex = muxer.addTrack(format);
-////                    indexMap.put(i, dstIndex);
-////                }
-//                // Copy the samples from MediaExtractor to MediaMuxer.
+                // Copy the samples from MediaExtractor to MediaMuxer.
 //                boolean sawEOS = false;
 //                final int MAX_SAMPLE_SIZE = 256 * 1024;
 //                int bufferSize = MAX_SAMPLE_SIZE;
 //                int frameCount = 0;
-//                int offset = 100;
+                int offset = 100;
 //                ByteBuffer dstBuf = ByteBuffer.allocate(bufferSize);
-//                MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
+                MediaCodec.BufferInfo audioBufferInfo = new MediaCodec.BufferInfo();
 
 
 
@@ -332,36 +580,287 @@ public class MyEncodeAndMuxTest {
 
 
 
-                mMuxer.start();
+//                mMuxer.start();
+
+
+                ByteBuffer[] audioEncoderInputBuffers = null;
+                ByteBuffer[] audioEncoderOutputBuffers = null;
+                audioEncoder.start();
+                audioEncoderInputBuffers = audioEncoder.getInputBuffers();
+                audioEncoderOutputBuffers = audioEncoder.getOutputBuffers();
+
+                audioDecoder.start();
+                ByteBuffer[] audioDecoderInputBuffers = audioDecoder.getInputBuffers();
+                ByteBuffer[] audioDecoderOutputBuffers = audioDecoder.getOutputBuffers();
+
+
+                boolean extractorDone = false;
+                boolean decoderDone = false;
+                boolean encoderDone = false;
+
+                while (!encoderDone) {
+                    if(!extractorDone) {
+                        int inputBufIndex = audioDecoder.dequeueInputBuffer(TIMEOUT_USEC);
+
+                        if (VERBOSE) Log.d(TAG, "inputBufIndex=" + inputBufIndex);
+                        if (inputBufIndex >= 0) {
+                            audioBufferInfo.offset = offset;
+                            ByteBuffer inputBuf = audioDecoderInputBuffers[inputBufIndex];
+                            audioBufferInfo.size = extractor.readSampleData(inputBuf, offset);
+                            audioBufferInfo.presentationTimeUs = extractor.getSampleTime();
+                            if (audioBufferInfo.size < 0) {
+                                if (VERBOSE) {
+                                    Log.d(TAG, "saw input EOS.");
+                                }
+                                audioDecoder.queueInputBuffer(inputBufIndex, 0, 0, audioBufferInfo.presentationTimeUs,
+                                        MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                                extractorDone = true;
+//                                audioBufferInfo.size = 0;
+                            } else {
+//                                audioBufferInfo.presentationTimeUs = extractor.getSampleTime();
+                                //audioBufferInfo.flags = extractor.getSampleFlags();
+//                                int trackIndex = extractor.getSampleTrackIndex();
+//                                mMuxer.writeSampleData(mAudioTrackIndex, dstBuf,
+//                                        audioBufferInfo);
+                                extractor.advance();
+//                                frameCount++;
+
+                                audioDecoder.queueInputBuffer(inputBufIndex, 0, audioBufferInfo.size,
+                                        audioBufferInfo.presentationTimeUs, 0/*extractor.getSampleFlags()*/ /*audioBufferInfo.flags*/);
+//                                encoderDone = (extractor.getSampleFlags() & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+                                if (VERBOSE) Log.d(TAG, "passed " + audioBufferInfo.size + " bytes to decoder"
+                                        + (extractorDone ? " (EOS)" : ""));
+                            }
+                        } else {
+                            // either all in use, or we timed out during initial setup
+                            if (VERBOSE) Log.d(TAG, "input buffer not available");
+                        }
+                    }
+
+                    if(!decoderDone) {
+                        int decoderStatus = audioDecoder.dequeueOutputBuffer(audioBufferInfo, TIMEOUT_USEC);
+                        if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                            // no output available yet
+                            if (VERBOSE) Log.d(TAG, "no output from decoder available");
+                        } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                            // The storage associated with the direct ByteBuffer may already be unmapped,
+                            // so attempting to access data through the old output buffer array could
+                            // lead to a native crash.
+                            if (VERBOSE) Log.d(TAG, "decoder output buffers changed");
+                            audioDecoderOutputBuffers = audioDecoder.getOutputBuffers();
+                        } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                            // this happens before the first frame is returned
+                            MediaFormat decoderOutputFormat = audioDecoder.getOutputFormat();
+                            if (VERBOSE) Log.d(TAG, "decoder output format changed: " +
+                                    decoderOutputFormat);
+                        } else if (decoderStatus < 0) {
+                            System.out.println("unexpected result from deocder.dequeueOutputBuffer: " + decoderStatus);
+                        } else {  // decoderStatus >= 0
+                            ByteBuffer decodedData = audioDecoderOutputBuffers[decoderStatus];
+                            if (decodedData == null) {
+                                System.out.println("encoderOutputBuffer " + encoderStatus + " was null");
+                            }
+                            // It's usually necessary to adjust the ByteBuffer values to match BufferInfo.
+                            decodedData.position(audioBufferInfo.offset);
+                            decodedData.limit(audioBufferInfo.offset + audioBufferInfo.size);
+
+                            if ((audioBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                                // Codec config info.  Only expected on first packet.  One way to
+                                // handle this is to manually stuff the data into the MediaFormat
+                                // and pass that to configure().  We do that here to exercise the API.
+
+                                if (encoderConfigured)
+                                    System.out.println("Encoder already configured!");
+
+                                MediaFormat encoderFormat =
+                                        MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, 60, 1);
+                                encoderFormat.setByteBuffer("csd-0", decodedData);
+                                audioEncoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+                                audioEncoder.start();
+                                audioEncoderInputBuffers = audioEncoder.getInputBuffers();
+                                audioEncoderOutputBuffers = audioEncoder.getOutputBuffers();
+                                encoderConfigured = true;
+                                if (VERBOSE)
+                                    Log.d(TAG, "decoder configured (" + audioBufferInfo.size + " bytes)");
+                            } else {
+                                // Get an encoder input buffer, blocking until it's available.
+                                if (!encoderConfigured)
+                                    System.out.println("Encoder not configured!");
+
+                                int inputBufIndex = audioEncoder.dequeueInputBuffer(-1);
+                                ByteBuffer inputBuf = audioEncoderInputBuffers[inputBufIndex];
+
+//                                while(decodedData.hasRemaining()) {
+//                                    if(inputBuf.limit() == inputBuf.capacity()) {
+//
+//                                    }
+//                                    inputBuf.put(decodedData.get());
+//                                }
+
+
+                                inputBuf.clear();
+                                inputBuf.put(decodedData);
+                                audioEncoder.queueInputBuffer(inputBufIndex, 0, audioBufferInfo.size,
+                                        audioBufferInfo.presentationTimeUs, audioBufferInfo.flags);
+                                decoderDone = (audioBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+                                if (VERBOSE)
+                                    Log.d(TAG, "passed " + audioBufferInfo.size + " bytes to encoder"
+                                            + (decoderDone ? " (EOS)" : ""));
+                            }
+                            audioDecoder.releaseOutputBuffer(decoderStatus, false);
+                        }
+                    }
+
+                    if(encoderConfigured) {
+                        int audioEncoderStatus = audioEncoder.dequeueOutputBuffer(audioBufferInfo, TIMEOUT_USEC);
+                        if (audioEncoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                            // no output available yet
+                            if (VERBOSE) Log.d(TAG, "no output from encoder available");
+                        } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                            // not expected for an encoder
+                            encoderOutputBuffers = audioEncoder.getOutputBuffers();
+                            if (VERBOSE) Log.d(TAG, "encoder output buffers changed");
+                        } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                            // not expected for an encoder
+                            MediaFormat newEncoderFormat = audioEncoder.getOutputFormat();
+                            if (VERBOSE) Log.d(TAG, "encoder output format changed: " + newEncoderFormat);
+                            // should happen before receiving buffers, and should only happen once
+                            if (mMuxerStarted) {
+                                throw new RuntimeException("format changed twice");
+                            }
+
+                            // now that we have the Magic Goodies, start the muxer
+                            mAudioTrackIndex = mMuxer.addTrack(newEncoderFormat);
+                            mMuxer.start();
+                            mMuxerStarted = true;
+                        } else if (audioEncoderStatus < 0) {
+                            System.out.println("unexpected result from encoder.dequeueOutputBuffer: " + encoderStatus);
+                        } else { // encoderStatus >= 0
 
 
 
-//                while (!sawEOS) {
-//                    bufferInfo.offset = offset;
-//                    bufferInfo.size = extractor.readSampleData(dstBuf, offset);
-//                    if (bufferInfo.size < 0) {
+
+                            ByteBuffer encodedData = audioEncoderOutputBuffers[audioEncoderStatus];
+                            if (encodedData == null) {
+                                throw new RuntimeException("encoderOutputBuffer " + audioEncoderStatus +
+                                        " was null");
+                            }
+
+                            if ((audioBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                                // The codec config data was pulled out and fed to the muxer when we got
+                                // the INFO_OUTPUT_FORMAT_CHANGED status.  Ignore it.
+                                if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
+                                audioBufferInfo.size = 0;
+                            }
+
+                            if (audioBufferInfo.size != 0) {
+                                if (!mMuxerStarted) {
+                                    throw new RuntimeException("muxer hasn't started");
+                                }
+
+                                // adjust the ByteBuffer values to match BufferInfo (not needed?)
+                                encodedData.position(audioBufferInfo.offset);
+                                encodedData.limit(audioBufferInfo.offset + audioBufferInfo.size);
+
+                                mMuxer.writeSampleData(mAudioTrackIndex, encodedData, audioBufferInfo);
+                                if (VERBOSE) Log.d(TAG, "sent " + audioBufferInfo.size + " bytes to muxer");
+                            }
+
+                            audioEncoder.releaseOutputBuffer(audioEncoderStatus, false);
+
+                            if ((audioBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+//                                if (!endOfStream) {
+//                                    Log.w(TAG, "reached end of stream unexpectedly");
+//                                } else {
+                                    if (VERBOSE) Log.d(TAG, "end of stream reached");
+//                                }
+                                encoderDone = true;      // out of while
+                            }
+
+
+
+
+
+
+
+
+//                            ByteBuffer encodedData = encoderOutputBuffers[audioEncoderStatus];
+//                            if (encodedData == null) {
+//                                System.out.println("encoderOutputBuffer " + audioEncoderStatus + " was null");
+//                            }
+//                            // It's usually necessary to adjust the ByteBuffer values to match BufferInfo.
+//                            encodedData.position(audioBufferInfo.offset);
+//                            encodedData.limit(info.offset + info.size);
+//                            encodedSize += info.size;
+//                            if (outputStream != null) {
+//                                byte[] data = new byte[info.size];
+//                                encodedData.get(data);
+//                                encodedData.position(info.offset);
+//                                try {
+//                                    outputStream.write(data);
+//                                } catch (IOException ioe) {
+//                                    Log.w(TAG, "failed writing debug data to file");
+//                                    throw new RuntimeException(ioe);
+//                                }
+//                            }
+//                            if ((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+//                                // Codec config info.  Only expected on first packet.  One way to
+//                                // handle this is to manually stuff the data into the MediaFormat
+//                                // and pass that to configure().  We do that here to exercise the API.
+//                                assertFalse(decoderConfigured);
+//                                MediaFormat format =
+//                                        MediaFormat.createVideoFormat(MIME_TYPE, mWidth, mHeight);
+//                                format.setByteBuffer("csd-0", encodedData);
+//                                decoder.configure(format, toSurface ? outputSurface.getSurface() : null,
+//                                        null, 0);
+//                                decoder.start();
+//                                audioDecoderInputBuffers = decoder.getInputBuffers();
+//                                audioDecoderOutputBuffers = decoder.getOutputBuffers();
+//                                decoderConfigured = true;
+//                                if (VERBOSE) Log.d(TAG, "decoder configured (" + info.size + " bytes)");
+//                            } else {
+//                                // Get a decoder input buffer, blocking until it's available.
+//                                assertTrue(decoderConfigured);
+//                                int inputBufIndex = decoder.dequeueInputBuffer(-1);
+//                                ByteBuffer inputBuf = audioDecoderInputBuffers[inputBufIndex];
+//                                inputBuf.clear();
+//                                inputBuf.put(encodedData);
+//                                decoder.queueInputBuffer(inputBufIndex, 0, info.size,
+//                                        info.presentationTimeUs, info.flags);
+//                                encoderDone = (info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+//                                if (VERBOSE) Log.d(TAG, "passed " + info.size + " bytes to decoder"
+//                                        + (encoderDone ? " (EOS)" : ""));
+//                            }
+//                            encoder.releaseOutputBuffer(audioEncoderStatus, false);
+                        }
+                    }
+
+
+//                    audioBufferInfo.offset = offset;
+//                    audioBufferInfo.size = extractor.readSampleData(dstBuf, offset);
+//                    if (audioBufferInfo.size < 0) {
 //                        if (VERBOSE) {
 //                            Log.d(TAG, "saw input EOS.");
 //                        }
 //                        sawEOS = true;
-//                        bufferInfo.size = 0;
+//                        audioBufferInfo.size = 0;
 //                    } else {
-//                        bufferInfo.presentationTimeUs = extractor.getSampleTime();
-//                        bufferInfo.flags = extractor.getSampleFlags();
+//                        audioBufferInfo.presentationTimeUs = extractor.getSampleTime();
+//                        audioBufferInfo.flags = extractor.getSampleFlags();
 //                        int trackIndex = extractor.getSampleTrackIndex();
 //                        mMuxer.writeSampleData(mAudioTrackIndex, dstBuf,
-//                                bufferInfo);
+//                                audioBufferInfo);
 //                        extractor.advance();
 //                        frameCount++;
 //                        if (VERBOSE) {
 //                            Log.d(TAG, "Frame (" + frameCount + ") " +
-//                                    "PresentationTimeUs:" + bufferInfo.presentationTimeUs +
-//                                    " Flags:" + bufferInfo.flags +
+//                                    "PresentationTimeUs:" + audioBufferInfo.presentationTimeUs +
+//                                    " Flags:" + audioBufferInfo.flags +
 //                                    " TrackIndex:" + trackIndex +
-//                                    " Size(KB) " + bufferInfo.size / 1024);
+//                                    " Size(KB) " + audioBufferInfo.size / 1024);
 //                        }
 //                    }
-//                }
+                }
 
 
 
@@ -385,7 +884,7 @@ public class MyEncodeAndMuxTest {
 
 
 
-                mMuxerStarted = true;
+//                mMuxerStarted = true;
             } else if (encoderStatus < 0) {
                 Log.w(TAG, "unexpected result from encoder.dequeueOutputBuffer: " +
                         encoderStatus);
