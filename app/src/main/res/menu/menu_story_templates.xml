@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="org.sil.storyproducer.MainActivity">
+    tools:context=".controller.MainActivity">
     <item android:id="@+id/menu_lang"
         android:title="@string/menu_search"
         android:icon="@drawable/ic_menu_translate"

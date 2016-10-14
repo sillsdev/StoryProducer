@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,10 +18,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-public class SetupApp extends AppCompatActivity {
-    GestureDetectorCompat gestureDetector;
-    ViewFlipper settingFlipper;
-    LinearLayout pageIndicatorLayout;
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.MainActivity;
+
+public class SetupAppActivity extends AppCompatActivity {
+    private GestureDetectorCompat gestureDetector;
+    private ViewFlipper settingFlipper;
+    private LinearLayout pageIndicatorLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

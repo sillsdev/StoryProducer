@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,9 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-/**
- * Created by Jordan Skomer on 10/22/2015.
- */
+import org.sil.storyproducer.tools.PagerAnimation;
+import org.sil.storyproducer.R;
+
 public class PagerFrag extends Fragment{
     public static final String NUM_OF_FRAG = "fragnum";
     public static final String TYPE_OF_FRAG = "fragtype";

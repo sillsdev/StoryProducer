@@ -1,19 +1,19 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.tools;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-/**
- * Created by hannahbrown on 9/27/15.
- */
-class FileSystem {
+public class FileSystem {
     private static String language = "English";
+
+    private static Context context;
+
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
@@ -25,7 +25,8 @@ class FileSystem {
         }
     };
 
-    public static void init() {
+    public static void init(Context con) {
+        context = con;
         loadStories();
     }
 
@@ -64,7 +65,7 @@ class FileSystem {
     }
 
     private static File[] getStorageDirs() {
-        return ContextCompat.getExternalFilesDirs(Main.getAppContext(), null);
+        return ContextCompat.getExternalFilesDirs(context, null);
     }
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
