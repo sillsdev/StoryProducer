@@ -69,9 +69,11 @@ public class MyEncodeAndMuxTest {
 
     // parameters for the encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
-    private static final int VIDEO_FRAME_RATE = 10;               // 10fps
+    private static final int VIDEO_LENGTH_SECONDS = 16;
+    private static final long VIDEO_LENGTH_US = 1000000l * VIDEO_LENGTH_SECONDS;
+    private static final int VIDEO_FRAME_RATE = 15;               // 15fps
     private static final int VIDEO_IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
-    private static final int VIDEO_NUM_FRAMES = 60;               // 6 seconds of video
+    private static final int VIDEO_NUM_FRAMES = VIDEO_LENGTH_SECONDS * VIDEO_FRAME_RATE;
 
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
     private static final int AUDIO_SAMPLE_RATE = 8000;
@@ -112,11 +114,12 @@ public class MyEncodeAndMuxTest {
     private long audioPresentationTimeUsLast = 0;
 
     private boolean mUseAudio = true;
-    private boolean mUseVideo = false;
+    private boolean mUseVideo = true;
 
     private boolean mMuxerStarted = false;
 
-    private int mVideoCurrentFrame = 0;
+    private int mVideoGeneratorFrame = 0;
+    private int mVideoEncoderFrame = 0;
     private boolean mVideoGeneratorDone = false;
     private boolean mVideoEncoderDone = false;
     private boolean mVideoEOSSent = false;
@@ -125,10 +128,16 @@ public class MyEncodeAndMuxTest {
     private boolean mAudioDecoderDone = false;
     private boolean mAudioEncoderDone = false;
 
+    private static boolean started = false;
+
     /**
      * Tests encoding of AVC video from a Surface.  The output is saved as an MP4 file.
      */
     public void testEncodeVideoToMp4() {
+        if(started) {
+            return;
+        }
+        started = true;
         try {
             prepareVideoResources();
             prepareAudioResources();
@@ -617,18 +626,23 @@ public class MyEncodeAndMuxTest {
                 && (encoderOutputVideoFormat == null || mMuxerStarted)) {
             // Generate a new frame of input.
             Canvas cnv = mVideoSurface.lockCanvas(null);
-            cnv.drawBitmap(TEST_BITMAP, new Rect(0, 0, 50 + 10 * mVideoCurrentFrame, 50 + 5 * mVideoCurrentFrame), mScreenRect, null);
+            float percent = mVideoGeneratorFrame /(float)VIDEO_NUM_FRAMES;
+            int x = (int)(percent*TEST_BITMAP.getWidth());
+            int y = (int)(percent*TEST_BITMAP.getHeight());
+            Log.d(TAG, "percent: " + percent +" of (" + TEST_BITMAP.getWidth() + ", " + TEST_BITMAP.getHeight() + ")");
+            Log.d(TAG, "(" + 0 + ", " + 0 +") -> (" + x + ", " + y + ")");
+            cnv.drawBitmap(TEST_BITMAP, new Rect(0, 0, x, y), mScreenRect, null);
 
             // Submit it to the encoder.  The eglSwapBuffers call will block if the input
             // is full, which would be bad if it stayed full until we dequeued an output
             // buffer (which we can't do, since we're stuck here).  So long as we fully drain
             // the encoder before supplying additional input, the system guarantees that we
             // can supply another frame without blocking.
-            if (VERBOSE) Log.d(TAG, "sending frame " + mVideoCurrentFrame + " to encoder");
+            if (VERBOSE) Log.d(TAG, "sending frame " + mVideoGeneratorFrame + " to encoder");
             mVideoSurface.unlockCanvasAndPost(cnv);
 
-            mVideoCurrentFrame++;
-            if (mVideoCurrentFrame >= VIDEO_NUM_FRAMES) {
+            mVideoGeneratorFrame++;
+            if (mVideoGeneratorFrame >= VIDEO_NUM_FRAMES) {
                 mVideoGeneratorDone = true;
             }
         }
@@ -836,6 +850,10 @@ public class MyEncodeAndMuxTest {
                     encodedData.position(mBufferInfo.offset);
                     encodedData.limit(mBufferInfo.offset + mBufferInfo.size);
 
+                    float percent = mVideoEncoderFrame/(float)VIDEO_NUM_FRAMES;
+                    mBufferInfo.presentationTimeUs = (long)(percent*VIDEO_LENGTH_US);
+                    mVideoEncoderFrame++;
+
                     mMuxer.writeSampleData(mVideoTrackIndex, encodedData, mBufferInfo);
                     if (VERBOSE) Log.d(TAG, "sent " + mBufferInfo.size + " bytes to muxer");
                 }
@@ -849,7 +867,7 @@ public class MyEncodeAndMuxTest {
                         if (VERBOSE) Log.d(TAG, "end of stream reached");
                     }
                     mVideoEncoderDone = true;
-                    break;      // out of while
+//                    break;      // out of while
                 }
             }
         }
