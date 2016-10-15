@@ -56,7 +56,7 @@ public class MyEncodeAndMuxTest {
     private static final int mVideoBitRate = 2000000;
 
     //not sure where this number comes from
-    private static final int AUDIO_OFFSET = 100;
+    private static final int AUDIO_OFFSET = 0;
 
     // where to put the output file (note: /sdcard requires WRITE_EXTERNAL_STORAGE permission)
     private static final File OUTPUT_DIR = new File(FileSystem.getStoryPath("Fiery Furnace"));
@@ -64,14 +64,14 @@ public class MyEncodeAndMuxTest {
     private static final String TEST_AUDIO_PATH = OUTPUT_DIR.getPath() + "/TestSound.mp3"; //"/recording1.mp3", "/narration0.wav"
     // Output filename.  Ideally this would use Context.getFilesDir() rather than a
     // hard-coded output directory.
-    private static final String VIDEO_OUTPUT_PATH = new File(OUTPUT_DIR,
+    private String mOutputPath = new File(OUTPUT_DIR,
             "test." + mWidth + "x" + mHeight + ".mp4").toString();
 
     // parameters for the encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
-    private static final int VIDEO_FRAME_RATE = 15;               // 15fps
+    private static final int VIDEO_FRAME_RATE = 10;               // 10fps
     private static final int VIDEO_IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
-    private static final int VIDEO_NUM_FRAMES = 30;               // two seconds of video
+    private static final int VIDEO_NUM_FRAMES = 60;               // 6 seconds of video
 
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
     private static final int AUDIO_SAMPLE_RATE = 8000;
@@ -95,8 +95,25 @@ public class MyEncodeAndMuxTest {
     // allocate one of these up front so we don't need to do it every time
     private MediaCodec.BufferInfo mBufferInfo = new MediaCodec.BufferInfo();
 
-    private boolean mVideoOutputFormatEstablished = false;
-    private boolean mAudioOutputFormatEstablished = false;
+    MediaCodec.BufferInfo videoEncoderOutputBufferInfo = new MediaCodec.BufferInfo();
+    MediaCodec.BufferInfo audioDecoderOutputBufferInfo = new MediaCodec.BufferInfo();
+    MediaCodec.BufferInfo audioEncoderOutputBufferInfo = new MediaCodec.BufferInfo();
+
+    // We will get this from the decoder when notified of a format change.
+    private MediaFormat decoderOutputAudioFormat = null;
+    // We will get these from the encoders when notified of a format change.
+    private MediaFormat encoderOutputVideoFormat = null;
+    private MediaFormat encoderOutputAudioFormat = null;
+
+    // The audio decoder output buffer to process, -1 if none.
+    private int pendingAudioDecoderOutputBufferIndex = -1;
+
+    //For error correction (http://stackoverflow.com/questions/26504386/mediacodec-audio-video-muxing-issues-ond-android)
+    private long audioPresentationTimeUsLast = 0;
+
+    private boolean mUseAudio = true;
+    private boolean mUseVideo = false;
+
     private boolean mMuxerStarted = false;
 
     private int mVideoCurrentFrame = 0;
@@ -117,13 +134,29 @@ public class MyEncodeAndMuxTest {
             prepareAudioResources();
             prepareMuxer();
 
-            while(!mVideoEncoderDone || !mAudioEncoderDone) {
+            while((mUseVideo && !mVideoEncoderDone) || (mUseAudio && !mAudioEncoderDone)) {
                 videoDrawFrame();
                 videoDrainEncoder(mVideoGeneratorDone);
 
                 audioReadSample();
                 audioDrainDecoder();
                 audioDrainEncoder();
+
+                if (!mMuxerStarted
+                        && (!mUseAudio || encoderOutputAudioFormat != null)
+                        && (!mUseVideo || encoderOutputVideoFormat != null)) {
+                    if (mUseVideo) {
+                        Log.d(TAG, "muxer: adding video track.");
+                        mVideoTrackIndex = mMuxer.addTrack(encoderOutputVideoFormat);
+                    }
+                    if (mUseAudio) {
+                        Log.d(TAG, "muxer: adding audio track.");
+                        mAudioTrackIndex = mMuxer.addTrack(encoderOutputAudioFormat);
+                    }
+                    Log.d(TAG, "muxer: starting");
+                    mMuxer.start();
+                    mMuxerStarted = true;
+                }
             }
 
 //            for (int i = 0; i < VIDEO_NUM_FRAMES; i++) {
@@ -149,214 +182,439 @@ public class MyEncodeAndMuxTest {
     }
 
     private void audioReadSample() {
-        if(mAudioOutputFormatEstablished && !mVideoOutputFormatEstablished) {
-            return;
-        }
         ByteBuffer[] audioDecoderInputBuffers = mAudioDecoder.getInputBuffers();
 //        ByteBuffer[] audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
 //
 //        ByteBuffer[] audioEncoderInputBuffers = mAudioEncoder.getInputBuffers();
 //        ByteBuffer[] audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
 
-        if(!mAudioExtractorDone) {
-            int inputBufIndex = mAudioDecoder.dequeueInputBuffer(TIMEOUT_USEC);
-
-            if (VERBOSE) Log.d(TAG, "inputBufIndex=" + inputBufIndex);
-            if (inputBufIndex >= 0) {
-                mBufferInfo.offset = AUDIO_OFFSET;
-                ByteBuffer inputBuf = audioDecoderInputBuffers[inputBufIndex];
-                mBufferInfo.size = mAudioExtractor.readSampleData(inputBuf, AUDIO_OFFSET);
-                mBufferInfo.presentationTimeUs = mAudioExtractor.getSampleTime();
-                if (mBufferInfo.size < 0) {
-                    if (VERBOSE) {
-                        Log.d(TAG, "saw input EOS.");
-                    }
-                    mAudioDecoder.queueInputBuffer(inputBufIndex, 0, 0, mBufferInfo.presentationTimeUs,
-                            MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                    mAudioExtractorDone = true;
-                } else {
-                    mAudioDecoder.queueInputBuffer(inputBufIndex, 0, mBufferInfo.size,
-                            mBufferInfo.presentationTimeUs, /*0*/mAudioExtractor.getSampleFlags() /*audioBufferInfo.flags*/);
-                    mAudioExtractor.advance();
-                    if (VERBOSE) Log.d(TAG, "passed " + mBufferInfo.size + " bytes to decoder"
-                            + (mAudioExtractorDone ? " (EOS)" : ""));
-                }
-            } else {
-                // either all in use, or we timed out during initial setup
-                if (VERBOSE) Log.d(TAG, "input buffer not available");
+        // Extract audio from file and feed to decoder.
+        // Do not extract audio if we have determined the output format but we are not yet
+        // ready to mux the frames.
+        while (mUseAudio && !mAudioExtractorDone
+                && (encoderOutputAudioFormat == null || mMuxerStarted)) {
+            int decoderInputBufferIndex = mAudioDecoder.dequeueInputBuffer(TIMEOUT_USEC);
+            if (decoderInputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (VERBOSE) Log.d(TAG, "no audio decoder input buffer");
+                break;
             }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: returned input buffer: " + decoderInputBufferIndex);
+            }
+            ByteBuffer decoderInputBuffer = audioDecoderInputBuffers[decoderInputBufferIndex];
+            int size = mAudioExtractor.readSampleData(decoderInputBuffer, 0);
+            long presentationTime = mAudioExtractor.getSampleTime();
+            if (VERBOSE) {
+                Log.d(TAG, "audio extractor: returned buffer of size " + size);
+                Log.d(TAG, "audio extractor: returned buffer for time " + presentationTime);
+            }
+            if (size >= 0) {
+                mAudioDecoder.queueInputBuffer(
+                        decoderInputBufferIndex,
+                        0,
+                        size,
+                        presentationTime,
+                        mAudioExtractor.getSampleFlags());
+            }
+            mAudioExtractorDone = !mAudioExtractor.advance();
+            if (mAudioExtractorDone) {
+                if (VERBOSE) Log.d(TAG, "audio extractor: EOS");
+                mAudioDecoder.queueInputBuffer(
+                        decoderInputBufferIndex,
+                        0,
+                        0,
+                        0, //presentationTime?
+                        MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+            }
+//            audioExtractedFrameCount++;
+            // We extracted a frame, let's try something else next.
+            break;
         }
+
+
+
+
+
+//        if(mUseAudio && !mAudioExtractorDone
+//                && (encoderOutputAudioFormat == null || mMuxerStarted)) {
+//            int inputBufIndex = mAudioDecoder.dequeueInputBuffer(TIMEOUT_USEC);
+//
+////            if (VERBOSE) Log.d(TAG, "inputBufIndex=" + inputBufIndex);
+//            if (inputBufIndex >= 0) {
+//                ByteBuffer inputBuf = audioDecoderInputBuffers[inputBufIndex];
+//                int size = mAudioExtractor.readSampleData(inputBuf, AUDIO_OFFSET);
+//                long presentationTimeUs = mAudioExtractor.getSampleTime();
+//                if (size < 0) {
+//                    if (VERBOSE) {
+//                        Log.d(TAG, "saw input EOS.");
+//                    }
+//                    size = 0;
+//                    mAudioDecoder.queueInputBuffer(inputBufIndex, 0, 0, 0,
+//                            MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+//                    mAudioExtractorDone = true;
+//                } else {
+//                    mAudioDecoder.queueInputBuffer(inputBufIndex, 0, size,
+//                            presentationTimeUs, /*0*/mAudioExtractor.getSampleFlags() /*audioBufferInfo.flags*/);
+//                    mAudioExtractor.advance();
+//                }
+//                if (VERBOSE) Log.d(TAG, "passed " + size + " bytes to decoder"
+//                        + (mAudioExtractorDone ? " (EOS)" : ""));
+//            } else {
+//                // either all in use, or we timed out during initial setup
+//                if (VERBOSE) Log.d(TAG, "input buffer not available");
+//            }
+//        }
     }
 
     private void audioDrainDecoder() {
-        if(mAudioOutputFormatEstablished && !mVideoOutputFormatEstablished) {
-            return;
-        }
 //        ByteBuffer[] audioDecoderInputBuffers = mAudioDecoder.getInputBuffers();
         ByteBuffer[] audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
 
         ByteBuffer[] audioEncoderInputBuffers = mAudioEncoder.getInputBuffers();
 //        ByteBuffer[] audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
 
-        while(!mAudioDecoderDone) {
-            int decoderStatus = mAudioDecoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
-            if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                // no output available yet
-                if (VERBOSE) Log.d(TAG, "no output from decoder available");
+
+        // Poll output frames from the audio decoder.
+        // Do not poll if we already have a pending buffer to feed to the encoder.
+        while (mUseAudio && !mAudioDecoderDone && pendingAudioDecoderOutputBufferIndex == -1
+                && (encoderOutputAudioFormat == null || mMuxerStarted)) {
+            int decoderOutputBufferIndex =
+                    mAudioDecoder.dequeueOutputBuffer(
+                            audioDecoderOutputBufferInfo, TIMEOUT_USEC);
+            if (decoderOutputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (VERBOSE) Log.d(TAG, "no audio decoder output buffer");
                 break;
-            } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                // The storage associated with the direct ByteBuffer may already be unmapped,
-                // so attempting to access data through the old output buffer array could
-                // lead to a native crash.
-                if (VERBOSE) Log.d(TAG, "decoder output buffers changed");
-                audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
-            } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                // this happens before the first frame is returned
-                MediaFormat decoderOutputFormat = mAudioDecoder.getOutputFormat();
-                if (VERBOSE) Log.d(TAG, "decoder output format changed: " +
-                        decoderOutputFormat);
-            } else if (decoderStatus < 0) {
-                System.out.println("unexpected result from deocder.dequeueOutputBuffer: " + decoderStatus);
-            } else {  // decoderStatus >= 0
-                ByteBuffer decodedData = audioDecoderOutputBuffers[decoderStatus];
-                if (decodedData == null) {
-                    System.out.println("audioDecoderOutputBuffer " + decoderStatus + " was null");
-                }
-                // It's usually necessary to adjust the ByteBuffer values to match BufferInfo.
-                decodedData.position(mBufferInfo.offset);
-                decodedData.limit(mBufferInfo.offset + mBufferInfo.size);
-
-                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                    throw new RuntimeException("Audio encoder already configured!");
-
-                    // Codec config info.  Only expected on first packet.  One way to
-                    // handle this is to manually stuff the data into the MediaFormat
-                    // and pass that to configure().  We do that here to exercise the API.
-
-//                                if (audioEncoderConfigured)
-//                                    System.out.println("Encoder already configured!");
-//
-//                                MediaFormat encoderFormat =
-//                                        MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, 60, 1);
-//                                encoderFormat.setByteBuffer("csd-0", decodedData);
-//                                audioEncoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-//                                audioEncoder.start();
-//                                audioEncoderInputBuffers = audioEncoder.getInputBuffers();
-//                                audioEncoderOutputBuffers = audioEncoder.getOutputBuffers();
-//                                audioEncoderConfigured = true;
-//                                if (VERBOSE)
-//                                    Log.d(TAG, "decoder configured (" + mBufferInfo.size + " bytes)");
-                } else {
-//                                if (!audioEncoderConfigured)
-//                                    System.out.println("Encoder not configured!");
-
-                    // Get an encoder input buffer, blocking until it's available.
-                    int inputBufIndex = mAudioEncoder.dequeueInputBuffer(-1);
-                    ByteBuffer inputBuf = audioEncoderInputBuffers[inputBufIndex];
-
-                    inputBuf.clear();
-                    inputBuf.put(decodedData);
-                    mAudioEncoder.queueInputBuffer(inputBufIndex, 0, mBufferInfo.size,
-                            mBufferInfo.presentationTimeUs, mBufferInfo.flags);
-                    mAudioDecoderDone = (mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
-                    if (VERBOSE)
-                        Log.d(TAG, "passed " + mBufferInfo.size + " bytes to encoder"
-                                + (mAudioDecoderDone ? " (EOS)" : ""));
-                }
-                mAudioDecoder.releaseOutputBuffer(decoderStatus, false);
             }
+            if (decoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                if (VERBOSE) Log.d(TAG, "audio decoder: output buffers changed");
+                audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
+                break;
+            }
+            if (decoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                decoderOutputAudioFormat = mAudioDecoder.getOutputFormat();
+                if (VERBOSE) {
+                    Log.d(TAG, "audio decoder: output format changed: "
+                            + decoderOutputAudioFormat);
+                }
+                break;
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: returned output buffer: "
+                        + decoderOutputBufferIndex);
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: returned buffer of size "
+                        + audioDecoderOutputBufferInfo.size);
+            }
+            ByteBuffer decoderOutputBuffer =
+                    audioDecoderOutputBuffers[decoderOutputBufferIndex];
+            if ((audioDecoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG)
+                    != 0) {
+                if (VERBOSE) Log.d(TAG, "audio decoder: codec config buffer");
+                mAudioDecoder.releaseOutputBuffer(decoderOutputBufferIndex, false);
+                break;
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: returned buffer for time "
+                        + audioDecoderOutputBufferInfo.presentationTimeUs);
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: output buffer is now pending: "
+                        + pendingAudioDecoderOutputBufferIndex);
+            }
+            pendingAudioDecoderOutputBufferIndex = decoderOutputBufferIndex;
+//            audioDecodedFrameCount++;
+            // We extracted a pending frame, let's try something else next.
+            break;
         }
+
+
+
+
+        // Feed the pending decoded audio buffer to the audio encoder.
+        while (mUseAudio && pendingAudioDecoderOutputBufferIndex != -1) {
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: attempting to process pending buffer: "
+                        + pendingAudioDecoderOutputBufferIndex);
+            }
+            int encoderInputBufferIndex = mAudioEncoder.dequeueInputBuffer(TIMEOUT_USEC);
+            if (encoderInputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (VERBOSE) Log.d(TAG, "no audio encoder input buffer");
+                break;
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio encoder: returned input buffer: " + encoderInputBufferIndex);
+            }
+            ByteBuffer encoderInputBuffer = audioEncoderInputBuffers[encoderInputBufferIndex];
+            int size = audioDecoderOutputBufferInfo.size;
+            long presentationTime = audioDecoderOutputBufferInfo.presentationTimeUs;
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: processing pending buffer: "
+                        + pendingAudioDecoderOutputBufferIndex);
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio decoder: pending buffer of size " + size);
+                Log.d(TAG, "audio decoder: pending buffer for time " + presentationTime);
+            }
+            if (size >= 0) {
+                ByteBuffer decoderOutputBuffer =
+                        audioDecoderOutputBuffers[pendingAudioDecoderOutputBufferIndex]
+                                .duplicate();
+                decoderOutputBuffer.position(audioDecoderOutputBufferInfo.offset);
+                decoderOutputBuffer.limit(audioDecoderOutputBufferInfo.offset + size);
+                encoderInputBuffer.position(0);
+                encoderInputBuffer.put(decoderOutputBuffer);
+                mAudioEncoder.queueInputBuffer(
+                        encoderInputBufferIndex,
+                        0,
+                        size,
+                        presentationTime,
+                        audioDecoderOutputBufferInfo.flags);
+            }
+            mAudioDecoder.releaseOutputBuffer(pendingAudioDecoderOutputBufferIndex, false);
+            pendingAudioDecoderOutputBufferIndex = -1;
+            if ((audioDecoderOutputBufferInfo.flags
+                    & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                if (VERBOSE) Log.d(TAG, "audio decoder: EOS");
+                mAudioDecoderDone = true;
+            }
+            // We enqueued a pending frame, let's try something else next.
+            break;
+        }
+
+
+
+
+
+
+//        while(!mAudioDecoderDone) {
+//            int decoderStatus = mAudioDecoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
+//            if (decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+//                // no output available yet
+//                if (VERBOSE) Log.d(TAG, "no output from decoder available");
+//                break;
+//            } else if (decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+//                // The storage associated with the direct ByteBuffer may already be unmapped,
+//                // so attempting to access data through the old output buffer array could
+//                // lead to a native crash.
+//                if (VERBOSE) Log.d(TAG, "decoder output buffers changed");
+//                audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
+//            } else if (decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+//                // this happens before the first frame is returned
+//                MediaFormat decoderOutputFormat = mAudioDecoder.getOutputFormat();
+//                if (VERBOSE) Log.d(TAG, "decoder output format changed: " +
+//                        decoderOutputFormat);
+//            } else if (decoderStatus < 0) {
+//                System.out.println("unexpected result from deocder.dequeueOutputBuffer: " + decoderStatus);
+//            } else {  // decoderStatus >= 0
+//                ByteBuffer decodedData = audioDecoderOutputBuffers[decoderStatus];
+//                if (decodedData == null) {
+//                    System.out.println("audioDecoderOutputBuffer " + decoderStatus + " was null");
+//                }
+//                // It's usually necessary to adjust the ByteBuffer values to match BufferInfo.
+//                decodedData.position(mBufferInfo.offset);
+//                decodedData.limit(mBufferInfo.offset + mBufferInfo.size);
+//
+//                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+//                    throw new RuntimeException("Audio encoder already configured!");
+//
+//                    // Codec config info.  Only expected on first packet.  One way to
+//                    // handle this is to manually stuff the data into the MediaFormat
+//                    // and pass that to configure().  We do that here to exercise the API.
+//
+////                                if (audioEncoderConfigured)
+////                                    System.out.println("Encoder already configured!");
+////
+////                                MediaFormat encoderFormat =
+////                                        MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, 60, 1);
+////                                encoderFormat.setByteBuffer("csd-0", decodedData);
+////                                audioEncoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+////                                audioEncoder.start();
+////                                audioEncoderInputBuffers = audioEncoder.getInputBuffers();
+////                                audioEncoderOutputBuffers = audioEncoder.getOutputBuffers();
+////                                audioEncoderConfigured = true;
+////                                if (VERBOSE)
+////                                    Log.d(TAG, "decoder configured (" + mBufferInfo.size + " bytes)");
+//                } else {
+////                                if (!audioEncoderConfigured)
+////                                    System.out.println("Encoder not configured!");
+//
+//                    // Get an encoder input buffer, blocking until it's available.
+//                    int inputBufIndex = mAudioEncoder.dequeueInputBuffer(-1);
+//                    ByteBuffer inputBuf = audioEncoderInputBuffers[inputBufIndex];
+//
+//                    inputBuf.clear();
+//                    inputBuf.put(decodedData);
+//                    mAudioEncoder.queueInputBuffer(inputBufIndex, 0, mBufferInfo.size,
+//                            mBufferInfo.presentationTimeUs, mBufferInfo.flags);
+//                    mAudioDecoderDone = (mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+//                    if (VERBOSE)
+//                        Log.d(TAG, "passed " + mBufferInfo.size + " bytes to encoder"
+//                                + (mAudioDecoderDone ? " (EOS)" : ""));
+//                }
+//                mAudioDecoder.releaseOutputBuffer(decoderStatus, false);
+//            }
+//        }
     }
 
     private void audioDrainEncoder() {
-        if(mAudioOutputFormatEstablished && !mVideoOutputFormatEstablished) {
-            return;
-        }
 //        ByteBuffer[] audioDecoderInputBuffers = mAudioDecoder.getInputBuffers();
 //        ByteBuffer[] audioDecoderOutputBuffers = mAudioDecoder.getOutputBuffers();
 //
 //        ByteBuffer[] audioEncoderInputBuffers = mAudioEncoder.getInputBuffers();
         ByteBuffer[] audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
 
-        while(!mAudioEncoderDone) {
-            int audioEncoderStatus = mAudioEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
-            if (audioEncoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                // no output available yet
-                if (VERBOSE) Log.d(TAG, "no output from audio encoder available");
+
+
+        // Poll frames from the audio encoder and send them to the muxer.
+        while (mUseAudio && !mAudioEncoderDone
+                && (encoderOutputAudioFormat == null || mMuxerStarted)) {
+            int encoderOutputBufferIndex = mAudioEncoder.dequeueOutputBuffer(
+                    audioEncoderOutputBufferInfo, TIMEOUT_USEC);
+            if (encoderOutputBufferIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (VERBOSE) Log.d(TAG, "no audio encoder output buffer");
                 break;
-            } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                // not expected for an encoder
-                audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
-                if (VERBOSE) Log.d(TAG, "encoder output buffers changed");
-            } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                // not expected for an encoder
-                MediaFormat newEncoderFormat = mAudioEncoder.getOutputFormat();
-                if (VERBOSE) Log.d(TAG, "encoder output format changed: " + newEncoderFormat);
-                // should happen before receiving buffers, and should only happen once
-                if (mAudioOutputFormatEstablished) {
-                    throw new RuntimeException("format changed twice");
-                }
-
-                // now that we have the Magic Goodies, start the muxer
-                mAudioTrackIndex = mMuxer.addTrack(newEncoderFormat);
-                mAudioOutputFormatEstablished = true;
-
-                if(mVideoOutputFormatEstablished) {
-                    mMuxer.start();
-                    mMuxerStarted = true;
-                }
-                else {
-                    //Don't start muxing until muxer is started.
-                    break;
-                }
-            } else if (audioEncoderStatus < 0) {
-                System.out.println("unexpected result from encoder.dequeueOutputBuffer: " + audioEncoderStatus);
-            } else { // encoderStatus >= 0
-                ByteBuffer encodedData = audioEncoderOutputBuffers[audioEncoderStatus];
-                if (encodedData == null) {
-                    throw new RuntimeException("encoderOutputBuffer " + audioEncoderStatus +
-                            " was null");
-                }
-
-                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                    // The codec config data was pulled out and fed to the muxer when we got
-                    // the INFO_OUTPUT_FORMAT_CHANGED status.  Ignore it.
-                    if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
-                    mBufferInfo.size = 0;
-                }
-
-                if (mBufferInfo.size != 0) {
-                    if (!mMuxerStarted) {
-                        throw new RuntimeException("muxer hasn't started");
-                    }
-
-                    // adjust the ByteBuffer values to match BufferInfo (not needed?)
-                    encodedData.position(mBufferInfo.offset);
-                    encodedData.limit(mBufferInfo.offset + mBufferInfo.size);
-
-                    mMuxer.writeSampleData(mAudioTrackIndex, encodedData, mBufferInfo);
-                    if (VERBOSE) Log.d(TAG, "sent " + mBufferInfo.size + " bytes to muxer");
-                }
-
-                mAudioEncoder.releaseOutputBuffer(audioEncoderStatus, false);
-
-                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-//                                if (!endOfStream) {
-//                                    Log.w(TAG, "reached end of stream unexpectedly");
-//                                } else {
-                    if (VERBOSE) Log.d(TAG, "end of stream reached");
-//                                }
-                    mAudioEncoderDone = true;      // out of while
-                }
             }
+            if (encoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                if (VERBOSE) Log.d(TAG, "audio encoder: output buffers changed");
+                audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
+                break;
+            }
+            if (encoderOutputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                if (VERBOSE) Log.d(TAG, "audio encoder: output format changed");
+                if (mAudioTrackIndex >= 0) {
+                    throw new RuntimeException("audio encoder changed its output format again?");
+                }
+                encoderOutputAudioFormat = mAudioEncoder.getOutputFormat();
+                break;
+            }
+
+            if (VERBOSE) {
+                Log.d(TAG, "audio encoder: returned output buffer: "
+                        + encoderOutputBufferIndex);
+                Log.d(TAG, "audio encoder: returned buffer of size "
+                        + audioEncoderOutputBufferInfo.size);
+            }
+            ByteBuffer encoderOutputBuffer =
+                    audioEncoderOutputBuffers[encoderOutputBufferIndex];
+            if ((audioEncoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG)
+                    != 0) {
+                if (VERBOSE) Log.d(TAG, "audio encoder: codec config buffer");
+                // Simply ignore codec config buffers.
+                mAudioEncoder.releaseOutputBuffer(encoderOutputBufferIndex, false);
+                break;
+            }
+            if (VERBOSE) {
+                Log.d(TAG, "audio encoder: returned buffer for time "
+                        + audioEncoderOutputBufferInfo.presentationTimeUs);
+            }
+
+//            if (audioPresentationTimeUsLast == 0) {
+//                audioPresentationTimeUsLast = audioEncoderOutputBufferInfo.presentationTimeUs;
+//            } else {
+                if (audioPresentationTimeUsLast > audioEncoderOutputBufferInfo.presentationTimeUs) {
+                    audioEncoderOutputBufferInfo.presentationTimeUs = audioPresentationTimeUsLast + 1;
+                }
+//            }
+            audioPresentationTimeUsLast = audioEncoderOutputBufferInfo.presentationTimeUs;
+
+            // Write data
+            if (audioEncoderOutputBufferInfo.size != 0) {
+                mMuxer.writeSampleData(
+                        mAudioTrackIndex, encoderOutputBuffer, audioEncoderOutputBufferInfo);
+            }
+
+            if ((audioEncoderOutputBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+                    != 0) {
+                if (VERBOSE) Log.d(TAG, "audio encoder: EOS");
+                mAudioEncoderDone = true;
+            }
+            mAudioEncoder.releaseOutputBuffer(encoderOutputBufferIndex, false);
+//            audioEncodedFrameCount++;
+            // We enqueued an encoded frame, let's try something else next.
+            break;
         }
+
+
+
+
+//        while(!mAudioEncoderDone) {
+//            int audioEncoderStatus = mAudioEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
+//            if (audioEncoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
+//                // no output available yet
+//                if (VERBOSE) Log.d(TAG, "no output from audio encoder available");
+//                break;
+//            } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+//                // not expected for an encoder
+//                audioEncoderOutputBuffers = mAudioEncoder.getOutputBuffers();
+//                if (VERBOSE) Log.d(TAG, "encoder output buffers changed");
+//            } else if (audioEncoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+//                // not expected for an encoder
+//                MediaFormat newEncoderFormat = mAudioEncoder.getOutputFormat();
+//                if (VERBOSE) Log.d(TAG, "encoder output format changed: " + newEncoderFormat);
+//                // should happen before receiving buffers, and should only happen once
+//                if (mAudioOutputFormatEstablished) {
+//                    throw new RuntimeException("format changed twice");
+//                }
+//
+//                // now that we have the Magic Goodies, start the muxer
+//                mAudioTrackIndex = mMuxer.addTrack(newEncoderFormat);
+//                mAudioOutputFormatEstablished = true;
+//
+//                if(mVideoOutputFormatEstablished) {
+//                    mMuxer.start();
+//                    mMuxerStarted = true;
+//                }
+//                else {
+//                    //Don't start muxing until muxer is started.
+//                    break;
+//                }
+//            } else if (audioEncoderStatus < 0) {
+//                System.out.println("unexpected result from encoder.dequeueOutputBuffer: " + audioEncoderStatus);
+//            } else { // encoderStatus >= 0
+//                ByteBuffer encodedData = audioEncoderOutputBuffers[audioEncoderStatus];
+//                if (encodedData == null) {
+//                    throw new RuntimeException("encoderOutputBuffer " + audioEncoderStatus +
+//                            " was null");
+//                }
+//
+//                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+//                    // The codec config data was pulled out and fed to the muxer when we got
+//                    // the INFO_OUTPUT_FORMAT_CHANGED status.  Ignore it.
+//                    if (VERBOSE) Log.d(TAG, "ignoring BUFFER_FLAG_CODEC_CONFIG");
+//                    mBufferInfo.size = 0;
+//                }
+//
+//                if (mBufferInfo.size != 0) {
+//                    if (!mMuxerStarted) {
+//                        throw new RuntimeException("muxer hasn't started");
+//                    }
+//
+//                    // adjust the ByteBuffer values to match BufferInfo (not needed?)
+//                    encodedData.position(mBufferInfo.offset);
+//                    encodedData.limit(mBufferInfo.offset + mBufferInfo.size);
+//
+//                    mMuxer.writeSampleData(mAudioTrackIndex, encodedData, mBufferInfo);
+//                    if (VERBOSE) Log.d(TAG, "sent " + mBufferInfo.size + " bytes to muxer");
+//                }
+//
+//                mAudioEncoder.releaseOutputBuffer(audioEncoderStatus, false);
+//
+//                if ((mBufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+////                                if (!endOfStream) {
+////                                    Log.w(TAG, "reached end of stream unexpectedly");
+////                                } else {
+//                    if (VERBOSE) Log.d(TAG, "end of stream reached");
+////                                }
+//                    mAudioEncoderDone = true;      // out of while
+//                }
+//            }
+//        }
     }
 
     private void videoDrawFrame() {
-        if(mVideoOutputFormatEstablished && !mAudioOutputFormatEstablished) {
-            return;
-        }
-        if(!mVideoGeneratorDone) {
+        if(mUseVideo && !mVideoGeneratorDone
+                && (encoderOutputVideoFormat == null || mMuxerStarted)) {
             // Generate a new frame of input.
             Canvas cnv = mVideoSurface.lockCanvas(null);
             cnv.drawBitmap(TEST_BITMAP, new Rect(0, 0, 50 + 10 * mVideoCurrentFrame, 50 + 5 * mVideoCurrentFrame), mScreenRect, null);
@@ -427,8 +685,11 @@ public class MyEncodeAndMuxTest {
 
             mAudioEncoder = MediaCodec.createEncoderByType(AUDIO_MIME_TYPE);
 
-            MediaFormat encoderFormat =
-                    MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_COUNT);
+            MediaFormat encoderFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE,
+                    audioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE),
+                    audioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
+//            MediaFormat encoderFormat =
+//                    MediaFormat.createAudioFormat(AUDIO_MIME_TYPE, AUDIO_SAMPLE_RATE, AUDIO_CHANNEL_COUNT);
             encoderFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
             encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
             //encoder input buffers are too small by default
@@ -438,10 +699,11 @@ public class MyEncodeAndMuxTest {
             }
             catch(Exception e) {
                 e.printStackTrace();
+                throw new RuntimeException("Failed to configure audio encoder");
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            throw new RuntimeException("Failed to create audio encoder/decoder");
         }
 
 
@@ -450,7 +712,9 @@ public class MyEncodeAndMuxTest {
     }
 
     private void prepareMuxer() {
-        Log.d(TAG, "output file is " + VIDEO_OUTPUT_PATH);
+        mOutputPath = new File(OUTPUT_DIR,
+                "test" + (mUseAudio ? "A" : "") + (mUseVideo ? "V" : "") + "." + mWidth + "x" + mHeight + ".mp4").toString();
+        Log.d(TAG, "output file is " + mOutputPath);
 
         // Create a MediaMuxer.  We can't add the video track and start() the muxer here,
         // because our MediaFormat doesn't have the Magic Goodies.  These can only be
@@ -459,7 +723,7 @@ public class MyEncodeAndMuxTest {
         // We're not actually interested in multiplexing audio.  We just want to convert
         // the raw H.264 elementary stream we get from MediaCodec into a .mp4 file.
         try {
-            mMuxer = new MediaMuxer(VIDEO_OUTPUT_PATH, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            mMuxer = new MediaMuxer(mOutputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
         } catch (IOException ioe) {
             throw new RuntimeException("MediaMuxer creation failed", ioe);
         }
@@ -512,11 +776,7 @@ public class MyEncodeAndMuxTest {
      * Calling this with endOfStream set should be done once, right before stopping the muxer.
      */
     private void videoDrainEncoder(boolean endOfStream) {
-        if(mVideoOutputFormatEstablished && !mAudioOutputFormatEstablished) {
-            return;
-        }
-
-        if (VERBOSE) Log.d(TAG, "videoDrainEncoder(" + endOfStream + ")");
+//        if (VERBOSE) Log.d(TAG, "videoDrainEncoder(" + endOfStream + ")");
 
         if (endOfStream && !mVideoEOSSent) {
             if (VERBOSE) Log.d(TAG, "sending EOS to encoder");
@@ -525,7 +785,8 @@ public class MyEncodeAndMuxTest {
         }
 
         ByteBuffer[] videoEncoderOutputBuffers = mVideoEncoder.getOutputBuffers();
-        while (true) {
+        while (mUseVideo && !mVideoEncoderDone
+                && (encoderOutputVideoFormat == null || mMuxerStarted)) {
             int videoEncoderStatus = mVideoEncoder.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
             if (videoEncoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 break;
@@ -543,22 +804,11 @@ public class MyEncodeAndMuxTest {
                 MediaFormat newFormat = mVideoEncoder.getOutputFormat();
                 Log.d(TAG, "encoder output format changed: " + newFormat);
                 // should happen before receiving buffers, and should only happen once
-                if (mVideoOutputFormatEstablished) {
+                if (mVideoTrackIndex >= 0) {
                     throw new RuntimeException("format changed twice");
                 }
 
-                // now that we have the Magic Goodies, start the muxer
-                mVideoTrackIndex = mMuxer.addTrack(newFormat);
-                mVideoOutputFormatEstablished = true;
-
-                if(mAudioOutputFormatEstablished) {
-                    mMuxer.start();
-                    mMuxerStarted = true;
-                }
-                else {
-                    //Don't start muxing until muxer is started.
-                    break;
-                }
+                encoderOutputVideoFormat = mVideoEncoder.getOutputFormat();
             } else if (videoEncoderStatus < 0) {
                 Log.w(TAG, "unexpected result from encoder.dequeueOutputBuffer: " +
                         videoEncoderStatus);
