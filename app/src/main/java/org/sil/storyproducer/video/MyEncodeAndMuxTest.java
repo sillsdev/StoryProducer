@@ -79,7 +79,7 @@ public class MyEncodeAndMuxTest {
     private static final int AUDIO_SAMPLE_RATE = 8000;
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BITRATE = 64000;
-    private static final int AUDIO_INPUT_BUFFER_SIZE = 16 * 1024;
+    private static final int AUDIO_INPUT_BUFFER_SIZE = 128 * 1024;
 
     private static final int TIMEOUT_USEC = 10000;
 
@@ -518,13 +518,9 @@ public class MyEncodeAndMuxTest {
                         + audioEncoderOutputBufferInfo.presentationTimeUs);
             }
 
-//            if (audioPresentationTimeUsLast == 0) {
-//                audioPresentationTimeUsLast = audioEncoderOutputBufferInfo.presentationTimeUs;
-//            } else {
-                if (audioPresentationTimeUsLast > audioEncoderOutputBufferInfo.presentationTimeUs) {
-                    audioEncoderOutputBufferInfo.presentationTimeUs = audioPresentationTimeUsLast + 1;
-                }
-//            }
+            if (audioPresentationTimeUsLast > audioEncoderOutputBufferInfo.presentationTimeUs) {
+                audioEncoderOutputBufferInfo.presentationTimeUs = audioPresentationTimeUsLast + 1;
+            }
             audioPresentationTimeUsLast = audioEncoderOutputBufferInfo.presentationTimeUs;
 
             // Write data
