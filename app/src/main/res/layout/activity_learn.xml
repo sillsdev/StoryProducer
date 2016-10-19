@@ -23,7 +23,47 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@null"
-        android:src="@drawable/ic_play_gray"
+        android:src="@drawable/ic_pause_gray"
         android:onClick="clickPlayPauseButton"
         android:id="@+id/playButton" />
+
+    <SeekBar
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoSeekBar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_above="@+id/playButton"
+        android:max="100" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_menu_play"
+        android:id="@+id/soundOff"
+        android:layout_alignTop="@+id/learnImageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/volumeSwitch"
+        android:layout_alignBottom="@+id/soundON"
+        android:layout_toLeftOf="@+id/soundOff"
+        android:layout_toStartOf="@+id/soundOff"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_no_audio"
+        android:id="@+id/soundOn"
+        android:layout_alignTop="@+id/learnImageView"
+        android:layout_toLeftOf="@+id/volumeSwitch"
+        android:layout_toStartOf="@+id/volumeSwitch"
+        android:visibility="gone"/>
+
 </RelativeLayout>

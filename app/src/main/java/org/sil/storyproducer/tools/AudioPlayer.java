@@ -1,7 +1,6 @@
 package org.sil.storyproducer.tools;
 
 import android.media.MediaPlayer;
-import android.net.sip.SipAudioCall;
 
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ public class AudioPlayer {
     MediaPlayer mPlayer;
 
     /**
-     * Constructor for Audio Player. Takes no params
+     * Constructor for Audio Player, no params
      */
     public AudioPlayer() {
         mPlayer = new MediaPlayer();

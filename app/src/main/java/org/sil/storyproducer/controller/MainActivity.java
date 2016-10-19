@@ -200,7 +200,9 @@ public class MainActivity extends AppCompatActivity {
      */
     public void changeActivity(int slideNum, String storyName) {
         //change to the learning activity
+        String STORY_NAME = "storyname";
         Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
+        intent.putExtra( STORY_NAME, storyName);
         startActivity(intent);
         System.out.println("The storyname is " + storyName);
     }

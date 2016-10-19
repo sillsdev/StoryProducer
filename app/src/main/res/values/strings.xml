@@ -55,4 +55,8 @@
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    /* SnackBar Messages */
+    <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="ok">Ok</string>
 </resources>
