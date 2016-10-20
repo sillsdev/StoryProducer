@@ -211,6 +211,7 @@ public class MyEncodeAndMuxTest {
                 Log.d(TAG, "audio decoder: returned input buffer: " + decoderInputBufferIndex);
             }
             ByteBuffer decoderInputBuffer = audioDecoderInputBuffers[decoderInputBufferIndex];
+            decoderInputBuffer.clear();
             int size = mAudioExtractor.readSampleData(decoderInputBuffer, 0);
             long presentationTime = mAudioExtractor.getSampleTime();
             if (VERBOSE) {
@@ -237,7 +238,7 @@ public class MyEncodeAndMuxTest {
             }
 //            audioExtractedFrameCount++;
             // We extracted a frame, let's try something else next.
-            break;
+//            break;
         }
 
 
@@ -334,7 +335,7 @@ public class MyEncodeAndMuxTest {
             pendingAudioDecoderOutputBufferIndex = decoderOutputBufferIndex;
 //            audioDecodedFrameCount++;
             // We extracted a pending frame, let's try something else next.
-            break;
+//            break;
         }
 
 
@@ -355,6 +356,7 @@ public class MyEncodeAndMuxTest {
                 Log.d(TAG, "audio encoder: returned input buffer: " + encoderInputBufferIndex);
             }
             ByteBuffer encoderInputBuffer = audioEncoderInputBuffers[encoderInputBufferIndex];
+//            encoderInputBuffer.clear();
             int size = audioDecoderOutputBufferInfo.size;
             long presentationTime = audioDecoderOutputBufferInfo.presentationTimeUs;
             if (VERBOSE) {
@@ -371,7 +373,8 @@ public class MyEncodeAndMuxTest {
                                 .duplicate();
                 decoderOutputBuffer.position(audioDecoderOutputBufferInfo.offset);
                 decoderOutputBuffer.limit(audioDecoderOutputBufferInfo.offset + size);
-                encoderInputBuffer.position(0);
+//                encoderInputBuffer.position(0);
+                encoderInputBuffer.clear();
                 encoderInputBuffer.put(decoderOutputBuffer);
                 mAudioEncoder.queueInputBuffer(
                         encoderInputBufferIndex,
@@ -388,7 +391,7 @@ public class MyEncodeAndMuxTest {
                 mAudioDecoderDone = true;
             }
             // We enqueued a pending frame, let's try something else next.
-            break;
+//            break;
         }
 
 
@@ -516,9 +519,15 @@ public class MyEncodeAndMuxTest {
             if (VERBOSE) {
                 Log.d(TAG, "audio encoder: returned buffer for time "
                         + audioEncoderOutputBufferInfo.presentationTimeUs);
+
+//                long nextTimeExpected = audioEncoderOutputBufferInfo.presentationTimeUs
+//                        + (audioEncoderOutputBufferInfo.size / 2 / encoderOutputAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT)) * ();
+//                Log.d(TAG, "audio encoder: expecting next time " + nextTimeExpected);
             }
 
             if (audioPresentationTimeUsLast > audioEncoderOutputBufferInfo.presentationTimeUs) {
+                if(VERBOSE) Log.d(TAG, "audio encoder: correcting presentation time from "
+                        + audioEncoderOutputBufferInfo.presentationTimeUs + " to " + (audioPresentationTimeUsLast + 1));
                 audioEncoderOutputBufferInfo.presentationTimeUs = audioPresentationTimeUsLast + 1;
             }
             audioPresentationTimeUsLast = audioEncoderOutputBufferInfo.presentationTimeUs;
@@ -537,7 +546,7 @@ public class MyEncodeAndMuxTest {
             mAudioEncoder.releaseOutputBuffer(encoderOutputBufferIndex, false);
 //            audioEncodedFrameCount++;
             // We enqueued an encoded frame, let's try something else next.
-            break;
+//            break;
         }
 
 
