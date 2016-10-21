@@ -79,7 +79,6 @@ public class MyEncodeAndMuxTest {
     private static final int AUDIO_SAMPLE_RATE = 8000;
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BITRATE = 64000;
-    private static final int AUDIO_INPUT_BUFFER_SIZE = 128 * 1024;
 
     private static final int TIMEOUT_USEC = 10000;
 
@@ -129,6 +128,62 @@ public class MyEncodeAndMuxTest {
     private boolean mAudioEncoderDone = false;
 
     private static boolean started = false;
+
+    public void runPipedTest() {
+        String outputPath = new File(OUTPUT_DIR,
+                "testPipe" + (mUseAudio ? "A" : "") + (mUseVideo ? "V" : "") + "." + mWidth + "x" + mHeight + ".mp4").toString();
+
+        PipedMediaExtractor extractor = null;
+        PipedMediaDecoder decoder = null;
+        PipedMediaEncoder encoder = null;
+        PipedMediaMuxer muxer = null;
+
+        try {
+            extractor = new PipedMediaExtractor(TEST_AUDIO_PATH, MediaHelper.MediaType.AUDIO);
+            MediaFormat audioFormat = extractor.getFormat();
+
+            decoder = new PipedMediaDecoder(audioFormat);
+            decoder.addSource(extractor);
+
+            MediaFormat encoderFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE,
+                    audioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE),
+                    audioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
+            encoderFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
+            //encoder input buffers are too small by default
+            encoderFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
+            encoder = new PipedMediaEncoder(encoderFormat);
+            encoder.addSource(decoder);
+
+            muxer = new PipedMediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            muxer.addSource(encoder);
+
+            muxer.crunch();
+        }
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        catch (SourceUnacceptableException e) {
+            e.printStackTrace();
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(muxer != null) {
+                muxer.close();
+            }
+            if(encoder != null) {
+                encoder.close();
+            }
+            if(decoder != null) {
+                decoder.close();
+            }
+            if(extractor != null) {
+                extractor.close();
+            }
+        }
+    }
 
     /**
      * Tests encoding of AVC video from a Surface.  The output is saved as an MP4 file.
@@ -712,7 +767,7 @@ public class MyEncodeAndMuxTest {
             encoderFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
             encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
             //encoder input buffers are too small by default
-            encoderFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, AUDIO_INPUT_BUFFER_SIZE);
+            encoderFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
             try {
                 mAudioEncoder.configure(encoderFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             }

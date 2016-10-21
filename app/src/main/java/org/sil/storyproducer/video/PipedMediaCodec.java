@@ -4,19 +4,21 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.Log;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByteBufferDest {
+public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSource, MediaByteBufferDest {
     private static final boolean VERBOSE = true;
     private static final String TAG = "PipedMediaCodec";
     protected abstract String getComponentName();
-    private static final long TIMEOUT_USEC = 1000;
+
+    private MediaFormat mConfigureFormat;
 
     protected MediaCodec mCodec;
     private ByteBuffer[] mInputBuffers;
     private ByteBuffer[] mOutputBuffers;
     private MediaFormat mOutputFormat = null;
-    private int mCurrentOutputBufferIndex = -1;
 
     private MediaByteBufferSource mSource = null;
 
@@ -25,14 +27,14 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-    public PipedMediaCodec() {
-        //do nothing
+    public PipedMediaCodec(MediaFormat format) {
+        mConfigureFormat = format;
     }
 
     @Override
     public MediaFormat getFormat() {
         if(mOutputFormat == null) {
-            spinOutput(mInfo);
+            spinOutput(mInfo, true);
             if(mOutputFormat == null) {
                 throw new RuntimeException("format was not retrieved from loop");
             }
@@ -41,20 +43,31 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
     }
 
     @Override
+    public MediaHelper.MediaType getType() {
+        return MediaHelper.getTypeFromFormat(mConfigureFormat);
+    }
+
+    @Override
+    public boolean isDone() {
+        return mIsDone;
+    }
+
+    @Override
     public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-        spinOutput(info);
+        ByteBuffer outputBuffer = spinOutput(info, false);
         buffer.clear();
-        buffer.put(mOutputBuffers[mCurrentOutputBufferIndex]);
-        mCodec.releaseOutputBuffer(mCurrentOutputBufferIndex, false);
-        mCurrentOutputBufferIndex = -1;
+        buffer.put(outputBuffer);
+        releaseBuffer(outputBuffer);
+//        mCodec.releaseOutputBuffer(mCurrentOutputBufferIndex, false);
+//        mCurrentOutputBufferIndex = -1;
     }
 
     @Override
     public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
-        spinOutput(info);
-        int index = mCurrentOutputBufferIndex;
-        mCurrentOutputBufferIndex = -1;
-        return mOutputBuffers[index];
+        return spinOutput(info, false);
+//        int index = mCurrentOutputBufferIndex;
+//        mCurrentOutputBufferIndex = -1;
+//        return mOutputBuffers[index];
     }
 
     @Override
@@ -74,20 +87,21 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
         mOutputBuffers = mCodec.getOutputBuffers();
     }
 
-    private void spinOutput(MediaCodec.BufferInfo info) {
-        // Poll frames from the audio encoder and send them to the muxer.
+    private ByteBuffer spinOutput(MediaCodec.BufferInfo info, boolean stopWithFormat) {
+        if(mIsDone) {
+            throw new RuntimeException("spinOutput called after depleted");
+        }
+
         while (!mIsDone) {
             int pollCode = mCodec.dequeueOutputBuffer(
-                    info, TIMEOUT_USEC);
+                    info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
                 spinInput();
-//                break;
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 if (VERBOSE) Log.d(TAG, getComponentName() + ": output buffers changed");
                 mOutputBuffers = mCodec.getOutputBuffers();
-//                break;
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (VERBOSE) Log.d(TAG, getComponentName() + ": output format changed");
@@ -95,25 +109,20 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
                     throw new RuntimeException("changed output format again?");
                 }
                 mOutputFormat = mCodec.getOutputFormat();
-                break;
+                if(stopWithFormat) {
+                    return null;
+                }
             }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
                 if (VERBOSE) Log.d(TAG, getComponentName() + ": codec config buffer");
                 //TODO: make sure this is ok
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);
-//                break;
             }
             else {
-                //TODO: make sure this never happens
-                if(mCurrentOutputBufferIndex != -1) {
-                    throw new RuntimeException("attempting to get second output buffer before previous buffer handled");
-                }
                 if (VERBOSE) {
                     Log.d(TAG, getComponentName() + ": returned output buffer: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
-
-                mCurrentOutputBufferIndex = pollCode;
 
                 if (mPresentationTimeUsLast > info.presentationTimeUs) {
                     throw new RuntimeException("buffer presentation time out of order!");
@@ -130,9 +139,11 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
                     if (VERBOSE) Log.d(TAG, getComponentName() + ": EOS");
                     mIsDone = true;
                 }
-                break;
+                return buffer;
             }
         }
+
+        return null;
     }
 
     private void spinInput() {
@@ -142,7 +153,7 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
         }
         //TODO: What is the loop condition?
         while (true) {
-            int pollCode = mCodec.dequeueInputBuffer(TIMEOUT_USEC);
+            int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 //TODO: Can this ever happen?
                 if (VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
@@ -167,5 +178,13 @@ public abstract class PipedMediaCodec implements MediaByteBufferSource, MediaByt
             throw new SourceUnacceptableException("One source already supplied!");
         }
         mSource = src;
+    }
+
+    @Override
+    public void close() {
+        if(mCodec != null) {
+            mCodec.stop();
+            mCodec.release();
+        }
     }
 }
