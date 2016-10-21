@@ -2,6 +2,7 @@ package org.sil.storyproducer;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -11,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,99 +25,61 @@ import java.util.Stack;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    View generalSection, translatorSection, consultantSection, trainerSection, databaseSection;
     private Resources classResources;
-
-    //The listOfTextFieldsParsed and listOfTextFields are used together and is
-    //used for parsing purposes.
-    private boolean [] listOfTextFieldsParsed;
     private List<TextInputEditText> listOfTextFields;
+    private final int [] viewIntId = {R.id.general_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.database_section};
+    private final int [] headIntId = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
+    private View[] mySelectionViews = new View[viewIntId.length];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-
-        generalSection = findViewById(R.id.general_section);
-        translatorSection = findViewById(R.id.translator_section);
-        consultantSection = findViewById(R.id.consultant_section);
-        trainerSection = findViewById(R.id.trainer_section);
-        databaseSection = findViewById(R.id.database_section);
-
-        setAccordionListener(findViewById(R.id.general_header), generalSection);
-        setAccordionListener(findViewById(R.id.translator_header), translatorSection);
-        setAccordionListener(findViewById(R.id.consultant_header), consultantSection);
-        setAccordionListener(findViewById(R.id.trainer_header), trainerSection);
-        setAccordionListener(findViewById(R.id.database_header), databaseSection);
+        for(int i = 0; i < viewIntId.length; i++){
+            mySelectionViews[i] = findViewById(viewIntId[i]);
+            setAccordionListener(findViewById(headIntId[i]), mySelectionViews[i]);
+        }
 
         //Used later in a context that needs the resources
         classResources = this.getResources();
-
-
     }
 
     protected void onPostCreate(Bundle savedInstanceState){
         super.onPostCreate(savedInstanceState);
-        this.addParserToTextFields();
+        this.setupTextFields();
         this.addSubmitButtonSave();
     }
 
-    /**
-     * This function adds parsing capabilities per TextInputEditText fields.
+    /***
+     * Initializes the listOfTextFields to the text fields in the activity.
      */
-    private void addParserToTextFields(){
+    private void setupTextFields(){
         View view = findViewById(R.id.scroll_view);
 
         //Find the top level linear layout
-        if(view instanceof ScrollView){
-            boolean hasError = true;
-            ScrollView scrollView = (ScrollView)view;
+        if(view instanceof ScrollView) {
+            ScrollView scrollView = (ScrollView) view;
             listOfTextFields = getTextFields(scrollView);
-            listOfTextFieldsParsed = new boolean[listOfTextFields.size()];
-
-            for(int i = 0; i < listOfTextFields.size(); i++){
-                final TextInputEditText inputtedTextField = listOfTextFields.get(i);
-                listOfTextFieldsParsed[i] =  hasError;
-                inputtedTextField.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus){
-                        if(!hasFocus){
-                            int type = inputtedTextField.getInputType();
-                            String inputString = inputtedTextField.getText().toString();
-
-                            ParseText.parseText(type, inputString, classResources);
-                            listOfTextFieldsParsed[listOfTextFields.indexOf(inputtedTextField)] = ParseText.hasError();
-                        }
-                    }
-                });
-            }
         }
     }
 
     /**
-     * This function adds the on click listner for the submit button.
+     * This function adds the on click listener for the submit button.
      */
     private void addSubmitButtonSave(){
-        Button submitButton = (Button)findViewById(R.id.submit_button);
+        final Button submitButton = (Button)findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                for(int i = 0; i < listOfTextFieldsParsed.length; i++){
-                    if(listOfTextFieldsParsed[i]){
-                        final TextInputEditText errorTextField = listOfTextFields.get(i);
-                        createErrorDialog(errorTextField);
-                        errorTextField.requestFocus();
-                        return;
-                    }
+                submitButton.requestFocus();
+                if(textFieldsParsed()){
+                    storeRegistrationInfo();
+                    createToast(getApplicationContext(), getString(R.string.saved_successfully));
+                    retrieveRegistrationInfo();
+                    hideKeyboard();
                 }
-
-                storeRegistrationInfo();
-
-                retrieveRegistrationInfo();
             }
         });
-
-
     }
 
     /**
@@ -159,6 +124,33 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
+     * Parse the text fields when the submit button has been clicked.
+     * @return Returns true if all the text fields are inputted correctly, else,
+     * returns false if text fields are not inputted correctly.
+     */
+    private boolean textFieldsParsed(){
+        for(int i = 0; i < listOfTextFields.size(); i++){
+            TextInputEditText textField = listOfTextFields.get(i);
+            int type = textField.getInputType();
+            String inputString = textField.getText().toString();
+            ParseText.parseText(type, inputString, classResources);
+
+            if(ParseText.hasError()){
+                createErrorDialog(textField);
+                textField.requestFocus();
+                for(int j = 0; j < this.mySelectionViews.length; j++){
+                    if(mySelectionViews[j].findFocus() != null){
+                        mySelectionViews[j].setVisibility(View.VISIBLE);
+                    }
+                }
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Custom dialog box creation for a parsing error.
      * @param myText The TextInputEditText field that might need to regain focus depending
      *               on user input.
@@ -176,7 +168,7 @@ public class RegistrationActivity extends AppCompatActivity {
         })
         .setNegativeButton(" ", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                myText.clearComposingText();
+                myText.setText("");
             }
         }).create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
@@ -189,14 +181,21 @@ public class RegistrationActivity extends AppCompatActivity {
                 Button negativeButton = ((AlertDialog) dialog)
                         .getButton(AlertDialog.BUTTON_NEGATIVE);
                 negativeButton.setBackgroundResource(android.R.drawable.ic_delete);
-//                //((AlertDialog) dialog).setIcon(android.R.drawable.ic_dialog_info);
-//                ((AlertDialog)dialog).requestWindowFeature(Window.FEATURE_LEFT_ICON);
-//                ((AlertDialog)dialog).setFeatureDrawableResource(Window.FEATURE_LEFT_ICON, android.R.drawable.ic_dialog_info);
-                //((AlertDialog)dialog).setContentView(R.layout.custom_dialog);
             }
         });
         dialog.show();
         return dialog;
+    }
+
+    /***
+     * Create a toast with the default location with a message.
+     * @param context The current app context.
+     * @param message The message that the toast will display.
+     */
+    private void createToast(Context context, String message){
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
     }
 
     /***
@@ -208,10 +207,10 @@ public class RegistrationActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE);
         HashMap<String, String> myMap = (HashMap<String, String>)prefs.getAll();
 
-        System.out.println("Ouputting values!");
-        System.out.println("Ouputting values!");
-        System.out.println("Ouputting values!");
-        System.out.println("Ouputting values!");
+        System.out.println("                ");
+        System.out.println("                ");
+        System.out.println("                ");
+        System.out.println("                ");
 
         for (Map.Entry<String, String> entry : myMap.entrySet())
         {
@@ -234,8 +233,13 @@ public class RegistrationActivity extends AppCompatActivity {
         editor.commit();
     }
 
-
-
+    private void hideKeyboard(){
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
     /**
      * This function sets the click listeners to implement the accordion functionality

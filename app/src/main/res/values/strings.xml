@@ -143,6 +143,9 @@
     <string name="email_invalid">%s is an invalid email address!</string>
     <!--End of Parsing Strings-->
 
+    <!--Save toast string after submit button-->
+    <string name="saved_successfully">Registration informations saved!</string>
+
     <!-- Registration Save File Name -->
     <string name="Registration_File_Name">Registration_File_Name</string>
 </resources>
