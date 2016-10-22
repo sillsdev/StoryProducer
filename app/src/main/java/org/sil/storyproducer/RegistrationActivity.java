@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -49,6 +50,19 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         this.setupTextFields();
         this.addSubmitButtonSave();
+        final AlertDialog instructionDialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle("Welcome!")
+                .setMessage("Please enter in as much registration info as you can. If the " +
+                        "information is not available, put \"None\"")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //
+                    }
+                }).create();
+        instructionDialog.show();
+
+
     }
 
     /***
@@ -248,14 +262,23 @@ public class RegistrationActivity extends AppCompatActivity {
      *                   a section of the registration
      * @param sectionView a variable of type View denoting the section that will open up
      */
-    private void setAccordionListener(View headerView, final View sectionView) {
+    private void setAccordionListener(final View headerView, final View sectionView) {
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String oldText, newText;
+                TextView headerTextView = (TextView) headerView;
+
                 if (sectionView.getVisibility() == View.GONE) {
                     sectionView.setVisibility(View.VISIBLE);
+                    oldText = headerTextView.getText().toString();
+                    newText = oldText.replace("+", "^");
+                    headerTextView.setText(newText);
                 } else {
                     sectionView.setVisibility(View.GONE);
+                    oldText = headerTextView.getText().toString();
+                    newText = oldText.replace("^", "+");
+                    headerTextView.setText(newText);
                 }
             }
         });

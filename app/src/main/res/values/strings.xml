@@ -20,11 +20,11 @@
     <string name="language">"Language:  "</string>
 
     <!-- String names for registration -->
-    <string name="general_header">General Information</string>
-    <string name="translator_header">Translator Information</string>
-    <string name="consultant_header">Consultant Information</string>
-    <string name="trainer_header">Trainer Information</string>
-    <string name="database_header">Data Information</string>
+    <string name="general_header">+  General Information</string>
+    <string name="translator_header">+  Translator Information</string>
+    <string name="consultant_header">+  Consultant Information</string>
+    <string name="trainer_header">+  Trainer Information</string>
+    <string name="database_header">+  Data Information</string>
     <string name="language_hint">Language (being translated into)</string>
     <string name="etnologue_code_hint">Ethnologue Code</string>
     <string name="country_hint">Country</string>
