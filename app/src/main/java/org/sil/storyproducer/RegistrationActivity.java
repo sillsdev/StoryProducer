@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private Resources classResources;
     private List<TextInputEditText> listOfTextFields;
+    private List<Spinner> listOfSpinners;
     private final int [] viewIntId = {R.id.general_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.database_section};
     private final int [] headIntId = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
     private View[] mySelectionViews = new View[viewIntId.length];
@@ -50,19 +52,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         this.setupTextFields();
         this.addSubmitButtonSave();
-        final AlertDialog instructionDialog = new AlertDialog.Builder(RegistrationActivity.this)
-                .setTitle("Welcome!")
-                .setMessage("Please enter in as much registration info as you can. If the " +
-                        "information is not available, put \"None\"")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //
-                    }
-                }).create();
-        instructionDialog.show();
-
-
+        createAlertDialog(getString(R.string.bypass_message));
     }
 
     /***
@@ -150,7 +140,7 @@ public class RegistrationActivity extends AppCompatActivity {
             ParseText.parseText(type, inputString, classResources);
 
             if(ParseText.hasError()){
-                createErrorDialog(textField);
+                createAlertDialog(textField);
                 textField.requestFocus();
                 for(int j = 0; j < this.mySelectionViews.length; j++){
                     if(mySelectionViews[j].findFocus() != null){
@@ -165,12 +155,14 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * Custom dialog box creation for a parsing error.
+     * Creates and shows a custom dialog box for parsing the fields.
      * @param myText The TextInputEditText field that might need to regain focus depending
      *               on user input.
-     * @return The dialog box that the user must encounter.
+     * @return The dialog box that the user must encounter. The dialog box does not need to be
+     * assigned to anything when the createAlertDialog is called. The return value is an optional
+     * value to initialize an object with.
      */
-    private Dialog createErrorDialog(final TextInputEditText myText){
+    private Dialog createAlertDialog(final TextInputEditText myText){
         AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
         .setTitle(" ")
         .setMessage(" ")
@@ -179,11 +171,6 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 myText.requestFocus();
             }
-        })
-        .setNegativeButton(" ", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                myText.setText("");
-            }
         }).create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -191,14 +178,32 @@ public class RegistrationActivity extends AppCompatActivity {
                 Button positiveButton = ((AlertDialog) dialog)
                         .getButton(AlertDialog.BUTTON_POSITIVE);
                 positiveButton.setBackgroundResource(android.R.drawable.ic_menu_revert);
-
-                Button negativeButton = ((AlertDialog) dialog)
-                        .getButton(AlertDialog.BUTTON_NEGATIVE);
-                negativeButton.setBackgroundResource(android.R.drawable.ic_delete);
             }
         });
         dialog.show();
         return dialog;
+    }
+
+    /**
+     * Creates and shows the dialog box for a particular message.
+     * @param message The message that the alert box will show for the RegistrationActivity context.
+     * @return The dialog box that the user must encounter. The dialog box does not need to be
+     * assigned to anything when the createAlertDialog is called. The return value is an optional
+     * value to initialize an object with.
+     */
+    private Dialog createAlertDialog(String message){
+        final AlertDialog instructionDialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle("Welcome!")
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //
+                    }
+                }).create();
+        instructionDialog.show();
+
+        return instructionDialog;
     }
 
     /***
@@ -228,7 +233,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         for (Map.Entry<String, String> entry : myMap.entrySet())
         {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
+            System.out.println(entry.getKey() + " : " + entry.getValue());
         }
     }
 
@@ -238,15 +243,21 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void storeRegistrationInfo(){
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE).edit();
+        final String BYPASS_STRING = getString(R.string.bypass_field_parse);
         for(int i = 0; i < listOfTextFields.size(); i++){
             final TextInputEditText textField = listOfTextFields.get(i);
             String textFieldName = getResources().getResourceEntryName(textField.getId());
+            String textFieldText = textField.getText().toString().equals(BYPASS_STRING) ? "N/A"
+                    : textField.getText().toString();
             System.out.println(textFieldName);
-            editor.putString(textFieldName, textField.getText().toString());
+            editor.putString(textFieldName, textFieldText);
         }
         editor.commit();
     }
 
+    /**
+     * This function hides the keyboard if current view has enabled the keyboard.
+     */
     private void hideKeyboard(){
         View view = this.getCurrentFocus();
         if (view != null) {

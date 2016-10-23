@@ -141,6 +141,8 @@
     <string name="empty_string">Empty String!</string>
     <string name="email_regex">^[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+(([.]([![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+))*)([@]){1}[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+([.][![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+)*([.][A-Za-z]{3})$</string>
     <string name="email_invalid">%s is an invalid email address!</string>
+    <string name="bypass_message">Please enter in as much registration info as you can. If the information is not available, put &#92;&#34;..&#92;&#34;</string>
+    <string name="bypass_field_parse">..</string>
     <!--End of Parsing Strings-->
 
     <!--Save toast string after submit button-->

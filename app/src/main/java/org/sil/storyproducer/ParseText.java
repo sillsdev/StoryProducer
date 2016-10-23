@@ -33,6 +33,7 @@ public class ParseText {
 
         hasError = false;
         errorString = "";
+        final String BYTPASS_STRING =  classResources.getString(R.string.bypass_field_parse);
         Pattern parsingPattern;
 
         switch(TextFieldType){
@@ -41,26 +42,41 @@ public class ParseText {
                 if(inputtedTextField.equals("")){
                     String emptyError = classResources.getString(R.string.empty_string);
                     setError(emptyError);
-                }else{
+                }else if(inputtedTextField.equals(BYTPASS_STRING)){
+                    //May have other logic to go in here
+                    toReturn = inputtedTextField;
+                }
+                else{
                     toReturn = inputtedTextField;
                 }
                 break;
             case EMAIL:
                 // do something with inputtedTextField
 //                String regexString = classResources.getString(R.string.email_regex);
-                String regexString ="^[\\w\\p{Punct}&&[^.@]]+(([.]([\\w\\p{Punct}&&[^.@]]+))*)([@]){1}[\\w\\p{Punct}&&[^.@]]+([.][\\w\\p{Punct}&&[^.@]]+)*([.][A-Za-z]{3})$";
-                parsingPattern = Pattern.compile(regexString);
-                Matcher mc = parsingPattern.matcher(inputtedTextField);
-                if(!mc.find()){
-                    String invalidEmailMsg = classResources.getString(R.string.email_invalid);
-                    setError(String.format(invalidEmailMsg, inputtedTextField));
-                }else {
+                if(inputtedTextField.equals(BYTPASS_STRING)){
+                    //May have other logic to go in here
                     toReturn = inputtedTextField;
+                }
+                else{
+                    String regexString ="^[\\w\\p{Punct}&&[^.@]]+(([.]([\\w\\p{Punct}&&[^.@]]+))*)([@]){1}[\\w\\p{Punct}&&[^.@]]+([.][\\w\\p{Punct}&&[^.@]]+)*([.][A-Za-z]{3})$";
+                    parsingPattern = Pattern.compile(regexString);
+                    Matcher mc = parsingPattern.matcher(inputtedTextField);
+                    if(!mc.find()){
+                        String invalidEmailMsg = classResources.getString(R.string.email_invalid);
+                        setError(String.format(invalidEmailMsg, inputtedTextField));
+                    }else {
+                        toReturn = inputtedTextField;
+                    }
                 }
                 break;
             case PHONE:
                 //do something with phone text field
-                toReturn = inputtedTextField;
+                if(inputtedTextField.equals(BYTPASS_STRING)){
+                    //May have other logic to go in here
+                    toReturn = inputtedTextField;
+                }else{
+                    toReturn = inputtedTextField;
+                }
                 break;
             default:
                 setError("Something went wrong!");
