@@ -33,7 +33,7 @@ public class ParseText {
 
         hasError = false;
         errorString = "";
-        final String BYTPASS_STRING =  classResources.getString(R.string.bypass_field_parse);
+        final String BYPASS_STRING =  classResources.getString(R.string.bypass_field_parse);
         Pattern parsingPattern;
 
         switch(TextFieldType){
@@ -42,7 +42,7 @@ public class ParseText {
                 if(inputtedTextField.equals("")){
                     String emptyError = classResources.getString(R.string.empty_string);
                     setError(emptyError);
-                }else if(inputtedTextField.equals(BYTPASS_STRING)){
+                }else if(inputtedTextField.equals(BYPASS_STRING)){
                     //May have other logic to go in here
                     toReturn = inputtedTextField;
                 }
@@ -53,7 +53,7 @@ public class ParseText {
             case EMAIL:
                 // do something with inputtedTextField
 //                String regexString = classResources.getString(R.string.email_regex);
-                if(inputtedTextField.equals(BYTPASS_STRING)){
+                if(inputtedTextField.equals(BYPASS_STRING)){
                     //May have other logic to go in here
                     toReturn = inputtedTextField;
                 }
@@ -71,7 +71,7 @@ public class ParseText {
                 break;
             case PHONE:
                 //do something with phone text field
-                if(inputtedTextField.equals(BYTPASS_STRING)){
+                if(inputtedTextField.equals(BYPASS_STRING)){
                     //May have other logic to go in here
                     toReturn = inputtedTextField;
                 }else{

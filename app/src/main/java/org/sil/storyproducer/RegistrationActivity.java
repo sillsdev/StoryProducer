@@ -25,46 +25,74 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+/**
+ * The purpose of this class is to create the Registration activity.
+ *
+ * Key classes used in this class:
+ * @see ParseText used for input parsing.
+ * @see android.widget.Spinner for input from a selection menu.
+ * @see android.support.design.widget.TextInputEditText for inputting text for registration fields.
+ * @see android.content.SharedPreferences for Saving registration information.
+ *
+ * Flow of RegistrationActivty:
+ * 1. onCreate() is called and calls the following:
+ *  a.  setAccordionListener() is called which adds click listeners to the header sections of the
+ *      accordion.
+ * 2. onPostCreate() is called and calls the following:
+ *  a.  setupInputFields() is called which takes a root ScrollView.
+ *          I. getInputFields() is called and takes the root ScrollView and does an in-order
+ *          traversal of the nodes in the registration xml to find the TextInputEditText
+ *          and Spinner inputs. Each TextInputEditText and Spinner inputs are added to the
+ *          mySelectionViews[] for parsing and saving.
+ *  b.  addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input)
+ *      to check for valid inputs.
+ *          I. textFieldParsed() is called. Parsing is done with the ParseText class. If a TextInputEditText is not valid input
+ *          then the saving is halted and the user is prompted to redo the input.
+ *          II. If all text fields are valid input then storeRegistrationInfo() is called.
+ *  c. createAlertDialog() is called and greets users with a message from the string.xml.
+ *
+ */
 public class RegistrationActivity extends AppCompatActivity {
 
-    private Resources classResources;
-    private List<TextInputEditText> listOfTextFields;
-    private List<Spinner> listOfSpinners;
     private final int [] viewIntId = {R.id.general_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.database_section};
     private final int [] headIntId = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
     private View[] mySelectionViews = new View[viewIntId.length];
+    private Resources classResources;
+    private List<View> listOfInputFields;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
+        //Initialize mySelectionViews[] with the integer id's of the various LinearLayouts
+        //Add the listeners to the LinearLayouts's header section.
         for(int i = 0; i < viewIntId.length; i++){
             mySelectionViews[i] = findViewById(viewIntId[i]);
             setAccordionListener(findViewById(headIntId[i]), mySelectionViews[i]);
         }
 
-        //Used later in a context that needs the resources
+        //Used later in a context that needs the resources of this activity.
         classResources = this.getResources();
     }
 
     protected void onPostCreate(Bundle savedInstanceState){
         super.onPostCreate(savedInstanceState);
-        this.setupTextFields();
+        this.setupInputFields();
         this.addSubmitButtonSave();
         createAlertDialog(getString(R.string.bypass_message));
     }
 
     /***
-     * Initializes the listOfTextFields to the text fields in the activity.
+     * Initializes the listOfInputFields to the inputs of this activity.
      */
-    private void setupTextFields(){
+    private void setupInputFields(){
         View view = findViewById(R.id.scroll_view);
 
         //Find the top level linear layout
         if(view instanceof ScrollView) {
             ScrollView scrollView = (ScrollView) view;
-            listOfTextFields = getTextFields(scrollView);
+            listOfInputFields = getInputFields(scrollView);
         }
     }
 
@@ -88,27 +116,29 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * This function takes a scroll view as the root view of a xml layout and searches for
-     * TextInputEditText fields to add to the List.
-     * Don't mind the superfluous casts. The multiple casts are in place so that all nodes are
-     * visited, regardless of what class the node is.
+     * TextInputEditText and spinner fields to add to the List.
      * @param rootScrollView The root scroll view where all the children will be visited to
      *                       check if there is an TextInputEditText field.
-     * @return               The list of TextInputEditText fields that will be parsed.
+     * @return               The list of input fields that will be parsed either a spinner or a
+     *                       TextInputEditText.
      */
-    private List<TextInputEditText> getTextFields(ScrollView rootScrollView){
+    private List<View> getInputFields(ScrollView rootScrollView){
         //error check
         if(rootScrollView == null){
             return null;
         }
 
-        List<TextInputEditText> listOfEditText = new ArrayList<>();
+        List<View> listOfEditText = new ArrayList<>();
         Stack<ViewGroup> myStack = new Stack<>();
         myStack.push(rootScrollView);
 
         while(myStack.size() > 0){
             ViewGroup currentView = myStack.pop();
             if(currentView instanceof TextInputLayout){
-                listOfEditText.add((TextInputEditText)((TextInputLayout) currentView).getEditText());
+                listOfEditText.add(((TextInputLayout) currentView).getEditText());
+            }
+            else if(currentView instanceof Spinner){
+                listOfEditText.add(currentView);
             }
             else{
                 if(currentView.getChildCount() > 0){
@@ -130,24 +160,28 @@ public class RegistrationActivity extends AppCompatActivity {
     /**
      * Parse the text fields when the submit button has been clicked.
      * @return Returns true if all the text fields are inputted correctly, else,
-     * returns false if text fields are not inputted correctly.
+     * returns false if text fields are not inputted correctly. Only need to check the
+     * TextInputEditText fields and not the spinner fields.
      */
     private boolean textFieldsParsed(){
-        for(int i = 0; i < listOfTextFields.size(); i++){
-            TextInputEditText textField = listOfTextFields.get(i);
-            int type = textField.getInputType();
-            String inputString = textField.getText().toString();
-            ParseText.parseText(type, inputString, classResources);
+        for(int i = 0; i < listOfInputFields.size(); i++){
+            View aView = listOfInputFields.get(i);
+            if(aView instanceof TextInputEditText){
+                TextInputEditText textField = (TextInputEditText)aView;
+                int type = textField.getInputType();
+                String inputString = textField.getText().toString();
+                ParseText.parseText(type, inputString, classResources);
 
-            if(ParseText.hasError()){
-                createAlertDialog(textField);
-                textField.requestFocus();
-                for(int j = 0; j < this.mySelectionViews.length; j++){
-                    if(mySelectionViews[j].findFocus() != null){
-                        mySelectionViews[j].setVisibility(View.VISIBLE);
+                if(ParseText.hasError()){
+                    createAlertDialog(textField);
+                    textField.requestFocus();
+                    for(int j = 0; j < this.mySelectionViews.length; j++){
+                        if(mySelectionViews[j].findFocus() != null){
+                            mySelectionViews[j].setVisibility(View.VISIBLE);
+                        }
                     }
+                    return false;
                 }
-                return false;
             }
         }
 
@@ -244,13 +278,22 @@ public class RegistrationActivity extends AppCompatActivity {
     private void storeRegistrationInfo(){
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE).edit();
         final String BYPASS_STRING = getString(R.string.bypass_field_parse);
-        for(int i = 0; i < listOfTextFields.size(); i++){
-            final TextInputEditText textField = listOfTextFields.get(i);
-            String textFieldName = getResources().getResourceEntryName(textField.getId());
-            String textFieldText = textField.getText().toString().equals(BYPASS_STRING) ? "N/A"
-                    : textField.getText().toString();
-            System.out.println(textFieldName);
-            editor.putString(textFieldName, textFieldText);
+        for(int i = 0; i < listOfInputFields.size(); i++){
+            View aView = listOfInputFields.get(i);
+            if(aView instanceof TextInputEditText){
+                final TextInputEditText textField = (TextInputEditText)aView;
+                String textFieldName = getResources().getResourceEntryName(textField.getId());
+                String textFieldText = textField.getText().toString().equals(BYPASS_STRING) ? "N/A"
+                        : textField.getText().toString();
+                System.out.println(textFieldName);
+                editor.putString(textFieldName, textFieldText);
+            }else if(aView instanceof Spinner){
+                final Spinner spinner = (Spinner)aView;
+                String spinnerName = getResources().getResourceEntryName(spinner.getId());
+                String spinnerText = spinner.getSelectedItem().toString();
+                editor.putString(spinnerName, spinnerText);
+            }
+
         }
         editor.commit();
     }
@@ -294,5 +337,4 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         });
     }
-
 }
