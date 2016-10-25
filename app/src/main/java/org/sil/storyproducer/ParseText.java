@@ -40,7 +40,7 @@ public class ParseText {
             case TEXT:
                 //do something with inputtedTextField
                 if(inputtedTextField.equals("")){
-                    String emptyError = classResources.getString(R.string.empty_string);
+                    String emptyError = classResources.getString(R.string.blank_text_field_error);
                     setError(emptyError);
                 }else if(inputtedTextField.equals(BYPASS_STRING)){
                     //May have other logic to go in here

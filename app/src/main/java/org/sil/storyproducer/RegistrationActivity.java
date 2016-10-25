@@ -4,12 +4,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +61,13 @@ public class RegistrationActivity extends AppCompatActivity {
     private final int [] viewIntId = {R.id.general_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.database_section};
     private final int [] headIntId = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
     private View[] mySelectionViews = new View[viewIntId.length];
+    private View[] myHeaderViews = new View[headIntId.length];
     private Resources classResources;
     private List<View> listOfInputFields;
+
+    private final int SHOW = 0;
+    private final int HIDE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +79,7 @@ public class RegistrationActivity extends AppCompatActivity {
         for(int i = 0; i < viewIntId.length; i++){
             mySelectionViews[i] = findViewById(viewIntId[i]);
             setAccordionListener(findViewById(headIntId[i]), mySelectionViews[i]);
+            myHeaderViews[i] = findViewById(headIntId[i]);
         }
 
         //Used later in a context that needs the resources of this activity.
@@ -80,6 +90,7 @@ public class RegistrationActivity extends AppCompatActivity {
         super.onPostCreate(savedInstanceState);
         this.setupInputFields();
         this.addSubmitButtonSave();
+        this.addRegistrationSkip();
         createAlertDialog(getString(R.string.bypass_message));
     }
 
@@ -109,9 +120,32 @@ public class RegistrationActivity extends AppCompatActivity {
                     createToast(getApplicationContext(), getString(R.string.saved_successfully));
                     retrieveRegistrationInfo();
                     hideKeyboard();
+                    Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
             }
         });
+    }
+
+    /**
+     * Sets the on click listener for the registration bypass button
+     */
+    private void addRegistrationSkip() {
+        final Button skipButton = (Button)findViewById(R.id.bypass_button);
+        skipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showExitAlertDialog();
+            }
+        });
+    }
+
+    /**
+     * Sets the listener for the back button pressed
+     */
+    @Override
+    public void onBackPressed() {
+        showExitAlertDialog();
     }
 
     /**
@@ -170,14 +204,16 @@ public class RegistrationActivity extends AppCompatActivity {
                 TextInputEditText textField = (TextInputEditText)aView;
                 int type = textField.getInputType();
                 String inputString = textField.getText().toString();
-                ParseText.parseText(type, inputString, classResources);
+                String errorMessage = "";
+                errorMessage = ParseText.parseText(type, inputString, classResources);
 
                 if(ParseText.hasError()){
-                    createAlertDialog(textField);
+                    createAlertDialog(textField, errorMessage);
                     textField.requestFocus();
                     for(int j = 0; j < this.mySelectionViews.length; j++){
                         if(mySelectionViews[j].findFocus() != null){
                             mySelectionViews[j].setVisibility(View.VISIBLE);
+                            replaceHeaderText(myHeaderViews[j], SHOW);
                         }
                     }
                     return false;
@@ -196,10 +232,10 @@ public class RegistrationActivity extends AppCompatActivity {
      * assigned to anything when the createAlertDialog is called. The return value is an optional
      * value to initialize an object with.
      */
-    private Dialog createAlertDialog(final TextInputEditText myText){
+    private Dialog createAlertDialog(final TextInputEditText myText, String message){
         AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
         .setTitle(" ")
-        .setMessage(" ")
+        .setMessage(message)
         .setIcon(android.R.drawable.ic_dialog_info)
         .setPositiveButton(" ", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -278,6 +314,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private void storeRegistrationInfo(){
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE).edit();
         final String BYPASS_STRING = getString(R.string.bypass_field_parse);
+        Calendar calendar;
+        String date, androidVersion, manufacturer, model;
+        String day, month, year, hour, min;
         for(int i = 0; i < listOfInputFields.size(); i++){
             View aView = listOfInputFields.get(i);
             if(aView instanceof TextInputEditText){
@@ -295,6 +334,24 @@ public class RegistrationActivity extends AppCompatActivity {
             }
 
         }
+        // Create timestamp for when the data was submitted
+        calendar = Calendar.getInstance();
+        day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
+        month = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        year = Integer.toString(calendar.get(Calendar.YEAR));
+        hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY));
+        min = Integer.toString(calendar.get(Calendar.MINUTE));
+        date = month + "/" + day + "/" + year + " " + hour + ":" + min;
+        editor.putString("date", date);
+
+        // Retrieve phone information
+        manufacturer = Build.MANUFACTURER;
+        model = Build.MODEL;
+        androidVersion = Build.VERSION.RELEASE;
+        editor.putString("manufacturer", manufacturer);
+        editor.putString("model", model);
+        editor.putString("android_version", androidVersion);
+
         editor.commit();
     }
 
@@ -320,21 +377,59 @@ public class RegistrationActivity extends AppCompatActivity {
         headerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String oldText, newText;
-                TextView headerTextView = (TextView) headerView;
 
                 if (sectionView.getVisibility() == View.GONE) {
                     sectionView.setVisibility(View.VISIBLE);
-                    oldText = headerTextView.getText().toString();
-                    newText = oldText.replace("+", "^");
-                    headerTextView.setText(newText);
+                    replaceHeaderText(headerView, SHOW);
                 } else {
                     sectionView.setVisibility(View.GONE);
-                    oldText = headerTextView.getText().toString();
-                    newText = oldText.replace("^", "+");
-                    headerTextView.setText(newText);
+                    replaceHeaderText(headerView, HIDE);
                 }
             }
         });
+    }
+
+    /**
+     * This function changes the header text when the section is pulled up or down
+     * Standard format is +  <headerText> for hidden sections
+     * Standard format is ^  <headerText> for shown sections
+     * @param headerView indicates the view to be changed
+     * @param action, indicates the action taken on the section, either showing or hiding
+     */
+    private void replaceHeaderText(View headerView, int action) {
+        String oldText;
+        String newText = "";
+        TextView headerTextView = (TextView) headerView;
+        oldText = headerTextView.getText().toString();
+        if (action == SHOW) {
+            newText = oldText.replace("+", "^");
+        } else if (action == HIDE) {
+            newText = oldText.replace("^", "+");
+        } else {
+            return;
+        }
+        headerTextView.setText(newText);
+    }
+
+    /**
+     * Creates an alert dialog asking if the user wants to exit registration
+     * If they respond yes, sends them back to MainActivity
+     */
+    private void showExitAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle("Skip Registration?")
+                .setMessage("Are you sure you want to skip registration? Your information " +
+                        "will not be saved.")
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setNegativeButton("No", null)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                        intent.putExtra("skip", true);
+                        startActivity(intent);
+                    }
+                }).create();
+
+        dialog.show();
     }
 }

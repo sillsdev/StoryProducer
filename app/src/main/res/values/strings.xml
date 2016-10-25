@@ -39,7 +39,9 @@
     <string name="person_location_hint">Location</string>
     <string name="education_hint">Education Level</string>
     <string name="communication_preference_hint">Communication Preference:</string>
+    <string name="location_type_hint">Location Type: </string>
     <string name="submit">Submit</string>
+    <string name="bypass_button_text">Skip Registration</string>
 
     <string-array name="orthography_list">
         <item>None</item>
@@ -50,6 +52,11 @@
     <string-array name="communication_list">
         <item>Phone</item>
         <item>E-mail</item>
+    </string-array>
+
+    <string-array name="location_type_list">
+        <item>Local</item>
+        <item>Remote</item>
     </string-array>
 
     <!--Navigation Drawer Labels -->
@@ -138,9 +145,9 @@
     <string name="pref_title_vibrate">Vibrate</string>
 
     <!--Parsing Strings-->
-    <string name="empty_string">Empty String!</string>
     <string name="email_regex">^[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+(([.]([![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+))*)([@]){1}[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+([.][![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+)*([.][A-Za-z]{3})$</string>
-    <string name="email_invalid">%s is an invalid email address!</string>
+    <string name="blank_text_field_error">It looks like you left a field blank. If the information is not available, put &#92;&#34;..&#92;&#34;</string>
+    <string name="email_invalid">%s is an invalid email address format</string>
     <string name="bypass_message">Please enter in as much registration info as you can. If the information is not available, put &#92;&#34;..&#92;&#34;</string>
     <string name="bypass_field_parse">..</string>
     <!--End of Parsing Strings-->

@@ -2,6 +2,7 @@ package org.sil.storyproducer;
 
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.media.MediaPlayer;
@@ -22,8 +23,12 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    private boolean skipRegistration = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +38,25 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryFrag()).commit();
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
-        // For registration testing purposes
-        Intent intent = new Intent(this, RegistrationActivity.class);
-        startActivity(intent);
+
+        // Check to see if registration was skipped by the user
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getBoolean("skip") == true) {
+            skipRegistration = true;
+        }
+
+        if (!skipRegistration) {
+            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE);
+            HashMap<String, String> myMap = (HashMap<String, String>)prefs.getAll();
+            if (myMap.isEmpty()) {
+
+                Intent intent = new Intent(this, RegistrationActivity.class);
+                startActivity(intent);
+            }
+        }
+
+
     }
 
     @Override
