@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.view.View;
+import android.view.KeyEvent;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.CompoundButton;
@@ -27,10 +28,12 @@ public class LearnActivity extends AppCompatActivity {
     private PopupWindow pWindow;
     private SeekBar videoSeekBar;
     private AudioPlayer aPlayer;
+    private AudioPlayer backgroundPlayer;
     private int slideNum = 0;
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
+    private float backgroundVolume = 0.4f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +44,6 @@ public class LearnActivity extends AppCompatActivity {
         Intent intent = getIntent();
         storyName = intent.getStringExtra("storyname");
 
-        //turn on the background music
-        AudioPlayer backgroundPlayer = new AudioPlayer();
-        backgroundPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/SoundTrack0.mp3");
-        backgroundPlayer.setVolume(0.4f);
-
         //get the ui
         learnImageView = (ImageView) findViewById(R.id.learnImageView);
         playButton = (ImageButton) findViewById(R.id.playButton);
@@ -53,7 +51,43 @@ public class LearnActivity extends AppCompatActivity {
 
         setSeekBarListener();
         playVideo();
+        setBackgroundMusic();
 
+    }
+
+    /**
+     * Sets up the background music player
+     */
+    private void setBackgroundMusic() {
+        //turn on the background music
+        backgroundPlayer = new AudioPlayer();
+        backgroundPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/SoundTrack0.mp3");
+        backgroundPlayer.setVolume(backgroundVolume);
+    }
+
+    /**
+     * Back button event for API's greater than 5
+     */
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        aPlayer.stopAudio();
+        backgroundPlayer.stopAudio();
+    }
+
+    /**
+     * Back button event for API's less than 5
+     * @param keyCode
+     * @param event
+     * @return returns the event
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            aPlayer.stopAudio();
+            backgroundPlayer.stopAudio();
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**
@@ -76,6 +110,7 @@ public class LearnActivity extends AppCompatActivity {
                     playVideo();
                 } else {
                     videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
+                    backgroundPlayer.stopAudio();
                     showSnackBar();
                 }
             }
@@ -90,9 +125,11 @@ public class LearnActivity extends AppCompatActivity {
     public void clickPlayPauseButton(View view) {
         if(aPlayer.isAudioPlaying()) {
             aPlayer.pauseAudio();
+            backgroundPlayer.pauseAudio();
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
             aPlayer.resumeAudio();
+            backgroundPlayer.resumeAudio();
             playButton.setImageResource(R.drawable.ic_pause_gray);
         }
     }
@@ -141,6 +178,8 @@ public class LearnActivity extends AppCompatActivity {
                     videoSeekBar.setProgress(0);
                     slideNum = 0;
                     aPlayer.setVolume(0.0f);
+                    setBackgroundMusic();
+                    backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
                     playVideo();
                     setVolumeSwitchVisible();
@@ -165,9 +204,11 @@ public class LearnActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     aPlayer.setVolume(1.0f);
+                    backgroundPlayer.setVolume(backgroundVolume);
                     isVolumeOn = true;
                 } else {
                     aPlayer.setVolume(0.0f);
+                    backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
                 }
             }
