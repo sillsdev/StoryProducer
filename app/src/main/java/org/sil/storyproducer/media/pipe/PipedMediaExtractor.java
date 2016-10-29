@@ -1,4 +1,4 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;
@@ -6,12 +6,14 @@ import android.media.MediaFormat;
 import android.os.Build;
 import android.util.Log;
 
+import org.sil.storyproducer.media.MediaHelper;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
+public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaExtractor";
 
     private MediaExtractor mExtractor;
@@ -51,7 +53,7 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
     }
 
     @Override
-    public MediaHelper.MediaType getType() {
+    public MediaHelper.MediaType getMediaType() {
         return mType;
     }
 

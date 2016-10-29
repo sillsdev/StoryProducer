@@ -1,33 +1,17 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
-import android.media.MediaFormat;
 import android.util.Log;
+
+import org.sil.storyproducer.media.MediaHelper;
 
 import java.nio.ByteBuffer;
 
-public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements MediaByteBufferDest {
+public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedMediaCodecBuffer";
 
-//    protected MediaFormat mSourceFormat;
-    protected MediaByteBufferSource mSource;
+    protected PipedMediaByteBufferSource mSource;
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
-
-//    @Override
-//    public void setup() {
-//        mSource.setup();
-//    }
-
-//    @Override
-//    public MediaFormat getFormat() {
-//        if(mSource == null) {
-//            throw new RuntimeException("No source specified for encoder!");
-//        }
-//
-//        mSourceFormat = mSource.getFormat();
-//
-//        return super.getFormat();
-//    }
 
     @Override
     protected void spinInput() {
@@ -51,7 +35,7 @@ public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements M
     }
 
     @Override
-    public void addSource(MediaByteBufferSource src) throws SourceUnacceptableException {
+    public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
         if(mSource != null) {
             throw new SourceUnacceptableException("One source already supplied!");
         }

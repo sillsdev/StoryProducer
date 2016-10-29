@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;

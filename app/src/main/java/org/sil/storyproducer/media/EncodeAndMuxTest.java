@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media;
 
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
@@ -27,7 +27,6 @@ import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.opengl.GLES20;
-import android.os.Environment;
 import android.util.Log;
 import android.view.Surface;
 

@@ -20,11 +20,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import com.github.hiteshsondhi88.libffmpeg.*;
-import com.github.hiteshsondhi88.libffmpeg.exceptions.*;
 
-import org.sil.storyproducer.video.EncodeAndMuxTest;
-import org.sil.storyproducer.video.MyEncodeAndMuxTest;
+import org.sil.storyproducer.media.MyEncodeAndMuxTest;
 
 import java.util.ArrayList;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -28,6 +28,13 @@ import android.util.Log;
 import android.view.Surface;
 
 import org.sil.storyproducer.FileSystem;
+import org.sil.storyproducer.media.pipe.PipedMediaSurfaceSource;
+import org.sil.storyproducer.media.pipe.PipedMediaDecoderBuffer;
+import org.sil.storyproducer.media.pipe.PipedMediaEncoderBuffer;
+import org.sil.storyproducer.media.pipe.PipedMediaEncoderSurface;
+import org.sil.storyproducer.media.pipe.PipedMediaExtractor;
+import org.sil.storyproducer.media.pipe.PipedMediaMuxer;
+import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
 
 import java.io.File;
 import java.io.IOException;
@@ -173,7 +180,7 @@ public class MyEncodeAndMuxTest {
                 muxer.addSource(audioEncoder);
             }
             if(mUseVideo) {
-                MediaSurfaceSource videoDrawer = new MediaSurfaceSource() {
+                PipedMediaSurfaceSource videoDrawer = new PipedMediaSurfaceSource() {
                     @Override
                     public void setup() throws IOException {
 

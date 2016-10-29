@@ -1,7 +1,9 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+
+import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 
@@ -14,7 +16,7 @@ public class PipedMediaEncoderBuffer extends PipedMediaCodecBuffer {
     }
 
     @Override
-    public MediaHelper.MediaType getType() {
+    public MediaHelper.MediaType getMediaType() {
         return MediaHelper.getTypeFromFormat(mConfigureFormat);
     }
 
@@ -24,15 +26,15 @@ public class PipedMediaEncoderBuffer extends PipedMediaCodecBuffer {
         mSourceFormat = mSource.getFormat();
 
         //audio keys
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_SAMPLE_RATE);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_SAMPLE_RATE);
 
         //video keys
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
-        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
+        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
 
         //TODO: Make buffers appropriate size
         //encoder input buffers are too small by default

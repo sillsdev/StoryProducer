@@ -1,13 +1,15 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.Log;
 
+import org.sil.storyproducer.media.MediaHelper;
+
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSource {
+public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
     @Deprecated

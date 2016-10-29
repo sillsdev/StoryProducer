@@ -1,7 +1,9 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+
+import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 
@@ -11,7 +13,10 @@ public class PipedMediaDecoderBuffer extends PipedMediaCodecBuffer {
     public PipedMediaDecoderBuffer() { }
 
     @Override
-    public MediaHelper.MediaType getType() {
+    public MediaHelper.MediaType getMediaType() {
+        if(mSourceFormat == null) {
+            return null;
+        }
         return MediaHelper.getTypeFromFormat(mSourceFormat);
     }
 

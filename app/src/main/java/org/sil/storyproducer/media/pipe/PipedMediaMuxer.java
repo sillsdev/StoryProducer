@@ -1,46 +1,46 @@
-package org.sil.storyproducer.video;
+package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaMuxer;
 import android.util.Log;
 
+import org.sil.storyproducer.media.MediaHelper;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
+/**
+ * <p>A media pipeline component for multiplexing encoded audio and video streams into an output file.
+ * This class primarily encapsulates a {@link MediaMuxer}.</p>
+ * <p>Components commonly used in conjunction with this class are {@link PipedMediaCodec}
+ * (particularly its subclasses {@link PipedMediaEncoderBuffer} and {@link PipedMediaEncoderSurface})
+ * and {@link PipedMediaExtractor}.</p>
+ */
+public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     private static final String TAG = "PipedMediaMuxer";
 
     private MediaMuxer mMuxer = null;
 
-    private MediaByteBufferSource[] mSources = {null, null};
-
-    private MediaByteBufferSource mAudioSource = null;
+    private PipedMediaByteBufferSource mAudioSource = null;
     private int mAudioTrackIndex = -1;
-    private MediaByteBufferSource mVideoSource = null;
+    private PipedMediaByteBufferSource mVideoSource = null;
     private int mVideoTrackIndex = -1;
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
+    /**
+     * @param path the output media file.
+     * @param format the format of the output media file
+     *               (from {@link android.media.MediaMuxer.OutputFormat}).
+     * @throws IOException if failed to open the file for write
+     */
     public PipedMediaMuxer(String path, int format) throws IOException {
         mMuxer = new MediaMuxer(path, format);
     }
 
     @Override
-    public void addSource(MediaByteBufferSource src) throws SourceUnacceptableException {
-        if(mSources[0] == null) {
-            mSources[0] = src;
-        }
-        else if(mSources[1] == null) {
-            mSources[1] = src;
-        }
-        else {
-            throw new SourceUnacceptableException("two sources already provided");
-        }
-    }
-
-    private void actuallyAddSource(MediaByteBufferSource src) throws SourceUnacceptableException {
-        //TODO: defer calling getType
-        if(src.getType() == MediaHelper.MediaType.AUDIO) {
+    public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
+        if(src.getMediaType() == MediaHelper.MediaType.AUDIO) {
             if(mAudioSource == null) {
                 mAudioSource = src;
             }
@@ -48,7 +48,7 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
                 throw new SourceUnacceptableException("audio source already provided");
             }
         }
-        else if(src.getType() == MediaHelper.MediaType.VIDEO) {
+        else if(src.getMediaType() == MediaHelper.MediaType.VIDEO) {
             if(mVideoSource == null) {
                 mVideoSource = src;
             }
@@ -59,13 +59,6 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
     }
 
     private void start() throws IOException, SourceUnacceptableException {
-        for(int i = 0; i < mSources.length; i++) {
-            if(mSources == null) {
-                break;
-            }
-            actuallyAddSource(mSources[i]);
-        }
-
         if (mAudioSource != null) {
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up audio track."); }
             mAudioSource.setup();
