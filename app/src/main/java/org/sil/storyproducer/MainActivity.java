@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
-        test.runPipedTest();
+        test.runTest();
     }
 
     @Override

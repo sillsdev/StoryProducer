@@ -129,20 +129,35 @@ public class MyEncodeAndMuxTest {
 
     private static boolean started = false;
 
+    public void runTest() {
+//        testEncodeVideoToMp4();
+        runPipedTest();
+    }
+
     public void runPipedTest() {
+        //Bandaid for run on startup
+        if(started) {
+            return;
+        }
+        started = true;
+
+
         String outputPath = new File(OUTPUT_DIR,
                 "testPipe" + (mUseAudio ? "A" : "") + (mUseVideo ? "V" : "") + "." + mWidth + "x" + mHeight + ".mp4").toString();
 
         PipedMediaExtractor extractor = null;
-        PipedMediaDecoder decoder = null;
-        PipedMediaEncoder encoder = null;
+        PipedMediaDecoderBuffer decoder = null;
+        PipedMediaEncoderBuffer encoder = null;
+
+        PipedMediaEncoderSurface videoEncoder = null;
+
         PipedMediaMuxer muxer = null;
 
         try {
             extractor = new PipedMediaExtractor(TEST_AUDIO_PATH, MediaHelper.MediaType.AUDIO);
             MediaFormat audioFormat = extractor.getFormat();
 
-            decoder = new PipedMediaDecoder(audioFormat);
+            decoder = new PipedMediaDecoderBuffer(audioFormat);
             decoder.addSource(extractor);
 
             MediaFormat encoderFormat = MediaFormat.createAudioFormat(AUDIO_MIME_TYPE,
@@ -152,11 +167,64 @@ public class MyEncodeAndMuxTest {
             encoderFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
             //encoder input buffers are too small by default
             encoderFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
-            encoder = new PipedMediaEncoder(encoderFormat);
+            encoder = new PipedMediaEncoderBuffer(encoderFormat);
             encoder.addSource(decoder);
+
+
+
+            MediaSurfaceSource videoDrawer = new MediaSurfaceSource() {
+                @Override
+                public boolean isDone() {
+                    return mVideoGeneratorFrame >= VIDEO_NUM_FRAMES;
+                }
+
+                @Override
+                public long fillCanvas(Canvas canv) {
+                    float percent = mVideoGeneratorFrame /(float)VIDEO_NUM_FRAMES;
+                    int x = (int)(percent*TEST_BITMAP.getWidth());
+                    int y = (int)(percent*TEST_BITMAP.getHeight());
+                    Log.d(TAG, "percent: " + percent +" of (" + TEST_BITMAP.getWidth() + ", " + TEST_BITMAP.getHeight() + ")");
+                    Log.d(TAG, "(" + 0 + ", " + 0 +") -> (" + x + ", " + y + ")");
+                    canv.drawBitmap(TEST_BITMAP, new Rect(0, 0, x, y), mScreenRect, null);
+
+                    // Submit it to the encoder.  The eglSwapBuffers call will block if the input
+                    // is full, which would be bad if it stayed full until we dequeued an output
+                    // buffer (which we can't do, since we're stuck here).  So long as we fully drain
+                    // the encoder before supplying additional input, the system guarantees that we
+                    // can supply another frame without blocking.
+                    if (VERBOSE) Log.d(TAG, "sending frame " + mVideoGeneratorFrame + " to encoder");
+//                    mVideoSurface.unlockCanvasAndPost(cnv);
+
+//                    if (mVideoGeneratorFrame >= VIDEO_NUM_FRAMES) {
+//                        mVideoGeneratorDone = true;
+//                    }
+
+                    mVideoGeneratorFrame++;
+
+                    return (long)(percent*VIDEO_LENGTH_US);
+                }
+            };
+
+
+            MediaFormat videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
+
+            // Set some properties.  Failing to specify some of these can cause the MediaCodec
+            // configure() call to throw an unhelpful exception.
+            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                    MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
+            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
+            if (VERBOSE) Log.d(TAG, "video format: " + videoFormat);
+
+            videoEncoder = new PipedMediaEncoderSurface(videoFormat);
+            videoEncoder.addSource(videoDrawer);
+
+
 
             muxer = new PipedMediaMuxer(outputPath, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
             muxer.addSource(encoder);
+            muxer.addSource(videoEncoder);
 
             muxer.crunch();
         }
@@ -181,6 +249,9 @@ public class MyEncodeAndMuxTest {
             }
             if(extractor != null) {
                 extractor.close();
+            }
+            if(videoEncoder != null) {
+                videoEncoder.close();
             }
         }
     }

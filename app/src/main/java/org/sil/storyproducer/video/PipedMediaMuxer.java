@@ -86,8 +86,12 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
     @Override
     public void close() {
         if(mMuxer != null) {
-            mMuxer.stop();
-            mMuxer.release();
+            try {
+                mMuxer.stop();
+            }
+            finally {
+                mMuxer.release();
+            }
         }
     }
 }
