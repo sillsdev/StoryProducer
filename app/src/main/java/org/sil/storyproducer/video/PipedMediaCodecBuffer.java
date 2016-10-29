@@ -4,8 +4,6 @@ import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements MediaByteBufferDest {
@@ -23,25 +21,20 @@ public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements M
         if(mSource == null) {
             throw new RuntimeException("No source specified for encoder!");
         }
-        //TODO: What is the loop condition?
-//        while (true) {
-            int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
-            if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                //TODO: Can this ever happen?
-                if (VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
-//                break;
+
+        int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
+        if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
+            //TODO: Can this ever happen?
+            if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
+        }
+        else {
+            if (MediaHelper.VERBOSE) {
+                Log.d(TAG, getComponentName() + ": returned input buffer: " + pollCode);
             }
-            else {
-                if (VERBOSE) {
-                    Log.d(TAG, getComponentName() + ": returned input buffer: " + pollCode);
-                }
-                ByteBuffer inputBuffer = mInputBuffers[pollCode];
-                mSource.fillBuffer(inputBuffer, mInfo);
-                mCodec.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags);
-                // We enqueued a pending frame, let's try something else next.
-//                break;
-            }
-//        }
+            ByteBuffer inputBuffer = mInputBuffers[pollCode];
+            mSource.fillBuffer(inputBuffer, mInfo);
+            mCodec.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags);
+        }
     }
 
     @Override

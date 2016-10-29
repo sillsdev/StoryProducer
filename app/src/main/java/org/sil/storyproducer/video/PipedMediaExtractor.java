@@ -12,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
-    private static final boolean VERBOSE = true;
     private static final String TAG = "PipedMediaExtractor";
 
     private MediaExtractor mExtractor;
@@ -21,7 +20,6 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
     private MediaHelper.MediaType mType;
 
     private boolean mIsDone = false;
-    private boolean mEOSSent = false;
 
     private ArrayList<ByteBuffer> buffers = new ArrayList<>(4);
     private ArrayList<Boolean> bufferAvailable = new ArrayList<>(4);
@@ -108,19 +106,12 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
     }
 
     private void spinOutput(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-        if(mIsDone && mEOSSent) {
+        if(mIsDone) {
             throw new RuntimeException("spinOutput called after depleted");
         }
 
-        while (!mIsDone || !mEOSSent) {
+        while (!mIsDone) {
             buffer.clear();
-
-//            if(mIsDone && !mEOSSent) {
-//                if (VERBOSE) Log.d(TAG, "extractor: EOS");
-//                info.set(0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-//                mEOSSent = true;
-//                return;
-//            }
 
             info.offset = 0;
             info.size = mExtractor.readSampleData(buffer, 0);
@@ -144,7 +135,7 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
 //            if((actualFlags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
 //                info.flags |= MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 //            }
-            if (VERBOSE) {
+            if (MediaHelper.VERBOSE) {
                 Log.d(TAG, "extractor: returned buffer of size " + info.size + " for time " + info.presentationTimeUs);
             }
 
@@ -154,17 +145,10 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
                 mExtractor.advance();
             }
             else {
-                if (VERBOSE) Log.d(TAG, "extractor: EOS");
+                if (MediaHelper.VERBOSE) Log.d(TAG, "extractor: EOS");
                 info.set(0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                 mIsDone = true;
-                mEOSSent = true;
-//                return;
             }
-//            mIsDone = !mExtractor.advance();
-//            if (mIsDone) {
-//                if (VERBOSE) Log.d(TAG, "extractor: EOS");
-////                //TODO: is EOS queued currently?
-//            }
 
             return;
         }

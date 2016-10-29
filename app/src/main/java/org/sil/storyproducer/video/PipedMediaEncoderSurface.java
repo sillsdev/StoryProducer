@@ -8,6 +8,7 @@ import android.view.Surface;
 
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Queue;
 
 public class PipedMediaEncoderSurface extends PipedMediaCodec implements MediaSurfaceDest {
@@ -59,7 +60,12 @@ public class PipedMediaEncoderSurface extends PipedMediaCodec implements MediaSu
 
     @Override
     protected void correctTime(MediaCodec.BufferInfo info) {
-        info.presentationTimeUs = mPresentationTimeQueue.remove();
+        try {
+            info.presentationTimeUs = mPresentationTimeQueue.remove();
+        }
+        catch (NoSuchElementException e) {
+            throw new RuntimeException("Tried to correct time for extra frame", e);
+        }
     }
 
     @Override

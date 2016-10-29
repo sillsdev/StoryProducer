@@ -8,7 +8,6 @@ import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSource {
-    protected static final boolean VERBOSE = true;
     private static final String TAG = "PipedMediaCodec";
 
     @Deprecated
@@ -90,16 +89,16 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
             int pollCode = mCodec.dequeueOutputBuffer(
                     info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
 
                 spinInput();
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (VERBOSE) Log.d(TAG, getComponentName() + ": output buffers changed");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": output buffers changed");
                 mOutputBuffers = mCodec.getOutputBuffers();
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (VERBOSE) Log.d(TAG, getComponentName() + ": output format changed");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": output format changed");
                 if (mOutputFormat != null) {
                     throw new RuntimeException("changed output format again?");
                 }
@@ -109,13 +108,13 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
                 }
             }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
-                if (VERBOSE) Log.d(TAG, getComponentName() + ": codec config buffer");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": codec config buffer");
                 //TODO: make sure this is ok
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);
             }
             else {
-                if (VERBOSE) {
+                if (MediaHelper.VERBOSE) {
                     Log.d(TAG, getComponentName() + ": returned output buffer: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
@@ -123,7 +122,7 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
 
                 if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                         != 0) {
-                    if (VERBOSE) Log.d(TAG, getComponentName() + ": EOS");
+                    if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": EOS");
                     mIsDone = true;
                 }
                 else {
@@ -141,7 +140,6 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
     protected void correctTime(MediaCodec.BufferInfo info) {
         if (mPresentationTimeUsLast > info.presentationTimeUs) {
             throw new RuntimeException("buffer presentation time out of order!");
-//                    info.presentationTimeUs = mPresentationTimeUsLast + 1;
         }
         mPresentationTimeUsLast = info.presentationTimeUs;
     }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
-    private static final boolean VERBOSE = true;
     private static final String TAG = "PipedMediaMuxer";
 
     private MediaMuxer mMuxer = null;
@@ -46,14 +45,14 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
 
     private void start() {
         if (mAudioSource != null) {
-            if(VERBOSE) { Log.d(TAG, "muxer: adding audio track."); }
+            if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding audio track."); }
             mAudioTrackIndex = mMuxer.addTrack(mAudioSource.getFormat());
         }
         if (mVideoSource != null) {
-            if(VERBOSE) { Log.d(TAG, "muxer: adding video track."); }
+            if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding video track."); }
             mVideoTrackIndex = mMuxer.addTrack(mVideoSource.getFormat());
         }
-        if(VERBOSE) { Log.d(TAG, "muxer: starting"); }
+        if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: starting"); }
         mMuxer.start();
     }
 
@@ -64,7 +63,7 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
             ByteBuffer buffer;
             if(mAudioSource != null && !mAudioSource.isDone()) {
                 buffer = mAudioSource.getBuffer(mInfo);
-                if (VERBOSE) {
+                if (MediaHelper.VERBOSE) {
                     Log.d(TAG, "muxer: writing audio output buffer of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
                 }
                 mMuxer.writeSampleData(mAudioTrackIndex, buffer, mInfo);
@@ -73,7 +72,7 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
 
             if(mVideoSource != null && !mVideoSource.isDone()) {
                 buffer = mVideoSource.getBuffer(mInfo);
-                if (VERBOSE) {
+                if (MediaHelper.VERBOSE) {
                     Log.d(TAG, "muxer: writing video output buffer of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
                 }
                 mMuxer.writeSampleData(mVideoTrackIndex, buffer, mInfo);

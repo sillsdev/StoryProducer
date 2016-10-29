@@ -7,10 +7,6 @@ import java.nio.ByteBuffer;
 
 public interface MediaByteBufferSource {
 
-    /**
-     * Get
-     * @return
-     */
     MediaFormat getFormat();
     MediaHelper.MediaType getType();
     boolean isDone();
