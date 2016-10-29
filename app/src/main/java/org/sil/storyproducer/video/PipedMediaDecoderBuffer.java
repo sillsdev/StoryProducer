@@ -6,10 +6,21 @@ import android.media.MediaFormat;
 import java.io.IOException;
 
 public class PipedMediaDecoderBuffer extends PipedMediaCodecBuffer {
-    public PipedMediaDecoderBuffer(MediaFormat format) throws IOException {
-        super(format);
-        mCodec = MediaCodec.createDecoderByType(format.getString(MediaFormat.KEY_MIME));
-        mCodec.configure(format, null, null, 0);
+    private MediaFormat mSourceFormat;
+
+    public PipedMediaDecoderBuffer() { }
+
+    @Override
+    public MediaHelper.MediaType getType() {
+        return MediaHelper.getTypeFromFormat(mSourceFormat);
+    }
+
+    @Override
+    public void setup() throws IOException {
+        mSource.setup();
+        mSourceFormat = mSource.getFormat();
+        mCodec = MediaCodec.createDecoderByType(mSourceFormat.getString(MediaFormat.KEY_MIME));
+        mCodec.configure(mSourceFormat, null, null, 0);
         start();
     }
 

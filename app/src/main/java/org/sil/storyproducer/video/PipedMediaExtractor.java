@@ -41,6 +41,11 @@ public class PipedMediaExtractor implements Closeable, MediaByteBufferSource {
     }
 
     @Override
+    public void setup() throws IOException {
+
+    }
+
+    @Override
     public MediaFormat getFormat() {
         return mFormat;
     }

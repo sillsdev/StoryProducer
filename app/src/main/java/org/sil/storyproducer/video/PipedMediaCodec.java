@@ -13,8 +13,6 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
     @Deprecated
     protected abstract String getComponentName();
 
-    private MediaFormat mConfigureFormat;
-
     protected MediaCodec mCodec;
     protected ByteBuffer[] mInputBuffers;
     private ByteBuffer[] mOutputBuffers;
@@ -25,10 +23,6 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-    public PipedMediaCodec(MediaFormat format) {
-        mConfigureFormat = format;
-    }
-
     @Override
     public MediaFormat getFormat() {
         if(mOutputFormat == null) {
@@ -38,11 +32,6 @@ public abstract class PipedMediaCodec implements Closeable, MediaByteBufferSourc
             }
         }
         return mOutputFormat;
-    }
-
-    @Override
-    public MediaHelper.MediaType getType() {
-        return MediaHelper.getTypeFromFormat(mConfigureFormat);
     }
 
     @Override

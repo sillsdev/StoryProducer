@@ -2,6 +2,7 @@ package org.sil.storyproducer.video;
 
 import android.graphics.Canvas;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.util.Log;
 import android.view.Surface;
@@ -14,29 +15,22 @@ import java.util.Queue;
 public class PipedMediaEncoderSurface extends PipedMediaCodec implements MediaSurfaceDest {
     private Surface mSurface;
 
-    private MediaSurfaceSource mSource = null;
+    private MediaFormat mConfigureFormat;
+    private MediaFormat mSourceFormat;
+    private MediaSurfaceSource mSource;
 
     private Queue<Long> mPresentationTimeQueue = new LinkedList<>();
 
     private long mCurrentPresentationTime;
 
-    public PipedMediaEncoderSurface(MediaFormat format) throws IOException {
-        super(format);
-        mCodec = MediaCodec.createEncoderByType(format.getString(MediaFormat.KEY_MIME));
-        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
-        mCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-
-        mSurface = mCodec.createInputSurface();
-
-        start();
+    public PipedMediaEncoderSurface(MediaFormat format) {
+        mConfigureFormat = format;
     }
 
     @Override
     protected String getComponentName() {
         return "surface encoder";
     }
-
-    private int mCounter = 0;
 
     @Override
     protected void spinInput() {
@@ -74,5 +68,33 @@ public class PipedMediaEncoderSurface extends PipedMediaCodec implements MediaSu
             throw new SourceUnacceptableException("I already got a source");
         }
         mSource = src;
+    }
+
+    @Override
+    public MediaHelper.MediaType getType() {
+        return MediaHelper.MediaType.VIDEO;
+    }
+
+    @Override
+    public void setup() throws IOException {
+        mSourceFormat = mSource.getFormat();
+
+        //video keys
+        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
+        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
+        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
+        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
+        MediaHelper.copyMediaFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
+
+        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
+        mConfigureFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+
+        mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
+        mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+
+        mSurface = mCodec.createInputSurface();
+
+        start();
     }
 }

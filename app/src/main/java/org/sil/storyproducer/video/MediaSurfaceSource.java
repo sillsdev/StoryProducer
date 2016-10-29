@@ -2,7 +2,6 @@ package org.sil.storyproducer.video;
 
 import android.graphics.Canvas;
 
-public interface MediaSurfaceSource {
-    boolean isDone();
+public interface MediaSurfaceSource extends PipedMediaSource {
     long fillCanvas(Canvas canv);
 }

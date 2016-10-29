@@ -9,12 +9,25 @@ import java.nio.ByteBuffer;
 public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements MediaByteBufferDest {
     private static final String TAG = "PipedMediaCodecBuffer";
 
-    private MediaByteBufferSource mSource = null;
+//    protected MediaFormat mSourceFormat;
+    protected MediaByteBufferSource mSource;
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-    public PipedMediaCodecBuffer(MediaFormat format) {
-        super(format);
-    }
+//    @Override
+//    public void setup() {
+//        mSource.setup();
+//    }
+
+//    @Override
+//    public MediaFormat getFormat() {
+//        if(mSource == null) {
+//            throw new RuntimeException("No source specified for encoder!");
+//        }
+//
+//        mSourceFormat = mSource.getFormat();
+//
+//        return super.getFormat();
+//    }
 
     @Override
     protected void spinInput() {

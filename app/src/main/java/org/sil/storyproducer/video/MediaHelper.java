@@ -10,10 +10,9 @@ final public class MediaHelper {
 
     public static MediaType getTypeFromFormat(MediaFormat format) {
         String mime = format.getString(MediaFormat.KEY_MIME);
-        if(mime.startsWith("video")) {
+        if (mime.startsWith("video")) {
             return MediaType.VIDEO;
-        }
-        else if(mime.startsWith("audio")) {
+        } else if (mime.startsWith("audio")) {
             return MediaType.AUDIO;
         }
         throw new RuntimeException("Unclassified mime type: " + mime);
@@ -24,4 +23,30 @@ final public class MediaHelper {
         VIDEO,
         ;
     }
+
+    public static void copyMediaFormatIntKey(MediaFormat srcFormat, MediaFormat destFormat, String key) {
+        if(srcFormat.containsKey(key)) {
+            destFormat.setInteger(key, srcFormat.getInteger(key));
+        }
+    }
+
+    public static MediaFormat createFormat(String mime) {
+        MediaFormat format = new MediaFormat();
+        format.setString(MediaFormat.KEY_MIME, mime);
+        return format;
+    }
+
+    public static void copyMediaFormatStringKey(MediaFormat srcFormat, MediaFormat destFormat, String key) {
+        if(srcFormat.containsKey(key)) {
+            destFormat.setString(key, srcFormat.getString(key));
+        }
+    }
+
+//    public static MediaFormat copyMediaFormat(MediaFormat oldFormat) {
+//        MediaFormat newFormat = new MediaFormat();
+//
+//
+//
+//        return newFormat;
+//    }
 }

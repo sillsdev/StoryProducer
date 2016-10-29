@@ -13,6 +13,8 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
 
     private MediaMuxer mMuxer = null;
 
+    private MediaByteBufferSource[] mSources = {null, null};
+
     private MediaByteBufferSource mAudioSource = null;
     private int mAudioTrackIndex = -1;
     private MediaByteBufferSource mVideoSource = null;
@@ -25,6 +27,19 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
 
     @Override
     public void addSource(MediaByteBufferSource src) throws SourceUnacceptableException {
+        if(mSources[0] == null) {
+            mSources[0] = src;
+        }
+        else if(mSources[1] == null) {
+            mSources[1] = src;
+        }
+        else {
+            throw new SourceUnacceptableException("two sources already provided");
+        }
+    }
+
+    private void actuallyAddSource(MediaByteBufferSource src) throws SourceUnacceptableException {
+        //TODO: defer calling getType
         if(src.getType() == MediaHelper.MediaType.AUDIO) {
             if(mAudioSource == null) {
                 mAudioSource = src;
@@ -43,12 +58,23 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
         }
     }
 
-    private void start() {
+    private void start() throws IOException, SourceUnacceptableException {
+        for(int i = 0; i < mSources.length; i++) {
+            if(mSources == null) {
+                break;
+            }
+            actuallyAddSource(mSources[i]);
+        }
+
         if (mAudioSource != null) {
+            if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up audio track."); }
+            mAudioSource.setup();
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding audio track."); }
             mAudioTrackIndex = mMuxer.addTrack(mAudioSource.getFormat());
         }
         if (mVideoSource != null) {
+            if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up video track."); }
+            mVideoSource.setup();
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding video track."); }
             mVideoTrackIndex = mMuxer.addTrack(mVideoSource.getFormat());
         }
@@ -56,7 +82,7 @@ public class PipedMediaMuxer implements Closeable, MediaByteBufferDest {
         mMuxer.start();
     }
 
-    public void crunch() {
+    public void crunch() throws IOException, SourceUnacceptableException {
         start();
 
         while ((mAudioSource != null && !mAudioSource.isDone()) || (mVideoSource != null && !mVideoSource.isDone())) {
