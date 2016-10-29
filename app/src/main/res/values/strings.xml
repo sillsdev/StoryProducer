@@ -20,11 +20,11 @@
     <string name="language">"Language:  "</string>
 
     <!-- String names for registration -->
-    <string name="general_header">+  General Information</string>
-    <string name="translator_header">+  Translator Information</string>
-    <string name="consultant_header">+  Consultant Information</string>
-    <string name="trainer_header">+  Trainer Information</string>
-    <string name="database_header">+  Data Information</string>
+    <string name="general_header">General Information</string>
+    <string name="translator_header">Translator Information</string>
+    <string name="consultant_header">Consultant Information</string>
+    <string name="trainer_header">Trainer Information</string>
+    <string name="database_header">Data Information</string>
     <string name="language_hint">Language (being translated into)</string>
     <string name="etnologue_code_hint">Ethnologue Code</string>
     <string name="country_hint">Country</string>
@@ -42,6 +42,15 @@
     <string name="location_type_hint">Location Type: </string>
     <string name="submit">Submit</string>
     <string name="bypass_button_text">Skip Registration</string>
+
+    <!-- Dialog strings for titles, messages, and buttons -->
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="skip_title">Skip Registration?</string>
+    <string name="skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
+    <string name="submit_title">Submit?</string>
+    <string name="submit_complete_message">Are you ready to submit?</string>
+    <string name="submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
 
     <string-array name="orthography_list">
         <item>None</item>
@@ -144,17 +153,10 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <!--Parsing Strings-->
-    <string name="email_regex">^[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+(([.]([![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+))*)([@]){1}[![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+([.][![CDATA[\\w\\p]]{Punct}&amp;&amp;[^.@]]+)*([.][A-Za-z]{3})$</string>
-    <string name="blank_text_field_error">It looks like you left a field blank. If the information is not available, put &#92;&#34;..&#92;&#34;</string>
-    <string name="email_invalid">%s is an invalid email address format</string>
-    <string name="bypass_message">Please enter in as much registration info as you can. If the information is not available, put &#92;&#34;..&#92;&#34;</string>
-    <string name="bypass_field_parse">..</string>
-    <!--End of Parsing Strings-->
 
     <!--Save toast string after submit button-->
-    <string name="saved_successfully">Registration informations saved!</string>
+    <string name="saved_successfully">Registration information saved!</string>
 
     <!-- Registration Save File Name -->
-    <string name="Registration_File_Name">Registration_File_Name</string>
+    <string name="Registration_Filename">Registration</string>
 </resources>

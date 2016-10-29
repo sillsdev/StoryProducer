@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_File_Name), MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_Filename), MODE_PRIVATE);
             HashMap<String, String> myMap = (HashMap<String, String>)prefs.getAll();
             if (myMap.isEmpty()) {
 
