@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class FileSystem {
-    private static String language = "English";
+    private static String language = "ENG"; //ethnologue code for english
 
     private static Context context;
 
@@ -39,22 +39,27 @@ public class FileSystem {
         for(int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
             File sDir = storeDirs[storeIndex];
 
-            File[] langDirs = getLanguageDirs(sDir);
-            for(int langIndex = 0; langIndex < langDirs.length; langIndex++) {
-                File lDir = langDirs[langIndex];
-                String lang = lDir.getName();
+            if (sDir != null) {
+                File templateDir = new File(sDir, "templates");
+                if (templateDir.exists()) {
+                    File[] langDirs = getLanguageDirs(templateDir);
+                    for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
+                        File lDir = langDirs[langIndex];
+                        String lang = lDir.getName();
 
-                if(!storyPaths.containsKey(lang)) {
-                    storyPaths.put(lang, new HashMap<String, String>());
-                }
-                Map<String, String> storyMap = storyPaths.get(lang);
+                        if (!storyPaths.containsKey(lang)) {
+                            storyPaths.put(lang, new HashMap<String, String>());
+                        }
+                        Map<String, String> storyMap = storyPaths.get(lang);
 
-                File[] storyDirs = getStoryDirs(lDir);
-                for(int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
-                    File storyDir = storyDirs[storyIndex];
-                    String storyName = storyDir.getName();
-                    String storyPath = storyDir.getPath();
-                    storyMap.put(storyName, storyPath);
+                        File[] storyDirs = getStoryDirs(lDir);
+                        for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                            File storyDir = storyDirs[storyIndex];
+                            String storyName = storyDir.getName();
+                            String storyPath = storyDir.getPath();
+                            storyMap.put(storyName, storyPath);
+                        }
+                    }
                 }
             }
         }
