@@ -27,7 +27,8 @@ public class LearnActivity extends AppCompatActivity {
         //play the audio for this scene
         MediaPlayer mPlayer = new MediaPlayer();
         try {
-            mPlayer.setDataSource(FileSystem.getStoryPath("Fiery Furnace") + "/narration6.wav");
+            mPlayer.setDataSource(FileSystem.getStoryFile("Fiery Furnace").getAbsolutePath()
+                    + "/narration6.wav");
         } catch (IOException e) {
             e.printStackTrace();
         }

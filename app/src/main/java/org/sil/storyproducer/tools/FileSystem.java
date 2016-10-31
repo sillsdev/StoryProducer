@@ -79,10 +79,18 @@ public class FileSystem {
         return langDir.listFiles(directoryFilter);
     }
 
-    public static String getStoryPath(String story) {
+    private static String getStoryPath(String story) {
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
             return storyMap.get(story);
+        }
+        return null;
+    }
+
+    public static File getStoryFile(String story) {
+        Map<String, String> storyMap = storyPaths.get(language);
+        if(storyMap != null) {
+            return new File(storyMap.get(story));
         }
         return null;
     }
@@ -108,6 +116,7 @@ public class FileSystem {
         }
         return null;
     }
+
     public static Bitmap getAudio(String story, int number) {
         String path = getStoryPath(story);
         File f = new File(path);

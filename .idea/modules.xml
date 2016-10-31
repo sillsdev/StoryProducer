@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/BibleStory.iml" filepath="$PROJECT_DIR$/BibleStory.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Story-Producer.iml" filepath="$PROJECT_DIR$/Story-Producer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BibleStory-2.iml" filepath="$PROJECT_DIR$/BibleStory-2.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
