@@ -1,8 +1,4 @@
-package org.sil.storyproducer;
-
-/**
- * Created by Jordan Skomer on 9/27/2015.
- */
+package org.sil.storyproducer.controller;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,6 +8,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.NavItem;
 
 import java.util.ArrayList;
 

@@ -1,14 +1,22 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.learn.LearnActivity;
+import org.sil.storyproducer.model.*;
+import org.sil.storyproducer.tools.FileSystem;
+
+import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.media.MediaPlayer;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +29,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,15 +36,24 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean skipRegistration = false;
 
+    private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FileSystem.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryFrag()).commit();
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
+                    PERMISSIONS_REQUEST_RECORD_AUDIO);
+        }
 
         // Check to see if registration was skipped by the user
         Bundle extras = getIntent().getExtras();
@@ -169,23 +185,24 @@ public class MainActivity extends AppCompatActivity {
         switch (iFragNum) {
             case 0:
                 fragment = new StoryFrag();
-                title=getApplicationContext().getString(R.string.title_activity_story_templates);
+                title = getApplicationContext().getString(R.string.title_activity_story_templates);
                 hideIcon = false;
                 break;
             case 1:
                 pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
                 fragment = pagerFrag;
-                title=getApplicationContext().getString(R.string.title_fragment_translate);
+                title = getApplicationContext().getString(R.string.title_fragment_translate);
                 hideIcon = true;
                 break;
             case 2:
-                pagerFrag= PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_community);
+                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
+                fragment = pagerFrag;
+                title = getApplicationContext().getString(R.string.title_fragment_community);
                 hideIcon = true;
                 break;
             case 3:
                 fragment = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_consultant);
+                title = getApplicationContext().getString(R.string.title_fragment_consultant);
                 hideIcon = true;
                 break;
 
@@ -201,6 +218,15 @@ public class MainActivity extends AppCompatActivity {
         if(pagerFrag != null) {
             pagerFrag.changeView(slidePosition);
         }
+    }
+
+    /**
+     * Change the activity that the app is on
+     */
+    public void startLearnActivity(int slideNum, String storyName) {
+        //change to the learning activity
+        Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
+        startActivity(intent);
     }
 }
 

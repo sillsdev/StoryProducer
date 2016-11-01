@@ -1,13 +1,14 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 
-/**
- * Created by Jordan Skomer on 10/22/2015.
- */
+import org.sil.storyproducer.controller.community.CommunityCheckFrag;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
+import org.sil.storyproducer.controller.draft.TransFrag;
+
 public class PagerAdapter extends FragmentPagerAdapter {
     Context context;
     private static int NUM_OF_FRAGS = 5;
@@ -34,10 +35,10 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 return TransFrag.newInstance(position, NUM_OF_FRAGS, FRAG_STORY);
             //Community
             case 2:
-                return new ComCheckFrag();
+                return new CommunityCheckFrag();
             //Consultant
             case 3:
-                return new ConCheckFrag();
+                return new ConsultantCheckFrag();
         }
         return null;
     }
