@@ -55,12 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-        // Check to see if registration was skipped by the user
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean("skip") == true) {
-            skipRegistration = true;
-        }
-
+        skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_Filename), MODE_PRIVATE);
@@ -227,6 +222,20 @@ public class MainActivity extends AppCompatActivity {
         //change to the learning activity
         Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Checks the bundle variables to see if the user has bypassed registration
+     * @return true if they want to bypass registration, false if not
+     */
+    private boolean checkRegistrationSkip() {
+        // Check to see if registration was skipped by the user
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getBoolean("skip") == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
