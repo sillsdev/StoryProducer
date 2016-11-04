@@ -31,10 +31,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
-    private boolean skipRegistration = false;
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
@@ -55,13 +54,12 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-        skipRegistration = checkRegistrationSkip();
+        boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.Registration_Filename), MODE_PRIVATE);
-            HashMap<String, String> myMap = (HashMap<String, String>)prefs.getAll();
-            if (myMap.isEmpty()) {
-
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+            if (preferences.isEmpty()) {
                 Intent intent = new Intent(this, RegistrationActivity.class);
                 startActivity(intent);
             }
@@ -231,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean checkRegistrationSkip() {
         // Check to see if registration was skipped by the user
         Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean("skip") == true) {
+        if (extras != null && extras.getBoolean(RegistrationActivity.SKIP_KEY)) {
             return true;
         } else {
             return false;

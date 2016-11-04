@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -27,35 +28,46 @@ import java.util.Stack;
 /**
  * The purpose of this class is to create the Registration activity.
  *
- * Key classes used in this class:
- * @see android.widget.Spinner for input from a selection menu.
- * @see android.support.design.widget.TextInputEditText for inputting text for registration fields.
- * @see android.content.SharedPreferences for Saving registration information.
- *
- * Flow of RegistrationActivity:
- * 1. onCreate() is called and calls the following:
- *  a.  setAccordionListener() is called which adds click listeners to the header sections of the
- *      accordion.
- * 2. onPostCreate() is called and calls the following:
- *  a.  setupInputFields() is called which takes a root ScrollView.
- *          I. getInputFields() is called and takes the root ScrollView and does an in-order
+ * <p>Flow of RegistrationActivity:</p>
+ * <ol>
+ *     <li>onCreate() is called and calls the following:</li>
+ *     <ul>
+ *         <li>setAccordionListener() is called which adds click listeners to the header sections of the accordion.</li>
+ *     </ul>
+ *     <li>onPostCreate() is called and calls the following:</li>
+ *     <ol>
+ *         <li>setupInputFields() is called which takes a root ScrollView.</li>
+ *         <ul>
+ *             <li>getInputFields() is called and takes the root ScrollView and does an in-order
  *          traversal of the nodes in the registration xml to find the TextInputEditText
  *          and Spinner inputs. Each TextInputEditText and Spinner inputs are added to the
- *          sectionViews[] for parsing and saving.
- *  b.  addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input)
- *      to check for valid inputs.
- *          I. textFieldParsed() is called. This checks to see if all fields were entered
- *          II. A confirmation dialog is launched to ask if the user wants to submit the info
- *  c. addRegistrationSkip() is called to set the on click listener for skipping the registration phase temporarily
+ *          sectionViews[] for parsing and saving.</li>
+ *         </ul>
+ *         <li>addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input) to check for valid inputs.</li>
+ *         <ul>
+ *             <li>textFieldParsed() is called. This checks to see if all fields were entered</li>
+ *             <li>A confirmation dialog is launched to ask if the user wants to submit the info</li>
+ *         </ul>
+ *         <li>addRegistrationSkip() is called to set the on click listener for skipping the registration phase temporarily</li>
+ *     </ol>
+ * </ol>
+ *  <p>Key classes used in this class:</p>
+ *  <ul>
+ *      <li>{@link android.widget.Spinner} for input from a selection menu.</li>
+ *      <li>{@link android.support.design.widget.TextInputEditText} for inputting text for registration fields.</li>
+ *      <li>{@link android.content.SharedPreferences} for saving registration information.</li>
+ *  </ul>
  *
  */
 public class RegistrationActivity extends AppCompatActivity {
+
+    public static final String SKIP_KEY = "skip";
 
     private final int [] sectionIds = {R.id.general_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.database_section};
     private final int [] headerIds = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
     private View[] sectionViews = new View[sectionIds.length];
 
-    private List<View> inputFields;
+    private List<View> inputFields = new ArrayList<View>();
 
 
     @Override
@@ -72,14 +84,15 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
+    @Override
     protected void onPostCreate(Bundle savedInstanceState){
         super.onPostCreate(savedInstanceState);
-        this.setupInputFields();
-        this.addSubmitButtonSave();
-        this.addRegistrationSkip();
+        setupInputFields();
+        addSubmitButtonSave();
+        addRegistrationSkip();
     }
 
-    /***
+    /**
      * Initializes the inputFields to the inputs of this activity.
      */
     private void setupInputFields(){
@@ -93,7 +106,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * This function adds the on click listener for the submit button.
+     * Sets the on click listener for the submit button.
      */
     private void addSubmitButtonSave(){
         final Button submitButton = (Button)findViewById(R.id.submit_button);
@@ -143,33 +156,31 @@ public class RegistrationActivity extends AppCompatActivity {
             return null;
         }
 
-        List<View> listOfEditText = new ArrayList<>();
+        List<View> inputFieldsList = new ArrayList<>();
         Stack<ViewGroup> myStack = new Stack<>();
         myStack.push(rootScrollView);
 
         while(myStack.size() > 0){
             ViewGroup currentView = myStack.pop();
             if(currentView instanceof TextInputLayout){
-                listOfEditText.add(((TextInputLayout) currentView).getEditText());
+                inputFieldsList.add(((TextInputLayout) currentView).getEditText());
             }
             else if(currentView instanceof Spinner){
-                listOfEditText.add(currentView);
+                inputFieldsList.add(currentView);
             }
             else{
-                if(currentView.getChildCount() > 0){
-                    //push children onto stack from right to left
-                    //pushing on in reverse order so that the traversal is in-order traversal
-                    for(int i = currentView.getChildCount() - 1; i >= 0; i--){
-                        View child = currentView.getChildAt(i);
-                        if(child instanceof ViewGroup){
-                            myStack.push((ViewGroup)child);
-                        }
+                //push children onto stack from right to left
+                //pushing on in reverse order so that the traversal is in-order traversal
+                for(int i = currentView.getChildCount() - 1; i >= 0; i--){
+                    View child = currentView.getChildAt(i);
+                    if(child instanceof ViewGroup){
+                        myStack.push((ViewGroup)child);
                     }
                 }
             }
         }
 
-        return listOfEditText;
+        return inputFieldsList;
     }
 
     /**
@@ -184,7 +195,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (inputString.trim().isEmpty()) {
                     // Set focus to first empty field and make section visible if hidden
                     field.requestFocus();
-                    for(int j = 0; j < this.sectionViews.length; j++){
+                    for(int j = 0; j < sectionViews.length; j++){
                         if(sectionViews[j].findFocus() != null){
                             sectionViews[j].setVisibility(View.VISIBLE);
                         }
@@ -196,23 +207,12 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 
-    /***
-     * Create a toast with the default location with a message.
-     * @param context The current app context.
-     * @param message The message that the toast will display.
-     */
-    private void createToast(Context context, String message){
-        int duration = Toast.LENGTH_SHORT;
-        Toast toast = Toast.makeText(context, message, duration);
-        toast.show();
-    }
-
-    /***
+    /**
      * This function stores the registration information to the saved preference file. The
      * preference file is located in getString(R.string.Registration_File_Name).
      */
     private void storeRegistrationInfo(){
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.Registration_Filename), MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
         Calendar calendar;
         String date, androidVersion, manufacturer, model;
         String day, month, year, hour, min;
@@ -220,13 +220,13 @@ public class RegistrationActivity extends AppCompatActivity {
         for(int i = 0; i < inputFields.size(); i++){
             View field = inputFields.get(i);
             if(field instanceof TextInputEditText){
-                final TextInputEditText textField = (TextInputEditText)field;
+                TextInputEditText textField = (TextInputEditText)field;
                 String textFieldName = getResources().getResourceEntryName(textField.getId());
                 textFieldName = textFieldName.replace("input_", "");
                 String textFieldText = textField.getText().toString();
                 editor.putString(textFieldName, textFieldText);
             } else if (field instanceof Spinner) {
-                final Spinner spinner = (Spinner)field;
+                Spinner spinner = (Spinner)field;
                 String spinnerName = getResources().getResourceEntryName(spinner.getId());
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
@@ -271,6 +271,8 @@ public class RegistrationActivity extends AppCompatActivity {
                     sectionView.setVisibility(View.VISIBLE);
                 } else {
                     sectionView.setVisibility(View.GONE);
+                    // Hide keyboard on accordion closing
+                    hideKeyboard();
                 }
             }
         });
@@ -282,13 +284,13 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void showExitAlertDialog() {
         AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
-                .setTitle(getString(R.string.skip_title))
-                .setMessage(getString(R.string.skip_message))
+                .setTitle(getString(R.string.registration_skip_title))
+                .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-                        intent.putExtra("skip", true);
+                        intent.putExtra(SKIP_KEY, true);
                         startActivity(intent);
                     }
                 }).create();
@@ -303,23 +305,32 @@ public class RegistrationActivity extends AppCompatActivity {
     private void createSubmitConfirmationDialog(boolean completeFields) {
         String message;
         if (completeFields) {
-            message = getString(R.string.submit_complete_message);
+            message = getString(R.string.registration_submit_complete_message);
         } else {
-            message = getString(R.string.submit_incomplete_message);
+            message = getString(R.string.registration_submit_incomplete_message);
         }
         AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
-                .setTitle(getString(R.string.submit_title))
+                .setTitle(getString(R.string.registration_submit_title))
                 .setMessage(message)
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         storeRegistrationInfo();
-                        createToast(getApplicationContext(), getString(R.string.saved_successfully));
+                        Toast saveToast = Toast.makeText(RegistrationActivity.this, R.string.registration_saved_successfully, Toast.LENGTH_LONG);
+                        saveToast.show();
                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                         startActivity(intent);
                     }
                 }).create();
 
         dialog.show();
+    }
+
+    /**
+     * Hides keyboard from the view
+     */
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 }

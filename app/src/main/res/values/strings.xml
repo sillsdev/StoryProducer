@@ -20,11 +20,11 @@
     <string name="language">"Language:  "</string>
 
     <!-- String names for registration -->
-    <string name="general_header">General Information</string>
-    <string name="translator_header">Translator Information</string>
-    <string name="consultant_header">Consultant Information</string>
-    <string name="trainer_header">Trainer Information</string>
-    <string name="database_header">Data Information</string>
+    <string name="registration_general_header">General Information</string>
+    <string name="registration_translator_header">Translator Information</string>
+    <string name="registration_consultant_header">Consultant Information</string>
+    <string name="registration_trainer_header">Trainer Information</string>
+    <string name="registration_database_header">Data Information</string>
     <string name="language_hint">Language (being translated into)</string>
     <string name="etnologue_code_hint">Ethnologue Code</string>
     <string name="country_hint">Country</string>
@@ -46,13 +46,13 @@
     <!-- Dialog strings for titles, messages, and buttons -->
     <string name="no">No</string>
     <string name="yes">Yes</string>
-    <string name="skip_title">Skip Registration?</string>
-    <string name="skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
-    <string name="submit_title">Submit?</string>
-    <string name="submit_complete_message">Are you ready to submit?</string>
-    <string name="submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
-    <string name="saved_successfully">Registration information saved!</string>
-    <string name="Registration_Filename">Registration</string>
+    <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
+    <string name="registration_submit_title">Submit?</string>
+    <string name="registration_submit_complete_message">Are you ready to submit?</string>
+    <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_saved_successfully">Registration information saved!</string>
+    <string name="registration_filename">Registration</string>
 
     <string-array name="orthography_list">
         <item>None</item>
