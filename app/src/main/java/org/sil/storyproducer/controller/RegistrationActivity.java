@@ -67,7 +67,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private final int [] headerIds = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
     private View[] sectionViews = new View[sectionIds.length];
 
-    private List<View> inputFields = new ArrayList<View>();
+    private List<View> inputFields;
 
 
     @Override
@@ -151,17 +151,19 @@ public class RegistrationActivity extends AppCompatActivity {
      *                       TextInputEditText.
      */
     private List<View> getInputFields(ScrollView rootScrollView){
-        //error check
-        if(rootScrollView == null){
-            return null;
-        }
 
         List<View> inputFieldsList = new ArrayList<>();
-        Stack<ViewGroup> myStack = new Stack<>();
-        myStack.push(rootScrollView);
+        Stack<ViewGroup> viewStack = new Stack<>();
 
-        while(myStack.size() > 0){
-            ViewGroup currentView = myStack.pop();
+        //error check
+        if(rootScrollView == null){
+            return inputFieldsList;
+        }
+
+        viewStack.push(rootScrollView);
+
+        while(viewStack.size() > 0){
+            ViewGroup currentView = viewStack.pop();
             if(currentView instanceof TextInputLayout){
                 inputFieldsList.add(((TextInputLayout) currentView).getEditText());
             }
@@ -174,7 +176,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 for(int i = currentView.getChildCount() - 1; i >= 0; i--){
                     View child = currentView.getChildAt(i);
                     if(child instanceof ViewGroup){
-                        myStack.push((ViewGroup)child);
+                        viewStack.push((ViewGroup)child);
                     }
                 }
             }
