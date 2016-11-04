@@ -120,7 +120,7 @@ class FileSystem {
         File file[] = f.listFiles();
         int count = 0;
         for(int i=0; i<file.length; i++) {
-            if (!file[i].isHidden() && file[i].getName().contains(".jpg")) {
+            if (!file[i].isHidden() && file[i].getName().matches("\\d+\\.jpg")) {
                 count++;
             }
         }

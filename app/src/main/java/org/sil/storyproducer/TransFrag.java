@@ -275,6 +275,8 @@ public class TransFrag extends Fragment {
                 launchSlideSelectDialog();
             }
         });
+
+
     }
 
     private void launchSlideSelectDialog() {

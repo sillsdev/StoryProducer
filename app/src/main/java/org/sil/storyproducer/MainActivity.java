@@ -126,12 +126,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if(position == 0) {
-                FragmentManager fm = getFragmentManager();
-                Toast.makeText(getBaseContext(), "In backstack " + fm.getBackStackEntryCount(), Toast.LENGTH_LONG).show();
-                for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                    Toast.makeText(getBaseContext(), "Found fragment: " + fm.getBackStackEntryAt(entry).getId(), Toast.LENGTH_LONG).show();
-                }
+//                FragmentManager fm = getFragmentManager();
+//                Toast.makeText(getBaseContext(), "In backstack " + fm.getBackStackEntryCount(), Toast.LENGTH_LONG).show();
+//                for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
+//                    Toast.makeText(getBaseContext(), "Found fragment: " + fm.getBackStackEntryAt(entry).getId(), Toast.LENGTH_LONG).show();
+//                }
 //                startFragment(position, 0, "");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryFrag()).commit();
+                mActivityTitle = "Story Templates";
+                getSupportActionBar().setTitle(mActivityTitle);
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }

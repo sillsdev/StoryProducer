@@ -30,10 +30,10 @@
     <string name="nav_open">Options</string>
     <string-array name="nav_labels">
         <item>Story Templates</item>
-        <item>Translate</item>
+        <!-- <item>Translate</item>
         <item>Community Check</item>
         <item>Consultant Check</item>
-        <item>Recording Studio</item>
+        <item>Recording Studio</item> -->
     </string-array>
     <array name="nav_icons">
         <item>@drawable/ic_list</item>
