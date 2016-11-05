@@ -1,7 +1,9 @@
 package org.sil.storyproducer;
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -9,7 +11,9 @@ import android.os.Environment;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -71,14 +75,26 @@ public class TransFrag extends Fragment {
         final File output = new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/BSVP/" +
                 getArguments().getString(STORY_NAME));
 
-        if (output.exists()) {
+        final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
+        final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
+        floatingActionButton2.setVisibility(View.INVISIBLE);
+
+        if (output.exists() && output.canRead()) {
+            String recordedVoice = output.getAbsolutePath() + "/" + fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
+            File narrationFile = new File(recordedVoice);
+            if(narrationFile.exists() && narrationFile.canRead()){
+                outputFile = fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
+                floatingActionButton1.setColorNormalResId(R.color.yellow);
+                if((new File(output.getAbsolutePath() + "/" + outputFile + "green").exists()))
+                    floatingActionButton1.setColorNormalResId(R.color.green);
+
+                floatingActionButton2.setVisibility(View.VISIBLE);
+            }
         }
         else {
             output.mkdirs();
         }
-        final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
-        final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
-        floatingActionButton2.setVisibility(View.INVISIBLE);
+
 
         floatingActionButton1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,6 +134,8 @@ public class TransFrag extends Fragment {
                         } else if (record_count == 1 & failure == 1) {
                             record_count--;
                             floatingActionButton1.setColorNormalResId(R.color.green);
+                            File greenColor = new File(output.getAbsolutePath() + "/" + outputFile + "green");
+                            if(!greenColor.exists()){ greenColor.mkdir();}
                         } else if (record_count == 0 & failure == 0) {
                             record_count++;
                             floatingActionButton1.setColorNormalResId(R.color.yellow);
@@ -237,6 +255,14 @@ public class TransFrag extends Fragment {
     }
     private MediaRecorder createAudioRecorder(String fileName){
         MediaRecorder mediaRecorder = new MediaRecorder();
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    1);
+        }
 
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
