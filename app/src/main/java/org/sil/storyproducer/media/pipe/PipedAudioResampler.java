@@ -93,7 +93,7 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
         mChannelCount = mSourceFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         mOutputFormat = MediaHelper.createFormat("audio/raw");
-        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mInputSampleRate);
+        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
         //Initialize sample data to 0.
