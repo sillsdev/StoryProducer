@@ -9,7 +9,7 @@ final public class MediaHelper {
     /**
      * lots of logging?
      */
-    public static final boolean VERBOSE = true;
+    public static final boolean VERBOSE = false;
 
     /**
      * the maximum size of input buffers; currently used to prevent buffer overflow.

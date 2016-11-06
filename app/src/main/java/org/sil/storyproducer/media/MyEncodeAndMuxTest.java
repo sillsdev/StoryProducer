@@ -174,7 +174,7 @@ public class MyEncodeAndMuxTest {
                 audioDecoder.addSource(audioExtractor);
 
                 final int sampleRate = 8000;
-                audioResampler = new PipedAudioResampler(sampleRate);
+                audioResampler = new PipedAudioResampler(sampleRate, 1);
                 audioResampler.addSource(audioDecoder);
 
                 MediaFormat audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE);
@@ -212,11 +212,9 @@ public class MyEncodeAndMuxTest {
                         float percent = mVideoGeneratorFrame / (float) VIDEO_NUM_FRAMES;
                         int x = (int) (percent * TEST_BITMAP.getWidth());
                         int y = (int) (percent * TEST_BITMAP.getHeight());
-                        Log.d(TAG, "percent: " + percent + " of (" + TEST_BITMAP.getWidth() + ", " + TEST_BITMAP.getHeight() + ")");
-                        Log.d(TAG, "(" + 0 + ", " + 0 + ") -> (" + x + ", " + y + ")");
                         canv.drawBitmap(TEST_BITMAP, new Rect(0, 0, x, y), mScreenRect, null);
 
-                        if (VERBOSE)
+                        if (MediaHelper.VERBOSE)
                             Log.d(TAG, "sending frame " + mVideoGeneratorFrame + " to encoder");
 
                         mVideoGeneratorFrame++;
@@ -240,6 +238,7 @@ public class MyEncodeAndMuxTest {
             }
 
             muxer.crunch();
+            Log.d(TAG, "muxer.crunch complete");
         }
         catch (IOException ioe) {
             ioe.printStackTrace();

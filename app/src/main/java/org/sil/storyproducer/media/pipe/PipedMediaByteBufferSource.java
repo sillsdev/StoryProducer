@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
  */
 public interface PipedMediaByteBufferSource extends PipedMediaSource {
     /**
+     * Note: This function should only be called after {@link #setup()}.
      * @return the type of media this component provides.
      */
     MediaHelper.MediaType getMediaType();
