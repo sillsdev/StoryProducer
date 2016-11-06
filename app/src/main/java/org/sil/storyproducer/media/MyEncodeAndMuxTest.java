@@ -28,10 +28,11 @@ import android.util.Log;
 import android.view.Surface;
 
 import org.sil.storyproducer.FileSystem;
-import org.sil.storyproducer.media.pipe.PipedMediaSurfaceSource;
+import org.sil.storyproducer.media.pipe.PipedAudioResampler;
+import org.sil.storyproducer.media.pipe.PipedVideoSurfaceSource;
 import org.sil.storyproducer.media.pipe.PipedMediaDecoderBuffer;
 import org.sil.storyproducer.media.pipe.PipedMediaEncoderBuffer;
-import org.sil.storyproducer.media.pipe.PipedMediaEncoderSurface;
+import org.sil.storyproducer.media.pipe.PipedVideoEncoderSurface;
 import org.sil.storyproducer.media.pipe.PipedMediaExtractor;
 import org.sil.storyproducer.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
@@ -154,9 +155,12 @@ public class MyEncodeAndMuxTest {
 
         PipedMediaExtractor audioExtractor = null;
         PipedMediaDecoderBuffer audioDecoder = null;
+
+        PipedAudioResampler audioResampler = null;
+
         PipedMediaEncoderBuffer audioEncoder = null;
 
-        PipedMediaEncoderSurface videoEncoder = null;
+        PipedVideoEncoderSurface videoEncoder = null;
 
         PipedMediaMuxer muxer = null;
 
@@ -169,18 +173,23 @@ public class MyEncodeAndMuxTest {
                 audioDecoder = new PipedMediaDecoderBuffer();
                 audioDecoder.addSource(audioExtractor);
 
+                final int sampleRate = 8000;
+                audioResampler = new PipedAudioResampler(sampleRate);
+                audioResampler.addSource(audioDecoder);
+
                 MediaFormat audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE);
                 audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
                 audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
                 if (VERBOSE) Log.d(TAG, "audio format: " + audioFormat);
 
                 audioEncoder = new PipedMediaEncoderBuffer(audioFormat);
-                audioEncoder.addSource(audioDecoder);
+//                audioEncoder.addSource(audioDecoder);
+                audioEncoder.addSource(audioResampler);
 
                 muxer.addSource(audioEncoder);
             }
             if(mUseVideo) {
-                PipedMediaSurfaceSource videoDrawer = new PipedMediaSurfaceSource() {
+                PipedVideoSurfaceSource videoDrawer = new PipedVideoSurfaceSource() {
                     @Override
                     public void setup() throws IOException {
 
@@ -224,7 +233,7 @@ public class MyEncodeAndMuxTest {
                 videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
                 if (VERBOSE) Log.d(TAG, "video format: " + videoFormat);
 
-                videoEncoder = new PipedMediaEncoderSurface(videoFormat);
+                videoEncoder = new PipedVideoEncoderSurface(videoFormat);
                 videoEncoder.addSource(videoDrawer);
 
                 muxer.addSource(videoEncoder);

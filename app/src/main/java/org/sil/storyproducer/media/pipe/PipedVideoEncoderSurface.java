@@ -14,18 +14,18 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-public class PipedMediaEncoderSurface extends PipedMediaCodec {
+public class PipedVideoEncoderSurface extends PipedMediaCodec {
     private Surface mSurface;
 
     private MediaFormat mConfigureFormat;
     private MediaFormat mSourceFormat;
-    private PipedMediaSurfaceSource mSource;
+    private PipedVideoSurfaceSource mSource;
 
     private Queue<Long> mPresentationTimeQueue = new LinkedList<>();
 
     private long mCurrentPresentationTime;
 
-    public PipedMediaEncoderSurface(MediaFormat format) {
+    public PipedVideoEncoderSurface(MediaFormat format) {
         mConfigureFormat = format;
     }
 
@@ -64,7 +64,7 @@ public class PipedMediaEncoderSurface extends PipedMediaCodec {
         }
     }
 
-    public void addSource(PipedMediaSurfaceSource src) throws SourceUnacceptableException {
+    public void addSource(PipedVideoSurfaceSource src) throws SourceUnacceptableException {
         if(mSource != null) {
             throw new SourceUnacceptableException("I already got a source");
         }

@@ -6,12 +6,12 @@ import android.media.MediaFormat;
 import android.os.Build;
 import android.util.Log;
 
+import org.sil.storyproducer.media.ByteBufferPool;
 import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaExtractor";
@@ -23,8 +23,7 @@ public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSourc
 
     private boolean mIsDone = false;
 
-    private ArrayList<ByteBuffer> buffers = new ArrayList<>(4);
-    private ArrayList<Boolean> bufferAvailable = new ArrayList<>(4);
+    private ByteBufferPool mBufferPool = new ByteBufferPool();
 
     public PipedMediaExtractor(String path, MediaHelper.MediaType type) throws IOException {
         mType = type;
@@ -75,41 +74,12 @@ public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSourc
     }
 
     private ByteBuffer getBuffer() {
-        //TODO: determine capacity
-        final int capacity = MediaHelper.MAX_INPUT_BUFFER_SIZE;
-        ByteBuffer buffer;
-
-        for(int i = 0; i < bufferAvailable.size(); i++) {
-            buffer = buffers.get(i);
-            if(buffer == null) {
-                buffer = ByteBuffer.allocate(capacity);
-                buffers.set(i, buffer);
-                bufferAvailable.set(i, false);
-                return buffer;
-            }
-
-            if(bufferAvailable.get(i)) {
-                bufferAvailable.set(i, false);
-                return buffer;
-            }
-        }
-
-        buffer = ByteBuffer.allocate(capacity);
-        buffers.add(buffer);
-        bufferAvailable.add(false);
-        return buffer;
+        return mBufferPool.get();
     }
 
     @Override
     public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException {
-        for(int i = 0; i < buffers.size(); i++) {
-            if(buffers.get(i) == buffer) {
-                buffer.clear();
-                bufferAvailable.set(i, true);
-                return;
-            }
-        }
-        throw new InvalidBufferException("I don't own that buffer!");
+        mBufferPool.release(buffer);
     }
 
     private void spinOutput(ByteBuffer buffer, MediaCodec.BufferInfo info) {

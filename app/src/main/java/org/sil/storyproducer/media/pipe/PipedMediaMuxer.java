@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * <p>A media pipeline component for multiplexing encoded audio and video streams into an output file.
  * This class primarily encapsulates a {@link MediaMuxer}.</p>
  * <p>Components commonly used in conjunction with this class are {@link PipedMediaCodec}
- * (particularly its subclasses {@link PipedMediaEncoderBuffer} and {@link PipedMediaEncoderSurface})
+ * (particularly its subclasses {@link PipedMediaEncoderBuffer} and {@link PipedVideoEncoderSurface})
  * and {@link PipedMediaExtractor}.</p>
  */
 public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
