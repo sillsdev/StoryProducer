@@ -14,7 +14,7 @@ public interface PipedMediaSource {
      * <p>Note: This method should be called <b>after the pipeline is fully constructed</b>.</p>
      * @throws IOException
      */
-    void setup() throws IOException;
+    void setup() throws IOException, SourceUnacceptableException;
 
     /**
      * Get the output format from this component.

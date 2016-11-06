@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.Surface;
 
 import org.sil.storyproducer.FileSystem;
+import org.sil.storyproducer.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.media.pipe.PipedAudioResampler;
 import org.sil.storyproducer.media.pipe.PipedVideoSurfaceSource;
 import org.sil.storyproducer.media.pipe.PipedMediaDecoder;
@@ -70,6 +71,7 @@ public class MyEncodeAndMuxTest {
     private static final File OUTPUT_DIR = new File(FileSystem.getStoryPath("Fiery Furnace"));
     private static final Bitmap TEST_BITMAP = FileSystem.getImage("Fiery Furnace", 1);
     private static final String TEST_AUDIO_PATH = OUTPUT_DIR.getPath() + "/TestSound.mp3"; //"/recording1.mp3", "/narration0.wav"
+    private static final String TEST_AUDIO_PATH_2 = OUTPUT_DIR.getPath() + "/narration0.wav";
     // Output filename.  Ideally this would use Context.getFilesDir() rather than a
     // hard-coded output directory.
     private String mOutputPath = new File(OUTPUT_DIR,
@@ -155,8 +157,12 @@ public class MyEncodeAndMuxTest {
 
         PipedMediaExtractor audioExtractor = null;
         PipedMediaDecoder audioDecoder = null;
+        PipedMediaExtractor audioExtractor2 = null;
+        PipedMediaDecoder audioDecoder2 = null;
 
         PipedAudioResampler audioResampler = null;
+        PipedAudioResampler audioResampler2 = null;
+        PipedAudioMixer audioMixer = null;
 
         PipedMediaEncoder audioEncoder = null;
 
@@ -169,13 +175,24 @@ public class MyEncodeAndMuxTest {
 
             if(mUseAudio) {
                 audioExtractor = new PipedMediaExtractor(TEST_AUDIO_PATH, MediaHelper.MediaType.AUDIO);
+                audioExtractor2 = new PipedMediaExtractor(TEST_AUDIO_PATH_2, MediaHelper.MediaType.AUDIO);
 
                 audioDecoder = new PipedMediaDecoder();
                 audioDecoder.addSource(audioExtractor);
 
-                final int sampleRate = 8000;
-                audioResampler = new PipedAudioResampler(sampleRate, 1);
+                audioDecoder2 = new PipedMediaDecoder();
+                audioDecoder2.addSource(audioExtractor2);
+
+                final int sampleRate = 48000;
+                audioResampler = new PipedAudioResampler(sampleRate, 2);
                 audioResampler.addSource(audioDecoder);
+
+                audioResampler2 = new PipedAudioResampler(sampleRate, 2);
+                audioResampler2.addSource(audioDecoder2);
+
+                audioMixer = new PipedAudioMixer();
+                audioMixer.addSource(audioResampler);
+                audioMixer.addSource(audioResampler2);
 
                 MediaFormat audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE);
                 audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
@@ -184,7 +201,8 @@ public class MyEncodeAndMuxTest {
 
                 audioEncoder = new PipedMediaEncoder(audioFormat);
 //                audioEncoder.addSource(audioDecoder);
-                audioEncoder.addSource(audioResampler);
+//                audioEncoder.addSource(audioResampler);
+                audioEncoder.addSource(audioMixer);
 
                 muxer.addSource(audioEncoder);
             }

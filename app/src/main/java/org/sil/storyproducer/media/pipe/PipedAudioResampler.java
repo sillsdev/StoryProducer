@@ -17,7 +17,7 @@ import java.nio.ShortBuffer;
  *
  * This component also optionally changes the track count of the raw audio stream.
  */
-public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMediaByteBufferDest {
+public class PipedAudioResampler extends PipedAudioShortManipulator {
     private static final String TAG = "PipedAudioResampler";
 
     private PipedMediaByteBufferSource mSource;
@@ -44,11 +44,6 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
     private ByteBuffer mSourceBuffer;
     private ShortBuffer mSourceShortBuffer;
     private MediaCodec.BufferInfo mInputInfo = new MediaCodec.BufferInfo();
-
-    private int mSampleRate;
-    private int mChannelCount;
-    private long mSeekTime = 0;
-    private int mAbsoluteSampleIndex = 0;
 
     private boolean mIsDone = false;
 
@@ -79,29 +74,7 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
     }
 
     @Override
-    public MediaHelper.MediaType getMediaType() {
-        return MediaHelper.MediaType.AUDIO;
-    }
-
-    @Override
-    public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-        spinOutput(buffer, info);
-    }
-
-    @Override
-    public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
-        ByteBuffer buffer = mBufferPool.get();
-        spinOutput(buffer, info);
-        return buffer;
-    }
-
-    @Override
-    public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException {
-        mBufferPool.release(buffer);
-    }
-
-    @Override
-    public void setup() throws IOException {
+    public void setup() throws IOException, SourceUnacceptableException {
         mSource.setup();
 
         mSourceFormat = mSource.getOutputFormat();
@@ -110,14 +83,14 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
         mSourceChannelCount = mSourceFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         if(mSourceChannelCount != 1 && mSourceChannelCount != 2) {
-            throw new IOException("Source audio is neither mono nor stereo!");
+            throw new SourceUnacceptableException("Source audio is neither mono nor stereo!");
         }
 
         if(mChannelCount == 0) {
             mChannelCount = mSourceChannelCount;
         }
 
-        mOutputFormat = MediaHelper.createFormat("audio/raw");
+        mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
@@ -143,68 +116,6 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
         return mIsDone;
     }
 
-    private void spinOutput(ByteBuffer outBuffer, MediaCodec.BufferInfo info) {
-        //reset output buffer
-        outBuffer.clear();
-
-        //reset output buffer info
-        info.size = 0;
-        info.offset = 0;
-        //N.B. mSeekTime is currently the time of the first sample in this buffer.
-        info.presentationTimeUs = mSeekTime;
-        info.flags = 0;
-
-        //prepare a ShortBuffer view of the output buffer
-        ShortBuffer outShortBuffer = outBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();
-        outShortBuffer.clear();
-
-        while(!mIsDone) {
-            //interleave channels
-            //N.B. Always put all samples (of different channels) of the same time in the same buffer.
-            for(int i = 0; i < mChannelCount; i++) {
-                short sample = getSampleForTime(mSeekTime, i);
-                outShortBuffer.put(sample);
-
-                //increment by short size (2 bytes)
-                info.size += 2;
-            }
-
-            //Keep track of the current presentation time in the output audio stream.
-            mAbsoluteSampleIndex++;
-            mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
-
-            //Don't overflow the buffer!
-            if(info.size > PERCENT_BUFFER_FILL * outBuffer.capacity()) {
-                break;
-            }
-        }
-
-        //just to be sure
-        outBuffer.position(info.offset);
-        outBuffer.limit(info.offset + info.size);
-
-        if(mIsDone) {
-            info.flags = MediaCodec.BUFFER_FLAG_END_OF_STREAM;
-        }
-
-        if (MediaHelper.VERBOSE) {
-            Log.d(TAG, "resampler: returned output buffer: size " + info.size + " for time " + info.presentationTimeUs);
-        }
-    }
-
-    /**
-     * <p>Get the sample time from the sample index given a sample rate.</p>
-     *
-     * <p>Note: This method provides more accurate timestamps than simply keeping track
-     * of the current timestamp and incrementing it by the time per sample.</p>
-     * @param sampleRate
-     * @param index
-     * @return
-     */
-    private long getTimeFromIndex(long sampleRate, int index) {
-        return index * 1000000L / sampleRate;
-    }
-
     /**
      * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
      *
@@ -213,7 +124,8 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
      * @param channel
      * @return
      */
-    private short getSampleForTime(long time, int channel) {
+    @Override
+    protected short getSampleForTime(long time, int channel) {
         //Move window forward until left and right appropriately surround the given time.
         //N.B. Left is inclusive; right is exclusive.
         while(time >= mRightSeekTime) {
@@ -296,6 +208,6 @@ public class PipedAudioResampler implements PipedMediaByteBufferSource, PipedMed
 
         //Pull in new buffer.
         mSourceBuffer = mSource.getBuffer(mInputInfo);
-        mSourceShortBuffer = mSourceBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();
+        mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
     }
 }

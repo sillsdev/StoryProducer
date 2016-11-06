@@ -42,7 +42,7 @@ public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSourc
     }
 
     @Override
-    public void setup() throws IOException {
+    public void setup() throws IOException, SourceUnacceptableException {
 
     }
 

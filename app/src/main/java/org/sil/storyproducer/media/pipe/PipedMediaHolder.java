@@ -41,7 +41,7 @@ public class PipedMediaHolder implements PipedMediaByteBufferSource, PipedMediaB
     }
 
     @Override
-    public void setup() throws IOException {
+    public void setup() throws IOException, SourceUnacceptableException {
         mSource.setup();
     }
 

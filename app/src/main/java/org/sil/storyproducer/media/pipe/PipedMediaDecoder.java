@@ -21,7 +21,7 @@ public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
     }
 
     @Override
-    public void setup() throws IOException {
+    public void setup() throws IOException, SourceUnacceptableException {
         mSource.setup();
         mSourceFormat = mSource.getOutputFormat();
         mCodec = MediaCodec.createDecoderByType(mSourceFormat.getString(MediaFormat.KEY_MIME));

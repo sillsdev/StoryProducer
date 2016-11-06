@@ -2,6 +2,10 @@ package org.sil.storyproducer.media;
 
 import android.media.MediaFormat;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
+
 /**
  * Provides static methods for miscellaneous low-level media tasks.
  */
@@ -16,6 +20,8 @@ final public class MediaHelper {
      */
     public static final int MAX_INPUT_BUFFER_SIZE = 128 * 1024;
     public static final long TIMEOUT_USEC = 1000;
+
+    public static final String MIMETYPE_RAW_AUDIO = "audio/raw";
 
     /**
      * Extract the {@link MediaType} from the format.
@@ -39,6 +45,15 @@ final public class MediaHelper {
             return MediaType.AUDIO;
         }
         throw new RuntimeException("Unclassified mime type: " + mime);
+    }
+
+    /**
+     * Get a ShortBuffer view of a ByteBuffer.
+     * @param buffer
+     * @return
+     */
+    public static ShortBuffer getShortBuffer(ByteBuffer buffer) {
+        return buffer.order(ByteOrder.nativeOrder()).asShortBuffer();
     }
 
     /**
