@@ -7,10 +7,10 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 
-public class PipedMediaDecoderBuffer extends PipedMediaCodecBuffer {
+public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
     private MediaFormat mSourceFormat;
 
-    public PipedMediaDecoderBuffer() { }
+    public PipedMediaDecoder() { }
 
     @Override
     public MediaHelper.MediaType getMediaType() {
@@ -23,7 +23,7 @@ public class PipedMediaDecoderBuffer extends PipedMediaCodecBuffer {
     @Override
     public void setup() throws IOException {
         mSource.setup();
-        mSourceFormat = mSource.getFormat();
+        mSourceFormat = mSource.getOutputFormat();
         mCodec = MediaCodec.createDecoderByType(mSourceFormat.getString(MediaFormat.KEY_MIME));
         mCodec.configure(mSourceFormat, null, null, 0);
         start();

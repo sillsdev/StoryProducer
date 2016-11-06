@@ -46,8 +46,8 @@ public class PipedMediaHolder implements PipedMediaByteBufferSource, PipedMediaB
     }
 
     @Override
-    public MediaFormat getFormat() {
-        return mSource.getFormat();
+    public MediaFormat getOutputFormat() {
+        return mSource.getOutputFormat();
     }
 
     @Override

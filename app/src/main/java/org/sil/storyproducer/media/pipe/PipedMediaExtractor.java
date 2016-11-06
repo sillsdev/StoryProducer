@@ -47,7 +47,7 @@ public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSourc
     }
 
     @Override
-    public MediaFormat getFormat() {
+    public MediaFormat getOutputFormat() {
         return mFormat;
     }
 

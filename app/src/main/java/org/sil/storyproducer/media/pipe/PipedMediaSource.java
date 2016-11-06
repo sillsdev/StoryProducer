@@ -20,7 +20,7 @@ public interface PipedMediaSource {
      * Get the output format from this component.
      * @return
      */
-    MediaFormat getFormat();
+    MediaFormat getOutputFormat();
 
     /**
      * @return whether this component has finished providing output.

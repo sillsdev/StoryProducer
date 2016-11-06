@@ -26,7 +26,7 @@ public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBuffer
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     @Override
-    public MediaFormat getFormat() {
+    public MediaFormat getOutputFormat() {
         if(mOutputFormat == null) {
             spinOutput(mInfo, true);
             if(mOutputFormat == null) {

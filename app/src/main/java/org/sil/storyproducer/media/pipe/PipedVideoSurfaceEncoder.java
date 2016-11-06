@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-public class PipedVideoEncoderSurface extends PipedMediaCodec {
+public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     private Surface mSurface;
 
     private MediaFormat mConfigureFormat;
@@ -25,7 +25,7 @@ public class PipedVideoEncoderSurface extends PipedMediaCodec {
 
     private long mCurrentPresentationTime;
 
-    public PipedVideoEncoderSurface(MediaFormat format) {
+    public PipedVideoSurfaceEncoder(MediaFormat format) {
         mConfigureFormat = format;
     }
 
@@ -78,7 +78,7 @@ public class PipedVideoEncoderSurface extends PipedMediaCodec {
 
     @Override
     public void setup() throws IOException {
-        mSourceFormat = mSource.getFormat();
+        mSourceFormat = mSource.getOutputFormat();
 
         //video keys
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);

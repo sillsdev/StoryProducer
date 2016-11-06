@@ -7,8 +7,8 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.nio.ByteBuffer;
 
-public abstract class PipedMediaCodecBuffer extends PipedMediaCodec implements PipedMediaByteBufferDest {
-    private static final String TAG = "PipedMediaCodecBuffer";
+public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec implements PipedMediaByteBufferDest {
+    private static final String TAG = "PipedMediaCodecByteBufferDest";
 
     protected PipedMediaByteBufferSource mSource;
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();

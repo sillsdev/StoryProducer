@@ -7,11 +7,11 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 
-public class PipedMediaEncoderBuffer extends PipedMediaCodecBuffer {
+public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
     private MediaFormat mConfigureFormat;
     private MediaFormat mSourceFormat;
 
-    public PipedMediaEncoderBuffer(MediaFormat format) {
+    public PipedMediaEncoder(MediaFormat format) {
         mConfigureFormat = format;
     }
 
@@ -23,7 +23,7 @@ public class PipedMediaEncoderBuffer extends PipedMediaCodecBuffer {
     @Override
     public void setup() throws IOException {
         mSource.setup();
-        mSourceFormat = mSource.getFormat();
+        mSourceFormat = mSource.getOutputFormat();
 
         //audio keys
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);

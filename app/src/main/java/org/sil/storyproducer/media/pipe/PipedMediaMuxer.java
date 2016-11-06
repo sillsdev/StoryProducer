@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * <p>A media pipeline component for multiplexing encoded audio and video streams into an output file.
  * This class primarily encapsulates a {@link MediaMuxer}.</p>
  * <p>Components commonly used in conjunction with this class are {@link PipedMediaCodec}
- * (particularly its subclasses {@link PipedMediaEncoderBuffer} and {@link PipedVideoEncoderSurface})
+ * (particularly its subclasses {@link PipedMediaEncoder} and {@link PipedVideoSurfaceEncoder})
  * and {@link PipedMediaExtractor}.</p>
  */
 public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
@@ -63,13 +63,13 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up audio track."); }
             mAudioSource.setup();
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding audio track."); }
-            mAudioTrackIndex = mMuxer.addTrack(mAudioSource.getFormat());
+            mAudioTrackIndex = mMuxer.addTrack(mAudioSource.getOutputFormat());
         }
         if (mVideoSource != null) {
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up video track."); }
             mVideoSource.setup();
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: adding video track."); }
-            mVideoTrackIndex = mMuxer.addTrack(mVideoSource.getFormat());
+            mVideoTrackIndex = mMuxer.addTrack(mVideoSource.getOutputFormat());
         }
         if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: starting"); }
         mMuxer.start();
