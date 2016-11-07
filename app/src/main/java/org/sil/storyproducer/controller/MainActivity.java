@@ -8,6 +8,8 @@ import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -28,8 +30,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
     @Override
@@ -48,6 +53,19 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
+
+        boolean skipRegistration = checkRegistrationSkip();
+        if (!skipRegistration) {
+            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+            if (preferences.isEmpty()) {
+                Intent intent = new Intent(this, RegistrationActivity.class);
+                startActivity(intent);
+            }
+        }
+
+
     }
 
     @Override
@@ -202,6 +220,20 @@ public class MainActivity extends AppCompatActivity {
         //change to the learning activity
         Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Checks the bundle variables to see if the user has bypassed registration
+     * @return true if they want to bypass registration, false if not
+     */
+    private boolean checkRegistrationSkip() {
+        // Check to see if registration was skipped by the user
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getBoolean(RegistrationActivity.SKIP_KEY)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
