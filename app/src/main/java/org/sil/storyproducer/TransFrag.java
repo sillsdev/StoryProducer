@@ -42,6 +42,8 @@ public class TransFrag extends Fragment {
     private int record_count = 2;
     private int failure;
     private boolean isSpeakButtonLongPressed;
+    private MediaPlayer narrationMediaPlayer;
+
 
     public static TransFrag newInstance(int position, int numOfSlides, String storyName){
         TransFrag frag = new TransFrag();
@@ -51,6 +53,22 @@ public class TransFrag extends Fragment {
         args.putString(STORY_NAME, storyName);
         frag.setArguments(args);
         return frag;
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        if(narrationMediaPlayer != null && narrationMediaPlayer.isPlaying()){
+            narrationMediaPlayer.stop();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(narrationMediaPlayer != null && narrationMediaPlayer.isPlaying()){
+            narrationMediaPlayer.stop();
+        }
     }
 
 
@@ -213,24 +231,34 @@ public class TransFrag extends Fragment {
         return view;
     }
 
+    public void stopNarrationRecording(){
+        if(narrationMediaPlayer != null && narrationMediaPlayer.isPlaying()){
+            narrationMediaPlayer.stop();
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.menu_play){
+            //Stop original recording to play a new recording.
+            if(narrationMediaPlayer != null && narrationMediaPlayer.isPlaying()){
+                narrationMediaPlayer.stop();
+            }
             Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
-            MediaPlayer m = new MediaPlayer();
+            narrationMediaPlayer = new MediaPlayer();
             try {
-                m.setDataSource(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
+                narrationMediaPlayer.setDataSource(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             try {
-                m.prepare();
+                narrationMediaPlayer.prepare();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            m.start();
+            narrationMediaPlayer.start();
         }
         return super.onOptionsItemSelected(item);
     }

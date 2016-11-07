@@ -2,6 +2,7 @@ package org.sil.storyproducer;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,9 @@ public class PagerFrag extends Fragment{
     public static final String NUM_OF_FRAG = "fragnum";
     public static final String TYPE_OF_FRAG = "fragtype";
     public static final String STORY_NAME = "storyname";
+    private boolean getInitialPosition = false;
+    private int previousPosition = 0;
+
     public static PagerFrag newInstance(int numOfFrags, int typeOfFrag, String storyName){
         PagerFrag frag = new PagerFrag();
         Bundle bundle = new Bundle();
@@ -30,6 +34,22 @@ public class PagerFrag extends Fragment{
         mPager = (ViewPager)view.findViewById(R.id.pager_viewpager);
         mPager.setAdapter(new PagerAdapter(getActivity(), getChildFragmentManager(), getArguments().getInt(NUM_OF_FRAG), getArguments().getInt(TYPE_OF_FRAG), getArguments().getString(STORY_NAME)));
         mPager.setPageTransformer(true, new PagerAnimation());
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(!getInitialPosition){
+                    getInitialPosition = true;
+                    previousPosition = position;
+                }
+            }
+            public void onPageSelected(int position) {
+                if(position != previousPosition){
+                    TransFrag transFrag = ((PagerAdapter)mPager.getAdapter()).getTransFrag(previousPosition);
+                    transFrag.stopNarrationRecording();
+                    previousPosition = position;
+                }
+            }
+        });
         return view;
     }
 
