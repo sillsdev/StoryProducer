@@ -16,8 +16,9 @@
     <RelativeLayout
         android:id="@+id/trans_info_bar"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_below="@+id/trans_image_slide"
@@ -29,7 +30,7 @@
             android:text="Slide Title"
             android:textColor="@color/white"
             android:textSize="@dimen/text_title"/>
-        <TextView
+      <!--  <TextView
             android:id="@+id/trans_slide_title_secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,7 +38,7 @@
             android:text="Second"
             android:textSize="@dimen/text_title_sub"
             android:textColor="@color/white"
-            android:textStyle="italic"/>
+            android:textStyle="italic"/> -->
         <TextView
             android:id="@+id/trans_slide_indicator"
             android:layout_width="wrap_content"

@@ -160,16 +160,32 @@ class FileSystem {
     }
 
     public static String getTitle(){
-        return content[0];
+        if (content.length > 0 && content[0] != null) {
+            return content[0];
+        } else {
+            return "";
+        }
     }
     public static String getSubTitle(){
-        return content[1];
+        if (content.length > 1 && content[1] != null) {
+            return content[1];
+        } else {
+            return "";
+        }
     }
     public static String getSlideVerse(){
-        return content[2];
+        if (content.length > 2 && content[2] != null) {
+            return content[2];
+        } else {
+            return "";
+        }
     }
     public static String getSlideContent(){
-        return content[3];
+        if (content.length > 3 && content[3] != null) {
+            return content[3];
+        } else {
+            return "";
+        }
     }
 
     public static String[] getLanguages() {

@@ -312,8 +312,8 @@ public class TransFrag extends Fragment {
         TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
         slideTitle.setText(FileSystem.getTitle());
 
-        TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
-        slideSubTitle.setText(FileSystem.getSlideVerse());
+//        TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
+//        slideSubTitle.setText(FileSystem.getSlideVerse());
 
         TextView slideVerse = (TextView)view.findViewById(R.id.trans_scripture_title);
         slideVerse.setText(FileSystem.getSlideVerse());

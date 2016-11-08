@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        mainMenu = menu;
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         if(drawerOpen || hideIcon) {
             menu.findItem(R.id.menu_lang).setVisible(false);
@@ -80,11 +81,21 @@ public class MainActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mActivityTitle = "Story Templates";
+        getSupportActionBar().setTitle(mActivityTitle);
+        mainMenu.findItem(R.id.menu_play).setVisible(false);
+        mainMenu.findItem(R.id.menu_lang).setVisible(true);
+    }
+
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
     private ArrayList<NavItem> mNavItems = new ArrayList<>();
     private String mActivityTitle;
+    private Menu mainMenu;
 
     private void setupNavDrawer(){
         mActivityTitle = getTitle().toString();
@@ -135,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryFrag()).commit();
                 mActivityTitle = "Story Templates";
                 getSupportActionBar().setTitle(mActivityTitle);
+                hideIcon = false;
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }
