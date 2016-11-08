@@ -143,10 +143,11 @@ public class MainActivity extends AppCompatActivity {
 //                    Toast.makeText(getBaseContext(), "Found fragment: " + fm.getBackStackEntryAt(entry).getId(), Toast.LENGTH_LONG).show();
 //                }
 //                startFragment(position, 0, "");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryFrag()).commit();
-                mActivityTitle = "Story Templates";
-                getSupportActionBar().setTitle(mActivityTitle);
-                hideIcon = false;
+//                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryFrag()).commit();
+//                mActivityTitle = "Story Templates";
+//                getSupportActionBar().setTitle(mActivityTitle);
+//                hideIcon = false;
+                onBackPressed();
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }
