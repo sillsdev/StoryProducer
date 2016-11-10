@@ -89,14 +89,16 @@ class FileSystem {
         return new String[0];
     }
 
-    public static Bitmap getImage(String story, int number) {
+    public static Bitmap getImage(String story, int number, int sampleSize) {
         String path = getStoryPath(story);
         File f = new File(path);
         File file[] = f.listFiles();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sampleSize;
 
         for (int i=0; i < file.length; i++) {
                 if (file[i].getName().equals(number + ".jpg")) {
-                    return BitmapFactory.decodeFile(path + "/" + file[i].getName());
+                    return BitmapFactory.decodeFile(path + "/" + file[i].getName(), options);
                 }
         }
         return null;

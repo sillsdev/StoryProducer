@@ -307,7 +307,7 @@ public class TransFrag extends Fragment {
         FileSystem.loadSlideContent(storyName, currentSlide);
 
         ImageView slideImage = (ImageView)view.findViewById(R.id.trans_image_slide);
-        slideImage.setImageBitmap(FileSystem.getImage(storyName, currentSlide));
+        slideImage.setImageBitmap(FileSystem.getImage(storyName, currentSlide, 2));
 
         TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
         slideTitle.setText(FileSystem.getTitle());
