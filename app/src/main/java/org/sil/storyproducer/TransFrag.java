@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
 
 public class TransFrag extends Fragment {
@@ -244,20 +245,30 @@ public class TransFrag extends Fragment {
             if(narrationMediaPlayer != null && narrationMediaPlayer.isPlaying()){
                 narrationMediaPlayer.stop();
             }
-            Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             narrationMediaPlayer = new MediaPlayer();
             try {
-                narrationMediaPlayer.setDataSource(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            try {
+                File checkFile;
+                String [] audioExtensions = {".mp3", ".wav", ".wma"};
+                String filePath = FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM);
+                boolean foundFile = false;
+                for(int i = 0; i < audioExtensions.length; i++){
+                    checkFile = new File(filePath + audioExtensions[i]);
+                    if((foundFile = checkFile.exists())){
+                        narrationMediaPlayer.setDataSource(checkFile.getPath());
+                        break;
+                    }
+                }
+                if(!foundFile){
+                    Snackbar.make(getView(), "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
+                    return super.onOptionsItemSelected(item);
+                }
                 narrationMediaPlayer.prepare();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             narrationMediaPlayer.start();
         }
         return super.onOptionsItemSelected(item);
