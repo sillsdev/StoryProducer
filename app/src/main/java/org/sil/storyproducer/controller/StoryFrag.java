@@ -7,10 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.content.Intent;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.model.ListFiles;
 
