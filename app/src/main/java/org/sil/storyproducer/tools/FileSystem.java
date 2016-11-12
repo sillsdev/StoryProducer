@@ -87,6 +87,10 @@ public class FileSystem {
         return null;
     }
 
+    public static File getNarrationAudio(String story, int i){
+        return new File(getStoryPath(story)+"/narration"+i+".wav");
+    }
+
     public static File getStoryFile(String story) {
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
