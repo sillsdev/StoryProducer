@@ -78,27 +78,63 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     public void crunch() throws IOException, SourceUnacceptableException {
         start();
 
-        while ((mAudioSource != null && !mAudioSource.isDone()) || (mVideoSource != null && !mVideoSource.isDone())) {
-            ByteBuffer buffer;
-            if(mAudioSource != null && !mAudioSource.isDone()) {
-                buffer = mAudioSource.getBuffer(mInfo);
-                if (MediaHelper.VERBOSE) {
-                    Log.d(TAG, "muxer: writing audio output buffer of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
-                }
-                mMuxer.writeSampleData(mAudioTrackIndex, buffer, mInfo);
-                mAudioSource.releaseBuffer(buffer);
-            }
+        StreamThread audioThread = null;
+        StreamThread videoThread = null;
+        if(mAudioSource != null) {
+            audioThread = new StreamThread(mMuxer, mAudioSource, mAudioTrackIndex);
+            audioThread.start();
+        }
 
-            if(mVideoSource != null && !mVideoSource.isDone()) {
-                buffer = mVideoSource.getBuffer(mInfo);
-                if (MediaHelper.VERBOSE) {
-                    Log.d(TAG, "muxer: writing video output buffer of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
-                }
-                mMuxer.writeSampleData(mVideoTrackIndex, buffer, mInfo);
-                mVideoSource.releaseBuffer(buffer);
+        if(mVideoSource != null) {
+            videoThread = new StreamThread(mMuxer, mVideoSource, mVideoTrackIndex);
+            videoThread.start();
+        }
+
+        if(audioThread != null) {
+            try {
+                audioThread.join();
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+                e.printStackTrace();
             }
         }
 
+        if(videoThread != null) {
+            try {
+                videoThread.join();
+            } catch (InterruptedException e) {
+                //TODO: handle exception
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private class StreamThread extends Thread {
+        private MediaMuxer mMuxer;
+        private PipedMediaByteBufferSource mSource;
+        private int mTrackIndex;
+
+        public StreamThread(MediaMuxer muxer, PipedMediaByteBufferSource src, int trackIndex) {
+            mMuxer = muxer;
+            mSource = src;
+            mTrackIndex = trackIndex;
+        }
+
+        @Override
+        public void run() {
+            ByteBuffer buffer;
+            MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
+            while (!mSource.isDone()) {
+                buffer = mSource.getBuffer(info);
+                if (MediaHelper.VERBOSE) {
+                    Log.d(TAG, "muxer: writing output buffer of size " + info.size + " for time " + info.presentationTimeUs);
+                }
+                synchronized (mMuxer) {
+                    mMuxer.writeSampleData(mTrackIndex, buffer, info);
+                }
+                mSource.releaseBuffer(buffer);
+            }
+        }
     }
 
     @Override
