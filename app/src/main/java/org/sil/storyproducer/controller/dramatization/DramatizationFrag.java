@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.community;
+package org.sil.storyproducer.controller.dramatization;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,10 +9,8 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 
-/**
- * the fragment for the community check view. The community can make sure the draft is ok
- */
-public class CommunityCheckFrag extends Fragment {
+
+public class DramatizationFrag extends Fragment {
     public static final String ARG_OBJECT = "object";
 
     @Override

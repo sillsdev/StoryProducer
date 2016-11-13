@@ -59,4 +59,12 @@
     /* SnackBar Messages */
     <string name="learn_phase_practice">Practice saying the story!</string>
     <string name="ok">Ok</string>
+
+    /* Phases */
+    <string name="learnTitle">Learn</string>
+    <string name="draftTitle">Draft</string>
+    <string name="communityCheckTitle">Community Check</string>
+    <string name="consultantCheckTitle">Consultant Check</string>
+    <string name="dramatizationTitle">Dramatization</string>
+    <string name="exportTitle">Export</string>
 </resources>

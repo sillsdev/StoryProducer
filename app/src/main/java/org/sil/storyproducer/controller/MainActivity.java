@@ -3,9 +3,9 @@ package org.sil.storyproducer.controller;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.draft.PagerFrag;
 import org.sil.storyproducer.controller.learn.LearnActivity;
+import org.sil.storyproducer.controller.pager.PagerBaseActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
-
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -27,17 +27,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.io.Serializable;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-
+    public static android.content.Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = getApplicationContext();
 
-        FileSystem.init(this.getApplicationContext());
+        FileSystem.init(context);
+        StoryState.init(context);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
+
     }
 
     @Override
@@ -196,15 +200,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Changed the activity that the app is on
+     * move to the chosen story
      */
-    public void changeActivity(int slideNum, String storyName) {
-        //change to the learning activity
-        String STORY_NAME = "storyname";
-        Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
-        intent.putExtra( STORY_NAME, storyName);
+    public void switchToStory(String storyName) {
+        StoryState.setStoryName(storyName);
+        Phase currPhase = StoryState.getPhase();
+        Intent intent = new Intent(this.getApplicationContext(), currPhase.getPhaseClass());
         startActivity(intent);
-        System.out.println("The storyname is " + storyName);
     }
 }
 

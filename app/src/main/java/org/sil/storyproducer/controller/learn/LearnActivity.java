@@ -1,25 +1,30 @@
 package org.sil.storyproducer.controller.learn;
 
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MotionEvent;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.view.View;
-import android.view.KeyEvent;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.CompoundButton;
-import android.content.Intent;
 import android.widget.SeekBar;
 import android.support.design.widget.Snackbar;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.GestureListener;
 
 public class LearnActivity extends AppCompatActivity {
 
@@ -34,6 +39,7 @@ public class LearnActivity extends AppCompatActivity {
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
     private float backgroundVolume = 0.4f;
+    private GestureDetectorCompat mDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,17 +47,26 @@ public class LearnActivity extends AppCompatActivity {
         setContentView(R.layout.activity_learn);
 
         //get the story name
-        Intent intent = getIntent();
-        storyName = intent.getStringExtra("storyname");
+        storyName = StoryState.getStoryName();
 
         //get the ui
         learnImageView = (ImageView) findViewById(R.id.learnImageView);
         playButton = (ImageButton) findViewById(R.id.playButton);
         videoSeekBar = (SeekBar) findViewById(R.id.videoSeekBar);
 
+        //get the current phase
+        Phase phase = StoryState.getPhase();
+
+        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mActionBarToolbar);
+        getSupportActionBar().setTitle(phase.getPhaseTitle());
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getPhaseColor(), null)));
+
         setSeekBarListener();
         playVideo();
         setBackgroundMusic();
+
+        mDetector = new GestureDetectorCompat(this, new GestureListener(this));
 
     }
 
@@ -66,28 +81,35 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * Back button event for API's greater than 5
+     * get the touch event so that it can be passed on to GestureDetector
+     * @param event: the MotionEvent
+     * @return : the super version of the function
      */
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        this.mDetector.onTouchEvent(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         aPlayer.stopAudio();
         backgroundPlayer.stopAudio();
     }
 
-    /**
-     * Back button event for API's less than 5
-     * @param keyCode
-     * @param event
-     * @return returns the event
-     */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            aPlayer.stopAudio();
-            backgroundPlayer.stopAudio();
-        }
-        return super.onKeyDown(keyCode, event);
+    public void onPause() {
+        super.onPause();
+        aPlayer.pauseAudio();
+        backgroundPlayer.pauseAudio();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        aPlayer.resumeAudio();
+        backgroundPlayer.resumeAudio();
     }
 
     /**

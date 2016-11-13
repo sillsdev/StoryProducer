@@ -52,9 +52,7 @@ public class StoryFrag extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int slideNum = FileSystem.getImageAmount(values[position]);
-//                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
-                ((MainActivity)getActivity()).changeActivity(0, values[position]);
+                ((MainActivity)getActivity()).switchToStory(values[position]);
 
             }
         });
