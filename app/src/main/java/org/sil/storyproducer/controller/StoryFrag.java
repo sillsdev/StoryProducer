@@ -7,16 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.content.Intent;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.model.ListFiles;
 
 public class StoryFrag extends Fragment {
 
-    ListView listView;
+    private ListView listView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -27,13 +25,13 @@ public class StoryFrag extends Fragment {
         // Get ListView object from xml
         listView = (ListView)getActivity().findViewById(R.id.story_list_view);
 
-        // Defined Array values to show in ListView
-        final String[] values = FileSystem.getStoryNames();
-        final ListFiles[] listFiles = new ListFiles[values.length];
+        // Defined Array storyNames to show in ListView
+        final String[] storyNames = FileSystem.getStoryNames();
+        final ListFiles[] listFiles = new ListFiles[storyNames.length];
 
         for(int i = 0; i < listFiles.length; i++) {
-            FileSystem.loadSlideContent(values[i], 1);
-            listFiles[i] = new ListFiles(FileSystem.getImage(values[i], 1), FileSystem.getTitle(), FileSystem.getSubTitle());
+            FileSystem.loadSlideContent(storyNames[i], 1);
+            listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1), FileSystem.getTitle(), FileSystem.getSubTitle());
         }
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
@@ -52,7 +50,7 @@ public class StoryFrag extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((MainActivity)getActivity()).switchToStory(values[position]);
+            ((MainActivity)getActivity()).switchToStory(storyNames[position]);
 
             }
         });

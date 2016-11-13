@@ -18,9 +18,9 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.ListFiles;
 
 public class CustomAdapter extends ArrayAdapter<ListFiles> {
-    Context context;
-    int layoutResourceId;
-    ListFiles data[] = null;
+    private Context context;
+    private int layoutResourceId;
+    private ListFiles data[] = null;
 
     public CustomAdapter(Context context, int layoutResourceId, ListFiles[] data) {
         super(context, layoutResourceId, data);

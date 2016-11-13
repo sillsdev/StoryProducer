@@ -1,14 +1,12 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.draft.PagerFrag;
-import org.sil.storyproducer.controller.learn.LearnActivity;
-import org.sil.storyproducer.controller.pager.PagerBaseActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -30,6 +28,7 @@ import android.widget.Toast;
 import java.io.Serializable;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -53,6 +52,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
+
+        boolean skipRegistration = checkRegistrationSkip();
+        if (!skipRegistration) {
+            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+            if (preferences.isEmpty()) {
+                Intent intent = new Intent(this, RegistrationActivity.class);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override
@@ -165,23 +175,24 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         switch (iFragNum) {
             case 0:
                 fragment = new StoryFrag();
-                title=getApplicationContext().getString(R.string.title_activity_story_templates);
+                title = getApplicationContext().getString(R.string.title_activity_story_templates);
                 hideIcon = false;
                 break;
             case 1:
                 pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
                 fragment = pagerFrag;
-                title=getApplicationContext().getString(R.string.title_fragment_translate);
+                title = getApplicationContext().getString(R.string.title_fragment_translate);
                 hideIcon = true;
                 break;
             case 2:
-                pagerFrag= PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_community);
+                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
+                fragment = pagerFrag;
+                title = getApplicationContext().getString(R.string.title_fragment_community);
                 hideIcon = true;
                 break;
             case 3:
                 fragment = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title=getApplicationContext().getString(R.string.title_fragment_consultant);
+                title = getApplicationContext().getString(R.string.title_fragment_consultant);
                 hideIcon = true;
                 break;
 
@@ -207,6 +218,20 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         Phase currPhase = StoryState.getPhase();
         Intent intent = new Intent(this.getApplicationContext(), currPhase.getPhaseClass());
         startActivity(intent);
+    }
+
+    /**
+     * Checks the bundle variables to see if the user has bypassed registration
+     * @return true if they want to bypass registration, false if not
+     */
+    private boolean checkRegistrationSkip() {
+        // Check to see if registration was skipped by the user
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getBoolean(RegistrationActivity.SKIP_KEY)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 

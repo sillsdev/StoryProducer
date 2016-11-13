@@ -3,20 +3,13 @@
     <string name="action_settings">Settings</string>
     <string name="menu_info">Registration Info</string>
     <string name="menu_search">Search</string>
-    <string name="setup_langcode_hint">Language Code</string>
-    <string name="setup_countries_hint">Country(s)</string>
-    <string name="setup_teamname_hint">Team Name</string>
-    <string name="setup_teamcontact_hint">Contact Name</string>
-    <string name="setup_consname_hint">Consultant Name</string>
-    <string name="setup_consphone_hint">Consultant Phone</string>
-    <string name="setup_consemail_hint">Consultant Email</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
     <string name="title_fragment_community">Community Check</string>
     <string name="title_fragment_consultant">Consultant Check</string>
 
-    /*String names for Info Page*/
+    <!--String names for Info Page-->
     <string name="consultant_phone">"Consultant Phone:  "</string>
     <string name="consultant_email">"Consultant Email:  "</string>
     <string name="consultant_name">"Consultant Name:  "</string>
@@ -26,7 +19,58 @@
     <string name="language_code">"Language Code:  "</string>
     <string name="language">"Language:  "</string>
 
-    /* Navigation Drawer Labels */
+    <!-- String names for registration -->
+    <string name="registration_general_header">General Information</string>
+    <string name="registration_translator_header">Translator Information</string>
+    <string name="registration_consultant_header">Consultant Information</string>
+    <string name="registration_trainer_header">Trainer Information</string>
+    <string name="registration_database_header">Data Information</string>
+    <string name="language_hint">Language (being translated into)</string>
+    <string name="etnologue_code_hint">Ethnologue Code</string>
+    <string name="country_hint">Country</string>
+    <string name="location_hint">Province/State/Region</string>
+    <string name="town_hint">Village/Town/City</string>
+    <string name="lwc_hint">Language (being translated from)</string>
+    <string name="orthography_hint">Orthography Status:</string>
+    <string name="name_hint">Name</string>
+    <string name="spoken_language_hint">Spoken Languages</string>
+    <string name="phone_hint">Phone</string>
+    <string name="email_hint">E-mail</string>
+    <string name="person_location_hint">Location</string>
+    <string name="education_hint">Education Level</string>
+    <string name="communication_preference_hint">Communication Preference:</string>
+    <string name="location_type_hint">Location Type: </string>
+    <string name="submit">Submit</string>
+    <string name="bypass_button_text">Skip Registration</string>
+
+    <!-- Dialog strings for titles, messages, and buttons -->
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
+    <string name="registration_submit_title">Submit?</string>
+    <string name="registration_submit_complete_message">Are you ready to submit?</string>
+    <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_saved_successfully">Registration information saved!</string>
+    <string name="registration_filename">Registration</string>
+
+    <string-array name="orthography_list">
+        <item>None</item>
+        <item>Trial</item>
+        <item>Stable</item>
+    </string-array>
+
+    <string-array name="communication_list">
+        <item>Phone</item>
+        <item>E-mail</item>
+    </string-array>
+
+    <string-array name="location_type_list">
+        <item>Local</item>
+        <item>Remote</item>
+    </string-array>
+
+    <!--Navigation Drawer Labels -->
     <string name="nav_open">Options</string>
     <string-array name="nav_labels">
         <item>Story Templates</item>
@@ -44,7 +88,7 @@
     </array>
 
 
-    /* ListView */
+    <!-- ListView -->
     <string name="playVideo">Play</string>
     <string name="translateVideo">Translate</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -55,7 +99,7 @@
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-
+    <string name="title_activity_registration">Registration</string>
     /* SnackBar Messages */
     <string name="learn_phase_practice">Practice saying the story!</string>
     <string name="ok">Ok</string>
@@ -67,4 +111,5 @@
     <string name="consultantCheckTitle">Consultant Check</string>
     <string name="dramatizationTitle">Dramatization</string>
     <string name="exportTitle">Export</string>
+
 </resources>
