@@ -49,11 +49,40 @@ public final class StoryState {
     }
 
     /**
-     * Retusn the current Phase the story is in
+     * Return the current Phase the story is in
      * @return Phase
      */
     public static Phase getPhase() {
         return phase;
+    }
+
+    /**
+     * sets the phase and the phase index given a phase
+     * @param p : Phase
+     */
+    public static void setPhase(Phase p) {
+        for(int k = 0; k < phases.length; k++) {
+            if(p.getPhaseTitle().equals(phases[k].getPhaseTitle())) {
+                phaseIndex = k;
+            }
+        }
+        phase = p;
+    }
+
+    /**
+     * returns the story phase
+     * @return int
+     */
+    public static int getPhaseIndex() {
+        return phaseIndex;
+    }
+
+    /**
+     * returns the array of phases
+     * @return array of Phase
+     */
+    public static Phase[] getPhases() {
+        return phases;
     }
 
     /**

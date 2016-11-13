@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.view.MotionEvent;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 
@@ -18,7 +17,7 @@ public class GestureListener extends SimpleOnGestureListener {
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-    String STORY_NAME = "storyname";
+    private String STORY_NAME = "storyname";
     private Activity activity;
 
     /**

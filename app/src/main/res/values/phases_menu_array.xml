@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="phases_menu_array">
+        <item>@string/learnTitle</item>
+        <item>@string/draftTitle</item>
+        <item>@string/communityCheckTitle</item>
+        <item>@string/consultantCheckTitle</item>
+        <item>@string/dramatizationTitle</item>
+        <item>@string/exportTitle</item>
+    </string-array>
+</resources>
