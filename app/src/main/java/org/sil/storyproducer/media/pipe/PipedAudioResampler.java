@@ -2,14 +2,12 @@ package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
-import android.util.Log;
 
 import org.sil.storyproducer.media.ByteBufferPool;
 import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 
 /**
@@ -43,7 +41,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
 
     private ByteBuffer mSourceBuffer;
     private ShortBuffer mSourceShortBuffer;
-    private MediaCodec.BufferInfo mInputInfo = new MediaCodec.BufferInfo();
+    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     private boolean mIsDone = false;
 
@@ -103,7 +101,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
         }
 
         //Get the first input buffer.
-        fetchInputBuffer();
+        fetchSourceBuffer();
     }
 
     @Override
@@ -175,8 +173,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
         while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
-            releaseInputBuffer();
-            fetchInputBuffer();
+            releaseSourceBuffer();
+            fetchSourceBuffer();
         }
         //If we hit the end of input, use 0 as the last right sample value.
         if(mSourceShortBuffer == null) {
@@ -194,20 +192,20 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
         }
     }
 
-    private void releaseInputBuffer() {
+    private void releaseSourceBuffer() {
         mSource.releaseBuffer(mSourceBuffer);
         mSourceBuffer = null;
         mSourceShortBuffer = null;
     }
 
-    private void fetchInputBuffer() {
-        //If our source has no more output, leave the buffers as null (assumed from releaseInputBuffer).
+    private void fetchSourceBuffer() {
+        //If our source has no more output, leave the buffers as null (assumed from releaseSourceBuffer).
         if(mSource.isDone()) {
             return;
         }
 
         //Pull in new buffer.
-        mSourceBuffer = mSource.getBuffer(mInputInfo);
+        mSourceBuffer = mSource.getBuffer(mInfo);
         mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
     }
 }
