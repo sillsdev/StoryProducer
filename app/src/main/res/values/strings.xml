@@ -107,9 +107,9 @@
     /* Phases */
     <string name="learnTitle">Learn</string>
     <string name="draftTitle">Draft</string>
-    <string name="communityCheckTitle">Community Check</string>
-    <string name="consultantCheckTitle">Consultant Check</string>
-    <string name="dramatizationTitle">Dramatization</string>
-    <string name="exportTitle">Export</string>
+    <string name="community_check_title">Community Check</string>
+    <string name="consultant_check_title">Consultant Check</string>
+    <string name="dramatization_title">Dramatization</string>
+    <string name="export_title">Export</string>
 
 </resources>

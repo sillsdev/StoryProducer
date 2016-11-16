@@ -3,9 +3,9 @@
     <string-array name="phases_menu_array">
         <item>@string/learnTitle</item>
         <item>@string/draftTitle</item>
-        <item>@string/communityCheckTitle</item>
-        <item>@string/consultantCheckTitle</item>
-        <item>@string/dramatizationTitle</item>
-        <item>@string/exportTitle</item>
+        <item>@string/community_check_title</item>
+        <item>@string/consultant_check_title</item>
+        <item>@string/dramatization_title</item>
+        <item>@string/export_title</item>
     </string-array>
 </resources>

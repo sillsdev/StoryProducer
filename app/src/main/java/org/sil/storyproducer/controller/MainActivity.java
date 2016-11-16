@@ -32,14 +32,13 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-    public static android.content.Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getApplicationContext();
 
-        FileSystem.init(context);
-        StoryState.init(context);
+        FileSystem.init(getApplicationContext());
+        StoryState.init(getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

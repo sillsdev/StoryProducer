@@ -13,11 +13,11 @@
     <color name="black_semi_transparent">#B2000000</color>
     <color name="green">#32CD32</color>
     <color name="yellow">#ffeb3b</color>
-    <color name="learnPhase">#7B8D8E</color>
-    <color name="draftPhase">#E45641</color>
-    <color name="comunityCheckPhase">#795548</color>
-    <color name="consultantCheckPhase">#F1A94E</color>
-    <color name="dramatizationPhase">#009688</color>
-    <color name="exportPhase">#44B3C2</color>
+    <color name="learn_phase">#7B8D8E</color>
+    <color name="draft_phase">#E45641</color>
+    <color name="comunity_check_phase">#795548</color>
+    <color name="consultant_check_phase">#F1A94E</color>
+    <color name="dramatization_phase">#009688</color>
+    <color name="export_phase">#44B3C2</color>
     <color name="black_overlay">#66000000</color>
 </resources>

@@ -17,19 +17,22 @@ public final class StoryState {
     private static Phase[] phases;
     private static int phaseIndex = 0;
 
+
+    //TODO: add saving state in prefrences for each story
+
     /**
      * initializes the StoryState variables
      * @param con : the application context so that the colors can be grabbed from the resources
      */
     public static void init(Context con) {
         context = con;
-        phase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learnPhase, LearnActivity.class);
-        phases =  new Phase[] {new Phase(context.getResources().getString(R.string.learnTitle), R.color.learnPhase,LearnActivity.class),
-                            new Phase(context.getResources().getString(R.string.draftTitle), R.color.draftPhase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.communityCheckTitle), R.color.comunityCheckPhase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.consultantCheckTitle), R.color.consultantCheckPhase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.dramatizationTitle), R.color.dramatizationPhase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.exportTitle), R.color.exportPhase, ExportActivity.class)};
+        phase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class);
+        phases =  new Phase[] {new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase,LearnActivity.class),
+                            new Phase(context.getResources().getString(R.string.draftTitle), R.color.draft_phase, PagerBaseActivity.class),
+                            new Phase(context.getResources().getString(R.string.community_check_title), R.color.comunity_check_phase, PagerBaseActivity.class),
+                            new Phase(context.getResources().getString(R.string.consultant_check_title), R.color.consultant_check_phase, PagerBaseActivity.class),
+                            new Phase(context.getResources().getString(R.string.dramatization_title), R.color.dramatization_phase, PagerBaseActivity.class),
+                            new Phase(context.getResources().getString(R.string.export_title), R.color.export_phase, ExportActivity.class)};
     }
 
     /**
