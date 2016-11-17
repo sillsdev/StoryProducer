@@ -2,6 +2,7 @@ package org.sil.storyproducer.media;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaFormat;
 
@@ -85,6 +86,7 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
             soundtrackDecoder.addSource(soundtrackExtractor);
 
             PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mDelayUs);
+            audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
                 PipedAudioResampler narrationResampler = new PipedAudioResampler(mSampleRate, 1);
                 narrationConcatenator.addSource(narrationResampler);
@@ -121,10 +123,13 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
         //TODO: use kbfx
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
+        Paint p = new Paint();
+        p.setAlpha((int) (alpha * 255));
+
         float percent = (float) (timeOffset / (double) duration);
         int x = (int) (percent * bitmap.getWidth());
         int y = (int) (percent * bitmap.getHeight());
-        canv.drawBitmap(bitmap, new Rect(0, 0, x, y), mScreenRect, null);
+        canv.drawBitmap(bitmap, new Rect(0, 0, x, y), mScreenRect, p);
     }
 
     @Override

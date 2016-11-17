@@ -72,7 +72,7 @@ public class MyEncodeAndMuxTest {
     private static final File OUTPUT_DIR = new File(FileSystem.getStoryPath("Fiery Furnace"));
     private static final Bitmap TEST_BITMAP = FileSystem.getImage("Fiery Furnace", 1);
     private static final String TEST_IMG_1 = OUTPUT_DIR.getPath() + "/1.jpg";
-    private static final String TEST_IMG_2 = OUTPUT_DIR.getPath() + "/2.jpg";
+    private static final String TEST_IMG_2 = OUTPUT_DIR.getPath() + "/4.jpg";
     private static final String TEST_AUDIO_PATH = OUTPUT_DIR.getPath() + "/TestSound.mp3"; //"/recording1.mp3", "/narration0.wav"
     private static final String TEST_AUDIO_PATH_2 = OUTPUT_DIR.getPath() + "/narration0.wav";
     private static final String TEST_AUDIO_PATH_3 = OUTPUT_DIR.getPath() + "/narration1.wav";
@@ -90,7 +90,7 @@ public class MyEncodeAndMuxTest {
     private static final int VIDEO_NUM_FRAMES = VIDEO_LENGTH_SECONDS * VIDEO_FRAME_RATE;
 
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
-    private static final int AUDIO_SAMPLE_RATE = 8000;
+    private static final int AUDIO_SAMPLE_RATE = 48000;
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BITRATE = 64000;
 
@@ -181,7 +181,7 @@ public class MyEncodeAndMuxTest {
 
         File soundtrack = new File(OUTPUT_DIR.getPath() + "/TestSound.mp3");
 
-        long delayUs = 1000;
+        long delayUs = 3000000;
 
         VideoStoryMaker maker = new VideoStoryMaker(new File(outputPath), outputFormat, videoFormat, audioFormat,
                 pages, soundtrack, delayUs);
