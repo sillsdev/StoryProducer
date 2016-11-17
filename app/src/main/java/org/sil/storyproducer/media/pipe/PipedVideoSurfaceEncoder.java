@@ -18,15 +18,14 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     private Surface mSurface;
 
     private MediaFormat mConfigureFormat;
-    private MediaFormat mSourceFormat;
     private PipedVideoSurfaceSource mSource;
 
     private Queue<Long> mPresentationTimeQueue = new LinkedList<>();
 
     private long mCurrentPresentationTime;
 
-    public PipedVideoSurfaceEncoder(MediaFormat format) {
-        mConfigureFormat = format;
+    public PipedVideoSurfaceEncoder() {
+        //empty default constructor
     }
 
     @Override
@@ -44,14 +43,15 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         if(mSource == null) {
             throw new RuntimeException("No source provided!");
         }
-        Canvas canv = mSurface.lockCanvas(null);
-        mCurrentPresentationTime = mSource.fillCanvas(canv);
-        mPresentationTimeQueue.add(mCurrentPresentationTime);
-        mSurface.unlockCanvasAndPost(canv);
 
-        if(mSource.isDone()) {
-            mCodec.signalEndOfInputStream();
+        while(!mSource.isDone()) {
+            Canvas canv = mSurface.lockCanvas(null);
+            mCurrentPresentationTime = mSource.fillCanvas(canv);
+            mPresentationTimeQueue.add(mCurrentPresentationTime);
+            mSurface.unlockCanvasAndPost(canv);
         }
+
+        mCodec.signalEndOfInputStream();
     }
 
     @Override
@@ -78,14 +78,7 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
 
     @Override
     public void setup() throws IOException {
-        mSourceFormat = mSource.getOutputFormat();
-
-        //video keys
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
+        mConfigureFormat = mSource.getOutputFormat();
 
         mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
         mConfigureFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,

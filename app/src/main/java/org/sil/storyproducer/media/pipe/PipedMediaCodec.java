@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
+    Thread mThread;
+
     @Deprecated
     protected abstract String getComponentName();
 
@@ -69,6 +71,14 @@ public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBuffer
         mCodec.start();
         mInputBuffers = mCodec.getInputBuffers();
         mOutputBuffers = mCodec.getOutputBuffers();
+
+        mThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                spinInput();
+            }
+        });
+        mThread.start();
     }
 
     private ByteBuffer spinOutput(MediaCodec.BufferInfo info, boolean stopWithFormat) {
@@ -80,9 +90,8 @@ public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBuffer
             int pollCode = mCodec.dequeueOutputBuffer(
                     info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
-
-                spinInput();
+//                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
+                //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
                 if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": output buffers changed");

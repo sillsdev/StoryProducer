@@ -217,6 +217,14 @@ public class MyEncodeAndMuxTest {
                     public MediaFormat getOutputFormat() {
                         MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
                         format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
+
+                        // Set some properties.  Failing to specify some of these can cause the MediaCodec
+                        // configure() call to throw an unhelpful exception.
+                        format.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+                        format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
+
+                        if (MediaHelper.VERBOSE) Log.d(TAG, "video format: " + format);
+
                         return format;
                     }
 
@@ -241,15 +249,7 @@ public class MyEncodeAndMuxTest {
                     }
                 };
 
-                MediaFormat videoFormat = MediaHelper.createFormat(VIDEO_MIME_TYPE);
-
-                // Set some properties.  Failing to specify some of these can cause the MediaCodec
-                // configure() call to throw an unhelpful exception.
-                videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
-                videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
-                if (VERBOSE) Log.d(TAG, "video format: " + videoFormat);
-
-                videoEncoder = new PipedVideoSurfaceEncoder(videoFormat);
+                videoEncoder = new PipedVideoSurfaceEncoder();
                 videoEncoder.addSource(videoDrawer);
 
                 muxer.addSource(videoEncoder);
