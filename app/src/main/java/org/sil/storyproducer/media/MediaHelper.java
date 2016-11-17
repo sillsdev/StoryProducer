@@ -37,13 +37,13 @@ final public class MediaHelper {
     }
 
     /**
-     * <p>Get the sample/frame time from the sample/frame index given a sample/frame rate.</p>
+     * <p>Get the sample/frame presentation time from the sample/frame index given a sample/frame rate.</p>
      *
      * <p>Note: This method provides more accurate timestamps than simply keeping track
      * of the current timestamp and incrementing it by the time per sample/frame.</p>
-     * @param rate
-     * @param index
-     * @return
+     * @param rate sample or frame rate
+     * @param index particular sample or frame number
+     * @return sample or frame presentation time in microseconds
      */
     public static long getTimeFromIndex(long rate, int index) {
         return index * 1000000L / rate;

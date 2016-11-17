@@ -86,26 +86,20 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
 
     @Override
     public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
-        mSources.add(src);
+        addSource(src, 0);
     }
 
     /**
-     * Associate an expected duration with the source most recently added via
-     * {@link #addSource(PipedMediaByteBufferSource)}. The expected duration is guaranteed.
+     * <p>Add a source with an associated expected duration. The expected duration is guaranteed.</p>
      *
-     * In other words, if a duration is specified for all sources, the output audio stream is
-     * guaranteed to be within a couple of samples of the sum of all specified durations and n + 1 delays.
+     * <p>In other words, if a duration is specified for all sources, the output audio stream is
+     * guaranteed to be within a couple of samples of the sum of all specified durations and n + 1 delays.</p>
      *
-     * @param duration
+     * @param src source audio stream
+     * @param duration expected duration of the source audio stream
      */
-    public void addDuration(long duration) {
-        if(mSourceExpectedDurations.size() >= mSources.size()) {
-            throw new RuntimeException("Too many durations!");
-        }
-
-        while(mSourceExpectedDurations.size() < mSources.size() - 1) {
-            mSourceExpectedDurations.add(0L);
-        }
+    public void addSource(PipedMediaByteBufferSource src, long duration) throws SourceUnacceptableException {
+        mSources.add(src);
         mSourceExpectedDurations.add(duration);
     }
 
@@ -143,11 +137,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
-
-        //Fill up the rest of the duration queue with zeroes.
-        while(mSourceExpectedDurations.size() < mSources.size()) {
-            mSourceExpectedDurations.add(0L);
-        }
     }
 
     @Override
