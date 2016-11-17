@@ -11,14 +11,21 @@ import java.nio.ShortBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
-//TODO: class is very much incomplete
+/**
+ * This media pipeline component concatenates raw audio streams with specified delay in between streams.
+ *
+ * This component also optionally ensures that each audio stream matches an expected duration.
+ */
 public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
 
     private long mDelayUs;
-    private long baseLineUs = 0;
+    private long mDelayStartUs = 0;
+    private long mSourceStartUs = 0;
 
     private Queue<PipedMediaByteBufferSource> mSources = new LinkedList<>();
+    private Queue<Long> mSourceExpectedDurations = new LinkedList<>();
     private PipedMediaByteBufferSource mSource;
+    private long mSourceExpectedDuration;
     private ByteBuffer mSourceBuffer;
     private ShortBuffer mSourceShortBuffer;
 
@@ -34,14 +41,17 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
 
     @Override
     protected short getSampleForTime(long time, int channel) {
-        if(mSource == null && time > baseLineUs + mDelayUs) {
+        if(mSource == null && time > mDelayStartUs + mDelayUs) {
             //If sources are all gone, this component is done.
             if(mSources.isEmpty()) {
                 mIsDone = true;
                 return 0;
             }
             else {
+                mSourceStartUs = mSourceStartUs + mSourceExpectedDuration + mDelayUs;
+
                 mSource = mSources.remove();
+                mSourceExpectedDuration = mSourceExpectedDurations.remove();
                 fetchSourceBuffer();
             }
         }
@@ -54,12 +64,21 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
                 releaseSourceBuffer();
                 fetchSourceBuffer();
             }
-            if(mSourceShortBuffer != null) {
+
+            boolean isWithinExpectedTime = mSourceExpectedDuration == 0
+                    || time <= mSourceStartUs + mSourceExpectedDuration;
+
+            if(mSourceShortBuffer != null && isWithinExpectedTime) {
                 return mSourceShortBuffer.get();
             }
             else {
                 mSource = null;
-                baseLineUs = time;
+                if(mSourceExpectedDuration == 0) {
+                    mDelayStartUs = time;
+                }
+                else {
+                    mDelayStartUs = mSourceStartUs + mSourceExpectedDuration;
+                }
                 return 0;
             }
         }
@@ -68,6 +87,26 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
     @Override
     public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
         mSources.add(src);
+    }
+
+    /**
+     * Associate an expected duration with the source most recently added via
+     * {@link #addSource(PipedMediaByteBufferSource)}. The expected duration is guaranteed.
+     *
+     * In other words, if a duration is specified for all sources, the output audio stream is
+     * guaranteed to be within a couple of samples of the sum of all specified durations and n + 1 delays.
+     *
+     * @param duration
+     */
+    public void addDuration(long duration) {
+        if(mSourceExpectedDurations.size() >= mSources.size()) {
+            throw new RuntimeException("Too many durations!");
+        }
+
+        while(mSourceExpectedDurations.size() < mSources.size() - 1) {
+            mSourceExpectedDurations.add(0L);
+        }
+        mSourceExpectedDurations.add(duration);
     }
 
     @Override
@@ -104,6 +143,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator  {
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        //Fill up the rest of the duration queue with zeroes.
+        while(mSourceExpectedDurations.size() < mSources.size()) {
+            mSourceExpectedDurations.add(0L);
+        }
     }
 
     @Override

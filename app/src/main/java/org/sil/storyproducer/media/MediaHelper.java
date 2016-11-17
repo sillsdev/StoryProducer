@@ -1,6 +1,7 @@
 package org.sil.storyproducer.media;
 
 import android.media.MediaFormat;
+import android.media.MediaMetadataRetriever;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -13,7 +14,7 @@ final public class MediaHelper {
     /**
      * lots of logging?
      */
-    public static final boolean VERBOSE = false;
+    public static final boolean VERBOSE = true;
 
     /**
      * the maximum size of input buffers; currently used to prevent buffer overflow.
@@ -22,6 +23,18 @@ final public class MediaHelper {
     public static final long TIMEOUT_USEC = 1000;
 
     public static final String MIMETYPE_RAW_AUDIO = "audio/raw";
+
+    /**
+     * Get the duration of an audio file in microseconds.
+     * @param path
+     * @return microsecond duration of the audio file
+     */
+    public static long getAudioDuration(String path) {
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(path);
+        String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        return Integer.parseInt(durationStr) * 1000;
+    }
 
     /**
      * Extract the {@link MediaType} from the format.
