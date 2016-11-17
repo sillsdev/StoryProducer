@@ -71,6 +71,8 @@ public class MyEncodeAndMuxTest {
     // where to put the output file (note: /sdcard requires WRITE_EXTERNAL_STORAGE permission)
     private static final File OUTPUT_DIR = new File(FileSystem.getStoryPath("Fiery Furnace"));
     private static final Bitmap TEST_BITMAP = FileSystem.getImage("Fiery Furnace", 1);
+    private static final String TEST_IMG_1 = OUTPUT_DIR.getPath() + "/1.jpg";
+    private static final String TEST_IMG_2 = OUTPUT_DIR.getPath() + "/2.jpg";
     private static final String TEST_AUDIO_PATH = OUTPUT_DIR.getPath() + "/TestSound.mp3"; //"/recording1.mp3", "/narration0.wav"
     private static final String TEST_AUDIO_PATH_2 = OUTPUT_DIR.getPath() + "/narration0.wav";
     private static final String TEST_AUDIO_PATH_3 = OUTPUT_DIR.getPath() + "/narration1.wav";
@@ -142,18 +144,51 @@ public class MyEncodeAndMuxTest {
     private static boolean started = false;
 
     public void runTest() {
-//        testEncodeVideoToMp4();
-        runPipedTest();
-    }
-
-    public void runPipedTest() {
         //Bandaid for run on startup
         if(started) {
             return;
         }
         started = true;
 
+//        testEncodeVideoToMp4();
+//        runPipedTest();
+        runVideoStoryMakerTest();
+    }
 
+    public void runVideoStoryMakerTest() {
+        String outputPath = new File(OUTPUT_DIR,
+                "testPipe" + (mUseAudio ? "A" : "") + (mUseVideo ? "V" : "") + "." + mWidth + "x" + mHeight + ".mp4").toString();
+        int outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4;
+
+        MediaFormat videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
+
+        // Set some properties.  Failing to specify some of these can cause the MediaCodec
+        // configure() call to throw an unhelpful exception.
+        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
+
+        MediaFormat audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE);
+        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BITRATE);
+        audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
+        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
+
+        StoryPage[] pages = {
+                new StoryPage(new File(TEST_IMG_1), new File(TEST_AUDIO_PATH_2), null),
+                new StoryPage(new File(TEST_IMG_2), new File(TEST_AUDIO_PATH_3), null),
+        };
+
+        File soundtrack = new File(OUTPUT_DIR.getPath() + "/TestSound.mp3");
+
+        long delayUs = 1000;
+
+        VideoStoryMaker maker = new VideoStoryMaker(new File(outputPath), outputFormat, videoFormat, audioFormat,
+                pages, soundtrack, delayUs);
+        maker.churn();
+    }
+
+    public void runPipedTest() {
         String outputPath = new File(OUTPUT_DIR,
                 "testPipe" + (mUseAudio ? "A" : "") + (mUseVideo ? "V" : "") + "." + mWidth + "x" + mHeight + ".mp4").toString();
 

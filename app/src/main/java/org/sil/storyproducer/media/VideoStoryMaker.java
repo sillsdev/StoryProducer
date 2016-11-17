@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.media.MediaFormat;
-import android.media.MediaMuxer;
 
 import org.sil.storyproducer.media.pipe.PipedAudioConcatenator;
 import org.sil.storyproducer.media.pipe.PipedAudioMixer;
@@ -22,6 +21,7 @@ import java.io.IOException;
 
 public class VideoStoryMaker implements PipedVideoSurfaceSource {
     private File mOutputFile;
+    private int mOutputFormat;
 
     private MediaFormat mVideoFormat;
     private MediaFormat mAudioFormat;
@@ -34,6 +34,7 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
     private long mCurrentPageStart = 0;
 
     private int mSampleRate;
+    private int mChannelCount;
 
     private int mFrameRate;
 
@@ -45,8 +46,9 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
 
     private boolean mIsVideoDone = false;
 
-    public VideoStoryMaker(File output, MediaFormat videoFormat, MediaFormat audioFormat, StoryPage[] pages, File soundtrack, long delayUs) {
+    public VideoStoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat, StoryPage[] pages, File soundtrack, long delayUs) {
         mOutputFile = output;
+        mOutputFormat = outputFormat;
         mVideoFormat = videoFormat;
         mAudioFormat = audioFormat;
         mPages = pages;
@@ -54,6 +56,7 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
         mDelayUs = delayUs;
 
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         mFrameRate = mVideoFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
 
@@ -64,7 +67,7 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
 
     public void churn() {
         try {
-            PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
+            PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
             PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
             muxer.addSource(audioEncoder);
@@ -81,7 +84,7 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
             PipedMediaExtractor soundtrackExtractor = new PipedMediaExtractor(mSoundTrack.getPath(), MediaHelper.MediaType.AUDIO);
             soundtrackDecoder.addSource(soundtrackExtractor);
 
-            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(1000);
+            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mDelayUs);
             for (StoryPage page : mPages) {
                 PipedAudioResampler narrationResampler = new PipedAudioResampler(mSampleRate, 1);
                 narrationConcatenator.addSource(narrationResampler);
@@ -97,6 +100,9 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
             muxer.addSource(videoEncoder);
 
             videoEncoder.addSource(this);
+
+            muxer.crunch();
+            System.out.println("muxer complete");
         }
         catch (IOException | SourceUnacceptableException | RuntimeException e) {
             e.printStackTrace();
@@ -145,6 +151,8 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
             long nextOffset = currentTime - mCurrentPageStart - mCurrentPageDuration;
             drawFrame(canv, mCurrentPageIndex + 1, nextOffset, nextOffset / (float) mDelayUs);
         }
+
+        mCurrentFrame++;
 
         return currentTime;
     }
