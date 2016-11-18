@@ -98,7 +98,7 @@ public class FileSystem {
         return dir.listFiles(directoryFilter);
     }
 
-    private static String getStoryPath(String story) {
+    private static String getStoryPath(String story){
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
             return storyMap.get(story);
@@ -110,16 +110,14 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
 
-    private static File getStoryDirectory(String story) {
-        Map<String, String> storyMap = storyPaths.get(language);
-        if(storyMap != null) {
-            return new File(storyMap.get(story));
-        }
-        return null;
-    }
-
-    public static File getProjectDirectory(String story){
-        return new File(projectPaths.get(story));
+    /**
+     * Gets the directory of a particular story in the <b>projects</b> directory.
+     * @param story
+     * @return
+     */
+    public static File getProjectDirectory(String story) {
+        String path = projectPaths.get(story);
+        return new File(path); //will throw a null pointer exception if path is null
     }
 
     public static String[] getStoryNames() {
