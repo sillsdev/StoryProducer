@@ -13,10 +13,14 @@ public class FileSystem {
     private static String language = "ENG"; //ethnologue code for english
 
     private static Context context;
+    private static final String TEMPLATES_DIR = "templates",
+                                NARRATION_PREFIX="narration",
+                                PROJECT_DIR="projects";
 
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
+    private static Map<String, String> projectPaths;
 
     private static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -34,14 +38,16 @@ public class FileSystem {
     public static void loadStories() {
         //Reset storyPaths
         storyPaths = new HashMap<>();
+        projectPaths=new HashMap<>();
 
         File[] storeDirs = getStorageDirs();
         for(int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
             File sDir = storeDirs[storeIndex];
 
             if (sDir != null) {
-                File templateDir = new File(sDir, "templates");
-                if (templateDir.exists()) {
+                File templateDir = new File(sDir, TEMPLATES_DIR);
+
+                if (templateDir.exists() && templateDir.isDirectory()) {
                     File[] langDirs = getLanguageDirs(templateDir);
                     for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
                         File lDir = langDirs[langIndex];
@@ -61,6 +67,19 @@ public class FileSystem {
                         }
                     }
                 }
+
+                File projectDir  = new File(sDir, PROJECT_DIR);
+
+                if (projectDir.exists() && projectDir.isDirectory()) {
+                    File[] storyDirs = getStoryDirs(projectDir);
+                    for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                        File storyDir = storyDirs[storyIndex];
+                        String storyName = storyDir.getName();
+                        String storyPath = storyDir.getPath();
+                        projectPaths.put(storyName, storyPath);
+                    }
+                }
+
             }
         }
     }
@@ -75,8 +94,8 @@ public class FileSystem {
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
     }
-    private static File[] getStoryDirs(File langDir) {
-        return langDir.listFiles(directoryFilter);
+    private static File[] getStoryDirs(File dir) {
+        return dir.listFiles(directoryFilter);
     }
 
     private static String getStoryPath(String story) {
@@ -88,15 +107,19 @@ public class FileSystem {
     }
 
     public static File getNarrationAudio(String story, int i){
-        return new File(getStoryPath(story)+"/narration"+i+".wav");
+        return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
 
-    public static File getStoryFile(String story) {
+    private static File getStoryDirectory(String story) {
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
             return new File(storyMap.get(story));
         }
         return null;
+    }
+
+    public static File getProjectDirectory(String story){
+        return new File(projectPaths.get(story));
     }
 
     public static String[] getStoryNames() {

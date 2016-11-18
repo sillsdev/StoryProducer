@@ -69,7 +69,7 @@ public class TransFrag extends Fragment {
         //stuff for saving and playing the audio
         //TODO test to see where exacly getPath is in our files and if we even need the directory path
 
-        final File output = FileSystem.getStoryFile(getArguments().getString(STORY_NAME));
+        final File output = FileSystem.getProjectDirectory(getArguments().getString(STORY_NAME));
 
         final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
         final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
@@ -197,7 +197,7 @@ public class TransFrag extends Fragment {
             MediaPlayer m = new MediaPlayer();
             try {
                 /*m.setDataSource(
-                        FileSystem.getStoryFile(getArguments().getString(STORY_NAME))
+                        FileSystem.getStoryDirectory(getArguments().getString(STORY_NAME))
                                 .getAbsolutePath() + "/narration" + getArguments().getInt(SLIDE_NUM)
                                 + ".wav"); */
                 m.setDataSource(FileSystem.getNarrationAudio(getArguments().getString(STORY_NAME),
