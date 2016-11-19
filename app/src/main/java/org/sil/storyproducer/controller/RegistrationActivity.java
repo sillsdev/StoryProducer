@@ -1,15 +1,18 @@
 package org.sil.storyproducer.controller;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -22,7 +25,10 @@ import org.sil.storyproducer.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -320,8 +326,9 @@ public class RegistrationActivity extends AppCompatActivity {
                         storeRegistrationInfo();
                         Toast saveToast = Toast.makeText(RegistrationActivity.this, R.string.registration_saved_successfully, Toast.LENGTH_LONG);
                         saveToast.show();
-                        Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-                        startActivity(intent);
+//                        Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+//                        startActivity(intent);
+                        sendEmail(RegistrationActivity.this);
                     }
                 }).create();
 
@@ -334,5 +341,43 @@ public class RegistrationActivity extends AppCompatActivity {
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    private static void sendEmail(Activity activity) {
+
+        SharedPreferences prefs = activity.getSharedPreferences(activity.getString(R.string.registration_filename), MODE_PRIVATE);
+        Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+
+        Set<Map.Entry<String, String>> prefMap = preferences.entrySet();
+        Iterator<Map.Entry<String, String>> mapIter = prefMap.iterator();
+        Map.Entry<String, String> infoPair;
+        String message = "";
+
+        while(mapIter.hasNext()) {
+            infoPair = mapIter.next();
+            message += infoPair.getKey();
+            message += ": ";
+            message += infoPair.getValue();
+            message += "\n";
+        }
+
+        String[] TO =  { preferences.get("database_email") };
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setData(Uri.parse("mailto:"));
+        emailIntent.setType("text/plain");
+
+
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "StoryProducer Registration Info");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+
+        try {
+            activity.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            activity.finish();
+            Log.i("Finished sending email", "");
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(activity,
+                    "There is no email client installed.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
