@@ -11,9 +11,9 @@ public class Phase {
 
     /**
      * Constructor for the Phase
-     * @param title: the title for the phase
-     * @param clr: the color for the phase
-     * @param cls: class for the activity of the phase
+     * @param title the title for the phase
+     * @param clr the color for the phase
+     * @param cls class for the activity of the phase
      */
     public Phase(String title, int clr, Class cls) {
         phaseTitle = title;
@@ -23,25 +23,25 @@ public class Phase {
 
     /**
      * get the title for the phase
-     * @return : return the title
+     * @return return the title
      */
-    public String getPhaseTitle() {
+    public String getTitle() {
         return phaseTitle;
     }
 
     /**
      * get the color for the phase
-     * @return : return the color
+     * @return return the color
      */
-    public int getPhaseColor() {
+    public int getColor() {
         return phaseColor;
     }
 
     /**
      * get the class for the activity of the phase
-     * @return : return the class
+     * @return return the class
      */
-    public Class getPhaseClass() {
+    public Class getTheClass() {
         return phaseCls;
     }
 }

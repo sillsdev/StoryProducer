@@ -16,7 +16,7 @@ import android.widget.Spinner;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.GestureListener;
+import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class ExportActivity extends AppCompatActivity {
@@ -29,18 +29,18 @@ public class ExportActivity extends AppCompatActivity {
         setContentView(R.layout.activity_export);
 
         //get the current phase
-        Phase phase = StoryState.getPhase();
+        Phase phase = StoryState.getCurrentPhase();
 
         Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getPhaseColor(), null)));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getColor(), null)));
 
-        mDetector = new GestureDetectorCompat(this, new GestureListener(this));
+        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
     }
 
     /**
-     * sets the Menu spinner object
+     * sets the Menu spinner_item object
      * @param menu
      * @return
      */
@@ -57,18 +57,18 @@ public class ExportActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getPhaseIndex());
+        spinner.setSelection(StoryState.getCurrentPhaseIndex());
         return true;
     }
 
     /**
      * get the touch event so that it can be passed on to GestureDetector
-     * @param event: the MotionEvent
-     * @return : the super version of the function
+     * @param event the MotionEvent
+     * @return the super version of the function
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        this.mDetector.onTouchEvent(event);
+        mDetector.onTouchEvent(event);
         return super.dispatchTouchEvent(event);
     }
 }

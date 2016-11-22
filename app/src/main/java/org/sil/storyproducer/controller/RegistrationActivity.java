@@ -144,10 +144,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * This function takes a scroll view as the root view of a xml layout and searches for
-     * TextInputEditText and spinner fields to add to the List.
+     * TextInputEditText and spinner_item fields to add to the List.
      * @param rootScrollView The root scroll view where all the children will be visited to
      *                       check if there is an TextInputEditText field.
-     * @return               The list of input fields that will be parsed either a spinner or a
+     * @return               The list of input fields that will be parsed either a spinner_item or a
      *                       TextInputEditText.
      */
     private List<View> getInputFields(ScrollView rootScrollView){

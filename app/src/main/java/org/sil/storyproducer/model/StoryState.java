@@ -13,30 +13,31 @@ public final class StoryState {
 
     private static Context context;
     private static String storyName;
-    private static Phase phase;
+    private static Phase currentPhase;
     private static Phase[] phases;
-    private static int phaseIndex = 0;
+    private static int currentPhaseIndex = 0;
 
 
     //TODO: add saving state in prefrences for each story
 
     /**
      * initializes the StoryState variables
-     * @param con : the application context so that the colors can be grabbed from the resources
+     * @param con the application context so that the colors can be grabbed from the resources
      */
     public static void init(Context con) {
         context = con;
-        phase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class);
-        phases =  new Phase[] {new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase,LearnActivity.class),
-                            new Phase(context.getResources().getString(R.string.draftTitle), R.color.draft_phase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.community_check_title), R.color.comunity_check_phase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.consultant_check_title), R.color.consultant_check_phase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.dramatization_title), R.color.dramatization_phase, PagerBaseActivity.class),
-                            new Phase(context.getResources().getString(R.string.export_title), R.color.export_phase, ExportActivity.class)};
+        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class);
+        String[] phaseMenuArray = con.getResources().getStringArray(R.array.phases_menu_array);
+        phases =  new Phase[] {new Phase(phaseMenuArray[0], R.color.learn_phase,LearnActivity.class),
+                            new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class),
+                            new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class),
+                            new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class),
+                            new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class),
+                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class)};
     }
 
     /**
-     * Returns the story name
+     * Returns the story's name
      * @return String for storyName
      */
     public static String getStoryName() {
@@ -45,7 +46,7 @@ public final class StoryState {
 
     /**
      * Sets the storyName
-     * @param name: String to set storyName with
+     * @param name String to set storyName with
      */
     public static void setStoryName(String name) {
         storyName = name;
@@ -55,61 +56,57 @@ public final class StoryState {
      * Return the current Phase the story is in
      * @return Phase
      */
-    public static Phase getPhase() {
-        return phase;
+    public static Phase getCurrentPhase() {
+        return currentPhase;
     }
 
     /**
-     * sets the phase and the phase index given a phase
-     * @param p : Phase
+     * sets the current phase as well as the phaseIndex
+     * @param p Phase
      */
-    public static void setPhase(Phase p) {
+    public static void setCurrentPhase(Phase p) {
         for(int k = 0; k < phases.length; k++) {
-            if(p.getPhaseTitle().equals(phases[k].getPhaseTitle())) {
-                phaseIndex = k;
+            if(p.getTitle().equals(phases[k].getTitle())) {
+                currentPhaseIndex = k;
             }
         }
-        phase = p;
+        currentPhase = p;
     }
 
     /**
-     * returns the story phase
+     * returns the index for the current story phase
      * @return int
      */
-    public static int getPhaseIndex() {
-        return phaseIndex;
+    public static int getCurrentPhaseIndex() {
+        return currentPhaseIndex;
     }
 
-    /**
-     * returns the array of phases
-     * @return array of Phase
-     */
     public static Phase[] getPhases() {
         return phases;
     }
 
     /**
-     * gets the Next Phase and sets the current phase to that phase
-     * @return Phase: returns the next phase
+     * gets the next phase and sets the current phase to that phase
+     * @return Phase returns the next phase
      */
-    public static Phase getNextPhase() {
-        if(phaseIndex < phases.length - 1) {
-            phaseIndex++;
+    public static Phase advanceNextPhase() {
+        if(currentPhaseIndex < phases.length - 1) {
+            currentPhaseIndex++;
         }
-        phase = phases[phaseIndex];
-        return phase;
+        currentPhase = phases[currentPhaseIndex];
+        return currentPhase;
     }
 
     /**
      * gets the previous Phase and sets the current phase to that phase
-     * @return Phase: returns the previous phase
+     * @return Phase returns the previous phase
      */
-    public static Phase getPrevPhase() {
-        if(phaseIndex > 0) {
-            phaseIndex--;
+    public static Phase advancePrevPhase() {
+        if(currentPhaseIndex > 0) {
+            currentPhaseIndex--;
         }
-        phase = phases[phaseIndex];
-        return phase;
+        currentPhase = phases[currentPhaseIndex];
+        return currentPhase;
     }
 
 

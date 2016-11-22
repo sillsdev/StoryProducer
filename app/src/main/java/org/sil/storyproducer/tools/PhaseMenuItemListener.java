@@ -15,8 +15,8 @@ public class PhaseMenuItemListener implements OnItemSelectedListener {
     private Activity activity;
 
     /**
-     * Constructor for GestureListener
-     * @param mActivity: the actvity so that gestureListener can move to different activities
+     * Constructor for PhaseGestureListener
+     * @param mActivity the actvity so that gestureListener can move to different activities
      */
     public PhaseMenuItemListener(Activity mActivity) {
         activity = mActivity;
@@ -25,10 +25,9 @@ public class PhaseMenuItemListener implements OnItemSelectedListener {
     @Override
     public void onItemSelected(AdapterView<?> parent, View view,
     int pos, long id) {
-        System.out.println(parent.getItemAtPosition(pos) + " is the item that was picked");
         Phase[] phases = StoryState.getPhases();
         //return if the phase is the same as the current phase
-        if(phases[pos].getPhaseTitle().equals(StoryState.getPhase().getPhaseTitle())) return;
+        if(phases[pos].getTitle().equals(StoryState.getCurrentPhase().getTitle())) return;
         jumpToPhase(phases[pos]);
     }
 
@@ -42,8 +41,8 @@ public class PhaseMenuItemListener implements OnItemSelectedListener {
      * @param phase
      */
     private void jumpToPhase(Phase phase) {
-        StoryState.setPhase(phase);
-        Intent intent = new Intent(activity.getApplicationContext(), phase.getPhaseClass());
+        StoryState.setCurrentPhase(phase);
+        Intent intent = new Intent(activity.getApplicationContext(), phase.getTheClass());
         intent.putExtra(STORY_NAME, StoryState.getStoryName());
         activity.startActivity(intent);
     }
