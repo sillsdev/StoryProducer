@@ -23,13 +23,13 @@ public class AudioPlayer {
         try {
             mPlayer.setDataSource(path);
         } catch (IOException e) {
-            //TODO maybe somehting with this exception
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
         try {
             mPlayer.prepare();
         } catch (IOException e) {
-            //TODO maybe somehting with this exception
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
         mPlayer.start();
@@ -43,7 +43,7 @@ public class AudioPlayer {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
-                //TODO maybe somehting with this exception
+                //TODO maybe something with this exception
                 e.printStackTrace();
             }
         }
@@ -66,7 +66,7 @@ public class AudioPlayer {
             mPlayer.stop();
             mPlayer.release();
         } catch (IllegalStateException e) {
-            //TODO maybe somehting with this exception
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
     }

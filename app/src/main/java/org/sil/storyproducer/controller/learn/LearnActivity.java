@@ -36,7 +36,7 @@ public class LearnActivity extends AppCompatActivity {
     private ImageView learnImageView;
     private ImageButton playButton;
     private SeekBar videoSeekBar;
-    private AudioPlayer narationPlayer;
+    private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
     private int slideNum = 0;
     private String storyName;
@@ -121,21 +121,21 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        narationPlayer.stopAudio();
+        narrationPlayer.stopAudio();
         backgroundPlayer.stopAudio();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        narationPlayer.pauseAudio();
+        narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        narationPlayer.resumeAudio();
+        narrationPlayer.resumeAudio();
         backgroundPlayer.resumeAudio();
     }
 
@@ -145,15 +145,15 @@ public class LearnActivity extends AppCompatActivity {
     void playVideo() {
         //TODO: sync background audio with image
         learnImageView.setImageBitmap(FileSystem.getImage(storyName, slideNum));          //set the next image
-        narationPlayer = new AudioPlayer();                                                //set the next audio
-        narationPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/narration" + slideNum + ".wav");
+        narrationPlayer = new AudioPlayer();                                                //set the next audio
+        narrationPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/narration" + slideNum + ".wav");
         if(isVolumeOn) {
-            narationPlayer.setVolume(1.0f);
+            narrationPlayer.setVolume(1.0f);
         } else {
-            narationPlayer.setVolume(0.0f);
+            narrationPlayer.setVolume(0.0f);
         }
         videoSeekBar.setProgress(slideNum);
-        narationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
+        narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if(slideNum < FileSystem.getImageAmount(storyName)) {
@@ -173,12 +173,12 @@ public class LearnActivity extends AppCompatActivity {
      * @param view
      */
     public void onClickPlayPauseButton(View view) {
-        if(narationPlayer.isAudioPlaying()) {
-            narationPlayer.pauseAudio();
+        if(narrationPlayer.isAudioPlaying()) {
+            narrationPlayer.pauseAudio();
             backgroundPlayer.pauseAudio();
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
-            narationPlayer.resumeAudio();
+            narrationPlayer.resumeAudio();
             backgroundPlayer.resumeAudio();
             playButton.setImageResource(R.drawable.ic_pause_gray);
         }
@@ -200,11 +200,11 @@ public class LearnActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar sBar, int progress, boolean fromUser) {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
-                    notPlayingAudio = !narationPlayer.isAudioPlaying();
-                    narationPlayer.stopAudio();
+                    notPlayingAudio = !narrationPlayer.isAudioPlaying();
+                    narrationPlayer.stopAudio();
                     slideNum = progress;
                     playVideo();
-                    if(notPlayingAudio) narationPlayer.pauseAudio();
+                    if(notPlayingAudio) narrationPlayer.pauseAudio();
                 }
             }
         });
@@ -227,7 +227,7 @@ public class LearnActivity extends AppCompatActivity {
                     //reset the story with the volume off
                     videoSeekBar.setProgress(0);
                     slideNum = 0;
-                    narationPlayer.setVolume(0.0f);
+                    narrationPlayer.setVolume(0.0f);
                     setBackgroundMusic();
                     backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
@@ -253,11 +253,11 @@ public class LearnActivity extends AppCompatActivity {
         volumeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    narationPlayer.setVolume(1.0f);
+                    narrationPlayer.setVolume(1.0f);
                     backgroundPlayer.setVolume(backgroundVolume);
                     isVolumeOn = true;
                 } else {
-                    narationPlayer.setVolume(0.0f);
+                    narrationPlayer.setVolume(0.0f);
                     backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
                 }
