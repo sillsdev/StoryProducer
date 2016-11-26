@@ -9,7 +9,7 @@ import org.sil.storyproducer.media.MediaHelper;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
 
-public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBufferSource {
+public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
     Thread mThread;
@@ -150,6 +150,7 @@ public abstract class PipedMediaCodec implements Closeable, PipedMediaByteBuffer
     public void close() {
         if(mCodec != null) {
             try {
+                //TODO: handle IllegalStateException?
                 mCodec.stop();
             }
             finally {

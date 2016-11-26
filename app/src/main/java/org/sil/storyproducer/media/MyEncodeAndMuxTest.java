@@ -240,8 +240,8 @@ public class MyEncodeAndMuxTest {
                 audioResampler3.addSource(audioDecoder3);
 
                 audioConcatenator = new PipedAudioConcatenator(1000000);
-                audioConcatenator.addSource(audioResampler2);
-                audioConcatenator.addSource(audioResampler3);
+//                audioConcatenator.addSource(audioResampler2);
+//                audioConcatenator.addSource(audioResampler3);
 
                 audioMixer = new PipedAudioMixer();
                 audioMixer.addSource(audioResampler);
@@ -261,6 +261,11 @@ public class MyEncodeAndMuxTest {
             }
             if(mUseVideo) {
                 PipedVideoSurfaceSource videoDrawer = new PipedVideoSurfaceSource() {
+                    @Override
+                    public void close() throws IOException {
+
+                    }
+
                     @Override
                     public void setup() throws IOException {
 

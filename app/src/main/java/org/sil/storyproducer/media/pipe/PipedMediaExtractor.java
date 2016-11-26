@@ -13,7 +13,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class PipedMediaExtractor implements Closeable, PipedMediaByteBufferSource {
+public class PipedMediaExtractor implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaExtractor";
 
     private MediaExtractor mExtractor;

@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.media.MediaFormat;
 
 import org.sil.storyproducer.media.pipe.PipedAudioConcatenator;
+import org.sil.storyproducer.media.pipe.PipedAudioDecoderMaverick;
 import org.sil.storyproducer.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.media.pipe.PipedAudioResampler;
 import org.sil.storyproducer.media.pipe.PipedMediaDecoder;
@@ -68,37 +69,22 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
 
     public void churn() {
         try {
+            PipedAudioDecoderMaverick soundtrackMaverick = new PipedAudioDecoderMaverick(mSoundTrack.getPath(), mSampleRate, mChannelCount);
+            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mDelayUs, mSampleRate, mChannelCount);
+            PipedAudioMixer audioMixer = new PipedAudioMixer();
+            PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
+            PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
             PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
-            PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
             muxer.addSource(audioEncoder);
 
-            PipedAudioMixer audioMixer = new PipedAudioMixer();
             audioEncoder.addSource(audioMixer);
-
-            PipedAudioResampler soundtrackResampler = new PipedAudioResampler(mSampleRate, 1);
-            audioMixer.addSource(soundtrackResampler);
-
-            PipedMediaDecoder soundtrackDecoder = new PipedMediaDecoder();
-            soundtrackResampler.addSource(soundtrackDecoder);
-
-            PipedMediaExtractor soundtrackExtractor = new PipedMediaExtractor(mSoundTrack.getPath(), MediaHelper.MediaType.AUDIO);
-            soundtrackDecoder.addSource(soundtrackExtractor);
-
-            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mDelayUs);
+            audioMixer.addSource(soundtrackMaverick);
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
-                PipedAudioResampler narrationResampler = new PipedAudioResampler(mSampleRate, 1);
-                narrationConcatenator.addSource(narrationResampler);
-
-                PipedMediaDecoder narrationDecoder = new PipedMediaDecoder();
-                narrationResampler.addSource(narrationDecoder);
-
-                PipedMediaExtractor narrationExtractor = new PipedMediaExtractor(page.getNarrationAudio().getPath(), MediaHelper.MediaType.AUDIO);
-                narrationDecoder.addSource(narrationExtractor);
+                narrationConcatenator.addSource(page.getNarrationAudio().getPath());
             }
 
-            PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
             muxer.addSource(videoEncoder);
 
             videoEncoder.addSource(this);
@@ -175,5 +161,10 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
     @Override
     public boolean isDone() {
         return mIsVideoDone;
+    }
+
+    @Override
+    public void close() throws IOException {
+        //TODO
     }
 }

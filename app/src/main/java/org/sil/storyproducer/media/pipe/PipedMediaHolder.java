@@ -54,4 +54,9 @@ public class PipedMediaHolder implements PipedMediaByteBufferSource, PipedMediaB
     public boolean isDone() {
         return mSource.isDone();
     }
+
+    @Override
+    public void close() throws IOException {
+        mSource.close();
+    }
 }

@@ -11,7 +11,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PipedAudioMixer extends PipedAudioShortManipulator {
+public class PipedAudioMixer extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioMixer";
 
     private MediaFormat mOutputFormat;
@@ -132,5 +132,13 @@ public class PipedAudioMixer extends PipedAudioShortManipulator {
         mSources.get(sourceIndex).releaseBuffer(mSourceBuffers.get(sourceIndex));
         mSourceBuffers.set(sourceIndex, null);
         mSourceShortBuffers.set(sourceIndex, null);
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        for(PipedMediaByteBufferSource source : mSources) {
+            source.close();
+        }
     }
 }

@@ -15,17 +15,14 @@ import java.nio.ShortBuffer;
  *
  * This component also optionally changes the track count of the raw audio stream.
  */
-public class PipedAudioResampler extends PipedAudioShortManipulator {
+public class PipedAudioResampler extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioResampler";
+
+    private float mVolumeModifier = 1f;
 
     private PipedMediaByteBufferSource mSource;
     private MediaFormat mSourceFormat;
     private MediaFormat mOutputFormat;
-
-    private ByteBufferPool mBufferPool = new ByteBufferPool();
-
-    //Only fill output buffer this much. This prevents buffer overflow.
-    private static final float PERCENT_BUFFER_FILL = .75f;
 
     private int mSourceSampleRate;
     private float mSourceUsPerSample;
@@ -61,6 +58,14 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
     public PipedAudioResampler(int sampleRate, int channelCount) {
         mSampleRate = sampleRate;
         mChannelCount = channelCount;
+    }
+
+    /**
+     * Modify all samples by multiplying applying a constant (multiplication).
+     * @param volumeModifier constant to multiply all samples by.
+     */
+    public void setVolumeModifier(float volumeModifier) {
+        mVolumeModifier = volumeModifier;
     }
 
     @Override
@@ -153,7 +158,9 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
             float rightWeight = (time - mLeftSeekTime) / mSourceUsPerSample;
             float leftWeight = 1 - rightWeight;
 
-            return (short) ((short) (leftWeight * left) + (short) (rightWeight * right));
+            short interpolatedSample = (short) ((short) (leftWeight * left) + (short) (rightWeight * right));
+
+            return (short) (mVolumeModifier * interpolatedSample);
         }
     }
 
@@ -207,5 +214,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator {
         //Pull in new buffer.
         mSourceBuffer = mSource.getBuffer(mInfo);
         mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
+    }
+
+    @Override
+    public void close() throws IOException {
+        mSource.close();
     }
 }

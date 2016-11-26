@@ -6,10 +6,11 @@ import android.util.Log;
 import org.sil.storyproducer.media.ByteBufferPool;
 import org.sil.storyproducer.media.MediaHelper;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
-public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource, PipedMediaByteBufferDest {
+public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioShorter";
 
     private ByteBufferPool mBufferPool = new ByteBufferPool();
@@ -116,4 +117,8 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
      */
     protected abstract short getSampleForTime(long time, int channel);
 
+    @Override
+    public void close() throws IOException {
+        //TODO
+    }
 }
