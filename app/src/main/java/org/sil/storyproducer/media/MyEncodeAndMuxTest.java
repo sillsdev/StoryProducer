@@ -38,6 +38,8 @@ import org.sil.storyproducer.media.pipe.PipedVideoSurfaceEncoder;
 import org.sil.storyproducer.media.pipe.PipedMediaExtractor;
 import org.sil.storyproducer.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
+import org.sil.storyproducer.media.videostory.StoryPage;
+import org.sil.storyproducer.media.videostory.VideoStoryMaker;
 
 import java.io.File;
 import java.io.IOException;
@@ -174,9 +176,13 @@ public class MyEncodeAndMuxTest {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
+        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(20, 20, 40, 40), BitmapManager.getDimensions(TEST_IMG_1));
+        Rect r2 = BitmapManager.getDimensions(TEST_IMG_2);
+        KenBurnsEffect kbfx2 = new KenBurnsEffect(new Rect(0, 0, r2.right - 50, r2.bottom), new Rect(50, 0, r2.right, r2.bottom));
+
         StoryPage[] pages = {
-                new StoryPage(new File(TEST_IMG_1), new File(TEST_AUDIO_PATH_2), null),
-                new StoryPage(new File(TEST_IMG_2), new File(TEST_AUDIO_PATH_3), null),
+                new StoryPage(new File(TEST_IMG_1), new File(TEST_AUDIO_PATH_2), kbfx1),
+                new StoryPage(new File(TEST_IMG_2), new File(TEST_AUDIO_PATH_3), kbfx2),
         };
 
         File soundtrack = new File(OUTPUT_DIR.getPath() + "/TestSound.mp3");

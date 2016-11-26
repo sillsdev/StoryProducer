@@ -1,4 +1,4 @@
-package org.sil.storyproducer.media;
+package org.sil.storyproducer.media.videostory;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -6,37 +6,21 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaFormat;
 
-import org.sil.storyproducer.media.pipe.PipedAudioConcatenator;
-import org.sil.storyproducer.media.pipe.PipedAudioDecoderMaverick;
-import org.sil.storyproducer.media.pipe.PipedAudioMixer;
-import org.sil.storyproducer.media.pipe.PipedAudioResampler;
-import org.sil.storyproducer.media.pipe.PipedMediaDecoder;
-import org.sil.storyproducer.media.pipe.PipedMediaEncoder;
-import org.sil.storyproducer.media.pipe.PipedMediaExtractor;
-import org.sil.storyproducer.media.pipe.PipedMediaMuxer;
-import org.sil.storyproducer.media.pipe.PipedVideoSurfaceEncoder;
+import org.sil.storyproducer.media.KenBurnsEffect;
+import org.sil.storyproducer.media.MediaHelper;
 import org.sil.storyproducer.media.pipe.PipedVideoSurfaceSource;
 import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
 
-import java.io.File;
 import java.io.IOException;
 
-public class VideoStoryMaker implements PipedVideoSurfaceSource {
-    private File mOutputFile;
-    private int mOutputFormat;
-
+class VideoStoryDrawer implements PipedVideoSurfaceSource {
     private MediaFormat mVideoFormat;
-    private MediaFormat mAudioFormat;
     private StoryPage[] mPages;
-    private File mSoundTrack;
     private long mDelayUs;
 
     private int mCurrentPageIndex = -1;
     private long mCurrentPageDuration = 0;
     private long mCurrentPageStart = 0;
-
-    private int mSampleRate;
-    private int mChannelCount;
 
     private int mFrameRate;
 
@@ -48,53 +32,16 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
 
     private boolean mIsVideoDone = false;
 
-    public VideoStoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat, StoryPage[] pages, File soundtrack, long delayUs) {
-        mOutputFile = output;
-        mOutputFormat = outputFormat;
+    VideoStoryDrawer(MediaFormat videoFormat, StoryPage[] pages, long delayUs) {
         mVideoFormat = videoFormat;
-        mAudioFormat = audioFormat;
         mPages = pages;
-        mSoundTrack = soundtrack;
         mDelayUs = delayUs;
-
-        mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-        mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         mFrameRate = mVideoFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
 
         mWidth = mVideoFormat.getInteger(MediaFormat.KEY_WIDTH);
         mHeight = mVideoFormat.getInteger(MediaFormat.KEY_HEIGHT);
         mScreenRect = new Rect(0, 0, mWidth, mHeight);
-    }
-
-    public void churn() {
-        try {
-            PipedAudioDecoderMaverick soundtrackMaverick = new PipedAudioDecoderMaverick(mSoundTrack.getPath(), mSampleRate, mChannelCount);
-            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mDelayUs, mSampleRate, mChannelCount);
-            PipedAudioMixer audioMixer = new PipedAudioMixer();
-            PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
-            PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
-            PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
-
-            muxer.addSource(audioEncoder);
-
-            audioEncoder.addSource(audioMixer);
-            audioMixer.addSource(soundtrackMaverick);
-            audioMixer.addSource(narrationConcatenator);
-            for (StoryPage page : mPages) {
-                narrationConcatenator.addSource(page.getNarrationAudio().getPath());
-            }
-
-            muxer.addSource(videoEncoder);
-
-            videoEncoder.addSource(this);
-
-            muxer.crunch();
-            System.out.println("muxer complete");
-        }
-        catch (IOException | SourceUnacceptableException | RuntimeException e) {
-            e.printStackTrace();
-        }
     }
 
     private void drawFrame(Canvas canv, int pageIndex, long timeOffset, float alpha) {
@@ -110,12 +57,16 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
         Paint p = new Paint();
+//        p.setAntiAlias(true);
+//        p.setFilterBitmap(true);
+//        p.setFlags(Paint.ANTI_ALIAS_FLAG);
         p.setAlpha((int) (alpha * 255));
 
         float percent = (float) (timeOffset / (double) duration);
-        int x = (int) (percent * bitmap.getWidth());
-        int y = (int) (percent * bitmap.getHeight());
-        canv.drawBitmap(bitmap, new Rect(0, 0, x, y), mScreenRect, p);
+//        int x = (int) (percent * bitmap.getWidth());
+//        int y = (int) (percent * bitmap.getHeight());
+//        canv.drawBitmap(bitmap, new Rect(0, 0, x, y), mScreenRect, p);
+        canv.drawBitmap(bitmap, kbfx.interpolate(percent), mScreenRect, p);
     }
 
     @Override
@@ -165,6 +116,6 @@ public class VideoStoryMaker implements PipedVideoSurfaceSource {
 
     @Override
     public void close() throws IOException {
-        //TODO
+        //Do nothing.
     }
 }

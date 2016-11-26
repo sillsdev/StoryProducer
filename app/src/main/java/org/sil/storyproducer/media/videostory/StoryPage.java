@@ -1,7 +1,11 @@
-package org.sil.storyproducer.media;
+package org.sil.storyproducer.media.videostory;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import org.sil.storyproducer.media.BitmapManager;
+import org.sil.storyproducer.media.KenBurnsEffect;
+import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.File;
 

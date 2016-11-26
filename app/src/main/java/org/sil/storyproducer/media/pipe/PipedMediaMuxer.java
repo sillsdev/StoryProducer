@@ -108,7 +108,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             }
         }
 
-        //TODO: close sources
+        close();
     }
 
     private class StreamThread extends Thread {
@@ -141,7 +141,22 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     @Override
     public void close() {
-        //TODO: close sources
+        if(mAudioSource != null) {
+            try {
+                mAudioSource.close();
+            } catch (IOException e) {
+                //TODO: handle exception?
+                e.printStackTrace();
+            }
+        }
+        if(mVideoSource != null) {
+            try {
+                mVideoSource.close();
+            } catch (IOException e) {
+                //TODO: handle exception?
+                e.printStackTrace();
+            }
+        }
         if(mMuxer != null) {
             try {
                 mMuxer.stop();
