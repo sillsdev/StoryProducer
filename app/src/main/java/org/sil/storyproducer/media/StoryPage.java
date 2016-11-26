@@ -10,8 +10,6 @@ public class StoryPage {
     private File mNarrationAudio;
     private KenBurnsEffect mKBFX;
 
-    private Bitmap mBitmap;
-
     public StoryPage(File image, File narrationAudio, KenBurnsEffect kbfx) {
         mImage = image;
         mNarrationAudio = narrationAudio;
@@ -23,10 +21,7 @@ public class StoryPage {
     }
 
     public Bitmap getBitmap() {
-        if(mBitmap == null) {
-            mBitmap = BitmapFactory.decodeFile(mImage.getPath());
-        }
-        return mBitmap;
+        return BitmapManager.get(mImage.getPath());
     }
 
     public File getNarrationAudio() {

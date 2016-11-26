@@ -10,6 +10,8 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import org.sil.storyproducer.media.MyEncodeAndMuxTest;
+
 /**
  * Created by hannahbrown on 9/25/15.
  */
@@ -51,8 +53,10 @@ public class StoryFrag extends Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int slideNum = FileSystem.getImageAmount(values[position]);
-                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
+                MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
+                test.runTest();
+//                int slideNum = FileSystem.getImageAmount(values[position]);
+//                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
             }
         });
 

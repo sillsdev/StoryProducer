@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-        MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
-        test.runTest();
+//        MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
+//        test.runTest();
     }
 
     @Override

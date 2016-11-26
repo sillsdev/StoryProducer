@@ -145,9 +145,9 @@ public class MyEncodeAndMuxTest {
 
     public void runTest() {
         //Bandaid for run on startup
-        if(started) {
-            return;
-        }
+//        if(started) {
+//            return;
+//        }
         started = true;
 
 //        testEncodeVideoToMp4();
