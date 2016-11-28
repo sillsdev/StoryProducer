@@ -69,7 +69,7 @@ public class TransFrag extends Fragment {
         //stuff for saving and playing the audio
         //TODO test to see where exacly getPath is in our files and if we even need the directory path
 
-        final File output = new File(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)));
+        final File output = FileSystem.getProjectDirectory(getArguments().getString(STORY_NAME));
 
         final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
         final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
@@ -122,44 +122,6 @@ public class TransFrag extends Fragment {
                     }
                 }
 
-                /*switch (event.getAction() & MotionEvent.ACTION_MASK) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        v.setPressed(true);
-                        outputFile = FILE_BASE + getArguments().getInt(SLIDE_NUM) + ".mp3";
-                        audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
-                        startAudioRecorder(audioRecorder);
-                        Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_OUTSIDE:
-                    case MotionEvent.ACTION_CANCEL:
-                        if (isSpeakButtonLongPressed == false) {
-                            Toast.makeText(getContext(), "Recording Stopped", Toast.LENGTH_SHORT).show();
-                            failure = 1;
-                            stopAudioRecorder(audioRecorder);
-                            //keep track of the number of records
-                            if (record_count == 2 & failure == 1) {
-                                record_count--;
-                                floatingActionButton1.setColorNormalResId(R.color.yellow);
-                                floatingActionButton2.setVisibility(View.VISIBLE);
-                            } else if (record_count == 1 & failure == 1) {
-                                record_count--;
-                                floatingActionButton1.setColorNormalResId(R.color.green);
-                            } else if (record_count == 0 & failure == 0) {
-                                record_count++;
-                                floatingActionButton1.setColorNormalResId(R.color.yellow);
-                            }
-
-                            v.setPressed(false);
-                        }
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                    case MotionEvent.ACTION_POINTER_DOWN:
-                    case MotionEvent.ACTION_POINTER_UP:
-                        break;
-
-                }*/
                 return true;
             }
         });
@@ -196,7 +158,10 @@ public class TransFrag extends Fragment {
             Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             MediaPlayer m = new MediaPlayer();
             try {
-                m.setDataSource(FileSystem.getStoryPath(getArguments().getString(STORY_NAME)) + "/narration" + getArguments().getInt(SLIDE_NUM) + ".wav");
+                File narrFile = FileSystem.getNarrationAudio(getArguments().getString(STORY_NAME),
+                        getArguments().getInt(SLIDE_NUM));
+                m.setDataSource(narrFile.getAbsolutePath());
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
