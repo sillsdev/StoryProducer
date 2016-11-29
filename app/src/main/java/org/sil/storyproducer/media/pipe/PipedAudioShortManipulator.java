@@ -20,7 +20,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
     protected int mSampleRate;
     protected int mChannelCount;
-    private long mSeekTime = 0;
+    protected long mSeekTime = 0;
     private int mAbsoluteSampleIndex = 0;
 
     @Override
