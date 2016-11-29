@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -117,12 +118,21 @@ public class RegistrationActivity extends AppCompatActivity {
     private void addSubmitButtonSave(){
         final Button submitButton = (Button)findViewById(R.id.submit_button);
 
+
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
+                final EditText databaseEmailField = (EditText)findViewById(R.id.input_database_email);
+                String databaseEmail = databaseEmailField.getText().toString();
                 boolean completeFields;
+
                 submitButton.requestFocus();
                 completeFields = parseTextFields();
-                createSubmitConfirmationDialog(completeFields);
+                if (databaseEmail.isEmpty()) {
+                    createErrorDialog(databaseEmailField);
+                } else {
+                    createSubmitConfirmationDialog(completeFields);
+                }
+
             }
         });
     }
@@ -249,6 +259,9 @@ public class RegistrationActivity extends AppCompatActivity {
         year = Integer.toString(calendar.get(Calendar.YEAR));
         hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY));
         min = Integer.toString(calendar.get(Calendar.MINUTE));
+        if (min.length() < 2) {
+            min = "0" + min;
+        }
         date = month + "/" + day + "/" + year + " " + hour + ":" + min;
         editor.putString("date", date);
 
@@ -307,6 +320,22 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
+     * Shows error dialog if user did not provide an email to send the information to
+     * @param emailTextField the text field to check if it is blank
+     */
+    private void createErrorDialog(final EditText emailTextField) {
+        AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle(getString(R.string.registration_error_title))
+                .setMessage(getString(R.string.registration_error_message))
+                .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        emailTextField.requestFocus();
+                    }
+                }).create();
+        dialog.show();
+    }
+
+    /**
      * Creates a dialog to confirm the user wants to submit
      * @param completeFields true if all fields filled in, false if any fields are empty
      */
@@ -326,8 +355,6 @@ public class RegistrationActivity extends AppCompatActivity {
                         storeRegistrationInfo();
                         Toast saveToast = Toast.makeText(RegistrationActivity.this, R.string.registration_saved_successfully, Toast.LENGTH_LONG);
                         saveToast.show();
-//                        Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-//                        startActivity(intent);
                         sendEmail(RegistrationActivity.this);
                     }
                 }).create();
@@ -348,24 +375,12 @@ public class RegistrationActivity extends AppCompatActivity {
         SharedPreferences prefs = activity.getSharedPreferences(activity.getString(R.string.registration_filename), MODE_PRIVATE);
         Map<String, String> preferences = (Map<String, String>)prefs.getAll();
 
-        Set<Map.Entry<String, String>> prefMap = preferences.entrySet();
-        Iterator<Map.Entry<String, String>> mapIter = prefMap.iterator();
-        Map.Entry<String, String> infoPair;
-        String message = "";
-
-        while(mapIter.hasNext()) {
-            infoPair = mapIter.next();
-            message += infoPair.getKey();
-            message += ": ";
-            message += infoPair.getValue();
-            message += "\n";
-        }
+        String message = formatEmailFromPreferences(prefs);
 
         String[] TO =  { preferences.get("database_email") };
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");
-
 
         emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "StoryProducer Registration Info");
@@ -379,5 +394,42 @@ public class RegistrationActivity extends AppCompatActivity {
             Toast.makeText(activity,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Takes the preferences file and returns a string of formatted fields in readable format
+     * @param prefs the SharedPreferences object for registration
+     * @return a well formatted string of registration information
+     */
+    private static String formatEmailFromPreferences(SharedPreferences prefs) {
+        // Gives the order for retrieval and printing
+        // Empty strings ("") are used to separate sections in the printing phase
+        String[] keyListOrder = {"date", "", "language", "ethnologue", "country", "location",
+            "town", "lwc", "orthography", "", "translator_name", "translator_education", "translator_languages",
+            "translator_phone", "translator_email", "translator_communication_preference",
+            "translator_location", "", "consultant_name", "consultant_languages",
+                "consultant_phone", "consultant_email", "consultant_communication_preference",
+                "consultant_location", "consultant_location_type", "", "trainer_name", "trainer_languages",
+                "trainer_phone", "trainer_email", "trainer_communication_preference",
+                "trainer_location", "", "manufacturer", "model", "android_version"};
+
+        StringBuilder message = new StringBuilder();
+        String formattedKey;
+
+        for (int i = 0; i < keyListOrder.length; i++) {
+            // Section separation appends newline
+            if (keyListOrder[i].isEmpty()) {
+                message.append("\n");
+            // Find key and value and print in clean format
+            } else {
+                formattedKey = keyListOrder[i].replace("_", " ");
+                formattedKey = formattedKey.toUpperCase();
+                message.append(formattedKey);
+                message.append(": ");
+                message.append(prefs.getString(keyListOrder[i], "NA"));
+                message.append("\n");
+            }
+        }
+        return message.toString();
     }
 }
