@@ -16,7 +16,7 @@ public class KenBurnsEffect {
     private int mStartX, mStartY, mStartWidth, mStartHeight;
     private int mEndX, mEndY, mEndWidth, mEndHeight;
 
-    private int dx, dy, dWidth, dHeight;
+    private int dLeft, dTop, dRight, dBottom, dWidth, dHeight;
 
     public KenBurnsEffect(Rect start, Rect end) {
         mStart = start;
@@ -34,18 +34,20 @@ public class KenBurnsEffect {
         mEndWidth = mEnd.width();
         mEndHeight = mEnd.height();
 
-        dx = mEndX - mStartX;
-        dy = mEndY - mStartY;
+        dLeft = mEnd.left - mStart.left;
+        dTop = mEnd.top - mStart.top;
+        dRight = mEnd.right - mStart.right;
+        dBottom = mEnd.bottom - mStart.bottom;
         dWidth = mEndWidth - mStartWidth;
         dHeight = mEndHeight - mStartHeight;
     }
 
     public Rect interpolate(float position) {
         //Clamp position to [0, 1]
-        if(position <= 0) {
+        if(position < 0) {
             position = 0;
         }
-        else if(position >= 1) {
+        else if(position > 1) {
             position = 1;
         }
 
@@ -55,12 +57,21 @@ public class KenBurnsEffect {
             case LINEAR:
                 //Fall through to default case.
             default: //default to linear
-                left = (int) (mStartX + position * dx);
-                top = (int) (mStartY + position * dy);
-                right = (int) (left + mStartWidth + position * dWidth);
-                bottom = (int) (top + mStartHeight + position * dHeight);
+                left = mStart.left + (int) (position * dLeft);
+                top = mStart.top + (int) (position * dTop);
+                right = mStart.right + (int) (position * dRight);
+                bottom = mStart.bottom + (int) (position * dBottom);
+//                right = left + mStartWidth + (int) (position * dWidth);
+//                bottom = top + mStartHeight + (int) (position * dHeight);
                 break;
         }
+
+//        if(right > left) {
+//            right--;
+//        }
+//        if(bottom > top) {
+//            bottom--;
+//        }
 
         return new Rect(left, top, right, bottom);
     }

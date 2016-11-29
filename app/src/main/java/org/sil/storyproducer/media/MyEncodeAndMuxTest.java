@@ -61,11 +61,9 @@ public class MyEncodeAndMuxTest {
 
     // QVGA at 2Mbps
     // size of a frame, in pixels
-    private static final int mWidth = 320;
-    private static final int mHeight = 240;
+    public static final int mWidth = 320;
+    public static final int mHeight = 240;
     private Rect mScreenRect = new Rect(0, 0, mWidth, mHeight);
-    // bit rate, in bits per second
-    private static final int mVideoBitRate = 2000000;
 
     //not sure where this number comes from
     private static final int AUDIO_OFFSET = 0;
@@ -86,10 +84,12 @@ public class MyEncodeAndMuxTest {
     // parameters for the encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int VIDEO_LENGTH_SECONDS = 16;
-    private static final long VIDEO_LENGTH_US = 1000000l * VIDEO_LENGTH_SECONDS;
-    private static final int VIDEO_FRAME_RATE = 15;               // 15fps
+    private static final long VIDEO_LENGTH_US = 1000000L * VIDEO_LENGTH_SECONDS;
+    private static final int VIDEO_FRAME_RATE = 30;               // 30fps
     private static final int VIDEO_IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
     private static final int VIDEO_NUM_FRAMES = VIDEO_LENGTH_SECONDS * VIDEO_FRAME_RATE;
+    // bit rate, in bits per second
+    private static final int VIDEO_BIT_RATE = 32 * mWidth * mHeight * VIDEO_FRAME_RATE / 100;
 
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
     private static final int AUDIO_SAMPLE_RATE = 48000;
@@ -167,7 +167,7 @@ public class MyEncodeAndMuxTest {
 
         // Set some properties.  Failing to specify some of these can cause the MediaCodec
         // configure() call to throw an unhelpful exception.
-        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_BIT_RATE);
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
 
         MediaFormat audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE);
@@ -176,8 +176,13 @@ public class MyEncodeAndMuxTest {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
+//        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(20, 20, 40, 40), BitmapManager.getDimensions(TEST_IMG_1));
         KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(20, 20, 40, 40), BitmapManager.getDimensions(TEST_IMG_1));
         Rect r2 = BitmapManager.getDimensions(TEST_IMG_2);
+        if (MediaHelper.VERBOSE) {
+            Log.d(TAG, "image 2 rectangle: (" + r2.left + ", " + r2.top + ", "
+                    + r2.right + ", " + r2.bottom + ")");
+        }
         KenBurnsEffect kbfx2 = new KenBurnsEffect(new Rect(0, 0, r2.right - 50, r2.bottom), new Rect(50, 0, r2.right, r2.bottom));
 
         StoryPage[] pages = {
@@ -284,7 +289,7 @@ public class MyEncodeAndMuxTest {
 
                         // Set some properties.  Failing to specify some of these can cause the MediaCodec
                         // configure() call to throw an unhelpful exception.
-                        format.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+                        format.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_BIT_RATE);
                         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
 
                         if (MediaHelper.VERBOSE) Log.d(TAG, "video format: " + format);
@@ -883,7 +888,7 @@ public class MyEncodeAndMuxTest {
         // configure() call to throw an unhelpful exception.
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-        format.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
+        format.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_BIT_RATE);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL);
         if (VERBOSE) Log.d(TAG, "format: " + format);

@@ -24,6 +24,10 @@ public class StoryPage {
         return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
     }
 
+    public String getPath() {
+        return mImage.getPath();
+    }
+
     public Bitmap getBitmap() {
         return BitmapManager.get(mImage.getPath());
     }

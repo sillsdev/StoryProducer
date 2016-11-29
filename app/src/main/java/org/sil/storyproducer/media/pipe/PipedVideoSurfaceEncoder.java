@@ -49,9 +49,12 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
             mCurrentPresentationTime = mSource.fillCanvas(canv);
             mPresentationTimeQueue.add(mCurrentPresentationTime);
             mSurface.unlockCanvasAndPost(canv);
+//            break;
         }
 
-        mCodec.signalEndOfInputStream();
+//        if(mSource.isDone()) {
+            mCodec.signalEndOfInputStream();
+//        }
     }
 
     @Override
