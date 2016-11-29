@@ -49,12 +49,9 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
             mCurrentPresentationTime = mSource.fillCanvas(canv);
             mPresentationTimeQueue.add(mCurrentPresentationTime);
             mSurface.unlockCanvasAndPost(canv);
-//            break;
         }
 
-//        if(mSource.isDone()) {
-            mCodec.signalEndOfInputStream();
-//        }
+        mCodec.signalEndOfInputStream();
     }
 
     @Override
@@ -63,7 +60,8 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
             info.presentationTimeUs = mPresentationTimeQueue.remove();
         }
         catch (NoSuchElementException e) {
-            throw new RuntimeException("Tried to correct time for extra frame", e);
+//            throw new RuntimeException("Tried to correct time for extra frame", e);
+            e.printStackTrace();
         }
     }
 

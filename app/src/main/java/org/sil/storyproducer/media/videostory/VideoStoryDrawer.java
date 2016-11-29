@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import org.sil.storyproducer.media.BitmapManager;
 import org.sil.storyproducer.media.KenBurnsEffect;
 import org.sil.storyproducer.media.MediaHelper;
 import org.sil.storyproducer.media.pipe.PipedVideoSurfaceSource;
@@ -34,9 +33,6 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
     private int mHeight;
     private Rect mScreenRect;
 
-    private Bitmap mTransformedBitmap;
-    private Canvas mTransformingCanvas;
-
     private boolean mIsVideoDone = false;
 
     VideoStoryDrawer(MediaFormat videoFormat, StoryPage[] pages, long delayUs) {
@@ -49,12 +45,6 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
         mWidth = mVideoFormat.getInteger(MediaFormat.KEY_WIDTH);
         mHeight = mVideoFormat.getInteger(MediaFormat.KEY_HEIGHT);
         mScreenRect = new Rect(0, 0, mWidth, mHeight);
-
-        mTransformedBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.ARGB_8888);
-//        mTransformedBitmap = Bitmap.createBitmap(mWidth, mHeight, Bitmap.Config.RGB_565);
-        mTransformingCanvas = new Canvas(mTransformedBitmap);
-
-        mTransformingCanvas.drawARGB(1, 0, 0, 0);
     }
 
     private void drawFrame(Canvas canv, int pageIndex, long timeOffset, float alpha) {
@@ -70,39 +60,21 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
         Paint p = new Paint(0);
-        p.setAntiAlias(true);
-        p.setFilterBitmap(true);
-        p.setDither(true);
-//        p.setFlags(Paint.ANTI_ALIAS_FLAG);
+//        p.setAntiAlias(true);
+//        p.setFilterBitmap(true);
+//        p.setDither(true);
         p.setAlpha((int) (alpha * 255));
 
         float percent = (float) (timeOffset / (double) duration);
-        int actualWidth = bitmap.getWidth();
-        int actualHeight = bitmap.getHeight();
-        int x = (int) (percent * actualWidth);
-        int y = (int) (percent * actualHeight);
 
-//        Rect expectedDimensions = BitmapManager.getDimensions(page.getPath());
-//        int expectedWidth = expectedDimensions.width();
-
-
-
-//        canv.drawBitmap(bitmap, new Rect(0, 0, x, y), mScreenRect, p);
-//        Rect drawRect = new Rect(0, 0, x, y);
-//        Rect drawRect = MediaHelper.scaleRect(kbfx.interpolate(percent), actualWidth / (float) expectedWidth);
         Rect drawRect = kbfx.interpolate(percent);
-//        Rect drawRect = new Rect(9, 0, 1458, 1098);
-//        Rect drawRect = new Rect(9, 0, 1459, 1098);
-//        Rect drawRect = new Rect(10, 0, 1460, 1098);
-//        Rect drawRect = new Rect(0, 0, 20, 20);
+
         if (MediaHelper.VERBOSE) {
             Log.d(TAG, "drawer: drawing rectangle (" + drawRect.left + ", " + drawRect.top + ", "
                     + drawRect.right + ", " + drawRect.bottom + ") of bitmap ("
                     + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
         }
-//        canv.drawBitmap(bitmap, drawRect, mScreenRect, p);
-        mTransformingCanvas.drawBitmap(bitmap, drawRect, mScreenRect, p);
-        canv.drawBitmap(mTransformedBitmap, mScreenRect, mScreenRect, null);
+        canv.drawBitmap(bitmap, drawRect, mScreenRect, p);
     }
 
     @Override

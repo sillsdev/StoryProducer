@@ -23,7 +23,6 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
             int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 //Do nothing.
-//                break;
             } else {
                 if (MediaHelper.VERBOSE) {
                     Log.d(TAG, getComponentName() + ": returned input buffer: " + pollCode);

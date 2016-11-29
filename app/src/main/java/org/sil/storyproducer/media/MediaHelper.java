@@ -1,6 +1,5 @@
 package org.sil.storyproducer.media;
 
-import android.graphics.Rect;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 
@@ -20,7 +19,7 @@ final public class MediaHelper {
     /**
      * the maximum size of input buffers; currently used to prevent buffer overflow.
      */
-    public static final int MAX_INPUT_BUFFER_SIZE = 128 * 1024 * 128;
+    public static final int MAX_INPUT_BUFFER_SIZE = 128 * 1024;
     public static final long TIMEOUT_USEC = 1000;
 
     public static final String MIMETYPE_RAW_AUDIO = "audio/raw";
@@ -81,13 +80,6 @@ final public class MediaHelper {
      */
     public static ShortBuffer getShortBuffer(ByteBuffer buffer) {
         return buffer.order(ByteOrder.nativeOrder()).asShortBuffer();
-    }
-
-    public static Rect scaleRect(Rect src, float scale) {
-        return new Rect((int) (scale * src.left),
-                (int) (scale * src.top),
-                (int) (scale * src.right),
-                (int) (scale * src.bottom));
     }
 
     /**

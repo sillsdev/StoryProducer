@@ -61,8 +61,8 @@ public class MyEncodeAndMuxTest {
 
     // QVGA at 2Mbps
     // size of a frame, in pixels
-    public static final int mWidth = 320;
-    public static final int mHeight = 240;
+    private static final int mWidth = 320;
+    private static final int mHeight = 240;
     private Rect mScreenRect = new Rect(0, 0, mWidth, mHeight);
 
     //not sure where this number comes from
@@ -79,7 +79,7 @@ public class MyEncodeAndMuxTest {
     // Output filename.  Ideally this would use Context.getFilesDir() rather than a
     // hard-coded output directory.
     private String mOutputPath = new File(OUTPUT_DIR,
-            "test." + mWidth + "x" + mHeight + ".mp4").toString();
+            "test2." + mWidth + "x" + mHeight + ".mp4").toString();
 
     // parameters for the encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
@@ -176,7 +176,6 @@ public class MyEncodeAndMuxTest {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
-//        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(20, 20, 40, 40), BitmapManager.getDimensions(TEST_IMG_1));
         KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(20, 20, 40, 40), BitmapManager.getDimensions(TEST_IMG_1));
         Rect r2 = BitmapManager.getDimensions(TEST_IMG_2);
         if (MediaHelper.VERBOSE) {

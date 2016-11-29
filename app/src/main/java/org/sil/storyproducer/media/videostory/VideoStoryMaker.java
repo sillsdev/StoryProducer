@@ -49,7 +49,7 @@ public class VideoStoryMaker {
             PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
             PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
-//            muxer.addSource(audioEncoder);
+            muxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
             audioMixer.addSource(soundtrackMaverick);
