@@ -8,7 +8,6 @@ import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -29,10 +28,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.sil.storyproducer.media.story.SampleStory;
+import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
