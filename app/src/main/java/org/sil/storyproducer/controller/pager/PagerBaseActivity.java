@@ -49,6 +49,7 @@ public class PagerBaseActivity extends AppCompatActivity {
         // fragments, so use getSupportFragmentManager.
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setCurrentItem(StoryState.getCurrentStorySlide());
         mViewPager.setAdapter(mPagerAdapter);
 
         //get the current phase
