@@ -103,7 +103,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
      * @param index
      * @return
      */
-    protected long getTimeFromIndex(long sampleRate, int index) {
+    protected final long getTimeFromIndex(long sampleRate, int index) {
         return index * 1000000L / sampleRate;
     }
 
@@ -118,7 +118,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     protected abstract short getSampleForTime(long time, int channel);
 
     @Override
-    public void close() throws IOException {
-        //TODO
+    public void close() {
+        //Do nothing.
     }
 }

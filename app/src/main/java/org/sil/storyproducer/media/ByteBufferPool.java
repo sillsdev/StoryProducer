@@ -25,10 +25,18 @@ public class ByteBufferPool {
         mCapacity = capacity;
     }
 
+    /**
+     * Get a {@link ByteBuffer} from the shared pool.
+     * @return
+     */
     public static synchronized ByteBuffer getShared() {
         return singleton.get();
     }
 
+    /**
+     * Get a {@link ByteBuffer} from the pool.
+     * @return
+     */
     public ByteBuffer get() {
         ByteBuffer buffer;
 
@@ -53,10 +61,18 @@ public class ByteBufferPool {
         return buffer;
     }
 
+    /**
+     * Return a {@link ByteBuffer} to the shared pool.
+     * @return
+     */
     public static synchronized void releaseShared(ByteBuffer buffer) throws InvalidBufferException {
         singleton.release(buffer);
     }
 
+    /**
+     * Return a {@link ByteBuffer} to the pool.
+     * @return
+     */
     public void release(ByteBuffer buffer) throws InvalidBufferException {
         for(int i = 0; i < buffers.size(); i++) {
             if(buffers.get(i) == buffer) {

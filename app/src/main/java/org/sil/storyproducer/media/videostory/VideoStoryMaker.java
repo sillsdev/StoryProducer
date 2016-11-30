@@ -3,7 +3,6 @@ package org.sil.storyproducer.media.videostory;
 import android.media.MediaFormat;
 
 import org.sil.storyproducer.media.pipe.PipedAudioConcatenator;
-import org.sil.storyproducer.media.pipe.PipedAudioDecoderMaverick;
 import org.sil.storyproducer.media.pipe.PipedAudioLooper;
 import org.sil.storyproducer.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.media.pipe.PipedMediaEncoder;
@@ -22,35 +21,40 @@ public class VideoStoryMaker {
     private MediaFormat mAudioFormat;
     private StoryPage[] mPages;
     private File mSoundTrack;
-    private final long mAudioDelayUs;
+
+    private final long mAudioTransitionUs;
+    private final long mSlideTransitionUs;
 
     private final int mSampleRate;
     private final int mChannelCount;
 
     private final long mDurationUs;
 
-    public VideoStoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat, StoryPage[] pages, File soundtrack, long delayUs) {
+    public VideoStoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat,
+                           StoryPage[] pages, File soundtrack, long audioTransitionUs, long slideTransitionUs) {
         mOutputFile = output;
         mOutputFormat = outputFormat;
         mVideoFormat = videoFormat;
         mAudioFormat = audioFormat;
         mPages = pages;
         mSoundTrack = soundtrack;
-        mAudioDelayUs = delayUs;
+
+        mAudioTransitionUs = audioTransitionUs;
+        mSlideTransitionUs = slideTransitionUs;
 
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
-        mDurationUs = getStoryDurationUs(mPages, mAudioDelayUs);
+        mDurationUs = getStoryDurationUs(mPages, mAudioTransitionUs);
     }
 
     public void churn() {
         try {
             PipedAudioLooper soundtrackMaverick = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
-            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioDelayUs, mSampleRate, mChannelCount);
+            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
             PipedAudioMixer audioMixer = new PipedAudioMixer();
             PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
-            VideoStoryDrawer videoDrawer = new VideoStoryDrawer(mVideoFormat, mPages, mAudioDelayUs);
+            VideoStoryDrawer videoDrawer = new VideoStoryDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
             PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
             PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
@@ -75,11 +79,11 @@ public class VideoStoryMaker {
         }
     }
 
-    public static long getStoryDurationUs(StoryPage[] pages, long audioDelayUs) {
-        long durationUs = (pages.length + 1) * audioDelayUs;
+    public static long getStoryDurationUs(StoryPage[] pages, long audioTransitionUs) {
+        long durationUs = pages.length * audioTransitionUs;
 
         for(StoryPage page : pages) {
-            durationUs += page.getDuration();
+            durationUs += page.getAudioDuration();
         }
 
         return durationUs;

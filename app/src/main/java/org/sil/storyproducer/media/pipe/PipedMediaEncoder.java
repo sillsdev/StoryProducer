@@ -42,6 +42,9 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
 
         mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
         mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+
+        mComponentState = State.SETUP;
+
         start();
     }
 

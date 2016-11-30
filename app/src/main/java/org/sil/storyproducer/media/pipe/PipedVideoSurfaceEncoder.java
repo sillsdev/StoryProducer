@@ -44,14 +44,18 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
             throw new RuntimeException("No source provided!");
         }
 
-        while(!mSource.isDone()) {
+        while(mComponentState != State.CLOSED && !mSource.isDone()) {
             Canvas canv = mSurface.lockCanvas(null);
             mCurrentPresentationTime = mSource.fillCanvas(canv);
             mPresentationTimeQueue.add(mCurrentPresentationTime);
             mSurface.unlockCanvasAndPost(canv);
         }
 
-        mCodec.signalEndOfInputStream();
+        if(mComponentState != State.CLOSED) {
+            mCodec.signalEndOfInputStream();
+        }
+
+        mSource.close();
     }
 
     @Override
@@ -89,6 +93,8 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 
         mSurface = mCodec.createInputSurface();
+
+        mComponentState = State.SETUP;
 
         start();
     }

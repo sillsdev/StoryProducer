@@ -6,13 +6,14 @@ import android.util.Log;
 
 import org.sil.storyproducer.media.MediaHelper;
 
-import java.io.Closeable;
 import java.nio.ByteBuffer;
 
 public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
     Thread mThread;
+
+    protected volatile PipedMediaSource.State mComponentState = State.UNINITIALIZED;
 
     @Deprecated
     protected abstract String getComponentName();
@@ -78,6 +79,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 spinInput();
             }
         });
+        mComponentState = State.RUNNING;
         mThread.start();
     }
 
@@ -144,14 +146,32 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         mPresentationTimeUsLast = info.presentationTimeUs;
     }
 
+    /**
+     * <p>Gather input from source, feeding it into mCodec, until source is depleted.</p>
+     * <p>Note: This method <b>must return after mComponentState becomes CLOSED</b>.</p>
+     */
     protected abstract void spinInput();
 
     @Override
     public void close() {
+        //Shutdown child thread
+        mComponentState = State.CLOSED;
+        if(mThread != null) {
+            try {
+                mThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         if(mCodec != null) {
             try {
-                //TODO: handle IllegalStateException?
                 mCodec.stop();
+            }
+            catch(IllegalStateException e) {
+                if(MediaHelper.VERBOSE) {
+                    e.printStackTrace();
+                }
             }
             finally {
                 mCodec.release();

@@ -20,7 +20,7 @@ public class StoryPage {
         mKBFX = kbfx;
     }
 
-    public long getDuration() {
+    public long getAudioDuration() {
         return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
     }
 

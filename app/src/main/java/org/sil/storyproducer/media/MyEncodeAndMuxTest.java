@@ -191,10 +191,11 @@ public class MyEncodeAndMuxTest {
 
         File soundtrack = new File(OUTPUT_DIR.getPath() + "/TestSound.mp3");
 
-        long delayUs = 3000000;
+        long slideTransitionUs = 3000000;
+        long audioTransitionUs = 500000;
 
         VideoStoryMaker maker = new VideoStoryMaker(new File(outputPath), outputFormat, videoFormat, audioFormat,
-                pages, soundtrack, delayUs);
+                pages, soundtrack, audioTransitionUs, slideTransitionUs);
         maker.churn();
     }
 
@@ -272,7 +273,7 @@ public class MyEncodeAndMuxTest {
             if(mUseVideo) {
                 PipedVideoSurfaceSource videoDrawer = new PipedVideoSurfaceSource() {
                     @Override
-                    public void close() throws IOException {
+                    public void close() {
 
                     }
 

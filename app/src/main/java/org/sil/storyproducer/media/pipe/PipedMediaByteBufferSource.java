@@ -39,4 +39,6 @@ public interface PipedMediaByteBufferSource extends PipedMediaSource {
      * @throws InvalidBufferException if the buffer did not belong to this component.
      */
     void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException;
+
+    //TODO: add reset method
 }

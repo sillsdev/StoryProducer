@@ -78,6 +78,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mSource == null) {
+            throw new SourceUnacceptableException("Source cannot be null!");
+        }
+
         mSource.setup();
 
         mSourceFormat = mSource.getOutputFormat();
@@ -217,7 +221,9 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     }
 
     @Override
-    public void close() throws IOException {
-        mSource.close();
+    public void close() {
+        if(mSource != null) {
+            mSource.close();
+        }
     }
 }

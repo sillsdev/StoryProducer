@@ -141,25 +141,23 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     @Override
     public void close() {
+        //Close sources.
         if(mAudioSource != null) {
-            try {
-                mAudioSource.close();
-            } catch (IOException e) {
-                //TODO: handle exception?
-                e.printStackTrace();
-            }
+            mAudioSource.close();
         }
         if(mVideoSource != null) {
-            try {
-                mVideoSource.close();
-            } catch (IOException e) {
-                //TODO: handle exception?
-                e.printStackTrace();
-            }
+            mVideoSource.close();
         }
+
+        //Close self.
         if(mMuxer != null) {
             try {
                 mMuxer.stop();
+            }
+            catch(IllegalStateException e) {
+                if(MediaHelper.VERBOSE) {
+                    e.printStackTrace();
+                }
             }
             finally {
                 mMuxer.release();

@@ -9,7 +9,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
-public class PipedAudioLooper  extends PipedAudioShortManipulator {
+/**
+ * <p>This media pipeline component loops a single audio file for a specified amount of time.</p>
+ */
+public class PipedAudioLooper extends PipedAudioShortManipulator {
     private static final String TAG = "PipedAudioMixer";
 
     private final String mPath;
@@ -64,26 +67,14 @@ public class PipedAudioLooper  extends PipedAudioShortManipulator {
         return mSeekTime >= mDurationUs;
     }
 
-    /**
-     * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
-     *
-     * <p>Note: Sequential calls to this function must provide strictly increasing times.</p>
-     * @param time
-     * @param channel
-     * @return
-     */
+    @Override
     protected short getSampleForTime(long time, int channel) {
         while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
         if(mSourceShortBuffer == null) {
-            try {
-                mSource.close();
-            } catch (IOException e) {
-                //TODO: handle exception?
-                e.printStackTrace();
-            }
+            mSource.close();
             mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
             try {
                 mSource.setup();
@@ -120,8 +111,10 @@ public class PipedAudioLooper  extends PipedAudioShortManipulator {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         super.close();
-        mSource.close();
+        if(mSource != null) {
+            mSource.close();
+        }
     }
 }

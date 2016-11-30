@@ -56,7 +56,9 @@ public class PipedMediaHolder implements PipedMediaByteBufferSource, PipedMediaB
     }
 
     @Override
-    public void close() throws IOException {
-        mSource.close();
+    public void close() {
+        if(mSource != null) {
+            mSource.close();
+        }
     }
 }

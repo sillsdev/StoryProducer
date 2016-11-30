@@ -53,8 +53,14 @@ public class StoryFrag extends Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
-                test.runTest();
+                Thread encodeThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
+                        test.runTest();
+                    }
+                });
+                encodeThread.start();
 //                int slideNum = FileSystem.getImageAmount(values[position]);
 //                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
             }

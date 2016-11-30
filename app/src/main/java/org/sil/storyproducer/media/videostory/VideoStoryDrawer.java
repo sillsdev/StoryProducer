@@ -14,16 +14,18 @@ import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
 
 import java.io.IOException;
 
+//TODO: use slide transition
 class VideoStoryDrawer implements PipedVideoSurfaceSource {
     private static final String TAG = "VideoStoryDrawer";
 
     private MediaFormat mVideoFormat;
     private StoryPage[] mPages;
-    private long mDelayUs;
+    private long mAudioTransitionUs;
+    private long mSlideTransitionUs;
 
-    private int mCurrentPageIndex = -1;
-    private long mCurrentPageDuration = 0;
-    private long mCurrentPageStart = 0;
+    private int mCurrentSlideIndex = -1; //starts at -1 to allow initial transition
+    private long mCurrentSlideDuration = 0; //duration of audio
+    private long mCurrentSlideStart = 0; //time (after transition) of audio start
 
     private int mFrameRate;
 
@@ -35,10 +37,21 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
 
     private boolean mIsVideoDone = false;
 
-    VideoStoryDrawer(MediaFormat videoFormat, StoryPage[] pages, long delayUs) {
+    VideoStoryDrawer(MediaFormat videoFormat, StoryPage[] pages, long audioTransitionUs, long slideTransitionUs) {
         mVideoFormat = videoFormat;
         mPages = pages;
-        mDelayUs = delayUs;
+
+        mAudioTransitionUs = audioTransitionUs;
+        mSlideTransitionUs = slideTransitionUs;
+
+        //mSlideTransition must never exceed the length of slides in terms of audio.
+        //Pre-process pages and clip the slide transition time to fit in all cases.
+        for(StoryPage page : pages) {
+            long totalPageUs = page.getAudioDuration() + mAudioTransitionUs;
+            if(mSlideTransitionUs > totalPageUs) {
+                mSlideTransitionUs = totalPageUs;
+            }
+        }
 
         mFrameRate = mVideoFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
 
@@ -47,7 +60,8 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
         mScreenRect = new Rect(0, 0, mWidth, mHeight);
     }
 
-    private void drawFrame(Canvas canv, int pageIndex, long timeOffset, float alpha) {
+    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, float alpha) {
+        //In edge cases, draw a black frame with alpha value.
         if(pageIndex < 0 || pageIndex >= mPages.length) {
             canv.drawARGB((int) (alpha * 255), 0, 0, 0);
             return;
@@ -55,56 +69,67 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
 
         StoryPage page = mPages[pageIndex];
         Bitmap bitmap = page.getBitmap();
-        long duration = page.getDuration() + 2 * mDelayUs;
-        //TODO: use kbfx
+        long durationUs = page.getAudioDuration() + 2 * mSlideTransitionUs;
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
-        Paint p = new Paint(0);
-//        p.setAntiAlias(true);
-//        p.setFilterBitmap(true);
-//        p.setDither(true);
-        p.setAlpha((int) (alpha * 255));
-
-        float percent = (float) (timeOffset / (double) duration);
-
-        Rect drawRect = kbfx.interpolate(percent);
+        float position = (float) (timeOffsetUs / (double) durationUs);
+        Rect drawRect = kbfx.interpolate(position);
 
         if (MediaHelper.VERBOSE) {
             Log.d(TAG, "drawer: drawing rectangle (" + drawRect.left + ", " + drawRect.top + ", "
                     + drawRect.right + ", " + drawRect.bottom + ") of bitmap ("
                     + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
         }
+
+        Paint p = new Paint(0);
+//        p.setAntiAlias(true);
+//        p.setFilterBitmap(true);
+//        p.setDither(true);
+        p.setAlpha((int) (alpha * 255));
         canv.drawBitmap(bitmap, drawRect, mScreenRect, p);
     }
 
     @Override
     public long fillCanvas(Canvas canv) {
-        long currentTime = MediaHelper.getTimeFromIndex(mFrameRate, mCurrentFrame);
+        long currentTimeUs = MediaHelper.getTimeFromIndex(mFrameRate, mCurrentFrame);
 
-        while(currentTime > mCurrentPageStart + mCurrentPageDuration + mDelayUs) {
-            mCurrentPageIndex++;
+        long nextSlideTransitionUs = mSlideTransitionUs;
+        //For pre-first "slide" and last slide, make the transition half as long.
+        if(mCurrentSlideIndex == -1 || mCurrentSlideIndex == mPages.length - 1) {
+            nextSlideTransitionUs /= 2;
+        }
 
-            if(mCurrentPageIndex >= mPages.length) {
+        long nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideDuration;
+
+        while(currentTimeUs > nextSlideTransitionStartUs + nextSlideTransitionUs) {
+            mCurrentSlideIndex++;
+
+            if(mCurrentSlideIndex >= mPages.length) {
                 mIsVideoDone = true;
                 break;
             }
 
-            mCurrentPageStart = mCurrentPageStart + mCurrentPageDuration + mDelayUs;
-            mCurrentPageDuration = mPages[mCurrentPageIndex].getDuration();
+            mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideDuration + nextSlideTransitionUs;
+            mCurrentSlideDuration = mPages[mCurrentSlideIndex].getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
+
+            nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideDuration;
         }
 
-        long currentOffset = currentTime - mCurrentPageStart + mDelayUs;
+        long timeSinceCurrentSlideStartUs = currentTimeUs - mCurrentSlideStart;
+        long currentSlideOffsetUs = timeSinceCurrentSlideStartUs + mSlideTransitionUs;
 
-        drawFrame(canv, mCurrentPageIndex, currentOffset, 1);
+        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, 1);
 
-        if(currentOffset > mCurrentPageDuration + mDelayUs) {
-            long nextOffset = currentTime - mCurrentPageStart - mCurrentPageDuration;
-            drawFrame(canv, mCurrentPageIndex + 1, nextOffset, nextOffset / (float) mDelayUs);
+        if(currentTimeUs > nextSlideTransitionStartUs) {
+            long timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs;
+            long extraOffsetUs = mSlideTransitionUs - nextSlideTransitionUs; //0 normally, transition/2 for edge cases
+            long nextOffsetUs = timeSinceTransitionStartUs + extraOffsetUs;
+            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, nextOffsetUs / (float) nextSlideTransitionUs);
         }
 
         mCurrentFrame++;
 
-        return currentTime;
+        return currentTimeUs;
     }
 
     @Override
@@ -123,7 +148,7 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         //Do nothing.
     }
 }

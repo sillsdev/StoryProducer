@@ -12,24 +12,25 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * This media pipeline component concatenates raw audio streams with specified delay in between streams.
+ * <p>This media pipeline component concatenates raw audio streams with specified transition time
+ * in between streams. Note that this transition time is halved for the beginning and end of the stream.</p>
  *
- * This component also optionally ensures that each audio stream matches an expected duration.
+ * <p>This component also optionally ensures that each audio stream matches an expected duration.</p>
  */
 public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private PipedMediaByteBufferSource mFirstSource;
     private Queue<String> mSourceAudioPaths = new LinkedList<>();
 
-    private long mDelayUs;
-    private long mDelayStartUs = 0;
-    private long mSourceStartUs = 0;
+    private long mTransitionUs;
+    private long mTransitionStart = 0;
+    private long mSourceStart = 0;
 
     private Queue<Long> mSourceExpectedDurations = new LinkedList<>();
-    private PipedMediaByteBufferSource mSource;
-    private long mSourceExpectedDuration;
-    private ByteBuffer mSourceBuffer;
-    private ShortBuffer mSourceShortBuffer;
+    private PipedMediaByteBufferSource mSource; //current source
+    private long mSourceExpectedDuration; //current source expected duration
+    private ByteBuffer mSourceBuffer; //currently held ByteBuffer of current source
+    private ShortBuffer mSourceShortBuffer; //ShortBuffer for mSourceBuffer
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -37,34 +38,43 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private boolean mIsDone = false;
 
-    public PipedAudioConcatenator(long delayUs, int sampleRate, int channelCount) {
-        mDelayUs = delayUs;
+    public PipedAudioConcatenator(long transitionUs, int sampleRate, int channelCount) {
+        mTransitionUs = transitionUs;
         mSampleRate = sampleRate;
         mChannelCount = channelCount;
     }
 
-    public PipedAudioConcatenator(long delayUs) {
-        mDelayUs = delayUs;
+    public PipedAudioConcatenator(long transitionUs) {
+        mTransitionUs = transitionUs;
     }
 
     @Override
     protected short getSampleForTime(long time, int channel) {
-        if(mSource == null && time > mDelayStartUs + mDelayUs) {
+        long nextTransitionUs = mTransitionUs;
+        //For pre-first-source and last source, make the transition half as long.
+        if(mFirstSource != null || mSourceAudioPaths.isEmpty()) {
+            nextTransitionUs /= 2;
+        }
+
+        boolean inBetweenSources = mSource == null;
+        if(inBetweenSources && time > mTransitionStart + nextTransitionUs) {
             //If sources are all gone, this component is done.
             if(mSourceAudioPaths.isEmpty()) {
                 mIsDone = true;
                 return 0;
             }
             else {
-                mSourceStartUs = mSourceStartUs + mSourceExpectedDuration + mDelayUs;
+                mSourceStart = mSourceStart + mSourceExpectedDuration + nextTransitionUs;
 
                 mSource = getNextSource();
                 mSourceExpectedDuration = mSourceExpectedDurations.remove();
                 fetchSourceBuffer();
+
+                inBetweenSources = mSource == null; //only true if source was invalid
             }
         }
 
-        if(mSource == null) {
+        if(inBetweenSources) {
             return 0;
         }
         else {
@@ -74,25 +84,26 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             }
 
             boolean isWithinExpectedTime = mSourceExpectedDuration == 0
-                    || time <= mSourceStartUs + mSourceExpectedDuration;
+                    || time <= mSourceStart + mSourceExpectedDuration;
 
             if(mSourceShortBuffer != null && isWithinExpectedTime) {
+                //In the normal case, return the short from the buffer.
                 return mSourceShortBuffer.get();
             }
             else {
-                try {
-                    mSource.close();
-                } catch (IOException e) {
-                    //TODO
-                    e.printStackTrace();
-                }
+                //Clear out the current source.
+                mSource.close();
                 mSource = null;
+
+                //If no particular duration was expected, start transition now. Otherwise use precise time.
                 if(mSourceExpectedDuration == 0) {
-                    mDelayStartUs = time;
+                    mTransitionStart = time;
                 }
                 else {
-                    mDelayStartUs = mSourceStartUs + mSourceExpectedDuration;
+                    mTransitionStart = mSourceStart + mSourceExpectedDuration;
                 }
+
+                //Return first 0 of transition period.
                 return 0;
             }
         }
@@ -100,6 +111,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private PipedMediaByteBufferSource getNextSource() {
         PipedMediaByteBufferSource nextSource = null;
+
+        //Since the first source was already setup in setup(), it is held in a special place.
         if(mFirstSource != null) {
             nextSource = mFirstSource;
             mFirstSource = null;
@@ -111,23 +124,30 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                 nextSource.setup();
                 checkSourceValidity(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
-                e.printStackTrace();
-                throw new RuntimeException("Source setup failed!", e);
+                //If we encounter an error, just let this source be passed over.
+                new Exception("Source setup failed!", e).printStackTrace();
+                nextSource = null;
             }
 
         }
+
         return nextSource;
     }
 
+    /**
+     * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
+     *
+     * @param sourcePath source audio path
+     */
     public void addSource(String sourcePath) throws SourceUnacceptableException {
         addSource(sourcePath, 0);
     }
 
     /**
-     * <p>Add a source with an associated expected duration. The expected duration is guaranteed.</p>
+     * <p>Add a source with an expected duration. The expected duration is guaranteed.</p>
      *
      * <p>In other words, if a duration is specified for all sources, the output audio stream is
-     * guaranteed to be within a couple of samples of the sum of all specified durations and n + 1 delays.</p>
+     * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
      *
      * @param sourcePath source audio path
      * @param duration expected duration of the source audio stream
@@ -144,19 +164,21 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         }
 
         String nextSourcePath = mSourceAudioPaths.remove();
-        PipedAudioDecoderMaverick firstSource = new PipedAudioDecoderMaverick(nextSourcePath);
+        PipedAudioDecoderMaverick firstSource;
 
+        //If sample rate and channel count were specified, apply them to the first source.
         if(mSampleRate > 0) {
-            firstSource.setSampleRate(mSampleRate);
+            firstSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount);
         }
-        if(mChannelCount > 0) {
-            firstSource.setChannelCount(mChannelCount);
+        else {
+            firstSource = new PipedAudioDecoderMaverick(nextSourcePath);
         }
 
         firstSource.setup();
 
         MediaFormat format = firstSource.getOutputFormat();
 
+        //In any event, the first source's sample rate and channel count become the standard.
         mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
@@ -217,8 +239,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     @Override
-    public void close() throws IOException {
-        //TODO
+    public void close() {
         if(mSource != null) {
             mSource.close();
         }

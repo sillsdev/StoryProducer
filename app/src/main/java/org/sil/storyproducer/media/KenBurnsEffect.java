@@ -2,6 +2,8 @@ package org.sil.storyproducer.media;
 
 import android.graphics.Rect;
 
+import org.sil.storyproducer.graphics.RectHelper;
+
 public class KenBurnsEffect {
     public enum Easing {
         LINEAR,
@@ -16,8 +18,19 @@ public class KenBurnsEffect {
     private int dLeft, dTop, dRight, dBottom;
 
     public KenBurnsEffect(Rect start, Rect end) {
-        mStart = start;
-        mEnd = end;
+        this(start, end, null);
+    }
+
+    public KenBurnsEffect(Rect start, Rect end, Rect crop) {
+        mStart = new Rect(start);
+        if(crop != null) {
+            RectHelper.translate(mStart, crop.left, crop.top);
+        }
+
+        mEnd = new Rect(end);
+        if(crop != null) {
+            RectHelper.translate(mEnd, crop.left, crop.top);
+        }
 
         mEasing = Easing.LINEAR;
 

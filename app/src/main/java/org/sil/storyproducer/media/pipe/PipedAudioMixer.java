@@ -26,6 +26,10 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     @Override
     public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
+        if(src == null) {
+            throw new SourceUnacceptableException("Source cannot be null!");
+        }
+
         mSources.add(src);
         mSourceBuffers.add(null);
         mSourceShortBuffers.add(null);
@@ -135,7 +139,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         super.close();
         for(PipedMediaByteBufferSource source : mSources) {
             source.close();

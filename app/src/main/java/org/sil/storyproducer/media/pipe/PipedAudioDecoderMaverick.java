@@ -7,24 +7,23 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Pipe;
 
+/**
+ * <p>This media pipeline component is a thin wrapper for the commonly used triumvirate of
+ * {@link PipedMediaExtractor}, {@link PipedMediaDecoder}, and {@link PipedAudioResampler}.</p>
+ */
 public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioMaverick";
 
-    private String mPath;
-    private int mSampleRate = 48000;
-    private int mChannelCount = 2;
-    private float mVolumeModifier = 1f;
+    private final String mPath;
+    private final int mSampleRate;
+    private final int mChannelCount;
+    private final float mVolumeModifier;
 
     private PipedMediaByteBufferSource mSource;
 
-    private PipedMediaExtractor mExtractor;
-    private PipedMediaDecoder mDecoder;
-    private PipedAudioResampler mResampler;
-
     public PipedAudioDecoderMaverick(String path) {
-        mPath = path;
+        this(path, 0, 0);
     }
 
     public PipedAudioDecoderMaverick(String path, int sampleRate, int channelCount) {
@@ -35,18 +34,6 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
         mPath = path;
         mSampleRate = sampleRate;
         mChannelCount = channelCount;
-        mVolumeModifier = volumeModifier;
-    }
-
-    public void setSampleRate(int sampleRate) {
-        mSampleRate = sampleRate;
-    }
-
-    public void setChannelCount(int channelCount) {
-        mChannelCount = channelCount;
-    }
-
-    public void setVolumeModifier(float volumeModifier) {
         mVolumeModifier = volumeModifier;
     }
 
@@ -72,47 +59,22 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        mExtractor = new PipedMediaExtractor(mPath, MediaHelper.MediaType.AUDIO);
+        PipedMediaExtractor extractor = new PipedMediaExtractor(mPath, MediaHelper.MediaType.AUDIO);
 
-        mDecoder = new PipedMediaDecoder();
-        mDecoder.addSource(mExtractor);
+        PipedMediaDecoder decoder = new PipedMediaDecoder();
+        decoder.addSource(extractor);
 
-        mResampler = new PipedAudioResampler(mSampleRate, mChannelCount);
-        mResampler.setVolumeModifier(mVolumeModifier);
+        mSource = decoder;
 
-        mResampler.addSource(mDecoder);
-        mResampler.setup();
+        //Only use a resampler if the sample rate is specified.
+        if(mSampleRate > 0) {
+            PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
+            resampler.setVolumeModifier(mVolumeModifier);
+            resampler.addSource(decoder);
+            mSource = resampler;
+        }
 
-        mSource = mResampler;
-
-        //TODO: try to only use a resampler if necessary
-//        mDecoder.setup();
-//
-//        mSource = mDecoder;
-//
-//        MediaFormat sourceFormat = mDecoder.getOutputFormat();
-//        int sourceSampleRate = sourceFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-//        if(mSampleRate == 0) {
-//            mSampleRate = sourceSampleRate;
-//        }
-//        int sourceChannelCount = sourceFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-//        if(mChannelCount == 0) {
-//            mChannelCount = sourceChannelCount;
-//        }
-//
-//        boolean shouldCorrectSampleRate = sourceSampleRate != mSampleRate;
-//        boolean shouldCorrectChannelCount = sourceChannelCount != mChannelCount;
-//        boolean shouldModifiyVolume = Math.abs(mVolumeModifier - 1) > .001f;
-//
-//        if(shouldCorrectSampleRate || shouldCorrectChannelCount || shouldModifiyVolume) {
-//            mResampler = new PipedAudioResampler(mSampleRate, mChannelCount);
-//            mResampler.setVolumeModifier(mVolumeModifier);
-//
-//            mResampler.addSource(mDecoder);
-//            mResampler.setup();
-//
-//            mSource = mResampler;
-//        }
+        mSource.setup();
     }
 
     @Override
@@ -126,7 +88,9 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     }
 
     @Override
-    public void close() throws IOException {
-        mSource.close();
+    public void close() {
+        if(mSource != null) {
+            mSource.close();
+        }
     }
 }

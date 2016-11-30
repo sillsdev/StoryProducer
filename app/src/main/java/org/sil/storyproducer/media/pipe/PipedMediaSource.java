@@ -18,7 +18,7 @@ public interface PipedMediaSource extends Closeable {
     void setup() throws IOException, SourceUnacceptableException;
 
     /**
-     * Get the output format from this component.
+     * Get the output format from this component. The returned format should not be modified.
      * @return
      */
     MediaFormat getOutputFormat();
@@ -27,6 +27,12 @@ public interface PipedMediaSource extends Closeable {
      * @return whether this component has finished providing output.
      */
     boolean isDone();
+
+    /**
+     * Close the component <b>without throwing any exceptions</b>.
+     */
+    @Override
+    void close();
 
     enum State {
         UNINITIALIZED,
