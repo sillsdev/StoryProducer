@@ -40,18 +40,18 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.RegistrationActivity"></activity>
+        <activity android:name=".controller.RegistrationActivity" />
         <activity
             android:name=".controller.learn.LearnActivity"
             android:noHistory="true"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".controller.export.ExportActivity"
-            android:noHistory="true">
-            
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.export.ExportActivity"
+            android:noHistory="true"></activity>
     </application>
 
 </manifest>

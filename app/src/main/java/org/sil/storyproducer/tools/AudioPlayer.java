@@ -73,7 +73,7 @@ public class AudioPlayer {
 
     /**
      * returns the duration of the audio as an int
-     * @return returns the duration of the audio as an int
+     * @return the duration of the audio as an int
      */
     public int getAudioDurationInSeconds() {
         return (int)(mPlayer.getDuration() * 0.001);
