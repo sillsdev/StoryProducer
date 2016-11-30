@@ -133,6 +133,11 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
     }
 
     @Override
+    public MediaHelper.MediaType getMediaType() {
+        return MediaHelper.MediaType.VIDEO;
+    }
+
+    @Override
     public void setup() throws IOException, SourceUnacceptableException {
         //Do nothing.
     }

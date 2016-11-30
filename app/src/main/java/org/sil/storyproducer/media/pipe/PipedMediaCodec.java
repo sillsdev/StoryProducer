@@ -8,6 +8,12 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.nio.ByteBuffer;
 
+/**
+ * <p>This abstract media pipeline component provides a base for components which encode or decode
+ * media streams. This class primarily encapsulates a {@link MediaCodec}.</p>
+ * <p>Note: This class is spawns a child thread which keeps churning input while other calling code
+ * pulls output.</p>
+ */
 public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 

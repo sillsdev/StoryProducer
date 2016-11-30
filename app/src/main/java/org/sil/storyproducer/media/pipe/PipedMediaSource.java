@@ -2,6 +2,8 @@ package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaFormat;
 
+import org.sil.storyproducer.media.MediaHelper;
+
 import java.io.Closeable;
 import java.io.IOException;
 
@@ -11,14 +13,22 @@ import java.io.IOException;
  */
 public interface PipedMediaSource extends Closeable {
     /**
-     * <p>Initialize this component.</p>
+     * Note: This function should only be called after {@link #setup()}.
+     * @return the type of media this component provides.
+     */
+    MediaHelper.MediaType getMediaType();
+
+    /**
+     * <p>Initialize this component. Generally, setup will be called recursively,
+     * allowing each component to retrieve its source's output format after setting up.</p>
      * <p>Note: This method should be called <b>after the pipeline is fully constructed</b>.</p>
      * @throws IOException
      */
     void setup() throws IOException, SourceUnacceptableException;
 
     /**
-     * Get the output format from this component. The returned format should not be modified.
+     * <p>Get the output format from this component. The returned format should not be modified.</p>
+     * <p>Note: This function should only be called after {@link #setup()}.</p>
      * @return
      */
     MediaFormat getOutputFormat();
@@ -27,6 +37,8 @@ public interface PipedMediaSource extends Closeable {
      * @return whether this component has finished providing output.
      */
     boolean isDone();
+
+    //TODO: add reset method
 
     /**
      * Close the component <b>without throwing any exceptions</b>.

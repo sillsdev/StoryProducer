@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * <p>A media pipeline component for multiplexing encoded audio and video streams into an output file.
+ * <p>This media pipeline component multiplexes encoded audio and video streams into an output file.
  * This class primarily encapsulates a {@link MediaMuxer}.</p>
  * <p>Components commonly used in conjunction with this class are {@link PipedMediaCodec}
  * (particularly its subclasses {@link PipedMediaEncoder} and {@link PipedVideoSurfaceEncoder})

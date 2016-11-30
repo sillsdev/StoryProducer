@@ -11,6 +11,10 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <p>This media pipeline component mixes raw audio streams together.</p>
+ * <p>This component also optionally changes the volume of the raw audio stream.</p>
+ */
 public class PipedAudioMixer extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioMixer";
 
@@ -19,18 +23,34 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     private boolean mIsDone = false;
 
     private List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
+    private List<Float> mSourceVolumeModifiers = new ArrayList<>();
     private List<ByteBuffer> mSourceBuffers = new ArrayList<>();
     private List<ShortBuffer> mSourceShortBuffers = new ArrayList<>();
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
+    public PipedAudioMixer() {
+        //empty default constructor
+    }
+
     @Override
     public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
+        addSource(src, 1);
+    }
+
+    /**
+     * Specify a predecessor of this component in the pipeline with a specified volume scaling factor.
+     * @param src the preceding component of the pipeline.
+     * @param volumeModifier volume scaling factor.
+     * @throws SourceUnacceptableException if source is null.
+     */
+    public void addSource(PipedMediaByteBufferSource src, float volumeModifier) throws SourceUnacceptableException {
         if(src == null) {
             throw new SourceUnacceptableException("Source cannot be null!");
         }
 
         mSources.add(src);
+        mSourceVolumeModifiers.add(volumeModifier);
         mSourceBuffers.add(null);
         mSourceShortBuffers.add(null);
     }
@@ -80,27 +100,20 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         return mIsDone;
     }
 
-    /**
-     * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
-     *
-     * <p>Note: Sequential calls to this function must provide strictly increasing times.</p>
-     * @param time
-     * @param channel
-     * @return
-     */
     protected short getSampleForTime(long time, int channel) {
         int sum = 0;
 
         //Loop through all sources and add samples.
         for(int i = 0; i < mSources.size(); i++) {
             ShortBuffer sBuffer = mSourceShortBuffers.get(i);
+            float volumeModifier = mSourceVolumeModifiers.get(i);
             while(sBuffer != null && sBuffer.remaining() <= 0) {
                 releaseSourceBuffer(i);
                 fetchSourceBuffer(i);
                 sBuffer = mSourceShortBuffers.get(i);
             }
             if(sBuffer != null) {
-                sum += sBuffer.get();
+                sum += sBuffer.get() * volumeModifier;
             }
             else {
                 //Remove depleted sources from the lists.

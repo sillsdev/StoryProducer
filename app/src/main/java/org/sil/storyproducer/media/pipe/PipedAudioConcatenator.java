@@ -14,7 +14,6 @@ import java.util.Queue;
 /**
  * <p>This media pipeline component concatenates raw audio streams with specified transition time
  * in between streams. Note that this transition time is halved for the beginning and end of the stream.</p>
- *
  * <p>This component also optionally ensures that each audio stream matches an expected duration.</p>
  */
 public class PipedAudioConcatenator extends PipedAudioShortManipulator {
@@ -22,7 +21,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private PipedMediaByteBufferSource mFirstSource;
     private Queue<String> mSourceAudioPaths = new LinkedList<>();
 
-    private long mTransitionUs;
+    private final long mTransitionUs; //duration of the audio transition
     private long mTransitionStart = 0;
     private long mSourceStart = 0;
 
@@ -38,14 +37,24 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private boolean mIsDone = false;
 
+    /**
+     * Create concatenator with specified transition time, using the first audio source's format.
+     * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
+     */
+    public PipedAudioConcatenator(long transitionUs) {
+        this(transitionUs, 0, 0);
+    }
+
+    /**
+     * Create concatenator with specified transition time, resampling the audio stream.
+     * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     */
     public PipedAudioConcatenator(long transitionUs, int sampleRate, int channelCount) {
         mTransitionUs = transitionUs;
         mSampleRate = sampleRate;
         mChannelCount = channelCount;
-    }
-
-    public PipedAudioConcatenator(long transitionUs) {
-        mTransitionUs = transitionUs;
     }
 
     @Override
@@ -137,7 +146,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
      *
-     * @param sourcePath source audio path
+     * @param sourcePath source audio path.
      */
     public void addSource(String sourcePath) throws SourceUnacceptableException {
         addSource(sourcePath, 0);
@@ -149,8 +158,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * <p>In other words, if a duration is specified for all sources, the output audio stream is
      * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
      *
-     * @param sourcePath source audio path
-     * @param duration expected duration of the source audio stream
+     * @param sourcePath source audio path.
+     * @param duration expected duration of the source audio stream.
      */
     public void addSource(String sourcePath, long duration) throws SourceUnacceptableException {
         mSourceAudioPaths.add(sourcePath);

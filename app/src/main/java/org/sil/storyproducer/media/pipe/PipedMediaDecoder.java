@@ -7,6 +7,11 @@ import org.sil.storyproducer.media.MediaHelper;
 
 import java.io.IOException;
 
+/**
+ * <p>This media pipeline component provides a simple decoder encapsulating a {@link MediaCodec}.
+ * Therefore, it takes an encoded media stream and outputs a raw media stream.</p>
+ * <p>A common source for this component is {@link PipedMediaExtractor}.</p>
+ */
 public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
     private MediaFormat mSourceFormat;
 

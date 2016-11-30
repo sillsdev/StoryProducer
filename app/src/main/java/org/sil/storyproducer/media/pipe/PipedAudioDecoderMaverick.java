@@ -22,14 +22,31 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
 
     private PipedMediaByteBufferSource mSource;
 
+    /**
+     * Create maverick from a file, using the file's format.
+     * @param path The path of the audio file.
+     */
     public PipedAudioDecoderMaverick(String path) {
         this(path, 0, 0);
     }
 
+    /**
+     * Create maverick from a file, resampling the audio stream.
+     * @param path path of the audio file.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     */
     public PipedAudioDecoderMaverick(String path, int sampleRate, int channelCount) {
         this(path, sampleRate, channelCount, 1);
     }
 
+    /**
+     * Create maverick from a file, resampling the audio stream.
+     * @param path path of the audio file.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     * @param volumeModifier volume scaling factor.
+     */
     public PipedAudioDecoderMaverick(String path, int sampleRate, int channelCount, float volumeModifier) {
         mPath = path;
         mSampleRate = sampleRate;

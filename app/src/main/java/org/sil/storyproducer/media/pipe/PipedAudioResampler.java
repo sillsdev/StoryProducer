@@ -11,9 +11,8 @@ import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
 /**
- * This media pipeline component resamples (converts sample rate of) raw audio using linear interpolation.
- *
- * This component also optionally changes the track count of the raw audio stream.
+ * <p>This media pipeline component resamples (converts sample rate of) raw audio using linear interpolation.</p>
+ * <p>This component also optionally changes the channel count and/or volume of the raw audio stream.</p>
  */
 public class PipedAudioResampler extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioResampler";
@@ -43,17 +42,17 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     private boolean mIsDone = false;
 
     /**
-     * Original channel count will be maintained from source audio stream.
-     * @param sampleRate the sample rate of the new, resampled audio stream.
+     * Create resampler, maintaining channel count from source audio stream.
+     * @param sampleRate sample rate of the new, resampled audio stream.
      */
     public PipedAudioResampler(int sampleRate) {
         this(sampleRate, 0);
     }
 
     /**
-     * Channel count will be changed from the source channel count to the specified channel count.
-     * @param sampleRate the sample rate of the new, resampled audio stream.
-     * @param channelCount the number of channels in the new, resampled audio stream.
+     * Create resampler changing channel count from the source channel count to the specified channel count.
+     * @param sampleRate sample rate of the new, resampled audio stream.
+     * @param channelCount number of channels in the new, resampled audio stream.
      */
     public PipedAudioResampler(int sampleRate, int channelCount) {
         mSampleRate = sampleRate;

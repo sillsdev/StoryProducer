@@ -18,21 +18,40 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     private final String mPath;
     private final long mDurationUs;
 
-    private float mVolumeModifier = 1f;
+    private final float mVolumeModifier;
 
     private PipedMediaByteBufferSource mSource;
 
-    public PipedAudioLooper(String src, long durationUs) {
-        mPath = src;
-        mDurationUs = durationUs;
+    /**
+     * Create looper from an audio file with specified duration, using the file's format.
+     * @param path path of the audio file.
+     * @param durationUs desired duration in microseconds.
+     */
+    public PipedAudioLooper(String path, long durationUs) {
+        this(path, durationUs, 0, 0);
     }
 
-    public PipedAudioLooper(String src, long durationUs, int sampleRate, int channelCount) {
-        this(src, durationUs, sampleRate, channelCount, 1);
+    /**
+     * Create looper from an audio file with specified duration, resampling the audio stream.
+     * @param path path of the audio file.
+     * @param durationUs desired duration in microseconds.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     */
+    public PipedAudioLooper(String path, long durationUs, int sampleRate, int channelCount) {
+        this(path, durationUs, sampleRate, channelCount, 1);
     }
 
-    public PipedAudioLooper(String src, long durationUs, int sampleRate, int channelCount, float volumeModifier) {
-        mPath = src;
+    /**
+     * Create looper from an audio file with specified duration, resampling the audio stream.
+     * @param path path of the audio file.
+     * @param durationUs desired duration in microseconds.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     * @param volumeModifier volume scaling factor.
+     */
+    public PipedAudioLooper(String path, long durationUs, int sampleRate, int channelCount, float volumeModifier) {
+        mPath = path;
         mDurationUs = durationUs;
         mSampleRate = sampleRate;
         mChannelCount = channelCount;

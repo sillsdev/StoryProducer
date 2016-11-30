@@ -9,10 +9,13 @@ import android.util.Log;
 import org.sil.storyproducer.media.ByteBufferPool;
 import org.sil.storyproducer.media.MediaHelper;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+/**
+ * <p>This media pipeline component extracts a media file from a file and outputs an encoded media
+ * stream. This class primarily encapsulates a {@link MediaExtractor}.</p>
+ */
 public class PipedMediaExtractor implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaExtractor";
 
@@ -25,6 +28,12 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 
     private ByteBufferPool mBufferPool = new ByteBufferPool();
 
+    /**
+     * Create extractor from specified file.
+     * @param path path of the media file.
+     * @param type (audio/video) track to select from file.
+     * @throws IOException
+     */
     public PipedMediaExtractor(String path, MediaHelper.MediaType type) throws IOException {
         mType = type;
 
@@ -43,7 +52,7 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-
+        //Do nothing.
     }
 
     @Override

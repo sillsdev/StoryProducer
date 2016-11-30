@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
+/**
+ * <p>This abstract media pipeline component provides a base for audio components
+ * which care about touching every output short.</p>
+ */
 public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioShorter";
 
@@ -21,6 +25,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     protected int mSampleRate;
     protected int mChannelCount;
     protected long mSeekTime = 0;
+
     private int mAbsoluteSampleIndex = 0;
 
     @Override

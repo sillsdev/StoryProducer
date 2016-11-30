@@ -283,6 +283,11 @@ public class MyEncodeAndMuxTest {
                     }
 
                     @Override
+                    public MediaHelper.MediaType getMediaType() {
+                        return MediaHelper.MediaType.VIDEO;
+                    }
+
+                    @Override
                     public MediaFormat getOutputFormat() {
                         MediaFormat format = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
                         format.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);

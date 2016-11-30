@@ -2,8 +2,6 @@ package org.sil.storyproducer.media.pipe;
 
 import android.media.MediaCodec;
 
-import org.sil.storyproducer.media.MediaHelper;
-
 import java.nio.ByteBuffer;
 
 /**
@@ -11,12 +9,6 @@ import java.nio.ByteBuffer;
  * <p>Note: This interface is only intended to be used by other media pipeline components.</p>
  */
 public interface PipedMediaByteBufferSource extends PipedMediaSource {
-    /**
-     * Note: This function should only be called after {@link #setup()}.
-     * @return the type of media this component provides.
-     */
-    MediaHelper.MediaType getMediaType();
-
     /**
      * Request that this component fill the buffer with data.
      * @param buffer the buffer (owned by the caller) to be filled.
@@ -39,6 +31,4 @@ public interface PipedMediaByteBufferSource extends PipedMediaSource {
      * @throws InvalidBufferException if the buffer did not belong to this component.
      */
     void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException;
-
-    //TODO: add reset method
 }
