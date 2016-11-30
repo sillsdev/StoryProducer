@@ -111,7 +111,7 @@ public class FileSystem {
         return dir.listFiles(directoryFilter);
     }
 
-    private static String getStoryPath(String story){
+    private static String getStoryPath(String story) {
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
             return storyMap.get(story);

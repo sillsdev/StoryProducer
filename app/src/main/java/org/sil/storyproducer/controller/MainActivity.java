@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.export.MainExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
@@ -40,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent1 = new Intent(this, MainExportActivity.class);
+        startActivity(intent1);
+        finish();
 
         FileSystem.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);

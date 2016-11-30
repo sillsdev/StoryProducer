@@ -18,6 +18,18 @@
             android:label="@string/title_activity_story_templates">
         </activity>
 
+        <!-- File Explorer Launch Page -->
+        <activity
+            android:name=".controller.export.MainExportActivity"
+            android:label="Bob">
+        </activity>
+
+        <!-- File Explorer Launch Page -->
+        <activity
+            android:name=".controller.export.FileChooser"
+            android:label="FileChooser">
+        </activity>
+
         <!-- Info Page -->
         <activity
             android:name=".controller.InfoPageActivity"
