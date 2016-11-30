@@ -23,6 +23,18 @@
             android:label="Pager Base"
             android:screenOrientation="portrait" />
 
+        <!-- File Explorer Launch Page -->
+        <activity
+            android:name=".controller.export.MainExportActivity"
+            android:label="Bob">
+        </activity>
+
+        <!-- File Explorer Launch Page -->
+        <activity
+            android:name=".controller.export.FileChooser"
+            android:label="FileChooser">
+        </activity>
+
         <!-- Info Page -->
         <activity
             android:name=".controller.InfoPageActivity"
