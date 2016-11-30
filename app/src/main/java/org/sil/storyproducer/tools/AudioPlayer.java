@@ -4,10 +4,6 @@ import android.media.MediaPlayer;
 
 import java.io.IOException;
 
-/**
- * Created by noahbragg on 10/10/16.
- */
-
 public class AudioPlayer {
 
     MediaPlayer mPlayer;
@@ -21,17 +17,19 @@ public class AudioPlayer {
 
     /**
      * Plays the audio with the given path
-     * @param  :String for the path where the audio resides
+     * @param String for the path where the audio resides
      */
     public void playWithPath(String path) {
         try {
             mPlayer.setDataSource(path);
         } catch (IOException e) {
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
         try {
             mPlayer.prepare();
         } catch (IOException e) {
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
         mPlayer.start();
@@ -45,6 +43,7 @@ public class AudioPlayer {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
                 e.printStackTrace();
             }
         }
@@ -67,6 +66,7 @@ public class AudioPlayer {
             mPlayer.stop();
             mPlayer.release();
         } catch (IllegalStateException e) {
+            //TODO maybe something with this exception
             e.printStackTrace();
         }
     }
@@ -89,7 +89,7 @@ public class AudioPlayer {
 
     /**
      * sets the volume of the audio
-     * @param :the float for the volume form 0.0 to 1.0
+     * @param the float for the volume from 0.0 to 1.0
      */
     public void setVolume(float volume) {
         mPlayer.setVolume(volume, volume);
@@ -97,7 +97,7 @@ public class AudioPlayer {
 
     /**
      * returns if the audio is being played or not
-     * @return :returns true or false based on if the audio is being played
+     * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
         return mPlayer.isPlaying();

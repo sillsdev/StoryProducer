@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.view.View;
 import android.widget.Spinner;
@@ -29,16 +28,15 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.FileSystem;
-import org.sil.storyproducer.tools.GestureListener;
+import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class LearnActivity extends AppCompatActivity {
 
     private ImageView learnImageView;
     private ImageButton playButton;
-    private PopupWindow pWindow;
     private SeekBar videoSeekBar;
-    private AudioPlayer aPlayer;
+    private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
     private int slideNum = 0;
     private String storyName;
@@ -61,18 +59,19 @@ public class LearnActivity extends AppCompatActivity {
         videoSeekBar = (SeekBar) findViewById(R.id.videoSeekBar);
 
         //get the current phase
-        Phase phase = StoryState.getPhase();
+        Phase phase = StoryState.getCurrentPhase();
 
         Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getPhaseColor(), null)));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
+                                                                                    phase.getColor(), null)));
 
         setSeekBarListener();
         playVideo();
         setBackgroundMusic();
 
-        mDetector = new GestureDetectorCompat(this, new GestureListener(this));
+        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
 
     }
 
@@ -87,7 +86,7 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * sets the Menu spinner object
+     * sets the Menu spinner_item object
      * @param menu
      * @return
      */
@@ -104,39 +103,39 @@ public class LearnActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getPhaseIndex());
+        spinner.setSelection(StoryState.getCurrentPhaseIndex());
         return true;
     }
 
     /**
      * get the touch event so that it can be passed on to GestureDetector
-     * @param event: the MotionEvent
-     * @return : the super version of the function
+     * @param event the MotionEvent
+     * @return the super version of the function
      */
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        this.mDetector.onTouchEvent(event);
+        mDetector.onTouchEvent(event);
         return super.dispatchTouchEvent(event);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        aPlayer.stopAudio();
+        narrationPlayer.stopAudio();
         backgroundPlayer.stopAudio();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        aPlayer.pauseAudio();
+        narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        aPlayer.resumeAudio();
+        narrationPlayer.resumeAudio();
         backgroundPlayer.resumeAudio();
     }
 
@@ -145,16 +144,17 @@ public class LearnActivity extends AppCompatActivity {
      * Plays the video and runs everytime the audio is completed
      */
     void playVideo() {
+        //TODO: sync background audio with image
         learnImageView.setImageBitmap(FileSystem.getImage(storyName, slideNum));          //set the next image
-        aPlayer = new AudioPlayer();                                                //set the next audio
-        aPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/narration" + slideNum + ".wav");
+        narrationPlayer = new AudioPlayer();                                                //set the next audio
+        narrationPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/narration" + slideNum + ".wav");
         if(isVolumeOn) {
-            aPlayer.setVolume(1.0f);
+            narrationPlayer.setVolume(1.0f);
         } else {
-            aPlayer.setVolume(0.0f);
+            narrationPlayer.setVolume(0.0f);
         }
         videoSeekBar.setProgress(slideNum);
-        aPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
+        narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 if(slideNum < FileSystem.getImageAmount(storyName)) {
@@ -162,7 +162,7 @@ public class LearnActivity extends AppCompatActivity {
                 } else {
                     videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
                     backgroundPlayer.stopAudio();
-                    showSnackBar();
+                    showStartPracticeSnackBar();
                 }
             }
         });
@@ -173,13 +173,13 @@ public class LearnActivity extends AppCompatActivity {
      * Button actin for playing/pausing the audio
      * @param view
      */
-    public void clickPlayPauseButton(View view) {
-        if(aPlayer.isAudioPlaying()) {
-            aPlayer.pauseAudio();
+    public void onClickPlayPauseButton(View view) {
+        if(narrationPlayer.isAudioPlaying()) {
+            narrationPlayer.pauseAudio();
             backgroundPlayer.pauseAudio();
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
-            aPlayer.resumeAudio();
+            narrationPlayer.resumeAudio();
             backgroundPlayer.resumeAudio();
             playButton.setImageResource(R.drawable.ic_pause_gray);
         }
@@ -201,20 +201,20 @@ public class LearnActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar sBar, int progress, boolean fromUser) {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
-                    if(!aPlayer.isAudioPlaying()) notPlayingAudio = true;
-                    aPlayer.stopAudio();
+                    notPlayingAudio = !narrationPlayer.isAudioPlaying();
+                    narrationPlayer.stopAudio();
                     slideNum = progress;
                     playVideo();
-                    if(notPlayingAudio) aPlayer.pauseAudio();
+                    if(notPlayingAudio) narrationPlayer.pauseAudio();
                 }
             }
         });
     }
 
     /**
-     * Shows a snackbar at the bottom of the screen to notify the user
+     * Shows a snackbar at the bottom of the screen to notify the user that they should practice saying the story
      */
-    private void showSnackBar() {
+    private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_learn),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
@@ -228,7 +228,7 @@ public class LearnActivity extends AppCompatActivity {
                     //reset the story with the volume off
                     videoSeekBar.setProgress(0);
                     slideNum = 0;
-                    aPlayer.setVolume(0.0f);
+                    narrationPlayer.setVolume(0.0f);
                     setBackgroundMusic();
                     backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
@@ -254,11 +254,11 @@ public class LearnActivity extends AppCompatActivity {
         volumeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
-                    aPlayer.setVolume(1.0f);
+                    narrationPlayer.setVolume(1.0f);
                     backgroundPlayer.setVolume(backgroundVolume);
                     isVolumeOn = true;
                 } else {
-                    aPlayer.setVolume(0.0f);
+                    narrationPlayer.setVolume(0.0f);
                     backgroundPlayer.setVolume(0.0f);
                     isVolumeOn = false;
                 }

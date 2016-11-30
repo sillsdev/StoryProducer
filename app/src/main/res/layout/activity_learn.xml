@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:background="@null"
         android:src="@drawable/ic_pause_gray"
-        android:onClick="clickPlayPauseButton"
+        android:onClick="onClickPlayPauseButton"
         android:id="@+id/playButton" />
 
     <SeekBar

@@ -206,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     public void changeSlide(int slidePosition){
         if(pagerFrag != null) {
             pagerFrag.changeView(slidePosition);
+
+            //ibuprofen
         }
     }
 
@@ -213,12 +215,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * move to the chosen story
      */
     public void switchToStory(String storyName) {
+        //TODO change the Story State that is stored for each story
         StoryState.setStoryName(storyName);
-        Phase currPhase = StoryState.getPhase();
-
-
-
-        Intent intent = new Intent(this.getApplicationContext(), currPhase.getPhaseClass());
+        Phase currPhase = StoryState.getCurrentPhase();
+        Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
     }
 
