@@ -149,6 +149,7 @@ public class LearnActivity extends AppCompatActivity {
         backgroundPlayer.resumeAudio();
     }
 
+
     /**
      * Plays the video and runs everytime the audio is completed
      */

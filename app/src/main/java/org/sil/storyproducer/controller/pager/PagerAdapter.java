@@ -5,14 +5,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 
-import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
-import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.FileSystem;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
+    private int numOfSlides = 0;
+
     public PagerAdapter(FragmentManager fm) {
         super(fm);
+        numOfSlides = FileSystem.getTotalSlideNum(StoryState.getStoryName());
     }
 
     /**
@@ -24,8 +27,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment = new DraftFrag();
         Bundle args = new Bundle();
-        // Our object is just an integer :-P
-        args.putInt(DraftFrag.ARG_OBJECT, i + 1);
+        args.putInt(DraftFrag.SLIDE_NUM, i + 1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,7 +38,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public int getCount() {
-        return 5;
+        return numOfSlides;
     }
 
     /**
