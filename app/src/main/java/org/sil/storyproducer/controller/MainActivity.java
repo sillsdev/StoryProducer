@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
 
 
-        boolean skipRegistration = checkRegistrationSkip();
+        /*boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 Intent intent = new Intent(this, RegistrationActivity.class);
                 startActivity(intent);
             }
-        }
+        }*/
     }
 
     @Override
@@ -215,6 +215,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     public void switchToStory(String storyName) {
         StoryState.setStoryName(storyName);
         Phase currPhase = StoryState.getPhase();
+
+
+
         Intent intent = new Intent(this.getApplicationContext(), currPhase.getPhaseClass());
         startActivity(intent);
     }

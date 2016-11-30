@@ -14,7 +14,6 @@ public class FileSystem {
 
     private static Context context;
 
-
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
 
@@ -176,5 +175,39 @@ public class FileSystem {
 
     public static String[] getLanguages() {
         return storyPaths.keySet().toArray(new String[storyPaths.size()]);
+    }
+
+    /**
+     * This function searches the directory of the story and finds the total number of
+     * slides associated with the story. The total number of slides will be determined by
+     * the number of .jpg and .txt extensions. The smaller number of .jpg or .txt will be returned.
+     * @param storyName The story name that needs to find total number of slides.
+     * @return The number of slides total for the story. The smaller number of .txt or .jpg files
+     * found in the directory.
+     */
+    public static int getTotalSlideNum(String storyName){
+        String rootDirectory = getStoryPath(storyName);
+        File [] files = new File(rootDirectory).listFiles();
+        int totalPics = 0;
+        int totalTexts = 0;
+
+        for(File aFile : files){
+            String tempNumber;
+            String fileName = aFile.toString();
+            if(fileName.contains(".jpg") || fileName.contains(".txt")){
+                String extension = (fileName.contains(".jpg")) ? ".jpg" : ".txt";
+                tempNumber = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf(extension));
+                if(tempNumber.matches("^([0-9]+)$")){
+                    int checkingNumber = Integer.valueOf(tempNumber);
+                    if(extension.equals(".txt")){
+                        totalTexts = (checkingNumber > totalTexts) ? checkingNumber : totalTexts;
+                    }else{
+                        totalPics = (checkingNumber > totalPics) ? checkingNumber : totalPics;
+                    }
+                }
+            }
+        }
+
+        return (totalPics < totalTexts) ? totalPics : totalTexts;
     }
 }

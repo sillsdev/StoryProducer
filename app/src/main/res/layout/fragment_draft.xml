@@ -1,12 +1,39 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/trans_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
 
-    <TextView
-        android:text="Test text"
+    <ImageView
+        android:id="@+id/fragment_draft_image_view"
         android:layout_width="wrap_content"
-        android:layout_height="165dp"
-        android:id="@+id/textView" />
-</FrameLayout>
+        android:layout_height="400dp"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_draft_Relative_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/fragment_draft_image_view"
+        android:background="@color/black_overlay"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="10dp">
+
+        <TextView
+            android:id="@+id/fragment_draft_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="You should be seeing this!" />
+    </RelativeLayout>
+</RelativeLayout>
