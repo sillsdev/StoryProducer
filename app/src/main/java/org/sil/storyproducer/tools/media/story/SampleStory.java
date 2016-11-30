@@ -48,9 +48,14 @@ public class SampleStory extends Thread {
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BITRATE = 64000;
 
-    public SampleStory() {
+    public SampleStory(String outputFile) {
         OUTPUT_DIR = FileSystem.getProjectDirectory("Fiery Furnace");
-        OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+        if(outputFile == null) {
+            OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+        }
+        else {
+            OUTPUT_FILE = new File(outputFile);
+        }
 
         IMG_1 = FileSystem.getImageFile(STORY, 1);
         IMG_2 = FileSystem.getImageFile(STORY, 4);

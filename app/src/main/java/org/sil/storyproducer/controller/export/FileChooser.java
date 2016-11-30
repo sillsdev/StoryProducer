@@ -43,7 +43,10 @@ public class FileChooser extends AppCompatActivity {
        // fill(currentDir);
    //     setContentView(R.activity_file_explorer.activity_file_chooser);
         File ext = ContextCompat.getExternalFilesDirs(this.getApplicationContext(), null)[0];
-        navigateToFolder(ext);
+        String projDir = getIntent().getStringExtra("HomeBoyDirectory");
+
+        navigateToFolder(new File(projDir));
+//        navigateToFolder(ext);
     }
 
     private void fill(File f) {

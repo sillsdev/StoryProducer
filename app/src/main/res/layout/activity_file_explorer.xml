@@ -24,12 +24,14 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:drawSelectorOnTop="false" />
+            android:drawSelectorOnTop="false"
+            android:background="@color/darkGray" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="61dp">
+            android:layout_height="61dp"
+            android:background="@color/darkGray" >
 
             <EditText
                 android:layout_width="wrap_content"

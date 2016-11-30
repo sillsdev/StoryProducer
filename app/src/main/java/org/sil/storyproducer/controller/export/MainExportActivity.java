@@ -18,7 +18,7 @@ import org.sil.storyproducer.R;
 
 public class MainExportActivity extends AppCompatActivity {
 
-    private static final int REQUEST_PATH = 1;
+    private static final int FILE_CHOOSER_CODE = 1;
     String curFileName;
     EditText textField;
 
@@ -31,13 +31,14 @@ public class MainExportActivity extends AppCompatActivity {
 
     public void getFile(View view){
         Intent intent1 = new Intent(this, FileChooser.class);
-        startActivityForResult(intent1,REQUEST_PATH);
+        startActivityForResult(intent1, FILE_CHOOSER_CODE);
     }
 
     // Listen for results.
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         // See which child activity is calling us back.
-        if (requestCode == REQUEST_PATH){
+        if (requestCode == FILE_CHOOSER_CODE){
             if (resultCode == RESULT_OK) {
                 curFileName = data.getStringExtra("GetFileName");
                 textField.setText(curFileName);

@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.export.FileChooser;
 import org.sil.storyproducer.controller.export.MainExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.*;
@@ -37,14 +38,15 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    private static final int FILE_CHOOSER_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent1 = new Intent(this, MainExportActivity.class);
-        startActivity(intent1);
-        finish();
+//        Intent intent1 = new Intent(this, MainExportActivity.class);
+//        startActivity(intent1);
+//        finish();
 
         FileSystem.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);
@@ -173,24 +175,54 @@ public class MainActivity extends AppCompatActivity {
 ////                startFragment(position, 0, "");
 //            }
             if(id == 5) {
+
+                Intent intent1 = new Intent(getBaseContext(), FileChooser.class);
+                intent1.putExtra("HomeBoyDirectory", FileSystem.getProjectDirectory("Fiery Furnace").getPath());
+                startActivityForResult(intent1, FILE_CHOOSER_CODE);
+
+//                Thread encodeThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Looper.prepare();
+//                        SampleStory test = new SampleStory();
+//                        test.run();
+//                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+//                        Looper.loop();
+//                    }
+//                });
+//                encodeThread.start();
+            }
+            mDrawerLayout.closeDrawer(mDrawerList);
+            if(id == 5) {
+//                Toast.makeText(getBaseContext(), "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // Listen for results.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        // See which child activity is calling us back.
+        if (requestCode == FILE_CHOOSER_CODE){
+            if (resultCode == RESULT_OK) {
+                final String path = data.getStringExtra("GetFileName");
                 Thread encodeThread = new Thread(new Runnable() {
                     @Override
                     public void run() {
                         Looper.prepare();
-                        SampleStory test = new SampleStory();
+                        SampleStory test = new SampleStory(path);
                         test.run();
-                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), "Video created! Saved to " + path, Toast.LENGTH_LONG).show();
                         Looper.loop();
                     }
                 });
-                encodeThread.start();
-            }
-            mDrawerLayout.closeDrawer(mDrawerList);
-            if(id == 5) {
                 Toast.makeText(getBaseContext(), "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
+                encodeThread.start();
+//                Toast.makeText(getBaseContext(), "File selected!!! " + path + " Yay!!!", Toast.LENGTH_LONG).show();
             }
         }
     }
+
     private boolean hideIcon = false;
     private PagerFrag pagerFrag;
     public void startFragment(int iFragNum, int slideCount, String storyName){
