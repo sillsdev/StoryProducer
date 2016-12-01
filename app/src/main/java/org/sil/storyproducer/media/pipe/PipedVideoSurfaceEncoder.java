@@ -14,6 +14,12 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+/**
+ * <p>This media pipeline component provides a simple encoder encapsulating a {@link MediaCodec}.
+ * Unlike {@link PipedMediaEncoder}, it uses an input {@link Surface} instead of ByteBuffers.
+ * This component takes raw canvas frames of a video and outputs an encoded video stream.</p>
+ * <p>Sources for this component must implement {@link PipedVideoSurfaceSource}.</p>
+ */
 public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     private Surface mSurface;
 
@@ -69,6 +75,11 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         }
     }
 
+    /**
+     * Specify a canvas provider for this component in the pipeline.
+     * @param src the preceding component (a canvas drawer) of the pipeline.
+     * @throws SourceUnacceptableException
+     */
     public void addSource(PipedVideoSurfaceSource src) throws SourceUnacceptableException {
         if(mSource != null) {
             throw new SourceUnacceptableException("I already got a source");

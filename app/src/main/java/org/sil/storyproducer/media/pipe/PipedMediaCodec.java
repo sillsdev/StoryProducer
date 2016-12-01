@@ -21,7 +21,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
 
     protected volatile PipedMediaSource.State mComponentState = State.UNINITIALIZED;
 
-    @Deprecated
+    @Deprecated //because this might not be a great long-term item
     protected abstract String getComponentName();
 
     protected MediaCodec mCodec;

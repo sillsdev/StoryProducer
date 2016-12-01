@@ -2,8 +2,13 @@ package org.sil.storyproducer.media;
 
 import android.graphics.Rect;
 
-import org.sil.storyproducer.graphics.RectHelper;
+import org.sil.storyproducer.media.graphics.RectHelper;
 
+/**
+ * This class encapsulates a single, un-timed Ken Burns effect for an image (Bitmap). In other words,
+ * this class stores two crops of an image and provides help with intermediary crops.
+ * Coordinates are stored as integer pixel values.
+ */
 public class KenBurnsEffect {
     public enum Easing {
         LINEAR,
@@ -17,10 +22,21 @@ public class KenBurnsEffect {
 
     private int dLeft, dTop, dRight, dBottom;
 
+    /**
+     * Create Ken Burns effect with starting and ending rectangles.
+     * @param start starting crop of effect.
+     * @param end ending crop of effect.
+     */
     public KenBurnsEffect(Rect start, Rect end) {
         this(start, end, null);
     }
 
+    /**
+     * Create Ken Burns effect with starting and ending rectangles whose values are relative to a given crop.
+     * @param start starting crop of effect.
+     * @param end ending crop of effect.
+     * @param crop initial crop of image (start and end are relative to this).
+     */
     public KenBurnsEffect(Rect start, Rect end, Rect crop) {
         mStart = new Rect(start);
         if(crop != null) {
@@ -40,6 +56,12 @@ public class KenBurnsEffect {
         dBottom = mEnd.bottom - mStart.bottom;
     }
 
+    /**
+     * Obtain an intermediary crop from the Ken Burns effect.
+     * @param position time-step between 0 and 1 (inclusive)
+     *                 where 0 corresponds to the starting crop.
+     * @return crop at time-step.
+     */
     public Rect interpolate(float position) {
         //Clamp position to [0, 1]
         if(position < 0) {

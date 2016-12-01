@@ -1,4 +1,4 @@
-package org.sil.storyproducer.media.videostory;
+package org.sil.storyproducer.media.story;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -14,9 +14,12 @@ import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
 
 import java.io.IOException;
 
+/**
+ * This class knows how to draw the frames provided to it by {@link StoryMaker}.
+ */
 //TODO: use slide transition
-class VideoStoryDrawer implements PipedVideoSurfaceSource {
-    private static final String TAG = "VideoStoryDrawer";
+class StoryFrameDrawer implements PipedVideoSurfaceSource {
+    private static final String TAG = "StoryFrameDrawer";
 
     private MediaFormat mVideoFormat;
     private StoryPage[] mPages;
@@ -37,7 +40,7 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
 
     private boolean mIsVideoDone = false;
 
-    VideoStoryDrawer(MediaFormat videoFormat, StoryPage[] pages, long audioTransitionUs, long slideTransitionUs) {
+    StoryFrameDrawer(MediaFormat videoFormat, StoryPage[] pages, long audioTransitionUs, long slideTransitionUs) {
         mVideoFormat = videoFormat;
         mPages = pages;
 
@@ -82,6 +85,7 @@ class VideoStoryDrawer implements PipedVideoSurfaceSource {
         }
 
         Paint p = new Paint(0);
+        //TODO: Should we use these flags?
 //        p.setAntiAlias(true);
 //        p.setFilterBitmap(true);
 //        p.setDither(true);

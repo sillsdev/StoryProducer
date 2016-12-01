@@ -34,6 +34,7 @@
         <item>Community Check</item>
         <item>Consultant Check</item>
         <item>Recording Studio</item>
+        <item>Generate Video</item>
     </string-array>
     <array name="nav_icons">
         <item>@drawable/ic_list</item>
@@ -41,6 +42,7 @@
         <item>@drawable/ic_community</item>
         <item>@drawable/ic_consultant</item>
         <item>@drawable/ic_mic_white</item>
+        <item>@drawable/ic_search</item>
     </array>
 
 

@@ -1,7 +1,10 @@
-package org.sil.storyproducer.graphics;
+package org.sil.storyproducer.media.graphics;
 
 import android.graphics.Rect;
 
+/**
+ * A simple helper for manipulating rectangles.
+ */
 public class RectHelper {
     public static void scale(Rect src, float scale) {
         src.left *= scale;

@@ -1,16 +1,12 @@
 package org.sil.storyproducer;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-
-import org.sil.storyproducer.media.MyEncodeAndMuxTest;
 
 /**
  * Created by hannahbrown on 9/25/15.
@@ -53,16 +49,8 @@ public class StoryFrag extends Fragment{
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Thread encodeThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        MyEncodeAndMuxTest test = new MyEncodeAndMuxTest();
-                        test.runTest();
-                    }
-                });
-                encodeThread.start();
-//                int slideNum = FileSystem.getImageAmount(values[position]);
-//                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
+                int slideNum = FileSystem.getImageAmount(values[position]);
+                ((MainActivity)getActivity()).startFragment(1, slideNum, values[position]);
             }
         });
 

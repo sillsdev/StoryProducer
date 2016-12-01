@@ -29,6 +29,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     /**
+     * Create a muxer.
      * @param path the output media file.
      * @param format the format of the output media file
      *               (from {@link android.media.MediaMuxer.OutputFormat}).
@@ -75,6 +76,11 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         mMuxer.start();
     }
 
+    /**
+     * Set the muxer in motion.
+     * @throws IOException
+     * @throws SourceUnacceptableException
+     */
     public void crunch() throws IOException, SourceUnacceptableException {
         start();
 

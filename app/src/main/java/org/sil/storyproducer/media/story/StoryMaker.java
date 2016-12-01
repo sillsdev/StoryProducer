@@ -1,4 +1,4 @@
-package org.sil.storyproducer.media.videostory;
+package org.sil.storyproducer.media.story;
 
 import android.media.MediaFormat;
 
@@ -13,7 +13,12 @@ import org.sil.storyproducer.media.pipe.SourceUnacceptableException;
 import java.io.File;
 import java.io.IOException;
 
-public class VideoStoryMaker {
+/**
+ * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
+ */
+public class StoryMaker {
+    private static final float SOUNDTRACK_VOLUME_MODIFIER = 0.8f;
+
     private final File mOutputFile;
     private final int mOutputFormat;
 
@@ -30,8 +35,21 @@ public class VideoStoryMaker {
 
     private final long mDurationUs;
 
-    public VideoStoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat,
-                           StoryPage[] pages, File soundtrack, long audioTransitionUs, long slideTransitionUs) {
+    /**
+     * Create StoryMaker.
+     * @param output output video file.
+     * @param outputFormat the format of the output media file
+     *               (from {@link android.media.MediaMuxer.OutputFormat}).
+     * @param videoFormat desired output video format.
+     * @param audioFormat desired output audio format.
+     * @param pages pages of this story.
+     * @param soundtrack background music for this story.
+     * @param audioTransitionUs transition duration, in microseconds, between narration segments.
+     *                          Note: this helps drive length of video.
+     * @param slideTransitionUs transition duration, in microseconds, of cross-fade between page images.
+     */
+    public StoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat,
+                      StoryPage[] pages, File soundtrack, long audioTransitionUs, long slideTransitionUs) {
         mOutputFile = output;
         mOutputFormat = outputFormat;
         mVideoFormat = videoFormat;
@@ -45,23 +63,26 @@ public class VideoStoryMaker {
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
-        mDurationUs = getStoryDurationUs(mPages, mAudioTransitionUs);
+        mDurationUs = getStoryDuration(mPages, mAudioTransitionUs);
     }
 
+    /**
+     * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
+     */
     public void churn() {
         try {
-            PipedAudioLooper soundtrackMaverick = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
+            PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
             PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
             PipedAudioMixer audioMixer = new PipedAudioMixer();
             PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
-            VideoStoryDrawer videoDrawer = new VideoStoryDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
+            StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
             PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
             PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
             muxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
-            audioMixer.addSource(soundtrackMaverick);
+            audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
                 narrationConcatenator.addSource(page.getNarrationAudio().getPath());
@@ -79,7 +100,14 @@ public class VideoStoryMaker {
         }
     }
 
-    public static long getStoryDurationUs(StoryPage[] pages, long audioTransitionUs) {
+    /**
+     * Get the expected duration, in microseconds, of the produced video.
+     * This value should be accurate to a few milliseconds for arbitrarily long stories.
+     * @param pages pages of this story.
+     * @param audioTransitionUs transition duration, in microseconds, between narration segments.
+     * @return expected duration of the produced video in microseconds.
+     */
+    public static long getStoryDuration(StoryPage[] pages, long audioTransitionUs) {
         long durationUs = pages.length * audioTransitionUs;
 
         for(StoryPage page : pages) {
