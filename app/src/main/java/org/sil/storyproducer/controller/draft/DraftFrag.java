@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -40,25 +41,40 @@ public class DraftFrag extends Fragment {
         return rootView;
     }
 
+    /**
+     * This function allows the picture to scale with the phone's screen size.
+     * @param aView The ImageView that will contain the picture.
+     * @param slideNum The slide number to grab the picture from the files.
+     */
     private void setPic(View aView,int slideNum){
+        if(! (aView instanceof ImageView)){
+            return;
+        }
         ImageView slideImage = (ImageView)aView;
         Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(),slideNum);
-//        slideImage.setImageBitmap();
+        //TODO make sure to dsiplay an error when a picture is not found for the story and slidenum
+
+        //Get the height of the phone.
         DisplayMetrics metric = getContext().getResources().getDisplayMetrics();
-        int width = metric.widthPixels;
         int height = metric.heightPixels;
+        double scalingFactor = 0.5;
+        height = (int)(height * scalingFactor);
 
-        System.out.format("The width:%d and height:%d of picture before transformation. %n", slidePicture.getWidth(), slidePicture.getHeight());
-
-        slidePicture = BitmapScaler.scaleToFitWidth(slidePicture, width);
-
-        System.out.format("The width:%d and height:%d of picture after transformation. %n", slidePicture.getWidth(), slidePicture.getHeight());
-
+        //Set the height of the image view
+        slideImage.getLayoutParams().height = height;
+        slideImage.requestLayout();
 
         slideImage.setImageBitmap(slidePicture);
     }
 
+    /**
+     * Sets the main text of the layout.
+     * @param aView The text view that will be filled with the verse's text.
+     */
     private void setText(View aView){
+        if(! (aView instanceof TextView)){
+            return;
+        }
         TextView textView = (TextView)aView;
         textView.setText(FileSystem.getSlideContent());
     }
