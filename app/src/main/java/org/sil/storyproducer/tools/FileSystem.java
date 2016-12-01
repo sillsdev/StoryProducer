@@ -14,8 +14,9 @@ public class FileSystem {
 
     private static Context context;
     private static final String TEMPLATES_DIR = "templates",
-                                NARRATION_PREFIX="narration",
-                                PROJECT_DIR="projects";
+                                NARRATION_PREFIX = "narration",
+                                PROJECT_DIR = "projects",
+                                SOUNDTRACK_PREFIX = "SoundTrack";
 
 
     //Paths to template directories from language and story name
@@ -98,7 +99,7 @@ public class FileSystem {
         return dir.listFiles(directoryFilter);
     }
 
-    public static String getStoryPath(String story){
+    private static String getStoryPath(String story){
         Map<String, String> storyMap = storyPaths.get(language);
         if(storyMap != null) {
             return storyMap.get(story);
@@ -108,6 +109,10 @@ public class FileSystem {
 
     public static File getNarrationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
+    }
+
+    public static File getSoundtrack(String story){
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
     }
 
     /**
@@ -138,19 +143,6 @@ public class FileSystem {
                 if (file[i].getName().equals(number + ".jpg")) {
                     return BitmapFactory.decodeFile(path + "/" + file[i].getName());
                 }
-        }
-        return null;
-    }
-
-    public static Bitmap getAudio(String story, int number) {
-        String path = getStoryPath(story);
-        File f = new File(path);
-        File file[] = f.listFiles();
-
-        for (int i=0; i < file.length; i++) {
-            if (file[i].getName().equals(number + ".wav")) {
-                return BitmapFactory.decodeFile(path + "/" + file[i].getName());
-            }
         }
         return null;
     }
