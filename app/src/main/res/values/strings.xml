@@ -100,7 +100,16 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_registration">Registration</string>
+    /* SnackBar Messages */
+    <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="ok">Ok</string>
 
-
+    /* Phases */
+    <string name="learnTitle">Learn</string>
+    <string name="draftTitle">Draft</string>
+    <string name="community_check_title">Community Check</string>
+    <string name="consultant_check_title">Consultant Check</string>
+    <string name="dramatization_title">Dramatization</string>
+    <string name="export_title">Export</string>
 
 </resources>

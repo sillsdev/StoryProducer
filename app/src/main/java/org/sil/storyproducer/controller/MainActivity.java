@@ -1,15 +1,12 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
-
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -28,20 +25,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.io.Serializable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FileSystem.init(this.getApplicationContext());
+        FileSystem.init(getApplicationContext());
+        StoryState.init(getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
+
         boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
@@ -64,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
-
-
     }
 
     @Override
@@ -214,11 +210,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Change the activity that the app is on
+     * move to the chosen story
      */
-    public void startLearnActivity(int slideNum, String storyName) {
-        //change to the learning activity
-        Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
+    public void switchToStory(String storyName) {
+        //TODO change the Story State that is stored for each story
+        StoryState.setStoryName(storyName);
+        Phase currPhase = StoryState.getCurrentPhase();
+        Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
     }
 
