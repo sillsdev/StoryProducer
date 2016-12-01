@@ -1,10 +1,11 @@
 package org.sil.storyproducer.model;
 
+import android.content.Context;
+
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.export.ExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
-import android.content.Context;
 
 /**
  * StoryState is a static class that holds the information of the state of a story project
@@ -16,7 +17,7 @@ public final class StoryState {
     private static Phase currentPhase;
     private static Phase[] phases;
     private static int currentPhaseIndex = 0;
-
+    private static int currentStorySlide = 0;
 
     //TODO: add saving state in prefrences for each story
 
@@ -71,6 +72,21 @@ public final class StoryState {
             }
         }
         currentPhase = p;
+    }
+
+    /**
+     * get the current stories Slide that the user is on
+     * @return
+     */
+    public static int getCurrentStorySlide() {
+        return currentStorySlide;
+    }
+
+    /**
+     * set the current story slide
+     */
+    public static void setCurrentStorySlide(int num) {
+        currentStorySlide = num;
     }
 
     /**

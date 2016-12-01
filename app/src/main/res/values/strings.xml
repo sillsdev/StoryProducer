@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="menu_info">Registration Info</string>
     <string name="menu_search">Search</string>
+    <string name="menu">Menu</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
@@ -111,5 +112,6 @@
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatization</string>
     <string name="export_title">Export</string>
+    <string name="title_activity_test_drawer">testDrawer</string>
 
 </resources>

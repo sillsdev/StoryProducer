@@ -2,10 +2,6 @@ package org.sil.storyproducer.tools;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by eric smith on 11/22/2016.
- */
-
 public class BitmapScaler
 {
     // Scale and maintain aspect ratio given a desired width

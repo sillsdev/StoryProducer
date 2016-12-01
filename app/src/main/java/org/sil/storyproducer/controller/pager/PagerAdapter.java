@@ -1,9 +1,8 @@
 package org.sil.storyproducer.controller.pager;
 
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.model.StoryState;
@@ -35,15 +34,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         Fragment fragment;
         if(!mapOfTransFrags.containsKey(i)){
             fragment = new DraftFrag();
-            Bundle args = new Bundle();
-            args.putInt(DraftFrag.SLIDE_NUM, i + 1);
-            fragment.setArguments(args);
             mapOfTransFrags.put(i, (DraftFrag)fragment);
         }
         else{
             fragment = mapOfTransFrags.get(i);
         }
-
+        StoryState.setCurrentStorySlide(i + 1);
         return fragment;
     }
 
@@ -63,7 +59,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public CharSequence getPageTitle(int position) {
-        return "OBJECT " + (position + 1);
+        return "Page " + (position + 1);
     }
 
     /**

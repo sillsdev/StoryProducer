@@ -32,11 +32,10 @@ public class DraftFrag extends Fragment {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         View rootView = inflater.inflate(R.layout.fragment_draft, container, false);
-        Bundle args = getArguments();
 
-        FileSystem.loadSlideContent(StoryState.getStoryName(), args.getInt(SLIDE_NUM));
+        FileSystem.loadSlideContent(StoryState.getStoryName(), StoryState.getCurrentStorySlide());
 
-        setPic(rootView.findViewById(R.id.fragment_draft_image_view), args.getInt(SLIDE_NUM));
+        setPic(rootView.findViewById(R.id.fragment_draft_image_view), StoryState.getCurrentStorySlide());
         setText(rootView.findViewById(R.id.fragment_draft_text_view));
         return rootView;
     }
