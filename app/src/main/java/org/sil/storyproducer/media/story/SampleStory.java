@@ -6,7 +6,7 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 
-import org.sil.storyproducer.FileSystem;
+import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.media.KenBurnsEffect;
 import org.sil.storyproducer.media.MediaHelper;
 
@@ -19,19 +19,20 @@ import java.io.File;
 public class SampleStory extends Thread {
     private static final String TAG = "SampleStory";
 
+    private static final String STORY = "Fiery Furnace";
+
     // size of a frame, in pixels
     private static final int WIDTH = 320;
     private static final int HEIGHT = 240;
 
-    // where to put the output file (note: /sdcard requires WRITE_EXTERNAL_STORAGE permission)
-    private static final File OUTPUT_DIR = new File(FileSystem.getStoryPath("Fiery Furnace"));
-    private static final File OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+    private final File OUTPUT_DIR;
+    private final File OUTPUT_FILE;
 
-    private static final String IMG_1 = OUTPUT_DIR.getPath() + "/1.jpg";
-    private static final String IMG_2 = OUTPUT_DIR.getPath() + "/4.jpg";
-    private static final String SOUNDTRACK_PATH = OUTPUT_DIR.getPath() + "/SoundTrack0.mp3";
-    private static final String NARRATION_PATH_1 = OUTPUT_DIR.getPath() + "/narration0.wav";
-    private static final String NARRATION_PATH_2 = OUTPUT_DIR.getPath() + "/narration1.wav";
+    private final File IMG_1;
+    private final File IMG_2;
+    private final File SOUNDTRACK;
+    private final File NARRATION_1;
+    private final File NARRATION_2;
 
     // parameters for the video encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
@@ -46,6 +47,17 @@ public class SampleStory extends Thread {
     private static final int AUDIO_SAMPLE_RATE = 48000;
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BITRATE = 64000;
+
+    public SampleStory() {
+        OUTPUT_DIR = FileSystem.getProjectDirectory("Fiery Furnace");
+        OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+
+        IMG_1 = FileSystem.getImageFile(STORY, 1);
+        IMG_2 = FileSystem.getImageFile(STORY, 4);
+        SOUNDTRACK = FileSystem.getSoundtrackAudio(STORY, 0);
+        NARRATION_1 = FileSystem.getNarrationAudio(STORY, 0);
+        NARRATION_2 = FileSystem.getNarrationAudio(STORY, 1);
+    }
 
     @Override
     public void run() {
@@ -65,8 +77,8 @@ public class SampleStory extends Thread {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
-        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), StoryBitmapManager.getDimensions(IMG_1));
-        Rect r2 = StoryBitmapManager.getDimensions(IMG_2);
+        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), StoryBitmapManager.getDimensions(IMG_1.getPath()));
+        Rect r2 = StoryBitmapManager.getDimensions(IMG_2.getPath());
         if (MediaHelper.VERBOSE) {
             Log.d(TAG, "image 2 rectangle: (" + r2.left + ", " + r2.top + ", "
                     + r2.right + ", " + r2.bottom + ")");
@@ -74,17 +86,15 @@ public class SampleStory extends Thread {
         KenBurnsEffect kbfx2 = new KenBurnsEffect(new Rect(0, 200, r2.right - 500, r2.bottom - 200), new Rect(500, 200, r2.right, r2.bottom - 200));
 
         StoryPage[] pages = {
-                new StoryPage(new File(IMG_1), new File(NARRATION_PATH_1), kbfx1),
-                new StoryPage(new File(IMG_2), new File(NARRATION_PATH_2), kbfx2),
+                new StoryPage(IMG_1, NARRATION_1, kbfx1),
+                new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
-
-        File soundtrack = new File(SOUNDTRACK_PATH);
 
         long slideTransitionUs = 3000000;
         long audioTransitionUs = 500000;
 
         StoryMaker maker = new StoryMaker(OUTPUT_FILE, outputFormat, videoFormat, audioFormat,
-                pages, soundtrack, audioTransitionUs, slideTransitionUs);
+                pages, SOUNDTRACK, audioTransitionUs, slideTransitionUs);
         maker.churn();
     }
 }

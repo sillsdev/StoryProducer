@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.controller;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,13 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-/**
- * Created by hannahbrown on 11/3/15.
- */
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.ListFiles;
+
 public class CustomAdapter extends ArrayAdapter<ListFiles> {
-    Context context;
-    int layoutResourceId;
-    ListFiles data[] = null;
+    private Context context;
+    private int layoutResourceId;
+    private ListFiles data[] = null;
 
     public CustomAdapter(Context context, int layoutResourceId, ListFiles[] data) {
         super(context, layoutResourceId, data);
@@ -59,8 +59,8 @@ public class CustomAdapter extends ArrayAdapter<ListFiles> {
 
         ListFiles listFiles = data[position];
         holder.txtTitle.setText(listFiles.title);
-//        holder.imgIcon.setImageBitmap(listFiles.icon);
-        holder.imgIcon.setImageBitmap(getRoundedShape(listFiles.icon));
+        holder.imgIcon.setImageBitmap(listFiles.icon);
+        //holder.imgIcon.setImageBitmap(getRoundedShape(listFiles.icon));
         holder.txtSubTitle.setText(listFiles.subtitle);
 
         return row;
@@ -95,19 +95,5 @@ public class CustomAdapter extends ArrayAdapter<ListFiles> {
                         targetHeight), null);
         return targetBitmap;
     }
-}
 
-class ListFiles {
-    public Bitmap icon;
-    public String title;
-    public String subtitle;
-
-    public ListFiles(){ super(); }
-
-    public ListFiles(Bitmap icon, String title, String subtitle) {
-        super();
-        this.icon = icon;
-        this.title = title;
-        this.subtitle = subtitle;
-    }
 }

@@ -1,11 +1,8 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.tools;
 
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-/**
- * Created by Jordan Skomer on 11/15/2015.
- */
 public class PagerAnimation implements ViewPager.PageTransformer {
     private static final float MIN_SCALE = 0.75f;
 

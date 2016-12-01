@@ -1,8 +1,5 @@
-package org.sil.storyproducer;
+package org.sil.storyproducer.model;
 
-/**
- * Created by Jordan Skomer on 9/27/2015.
- */
 public class NavItem {
 
     private String title;
