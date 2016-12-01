@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.FileSystem;
 
 /**
@@ -56,7 +54,7 @@ public class DraftFrag extends Fragment {
         //Get the height of the phone.
         DisplayMetrics metric = getContext().getResources().getDisplayMetrics();
         int height = metric.heightPixels;
-        double scalingFactor = 0.5;
+        double scalingFactor = 0.4;
         height = (int)(height * scalingFactor);
 
         //Set the height of the image view
