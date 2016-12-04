@@ -124,6 +124,4 @@ public final class StoryState {
         currentPhase = phases[currentPhaseIndex];
         return currentPhase;
     }
-
-
 }
