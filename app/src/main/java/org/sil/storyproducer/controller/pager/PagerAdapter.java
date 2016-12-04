@@ -5,12 +5,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -32,11 +30,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         Fragment fragment;
-        fragment = new DraftFrag();
-        Bundle passedArgs = new Bundle();
-        passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
-        fragment.setArguments(passedArgs);
-        //mapOfTransFrags.put(i, (DraftFrag)fragment);
+        if(StoryState.getCurrentPhase().getTitle().equals("Draft")) {
+            fragment = new DraftFrag();
+            Bundle passedArgs = new Bundle();
+            passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
+            fragment.setArguments(passedArgs);
+            //mapOfTransFrags.put(i, (DraftFrag)fragment);
+        } else {
+            fragment = new CommunityCheckFrag();
+            Bundle passedArgs = new Bundle();
+            passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
+            fragment.setArguments(passedArgs);
+        }
 
         return fragment;
     }
