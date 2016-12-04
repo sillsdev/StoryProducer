@@ -46,6 +46,7 @@ public class DraftFrag extends Fragment {
         slidePosition = passedArgs.getInt(SLIDE_NUM);
         FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
 
+        setUiColors();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slidePosition/*StoryState.getCurrentStorySlide()*/);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
@@ -179,6 +180,23 @@ public class DraftFrag extends Fragment {
                     }
                 }
             });
+        }
+    }
+
+    private void setUiColors(){
+        if(slidePosition == 0){
+            RelativeLayout rl = (RelativeLayout)rootView.findViewById(R.id.trans_layout);
+            rl.setBackgroundColor(getResources().getColor(R.color.primaryDark));
+            rl =  (RelativeLayout)rootView.findViewById(R.id.fragment_draft_Relative_Layout);
+            rl.setBackgroundColor(getResources().getColor(R.color.primaryDark));
+
+            TextView tv = (TextView)rootView.findViewById(R.id.fragment_draft_scripture_text);
+            tv.setBackgroundColor(getResources().getColor(R.color.primaryDark));
+            tv = (TextView)rootView.findViewById(R.id.fragment_draft_reference_text);
+            tv.setBackgroundColor(getResources().getColor(R.color.primaryDark));
+
+            ImageButton ib = (ImageButton)rootView.findViewById(R.id.fragment_draft_narration_button);
+            ib.setBackgroundColor(getResources().getColor(R.color.primaryDark));
         }
     }
 
