@@ -104,8 +104,8 @@ public class DraftFrag extends Fragment {
         //Get the height of the phone.
         DisplayMetrics metric = getContext().getResources().getDisplayMetrics();
         int height = metric.heightPixels;
-        double scalingFactor = 0.5;
-        height = (int) (height * scalingFactor);
+        double scalingFactor = 0.4;
+        height = (int)(height * scalingFactor);
 
         //Set the height of the image view
         slideImage.getLayoutParams().height = height;
