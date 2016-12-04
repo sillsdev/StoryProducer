@@ -18,7 +18,7 @@ public class DramatizationFrag extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         Bundle args = getArguments();
-        ((TextView) rootView.findViewById(R.id.textView)).setText("Object " + args.getInt(ARG_OBJECT));
+        ((TextView) rootView.findViewById(R.id.textView)).setText("");
 
         return rootView;
     }

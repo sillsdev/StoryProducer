@@ -6,7 +6,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
+import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
 
@@ -30,18 +32,26 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         Fragment fragment;
-        if(StoryState.getCurrentPhase().getTitle().equals("Draft")) {
-            fragment = new DraftFrag();
-            Bundle passedArgs = new Bundle();
-            passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
-            fragment.setArguments(passedArgs);
-            //mapOfTransFrags.put(i, (DraftFrag)fragment);
-        } else {
-            fragment = new CommunityCheckFrag();
-            Bundle passedArgs = new Bundle();
-            passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
-            fragment.setArguments(passedArgs);
+        switch (StoryState.getCurrentPhase().getTitle()) {
+            case "Draft":
+                fragment = new DraftFrag();
+                break;
+            case "Community Check":
+                fragment = new CommunityCheckFrag();
+                break;
+            case "Consultant Check":
+                fragment = new ConsultantCheckFrag();
+                break;
+            case "Dramatization":
+                fragment = new DramatizationFrag();
+                break;
+            default:
+                fragment = new DraftFrag();
         }
+        Bundle passedArgs = new Bundle();
+        passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
+        fragment.setArguments(passedArgs);
+        //mapOfTransFrags.put(i, (DraftFrag)fragment);
 
         return fragment;
     }
