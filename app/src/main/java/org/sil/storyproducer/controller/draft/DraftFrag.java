@@ -1,14 +1,19 @@
 package org.sil.storyproducer.controller.draft;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+//import android.support.design.widget.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -19,10 +24,9 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.FileSystem;
-import org.w3c.dom.Text;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -34,6 +38,12 @@ public class DraftFrag extends Fragment {
     private MediaPlayer narrationMediaPlayer;
     private View rootView;
     private String filePath;
+    String recordFilePath;
+    private MediaRecorder voiceRecorder;
+    private boolean isRecording = false;
+    private AudioPlayer voicePlayer;
+
+
 
     public DraftFrag() {
         super();
@@ -61,7 +71,7 @@ public class DraftFrag extends Fragment {
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarration(rootView.findViewById(R.id.fragment_draft_narration_button));
-        //setRecordNPlayback();
+        setRecordNPlayback();
         return rootView;
     }
 
@@ -225,79 +235,86 @@ public class DraftFrag extends Fragment {
         }
     }
 
-    private void startAudioRecorder(MediaRecorder recorder){
+
+    private void setRecordNPlayback(){
+        FloatingActionButton recordButton = (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
+        recordFilePath = FileSystem.getStoryPath(StoryState.getStoryName());
+        recordFilePath += "/recordedVoice" + slidePosition + ".mp3";
+
+        recordButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isRecording){
+                    stopAudioRecorder();
+                    setVoicePlayBackButton();
+                }else{
+                    startAudioRecorder();
+                }
+            }
+        });
+    }
+
+    private void startAudioRecorder(){
+        if(voiceRecorder != null){
+            setVoiceRecorder(recordFilePath, false);
+        }else{
+            setVoiceRecorder(recordFilePath, true);
+        }
         try {
-            recorder.prepare();
-            recorder.start();
+            voiceRecorder.prepare();
+            voiceRecorder.start();
+            isRecording = true;
+            Toast.makeText(getContext(), "Recording voice!", Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e){
             e.printStackTrace();
         }
     }
 
-    private void stopAudioRecorder(MediaRecorder recorder){
+    private void stopAudioRecorder(){
         try{
-            recorder.stop();
+            voiceRecorder.stop();
+            isRecording = false;
+            Toast.makeText(getContext(), "Stopped recording!", Toast.LENGTH_SHORT).show();
         }catch(RuntimeException stopException){
-            Toast.makeText(getContext(), "Please record again", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
         }
-        recorder.reset();
-        recorder.release();
+        voiceRecorder.reset();
     }
 
-//    private void setRecordNPlayback(){
-//
-//
-//        floatingActionButton1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//            }
-//        });
-//
-//        floatingActionButton1.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View v) {
-//                v.setPressed(true);
-//                outputFile = fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
-//                audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
-//                startAudioRecorder(audioRecorder);
-//                Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
-//                isSpeakButtonLongPressed = true;
-//                return true;
-//            }
-//        });
-//
-//        //TODO handle an event when you simply click -> it crashes when you do this
-//        //hopefully the click function above this does that.
-//        floatingActionButton1.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                v.onTouchEvent(event);
-//                if (event.getAction() == MotionEvent.ACTION_UP) {
-//                    if (isSpeakButtonLongPressed) {
-//                        Toast.makeText(getContext(), "Recording Stopped", Toast.LENGTH_SHORT).show();
-//                        failure = 1;
-//                        stopAudioRecorder(audioRecorder);
-//                        //keep track of the number of records
-//                        if (record_count == 2 & failure == 1) {
-//                            record_count--;
-//                            floatingActionButton1.setColorNormalResId(R.color.yellow);
-//                            floatingActionButton2.setVisibility(View.VISIBLE);
-//                        } else if (record_count == 1 & failure == 1) {
-//                            record_count--;
-//                            floatingActionButton1.setColorNormalResId(R.color.green);
-//                            File greenColor = new File(output.getAbsolutePath() + "/" + outputFile + "green");
-//                            if(!greenColor.exists()){ greenColor.mkdir();}
-//                        } else if (record_count == 0 & failure == 0) {
-//                            record_count++;
-//                            floatingActionButton1.setColorNormalResId(R.color.yellow);
-//                        }
-//                        v.setPressed(false);
-//                        isSpeakButtonLongPressed = false;
-//                    }
-//                }
-//                return true;
-//            }
-//        });
-//    }
 
+
+    private void setVoiceRecorder(String fileName, boolean createNewMediaRecorder){
+        if(createNewMediaRecorder || voiceRecorder == null){
+            voiceRecorder = new MediaRecorder();
+        }
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    1);
+        }
+
+        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        voiceRecorder.setOutputFile(fileName);
+    }
+
+    private void setVoicePlayBackButton() {
+        FloatingActionButton playbackButton = (FloatingActionButton) rootView.findViewById(R.id.fragment_draft_playback_button);
+        playbackButton.setVisibility(View.VISIBLE);
+        voicePlayer = new AudioPlayer();
+
+        playbackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (voicePlayer.isAudioPlaying()) {
+                    voicePlayer.stopAudio();
+                }
+                voicePlayer.playWithPath(recordFilePath);
+            }
+        });
+    }
 }
