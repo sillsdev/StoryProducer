@@ -26,6 +26,7 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.FileSystem;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -35,13 +36,12 @@ public class DraftFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slidePosition;
     private AudioPlayer narrationAudioPlayer;
+    private AudioPlayer voiceAudioPlayer;
     private View rootView;
-    private String filePath;
-    String recordFilePath;
+    private String narrationFilePath;
+    private String recordFilePath;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
-    private AudioPlayer voicePlayer;
-
 
 
     public DraftFrag() {
@@ -64,16 +64,21 @@ public class DraftFrag extends Fragment {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
 
-
         setUiColors();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slidePosition/*StoryState.getCurrentStorySlide()*/);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarration(rootView.findViewById(R.id.fragment_draft_narration_button));
         setRecordNPlayback();
+
         return rootView;
     }
 
+    /**
+     * This function serves to handle draft page changes and stops the audio streams from
+     * continuing.
+     * @param isVisibleToUser
+     */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -82,21 +87,46 @@ public class DraftFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                narrationAudioPlayer.stopAudio();
+                if(narrationAudioPlayer != null){
+                    narrationAudioPlayer.stopAudio();
+                }
+                if(voiceAudioPlayer != null){
+                    voiceAudioPlayer.stopAudio();
+                }
             }
         }
     }
 
+    /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on pause.
+     */
     @Override
     public void onPause() {
         super.onPause();
-        narrationAudioPlayer.stopAudio();
+        if(narrationAudioPlayer != null){
+            narrationAudioPlayer.stopAudio();
+        }
+        if(voiceAudioPlayer != null){
+            voiceAudioPlayer.stopAudio();
+        }
     }
 
+    /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on stop.
+     */
     @Override
     public void onStop() {
         super.onStop();
-        narrationAudioPlayer.releaseAudio();
+        if(narrationAudioPlayer != null){
+            narrationAudioPlayer.stopAudio();
+            narrationAudioPlayer.releaseAudio();
+        }
+        if(voiceAudioPlayer != null){
+            voiceAudioPlayer.stopAudio();
+            voiceAudioPlayer.releaseAudio();
+        }
     }
 
     /**
@@ -175,18 +205,22 @@ public class DraftFrag extends Fragment {
             return;
         }
 
-        filePath = FileSystem.getAudioPath(StoryState.getStoryName(), slidePosition);
-        if (filePath != null) {
+        narrationFilePath = FileSystem.getAudioPath(StoryState.getStoryName(), slidePosition);
+        if (narrationFilePath != null) {
             ImageView imageView = (ImageView) aView;
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(filePath == null) {
+                    if(narrationFilePath == null) {
                         Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
                     } else {
+                        //stop other playback streams.
+                        if(voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()){
+                            voiceAudioPlayer.stopAudio();
+                        }
                         narrationAudioPlayer = new AudioPlayer();
-                        narrationAudioPlayer.playWithPath(filePath.toString());
-                        Snackbar.make(rootView, "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
+                        narrationAudioPlayer.playWithPath(narrationFilePath.toString());
+                        Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -215,17 +249,34 @@ public class DraftFrag extends Fragment {
     }
 
 
+    /**
+     * This function sets the recording and playback buttons (The mic and play button) with their
+     * respective functionalities.
+     */
     private void setRecordNPlayback(){
-        FloatingActionButton recordButton = (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
+        FloatingActionButton recordButton =
+                (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
         recordFilePath = FileSystem.getStoryPath(StoryState.getStoryName());
         recordFilePath += "/recordedVoice" + slidePosition + ".mp3";
+        setVoicePlayBackButton(new File(recordFilePath).exists());
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //stop all other playback streams.
+                if(voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()){
+                    voiceAudioPlayer.stopAudio();
+                }
+                if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
+                    narrationAudioPlayer.stopAudio();
+                }
                 if(isRecording){
                     stopAudioRecorder();
-                    setVoicePlayBackButton();
+                    //set playback button visible
+                    FloatingActionButton playbackButton =
+                    (FloatingActionButton) rootView.findViewById(R.id.fragment_draft_playback_button);
+                    playbackButton.setVisibility(View.VISIBLE);
+
                 }else{
                     startAudioRecorder();
                 }
@@ -233,12 +284,11 @@ public class DraftFrag extends Fragment {
         });
     }
 
+    /**
+     * The function that aids in starting an audio recorder.
+     */
     private void startAudioRecorder(){
-        if(voiceRecorder != null){
-            setVoiceRecorder(recordFilePath, false);
-        }else{
-            setVoiceRecorder(recordFilePath, true);
-        }
+        setVoiceRecorder(recordFilePath, voiceRecorder != null);
         try {
             voiceRecorder.prepare();
             voiceRecorder.start();
@@ -249,6 +299,9 @@ public class DraftFrag extends Fragment {
         }
     }
 
+    /**
+     * The function that aids in stopping an audio recorder.
+     */
     private void stopAudioRecorder(){
         try{
             voiceRecorder.stop();
@@ -261,7 +314,13 @@ public class DraftFrag extends Fragment {
     }
 
 
-
+    /**
+     * This function sets the voice recorder with either a new voicerecorder or reuses the
+     * voicerecorder.
+     * @param fileName The file to output the voice recordings.
+     * @param createNewMediaRecorder The boolean that dictates an new instantiation of a
+     *                               voice recorder.
+     */
     private void setVoiceRecorder(String fileName, boolean createNewMediaRecorder){
         if(createNewMediaRecorder || voiceRecorder == null){
             voiceRecorder = new MediaRecorder();
@@ -281,18 +340,34 @@ public class DraftFrag extends Fragment {
         voiceRecorder.setOutputFile(fileName);
     }
 
-    private void setVoicePlayBackButton() {
-        FloatingActionButton playbackButton = (FloatingActionButton) rootView.findViewById(R.id.fragment_draft_playback_button);
-        playbackButton.setVisibility(View.VISIBLE);
-        voicePlayer = new AudioPlayer();
+    /**
+     * This function sets the voice play back function. This function is called
+     * in private void setRecordNPlayback(). This serves to set the visibility if the audio file
+     * already exists.
+     * @param audioFileExists The boolean to check if the recording file exists.
+     */
+    private void setVoicePlayBackButton(boolean audioFileExists) {
+        FloatingActionButton playbackButton =
+                (FloatingActionButton) rootView.findViewById(R.id.fragment_draft_playback_button);
+        if(audioFileExists){
+            playbackButton.setVisibility(View.VISIBLE);
+        }
+
 
         playbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (voicePlayer.isAudioPlaying()) {
-                    voicePlayer.stopAudio();
+                //Stops all other playback streams.
+                if (voiceAudioPlayer != null ) {
+                    if(voiceAudioPlayer.isAudioPlaying()) {
+                        voiceAudioPlayer.stopAudio();
+                    }
+                    if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
+                        narrationAudioPlayer.stopAudio();
+                    }
                 }
-                voicePlayer.playWithPath(recordFilePath);
+                voiceAudioPlayer = new AudioPlayer();
+                voiceAudioPlayer.playWithPath(recordFilePath);
             }
         });
     }
