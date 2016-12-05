@@ -1,14 +1,12 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -19,10 +17,9 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.FileSystem;
-import org.w3c.dom.Text;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -31,7 +28,7 @@ import java.io.IOException;
 public class DraftFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slidePosition;
-    private MediaPlayer narrationMediaPlayer;
+    private AudioPlayer narrationAudioPlayer;
     private View rootView;
     private String filePath;
 
@@ -73,9 +70,7 @@ public class DraftFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if (narrationMediaPlayer != null) {
-                    if (narrationMediaPlayer.isPlaying()) narrationMediaPlayer.stop();
-                }
+                narrationAudioPlayer.stopAudio();
             }
         }
     }
@@ -83,19 +78,13 @@ public class DraftFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (narrationMediaPlayer != null) {
-            if (narrationMediaPlayer.isPlaying()) narrationMediaPlayer.stop();
-        }
+        narrationAudioPlayer.stopAudio();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (narrationMediaPlayer != null) {
-            if (narrationMediaPlayer.isPlaying()) narrationMediaPlayer.stop();
-
-            narrationMediaPlayer.release();
-        }
+        narrationAudioPlayer.releaseAudio();
     }
 
     /**
@@ -176,28 +165,16 @@ public class DraftFrag extends Fragment {
 
         filePath = FileSystem.getAudioPath(StoryState.getStoryName(), slidePosition);
         if (filePath != null) {
-            narrationMediaPlayer = new MediaPlayer();
-
             ImageView imageView = (ImageView) aView;
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (narrationMediaPlayer != null) {
-                        if (narrationMediaPlayer.isPlaying()) narrationMediaPlayer.stop();
-
-                        narrationMediaPlayer.release();
-                        narrationMediaPlayer = new MediaPlayer();
-
-                        try {
-                            narrationMediaPlayer.setDataSource(filePath.toString());
-                            narrationMediaPlayer.prepare();
-                        } catch (IOException e) {
-                            System.out.println(e.getMessage());
-                        }
-                        Snackbar.make(rootView, "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
-                        narrationMediaPlayer.start();
-                    } else {
+                    if(filePath == null) {
                         Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
+                    } else {
+                        narrationAudioPlayer = new AudioPlayer();
+                        narrationAudioPlayer.playWithPath(filePath.toString());
+                        Snackbar.make(rootView, "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
                     }
                 }
             });

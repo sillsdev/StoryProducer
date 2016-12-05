@@ -39,7 +39,7 @@ public class AudioPlayer {
      * Pauses the audio if it is currenlty being played
      */
     public void pauseAudio() {
-        if(mPlayer.isPlaying()) {
+        if(mPlayer != null && mPlayer.isPlaying()) {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
@@ -53,21 +53,40 @@ public class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     public void resumeAudio() {
-        int pauseSpot = mPlayer.getCurrentPosition();
-        mPlayer.seekTo(pauseSpot);
-        mPlayer.start();
+        if(mPlayer != null) {
+            int pauseSpot = mPlayer.getCurrentPosition();
+            mPlayer.seekTo(pauseSpot);
+            mPlayer.start();
+        }
     }
 
     /**
      * Stops the audio if it is currenlty being played
      */
     public void stopAudio() {
-        try {
-            mPlayer.stop();
-            mPlayer.release();
-        } catch (IllegalStateException e) {
-            //TODO maybe something with this exception
-            e.printStackTrace();
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+                mPlayer.stop();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Stops the audio and releases it if it is currenlty being played
+     */
+    public void releaseAudio() {
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+
+                mPlayer.stop();
+                mPlayer.release();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
         }
     }
 

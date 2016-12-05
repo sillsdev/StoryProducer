@@ -131,8 +131,8 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        narrationPlayer.stopAudio();
-        backgroundPlayer.stopAudio();
+        narrationPlayer.releaseAudio();
+        backgroundPlayer.releaseAudio();
     }
 
     @Override
@@ -171,7 +171,7 @@ public class LearnActivity extends AppCompatActivity {
                     playVideo();
                 } else {
                     videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
-                    backgroundPlayer.stopAudio();
+                    backgroundPlayer.releaseAudio();
                     showStartPracticeSnackBar();
                 }
             }
@@ -212,7 +212,7 @@ public class LearnActivity extends AppCompatActivity {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
-                    narrationPlayer.stopAudio();
+                    narrationPlayer.releaseAudio();
                     slideNum = progress;
                     playVideo();
                     if(notPlayingAudio) narrationPlayer.pauseAudio();
