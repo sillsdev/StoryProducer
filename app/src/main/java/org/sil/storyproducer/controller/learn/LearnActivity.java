@@ -91,7 +91,7 @@ public class LearnActivity extends AppCompatActivity {
     private void setBackgroundMusic() {
         //turn on the background music
         backgroundPlayer = new AudioPlayer();
-        backgroundPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/SoundTrack0.mp3");
+        backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
         backgroundPlayer.setVolume(backgroundVolume);
     }
 
@@ -157,7 +157,7 @@ public class LearnActivity extends AppCompatActivity {
         //TODO: sync background audio with image
         learnImageView.setImageBitmap(FileSystem.getImage(storyName, slideNum));          //set the next image
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(FileSystem.getStoryPath(storyName) + "/narration" + slideNum + ".wav");
+        narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
         if(isVolumeOn) {
             narrationPlayer.setVolume(1.0f);
         } else {

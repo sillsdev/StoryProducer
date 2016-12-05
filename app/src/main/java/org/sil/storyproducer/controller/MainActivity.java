@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-
         boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
 //            // Checks registration file to see if registration has been done yet and launches registration if it hasn't

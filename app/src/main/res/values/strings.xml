@@ -52,6 +52,8 @@
     <string name="registration_submit_title">Submit?</string>
     <string name="registration_submit_complete_message">Are you ready to submit?</string>
     <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_error_title">Submission Error</string>
+    <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
     <string name="registration_filename">Registration</string>
 

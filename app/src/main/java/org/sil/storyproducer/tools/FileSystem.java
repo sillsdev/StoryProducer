@@ -10,12 +10,17 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class FileSystem {
-    private static String language = "English";
+    private static String language = "ENG"; //ethnologue code for english
 
     private static Context context;
+    private static final String TEMPLATES_DIR = "templates",
+                                NARRATION_PREFIX = "narration",
+                                PROJECT_DIR = "projects",
+                                SOUNDTRACK_PREFIX = "SoundTrack";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
+    private static Map<String, String> projectPaths;
 
     private static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -33,28 +38,48 @@ public class FileSystem {
     public static void loadStories() {
         //Reset storyPaths
         storyPaths = new HashMap<>();
+        projectPaths=new HashMap<>();
 
         File[] storeDirs = getStorageDirs();
         for (int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
             File sDir = storeDirs[storeIndex];
 
-            File[] langDirs = getLanguageDirs(sDir);
-            for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
-                File lDir = langDirs[langIndex];
-                String lang = lDir.getName();
+            if (sDir != null) {
+                File templateDir = new File(sDir, TEMPLATES_DIR);
 
-                if (!storyPaths.containsKey(lang)) {
-                    storyPaths.put(lang, new HashMap<String, String>());
-                }
-                Map<String, String> storyMap = storyPaths.get(lang);
+                if (templateDir.exists() && templateDir.isDirectory()) {
+                    File[] langDirs = getLanguageDirs(templateDir);
+                    for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
+                        File lDir = langDirs[langIndex];
+                        String lang = lDir.getName();
 
-                File[] storyDirs = getStoryDirs(lDir);
-                for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
-                    File storyDir = storyDirs[storyIndex];
-                    String storyName = storyDir.getName();
-                    String storyPath = storyDir.getPath();
-                    storyMap.put(storyName, storyPath);
+                        if (!storyPaths.containsKey(lang)) {
+                            storyPaths.put(lang, new HashMap<String, String>());
+                        }
+                        Map<String, String> storyMap = storyPaths.get(lang);
+
+                        File[] storyDirs = getStoryDirs(lDir);
+                        for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                            File storyDir = storyDirs[storyIndex];
+                            String storyName = storyDir.getName();
+                            String storyPath = storyDir.getPath();
+                            storyMap.put(storyName, storyPath);
+                        }
+                    }
                 }
+
+                File projectDir  = new File(sDir, PROJECT_DIR);
+
+                if (projectDir.exists() && projectDir.isDirectory()) {
+                    File[] storyDirs = getStoryDirs(projectDir);
+                    for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                        File storyDir = storyDirs[storyIndex];
+                        String storyName = storyDir.getName();
+                        String storyPath = storyDir.getPath();
+                        projectPaths.put(storyName, storyPath);
+                    }
+                }
+
             }
         }
     }
@@ -70,17 +95,34 @@ public class FileSystem {
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
     }
-
-    private static File[] getStoryDirs(File langDir) {
-        return langDir.listFiles(directoryFilter);
+    private static File[] getStoryDirs(File dir) {
+        return dir.listFiles(directoryFilter);
     }
 
-    public static String getStoryPath(String story) {
+    private static String getStoryPath(String story){
         Map<String, String> storyMap = storyPaths.get(language);
         if (storyMap != null) {
             return storyMap.get(story);
         }
         return null;
+    }
+
+    public static File getNarrationAudio(String story, int i){
+        return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
+    }
+
+    public static File getSoundtrack(String story){
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
+    }
+
+    /**
+     * Gets the directory of a particular story in the <b>projects</b> directory.
+     * @param story
+     * @return
+     */
+    public static File getProjectDirectory(String story) {
+        String path = projectPaths.get(story);
+        return new File(path); //will throw a null pointer exception if path is null
     }
 
     public static String[] getStoryNames() {
@@ -104,21 +146,6 @@ public class FileSystem {
         }
         return null;
     }
-//    public static Bitmap getAudio(String story, int number) {
-//        String path = getStoryPath(story);
-//        File f = new File(path);
-//        File file[] = f.listFiles();
-//
-//        for (int i=0; i < file.length; i++) {
-//            String [] audioExtensions = {".mp3", ".wav", ".wma"};
-//            for(String extension : audioExtensions){
-//                if (file[i].getName().equals(number + extension)) {
-//                    return BitmapFactory.decodeFile(path + "/" + file[i].getName());
-//                }
-//            }
-//        }
-//        return null;
-//    }
 
     public static String getAudioPath(String story, int number) {
         String path = getStoryPath(story);
@@ -137,7 +164,6 @@ public class FileSystem {
         }
         return null;
     }
-
     public static int getImageAmount(String storyName) {
         String path = getStoryPath(storyName);
         File f = new File(path);
