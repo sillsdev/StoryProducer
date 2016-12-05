@@ -29,3 +29,5 @@
             fab:fab_colorPressed="@color/lightGray"
             fab:fab_title="Record"/>
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+    https://www.sitepoint.com/animating-android-floating-action-button/

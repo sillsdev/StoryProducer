@@ -24,6 +24,7 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.FileSystem;
 
 import java.io.File;
@@ -139,17 +140,22 @@ public class DraftFrag extends Fragment {
         if (aView == null || !(aView instanceof ImageView)) {
             return;
         }
+
         ImageView slideImage = (ImageView) aView;
         Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
-        DisplayMetrics metric = getContext().getResources().getDisplayMetrics();
-        int height = metric.heightPixels;
+        DisplayMetrics phoneProperties = getContext().getResources().getDisplayMetrics();
+        int height = phoneProperties.heightPixels;
         double scalingFactor = 0.4;
         height = (int)(height * scalingFactor);
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height);
 
         //Set the height of the image view
         slideImage.getLayoutParams().height = height;

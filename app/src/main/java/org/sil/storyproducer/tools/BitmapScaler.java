@@ -15,10 +15,10 @@ public class BitmapScaler
 
     // Scale and maintain aspect ratio given a desired height
     // BitmapScaler.scaleToFitHeight(bitmap, 100);
-    public static Bitmap scaleToFitHeight(Bitmap b, int height)
+    public static Bitmap scaleToFitHeight(Bitmap bitmap, int height)
     {
-        float factor = height / (float) b.getHeight();
-        return Bitmap.createScaledBitmap(b, (int) (b.getWidth() * factor), height, true);
+        float factor = height / (float) bitmap.getHeight();
+        return Bitmap.createScaledBitmap(bitmap, (int) (bitmap.getWidth() * factor), height, true);
     }
 
 }

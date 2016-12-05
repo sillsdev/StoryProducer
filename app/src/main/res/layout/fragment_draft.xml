@@ -10,8 +10,9 @@
 
     <ImageView
         android:id="@+id/fragment_draft_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="400dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
         android:scaleType="centerCrop" />
 
     <RelativeLayout
