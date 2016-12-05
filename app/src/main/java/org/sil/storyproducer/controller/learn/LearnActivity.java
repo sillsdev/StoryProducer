@@ -1,10 +1,13 @@
 package org.sil.storyproducer.controller.learn;
 
+import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +17,7 @@ import android.view.MotionEvent;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.view.View;
 import android.widget.Spinner;
@@ -27,6 +31,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
@@ -44,6 +49,10 @@ public class LearnActivity extends AppCompatActivity {
     private boolean isWatchedOnce = false;
     private float backgroundVolume = 0.4f;
     private GestureDetectorCompat mDetector;
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,7 @@ public class LearnActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
                                                                                     phase.getColor(), null)));
+        setupDrawer();
 
         setSeekBarListener();
         playVideo();
@@ -121,8 +131,8 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        narrationPlayer.stopAudio();
-        backgroundPlayer.stopAudio();
+        narrationPlayer.releaseAudio();
+        backgroundPlayer.releaseAudio();
     }
 
     @Override
@@ -138,6 +148,7 @@ public class LearnActivity extends AppCompatActivity {
         narrationPlayer.resumeAudio();
         backgroundPlayer.resumeAudio();
     }
+
 
     /**
      * Plays the video and runs everytime the audio is completed
@@ -160,7 +171,7 @@ public class LearnActivity extends AppCompatActivity {
                     playVideo();
                 } else {
                     videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
-                    backgroundPlayer.stopAudio();
+                    backgroundPlayer.releaseAudio();
                     showStartPracticeSnackBar();
                 }
             }
@@ -201,7 +212,7 @@ public class LearnActivity extends AppCompatActivity {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
-                    narrationPlayer.stopAudio();
+                    narrationPlayer.releaseAudio();
                     slideNum = progress;
                     playVideo();
                     if(notPlayingAudio) narrationPlayer.pauseAudio();
@@ -263,6 +274,64 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * initializes the items that the drawer needs
+     */
+    private void setupDrawer() {
+        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerList = (ListView)findViewById(R.id.navList_learn);
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_learn);
+        addDrawerItems();
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.nav_open, R.string.dummy_content) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                //getSupportActionBar().setTitle("Navigation!");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                //getSupportActionBar().setTitle("blah");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    /**
+     * adds the items to the drawer from the array resources
+     */
+    private void addDrawerItems() {
+        String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();                                  //needed to make the drawer synced
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mDrawerToggle.onOptionsItemSelected(item);
     }
 
 }

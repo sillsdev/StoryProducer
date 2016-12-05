@@ -44,12 +44,13 @@ public class CustomAdapter extends ArrayAdapter<ListFiles> {
             holder.txtTitle = (TextView)row.findViewById(R.id.story_list_title);
             holder.txtSubTitle = (TextView)row.findViewById(R.id.story_list_subtitle);
             ImageView playButton = (ImageView)row.findViewById(R.id.story_list_play);
-            playButton.setOnClickListener(new View.OnClickListener() {
+            playButton.setVisibility(View.INVISIBLE);
+            /*playButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Snackbar.make(v, "DICK", Snackbar.LENGTH_LONG).show();
                 }
-            });
+            });*/
             row.setTag(holder);
         }
         else

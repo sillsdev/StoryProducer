@@ -9,5 +9,15 @@
         android:layout_width="wrap_content"
         android:layout_height="165dp"
         android:id="@+id/textView" />
-
+    <TextView android:layout_width="match_parent"
+        android:text="快來了..."
+        android:id="@+id/comingSoon"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="42dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp">
+    </TextView>
 </FrameLayout>
