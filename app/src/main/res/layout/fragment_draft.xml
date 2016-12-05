@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/trans_layout"
@@ -7,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
+
 
     <ImageView
         android:id="@+id/fragment_draft_image_view"
@@ -60,46 +60,35 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/fragment_draft_reference_text"
             android:background="@color/gray"
-            app:srcCompat="@drawable/ic_menu_play" />
+            fab:srcCompat="@drawable/ic_menu_play" />
 
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            fab:fab_addButtonColorNormal="@color/white"
 
-            fab:fab_addButtonColorPressed="@color/lightGray"
-            fab:fab_addButtonPlusIconColor="@color/darkGray"
-            fab:fab_labelStyle="@style/menu_labels_style">
-
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/trans_record"
+            android:id="@+id/fragment_draft_record_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/trans_play"
-            android:layout_toStartOf="@+id/trans_play"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/lightGray"
             fab:fab_icon="@drawable/ic_mic_black"
             fab:fab_title="Record" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/trans_play"
+            android:id="@+id/fragment_draft_playback_button"
+            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/fab"
-            android:layout_toStartOf="@+id/fab"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/lightGray"
             fab:fab_icon="@drawable/ic_play"
-            fab:fab_title="Play" />
+            fab:fab_title="Play"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/fragment_draft_record_button"
+            android:layout_toStartOf="@+id/fragment_draft_record_button"
+            android:layout_marginRight="17dp"
+            android:layout_marginEnd="17dp" />
 
     </RelativeLayout>
 </RelativeLayout>

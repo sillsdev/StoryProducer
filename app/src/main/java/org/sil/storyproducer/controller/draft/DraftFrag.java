@@ -2,17 +2,20 @@ package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
@@ -37,20 +40,28 @@ public class DraftFrag extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+
+        Bundle passedArgs = this.getArguments();
+        slidePosition = passedArgs.getInt(SLIDE_NUM);
+        FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
-        Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
-        FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
+
 
         setUiColors();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slidePosition/*StoryState.getCurrentStorySlide()*/);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarration(rootView.findViewById(R.id.fragment_draft_narration_button));
+        //setRecordNPlayback();
         return rootView;
     }
 
@@ -62,7 +73,6 @@ public class DraftFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                //TODO release playing audio or other fragment instance related objects
                 if (narrationMediaPlayer != null) {
                     if (narrationMediaPlayer.isPlaying()) narrationMediaPlayer.stop();
                 }
@@ -100,7 +110,9 @@ public class DraftFrag extends Fragment {
         }
         ImageView slideImage = (ImageView) aView;
         Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
-        //TODO make sure to dsiplay an error when a picture is not found for the story and slidenum
+        if(slidePicture == null){
+            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+        }
 
         //Get the height of the phone.
         DisplayMetrics metric = getContext().getResources().getDisplayMetrics();
@@ -128,6 +140,10 @@ public class DraftFrag extends Fragment {
         textView.setText(FileSystem.getSlideContent());
     }
 
+    /**
+     * This function sets the reference text.
+     * @param aView The view that will be populated with the reference text.
+     */
     private void setReferenceText(View aView) {
         if (aView == null || !(aView instanceof TextView)) {
             return;
@@ -148,6 +164,11 @@ public class DraftFrag extends Fragment {
         textView.setText("Bible Story!");
     }
 
+    /**
+     * This function sets the narration playback to the correct audio file. Also, the narration
+     * button will have a listener added to it in order to detect playback when pressed.
+     * @param aView
+     */
     private void setNarration(View aView) {
         if (aView == null || !(aView instanceof ImageButton)) {
             return;
@@ -183,6 +204,10 @@ public class DraftFrag extends Fragment {
         }
     }
 
+    /**
+     * This function sets the first slide of each story to the blue color in order to prevent
+     * clashing of the grey starting picture.
+     */
     private void setUiColors(){
         if(slidePosition == 0){
             RelativeLayout rl = (RelativeLayout)rootView.findViewById(R.id.trans_layout);
@@ -199,5 +224,80 @@ public class DraftFrag extends Fragment {
             ib.setBackgroundColor(getResources().getColor(R.color.primaryDark));
         }
     }
+
+    private void startAudioRecorder(MediaRecorder recorder){
+        try {
+            recorder.prepare();
+            recorder.start();
+        } catch (IllegalStateException | IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void stopAudioRecorder(MediaRecorder recorder){
+        try{
+            recorder.stop();
+        }catch(RuntimeException stopException){
+            Toast.makeText(getContext(), "Please record again", Toast.LENGTH_SHORT).show();
+        }
+        recorder.reset();
+        recorder.release();
+    }
+
+//    private void setRecordNPlayback(){
+//
+//
+//        floatingActionButton1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//            }
+//        });
+//
+//        floatingActionButton1.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View v) {
+//                v.setPressed(true);
+//                outputFile = fileName + getArguments().getInt(SLIDE_NUM) + ".mp3";
+//                audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
+//                startAudioRecorder(audioRecorder);
+//                Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
+//                isSpeakButtonLongPressed = true;
+//                return true;
+//            }
+//        });
+//
+//        //TODO handle an event when you simply click -> it crashes when you do this
+//        //hopefully the click function above this does that.
+//        floatingActionButton1.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                v.onTouchEvent(event);
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    if (isSpeakButtonLongPressed) {
+//                        Toast.makeText(getContext(), "Recording Stopped", Toast.LENGTH_SHORT).show();
+//                        failure = 1;
+//                        stopAudioRecorder(audioRecorder);
+//                        //keep track of the number of records
+//                        if (record_count == 2 & failure == 1) {
+//                            record_count--;
+//                            floatingActionButton1.setColorNormalResId(R.color.yellow);
+//                            floatingActionButton2.setVisibility(View.VISIBLE);
+//                        } else if (record_count == 1 & failure == 1) {
+//                            record_count--;
+//                            floatingActionButton1.setColorNormalResId(R.color.green);
+//                            File greenColor = new File(output.getAbsolutePath() + "/" + outputFile + "green");
+//                            if(!greenColor.exists()){ greenColor.mkdir();}
+//                        } else if (record_count == 0 & failure == 0) {
+//                            record_count++;
+//                            floatingActionButton1.setColorNormalResId(R.color.yellow);
+//                        }
+//                        v.setPressed(false);
+//                        isSpeakButtonLongPressed = false;
+//                    }
+//                }
+//                return true;
+//            }
+//        });
+//    }
 
 }
