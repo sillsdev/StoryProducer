@@ -16,7 +16,8 @@ public class FileSystem {
     private static final String TEMPLATES_DIR = "templates",
                                 NARRATION_PREFIX = "narration",
                                 PROJECT_DIR = "projects",
-                                SOUNDTRACK_PREFIX = "SoundTrack";
+                                SOUNDTRACK_PREFIX = "SoundTrack",
+                                TRANSLATION_PREFIX = "translation";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
@@ -110,6 +111,9 @@ public class FileSystem {
     public static File getNarrationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
+    public static File getTranslationAudio(String story, int i){
+        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
+    }
 
     public static File getSoundtrack(String story){
         return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
@@ -147,23 +151,22 @@ public class FileSystem {
         return null;
     }
 
-    public static String getAudioPath(String story, int number) {
-        String path = getStoryPath(story);
-        File f = new File(path);
-        File file[] = f.listFiles();
-        String audioName = "narration" + number;
-
-        for (int i = 0; i < file.length; i++) {
-            String[] audioExtensions = {".wav", ".mp3", ".wma"};
-            for (String extension : audioExtensions) {
-                if (file[i].getName().equals(audioName + extension)) {
-                    return file[i].getAbsolutePath();
-//                    return path + "/" + file[i].getName();
-                }
-            }
-        }
-        return null;
-    }
+//    public static String getAudioPath(String story, int number) {
+//        String path = getStoryPath(story);
+//        File f = new File(path);
+//        File file[] = f.listFiles();
+//        String audioName = "narration" + number;
+//
+//        for (int i = 0; i < file.length; i++) {
+//            String[] audioExtensions = {".wav", ".mp3", ".wma"};
+//            for (String extension : audioExtensions) {
+//                if (file[i].getName().equals(audioName + extension)) {
+//                    return file[i].getAbsolutePath();
+//                }
+//            }
+//        }
+//        return null;
+//    }
     public static int getImageAmount(String storyName) {
         String path = getStoryPath(storyName);
         File f = new File(path);

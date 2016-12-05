@@ -211,7 +211,7 @@ public class DraftFrag extends Fragment {
             return;
         }
 
-        narrationFilePath = FileSystem.getAudioPath(StoryState.getStoryName(), slidePosition);
+        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slidePosition).getPath();
         if (narrationFilePath != null) {
             ImageView imageView = (ImageView) aView;
             imageView.setOnClickListener(new View.OnClickListener() {
@@ -262,8 +262,7 @@ public class DraftFrag extends Fragment {
     private void setRecordNPlayback(){
         FloatingActionButton recordButton =
                 (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
-        recordFilePath = FileSystem.getStoryPath(StoryState.getStoryName());
-        recordFilePath += "/recordedVoice" + slidePosition + ".mp3";
+        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
         setVoicePlayBackButton(new File(recordFilePath).exists());
 
         recordButton.setOnClickListener(new View.OnClickListener() {
