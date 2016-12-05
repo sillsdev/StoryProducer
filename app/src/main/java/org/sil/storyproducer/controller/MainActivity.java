@@ -3,10 +3,8 @@ package org.sil.storyproducer.controller;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.export.FileChooser;
 import org.sil.storyproducer.controller.export.MainExportActivity;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,14 +27,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+import java.io.Serializable;
 
 import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     private static final int FILE_CHOOSER_CODE = 1;
 
@@ -44,11 +42,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        Intent intent1 = new Intent(this, MainExportActivity.class);
-//        startActivity(intent1);
+        FileSystem.init(getApplicationContext());
+        StoryState.init(getApplicationContext());
 //        finish();
 
-        FileSystem.init(this.getApplicationContext());
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,8 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
-
-
     }
 
     @Override
@@ -267,11 +262,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Change the activity that the app is on
+     * move to the chosen story
      */
-    public void startLearnActivity(int slideNum, String storyName) {
-        //change to the learning activity
-        Intent intent = new Intent(this.getApplicationContext(), LearnActivity.class);
+    public void switchToStory(String storyName) {
+        //TODO change the Story State that is stored for each story
+        StoryState.setStoryName(storyName);
+        Phase currPhase = StoryState.getCurrentPhase();
+        Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
     }
 

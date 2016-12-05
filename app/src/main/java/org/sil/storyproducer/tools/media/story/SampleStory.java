@@ -59,7 +59,7 @@ public class SampleStory extends Thread {
 
         IMG_1 = FileSystem.getImageFile(STORY, 1);
         IMG_2 = FileSystem.getImageFile(STORY, 4);
-        SOUNDTRACK = FileSystem.getSoundtrackAudio(STORY, 0);
+        SOUNDTRACK = FileSystem.getSoundtrack(STORY);
         NARRATION_1 = FileSystem.getNarrationAudio(STORY, 0);
         NARRATION_2 = FileSystem.getNarrationAudio(STORY, 1);
     }

@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="android:colorBackground">@color/white</item>
+        <item name="android:windowBackground">@color/black_overlay</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>

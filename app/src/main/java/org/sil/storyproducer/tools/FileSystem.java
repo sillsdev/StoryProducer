@@ -123,8 +123,8 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
 
-    public static File getSoundtrackAudio(String story, int i){
-        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+".mp3");
+    public static File getSoundtrack(String story){
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
     }
 
     /**
@@ -159,19 +159,6 @@ public class FileSystem {
                 if (file[i].getName().equals(number + ".jpg")) {
                     return BitmapFactory.decodeFile(path + "/" + file[i].getName());
                 }
-        }
-        return null;
-    }
-
-    public static Bitmap getAudio(String story, int number) {
-        String path = getStoryPath(story);
-        File f = new File(path);
-        File file[] = f.listFiles();
-
-        for (int i=0; i < file.length; i++) {
-            if (file[i].getName().equals(number + ".wav")) {
-                return BitmapFactory.decodeFile(path + "/" + file[i].getName());
-            }
         }
         return null;
     }

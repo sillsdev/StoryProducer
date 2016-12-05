@@ -15,8 +15,13 @@
         <!-- Story List Page -->
         <activity
             android:name=".controller.MainActivity"
-            android:label="@string/title_activity_story_templates">
-        </activity>
+            android:label="@string/title_activity_story_templates"
+            android:screenOrientation="portrait" />
+        <!-- Pager Base -->
+        <activity
+            android:name=".controller.pager.PagerBaseActivity"
+            android:label="Pager Base"
+            android:screenOrientation="portrait" />
 
         <!-- File Explorer Launch Page -->
         <activity
@@ -50,7 +55,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".controller.RegistrationActivity"></activity>
-        <activity android:name=".controller.learn.LearnActivity"></activity>
+        <activity
+            android:name=".controller.learn.LearnActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".controller.export.ExportActivity"></activity>
     </application>
 
 </manifest>
