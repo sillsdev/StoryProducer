@@ -166,19 +166,20 @@ public class ExportActivity extends AppCompatActivity {
         if (requestCode == FILE_CHOOSER_CODE){
             if (resultCode == RESULT_OK) {
                 final String path = data.getStringExtra("GetFileName");
-                final ExportActivity me = this;
-                Thread encodeThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        SampleStory test = new SampleStory(path);
-                        test.run();
-                        Toast.makeText(me, "Video created! Saved to " + path, Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
-                });
-                Toast.makeText(this, "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
-                encodeThread.start();
+                Toast.makeText(this, "Video creation skipped! Path: " + path, Toast.LENGTH_LONG).show();
+//                final ExportActivity me = this;
+//                Thread encodeThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Looper.prepare();
+//                        SampleStory test = new SampleStory(path);
+//                        test.run();
+//                        Toast.makeText(me, "Video created! Saved to " + path, Toast.LENGTH_LONG).show();
+//                        Looper.loop();
+//                    }
+//                });
+//                Toast.makeText(this, "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
+//                encodeThread.start();
 //                Toast.makeText(getBaseContext(), "File selected!!! " + path + " Yay!!!", Toast.LENGTH_LONG).show();
             }
         }
