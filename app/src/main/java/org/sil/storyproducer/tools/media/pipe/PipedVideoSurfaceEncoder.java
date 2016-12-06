@@ -70,8 +70,8 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
             info.presentationTimeUs = mPresentationTimeQueue.remove();
         }
         catch (NoSuchElementException e) {
-//            throw new RuntimeException("Tried to correct time for extra frame", e);
-            e.printStackTrace();
+            throw new RuntimeException("Tried to correct time for extra frame", e);
+//            e.printStackTrace();
         }
     }
 

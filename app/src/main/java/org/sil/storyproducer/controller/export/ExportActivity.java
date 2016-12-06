@@ -1,7 +1,9 @@
 package org.sil.storyproducer.controller.export;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Looper;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -17,16 +19,20 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
+import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
+import org.sil.storyproducer.tools.media.story.SampleStory;
 
 public class ExportActivity extends AppCompatActivity {
 
+    private static final int FILE_CHOOSER_CODE = 1;
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -140,5 +146,41 @@ public class ExportActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item);
+    }
+
+    public void onExportButtonClicked(View view) {
+        System.out.println("clicked export");
+        openFileExplorerToExport();
+    }
+
+    private void openFileExplorerToExport() {
+        Intent intent = new Intent(this, FileChooser.class);
+        intent.putExtra("HomeBoyDirectory", FileSystem.getProjectDirectory(StoryState.getStoryName()).getPath());
+        startActivityForResult(intent, FILE_CHOOSER_CODE);
+    }
+
+    // Listen for results.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        // See which child activity is calling us back.
+        if (requestCode == FILE_CHOOSER_CODE){
+            if (resultCode == RESULT_OK) {
+                final String path = data.getStringExtra("GetFileName");
+                final ExportActivity me = this;
+                Thread encodeThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Looper.prepare();
+                        SampleStory test = new SampleStory(path);
+                        test.run();
+                        Toast.makeText(me, "Video created! Saved to " + path, Toast.LENGTH_LONG).show();
+                        Looper.loop();
+                    }
+                });
+                Toast.makeText(this, "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
+                encodeThread.start();
+//                Toast.makeText(getBaseContext(), "File selected!!! " + path + " Yay!!!", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 }

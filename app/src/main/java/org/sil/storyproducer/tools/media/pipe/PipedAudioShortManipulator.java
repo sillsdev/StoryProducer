@@ -16,10 +16,8 @@ import java.nio.ShortBuffer;
 public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioShorter";
 
-    private ByteBufferPool mBufferPool = new ByteBufferPool();
-
-    //Only fill output buffer this much. This prevents buffer overflow.
-    private static final float PERCENT_BUFFER_FILL = .75f;
+    private static final int BUFFER_CAPACITY = 1024;
+    private ByteBufferPool mBufferPool = new ByteBufferPool(BUFFER_CAPACITY);
 
     protected int mSampleRate;
     protected int mChannelCount;
@@ -80,7 +78,8 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
 
             //Don't overflow the buffer!
-            if(info.size > PERCENT_BUFFER_FILL * outBuffer.capacity()) {
+            int bytesForNextSample = 2 * mChannelCount;
+            if(info.size + bytesForNextSample > outBuffer.capacity()) {
                 break;
             }
         }
