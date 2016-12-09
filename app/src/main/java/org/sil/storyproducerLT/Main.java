@@ -1,4 +1,4 @@
-package org.sil.storyproducer;
+package org.sil.storyproducerLT;
 
 import android.app.Application;
 import android.content.Context;

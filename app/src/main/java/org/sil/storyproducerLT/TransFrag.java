@@ -1,7 +1,6 @@
-package org.sil.storyproducer;
+package org.sil.storyproducerLT;
 
 import android.Manifest;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -15,8 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,7 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 
 public class TransFrag extends Fragment {

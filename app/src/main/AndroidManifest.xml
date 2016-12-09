@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.sil.storyproducer" >
+    package="org.sil.storyproducerLT" >
     <!--IMPORTANT for allowing recording and also writing to sd card-->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name="org.sil.storyproducer.Main"
+        android:name="org.sil.storyproducerLT.Main"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <!-- First Run Setup -->
         <activity
-            android:name="org.sil.storyproducer.SetupApp"
+            android:name="org.sil.storyproducerLT.SetupApp"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
         </activity>
         <!-- Story List Page -->
         <activity
-            android:name="org.sil.storyproducer.MainActivity"
+            android:name="org.sil.storyproducerLT.MainActivity"
             android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait">
         </activity>
 
         <!-- Info Page -->
         <activity
-            android:name="org.sil.storyproducer.InfoPage"
+            android:name="org.sil.storyproducerLT.InfoPage"
             android:label="@string/title_activity_info_page"
-            android:parentActivityName="org.sil.storyproducer.MainActivity"
+            android:parentActivityName="org.sil.storyproducerLT.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.sil.storyproducer.MainActivity" />
+                android:value="org.sil.storyproducerLT.MainActivity" />
         </activity>
         <!-- Splash Screen -->
         <activity
-            android:name="org.sil.storyproducer.SplashScreen"
-            android:label="@string/title_activity_splash_screen"
+            android:name="org.sil.storyproducerLT.SplashScreen"
+            android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

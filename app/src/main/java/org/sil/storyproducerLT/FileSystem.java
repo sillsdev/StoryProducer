@@ -1,8 +1,7 @@
-package org.sil.storyproducer;
+package org.sil.storyproducerLT;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 
 import java.io.*;
 import java.util.*;
