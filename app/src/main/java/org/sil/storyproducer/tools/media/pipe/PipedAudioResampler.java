@@ -2,6 +2,7 @@ package org.sil.storyproducer.tools.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.util.Log;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
 
@@ -34,8 +35,16 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     //N.B. Starting at -1 ensures starting with right and left from source.
     private int mAbsoluteRightSampleIndex = -1;
 
-    private ByteBuffer mSourceBuffer;
-    private ShortBuffer mSourceShortBuffer;
+    private static final int SOURCE_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE;
+
+//    private ByteBuffer mSourceBuffer = ByteBuffer.allocate(SOURCE_BUFFER_CAPACITY);
+//    private ShortBuffer mSourceShortBuffer;
+    private final short[] mSourceBufferA = new short[SOURCE_BUFFER_CAPACITY / 2];
+    private boolean mHasBuffer = false;
+
+    private int mSourcePos;
+    private int mSourceLim;
+
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     private boolean mIsDone = false;
@@ -181,12 +190,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mAbsoluteRightSampleIndex++;
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
-        while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
+        while(/*mSourceShortBuffer != null*/!mHasBuffer && mSourcePos >= mSourceLim/*mSourceShortBuffer.remaining() <= 0*/) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
         //If we hit the end of input, use 0 as the last right sample value.
-        if(mSourceShortBuffer == null) {
+        if(/*mSourceShortBuffer == null*/!mHasBuffer) {
             mIsDone = true;
 
             for(int i = 0; i < mSourceChannelCount; i++) {
@@ -196,15 +205,19 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         else {
             //Get right's values from the input buffer.
             for (int i = 0; i < mSourceChannelCount; i++) {
-                mRightSamples[i] = mSourceShortBuffer.get();
+                mRightSamples[i] = mSourceBufferA[mSourcePos++];//mSourceShortBuffer.get();
             }
         }
     }
 
     private void releaseSourceBuffer() {
-        mSource.releaseBuffer(mSourceBuffer);
-        mSourceBuffer = null;
-        mSourceShortBuffer = null;
+//        mSource.releaseBuffer(mSourceBuffer);
+//        mSourceBuffer = null;
+//        mSourceShortBuffer = null;
+//        mSourceBufferA = null;
+//        mSourcePos = 0;
+//        mSourceLim = 0;
+        mHasBuffer = false;
     }
 
     private void fetchSourceBuffer() {
@@ -214,8 +227,37 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         }
 
         //Pull in new buffer.
-        mSourceBuffer = mSource.getBuffer(mInfo);
-        mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
+        ByteBuffer tempSourceBuffer = mSource.getBuffer(mInfo);
+
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, "Received " + (tempSourceBuffer.isDirect() ? "direct" : "non-direct")
+                    + " buffer of size " + mInfo.size + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
+        }
+//        if(MediaHelper.VERBOSE) {
+//            Log.d(TAG, "temp capacity " + tempSourceBuffer.capacity() + " vs. my capacity " + mSourceBuffer.capacity());
+//        }
+
+//        mSourceBuffer.clear();
+//        mSourceBuffer.put(tempSourceBuffer);
+        ShortBuffer tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer);
+        int size = tempShortBuffer.remaining();
+        tempShortBuffer.get(mSourceBufferA, 0, size);
+        mSourcePos = 0;
+        mSourceLim = tempShortBuffer.limit();// * 2;
+        mSource.releaseBuffer(tempSourceBuffer);
+
+//        if(MediaHelper.VERBOSE) {
+//            Log.d(TAG, "Using " + (mSourceBuffer.isDirect() ? "direct" : "non-direct")
+//                    + " buffer of size " + mInfo.size + " with" + (mSourceBuffer.hasArray() ? "" : "out") + " array");
+//        }
+//        if(MediaHelper.VERBOSE) {
+//            Log.d(TAG, "Also using " + (mSourceShortBuffer.isDirect() ? "direct" : "non-direct")
+//                    + " buffer of size " + mInfo.size + " with" + (mSourceShortBuffer.hasArray() ? "" : "out") + " array");
+//        }
+
+//        mSourceBufferA = mSourceShortBuffer.array();
+
+        mHasBuffer = true;
     }
 
     @Override

@@ -88,7 +88,7 @@ public class StoryMaker {
                 narrationConcatenator.addSource(page.getNarrationAudio().getPath());
             }
 
-            muxer.addSource(videoEncoder);
+//            muxer.addSource(videoEncoder);
 
             videoEncoder.addSource(videoDrawer);
 
