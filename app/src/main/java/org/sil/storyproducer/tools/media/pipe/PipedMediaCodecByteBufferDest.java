@@ -23,10 +23,14 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
             throw new RuntimeException("No source specified for encoder!");
         }
 
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, getComponentName() + ": spinInput starting...");
+        }
+
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
             int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
+//                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
                 //Do nothing.
             } else {
                 if (MediaHelper.VERBOSE) {
@@ -38,7 +42,15 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
             }
         }
 
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, getComponentName() + ": spinInput complete!");
+        }
+
         mSource.close();
+
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, getComponentName() + ": spinInput source closed!");
+        }
     }
 
     @Override

@@ -17,7 +17,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     private static final String TAG = "PipedAudioShorter";
 
     private Thread mThread;
-    protected volatile boolean mIsDone = false;
+    private boolean mIsDone = false;
     protected volatile State mComponentState = State.UNINITIALIZED;
 
     private static final int BUFFER_COUNT = 4;
@@ -28,13 +28,13 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
     protected int mSampleRate;
     protected int mChannelCount;
-    protected long mSeekTime = 0;
+    private long mSeekTime = 0;
 
     private int mAbsoluteSampleIndex = 0;
 
     @Override
-    public boolean isDone() {
-        return mIsDone;
+    public final boolean isDone() {
+        return mIsDone && mBufferQueue.isEmpty();
     }
 
     @Override
@@ -71,6 +71,12 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     }
 
     private void spinInput() {
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, "spinInput starting...");
+        }
+
+        mIsDone = !loadSamplesForTime(mSeekTime);
+
         while(mComponentState != State.CLOSED && !mIsDone) {
             long durationNs = 0;
             if (MediaHelper.VERBOSE) {
@@ -93,7 +99,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             ShortBuffer outShortBuffer = MediaHelper.getShortBuffer(outBuffer);
 
             int length = outShortBuffer.remaining();
-            int cap = outBuffer.capacity();
+//            int cap = outBuffer.capacity();
             int pos = 0;//outShortBuffer.arrayOffset();
 
             outShortBuffer.get(mShortBuffer, pos, length);
@@ -104,9 +110,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
                 for (int i = 0; i < mChannelCount; i++) {
-//                short sample = getSampleForTime(mSeekTime, i);
-                    outBufferA[pos++] = getSampleForTime(mSeekTime, i);
-//                outShortBuffer.put(sample);
+                    outBufferA[pos++] = getSampleForChannel(i);
 
                     //increment by short size (2 bytes)
                     info.size += 2;
@@ -115,7 +119,9 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 //Keep track of the current presentation time in the output audio stream.
                 mAbsoluteSampleIndex++;
                 mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
-                onTimeUpdate();
+
+                //Give warning about new time
+                mIsDone = !loadSamplesForTime(mSeekTime);
 
                 //Don't overflow the buffer!
                 int shortsForNextSample = mChannelCount;
@@ -142,6 +148,9 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 Log.d(TAG, "spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
             }
         }
+        if(MediaHelper.VERBOSE) {
+            Log.d(TAG, "spinInput complete!");
+        }
     }
 
     /**
@@ -157,19 +166,24 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
         return index * 1000000L / sampleRate;
     }
 
-    protected void onTimeUpdate() {
-
-    }
-
     /**
-     * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
+     * <p>Get a sample for given a channel from the source media pipeline component using linear interpolation.</p>
      *
-     * <p>Note: Sequential calls to this function must provide strictly increasing times.</p>
-     * @param time
+     * <p>Note: No two calls to this function will elicit information for the same state.</p>
      * @param channel
      * @return
      */
-    protected abstract short getSampleForTime(long time, int channel);
+    protected abstract short getSampleForChannel(int channel);
+
+    /**
+     * <p>Instruct the callee to prepare to provide samples for a given time.
+     * Only this abstract base class should call this function.</p>
+     *
+     * <p>Note: Sequential calls to this function will provide strictly increasing times.</p>
+     * @param time
+     * @return true if the component has more source input to process and false if {@link #spinInput()} should finish
+     */
+    protected abstract boolean loadSamplesForTime(long time);
 
     @Override
     public void close() {
@@ -179,6 +193,12 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             mThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class IllegalStateException extends RuntimeException {
+        public IllegalStateException(String msg) {
+            super(msg);
         }
     }
 }

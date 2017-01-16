@@ -13,7 +13,7 @@ import java.nio.ShortBuffer;
  * <p>This media pipeline component loops a single audio file for a specified amount of time.</p>
  */
 public class PipedAudioLooper extends PipedAudioShortManipulator {
-    private static final String TAG = "PipedAudioMixer";
+    private static final String TAG = "PipedAudioLooper";
 
     private final String mPath;
     private final long mDurationUs;
@@ -60,9 +60,6 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
     private MediaFormat mOutputFormat;
 
-//    private ByteBuffer mSourceBuffer;
-//    private ShortBuffer mSourceShortBuffer;
-
     private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
 
     private int mPos;
@@ -89,27 +86,36 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         return mOutputFormat;
     }
 
-//    @Override
-//    public boolean isDone() {
-//        return mSeekTime >= mDurationUs;
-//    }
-
     @Override
-    protected void onTimeUpdate() {
-        mIsDone = mSeekTime >= mDurationUs;
+    protected short getSampleForChannel(int channel) {
+        if(mHasBuffer) {
+            try {
+                return mSourceBufferA[mPos++];
+            }
+            catch(ArrayIndexOutOfBoundsException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //only necessary for exception case
+        return 0;
     }
 
     @Override
-    protected short getSampleForTime(long time, int channel) {
+    protected boolean loadSamplesForTime(long time) {
+        //Component is done if duration is exceeded.
+        if(time >= mDurationUs) {
+            return false;
+        }
+
         while(mHasBuffer && mPos >= mSize) {
-//            while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
         if(!mHasBuffer) {
-//            if(mSourceShortBuffer == null) {
             mSource.close();
             mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
+
             try {
                 mSource.setup();
                 fetchSourceBuffer();
@@ -121,15 +127,8 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 e.printStackTrace();
             }
         }
-        //TODO: is this if necessary?
-        if(mHasBuffer) {
-//            if(mSourceShortBuffer != null) {
-//            return mSourceShortBuffer.get();
-            return mSourceBufferA[mPos++];
-        }
 
-        //TODO: can this happen?
-        return 0;
+        return true;
     }
 
     private void fetchSourceBuffer() {
@@ -144,15 +143,10 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         mSource.releaseBuffer(buffer);
 
         mHasBuffer = true;
-//        mSourceBuffer = buffer;
-//        mSourceShortBuffer = MediaHelper.getShortBuffer(buffer);
     }
 
     private void releaseSourceBuffer() {
         mHasBuffer = false;
-//        mSource.releaseBuffer(mSourceBuffer);
-//        mSourceBuffer = null;
-//        mSourceShortBuffer = null;
     }
 
     @Override

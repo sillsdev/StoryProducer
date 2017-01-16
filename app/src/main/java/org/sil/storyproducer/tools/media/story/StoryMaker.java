@@ -87,9 +87,9 @@ public class StoryMaker {
 //            audioEncoder.addSource(simpleMav);
 
 //            audioEncoder.addSource(soundtrackLooper);
-            audioEncoder.addSource(narrationConcatenator);
+//            audioEncoder.addSource(narrationConcatenator);
 
-//            audioEncoder.addSource(audioMixer);
+            audioEncoder.addSource(audioMixer);
             audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {

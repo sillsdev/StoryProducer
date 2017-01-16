@@ -20,16 +20,14 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     private MediaFormat mOutputFormat;
 
-//    private boolean mIsDone = false;
-
     private List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
     private List<Float> mSourceVolumeModifiers = new ArrayList<>();
-//    private List<ByteBuffer> mSourceBuffers = new ArrayList<>();
-//    private List<ShortBuffer> mSourceShortBuffers = new ArrayList<>();
 
     private List<short[]> mSourceBufferAs = new ArrayList<>();
     private List<Integer> mSourcePos = new ArrayList<>();
     private List<Integer> mSourceSizes = new ArrayList<>();
+
+    private short[] mCurrentSample;
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -55,8 +53,6 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
         mSources.add(src);
         mSourceVolumeModifiers.add(volumeModifier);
-//        mSourceBuffers.add(null);
-//        mSourceShortBuffers.add(null);
     }
 
     @Override
@@ -96,6 +92,8 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
+        mCurrentSample = new short[mChannelCount];
+
         start();
     }
 
@@ -104,58 +102,50 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         return mOutputFormat;
     }
 
-//    @Override
-//    public boolean isDone() {
-//        return mIsDone;
-//    }
+    protected short getSampleForChannel(int channel) {
+        return mCurrentSample[channel];
+    }
 
-    protected short getSampleForTime(long time, int channel) {
-        int sum = 0;
+    @Override
+    protected boolean loadSamplesForTime(long time) {
+        for(int i = 0; i < mChannelCount; i++) {
+            mCurrentSample[i] = 0;
+        }
 
         //Loop through all sources and add samples.
-        for(int i = 0; i < mSources.size(); i++) {
-//            ShortBuffer sBuffer = mSourceShortBuffers.get(i);
-            int size = mSourceSizes.get(i);
-            int pos = mSourcePos.get(i);
-            short[] buffer = mSourceBufferAs.get(i);
-            float volumeModifier = mSourceVolumeModifiers.get(i);
+        for(int iSource = 0; iSource < mSources.size(); iSource++) {
+            int size = mSourceSizes.get(iSource);
+            int pos = mSourcePos.get(iSource);
+            short[] buffer = mSourceBufferAs.get(iSource);
+            float volumeModifier = mSourceVolumeModifiers.get(iSource);
             while(buffer != null && pos >= size) {
-//                while(sBuffer != null && sBuffer.remaining() <= 0) {
-                releaseSourceBuffer(i);
-                fetchSourceBuffer(i);
+                releaseSourceBuffer(iSource);
+                fetchSourceBuffer(iSource);
 
-                size = mSourceSizes.get(i);
-                pos = mSourcePos.get(i);
-                buffer = mSourceBufferAs.get(i);
-//                sBuffer = mSourceShortBuffers.get(i);
+                size = mSourceSizes.get(iSource);
+                pos = mSourcePos.get(iSource);
+                buffer = mSourceBufferAs.get(iSource);
             }
             if(buffer != null) {
-//                if(sBuffer != null) {
-//                sum += sBuffer.get() * volumeModifier;
-                sum += buffer[pos++] * volumeModifier;
-                mSourcePos.set(i, pos);
+                for(int iChannel = 0; iChannel < mChannelCount; iChannel++) {
+                    mCurrentSample[iChannel] += buffer[pos++] * volumeModifier;
+                }
+                mSourcePos.set(iSource, pos);
             }
             else {
                 //Remove depleted sources from the lists.
-                mSources.remove(i);
-                mSourceBufferAs.remove(i);
-                mSourcePos.remove(i);
-                mSourceSizes.remove(i);
-//                mSourceBuffers.remove(i);
-//                mSourceShortBuffers.remove(i);
+                mSources.remove(iSource);
+                mSourceBufferAs.remove(iSource);
+                mSourcePos.remove(iSource);
+                mSourceSizes.remove(iSource);
 
-                //Decrement i so that former source i + 1 is not skipped.
-                i--;
+                //Decrement iSource so that former source iSource + 1 is not skipped.
+                iSource--;
             }
         }
 
         //If sources are all gone, this component is done.
-        if(mSources.isEmpty()) {
-            mIsDone = true;
-        }
-
-        //Clip the sum to a short.
-        return (short) sum;
+        return !mSources.isEmpty();
     }
 
     private void fetchSourceBuffer(int sourceIndex) {
@@ -171,8 +161,6 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         mSourcePos.set(sourceIndex, 0);
         mSourceSizes.set(sourceIndex, size);
         source.releaseBuffer(buffer);
-//        mSourceBuffers.set(sourceIndex, buffer);
-//        mSourceShortBuffers.set(sourceIndex, MediaHelper.getShortBuffer(buffer));
     }
 
     private void releaseSourceBuffer(int sourceIndex) {

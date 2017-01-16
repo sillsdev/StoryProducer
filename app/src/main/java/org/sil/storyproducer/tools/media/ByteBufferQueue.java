@@ -30,7 +30,12 @@ public class ByteBufferQueue {
         mFilledBuffers = new ArrayBlockingQueue<>(capacity);
     }
 
+    public boolean isEmpty() {
+        return mFilledBuffers.isEmpty();
+    }
+
     public ByteBuffer getEmptyBuffer() {
+        int loops = 0;
         while(true) {
             synchronized (mLock) {
                 boolean bufferIsAvailable = mBuffersOut < mCapacity;
@@ -41,7 +46,10 @@ public class ByteBufferQueue {
             }
 
             try {
-                Log.d(TAG, "empty buffer unavailable");
+                if(MediaHelper.VERBOSE && loops++ > 1000) {
+                    Log.d(TAG, "empty buffer unavailable");
+                    loops = 0;
+                }
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 e.printStackTrace();

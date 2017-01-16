@@ -37,13 +37,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     private static final int SOURCE_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE;
 
-//    private ByteBuffer mSourceBuffer = ByteBuffer.allocate(SOURCE_BUFFER_CAPACITY);
-//    private ShortBuffer mSourceShortBuffer;
     private final short[] mSourceBufferA = new short[SOURCE_BUFFER_CAPACITY / 2];
     private boolean mHasBuffer = false;
 
+    private long mSeekTime = 0;
+
     private int mSourcePos;
-    private int mSourceLim;
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -128,27 +127,15 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         return mOutputFormat;
     }
 
-//    @Override
-//    public boolean isDone() {
-//        return mIsDone;
-//    }
-
     /**
      * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
      *
      * <p>Note: Sequential calls to this function must provide strictly increasing times.</p>
-     * @param time
      * @param channel
      * @return
      */
     @Override
-    protected short getSampleForTime(long time, int channel) {
-        //Move window forward until left and right appropriately surround the given time.
-        //N.B. Left is inclusive; right is exclusive.
-        while(time >= mRightSeekTime) {
-            advanceWindow();
-        }
-
+    protected short getSampleForChannel(int channel) {
         short left, right;
 
         if(mChannelCount == mSourceChannelCount) {
@@ -164,12 +151,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             right = mRightSamples[0];
         }
 
-        if(time == mLeftSeekTime) {
+        if(mSeekTime == mLeftSeekTime) {
             return left;
         }
         else {
             //Perform linear interpolation.
-            float rightWeight = (time - mLeftSeekTime) / mSourceUsPerSample;
+            float rightWeight = (mSeekTime - mLeftSeekTime) / mSourceUsPerSample;
             float leftWeight = 1 - rightWeight;
 
             short interpolatedSample = (short) ((short) (leftWeight * left) + (short) (rightWeight * right));
@@ -178,10 +165,27 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         }
     }
 
+    @Override
+    protected boolean loadSamplesForTime(long time) {
+        boolean moreInput = true;
+
+        mSeekTime = time;
+
+        //Move window forward until left and right appropriately surround the given time.
+        //N.B. Left is inclusive; right is exclusive.
+        while(mSeekTime >= mRightSeekTime) {
+            moreInput = advanceWindow();
+        }
+
+        return moreInput;
+    }
+
     /**
      * Slide the window forward by one sample.
      */
-    private void advanceWindow() {
+    private boolean advanceWindow() {
+        boolean isDone = false;
+
         //Set left's values to be right's current values.
         short[] temp = mLeftSamples;
         mLeftSamples = mRightSamples;
@@ -193,13 +197,13 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mAbsoluteRightSampleIndex++;
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
-        while(/*mSourceShortBuffer != null*/mHasBuffer && mSourcePos >= mSourceSize/*mSourceShortBuffer.remaining() <= 0*/) {
+        while(mHasBuffer && mSourcePos >= mSourceSize) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
         //If we hit the end of input, use 0 as the last right sample value.
-        if(/*mSourceShortBuffer == null*/!mHasBuffer) {
-            mIsDone = true;
+        if(!mHasBuffer) {
+            isDone = true;
 
             for(int i = 0; i < mSourceChannelCount; i++) {
                 mRightSamples[i] = 0;
@@ -216,15 +220,11 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
                 }
             }
         }
+
+        return !isDone;
     }
 
     private void releaseSourceBuffer() {
-//        mSource.releaseBuffer(mSourceBuffer);
-//        mSourceBuffer = null;
-//        mSourceShortBuffer = null;
-//        mSourceBufferA = null;
-//        mSourcePos = 0;
-//        mSourceLim = 0;
         mHasBuffer = false;
     }
 
@@ -241,28 +241,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             Log.d(TAG, "Received " + (tempSourceBuffer.isDirect() ? "direct" : "non-direct")
                     + " buffer of size " + mInfo.size + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
         }
-//        if(MediaHelper.VERBOSE) {
-//            Log.d(TAG, "temp capacity " + tempSourceBuffer.capacity() + " vs. my capacity " + mSourceBuffer.capacity());
-//        }
 
-//        mSourceBuffer.clear();
-//        mSourceBuffer.put(tempSourceBuffer);
         ShortBuffer tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer);
         mSourceSize = tempShortBuffer.remaining();
         tempShortBuffer.get(mSourceBufferA, 0, mSourceSize);
         mSourcePos = 0;
         mSource.releaseBuffer(tempSourceBuffer);
-
-//        if(MediaHelper.VERBOSE) {
-//            Log.d(TAG, "Using " + (mSourceBuffer.isDirect() ? "direct" : "non-direct")
-//                    + " buffer of size " + mInfo.size + " with" + (mSourceBuffer.hasArray() ? "" : "out") + " array");
-//        }
-//        if(MediaHelper.VERBOSE) {
-//            Log.d(TAG, "Also using " + (mSourceShortBuffer.isDirect() ? "direct" : "non-direct")
-//                    + " buffer of size " + mInfo.size + " with" + (mSourceShortBuffer.hasArray() ? "" : "out") + " array");
-//        }
-
-//        mSourceBufferA = mSourceShortBuffer.array();
 
         mHasBuffer = true;
     }
