@@ -104,7 +104,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             int pollCode = mCodec.dequeueOutputBuffer(
                         info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-//                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
                 //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {

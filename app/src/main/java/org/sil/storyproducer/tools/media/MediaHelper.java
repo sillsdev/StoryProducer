@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * Provides static methods for miscellaneous low-level media tasks.
@@ -19,7 +20,7 @@ final public class MediaHelper {
     public static final boolean VERBOSE = true;
 
     /**
-     * the maximum size of input buffers; currently used to prevent buffer overflow.
+     * the maximum size of input buffers; currently used to prevent buffer overflow
      */
     public static final int MAX_INPUT_BUFFER_SIZE = 128 * 1024;
     public static final long TIMEOUT_USEC = 1000;
@@ -36,6 +37,16 @@ final public class MediaHelper {
         mmr.setDataSource(path);
         String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         return Integer.parseInt(durationStr) * 1000;
+    }
+
+    private static final NumberFormat form2Dec = new DecimalFormat("#0.00");
+    /**
+     * Get a 2-decimal number for printing.
+     * @param number
+     * @return formatted number
+     */
+    public static String getDecimal(double number) {
+        return form2Dec.format(number);
     }
 
     /**
@@ -85,6 +96,15 @@ final public class MediaHelper {
     }
 
     /**
+     * Copy buffer metadata from one object to another.
+     * @param src metadata to read
+     * @param dest metadata to overwrite
+     */
+    public static void copyBufferInfo(MediaCodec.BufferInfo src, MediaCodec.BufferInfo dest) {
+        dest.set(src.offset, src.size, src.presentationTimeUs, src.flags);
+    }
+
+    /**
      * Copy the value of the given (integer) attribute from one format to another.
      * @param srcFormat
      * @param destFormat
@@ -117,14 +137,6 @@ final public class MediaHelper {
         MediaFormat format = new MediaFormat();
         format.setString(MediaFormat.KEY_MIME, mime);
         return format;
-    }
-
-    public static String getDecimal(float sec) {
-        return "[??]";
-    }
-
-    public static void copyBufferInfo(MediaCodec.BufferInfo src, MediaCodec.BufferInfo dest) {
-        dest.set(src.offset, src.size, src.presentationTimeUs, src.flags);
     }
 
     public enum MediaType {

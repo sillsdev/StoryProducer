@@ -25,6 +25,9 @@ public class SampleStory extends Thread {
     private static final int WIDTH = 320;
     private static final int HEIGHT = 240;
 
+    private static final long SLIDE_TRANSITION_US = 3000000;
+    private static final long AUDIO_TRANSITION_US = 500000;
+
     private final File OUTPUT_DIR;
     private final File OUTPUT_FILE;
 
@@ -91,11 +94,8 @@ public class SampleStory extends Thread {
                 new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
 
-        long slideTransitionUs = 3000000;
-        long audioTransitionUs = 500000;
-
         StoryMaker maker = new StoryMaker(OUTPUT_FILE, outputFormat, videoFormat, audioFormat,
-                pages, SOUNDTRACK, audioTransitionUs, slideTransitionUs);
+                pages, SOUNDTRACK, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
         maker.churn();
     }
 }

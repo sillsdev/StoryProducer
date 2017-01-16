@@ -9,7 +9,9 @@ import android.support.v4.util.LruCache;
  * This class provides a simple LRU cache for Bitmaps and contains helper methods.
  */
 class StoryBitmapManager {
-    private static LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(3) {
+    private static final int CACHE_SIZE = 3;
+
+    private static LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
         @Override
         protected Bitmap create(String key) {
             return BitmapFactory.decodeFile(key);
@@ -32,6 +34,5 @@ class StoryBitmapManager {
         int imageHeight = options.outHeight;
         int imageWidth = options.outWidth;
         return new Rect(0, 0, imageWidth, imageHeight);
-//        String imageType = options.outMimeType;
     }
 }

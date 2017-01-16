@@ -21,6 +21,9 @@ import java.nio.ByteBuffer;
 public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     private static final String TAG = "PipedMediaMuxer";
 
+    private String mPath;
+    private int mFormat;
+
     private MediaMuxer mMuxer = null;
 
     private PipedMediaByteBufferSource mAudioSource = null;
@@ -34,14 +37,10 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
      * @param path the output media file.
      * @param format the format of the output media file
      *               (from {@link android.media.MediaMuxer.OutputFormat}).
-     * @throws IOException if failed to open the file for write
      */
-    public PipedMediaMuxer(String path, int format) throws IOException {
-        File output = new File(path);
-        if(!output.exists()) {
-            output.createNewFile();
-        }
-        mMuxer = new MediaMuxer(path, format);
+    public PipedMediaMuxer(String path, int format) {
+        mPath = path;
+        mFormat = format;
     }
 
     @Override
@@ -65,6 +64,12 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     }
 
     private void start() throws IOException, SourceUnacceptableException {
+        File output = new File(mPath);
+        if(!output.exists()) {
+            output.createNewFile();
+        }
+        mMuxer = new MediaMuxer(mPath, mFormat);
+
         if (mAudioSource != null) {
             if(MediaHelper.VERBOSE) { Log.d(TAG, "muxer: setting up audio track."); }
             mAudioSource.setup();
@@ -173,6 +178,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             finally {
                 mMuxer.release();
             }
+            mMuxer = null;
         }
     }
 }

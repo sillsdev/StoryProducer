@@ -64,7 +64,6 @@ public class StoryMaker {
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
-//        mDurationUs = 10000000;//getStoryDuration(mPages, mAudioTransitionUs);
         mDurationUs = getStoryDuration(mPages, mAudioTransitionUs);
     }
 
@@ -72,15 +71,15 @@ public class StoryMaker {
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
      */
     public void churn() {
-        try {
-            PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
-            PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
-            PipedAudioMixer audioMixer = new PipedAudioMixer();
-            PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
-            StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
-            PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
-            PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
+        PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
+        PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
+        PipedAudioMixer audioMixer = new PipedAudioMixer();
+        PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
+        StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
+        PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
+        PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
+        try {
             muxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
@@ -95,10 +94,20 @@ public class StoryMaker {
             videoEncoder.addSource(videoDrawer);
 
             muxer.crunch();
-            System.out.println("muxer complete");
+            System.out.println("Video saved to " + mOutputFile);
         }
         catch (IOException | SourceUnacceptableException | RuntimeException e) {
             e.printStackTrace();
+        }
+        finally {
+            //Everything should be closed automatically, but close everything just in case.
+            soundtrackLooper.close();
+            narrationConcatenator.close();
+            audioMixer.close();
+            audioEncoder.close();
+            videoDrawer.close();
+            videoEncoder.close();
+            muxer.close();
         }
     }
 

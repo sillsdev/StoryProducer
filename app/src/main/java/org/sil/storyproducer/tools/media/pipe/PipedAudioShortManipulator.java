@@ -12,6 +12,12 @@ import java.nio.ShortBuffer;
 /**
  * <p>This abstract media pipeline component provides a base for audio components
  * which care about touching every output short.</p>
+ *
+ * <p>The most important methods for a class overriding this class are {@link #loadSamplesForTime(long)}
+ * and {@link #getSampleForChannel(int)}. {@link #loadSamplesForTime(long)} will be called exactly
+ * once, in order, for each time step according to {@link #mSampleRate}. After each of these calls,
+ * {@link #getSampleForChannel(int)} will be called exactly once, in order, for each channel
+ * according to {@link #mChannelCount}.</p>
  */
 public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioShorter";
@@ -99,11 +105,10 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             ShortBuffer outShortBuffer = MediaHelper.getShortBuffer(outBuffer);
 
             int length = outShortBuffer.remaining();
-//            int cap = outBuffer.capacity();
-            int pos = 0;//outShortBuffer.arrayOffset();
+            int pos = 0;
 
             outShortBuffer.get(mShortBuffer, pos, length);
-            short[] outBufferA = mShortBuffer;//outShortBuffer.array();
+            short[] outBufferA = mShortBuffer;
             outShortBuffer.clear();
 
             while (!mIsDone) {
@@ -187,18 +192,12 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
     @Override
     public void close() {
-        //Do nothing.
+        //Force the spinInput thread to shutdown.
         mComponentState = State.CLOSED;
         try {
             mThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static class IllegalStateException extends RuntimeException {
-        public IllegalStateException(String msg) {
-            super(msg);
         }
     }
 }

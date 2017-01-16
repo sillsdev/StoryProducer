@@ -119,7 +119,6 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
             short[] buffer = mSourceBufferAs.get(iSource);
             float volumeModifier = mSourceVolumeModifiers.get(iSource);
             while(buffer != null && pos >= size) {
-                releaseSourceBuffer(iSource);
                 fetchSourceBuffer(iSource);
 
                 size = mSourceSizes.get(iSource);
@@ -162,12 +161,6 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         mSourcePos.set(sourceIndex, 0);
         mSourceSizes.set(sourceIndex, size);
         source.releaseBuffer(buffer);
-    }
-
-    private void releaseSourceBuffer(int sourceIndex) {
-//        mSources.get(sourceIndex).releaseBuffer(mSourceBuffers.get(sourceIndex));
-//        mSourceBuffers.set(sourceIndex, null);
-//        mSourceShortBuffers.set(sourceIndex, null);
     }
 
     @Override

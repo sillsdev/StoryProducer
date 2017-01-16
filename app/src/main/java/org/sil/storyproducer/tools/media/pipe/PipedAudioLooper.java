@@ -22,6 +22,16 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
     private PipedMediaByteBufferSource mSource;
 
+    private MediaFormat mOutputFormat;
+
+    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
+
+    private int mPos;
+    private int mSize;
+    private boolean mHasBuffer = false;
+
+    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
+
     /**
      * Create looper from an audio file with specified duration, using the file's format.
      * @param path path of the audio file.
@@ -57,16 +67,6 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         mChannelCount = channelCount;
         mVolumeModifier = volumeModifier;
     }
-
-    private MediaFormat mOutputFormat;
-
-    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
-
-    private int mPos;
-    private int mSize;
-    private boolean mHasBuffer = false;
-
-    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
