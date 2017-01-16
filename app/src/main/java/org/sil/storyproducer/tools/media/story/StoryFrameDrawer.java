@@ -86,9 +86,9 @@ class StoryFrameDrawer implements PipedVideoSurfaceSource {
 
         Paint p = new Paint(0);
         //TODO: Should we use these flags?
-//        p.setAntiAlias(true);
-//        p.setFilterBitmap(true);
-//        p.setDither(true);
+        p.setAntiAlias(true);
+        p.setFilterBitmap(true);
+        p.setDither(true);
         p.setAlpha((int) (alpha * 255));
         canv.drawBitmap(bitmap, drawRect, mScreenRect, p);
     }

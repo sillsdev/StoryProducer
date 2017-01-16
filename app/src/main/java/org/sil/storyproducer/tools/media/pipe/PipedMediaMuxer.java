@@ -7,6 +7,7 @@ import android.util.Log;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -36,6 +37,10 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
      * @throws IOException if failed to open the file for write
      */
     public PipedMediaMuxer(String path, int format) throws IOException {
+        File output = new File(path);
+        if(!output.exists()) {
+            output.createNewFile();
+        }
         mMuxer = new MediaMuxer(path, format);
     }
 
