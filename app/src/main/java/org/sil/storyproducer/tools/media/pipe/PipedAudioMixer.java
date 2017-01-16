@@ -131,6 +131,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 //                if(sBuffer != null) {
 //                sum += sBuffer.get() * volumeModifier;
                 sum += buffer[pos++] * volumeModifier;
+                mSourcePos.set(i, pos);
             }
             else {
                 //Remove depleted sources from the lists.
