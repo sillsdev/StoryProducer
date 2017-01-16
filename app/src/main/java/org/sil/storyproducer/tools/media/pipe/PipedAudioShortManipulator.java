@@ -19,7 +19,8 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     private static final int BUFFER_CAPACITY = 16 * 1024;
     private ByteBufferPool mBufferPool = new ByteBufferPool(BUFFER_CAPACITY);
 
-    private final short[] mShortBuffer = new short[BUFFER_CAPACITY / 2];
+    private static final int MAX_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE;
+    private final short[] mShortBuffer = new short[MAX_BUFFER_CAPACITY / 2];
 
     protected int mSampleRate;
     protected int mChannelCount;
@@ -62,12 +63,14 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
         //prepare a ShortBuffer view of the output buffer
         ShortBuffer outShortBuffer = MediaHelper.getShortBuffer(outBuffer);
-        outShortBuffer.get(mShortBuffer);
-        short[] outBufferA = mShortBuffer;//outShortBuffer.array();
-        outShortBuffer.clear();
 
+        int length = outShortBuffer.remaining();
         int cap = outBuffer.capacity();
         int pos = 0;//outShortBuffer.arrayOffset();
+
+        outShortBuffer.get(mShortBuffer, pos, length);
+        short[] outBufferA = mShortBuffer;//outShortBuffer.array();
+        outShortBuffer.clear();
 
         while(!isDone()) {
             //interleave channels
@@ -86,11 +89,13 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
 
             //Don't overflow the buffer!
-            int bytesForNextSample = 2 * mChannelCount;
-            if(info.size + bytesForNextSample > cap) {
+            int shortsForNextSample = mChannelCount;
+            if(pos + shortsForNextSample > length) {
                 break;
             }
         }
+
+        outShortBuffer.put(outBufferA, 0, length);
 
         //just to be sure
         outBuffer.position(info.offset);

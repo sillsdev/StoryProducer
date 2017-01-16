@@ -3,6 +3,7 @@ package org.sil.storyproducer.tools.media.story;
 import android.media.MediaFormat;
 
 import org.sil.storyproducer.tools.media.pipe.PipedAudioConcatenator;
+import org.sil.storyproducer.tools.media.pipe.PipedAudioDecoderMaverick;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioLooper;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
@@ -63,6 +64,7 @@ public class StoryMaker {
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
+//        mDurationUs = 10000000;//getStoryDuration(mPages, mAudioTransitionUs);
         mDurationUs = getStoryDuration(mPages, mAudioTransitionUs);
     }
 
@@ -80,6 +82,11 @@ public class StoryMaker {
             PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
             muxer.addSource(audioEncoder);
+
+//            PipedAudioDecoderMaverick simpleMav = new PipedAudioDecoderMaverick(mPages[0].getNarrationAudio().getPath(), mSampleRate, mChannelCount);
+//            audioEncoder.addSource(simpleMav);
+
+//            audioEncoder.addSource(soundtrackLooper);
 
             audioEncoder.addSource(audioMixer);
             audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);

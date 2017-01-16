@@ -28,8 +28,13 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private Queue<Long> mSourceExpectedDurations = new LinkedList<>();
     private PipedMediaByteBufferSource mSource; //current source
     private long mSourceExpectedDuration; //current source expected duration
-    private ByteBuffer mSourceBuffer; //currently held ByteBuffer of current source
-    private ShortBuffer mSourceShortBuffer; //ShortBuffer for mSourceBuffer
+//    private ByteBuffer mSourceBuffer; //currently held ByteBuffer of current source
+//    private ShortBuffer mSourceShortBuffer; //ShortBuffer for mSourceBuffer
+
+    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
+    private boolean mHasBuffer = false;
+    private int mPos;
+    private int mSize;
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -87,7 +92,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             return 0;
         }
         else {
-            while(mSourceShortBuffer != null && !mSourceShortBuffer.hasRemaining()) {
+            while(mHasBuffer && mPos >= mSize) {
+//            while(mSourceShortBuffer != null && !mSourceShortBuffer.hasRemaining()) {
                 releaseSourceBuffer();
                 fetchSourceBuffer();
             }
@@ -95,9 +101,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             boolean isWithinExpectedTime = mSourceExpectedDuration == 0
                     || time <= mSourceStart + mSourceExpectedDuration;
 
-            if(mSourceShortBuffer != null && isWithinExpectedTime) {
+            if(mHasBuffer && isWithinExpectedTime) {
+//            if(mSourceShortBuffer != null && isWithinExpectedTime) {
                 //In the normal case, return the short from the buffer.
-                return mSourceShortBuffer.get();
+//                return mSourceShortBuffer.get();
+                return mSourceBufferA[mPos++];
             }
             else {
                 //Clear out the current source.
@@ -231,9 +239,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     private void releaseSourceBuffer() {
-        mSource.releaseBuffer(mSourceBuffer);
-        mSourceBuffer = null;
-        mSourceShortBuffer = null;
+//        mSource.releaseBuffer(mSourceBuffer);
+//        mSourceBuffer = null;
+//        mSourceShortBuffer = null;
+
+        mHasBuffer = false;
     }
 
     private void fetchSourceBuffer() {
@@ -243,8 +253,19 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         }
 
         //Pull in new buffer.
-        mSourceBuffer = mSource.getBuffer(mInfo);
-        mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
+//        mSourceBuffer = mSource.getBuffer(mInfo);
+//        mSourceShortBuffer = MediaHelper.getShortBuffer(mSourceBuffer);
+        ByteBuffer buffer = mSource.getBuffer(mInfo);
+        ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+
+        mPos = 0;
+        mSize = sBuffer.remaining();
+
+        sBuffer.get(mSourceBufferA, mPos, mSize);
+
+        mSource.releaseBuffer(buffer);
+
+        mHasBuffer = true;
     }
 
     @Override

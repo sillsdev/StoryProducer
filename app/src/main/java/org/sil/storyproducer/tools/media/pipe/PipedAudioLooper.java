@@ -60,8 +60,14 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
     private MediaFormat mOutputFormat;
 
-    private ByteBuffer mSourceBuffer;
-    private ShortBuffer mSourceShortBuffer;
+//    private ByteBuffer mSourceBuffer;
+//    private ShortBuffer mSourceShortBuffer;
+
+    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
+
+    private int mPos;
+    private int mSize;
+    private boolean mHasBuffer = false;
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -88,11 +94,13 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
     @Override
     protected short getSampleForTime(long time, int channel) {
-        while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
+        while(mHasBuffer && mPos >= mSize) {
+//            while(mSourceShortBuffer != null && mSourceShortBuffer.remaining() <= 0) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
-        if(mSourceShortBuffer == null) {
+        if(!mHasBuffer) {
+//            if(mSourceShortBuffer == null) {
             mSource.close();
             mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
             try {
@@ -106,8 +114,10 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 e.printStackTrace();
             }
         }
-        if(mSourceShortBuffer != null) {
-            return mSourceShortBuffer.get();
+        if(mHasBuffer) {
+//            if(mSourceShortBuffer != null) {
+//            return mSourceShortBuffer.get();
+            return mSourceBufferA[mPos++];
         }
 
         //TODO: can this happen?
@@ -119,14 +129,22 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
             return;
         }
         ByteBuffer buffer = mSource.getBuffer(mInfo);
-        mSourceBuffer = buffer;
-        mSourceShortBuffer = MediaHelper.getShortBuffer(buffer);
+        ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+        mPos = 0;
+        mSize = sBuffer.remaining();
+        sBuffer.get(mSourceBufferA, mPos, mSize);
+        mSource.releaseBuffer(buffer);
+
+        mHasBuffer = true;
+//        mSourceBuffer = buffer;
+//        mSourceShortBuffer = MediaHelper.getShortBuffer(buffer);
     }
 
     private void releaseSourceBuffer() {
-        mSource.releaseBuffer(mSourceBuffer);
-        mSourceBuffer = null;
-        mSourceShortBuffer = null;
+        mHasBuffer = false;
+//        mSource.releaseBuffer(mSourceBuffer);
+//        mSourceBuffer = null;
+//        mSourceShortBuffer = null;
     }
 
     @Override

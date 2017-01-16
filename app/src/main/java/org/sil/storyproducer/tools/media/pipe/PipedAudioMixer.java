@@ -24,8 +24,12 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     private List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
     private List<Float> mSourceVolumeModifiers = new ArrayList<>();
-    private List<ByteBuffer> mSourceBuffers = new ArrayList<>();
-    private List<ShortBuffer> mSourceShortBuffers = new ArrayList<>();
+//    private List<ByteBuffer> mSourceBuffers = new ArrayList<>();
+//    private List<ShortBuffer> mSourceShortBuffers = new ArrayList<>();
+
+    private List<short[]> mSourceBufferAs = new ArrayList<>();
+    private List<Integer> mSourcePos = new ArrayList<>();
+    private List<Integer> mSourceSizes = new ArrayList<>();
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -51,8 +55,8 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
         mSources.add(src);
         mSourceVolumeModifiers.add(volumeModifier);
-        mSourceBuffers.add(null);
-        mSourceShortBuffers.add(null);
+//        mSourceBuffers.add(null);
+//        mSourceShortBuffers.add(null);
     }
 
     @Override
@@ -82,6 +86,9 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
                 throw new SourceUnacceptableException("Source audio sample rates don't match!");
             }
 
+            mSourceBufferAs.add(new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]);
+            mSourcePos.add(0);
+            mSourceSizes.add(0);
             fetchSourceBuffer(i);
         }
 
@@ -105,21 +112,34 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
         //Loop through all sources and add samples.
         for(int i = 0; i < mSources.size(); i++) {
-            ShortBuffer sBuffer = mSourceShortBuffers.get(i);
+//            ShortBuffer sBuffer = mSourceShortBuffers.get(i);
+            int size = mSourceSizes.get(i);
+            int pos = mSourcePos.get(i);
+            short[] buffer = mSourceBufferAs.get(i);
             float volumeModifier = mSourceVolumeModifiers.get(i);
-            while(sBuffer != null && sBuffer.remaining() <= 0) {
+            while(buffer != null && pos >= size) {
+//                while(sBuffer != null && sBuffer.remaining() <= 0) {
                 releaseSourceBuffer(i);
                 fetchSourceBuffer(i);
-                sBuffer = mSourceShortBuffers.get(i);
+
+                size = mSourceSizes.get(i);
+                pos = mSourcePos.get(i);
+                buffer = mSourceBufferAs.get(i);
+//                sBuffer = mSourceShortBuffers.get(i);
             }
-            if(sBuffer != null) {
-                sum += sBuffer.get() * volumeModifier;
+            if(buffer != null) {
+//                if(sBuffer != null) {
+//                sum += sBuffer.get() * volumeModifier;
+                sum += buffer[pos++] * volumeModifier;
             }
             else {
                 //Remove depleted sources from the lists.
                 mSources.remove(i);
-                mSourceBuffers.remove(i);
-                mSourceShortBuffers.remove(i);
+                mSourceBufferAs.remove(i);
+                mSourcePos.remove(i);
+                mSourceSizes.remove(i);
+//                mSourceBuffers.remove(i);
+//                mSourceShortBuffers.remove(i);
 
                 //Decrement i so that former source i + 1 is not skipped.
                 i--;
@@ -138,17 +158,24 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     private void fetchSourceBuffer(int sourceIndex) {
         PipedMediaByteBufferSource source = mSources.get(sourceIndex);
         if(source.isDone()) {
+            mSourceBufferAs.set(sourceIndex, null);
             return;
         }
         ByteBuffer buffer = source.getBuffer(mInfo);
-        mSourceBuffers.set(sourceIndex, buffer);
-        mSourceShortBuffers.set(sourceIndex, MediaHelper.getShortBuffer(buffer));
+        ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+        int size = sBuffer.remaining();
+        sBuffer.get(mSourceBufferAs.get(sourceIndex), 0, size);
+        mSourcePos.set(sourceIndex, 0);
+        mSourceSizes.set(sourceIndex, size);
+        source.releaseBuffer(buffer);
+//        mSourceBuffers.set(sourceIndex, buffer);
+//        mSourceShortBuffers.set(sourceIndex, MediaHelper.getShortBuffer(buffer));
     }
 
     private void releaseSourceBuffer(int sourceIndex) {
-        mSources.get(sourceIndex).releaseBuffer(mSourceBuffers.get(sourceIndex));
-        mSourceBuffers.set(sourceIndex, null);
-        mSourceShortBuffers.set(sourceIndex, null);
+//        mSources.get(sourceIndex).releaseBuffer(mSourceBuffers.get(sourceIndex));
+//        mSourceBuffers.set(sourceIndex, null);
+//        mSourceShortBuffers.set(sourceIndex, null);
     }
 
     @Override

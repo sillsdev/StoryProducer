@@ -48,6 +48,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     private boolean mIsDone = false;
+    private int mSourceSize;
 
     /**
      * Create resampler, maintaining channel count from source audio stream.
@@ -190,7 +191,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mAbsoluteRightSampleIndex++;
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
-        while(/*mSourceShortBuffer != null*/!mHasBuffer && mSourcePos >= mSourceLim/*mSourceShortBuffer.remaining() <= 0*/) {
+        while(/*mSourceShortBuffer != null*/mHasBuffer && mSourcePos >= mSourceSize/*mSourceShortBuffer.remaining() <= 0*/) {
             releaseSourceBuffer();
             fetchSourceBuffer();
         }
@@ -205,7 +206,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         else {
             //Get right's values from the input buffer.
             for (int i = 0; i < mSourceChannelCount; i++) {
-                mRightSamples[i] = mSourceBufferA[mSourcePos++];//mSourceShortBuffer.get();
+                try {
+                    mRightSamples[i] = mSourceBufferA[mSourcePos++];//mSourceShortBuffer.get();
+                }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -240,10 +246,9 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 //        mSourceBuffer.clear();
 //        mSourceBuffer.put(tempSourceBuffer);
         ShortBuffer tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer);
-        int size = tempShortBuffer.remaining();
-        tempShortBuffer.get(mSourceBufferA, 0, size);
+        mSourceSize = tempShortBuffer.remaining();
+        tempShortBuffer.get(mSourceBufferA, 0, mSourceSize);
         mSourcePos = 0;
-        mSourceLim = tempShortBuffer.limit();// * 2;
         mSource.releaseBuffer(tempSourceBuffer);
 
 //        if(MediaHelper.VERBOSE) {
