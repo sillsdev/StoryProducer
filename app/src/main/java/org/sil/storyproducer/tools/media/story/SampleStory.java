@@ -61,6 +61,7 @@ public class SampleStory extends Thread {
 
     @Override
     public void run() {
+        System.out.println("Starting to make story...");
         int outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4;
 
         MediaFormat videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, WIDTH, HEIGHT);
