@@ -105,6 +105,8 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     protected boolean loadSamplesForTime(long time) {
         //Component is done if duration is exceeded.
         if(time >= mDurationUs) {
+            mSource.close();
+            mSource = null;
             return false;
         }
 

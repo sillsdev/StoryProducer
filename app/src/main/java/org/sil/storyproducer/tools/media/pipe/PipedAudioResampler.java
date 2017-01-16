@@ -205,6 +205,9 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         if(!mHasBuffer) {
             isDone = true;
 
+            mSource.close();
+            mSource = null;
+
             for(int i = 0; i < mSourceChannelCount; i++) {
                 mRightSamples[i] = 0;
             }

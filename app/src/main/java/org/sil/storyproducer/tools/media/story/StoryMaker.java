@@ -83,12 +83,6 @@ public class StoryMaker {
 
             muxer.addSource(audioEncoder);
 
-//            PipedAudioDecoderMaverick simpleMav = new PipedAudioDecoderMaverick(mPages[0].getNarrationAudio().getPath(), mSampleRate, mChannelCount);
-//            audioEncoder.addSource(simpleMav);
-
-//            audioEncoder.addSource(soundtrackLooper);
-//            audioEncoder.addSource(narrationConcatenator);
-
             audioEncoder.addSource(audioMixer);
             audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);
             audioMixer.addSource(narrationConcatenator);
@@ -96,7 +90,7 @@ public class StoryMaker {
                 narrationConcatenator.addSource(page.getNarrationAudio().getPath());
             }
 
-//            muxer.addSource(videoEncoder);
+            muxer.addSource(videoEncoder);
 
             videoEncoder.addSource(videoDrawer);
 

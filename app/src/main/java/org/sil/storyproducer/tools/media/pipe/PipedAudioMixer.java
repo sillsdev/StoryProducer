@@ -151,6 +151,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     private void fetchSourceBuffer(int sourceIndex) {
         PipedMediaByteBufferSource source = mSources.get(sourceIndex);
         if(source.isDone()) {
+            source.close();
             mSourceBufferAs.set(sourceIndex, null);
             return;
         }
