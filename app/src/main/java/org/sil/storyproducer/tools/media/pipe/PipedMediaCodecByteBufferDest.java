@@ -26,6 +26,7 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
             int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
                 //Do nothing.
             } else {
                 if (MediaHelper.VERBOSE) {

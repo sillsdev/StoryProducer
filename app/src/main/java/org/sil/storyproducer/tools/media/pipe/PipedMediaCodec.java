@@ -29,7 +29,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private ByteBuffer[] mOutputBuffers;
     private MediaFormat mOutputFormat = null;
 
-    private boolean mIsDone = false;
+    private volatile boolean mIsDone = false;
     private long mPresentationTimeUsLast = 0;
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
@@ -90,15 +90,21 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     }
 
     private ByteBuffer spinOutput(MediaCodec.BufferInfo info, boolean stopWithFormat) {
+        Log.d(TAG, getComponentName() + ".spinOutput: state " + mComponentState.name());
         if(mIsDone) {
             throw new RuntimeException("spinOutput called after depleted");
         }
 
         while (!mIsDone) {
+            long durationNs = 0;
+            if(MediaHelper.VERBOSE) {
+                durationNs = -System.nanoTime();
+            }
+
             int pollCode = mCodec.dequeueOutputBuffer(
                         info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-//                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
+                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
                 //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
@@ -123,13 +129,14 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             }
             else {
                 if (MediaHelper.VERBOSE) {
-                    Log.d(TAG, getComponentName() + ": returned output buffer: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
+                    durationNs += System.nanoTime();
+                    float sec = durationNs / 1000000000L;
+                    Log.d(TAG, getComponentName() + ": return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
                 ByteBuffer buffer = mOutputBuffers[pollCode];
 
-                if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM)
-                        != 0) {
+                if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": EOS");
                     mIsDone = true;
                 }
@@ -154,7 +161,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
 
     /**
      * <p>Gather input from source, feeding it into mCodec, until source is depleted.</p>
-     * <p>Note: This method <b>must return after mComponentState becomes CLOSED</b>.</p>
+     * <p>Note: This method <b>must return after {@link #mComponentState} becomes CLOSED</b>.</p>
      */
     protected abstract void spinInput();
 

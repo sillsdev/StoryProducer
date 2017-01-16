@@ -122,7 +122,7 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 //                info.flags |= MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 //            }
             if (MediaHelper.VERBOSE) {
-                Log.d(TAG, "extractor: returned buffer of size " + info.size + " for time " + info.presentationTimeUs);
+                Log.d(TAG, "spinOutput: return buffer of size " + info.size + " for time " + info.presentationTimeUs);
             }
 
             if (info.size >= 0) {

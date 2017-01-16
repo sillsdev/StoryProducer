@@ -40,7 +40,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private MediaFormat mOutputFormat;
 
-    private boolean mIsDone = false;
+//    private boolean mIsDone = false;
 
     /**
      * Create concatenator with specified transition time, using the first audio source's format.
@@ -206,6 +206,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        start();
     }
 
     private void checkSourceValidity(PipedMediaByteBufferSource source) throws SourceUnacceptableException {
@@ -233,10 +235,10 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         return mOutputFormat;
     }
 
-    @Override
-    public boolean isDone() {
-        return mIsDone;
-    }
+//    @Override
+//    public boolean isDone() {
+//        return mIsDone;
+//    }
 
     private void releaseSourceBuffer() {
 //        mSource.releaseBuffer(mSourceBuffer);
@@ -270,6 +272,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     @Override
     public void close() {
+        super.close();
         if(mSource != null) {
             mSource.close();
         }

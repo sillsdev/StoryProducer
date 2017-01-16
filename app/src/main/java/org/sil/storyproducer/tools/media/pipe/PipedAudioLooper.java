@@ -80,6 +80,8 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        start();
     }
 
     @Override
@@ -87,9 +89,14 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         return mOutputFormat;
     }
 
+//    @Override
+//    public boolean isDone() {
+//        return mSeekTime >= mDurationUs;
+//    }
+
     @Override
-    public boolean isDone() {
-        return mSeekTime >= mDurationUs;
+    protected void onTimeUpdate() {
+        mIsDone = mSeekTime >= mDurationUs;
     }
 
     @Override
@@ -114,6 +121,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 e.printStackTrace();
             }
         }
+        //TODO: is this if necessary?
         if(mHasBuffer) {
 //            if(mSourceShortBuffer != null) {
 //            return mSourceShortBuffer.get();

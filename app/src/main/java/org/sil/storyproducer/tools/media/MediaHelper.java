@@ -1,11 +1,13 @@
 package org.sil.storyproducer.tools.media;
 
+import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
+import java.text.DecimalFormat;
 
 /**
  * Provides static methods for miscellaneous low-level media tasks.
@@ -115,6 +117,14 @@ final public class MediaHelper {
         MediaFormat format = new MediaFormat();
         format.setString(MediaFormat.KEY_MIME, mime);
         return format;
+    }
+
+    public static String getDecimal(float sec) {
+        return "[??]";
+    }
+
+    public static void copyBufferInfo(MediaCodec.BufferInfo src, MediaCodec.BufferInfo dest) {
+        dest.set(src.offset, src.size, src.presentationTimeUs, src.flags);
     }
 
     public enum MediaType {

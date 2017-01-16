@@ -47,7 +47,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-    private boolean mIsDone = false;
+//    private boolean mIsDone = false;
     private int mSourceSize;
 
     /**
@@ -119,6 +119,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
         //Get the first input buffer.
         fetchSourceBuffer();
+
+        start();
     }
 
     @Override
@@ -126,10 +128,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         return mOutputFormat;
     }
 
-    @Override
-    public boolean isDone() {
-        return mIsDone;
-    }
+//    @Override
+//    public boolean isDone() {
+//        return mIsDone;
+//    }
 
     /**
      * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
@@ -267,6 +269,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     @Override
     public void close() {
+        super.close();
         if(mSource != null) {
             mSource.close();
         }

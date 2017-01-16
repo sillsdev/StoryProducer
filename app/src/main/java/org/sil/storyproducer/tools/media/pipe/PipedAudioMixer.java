@@ -20,7 +20,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     private MediaFormat mOutputFormat;
 
-    private boolean mIsDone = false;
+//    private boolean mIsDone = false;
 
     private List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
     private List<Float> mSourceVolumeModifiers = new ArrayList<>();
@@ -95,6 +95,8 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        start();
     }
 
     @Override
@@ -102,10 +104,10 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         return mOutputFormat;
     }
 
-    @Override
-    public boolean isDone() {
-        return mIsDone;
-    }
+//    @Override
+//    public boolean isDone() {
+//        return mIsDone;
+//    }
 
     protected short getSampleForTime(long time, int channel) {
         int sum = 0;
