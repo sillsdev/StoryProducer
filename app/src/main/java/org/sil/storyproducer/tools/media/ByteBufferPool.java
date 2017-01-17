@@ -13,10 +13,10 @@ import java.util.ArrayList;
 public class ByteBufferPool {
     private final int mCapacity;
 
-    private ArrayList<ByteBuffer> buffers = new ArrayList<>(4);
-    private ArrayList<Boolean> bufferAvailable = new ArrayList<>(4);
+    private final ArrayList<ByteBuffer> buffers = new ArrayList<>(4);
+    private final ArrayList<Boolean> bufferAvailable = new ArrayList<>(4);
 
-    private static ByteBufferPool singleton = new ByteBufferPool();
+    private static final ByteBufferPool SINGLETON = new ByteBufferPool();
 
     public ByteBufferPool() {
         this(MediaHelper.MAX_INPUT_BUFFER_SIZE);
@@ -30,7 +30,7 @@ public class ByteBufferPool {
      * @return
      */
     public static synchronized ByteBuffer getShared() {
-        return singleton.get();
+        return SINGLETON.get();
     }
 
     /**
@@ -66,7 +66,7 @@ public class ByteBufferPool {
      * @return
      */
     public static synchronized void releaseShared(ByteBuffer buffer) throws InvalidBufferException {
-        singleton.release(buffer);
+        SINGLETON.release(buffer);
     }
 
     /**

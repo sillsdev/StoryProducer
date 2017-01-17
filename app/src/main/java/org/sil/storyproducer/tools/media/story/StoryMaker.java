@@ -18,15 +18,16 @@ import java.io.IOException;
  * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
  */
 public class StoryMaker {
+    //TODO: revisit volume of soundtrack or add configuration
     private static final float SOUNDTRACK_VOLUME_MODIFIER = 0.8f;
 
     private final File mOutputFile;
     private final int mOutputFormat;
 
-    private MediaFormat mVideoFormat;
-    private MediaFormat mAudioFormat;
-    private StoryPage[] mPages;
-    private File mSoundTrack;
+    private final MediaFormat mVideoFormat;
+    private final MediaFormat mAudioFormat;
+    private final StoryPage[] mPages;
+    private final File mSoundTrack;
 
     private final long mAudioTransitionUs;
     private final long mSlideTransitionUs;

@@ -17,27 +17,28 @@ import java.nio.ByteBuffer;
 public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
+    @Deprecated //because this might not be a great long-term item
+    protected abstract String getComponentName();
+
     Thread mThread;
 
     protected volatile PipedMediaSource.State mComponentState = State.UNINITIALIZED;
-
-    @Deprecated //because this might not be a great long-term item
-    protected abstract String getComponentName();
 
     protected MediaCodec mCodec;
     protected ByteBuffer[] mInputBuffers;
     private ByteBuffer[] mOutputBuffers;
     private MediaFormat mOutputFormat = null;
 
+    //TODO: is volatile necessary?
     private volatile boolean mIsDone = false;
     private long mPresentationTimeUsLast = 0;
 
-    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
+    private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     @Override
     public MediaFormat getOutputFormat() {
         if(mOutputFormat == null) {
-            spinOutput(mInfo, true);
+            pullBuffer(mInfo, true);
             if(mOutputFormat == null) {
                 throw new RuntimeException("format was not retrieved from loop");
             }
@@ -52,7 +53,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
 
     @Override
     public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-        ByteBuffer outputBuffer = spinOutput(info, false);
+        ByteBuffer outputBuffer = pullBuffer(info, false);
         buffer.clear();
         buffer.put(outputBuffer);
         releaseBuffer(outputBuffer);
@@ -60,7 +61,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
 
     @Override
     public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
-        return spinOutput(info, false);
+        return pullBuffer(info, false);
     }
 
     @Override
@@ -89,14 +90,13 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         mThread.start();
     }
 
-    private ByteBuffer spinOutput(MediaCodec.BufferInfo info, boolean stopWithFormat) {
-        Log.d(TAG, getComponentName() + ".spinOutput: state " + mComponentState.name());
+    private ByteBuffer pullBuffer(MediaCodec.BufferInfo info, boolean stopWithFormat) {
         if(mIsDone) {
-            throw new RuntimeException("spinOutput called after depleted");
+            throw new RuntimeException("pullBuffer called after depleted");
         }
 
         while (!mIsDone) {
-            long durationNs = 0;
+            long durationNs;
             if(MediaHelper.VERBOSE) {
                 durationNs = -System.nanoTime();
             }
@@ -104,15 +104,15 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             int pollCode = mCodec.dequeueOutputBuffer(
                         info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no output buffer");
+                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: no output buffer");
                 //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": output buffers changed");
+                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: output buffers changed");
                 mOutputBuffers = mCodec.getOutputBuffers();
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": output format changed");
+                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: output format changed");
                 if (mOutputFormat != null) {
                     throw new RuntimeException("changed output format again?");
                 }
@@ -122,22 +122,16 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 }
             }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": codec config buffer");
+                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: codec config buffer");
                 //TODO: make sure this is ok
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);
             }
             else {
-                if (MediaHelper.VERBOSE) {
-                    durationNs += System.nanoTime();
-                    float sec = durationNs / 1000000000L;
-                    Log.d(TAG, getComponentName() + ": return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
-                }
-
                 ByteBuffer buffer = mOutputBuffers[pollCode];
 
                 if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": EOS");
+                    if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: EOS");
                     mIsDone = true;
                 }
                 else {
@@ -145,6 +139,13 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                     buffer.position(info.offset);
                     buffer.limit(info.offset + info.size);
                 }
+
+                if (MediaHelper.VERBOSE) {
+                    durationNs += System.nanoTime();
+                    double sec = durationNs / 1E9;
+                    Log.v(TAG, getComponentName() + ".pullBuffer: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
+                }
+
                 return buffer;
             }
         }
@@ -152,6 +153,12 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         return null;
     }
 
+    /**
+     * Correct the presentation time of the current buffer.
+     * This function is primarily intended to be overridden by {@link PipedVideoSurfaceEncoder} to
+     * allow video frames to be displayed at the proper time.
+     * @param info to be updated
+     */
     protected void correctTime(MediaCodec.BufferInfo info) {
         if (mPresentationTimeUsLast > info.presentationTimeUs) {
             throw new RuntimeException("buffer presentation time out of order!");
@@ -173,22 +180,23 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             try {
                 mThread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Log.d(TAG, getComponentName() + ": Failed to close input thread!", e);
             }
+            mThread = null;
         }
 
+        //Shutdown MediaCodec
         if(mCodec != null) {
             try {
                 mCodec.stop();
             }
             catch(IllegalStateException e) {
-                if(MediaHelper.VERBOSE) {
-                    e.printStackTrace();
-                }
+                Log.d(TAG, getComponentName() + ": Failed to stop MediaCodec!", e);
             }
             finally {
                 mCodec.release();
             }
+            mCodec = null;
         }
     }
 }

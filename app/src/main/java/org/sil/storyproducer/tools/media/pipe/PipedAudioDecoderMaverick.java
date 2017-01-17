@@ -108,6 +108,7 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     public void close() {
         if(mSource != null) {
             mSource.close();
+            mSource = null;
         }
     }
 }

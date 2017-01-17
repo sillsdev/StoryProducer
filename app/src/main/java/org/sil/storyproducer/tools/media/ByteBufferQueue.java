@@ -8,7 +8,6 @@ import org.sil.storyproducer.tools.media.pipe.InvalidBufferException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,19 +19,23 @@ public class ByteBufferQueue {
 
     private final Object mLock = new Object();
 
-    private final int mCapacity;
+    private final int mBufferCount;
 
     //TODO: check/re-evaluate this value
-    private static final int BUFFER_CAPACITY = 16 * 1024;
-    private final ByteBufferPool mBufferPool = new ByteBufferPool(BUFFER_CAPACITY);
+    private static final int BUFFER_CAPACITY_DEFAULT = 16 * 1024;
+    private final ByteBufferPool mBufferPool;
 
     private int mBuffersOut = 0;
 
     private final BlockingQueue<MediaBuffer> mFilledBuffers;
 
-    public ByteBufferQueue(int capacity) {
-        mCapacity = capacity;
-        mFilledBuffers = new ArrayBlockingQueue<>(capacity);
+    public ByteBufferQueue(int bufferCount) {
+        this(bufferCount, BUFFER_CAPACITY_DEFAULT);
+    }
+    public ByteBufferQueue(int bufferCount, int bufferCapacity) {
+        mBufferCount = bufferCount;
+        mBufferPool = new ByteBufferPool(bufferCapacity);
+        mFilledBuffers = new ArrayBlockingQueue<>(bufferCount);
     }
 
     /**
@@ -51,7 +54,7 @@ public class ByteBufferQueue {
         int loops = 0;
         while(true) {
             synchronized (mLock) {
-                boolean bufferIsAvailable = mBuffersOut < mCapacity;
+                boolean bufferIsAvailable = mBuffersOut < mBufferCount;
                 if (bufferIsAvailable) {
                     mBuffersOut++;
                     return mBufferPool.get();

@@ -18,19 +18,27 @@ import java.nio.ShortBuffer;
  * once, in order, for each time step according to {@link #mSampleRate}. After each of these calls,
  * {@link #getSampleForChannel(int)} will be called exactly once, in order, for each channel
  * according to {@link #mChannelCount}.</p>
+ *
+ * <p>As a note on implementation, we are generally trying to use arrays when manipulating the shorts
+ * rather than using buffers directly. We hypothesize that doing so gives us significant performance
+ * gains on some physical devices.</p>
  */
 public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
-    private static final String TAG = "PipedAudioShorter";
+    private static final String TAG = "PipedAudioShortMan";
+
+    @Deprecated //because this might not be a great long-term item
+    protected abstract String getComponentName();
 
     private Thread mThread;
-    private boolean mIsDone = false;
+    //TODO: is volatile necessary?
+    private volatile boolean mIsDone = false;
     protected volatile State mComponentState = State.UNINITIALIZED;
 
     private static final int BUFFER_COUNT = 4;
     private final ByteBufferQueue mBufferQueue = new ByteBufferQueue(BUFFER_COUNT);
 
     private static final int MAX_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE;
-    private final short[] mShortBuffer = new short[MAX_BUFFER_CAPACITY / 2];
+    private final short[] mShortBuffer = new short[MAX_BUFFER_CAPACITY / 2]; //short = 2 bytes
 
     protected int mSampleRate;
     protected int mChannelCount;
@@ -78,7 +86,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
     private void spinInput() {
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, "spinInput starting...");
+            Log.v(TAG, getComponentName() + ".spinInput starting...");
         }
 
         mIsDone = !loadSamplesForTime(mSeekTime);
@@ -149,12 +157,12 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
             if (MediaHelper.VERBOSE) {
                 durationNs += System.nanoTime();
-                float sec = durationNs / 1000000000L;
-                Log.d(TAG, "spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
+                double sec = durationNs / 1E9;
+                Log.v(TAG, getComponentName() + ".spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
             }
         }
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, "spinInput complete!");
+            Log.v(TAG, getComponentName() + ".spinInput complete!");
         }
     }
 
@@ -194,10 +202,13 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     public void close() {
         //Force the spinInput thread to shutdown.
         mComponentState = State.CLOSED;
-        try {
-            mThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(mThread != null) {
+            try {
+                mThread.join();
+            } catch (InterruptedException e) {
+                Log.d(TAG, getComponentName() + ": Failed to stop input thread!", e);
+            }
+            mThread = null;
         }
     }
 }

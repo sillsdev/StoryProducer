@@ -26,7 +26,7 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 
     private boolean mIsDone = false;
 
-    private ByteBufferPool mBufferPool = new ByteBufferPool();
+    private final ByteBufferPool mBufferPool = new ByteBufferPool();
 
     /**
      * Create extractor from specified file.
@@ -72,13 +72,13 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 
     @Override
     public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-        spinOutput(buffer, info);
+        pullBuffer(buffer, info);
     }
 
     @Override
     public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
         ByteBuffer buffer = getBuffer();
-        spinOutput(buffer, info);
+        pullBuffer(buffer, info);
         return buffer;
     }
 
@@ -91,52 +91,48 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
         mBufferPool.release(buffer);
     }
 
-    private void spinOutput(ByteBuffer buffer, MediaCodec.BufferInfo info) {
+    private void pullBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
         if(mIsDone) {
-            throw new RuntimeException("spinOutput called after depleted");
+            throw new RuntimeException("pullBuffer called after depleted");
         }
 
-        while (!mIsDone) {
-            buffer.clear();
+        buffer.clear();
 
-            info.offset = 0;
-            info.size = mExtractor.readSampleData(buffer, 0);
-            info.presentationTimeUs = mExtractor.getSampleTime();
-            int actualFlags = mExtractor.getSampleFlags();
-            info.flags = 0;
-            //TODO: Do we need this SDK check?
-            if(Build.VERSION.SDK_INT >= 21 && (actualFlags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0) {
-                info.flags |= MediaCodec.BUFFER_FLAG_KEY_FRAME;
-            }
-            else if(Build.VERSION.SDK_INT < 21 && (actualFlags & MediaCodec.BUFFER_FLAG_SYNC_FRAME) != 0) {
-                info.flags |= MediaCodec.BUFFER_FLAG_SYNC_FRAME;
-            }
-            if((actualFlags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                info.flags |= MediaCodec.BUFFER_FLAG_END_OF_STREAM;
-            }
-            //TODO: Why aren't these listed in documentation but in annotations?
+        info.offset = 0;
+        info.size = mExtractor.readSampleData(buffer, 0);
+        info.presentationTimeUs = mExtractor.getSampleTime();
+        int actualFlags = mExtractor.getSampleFlags();
+        info.flags = 0;
+        //TODO: Do we need this SDK check?
+        if(Build.VERSION.SDK_INT >= 21 && (actualFlags & MediaCodec.BUFFER_FLAG_KEY_FRAME) != 0) {
+            info.flags |= MediaCodec.BUFFER_FLAG_KEY_FRAME;
+        }
+        else if(Build.VERSION.SDK_INT < 21 && (actualFlags & MediaCodec.BUFFER_FLAG_SYNC_FRAME) != 0) {
+            info.flags |= MediaCodec.BUFFER_FLAG_SYNC_FRAME;
+        }
+        if((actualFlags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+            info.flags |= MediaCodec.BUFFER_FLAG_END_OF_STREAM;
+        }
+        //TODO: Why aren't these listed in documentation but in annotations?
 //            if((actualFlags & MediaCodec.BUFFER_FLAG_SYNC_FRAME) != 0) {
 //                info.flags |= MediaCodec.BUFFER_FLAG_SYNC_FRAME;
 //            }
 //            if((actualFlags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
 //                info.flags |= MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 //            }
-            if (MediaHelper.VERBOSE) {
-                Log.d(TAG, "spinOutput: return buffer of size " + info.size + " for time " + info.presentationTimeUs);
-            }
+        if (MediaHelper.VERBOSE) {
+            Log.v(TAG, "pullBuffer: return buffer of size " + info.size + " for time " + info.presentationTimeUs);
+        }
 
-            if (info.size >= 0) {
-                buffer.position(info.offset);
-                buffer.limit(info.offset + info.size);
-                mExtractor.advance();
-            }
-            else {
-                if (MediaHelper.VERBOSE) Log.d(TAG, "extractor: EOS");
-                info.set(0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
-                mIsDone = true;
-            }
-
-            return;
+        if (info.size >= 0) {
+            buffer.position(info.offset);
+            buffer.limit(info.offset + info.size);
+            mExtractor.advance();
+        }
+        else {
+            if (MediaHelper.VERBOSE) Log.v(TAG, "pullBuffer: EOS");
+            info.set(0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+            mIsDone = true;
         }
     }
 
@@ -144,6 +140,7 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
     public void close() {
         if(mExtractor != null) {
             mExtractor.release();
+            mExtractor = null;
         }
     }
 }

@@ -15,12 +15,12 @@ public class KenBurnsEffect {
         ;
     }
 
-    private Rect mStart;
-    private Rect mEnd;
+    private final Rect mStart;
+    private final Rect mEnd;
 
-    private Easing mEasing;
+    private final Easing mEasing;
 
-    private int dLeft, dTop, dRight, dBottom;
+    private final int dLeft, dTop, dRight, dBottom;
 
     /**
      * Create Ken Burns effect with starting and ending rectangles.

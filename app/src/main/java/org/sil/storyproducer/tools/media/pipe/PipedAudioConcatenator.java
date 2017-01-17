@@ -19,6 +19,10 @@ import java.util.Queue;
  */
 public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private static final String TAG = "PipedAudioConcatenator";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
 
     private enum ConcatState {
         DATA,
@@ -30,23 +34,24 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private ConcatState mCurrentState = ConcatState.TRANSITION;
 
+    private final Queue<String> mSourceAudioPaths = new LinkedList<>();
+    private final Queue<Long> mSourceExpectedDurations = new LinkedList<>();
+
     private PipedMediaByteBufferSource mFirstSource;
-    private Queue<String> mSourceAudioPaths = new LinkedList<>();
+    private PipedMediaByteBufferSource mSource; //current source
+    private long mSourceExpectedDuration; //current source expected duration (us)
 
     private final long mTransitionUs; //duration of the audio transition
-    private long mTransitionStart = 0;
-    private long mSourceStart = 0;
+    private long mTransitionStart = 0; //timestamp (us) of current transition start
+    private long mSourceStart = 0; //timestamp (us) of current source start (i.e. after prior transition)
 
-    private Queue<Long> mSourceExpectedDurations = new LinkedList<>();
-    private PipedMediaByteBufferSource mSource; //current source
-    private long mSourceExpectedDuration; //current source expected duration
-
-    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2];
+    private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]; //short = 2 bytes
     private boolean mHasBuffer = false;
+
     private int mPos;
     private int mSize;
 
-    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
+    private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     private MediaFormat mOutputFormat;
 
@@ -73,7 +78,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     @Override
     protected short getSampleForChannel(int channel) {
         if(mCurrentState == ConcatState.DATA) {
-            //In the normal case, return the short from the buffer.
             return mSourceBufferA[mPos++];
         }
         else {
@@ -95,7 +99,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             boolean transitionComplete = time > mTransitionStart + transitionUs;
             if (transitionComplete) {
                 if(MediaHelper.VERBOSE) {
-                    Log.d(TAG, "loadSamplesForTime transition complete!");
+                    Log.v(TAG, "loadSamplesForTime transition complete!");
                 }
 
                 //Clear out the current source.
@@ -136,12 +140,9 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             boolean isWithinExpectedTime = mSourceExpectedDuration == 0
                     || time <= mSourceStart + mSourceExpectedDuration;
 
-            if(mHasBuffer && isWithinExpectedTime) {
-                //Do nothing. (Stay in DATA state.)
-            }
-            else {
+            if(!mHasBuffer || !isWithinExpectedTime) {
                 if(MediaHelper.VERBOSE) {
-                    Log.d(TAG, "loadSamplesForTime starting transition...");
+                    Log.v(TAG, "loadSamplesForTime starting transition...");
                 }
 
                 mCurrentState = ConcatState.TRANSITION;
@@ -165,7 +166,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private PipedMediaByteBufferSource getNextSource() {
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, "getNextSource starting...");
+            Log.v(TAG, "getNextSource starting...");
         }
 
         PipedMediaByteBufferSource nextSource = null;
@@ -173,7 +174,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         //Since the first source was already setup in setup(), it is held in a special place.
         if(mFirstSource != null) {
             if(MediaHelper.VERBOSE) {
-                Log.d(TAG, "getNextSource first source");
+                Log.v(TAG, "getNextSource first source");
             }
 
             nextSource = mFirstSource;
@@ -181,7 +182,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         }
         else if(!mSourceAudioPaths.isEmpty()) {
             if(MediaHelper.VERBOSE) {
-                Log.d(TAG, "getNextSource normal source");
+                Log.v(TAG, "getNextSource normal source");
             }
 
             String nextSourcePath = mSourceAudioPaths.remove();
@@ -191,7 +192,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                 checkSourceValidity(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
-                new RuntimeException("Source setup failed!", e).printStackTrace();
+                Log.d(TAG, "Source setup failed!", e);
                 nextSource = null;
             }
         }
@@ -312,6 +313,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         super.close();
         if(mSource != null) {
             mSource.close();
+            mSource = null;
         }
     }
 }

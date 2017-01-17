@@ -9,7 +9,7 @@ import android.util.Log;
 
 import org.sil.storyproducer.tools.media.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.MediaHelper;
-import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceSource;
+import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
 import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
 
 import java.io.IOException;
@@ -17,26 +17,25 @@ import java.io.IOException;
 /**
  * This class knows how to draw the frames provided to it by {@link StoryMaker}.
  */
-//TODO: use slide transition
-class StoryFrameDrawer implements PipedVideoSurfaceSource {
+class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     private static final String TAG = "StoryFrameDrawer";
 
-    private MediaFormat mVideoFormat;
-    private StoryPage[] mPages;
-    private long mAudioTransitionUs;
-    private long mSlideTransitionUs;
+    private final MediaFormat mVideoFormat;
+    private final StoryPage[] mPages;
+    private final long mAudioTransitionUs;
+    private final long mSlideTransitionUs;
+
+    private final int mFrameRate;
+
+    private final int mWidth;
+    private final int mHeight;
+    private final Rect mScreenRect;
 
     private int mCurrentSlideIndex = -1; //starts at -1 to allow initial transition
     private long mCurrentSlideDuration = 0; //duration of audio
     private long mCurrentSlideStart = 0; //time (after transition) of audio start
 
-    private int mFrameRate;
-
     private int mCurrentFrame = 0;
-
-    private int mWidth;
-    private int mHeight;
-    private Rect mScreenRect;
 
     private boolean mIsVideoDone = false;
 
@@ -45,16 +44,20 @@ class StoryFrameDrawer implements PipedVideoSurfaceSource {
         mPages = pages;
 
         mAudioTransitionUs = audioTransitionUs;
-        mSlideTransitionUs = slideTransitionUs;
+
+        long correctedSlideTransitionUs = slideTransitionUs;
 
         //mSlideTransition must never exceed the length of slides in terms of audio.
         //Pre-process pages and clip the slide transition time to fit in all cases.
         for(StoryPage page : pages) {
             long totalPageUs = page.getAudioDuration() + mAudioTransitionUs;
-            if(mSlideTransitionUs > totalPageUs) {
-                mSlideTransitionUs = totalPageUs;
+            if(correctedSlideTransitionUs > totalPageUs) {
+                correctedSlideTransitionUs = totalPageUs;
+                Log.d(TAG, "Corrected slide transition from " + slideTransitionUs + " to " + correctedSlideTransitionUs);
             }
         }
+
+        mSlideTransitionUs = correctedSlideTransitionUs;
 
         mFrameRate = mVideoFormat.getInteger(MediaFormat.KEY_FRAME_RATE);
 
@@ -79,7 +82,7 @@ class StoryFrameDrawer implements PipedVideoSurfaceSource {
         Rect drawRect = kbfx.interpolate(position);
 
         if (MediaHelper.VERBOSE) {
-            Log.d(TAG, "drawer: drawing rectangle (" + drawRect.left + ", " + drawRect.top + ", "
+            Log.v(TAG, "drawer: drawing rectangle (" + drawRect.left + ", " + drawRect.top + ", "
                     + drawRect.right + ", " + drawRect.bottom + ") of bitmap ("
                     + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
         }

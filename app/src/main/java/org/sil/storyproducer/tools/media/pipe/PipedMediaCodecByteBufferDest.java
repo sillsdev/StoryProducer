@@ -15,7 +15,7 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
     private static final String TAG = "PipedMediaCodecBBDest";
 
     protected PipedMediaByteBufferSource mSource;
-    private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
+    private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     @Override
     protected void spinInput() {
@@ -24,17 +24,17 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
         }
 
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, getComponentName() + ": spinInput starting...");
+            Log.v(TAG, getComponentName() + ".spinInput starting...");
         }
 
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
             int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.d(TAG, getComponentName() + ": no input buffer");
+                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput: no input buffer");
                 //Do nothing.
             } else {
                 if (MediaHelper.VERBOSE) {
-                    Log.d(TAG, getComponentName() + ": returned input buffer: " + pollCode);
+                    Log.v(TAG, getComponentName() + ".spinInput: returned input buffer: " + pollCode);
                 }
                 ByteBuffer inputBuffer = mInputBuffers[pollCode];
                 mSource.fillBuffer(inputBuffer, mInfo);
@@ -43,14 +43,10 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
         }
 
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, getComponentName() + ": spinInput complete!");
+            Log.v(TAG, getComponentName() + ".spinInput complete!");
         }
 
         mSource.close();
-
-        if(MediaHelper.VERBOSE) {
-            Log.d(TAG, getComponentName() + ": spinInput source closed!");
-        }
     }
 
     @Override

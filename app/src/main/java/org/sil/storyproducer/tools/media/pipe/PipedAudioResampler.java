@@ -16,6 +16,10 @@ import java.nio.ShortBuffer;
  */
 public class PipedAudioResampler extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioResampler";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
 
     private float mVolumeModifier = 1f;
 
@@ -131,8 +135,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
      * <p>Get a sample for a given time and channel from the source media pipeline component using linear interpolation.</p>
      *
      * <p>Note: Sequential calls to this function must provide strictly increasing times.</p>
-     * @param channel
-     * @return
+     * @param channel which channel to get sample for current time
+     * @return sample for current time and channel
      */
     @Override
     protected short getSampleForChannel(int channel) {
@@ -216,10 +220,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             //Get right's values from the input buffer.
             for (int i = 0; i < mSourceChannelCount; i++) {
                 try {
-                    mRightSamples[i] = mSourceBufferA[mSourcePos++];//mSourceShortBuffer.get();
+                    mRightSamples[i] = mSourceBufferA[mSourcePos++];
                 }
                 catch(ArrayIndexOutOfBoundsException e) {
-                    e.printStackTrace();
+                    Log.d(TAG, "Tried to read beyond buffer", e);
                 }
             }
         }
@@ -241,7 +245,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         ByteBuffer tempSourceBuffer = mSource.getBuffer(mInfo);
 
         if(MediaHelper.VERBOSE) {
-            Log.d(TAG, "Received " + (tempSourceBuffer.isDirect() ? "direct" : "non-direct")
+            Log.v(TAG, "Received " + (tempSourceBuffer.isDirect() ? "direct" : "non-direct")
                     + " buffer of size " + mInfo.size + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
         }
 
@@ -259,6 +263,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         super.close();
         if(mSource != null) {
             mSource.close();
+            mSource = null;
         }
     }
 }

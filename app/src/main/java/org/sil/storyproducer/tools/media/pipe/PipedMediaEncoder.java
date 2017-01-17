@@ -14,6 +14,12 @@ import java.io.IOException;
  * or any child class of {@link PipedAudioShortManipulator}.</p>
  */
 public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
+    private static final String TAG = "PipedMediaEncoder";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
+
     private MediaFormat mConfigureFormat;
     private MediaFormat mSourceFormat;
 
@@ -40,7 +46,8 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
+        //TODO: worrry about KEY_CAPTURE_RATE being API 21+
+        //MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
 
         //TODO: Make buffers appropriate size
         //encoder input buffers are too small by default
@@ -52,10 +59,5 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         mComponentState = State.SETUP;
 
         start();
-    }
-
-    @Override
-    protected String getComponentName() {
-        return "encoder";
     }
 }

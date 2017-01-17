@@ -2,6 +2,7 @@ package org.sil.storyproducer.tools.media.pipe;
 
 import android.media.MediaCodec;
 import android.media.MediaFormat;
+import android.util.Log;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
 
@@ -14,6 +15,10 @@ import java.nio.ShortBuffer;
  */
 public class PipedAudioLooper extends PipedAudioShortManipulator {
     private static final String TAG = "PipedAudioLooper";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
 
     private final String mPath;
     private final long mDurationUs;
@@ -93,7 +98,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 return mSourceBufferA[mPos++];
             }
             catch(ArrayIndexOutOfBoundsException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Tried to read beyond buffer", e);
             }
         }
 
@@ -121,12 +126,11 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
             try {
                 mSource.setup();
                 fetchSourceBuffer();
-            } catch (IOException e) {
-                //TODO: handle exception properly
-                e.printStackTrace();
-            } catch (SourceUnacceptableException e) {
-                //TODO: handle exception properly
-                e.printStackTrace();
+            } catch (IOException | SourceUnacceptableException e) {
+                Log.d(TAG, "Source setup failed!", e);
+                mSource.close();
+                mSource = null;
+                return false;
             }
         }
 
@@ -137,6 +141,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         if(mSource.isDone()) {
             return;
         }
+
         ByteBuffer buffer = mSource.getBuffer(mInfo);
         ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
         mPos = 0;
@@ -156,6 +161,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         super.close();
         if(mSource != null) {
             mSource.close();
+            mSource = null;
         }
     }
 }

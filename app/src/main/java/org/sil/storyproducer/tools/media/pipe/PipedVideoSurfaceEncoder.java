@@ -18,15 +18,21 @@ import java.util.Queue;
  * <p>This media pipeline component provides a simple encoder encapsulating a {@link MediaCodec}.
  * Unlike {@link PipedMediaEncoder}, it uses an input {@link Surface} instead of ByteBuffers.
  * This component takes raw canvas frames of a video and outputs an encoded video stream.</p>
- * <p>Sources for this component must implement {@link PipedVideoSurfaceSource}.</p>
+ * <p>Sources for this component must implement {@link Source}.</p>
  */
 public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
+    private static final String TAG = "PipedVideoSurfaceEnc";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
+
     private Surface mSurface;
 
     private MediaFormat mConfigureFormat;
-    private PipedVideoSurfaceSource mSource;
+    private Source mSource;
 
-    private Queue<Long> mPresentationTimeQueue = new LinkedList<>();
+    private final Queue<Long> mPresentationTimeQueue = new LinkedList<>();
 
     private long mCurrentPresentationTime;
 
@@ -35,14 +41,9 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     }
 
     @Override
-    protected String getComponentName() {
-        return "surface encoder";
-    }
-
-    @Override
     protected void spinInput() {
         if(mSource.isDone()) {
-            Log.d("SurfaceEncoder", "surface encoder: depleted source retrieval");
+            Log.v(TAG, "depleted source retrieval");
             return;
         }
 
@@ -71,7 +72,6 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         }
         catch (NoSuchElementException e) {
             throw new RuntimeException("Tried to correct time for extra frame", e);
-//            e.printStackTrace();
         }
     }
 
@@ -80,7 +80,7 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
      * @param src the preceding component (a canvas drawer) of the pipeline.
      * @throws SourceUnacceptableException
      */
-    public void addSource(PipedVideoSurfaceSource src) throws SourceUnacceptableException {
+    public void addSource(Source src) throws SourceUnacceptableException {
         if(mSource != null) {
             throw new SourceUnacceptableException("I already got a source");
         }
@@ -108,5 +108,17 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         mComponentState = State.SETUP;
 
         start();
+    }
+
+    /**
+     * Describes a component of the media pipeline which draws frames to a provided canvas when called.
+     */
+    public interface Source extends PipedMediaSource {
+        /**
+         * Request that this component draw a frame to the canvas.
+         * @param canv the canvas to be drawn upon.
+         * @return the presentation time (in microseconds) of the drawn frame.
+         */
+        long fillCanvas(Canvas canv);
     }
 }

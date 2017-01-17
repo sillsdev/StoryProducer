@@ -13,6 +13,12 @@ import java.io.IOException;
  * <p>A common source for this component is {@link PipedMediaExtractor}.</p>
  */
 public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
+    private static final String TAG = "PipedMediaDecoder";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
+
     private MediaFormat mSourceFormat;
 
     public PipedMediaDecoder() { }
@@ -35,10 +41,5 @@ public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
         mComponentState = State.SETUP;
 
         start();
-    }
-
-    @Override
-    protected String getComponentName() {
-        return "decoder";
     }
 }

@@ -17,15 +17,19 @@ import java.util.List;
  */
 public class PipedAudioMixer extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioMixer";
+    @Override
+    protected String getComponentName() {
+        return TAG;
+    }
 
     private MediaFormat mOutputFormat;
 
-    private List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
-    private List<Float> mSourceVolumeModifiers = new ArrayList<>();
+    private final List<PipedMediaByteBufferSource> mSources = new ArrayList<>();
+    private final List<Float> mSourceVolumeModifiers = new ArrayList<>();
 
-    private List<short[]> mSourceBufferAs = new ArrayList<>();
-    private List<Integer> mSourcePos = new ArrayList<>();
-    private List<Integer> mSourceSizes = new ArrayList<>();
+    private final List<short[]> mSourceBufferAs = new ArrayList<>();
+    private final List<Integer> mSourcePos = new ArrayList<>();
+    private final List<Integer> mSourceSizes = new ArrayList<>();
 
     private short[] mCurrentSample;
 
@@ -166,7 +170,8 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     @Override
     public void close() {
         super.close();
-        for(PipedMediaByteBufferSource source : mSources) {
+        while(!mSources.isEmpty()) {
+            PipedMediaByteBufferSource source = mSources.remove(0);
             source.close();
         }
     }
