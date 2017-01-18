@@ -31,7 +31,7 @@ public class StoryFrag extends Fragment {
 
         for(int i = 0; i < listFiles.length; i++) {
             FileSystem.loadSlideContent(storyNames[i], 1);
-            listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1), FileSystem.getTitle(), FileSystem.getSubTitle());
+            listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1, 25), FileSystem.getTitle(), FileSystem.getSubTitle());
         }
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
@@ -50,9 +50,7 @@ public class StoryFrag extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                int slideNum = FileSystem.getImageAmount(storyNames[position]);
-                ((MainActivity)getActivity()).startFragment(1, slideNum, storyNames[position]);
-//                ((MainActivity)getActivity()).startLearnActivity(0, storyNames[position]);
+            ((MainActivity)getActivity()).switchToStory(storyNames[position]);
 
             }
         });

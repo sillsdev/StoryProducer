@@ -51,6 +51,8 @@
     <string name="registration_submit_title">Submit?</string>
     <string name="registration_submit_complete_message">Are you ready to submit?</string>
     <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_error_title">Submission Error</string>
+    <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
     <string name="registration_filename">Registration</string>
 
@@ -102,7 +104,16 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_registration">Registration</string>
+    /* SnackBar Messages */
+    <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="ok">Ok</string>
 
-
+    /* Phases */
+    <string name="learnTitle">Learn</string>
+    <string name="draftTitle">Draft</string>
+    <string name="community_check_title">Community Check</string>
+    <string name="consultant_check_title">Consultant Check</string>
+    <string name="dramatization_title">Dramatization</string>
+    <string name="export_title">Export</string>
 
 </resources>

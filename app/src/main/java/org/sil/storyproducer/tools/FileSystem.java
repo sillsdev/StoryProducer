@@ -126,6 +126,10 @@ public class FileSystem {
     public static File getSoundtrackAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+".mp3");
     }
+    
+    public static File getSoundtrack(String story){
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
+    }
 
     /**
      * Gets the directory of a particular story in the <b>projects</b> directory.
@@ -151,26 +155,18 @@ public class FileSystem {
     }
 
     public static Bitmap getImage(String story, int number) {
-        String path = getStoryPath(story);
-        File f = new File(path);
-        File file[] = f.listFiles();
-
-        for (int i=0; i < file.length; i++) {
-                if (file[i].getName().equals(number + ".jpg")) {
-                    return BitmapFactory.decodeFile(path + "/" + file[i].getName());
-                }
-        }
-        return null;
+        return getImage(story, number, 1);
     }
-
-    public static Bitmap getAudio(String story, int number) {
+    public static Bitmap getImage(String story, int number, int sampleSize) {
         String path = getStoryPath(story);
         File f = new File(path);
         File file[] = f.listFiles();
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sampleSize;
 
         for (int i=0; i < file.length; i++) {
-            if (file[i].getName().equals(number + ".wav")) {
-                return BitmapFactory.decodeFile(path + "/" + file[i].getName());
+            if (file[i].getName().equals(number + ".jpg")) {
+                return BitmapFactory.decodeFile(path + "/" + file[i].getName(), options);
             }
         }
         return null;
