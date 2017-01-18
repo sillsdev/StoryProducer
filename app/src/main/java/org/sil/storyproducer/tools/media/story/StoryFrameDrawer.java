@@ -32,8 +32,11 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     private final Rect mScreenRect;
 
     private int mCurrentSlideIndex = -1; //starts at -1 to allow initial transition
-    private long mCurrentSlideDuration = 0; //duration of audio
+    private long mCurrentSlideExDuration = 0; //exclusive duration of current slide
     private long mCurrentSlideStart = 0; //time (after transition) of audio start
+
+    private long mCurrentSlideImgDuration = 0; //total duration of current slide image (cached for performance)
+    private long mNextSlideImgDuration = 0; //total duration of next slide image (cached for performance)
 
     private int mCurrentFrame = 0;
 
@@ -66,7 +69,7 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         mScreenRect = new Rect(0, 0, mWidth, mHeight);
     }
 
-    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, float alpha) {
+    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, long imgDurationUs, float alpha) {
         //In edge cases, draw a black frame with alpha value.
         if(pageIndex < 0 || pageIndex >= mPages.length) {
             canv.drawARGB((int) (alpha * 255), 0, 0, 0);
@@ -75,10 +78,9 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
 
         StoryPage page = mPages[pageIndex];
         Bitmap bitmap = page.getBitmap();
-        long durationUs = page.getAudioDuration() + 2 * mSlideTransitionUs;
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
-        float position = (float) (timeOffsetUs / (double) durationUs);
+        float position = (float) (timeOffsetUs / (double) imgDurationUs);
         Rect drawRect = kbfx.interpolate(position);
 
         if (MediaHelper.VERBOSE) {
@@ -108,7 +110,7 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
             nextSlideTransitionUs /= 2;
         }
 
-        long nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideDuration;
+        long nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration;
 
         while(currentTimeUs > nextSlideTransitionStartUs + nextSlideTransitionUs) {
             mCurrentSlideIndex++;
@@ -118,22 +120,26 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
                 break;
             }
 
-            mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideDuration + nextSlideTransitionUs;
-            mCurrentSlideDuration = mPages[mCurrentSlideIndex].getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
+            mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideExDuration + nextSlideTransitionUs;
+            mCurrentSlideExDuration = mPages[mCurrentSlideIndex].getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
+            mCurrentSlideImgDuration = mNextSlideImgDuration;
+            nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration;
 
-            nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideDuration;
+            if(mCurrentSlideIndex + 1 < mPages.length) {
+                mNextSlideImgDuration = mPages[mCurrentSlideIndex + 1].getAudioDuration() + 2 * mSlideTransitionUs;
+            }
         }
 
         long timeSinceCurrentSlideStartUs = currentTimeUs - mCurrentSlideStart;
         long currentSlideOffsetUs = timeSinceCurrentSlideStartUs + mSlideTransitionUs;
 
-        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, 1);
+        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration, 1);
 
         if(currentTimeUs > nextSlideTransitionStartUs) {
             long timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs;
             long extraOffsetUs = mSlideTransitionUs - nextSlideTransitionUs; //0 normally, transition/2 for edge cases
             long nextOffsetUs = timeSinceTransitionStartUs + extraOffsetUs;
-            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, nextOffsetUs / (float) nextSlideTransitionUs);
+            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, mNextSlideImgDuration, nextOffsetUs / (float) nextSlideTransitionUs);
         }
 
         mCurrentFrame++;
@@ -148,7 +154,9 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        //Do nothing.
+        if(mPages.length > 0) {
+            mNextSlideImgDuration = mPages[0].getAudioDuration() + 2 * mSlideTransitionUs;
+        }
     }
 
     @Override

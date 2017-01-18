@@ -40,7 +40,7 @@ public class SampleStory extends Thread {
     // parameters for the video encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int VIDEO_FRAME_RATE = 30;               // 30fps
-    private static final int VIDEO_IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
+    private static final int VIDEO_IFRAME_INTERVAL = 2;          // 2 seconds between I-frames
     // bit rate, in bits per second
     // TODO: figure out more stable way of getting a number here; bad number causes bad problems here
     private static final int VIDEO_BIT_RATE = 32 * WIDTH * HEIGHT * VIDEO_FRAME_RATE / 100;

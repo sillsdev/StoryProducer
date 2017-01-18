@@ -54,7 +54,9 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
             Canvas canv = mSurface.lockCanvas(null);
             mCurrentPresentationTime = mSource.fillCanvas(canv);
-            mPresentationTimeQueue.add(mCurrentPresentationTime);
+            synchronized (mPresentationTimeQueue) {
+                mPresentationTimeQueue.add(mCurrentPresentationTime);
+            }
             mSurface.unlockCanvasAndPost(canv);
         }
 
@@ -68,7 +70,9 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     @Override
     protected void correctTime(MediaCodec.BufferInfo info) {
         try {
-            info.presentationTimeUs = mPresentationTimeQueue.remove();
+            synchronized (mPresentationTimeQueue) {
+                info.presentationTimeUs = mPresentationTimeQueue.remove();
+            }
         }
         catch (NoSuchElementException e) {
             throw new RuntimeException("Tried to correct time for extra frame", e);
@@ -93,7 +97,8 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     }
 
     @Override
-    public void setup() throws IOException {
+    public void setup() throws IOException, SourceUnacceptableException {
+        mSource.setup();
         mConfigureFormat = mSource.getOutputFormat();
 
         mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
