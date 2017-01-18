@@ -22,7 +22,6 @@ public class ByteBufferQueue {
     private final int mBufferCount;
 
     //TODO: check/re-evaluate this value
-//    private static final int BUFFER_CAPACITY_DEFAULT = MediaHelper.MAX_INPUT_BUFFER_SIZE;
     private static final int BUFFER_CAPACITY_DEFAULT = 16 * 1024;
     private final ByteBufferPool mBufferPool;
 
@@ -68,9 +67,10 @@ public class ByteBufferQueue {
 
             //If unable to get a buffer, wait a little bit and try again.
             try {
-                Thread.sleep(0, 5000);
+                Thread.sleep(0, sleepNs);
             } catch (InterruptedException e) {
                 Log.d(TAG, "interrupt", e);
+                return null;
             }
         }
 

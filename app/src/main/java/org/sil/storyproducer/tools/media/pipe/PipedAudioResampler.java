@@ -50,7 +50,6 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-//    private boolean mIsDone = false;
     private int mSourceSize;
 
     /**
@@ -202,7 +201,6 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
         while(mHasBuffer && mSourcePos >= mSourceSize) {
-            releaseSourceBuffer();
             fetchSourceBuffer();
         }
         //If we hit the end of input, use 0 as the last right sample value.
@@ -231,11 +229,9 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         return !isDone;
     }
 
-    private void releaseSourceBuffer() {
-        mHasBuffer = false;
-    }
-
     private void fetchSourceBuffer() {
+        mHasBuffer = false;
+
         //If our source has no more output, leave the buffers as null (assumed from releaseSourceBuffer).
         if(mSource.isDone()) {
             return;
