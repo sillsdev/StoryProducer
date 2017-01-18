@@ -1,26 +1,32 @@
 package org.sil.storyproducer.controller.export;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Looper;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class ExportActivity extends AppCompatActivity {
 
+    private static final int FILE_CHOOSER_CODE = 1;
     private GestureDetectorCompat mDetector;
 
     @Override
@@ -70,5 +76,33 @@ public class ExportActivity extends AppCompatActivity {
     public boolean dispatchTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
         return super.dispatchTouchEvent(event);
+    }
+
+    public void onExportButtonClicked(View view) {
+        System.out.println("clicked export");
+        openFileExplorerToExport();
+    }
+
+    private void openFileExplorerToExport() {
+        Intent intent = new Intent(this, FileChooser.class);
+        intent.putExtra("HomeBoyDirectory", FileSystem.getProjectDirectory(StoryState.getStoryName()).getPath());
+        startActivityForResult(intent, FILE_CHOOSER_CODE);
+    }
+
+    // Listen for results.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // See which child activity is calling us back.
+        if (requestCode == FILE_CHOOSER_CODE) {
+            if (resultCode == RESULT_OK) {
+                final String path = data.getStringExtra("GetFileName");
+                final AlertDialog.Builder errorDialog = new AlertDialog.Builder(this);
+                errorDialog.setTitle("Info");
+                errorDialog.setMessage(path);
+                errorDialog.setPositiveButton("OK", null);
+                AlertDialog ret = errorDialog.create();
+                ret.show();
+            }
+        }
     }
 }

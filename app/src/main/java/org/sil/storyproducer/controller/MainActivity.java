@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent1 = new Intent(this, MainExportActivity.class);
-        startActivity(intent1);
-        finish();
+//        Intent intent1 = new Intent(this, MainExportActivity.class);
+//        startActivity(intent1);
+//        finish();
 
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());

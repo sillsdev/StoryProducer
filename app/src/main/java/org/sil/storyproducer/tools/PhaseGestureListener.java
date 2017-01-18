@@ -22,7 +22,7 @@ public class PhaseGestureListener extends SimpleOnGestureListener {
 
     /**
      * Constructor for PhaseGestureListener
-     * @param mActivity the activty so that gestureListener can move to different activities
+     * @param mActivity the activity so that gestureListener can move to different activities
      */
     public PhaseGestureListener(Activity mActivity) {
         activity = mActivity;
