@@ -247,7 +247,7 @@ public class FileChooser extends AppCompatActivity {
         } else {
             File newFile = new File(currentDir, fileName + fileExtension);
             if (newFile.exists()){
-                createErrorDialog("Folder \""+newFile.getName()+"\" already exists.");
+                createErrorDialog("File \""+newFile.getName()+"\" already exists.");
             } else {
                 Intent intent = new Intent();
                 intent.putExtra("GetPath",currentDir.toString());
