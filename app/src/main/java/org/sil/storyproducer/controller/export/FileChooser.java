@@ -243,7 +243,7 @@ public class FileChooser extends AppCompatActivity {
         if( illegalChars.matcher(fileName).find() ){
             createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
         } else if (fileName.length()==0){
-            createErrorDialog("Folder name cannot be empty.");
+            createErrorDialog("File name cannot be empty.");
         } else {
             File newFile = new File(currentDir, fileName + fileExtension);
             if (newFile.exists()){
