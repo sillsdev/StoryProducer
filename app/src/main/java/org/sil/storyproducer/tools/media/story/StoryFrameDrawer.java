@@ -7,7 +7,6 @@ import android.graphics.Rect;
 import android.media.MediaFormat;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.media.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
 import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
@@ -90,8 +89,6 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         }
 
         Paint p = new Paint(0);
-
-        //TODO: Should we use these flags?
         p.setAntiAlias(true);
         p.setFilterBitmap(true);
         p.setDither(true);

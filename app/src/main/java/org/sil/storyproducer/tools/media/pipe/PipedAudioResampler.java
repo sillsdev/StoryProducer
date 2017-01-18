@@ -242,7 +242,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
         if(MediaHelper.VERBOSE) {
             Log.v(TAG, "Received " + (tempSourceBuffer.isDirect() ? "direct" : "non-direct")
-                    + " buffer of size " + mInfo.size + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
+                    + " buffer of size " + mInfo.size
+                    + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
         }
 
         ShortBuffer tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer);

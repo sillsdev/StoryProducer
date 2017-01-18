@@ -6,7 +6,6 @@ import android.media.MediaFormat;
 import android.os.Build;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.media.ByteBufferPool;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.IOException;
@@ -116,9 +115,8 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 //            if((actualFlags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
 //                info.flags |= MediaCodec.BUFFER_FLAG_CODEC_CONFIG;
 //            }
-        if (MediaHelper.VERBOSE) {
-            Log.v(TAG, "pullBuffer: return buffer of size " + info.size + " for time " + info.presentationTimeUs);
-        }
+        if (MediaHelper.VERBOSE) Log.v(TAG, "pullBuffer: return buffer of size "
+                + info.size + " for time " + info.presentationTimeUs);
 
         if (info.size >= 0) {
             buffer.position(info.offset);

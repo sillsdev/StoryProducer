@@ -1,4 +1,4 @@
-package org.sil.storyproducer.tools.media;
+package org.sil.storyproducer.tools.media.story;
 
 import android.graphics.Rect;
 

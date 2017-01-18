@@ -43,7 +43,7 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
     @Override
     protected void spinInput() {
         if(mSource.isDone()) {
-            Log.v(TAG, "depleted source retrieval");
+            Log.w(TAG, "depleted source retrieval");
             return;
         }
 

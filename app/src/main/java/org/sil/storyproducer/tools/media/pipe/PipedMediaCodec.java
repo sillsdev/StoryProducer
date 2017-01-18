@@ -140,7 +140,9 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 if (MediaHelper.DEBUG) {
                     durationNs += System.nanoTime();
                     double sec = durationNs / 1E9;
-                    Log.d(TAG, getComponentName() + ".pullBuffer: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
+                    Log.d(TAG, getComponentName() + ".pullBuffer: return output buffer after "
+                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
+                            + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
                 return buffer;

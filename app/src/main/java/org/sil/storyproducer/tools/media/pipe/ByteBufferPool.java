@@ -1,6 +1,6 @@
-package org.sil.storyproducer.tools.media;
+package org.sil.storyproducer.tools.media.pipe;
 
-import org.sil.storyproducer.tools.media.pipe.InvalidBufferException;
+import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

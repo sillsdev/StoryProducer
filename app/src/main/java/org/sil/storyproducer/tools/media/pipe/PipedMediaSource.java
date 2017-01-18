@@ -34,6 +34,7 @@ public interface PipedMediaSource extends Closeable {
     MediaFormat getOutputFormat();
 
     /**
+     * Query the component to find out if it is done.
      * @return whether this component has finished providing output.
      */
     boolean isDone();
@@ -42,6 +43,7 @@ public interface PipedMediaSource extends Closeable {
 
     /**
      * Close the component <b>without throwing any exceptions</b>.
+     * The component should not be used after a call to this method.
      */
     @Override
     void close();

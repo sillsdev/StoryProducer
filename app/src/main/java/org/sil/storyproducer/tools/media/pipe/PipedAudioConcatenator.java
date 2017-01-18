@@ -98,9 +98,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
             boolean transitionComplete = time > mTransitionStart + transitionUs;
             if (transitionComplete) {
-                if(MediaHelper.VERBOSE) {
-                    Log.v(TAG, "loadSamplesForTime transition complete!");
-                }
+                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime transition complete!");
 
                 //Clear out the current source.
                 if(mSource != null) {
@@ -141,9 +139,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                     || time <= mSourceStart + mSourceExpectedDuration;
 
             if(!mHasBuffer || !isWithinExpectedTime) {
-                if(MediaHelper.VERBOSE) {
-                    Log.v(TAG, "loadSamplesForTime starting transition...");
-                }
+                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
 
                 mCurrentState = ConcatState.TRANSITION;
 
@@ -165,25 +161,19 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     private PipedMediaByteBufferSource getNextSource() {
-        if(MediaHelper.VERBOSE) {
-            Log.v(TAG, "getNextSource starting...");
-        }
+        if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting...");
 
         PipedMediaByteBufferSource nextSource = null;
 
         //Since the first source was already setup in setup(), it is held in a special place.
         if(mFirstSource != null) {
-            if(MediaHelper.VERBOSE) {
-                Log.v(TAG, "getNextSource first source");
-            }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource first source");
 
             nextSource = mFirstSource;
             mFirstSource = null;
         }
         else if(!mSourceAudioPaths.isEmpty()) {
-            if(MediaHelper.VERBOSE) {
-                Log.v(TAG, "getNextSource normal source");
-            }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
 
             String nextSourcePath = mSourceAudioPaths.remove();
             nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);

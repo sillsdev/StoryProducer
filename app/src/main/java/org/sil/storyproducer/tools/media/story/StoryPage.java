@@ -2,7 +2,6 @@ package org.sil.storyproducer.tools.media.story;
 
 import android.graphics.Bitmap;
 
-import org.sil.storyproducer.tools.media.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;

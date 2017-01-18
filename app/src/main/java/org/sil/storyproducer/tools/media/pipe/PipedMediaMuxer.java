@@ -72,34 +72,35 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     private void start() throws IOException, SourceUnacceptableException {
         File output = new File(mPath);
+        //Ensure file exists to avoid bugs on some devices.
         if(!output.exists()) {
             output.createNewFile();
         }
         mMuxer = new MediaMuxer(mPath, mFormat);
 
         if (mAudioSource != null) {
-            if(MediaHelper.VERBOSE) { Log.v(TAG, "setting up audio track."); }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.");
             mAudioSource.setup();
 
             mAudioOutputFormat = mAudioSource.getOutputFormat();
             //TODO: fudge bitrate since it isn't available
 //            mAudioBitrate = mAudioOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
 
-            if(MediaHelper.VERBOSE) { Log.v(TAG, "adding audio track."); }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "adding audio track.");
             mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
         }
         if (mVideoSource != null) {
-            if(MediaHelper.VERBOSE) { Log.v(TAG, "setting up video track."); }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up video track.");
             mVideoSource.setup();
 
             mVideoOutputFormat = mVideoSource.getOutputFormat();
             //TODO: fudge bitrate since it isn't available
 //            mVideoBitrate = mVideoOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
 
-            if(MediaHelper.VERBOSE) { Log.v(TAG, "adding video track."); }
+            if(MediaHelper.VERBOSE) Log.v(TAG, "adding video track.");
             mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
         }
-        if(MediaHelper.VERBOSE) { Log.v(TAG, "starting"); }
+        if(MediaHelper.VERBOSE) Log.v(TAG, "starting");
         mMuxer.start();
     }
 
@@ -161,10 +162,9 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
             while (!mSource.isDone()) {
                 buffer = mSource.getBuffer(info);
-                if (MediaHelper.VERBOSE) {
+                if (MediaHelper.VERBOSE)
                     Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
                             + info.size + " for time " + info.presentationTimeUs);
-                }
 
                 //TODO: determine presentation time for end of this buffer if possible
                 mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);

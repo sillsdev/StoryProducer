@@ -50,7 +50,7 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         //MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
 
         //TODO: Make buffers appropriate size
-        //encoder input buffers are too small by default
+        //encoder input buffers are too small, by default, to handle some decoder output buffers
         mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
 
         mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));

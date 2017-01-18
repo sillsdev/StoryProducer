@@ -3,7 +3,6 @@ package org.sil.storyproducer.tools.media.pipe;
 import android.media.MediaCodec;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.media.ByteBufferQueue;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.nio.ByteBuffer;
@@ -92,9 +91,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     }
 
     private void spinInput() {
-        if(MediaHelper.VERBOSE) {
-            Log.v(TAG, getComponentName() + ".spinInput starting...");
-        }
+        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting...");
 
         mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
 
@@ -106,9 +103,8 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             ByteBuffer outBuffer = mBufferQueue.getEmptyBuffer(MediaHelper.TIMEOUT_USEC);
 
             if(outBuffer == null) {
-                if(MediaHelper.VERBOSE) {
-                    Log.d(TAG, "empty buffer unavailable");
-                }
+                if(MediaHelper.VERBOSE)
+                    Log.d(TAG, getComponentName() + ".spinInput: empty buffer unavailable");
                 continue;
             }
 
@@ -172,12 +168,12 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             if (MediaHelper.DEBUG) {
                 durationNs += System.nanoTime();
                 double sec = durationNs / 1E9;
-                Log.d(TAG, getComponentName() + ".spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
+                Log.d(TAG, getComponentName() + ".spinInput: return output buffer after "
+                        + MediaHelper.getDecimal(sec) + " seconds: size " + info.size
+                        + " for time " + info.presentationTimeUs);
             }
         }
-        if(MediaHelper.VERBOSE) {
-            Log.v(TAG, getComponentName() + ".spinInput complete!");
-        }
+        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput complete!");
     }
 
     /**

@@ -7,7 +7,6 @@ import android.media.MediaMuxer;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.FileSystem;
-import org.sil.storyproducer.tools.media.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;
@@ -94,6 +93,8 @@ public class SampleStory extends Thread {
                 new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
 
+        long duration = -System.currentTimeMillis();
+
         final StoryMaker maker = new StoryMaker(OUTPUT_FILE, outputFormat, videoFormat, audioFormat,
                 pages, SOUNDTRACK, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
         final Thread actor = new Thread(new Runnable() {
@@ -129,5 +130,10 @@ public class SampleStory extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        duration += System.currentTimeMillis();
+
+        System.out.println("Stopped making story after "
+                + MediaHelper.getDecimal(duration / (double) 1000) + " seconds");
     }
 }

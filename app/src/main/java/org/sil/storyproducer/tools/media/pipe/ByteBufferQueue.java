@@ -1,9 +1,9 @@
-package org.sil.storyproducer.tools.media;
+package org.sil.storyproducer.tools.media.pipe;
 
 import android.media.MediaCodec;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.media.pipe.InvalidBufferException;
+import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -122,6 +122,19 @@ public class ByteBufferQueue {
         synchronized (mLock) {
             mBufferPool.release(buffer);
             mBuffersOut--;
+        }
+    }
+
+    /**
+     * Thin wrapper for a {@link ByteBuffer} and {@link MediaCodec.BufferInfo} pair
+     */
+    public static class MediaBuffer {
+        public ByteBuffer buffer;
+        public MediaCodec.BufferInfo info;
+
+        public MediaBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
+            this.buffer = buffer;
+            this.info = info;
         }
     }
 }
