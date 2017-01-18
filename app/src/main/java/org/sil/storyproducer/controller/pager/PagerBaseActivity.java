@@ -79,7 +79,6 @@ public class PagerBaseActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources()
                                                                                     , phase.getColor(), null)));
-        //TODO make drawer not show up behind things and not useable
         //setup the menu drawer
         setupDrawer();
 
@@ -104,14 +103,12 @@ public class PagerBaseActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //getSupportActionBar().setTitle("Navigation!");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                //getSupportActionBar().setTitle("blah");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
