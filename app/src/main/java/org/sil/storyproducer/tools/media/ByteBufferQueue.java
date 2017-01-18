@@ -22,7 +22,8 @@ public class ByteBufferQueue {
     private final int mBufferCount;
 
     //TODO: check/re-evaluate this value
-    private static final int BUFFER_CAPACITY_DEFAULT = MediaHelper.MAX_INPUT_BUFFER_SIZE;// 16 * 1024;
+//    private static final int BUFFER_CAPACITY_DEFAULT = MediaHelper.MAX_INPUT_BUFFER_SIZE;
+    private static final int BUFFER_CAPACITY_DEFAULT = 16 * 1024;
     private final ByteBufferPool mBufferPool;
 
     private int mBuffersOut = 0;

@@ -113,12 +113,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
         //Initialize sample data to 0.
-        mLeftSamples = new short[mSourceChannelCount];
-        mRightSamples = new short[mSourceChannelCount];
-        for(int i = 0; i < mSourceChannelCount; i++) {
-            mLeftSamples[i] = 0;
-            mRightSamples[i] = 0;
-        }
+        mLeftSamples = new short[] {0, 0};
+        mRightSamples = new short[] {0, 0};
+//        for(int i = 0; i < mSourceChannelCount; i++) {
+//            mLeftSamples[i] = 0;
+//            mRightSamples[i] = 0;
+//        }
 
         //Get the first input buffer.
         fetchSourceBuffer();
@@ -147,8 +147,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             right = mRightSamples[channel];
         }
         else if(mChannelCount == 1/* && mSourceChannelCount == 2*/) {
-            left = (short) (mLeftSamples[0]/2 + mLeftSamples[1]/2);
-            right = (short) (mRightSamples[0]/2 + mRightSamples[1]/2);
+//            left = (short) (mLeftSamples[0]/2 + mLeftSamples[1]/2);
+//            right = (short) (mRightSamples[0]/2 + mRightSamples[1]/2);
+            left = (short) ((mLeftSamples[0] >> 1) + (mLeftSamples[1] >> 1));
+            right = (short) ((mRightSamples[0] >> 1) + (mRightSamples[1] >> 1));
         }
         else { //mChannelCount == 2 && mSourceChannelCount == 1
             left = mLeftSamples[0];
@@ -188,12 +190,13 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
      * Slide the window forward by one sample.
      */
     private boolean advanceWindow() {
-        boolean isDone = false;
-
         //Set left's values to be right's current values.
-        short[] temp = mLeftSamples;
-        mLeftSamples = mRightSamples;
-        mRightSamples = temp;
+//        short[] temp = mLeftSamples;
+//        mLeftSamples = mRightSamples;
+//        mRightSamples = temp;
+
+        mLeftSamples[0] = mRightSamples[0];
+        mLeftSamples[1] = mRightSamples[1];
 
         mLeftSeekTime = mRightSeekTime;
 
@@ -201,41 +204,44 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mAbsoluteRightSampleIndex++;
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate, mAbsoluteRightSampleIndex);
 
-        while(mHasBuffer && mSourcePos >= mSourceSize) {
-            releaseSourceBuffer();
+        if(mSourcePos >= mSourceSize) {
             fetchSourceBuffer();
         }
         //If we hit the end of input, use 0 as the last right sample value.
         if(!mHasBuffer) {
-            isDone = true;
-
             mSource.close();
             mSource = null;
 
-            for(int i = 0; i < mSourceChannelCount; i++) {
-                mRightSamples[i] = 0;
-            }
+//            for(int i = 0; i < mSourceChannelCount; i++) {
+//                mRightSamples[i] = 0;
+//            }
+
+            mRightSamples[0] = 0;
+            mRightSamples[1] = 0;
+
+            return false;
         }
         else {
             //Get right's values from the input buffer.
-            for (int i = 0; i < mSourceChannelCount; i++) {
-                try {
-                    mRightSamples[i] = mSourceBufferA[mSourcePos++];
-                }
-                catch(ArrayIndexOutOfBoundsException e) {
-                    Log.e(TAG, "Tried to read beyond buffer", e);
-                }
-            }
+//            for (int i = 0; i < mSourceChannelCount; i++) {
+//                try {
+                    mRightSamples[0] = 0;//mSourceBufferA[mSourcePos++];
+                    if(mChannelCount == 2) {
+                        mRightSamples[1] = 0;//mSourceBufferA[mSourcePos++];
+                    }
+//                }
+//                catch(ArrayIndexOutOfBoundsException e) {
+//                    Log.e(TAG, "Tried to read beyond buffer", e);
+//                }
+//            }
         }
 
-        return !isDone;
-    }
-
-    private void releaseSourceBuffer() {
-        mHasBuffer = false;
+        return true;
     }
 
     private void fetchSourceBuffer() {
+        mHasBuffer = false;
+
         //If our source has no more output, leave the buffers as null (assumed from releaseSourceBuffer).
         if(mSource.isDone()) {
             return;
@@ -256,6 +262,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mSource.releaseBuffer(tempSourceBuffer);
 
         mHasBuffer = true;
+
+        if(mSourceSize <= 0) {
+            fetchSourceBuffer();
+        }
     }
 
     @Override

@@ -33,7 +33,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     //TODO: is volatile necessary?
     private volatile boolean mIsDone = false;
     private boolean mNonvolatileIsDone = false;
-    protected volatile State mComponentState = State.UNINITIALIZED;
+    protected /*volatile*/ State mComponentState = State.UNINITIALIZED;
 
     private static final int BUFFER_COUNT = 4;
     private final ByteBufferQueue mBufferQueue = new ByteBufferQueue(BUFFER_COUNT);
@@ -60,6 +60,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     @Override
     public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
         ByteBuffer myBuffer = mBufferQueue.getFilledBuffer(info);
+        buffer.clear();
         buffer.put(myBuffer);
         mBufferQueue.releaseUsedBuffer(myBuffer);
     }
@@ -104,11 +105,13 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             outBuffer.clear();
 
             //reset output buffer info
-            info.size = 0;
-            info.offset = 0;
-            //N.B. mSeekTime is currently the time of the first sample in this buffer.
-            info.presentationTimeUs = mSeekTime;
-            info.flags = 0;
+//            info.size = 0;
+//            info.offset = 0;
+//            //N.B. mSeekTime is currently the time of the first sample in this buffer.
+//            info.presentationTimeUs = mSeekTime;
+//            info.flags = 0;
+
+            info.set(0, 0, mSeekTime, 0);
 
             //prepare a ShortBuffer view of the output buffer
             ShortBuffer outShortBuffer = MediaHelper.getShortBuffer(outBuffer);
@@ -117,17 +120,21 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             int pos = 0;
 
             outShortBuffer.get(mShortBuffer, pos, length);
-            short[] outBufferA = mShortBuffer;
+//            short[] mShortBuffer = this.mShortBuffer;
             outShortBuffer.clear();
 
-            while (!mNonvolatileIsDone) {
+//            int size = 0;
+            int iSample;
+            for(iSample = 0; iSample < length; iSample += mChannelCount) {
+//            while (!mNonvolatileIsDone) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
                 for (int i = 0; i < mChannelCount; i++) {
-                    outBufferA[pos++] = getSampleForChannel(i);
+                    mShortBuffer[pos++] = getSampleForChannel(i);
 
                     //increment by short size (2 bytes)
-                    info.size += 2;
+//                    info.size += 2;
+//                    size += 2;
                 }
 
                 //Keep track of the current presentation time in the output audio stream.
@@ -138,13 +145,20 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
 
                 //Don't overflow the buffer!
-                int shortsForNextSample = mChannelCount;
-                if (pos + shortsForNextSample > length) {
+//                int shortsForNextSample = mChannelCount;
+//                if (pos + shortsForNextSample > length) {
+//                    break;
+//                }
+
+                if(mNonvolatileIsDone) {
+                    iSample += mChannelCount;
                     break;
                 }
             }
 
-            outShortBuffer.put(outBufferA, 0, length);
+            info.size = iSample;
+
+            outShortBuffer.put(mShortBuffer, 0, length);
 
             //just to be sure
             outBuffer.position(info.offset);
