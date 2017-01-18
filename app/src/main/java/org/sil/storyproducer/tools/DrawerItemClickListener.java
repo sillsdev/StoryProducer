@@ -25,9 +25,13 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
     private void selectItem(int position) {
         System.out.println("the position is " + position);
         //TODO add more options
-        if(position == 0) {
-            Intent intent = new Intent(context.getApplicationContext(), MainActivity.class);
-            context.startActivity(intent);
+        switch(position) {
+            case 0:
+                Intent intent = new Intent(context.getApplicationContext(), MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                break;
+            default:
         }
     }
 }

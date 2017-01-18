@@ -94,6 +94,7 @@ public class PagerBaseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerList = (ListView)findViewById(R.id.navList);
+        mDrawerList.bringToFront();
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
