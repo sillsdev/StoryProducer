@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.pipe;
 
 import android.media.MediaCodec;
+import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 
@@ -28,8 +29,15 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     private PipedMediaByteBufferSource mAudioSource = null;
     private int mAudioTrackIndex = -1;
+    private MediaFormat mAudioOutputFormat;
+    private int mAudioBitrate = -1;
+    private StreamThread mAudioThread;
+
     private PipedMediaByteBufferSource mVideoSource = null;
     private int mVideoTrackIndex = -1;
+    private MediaFormat mVideoOutputFormat;
+    private int mVideoBitrate = -1;
+    private StreamThread mVideoThread;
 
     /**
      * Create a muxer.
@@ -72,14 +80,24 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         if (mAudioSource != null) {
             if(MediaHelper.VERBOSE) { Log.v(TAG, "setting up audio track."); }
             mAudioSource.setup();
+
+            mAudioOutputFormat = mAudioSource.getOutputFormat();
+            //TODO: fudge bitrate since it isn't available
+//            mAudioBitrate = mAudioOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+
             if(MediaHelper.VERBOSE) { Log.v(TAG, "adding audio track."); }
-            mAudioTrackIndex = mMuxer.addTrack(mAudioSource.getOutputFormat());
+            mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
         }
         if (mVideoSource != null) {
             if(MediaHelper.VERBOSE) { Log.v(TAG, "setting up video track."); }
             mVideoSource.setup();
+
+            mVideoOutputFormat = mVideoSource.getOutputFormat();
+            //TODO: fudge bitrate since it isn't available
+//            mVideoBitrate = mVideoOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+
             if(MediaHelper.VERBOSE) { Log.v(TAG, "adding video track."); }
-            mVideoTrackIndex = mMuxer.addTrack(mVideoSource.getOutputFormat());
+            mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
         }
         if(MediaHelper.VERBOSE) { Log.v(TAG, "starting"); }
         mMuxer.start();
@@ -93,29 +111,27 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     public void crunch() throws IOException, SourceUnacceptableException {
         start();
 
-        StreamThread audioThread = null;
-        StreamThread videoThread = null;
         if(mAudioSource != null) {
-            audioThread = new StreamThread(mMuxer, mAudioSource, mAudioTrackIndex);
-            audioThread.start();
+            mAudioThread = new StreamThread(mMuxer, mAudioSource, mAudioTrackIndex, mAudioBitrate);
+            mAudioThread.start();
         }
 
         if(mVideoSource != null) {
-            videoThread = new StreamThread(mMuxer, mVideoSource, mVideoTrackIndex);
-            videoThread.start();
+            mVideoThread = new StreamThread(mMuxer, mVideoSource, mVideoTrackIndex, mVideoBitrate);
+            mVideoThread.start();
         }
 
-        if(audioThread != null) {
+        if(mAudioThread != null) {
             try {
-                audioThread.join();
+                mAudioThread.join();
             } catch (InterruptedException e) {
                 Log.d(TAG, "Audio thread did not end!", e);
             }
         }
 
-        if(videoThread != null) {
+        if(mVideoThread != null) {
             try {
-                videoThread.join();
+                mVideoThread.join();
             } catch (InterruptedException e) {
                 Log.d(TAG, "Video thread did not end!", e);
             }
@@ -129,10 +145,14 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         private final PipedMediaByteBufferSource mSource;
         private final int mTrackIndex;
 
-        public StreamThread(MediaMuxer muxer, PipedMediaByteBufferSource src, int trackIndex) {
+        private final int mBitrate;
+        private long mProgress = 0;
+
+        public StreamThread(MediaMuxer muxer, PipedMediaByteBufferSource src, int trackIndex, int bitrate) {
             mMuxer = muxer;
             mSource = src;
             mTrackIndex = trackIndex;
+            mBitrate = bitrate;
         }
 
         @Override
@@ -145,12 +165,34 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
                     Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
                             + info.size + " for time " + info.presentationTimeUs);
                 }
+
+                //TODO: determine presentation time for end of this buffer if possible
+                mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
+
                 synchronized (mMuxer) {
                     mMuxer.writeSampleData(mTrackIndex, buffer, info);
                 }
                 mSource.releaseBuffer(buffer);
             }
         }
+
+        public long getProgress() {
+            return mProgress;
+        }
+    }
+
+    public long getAudioProgress() {
+        if(mAudioThread != null) {
+            return mAudioThread.getProgress();
+        }
+        return 0;
+    }
+
+    public long getVideoProgress() {
+        if(mVideoThread != null) {
+            return mVideoThread.getProgress();
+        }
+        return 0;
     }
 
     @Override

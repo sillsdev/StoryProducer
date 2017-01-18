@@ -1,9 +1,9 @@
 package org.sil.storyproducer.tools.media.story;
 
 import android.media.MediaFormat;
+import android.util.Log;
 
 import org.sil.storyproducer.tools.media.pipe.PipedAudioConcatenator;
-import org.sil.storyproducer.tools.media.pipe.PipedAudioDecoderMaverick;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioLooper;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
@@ -18,6 +18,8 @@ import java.io.IOException;
  * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
  */
 public class StoryMaker {
+    private static final String TAG = "StoryMaker";
+
     //TODO: revisit volume of soundtrack or add configuration
     private static final float SOUNDTRACK_VOLUME_MODIFIER = 0.8f;
 
@@ -36,6 +38,8 @@ public class StoryMaker {
     private final int mChannelCount;
 
     private final long mDurationUs;
+
+    private PipedMediaMuxer mMuxer;
 
     /**
      * Create StoryMaker.
@@ -78,10 +82,10 @@ public class StoryMaker {
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
         StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
         PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
-        PipedMediaMuxer muxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
+        mMuxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
 
         try {
-            muxer.addSource(audioEncoder);
+            mMuxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
             audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);
@@ -90,15 +94,15 @@ public class StoryMaker {
                 narrationConcatenator.addSource(page.getNarrationAudio().getPath());
             }
 
-            muxer.addSource(videoEncoder);
+            mMuxer.addSource(videoEncoder);
 
             videoEncoder.addSource(videoDrawer);
 
-            muxer.crunch();
+            mMuxer.crunch();
             System.out.println("Video saved to " + mOutputFile);
         }
         catch (IOException | SourceUnacceptableException | RuntimeException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Error in story making", e);
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
@@ -108,8 +112,12 @@ public class StoryMaker {
             audioEncoder.close();
             videoDrawer.close();
             videoEncoder.close();
-            muxer.close();
+            mMuxer.close();
         }
+    }
+
+    public long getStoryDuration() {
+        return mDurationUs;
     }
 
     /**
@@ -127,5 +135,17 @@ public class StoryMaker {
         }
 
         return durationUs;
+    }
+
+    public double getProgress() {
+        if(mMuxer != null) {
+            long audioProgress = mMuxer.getAudioProgress();
+            long videoProgress = mMuxer.getVideoProgress();
+
+            long minProgress = Math.min(audioProgress, videoProgress);
+
+            return minProgress / (double) mDurationUs;
+        }
+        return 0;
     }
 }

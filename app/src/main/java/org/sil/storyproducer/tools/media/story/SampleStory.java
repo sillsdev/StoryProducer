@@ -40,7 +40,7 @@ public class SampleStory extends Thread {
     // parameters for the video encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int VIDEO_FRAME_RATE = 30;               // 30fps
-    private static final int VIDEO_IFRAME_INTERVAL = 2;          // 10 seconds between I-frames
+    private static final int VIDEO_IFRAME_INTERVAL = 10;          // 10 seconds between I-frames
     // bit rate, in bits per second
     // TODO: figure out more stable way of getting a number here; bad number causes bad problems here
     private static final int VIDEO_BIT_RATE = 32 * WIDTH * HEIGHT * VIDEO_FRAME_RATE / 100;
@@ -94,8 +94,36 @@ public class SampleStory extends Thread {
                 new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
 
-        StoryMaker maker = new StoryMaker(OUTPUT_FILE, outputFormat, videoFormat, audioFormat,
+        final StoryMaker maker = new StoryMaker(OUTPUT_FILE, outputFormat, videoFormat, audioFormat,
                 pages, SOUNDTRACK, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
-        maker.churn();
+        final Thread actor = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                maker.churn();
+            }
+        });
+        final Thread watcher = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(actor.isAlive()) {
+                    double progress = maker.getProgress();
+                    System.out.println("StoryMaker progress: " + MediaHelper.getDecimal(progress * 100) + "%");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        actor.start();
+        watcher.start();
+        try {
+            actor.join();
+            watcher.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
