@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -23,13 +24,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.export.FileChooser;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -54,13 +58,13 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
-//            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
-//            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-//            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
-//            if (preferences.isEmpty()) {
+            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+            if (preferences.isEmpty()) {
                 Intent intent = new Intent(this, RegistrationActivity.class);
                 startActivity(intent);
-//            }
+            }
         }
     }
 
