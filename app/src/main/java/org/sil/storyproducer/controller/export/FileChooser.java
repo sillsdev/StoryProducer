@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.export;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -10,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Pattern;
 
 public class FileChooser extends AppCompatActivity {
 
@@ -118,6 +122,8 @@ public class FileChooser extends AppCompatActivity {
         navigateToFolder(f, true);
     }
 
+    private void refresh(){navigateToFolder(currentDir, false);}
+
     private void navigateToFolder(File f, boolean addToHistory){
         if (currentDir != null && addToHistory) {
             history.push(currentDir);
@@ -136,11 +142,11 @@ public class FileChooser extends AppCompatActivity {
     private void onFileClick(Item o)
     {
         //Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent();
+      /*  Intent intent = new Intent();
         intent.putExtra("GetPath",currentDir.toString());
         intent.putExtra("GetFileName",o.getName());
         setResult(RESULT_OK, intent);
-        finish();
+        finish(); */
     }
 
     @Override
@@ -160,14 +166,66 @@ public class FileChooser extends AppCompatActivity {
 
     private void newFolder(){
         System.out.println("Yo, new folda bro");
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(FileChooser.this);
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(FileChooser.this);
         final EditText input = new EditText(getApplicationContext());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
+        alertDialog.setTitle("New Folder");
+        alertDialog.setMessage("Please specify a name for your new folder:");
         alertDialog.setView(input);
+        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                hideKeyboard(input);
+                Pattern illegalChars = Pattern.compile("[^a-zA-Z\\-\\_\\ ]");
+                if( illegalChars.matcher(input.getText()).find() ){
+                    createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
+                } else if (input.getText().length()==0){
+                    createErrorDialog("Folder name cannot be empty.");
+                } else {
+                    File newFolder = new File(currentDir, input.getText().toString());
+                    if (newFolder.exists()){
+                        createErrorDialog("Folder \""+input.getText()+"\" already exists.");
+                    } else {
+                        if (! newFolder.mkdir()){
+                            createErrorDialog("Folder creation failed for unknown reason.");
+                        } else {
+                            refresh();
+                        }
+                    }
+                }
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                hideKeyboard(input);
+            }
+        });
         alertDialog.create().show();
+        showKeyboard();
+    }
+
+    private void showKeyboard(){
+        //nifty code from Stack Overflow
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+    }
+
+    private void hideKeyboard(EditText _pay_box_helper){
+        //more nifty code from Stack Overflow
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(_pay_box_helper.getWindowToken(), 0);
+    }
+
+    private AlertDialog createErrorDialog(String text){
+        final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooser.this);
+        errorDialog.setTitle("Error");
+        errorDialog.setMessage(text);
+        errorDialog.setPositiveButton("OK", null);
+        AlertDialog ret = errorDialog.create();
+        ret.show();
+        return ret;
     }
 
     private void goBack(){
@@ -178,10 +236,27 @@ public class FileChooser extends AppCompatActivity {
 
     public void saveFile(View view){
         EditText textBox = (EditText) findViewById(R.id.editText3);
-        Intent intent = new Intent();
-        intent.putExtra("GetPath",currentDir.toString());
-        intent.putExtra("GetFileName",currentDir.getAbsolutePath()+"/"+textBox.getText());
-        setResult(RESULT_OK, intent);
-        finish();
+        String fileName = textBox.getText().toString();
+        String fileExtension = ".mp4";
+
+        Pattern illegalChars = Pattern.compile("[^a-zA-Z\\-\\_\\ ]");
+        if( illegalChars.matcher(fileName).find() ){
+            createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
+        } else if (fileName.length()==0){
+            createErrorDialog("Folder name cannot be empty.");
+        } else {
+            File newFile = new File(currentDir, fileName + fileExtension);
+            if (newFile.exists()){
+                createErrorDialog("Folder \""+newFile.getName()+"\" already exists.");
+            } else {
+                Intent intent = new Intent();
+                intent.putExtra("GetPath",currentDir.toString());
+                intent.putExtra("GetFileName",newFile.getAbsolutePath());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+
+
     }
 }
