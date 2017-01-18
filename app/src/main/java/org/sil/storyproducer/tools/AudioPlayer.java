@@ -17,7 +17,7 @@ public class AudioPlayer {
 
     /**
      * Plays the audio with the given path
-     * @param String for the path where the audio resides
+     * @param path for the path where the audio resides
      */
     public void playWithPath(String path) {
         try {
@@ -108,7 +108,7 @@ public class AudioPlayer {
 
     /**
      * sets the volume of the audio
-     * @param the float for the volume from 0.0 to 1.0
+     * @param volume the float for the volume from 0.0 to 1.0
      */
     public void setVolume(float volume) {
         mPlayer.setVolume(volume, volume);

@@ -24,12 +24,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.export.FileChooser;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
-import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
