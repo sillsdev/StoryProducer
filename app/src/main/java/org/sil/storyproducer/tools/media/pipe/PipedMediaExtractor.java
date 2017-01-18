@@ -77,13 +77,9 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
 
     @Override
     public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
-        ByteBuffer buffer = getBuffer();
+        ByteBuffer buffer = mBufferPool.get();
         pullBuffer(buffer, info);
         return buffer;
-    }
-
-    private ByteBuffer getBuffer() {
-        return mBufferPool.get();
     }
 
     @Override

@@ -48,12 +48,16 @@ public class ByteBufferQueue {
     }
 
     /**
-     * (Producer operation) Pull an empty buffer from the queue, blocking until one becomes available.
+     * (Producer operation) Pull an empty buffer from the queue, blocking until one becomes available
+     * or a timeout occurs.
+     * @param timeoutUs microseconds before timeout occurs
      * @return empty buffer
      */
-    public ByteBuffer getEmptyBuffer() {
-        int loops = 0;
-        while(true) {
+    public ByteBuffer getEmptyBuffer(long timeoutUs) {
+        int sleepNs = 10000;
+        long loops = timeoutUs / (sleepNs / 1000);
+
+        for(long i = 0; i < loops; i++) {
             synchronized (mLock) {
                 boolean bufferIsAvailable = mBuffersOut < mBufferCount;
                 if (bufferIsAvailable) {
@@ -64,16 +68,13 @@ public class ByteBufferQueue {
 
             //If unable to get a buffer, wait a little bit and try again.
             try {
-                if(MediaHelper.VERBOSE && loops++ > 1000) {
-                    Log.d(TAG, "empty buffer unavailable");
-                    loops = 0;
-                }
-                Thread.sleep(1);
+                Thread.sleep(0, 5000);
             } catch (InterruptedException e) {
-                //TODO: handle interrupt
-                e.printStackTrace();
+                Log.d(TAG, "interrupt", e);
             }
         }
+
+        return null;
     }
 
     /**

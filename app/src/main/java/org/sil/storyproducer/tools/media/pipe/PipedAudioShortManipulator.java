@@ -34,6 +34,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     private volatile boolean mIsDone = false;
     private boolean mNonvolatileIsDone = false;
     protected /*volatile*/ State mComponentState = State.UNINITIALIZED;
+//    protected volatile State mComponentState = State.UNINITIALIZED;
 
     private static final int BUFFER_COUNT = 4;
     private final ByteBufferQueue mBufferQueue = new ByteBufferQueue(BUFFER_COUNT);
@@ -98,7 +99,15 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             if (MediaHelper.DEBUG) {
                 durationNs = -System.nanoTime();
             }
-            ByteBuffer outBuffer = mBufferQueue.getEmptyBuffer();
+            ByteBuffer outBuffer = mBufferQueue.getEmptyBuffer(MediaHelper.TIMEOUT_USEC);
+
+            if(outBuffer == null) {
+                if(MediaHelper.VERBOSE) {
+                    Log.d(TAG, "empty buffer unavailable");
+                }
+                continue;
+            }
+
             MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
 
             //reset output buffer
@@ -156,7 +165,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 }
             }
 
-            info.size = iSample;
+            info.size = iSample * 2;
 
             outShortBuffer.put(mShortBuffer, 0, length);
 
