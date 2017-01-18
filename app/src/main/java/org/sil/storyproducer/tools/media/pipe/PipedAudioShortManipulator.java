@@ -32,6 +32,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     private Thread mThread;
     //TODO: is volatile necessary?
     private volatile boolean mIsDone = false;
+    private boolean mNonvolatileIsDone = false;
     protected volatile State mComponentState = State.UNINITIALIZED;
 
     private static final int BUFFER_COUNT = 4;
@@ -89,11 +90,11 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             Log.v(TAG, getComponentName() + ".spinInput starting...");
         }
 
-        mIsDone = !loadSamplesForTime(mSeekTime);
+        mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
 
         while(mComponentState != State.CLOSED && !mIsDone) {
             long durationNs = 0;
-            if (MediaHelper.VERBOSE) {
+            if (MediaHelper.DEBUG) {
                 durationNs = -System.nanoTime();
             }
             ByteBuffer outBuffer = mBufferQueue.getEmptyBuffer();
@@ -119,7 +120,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             short[] outBufferA = mShortBuffer;
             outShortBuffer.clear();
 
-            while (!mIsDone) {
+            while (!mNonvolatileIsDone) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
                 for (int i = 0; i < mChannelCount; i++) {
@@ -134,7 +135,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
                 mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
 
                 //Give warning about new time
-                mIsDone = !loadSamplesForTime(mSeekTime);
+                mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
 
                 //Don't overflow the buffer!
                 int shortsForNextSample = mChannelCount;
@@ -149,16 +150,18 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             outBuffer.position(info.offset);
             outBuffer.limit(info.offset + info.size);
 
-            if (mIsDone) {
+            if (mNonvolatileIsDone) {
+                mIsDone = true;
+
                 info.flags = MediaCodec.BUFFER_FLAG_END_OF_STREAM;
             }
 
             mBufferQueue.sendFilledBuffer(outBuffer, info);
 
-            if (MediaHelper.VERBOSE) {
+            if (MediaHelper.DEBUG) {
                 durationNs += System.nanoTime();
                 double sec = durationNs / 1E9;
-                Log.v(TAG, getComponentName() + ".spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
+                Log.d(TAG, getComponentName() + ".spinInput: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: size " + info.size + " for time " + info.presentationTimeUs);
             }
         }
         if(MediaHelper.VERBOSE) {
@@ -206,7 +209,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             try {
                 mThread.join();
             } catch (InterruptedException e) {
-                Log.d(TAG, getComponentName() + ": Failed to stop input thread!", e);
+                Log.w(TAG, getComponentName() + ": Failed to stop input thread!", e);
             }
             mThread = null;
         }

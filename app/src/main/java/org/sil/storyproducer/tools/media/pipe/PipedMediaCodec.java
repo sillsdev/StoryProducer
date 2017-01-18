@@ -95,12 +95,9 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             throw new RuntimeException("pullBuffer called after depleted");
         }
 
-        while (!mIsDone) {
-            long durationNs;
-            if(MediaHelper.VERBOSE) {
-                durationNs = -System.nanoTime();
-            }
+        long durationNs = -System.nanoTime();
 
+        while (!mIsDone) {
             int pollCode = mCodec.dequeueOutputBuffer(
                         info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -140,10 +137,10 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                     buffer.limit(info.offset + info.size);
                 }
 
-                if (MediaHelper.VERBOSE) {
+                if (MediaHelper.DEBUG) {
                     durationNs += System.nanoTime();
                     double sec = durationNs / 1E9;
-                    Log.v(TAG, getComponentName() + ".pullBuffer: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
+                    Log.d(TAG, getComponentName() + ".pullBuffer: return output buffer after " + MediaHelper.getDecimal(sec) + " seconds: " + pollCode + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
                 return buffer;
@@ -180,7 +177,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
             try {
                 mThread.join();
             } catch (InterruptedException e) {
-                Log.d(TAG, getComponentName() + ": Failed to close input thread!", e);
+                Log.w(TAG, getComponentName() + ": Failed to close input thread!", e);
             }
             mThread = null;
         }
@@ -191,7 +188,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 mCodec.stop();
             }
             catch(IllegalStateException e) {
-                Log.d(TAG, getComponentName() + ": Failed to stop MediaCodec!", e);
+                Log.e(TAG, getComponentName() + ": Failed to stop MediaCodec!", e);
             }
             finally {
                 mCodec.release();

@@ -107,7 +107,11 @@ public class SampleStory extends Thread {
             public void run() {
                 while(actor.isAlive()) {
                     double progress = maker.getProgress();
-                    System.out.println("StoryMaker progress: " + MediaHelper.getDecimal(progress * 100) + "%");
+                    double audioProgress = maker.getAudioProgress();
+                    double videoProgress = maker.getVideoProgress();
+                    System.out.println("StoryMaker progress: " + MediaHelper.getDecimal(progress * 100) + "% "
+                        + "(audio " + MediaHelper.getDecimal(audioProgress * 100) + "% "
+                        + " and video " + MediaHelper.getDecimal(videoProgress * 100) + "%)");
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {

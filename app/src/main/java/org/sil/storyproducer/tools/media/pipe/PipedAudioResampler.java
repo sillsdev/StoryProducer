@@ -223,7 +223,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
                     mRightSamples[i] = mSourceBufferA[mSourcePos++];
                 }
                 catch(ArrayIndexOutOfBoundsException e) {
-                    Log.d(TAG, "Tried to read beyond buffer", e);
+                    Log.e(TAG, "Tried to read beyond buffer", e);
                 }
             }
         }

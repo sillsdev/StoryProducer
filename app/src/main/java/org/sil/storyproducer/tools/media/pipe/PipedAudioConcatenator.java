@@ -192,7 +192,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                 checkSourceValidity(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
-                Log.d(TAG, "Source setup failed!", e);
+                Log.e(TAG, "Source setup failed!", e);
                 nextSource = null;
             }
         }

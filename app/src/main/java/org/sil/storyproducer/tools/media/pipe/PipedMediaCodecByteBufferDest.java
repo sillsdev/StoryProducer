@@ -36,9 +36,23 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
                 if (MediaHelper.VERBOSE) {
                     Log.v(TAG, getComponentName() + ".spinInput: returned input buffer: " + pollCode);
                 }
+
+                long durationNs;
+                if(MediaHelper.DEBUG) {
+                    durationNs = -System.nanoTime();
+                }
+
                 ByteBuffer inputBuffer = mInputBuffers[pollCode];
                 mSource.fillBuffer(inputBuffer, mInfo);
                 mCodec.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags);
+
+                if (MediaHelper.DEBUG) {
+                    durationNs += System.nanoTime();
+                    double sec = durationNs / 1E9;
+                    Log.d(TAG, getComponentName() + ".spinInput: fill/queue input buffer after "
+                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
+                            + " of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
+                }
             }
         }
 

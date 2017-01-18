@@ -98,7 +98,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 return mSourceBufferA[mPos++];
             }
             catch(ArrayIndexOutOfBoundsException e) {
-                Log.d(TAG, "Tried to read beyond buffer", e);
+                Log.e(TAG, "Tried to read beyond buffer", e);
             }
         }
 
@@ -127,7 +127,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
                 mSource.setup();
                 fetchSourceBuffer();
             } catch (IOException | SourceUnacceptableException e) {
-                Log.d(TAG, "Source setup failed!", e);
+                Log.e(TAG, "Source setup failed!", e);
                 mSource.close();
                 mSource = null;
                 return false;

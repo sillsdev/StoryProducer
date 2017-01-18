@@ -148,4 +148,20 @@ public class StoryMaker {
         }
         return 0;
     }
+
+    public double getAudioProgress() {
+        if(mMuxer != null) {
+            long audioProgress = mMuxer.getAudioProgress();
+            return audioProgress / (double) mDurationUs;
+        }
+        return 0;
+    }
+
+    public double getVideoProgress() {
+        if(mMuxer != null) {
+            long videoProgress = mMuxer.getVideoProgress();
+            return videoProgress / (double) mDurationUs;
+        }
+        return 0;
+    }
 }

@@ -125,7 +125,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             try {
                 mAudioThread.join();
             } catch (InterruptedException e) {
-                Log.d(TAG, "Audio thread did not end!", e);
+                Log.w(TAG, "Audio thread did not end!", e);
             }
         }
 
@@ -133,7 +133,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
             try {
                 mVideoThread.join();
             } catch (InterruptedException e) {
-                Log.d(TAG, "Video thread did not end!", e);
+                Log.w(TAG, "Video thread did not end!", e);
             }
         }
 
@@ -213,7 +213,7 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
                 mMuxer.stop();
             }
             catch(IllegalStateException e) {
-                Log.d(TAG, "Failed to stop MediaMuxer!", e);
+                Log.e(TAG, "Failed to stop MediaMuxer!", e);
             }
             finally {
                 mMuxer.release();
