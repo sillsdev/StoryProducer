@@ -34,9 +34,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/logo_large"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
                 android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
                 android:id="@+id/learnImageView" />
@@ -49,6 +50,7 @@
                 android:background="@null"
                 android:src="@drawable/ic_pause_gray"
                 android:onClick="onClickPlayPauseButton"
+                android:layout_marginTop="30dp"
                 android:id="@+id/playButton" />
 
             <SeekBar

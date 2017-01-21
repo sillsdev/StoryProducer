@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.learn;
 
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -21,6 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
@@ -31,6 +34,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
@@ -38,6 +42,7 @@ import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class LearnActivity extends AppCompatActivity {
 
+    private RelativeLayout rootView;
     private ImageView learnImageView;
     private ImageButton playButton;
     private SeekBar videoSeekBar;
@@ -58,6 +63,7 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
+        rootView = (RelativeLayout) findViewById(R.id.activity_learn);
 
         //get the story name
         storyName = StoryState.getStoryName();
@@ -155,7 +161,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     void playVideo() {
         //TODO: sync background audio with image
-        learnImageView.setImageBitmap(FileSystem.getImage(storyName, slideNum));          //set the next image
+        setPic(learnImageView);                                                             //set the next image
         narrationPlayer = new AudioPlayer();                                                //set the next audio
         narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
         if(isVolumeOn) {
@@ -331,6 +337,39 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This function allows the picture to scale with the phone's screen size.
+     *
+     * @param aView    The ImageView that will contain the picture.
+     */
+    private void setPic(View aView) {
+        if (aView == null || !(aView instanceof ImageView)) {
+            return;
+        }
+
+        ImageView slideImage = (ImageView) aView;
+        Bitmap slidePicture = FileSystem.getImage(storyName, slideNum);
+
+        if(slidePicture == null){
+            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+        }
+
+        //Get the height of the phone.
+        DisplayMetrics phoneProperties = getResources().getDisplayMetrics();
+        int height = phoneProperties.heightPixels;
+        double scalingFactor = 0.4;
+        height = (int)(height * scalingFactor);
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height);
+
+        //Set the height of the image view
+        slideImage.getLayoutParams().height = height;
+        slideImage.requestLayout();
+
+        slideImage.setImageBitmap(slidePicture);
     }
 
 }
