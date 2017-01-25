@@ -21,8 +21,11 @@ public class SampleStory extends Thread {
     private static final String STORY = "Fiery Furnace";
 
     // size of a frame, in pixels
-    private static final int WIDTH = 320;
-    private static final int HEIGHT = 240;
+    // first size isn't great quality, but runs faster
+//    private static final int WIDTH = 320;
+//    private static final int HEIGHT = 240;
+    private static final int WIDTH = 1280;
+    private static final int HEIGHT = 720;
 
     private static final long SLIDE_TRANSITION_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
@@ -39,10 +42,14 @@ public class SampleStory extends Thread {
     // parameters for the video encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
     private static final int VIDEO_FRAME_RATE = 30;               // 30fps
-    private static final int VIDEO_IFRAME_INTERVAL = 2;          // 2 seconds between I-frames
-    // bit rate, in bits per second
-    // TODO: figure out more stable way of getting a number here; bad number causes bad problems here
-    private static final int VIDEO_BIT_RATE = 32 * WIDTH * HEIGHT * VIDEO_FRAME_RATE / 100;
+    private static final int VIDEO_IFRAME_INTERVAL = 1;           // 1 second between I-frames
+
+    // using Kush Gauge for video bit rate
+    private static final int PIXEL_RATE = WIDTH * HEIGHT * VIDEO_FRAME_RATE;
+    private static final int MOTION_FACTOR = 2;                   // 1, 2, or 4
+    private static final float KUSH_GAUGE_CONSTANT = 0.07f;
+    // bits per second for video
+    private static final int VIDEO_BIT_RATE = (int) (PIXEL_RATE * MOTION_FACTOR * KUSH_GAUGE_CONSTANT);
 
     // parameters for the audio encoder
     private static final String AUDIO_MIME_TYPE = "audio/mp4a-latm"; //MediaFormat.MIMETYPE_AUDIO_AAC;
@@ -129,6 +136,7 @@ public class SampleStory extends Thread {
             watcher.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
+            maker.close();
         }
 
         duration += System.currentTimeMillis();

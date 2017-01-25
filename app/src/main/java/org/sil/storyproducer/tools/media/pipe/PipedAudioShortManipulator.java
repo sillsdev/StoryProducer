@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.pipe;
 
 import android.media.MediaCodec;
+import android.media.MediaFormat;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
@@ -25,7 +26,6 @@ import java.nio.ShortBuffer;
 public abstract class PipedAudioShortManipulator implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioShortMan";
 
-    @Deprecated //because this might not be a great long-term item
     protected abstract String getComponentName();
 
     private Thread mThread;
@@ -207,6 +207,35 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
      * @return true if the component has more source input to process and false if {@link #spinInput()} should finish
      */
     protected abstract boolean loadSamplesForTime(long time);
+
+    protected void validateSource(PipedMediaByteBufferSource source) throws SourceUnacceptableException {
+        validateSource(source, mChannelCount, mSampleRate);
+    }
+
+    protected void validateSource(PipedMediaByteBufferSource source, int channelCount, int sampleRate)
+            throws SourceUnacceptableException {
+        MediaFormat format = source.getOutputFormat();
+
+        if (source.getMediaType() != MediaHelper.MediaType.AUDIO) {
+            throw new SourceUnacceptableException("Source must be audio!");
+        }
+
+        if(!format.getString(MediaFormat.KEY_MIME).equals(MediaHelper.MIMETYPE_RAW_AUDIO)) {
+            throw new SourceUnacceptableException("Source audio must be a raw audio stream!");
+        }
+
+        int sourceChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+        if(sourceChannelCount != 1 && sourceChannelCount != 2) {
+            throw new SourceUnacceptableException("Source audio is neither mono nor stereo!");
+        }
+        else if (channelCount != 0 && channelCount != sourceChannelCount) {
+            throw new SourceUnacceptableException("Source audio channel counts don't match!");
+        }
+
+        if (sampleRate != 0 && sampleRate != format.getInteger(MediaFormat.KEY_SAMPLE_RATE)) {
+            throw new SourceUnacceptableException("Source audio sample rates don't match!");
+        }
+    }
 
     @Override
     public void close() {

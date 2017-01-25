@@ -77,7 +77,14 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     public void setup() throws IOException, SourceUnacceptableException {
         mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
         mSource.setup();
+
+        validateSource(mSource);
+
         fetchSourceBuffer();
+
+        MediaFormat sourceOutputFormat = mSource.getOutputFormat();
+        mSampleRate = sourceOutputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+        mChannelCount = sourceOutputFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);

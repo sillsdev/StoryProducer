@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 /**
- * Provides a pool of ByteBuffers to preserve memory. This class is not thread-safe,
+ * Provides a pool of ByteBuffers to preserve memory. This class is <b>not</b> thread-safe,
  * but it does provide thread-safe operations through the static "shared" functions.
  */
 

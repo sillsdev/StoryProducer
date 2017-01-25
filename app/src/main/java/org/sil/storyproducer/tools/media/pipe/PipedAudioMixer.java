@@ -61,29 +61,21 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mSources.isEmpty()) {
+            throw new SourceUnacceptableException("No sources specified!");
+        }
+
         for (int i = 0; i < mSources.size(); i++) {
             PipedMediaByteBufferSource source = mSources.get(i);
             source.setup();
+            validateSource(source, mChannelCount, mSampleRate);
+
             MediaFormat format = source.getOutputFormat();
-
-            if (source.getMediaType() != MediaHelper.MediaType.AUDIO) {
-                throw new SourceUnacceptableException("Source must be audio!");
-            }
-
-            if(!format.getString(MediaFormat.KEY_MIME).equals(MediaHelper.MIMETYPE_RAW_AUDIO)) {
-                throw new SourceUnacceptableException("Source audio must be a raw audio stream!");
-            }
-
             if (mChannelCount == 0) {
                 mChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-            } else if (mChannelCount != format.getInteger(MediaFormat.KEY_CHANNEL_COUNT)) {
-                throw new SourceUnacceptableException("Source audio channel counts don't match!");
             }
-
             if (mSampleRate == 0) {
                 mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-            } else if (mSampleRate != format.getInteger(MediaFormat.KEY_SAMPLE_RATE)) {
-                throw new SourceUnacceptableException("Source audio sample rates don't match!");
             }
 
             mSourceBufferAs.add(new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]);

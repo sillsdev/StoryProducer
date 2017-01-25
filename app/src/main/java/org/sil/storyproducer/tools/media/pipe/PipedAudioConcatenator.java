@@ -179,7 +179,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);
             try {
                 nextSource.setup();
-                checkSourceValidity(nextSource);
+                validateSource(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
                 Log.e(TAG, "Source setup failed!", e);
@@ -208,7 +208,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
      */
-    public void addSource(String sourcePath, long duration) throws SourceUnacceptableException {
+    public void addSource(String sourcePath, long duration) {
         mSourceAudioPaths.add(sourcePath);
         mSourceExpectedDurations.add(duration);
     }
@@ -240,33 +240,13 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
         mFirstSource = firstSource;
 
-        checkSourceValidity(mFirstSource);
+        validateSource(mFirstSource);
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
         start();
-    }
-
-    private void checkSourceValidity(PipedMediaByteBufferSource source) throws SourceUnacceptableException {
-        MediaFormat format = source.getOutputFormat();
-
-        if (source.getMediaType() != MediaHelper.MediaType.AUDIO) {
-            throw new SourceUnacceptableException("Source must be audio!");
-        }
-
-        if(!format.getString(MediaFormat.KEY_MIME).equals(MediaHelper.MIMETYPE_RAW_AUDIO)) {
-            throw new SourceUnacceptableException("Source audio must be a raw audio stream!");
-        }
-
-        if (mChannelCount != format.getInteger(MediaFormat.KEY_CHANNEL_COUNT)) {
-            throw new SourceUnacceptableException("Source audio channel counts don't match!");
-        }
-
-        if (mSampleRate != format.getInteger(MediaFormat.KEY_SAMPLE_RATE)) {
-            throw new SourceUnacceptableException("Source audio sample rates don't match!");
-        }
     }
 
     @Override

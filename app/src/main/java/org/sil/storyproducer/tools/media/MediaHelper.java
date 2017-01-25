@@ -14,15 +14,12 @@ import java.text.NumberFormat;
  * Provides static methods for miscellaneous low-level media tasks.
  */
 final public class MediaHelper {
-    /**
-     * lots of logging?
-     */
+    /** lots of logging? */
     public static final boolean VERBOSE = false;
     public static final boolean DEBUG = false;
 
-    /**
-     * the maximum size of input buffers; currently used to prevent buffer overflow
-     */
+    //Note: Perhaps this max size should be increased in the future.
+    /** the maximum size of input buffers; currently used to prevent buffer overflow */
     public static final int MAX_INPUT_BUFFER_SIZE = 128 * 1024;
     public static final long TIMEOUT_USEC = 1000;
 

@@ -11,17 +11,17 @@ import org.sil.storyproducer.tools.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
 import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
 /**
  * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
  */
-public class StoryMaker {
+public class StoryMaker implements Closeable {
     private static final String TAG = "StoryMaker";
 
-    //TODO: revisit volume of soundtrack or add configuration
-    private static final float SOUNDTRACK_VOLUME_MODIFIER = 0.8f;
+    private float mSoundtrackVolumeModifier = 0.8f;
 
     private final File mOutputFile;
     private final int mOutputFormat;
@@ -73,6 +73,14 @@ public class StoryMaker {
     }
 
     /**
+     * Set the relative volume of the soundtrack to the narration for the video.
+     * @param modifier between 0 (silent) and 1 (original volume)
+     */
+    public void setSoundtrackVolumeModifier(float modifier) {
+        mSoundtrackVolumeModifier = modifier;
+    }
+
+    /**
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
      */
     public void churn() {
@@ -88,7 +96,7 @@ public class StoryMaker {
             mMuxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
-            audioMixer.addSource(soundtrackLooper, SOUNDTRACK_VOLUME_MODIFIER);
+            audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
                 narrationConcatenator.addSource(page.getNarrationAudio().getPath());
@@ -163,5 +171,12 @@ public class StoryMaker {
             return videoProgress / (double) mDurationUs;
         }
         return 0;
+    }
+
+    @Override
+    public void close() {
+        if(mMuxer != null) {
+            mMuxer.close();
+        }
     }
 }

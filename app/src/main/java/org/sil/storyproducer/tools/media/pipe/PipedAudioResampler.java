@@ -94,14 +94,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
         mSource.setup();
 
+        validateSource(mSource, 0, 0);
+
         mSourceFormat = mSource.getOutputFormat();
         mSourceSampleRate = mSourceFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mSourceUsPerSample = 1000000f / mSourceSampleRate; //1000000 us/s
         mSourceChannelCount = mSourceFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-
-        if(mSourceChannelCount != 1 && mSourceChannelCount != 2) {
-            throw new SourceUnacceptableException("Source audio is neither mono nor stereo!");
-        }
 
         if(mChannelCount == 0) {
             mChannelCount = mSourceChannelCount;

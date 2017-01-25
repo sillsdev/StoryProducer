@@ -7,6 +7,8 @@ import android.util.Log;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * <p>This abstract media pipeline component provides a base for components which encode or decode
@@ -17,7 +19,6 @@ import java.nio.ByteBuffer;
 public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaCodec";
 
-    @Deprecated //because this might not be a great long-term item
     protected abstract String getComponentName();
 
     Thread mThread;
@@ -29,7 +30,8 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     private ByteBuffer[] mOutputBuffers;
     private MediaFormat mOutputFormat = null;
 
-    //TODO: is volatile necessary?
+    private final Queue<MediaBuffer> mBuffersBeforeFormat = new LinkedList<>();
+
     private volatile boolean mIsDone = false;
     private long mPresentationTimeUsLast = 0;
 
@@ -90,9 +92,16 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         mThread.start();
     }
 
-    private ByteBuffer pullBuffer(MediaCodec.BufferInfo info, boolean stopWithFormat) {
+    private ByteBuffer pullBuffer(MediaCodec.BufferInfo info, boolean getFormat) {
         if(mIsDone) {
             throw new RuntimeException("pullBuffer called after depleted");
+        }
+
+        //If actually trying to get a buffer and we cached the buffer, return buffer from cache.
+        if(!getFormat && !mBuffersBeforeFormat.isEmpty()) {
+            MediaBuffer tempBuffer = mBuffersBeforeFormat.remove();
+            MediaHelper.copyBufferInfo(tempBuffer.info, info);
+            return tempBuffer.buffer;
         }
 
         long durationNs = -System.nanoTime();
@@ -114,13 +123,13 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                     throw new RuntimeException("changed output format again?");
                 }
                 mOutputFormat = mCodec.getOutputFormat();
-                if(stopWithFormat) {
+                if(getFormat) {
                     return null;
                 }
             }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
                 if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: codec config buffer");
-                //TODO: make sure this is ok
+                //Note: Perhaps these buffers should not be ignored in the future.
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);
             }
@@ -145,7 +154,15 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                             + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
-                return buffer;
+                //If trying to get the format, save the buffer for later and don't return it.
+                if(getFormat) {
+                    MediaCodec.BufferInfo tempInfo = new MediaCodec.BufferInfo();
+                    MediaHelper.copyBufferInfo(info, tempInfo);
+                    mBuffersBeforeFormat.add(new MediaBuffer(buffer, tempInfo));
+                }
+                else {
+                    return buffer;
+                }
             }
         }
 

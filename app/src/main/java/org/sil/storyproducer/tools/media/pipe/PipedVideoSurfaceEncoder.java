@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
+import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 
@@ -42,17 +43,20 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
 
     @Override
     protected void spinInput() {
-        if(mSource.isDone()) {
-            Log.w(TAG, "depleted source retrieval");
-            return;
-        }
-
         if(mSource == null) {
             throw new RuntimeException("No source provided!");
         }
 
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
-            Canvas canv = mSurface.lockCanvas(null);
+            Canvas canv;
+            //Note: This method of getting a canvas to draw to may be invalid
+            //per documentation of MediaCodec.getInputSurface().
+            if(Build.VERSION.SDK_INT >= 23) {
+                canv = mSurface.lockHardwareCanvas();
+            }
+            else {
+                canv = mSurface.lockCanvas(null);
+            }
             mCurrentPresentationTime = mSource.fillCanvas(canv);
             synchronized (mPresentationTimeQueue) {
                 mPresentationTimeQueue.add(mCurrentPresentationTime);

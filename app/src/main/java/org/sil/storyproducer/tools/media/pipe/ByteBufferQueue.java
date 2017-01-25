@@ -21,7 +21,7 @@ public class ByteBufferQueue {
 
     private final int mBufferCount;
 
-    //TODO: check/re-evaluate this value
+    //This value is somewhat arbitrary, intended to be smaller than MediaHelper.MAX_INPUT_BUFFER_SIZE.
     private static final int BUFFER_CAPACITY_DEFAULT = 16 * 1024;
     private final ByteBufferPool mBufferPool;
 
@@ -69,7 +69,7 @@ public class ByteBufferQueue {
             try {
                 Thread.sleep(0, sleepNs);
             } catch (InterruptedException e) {
-                Log.d(TAG, "interrupt", e);
+                Log.d(TAG, "interrupted while getting empty buffer", e);
                 return null;
             }
         }
@@ -86,8 +86,7 @@ public class ByteBufferQueue {
         try {
             mFilledBuffers.put(new MediaBuffer(buffer, info));
         } catch (InterruptedException e) {
-            //TODO: handle interrupt
-            e.printStackTrace();
+            Log.e(TAG, "interrupted while sending filled buffer", e);
         }
     }
 
@@ -106,8 +105,8 @@ public class ByteBufferQueue {
                 }
             }
         } catch (InterruptedException e) {
-            //TODO: handle interrupt
-            e.printStackTrace();
+            Log.e(TAG, "interrupted while getting filled buffer", e);
+            return null;
         }
         MediaHelper.copyBufferInfo(mb.info, info);
         return mb.buffer;
@@ -122,19 +121,6 @@ public class ByteBufferQueue {
         synchronized (mLock) {
             mBufferPool.release(buffer);
             mBuffersOut--;
-        }
-    }
-
-    /**
-     * Thin wrapper for a {@link ByteBuffer} and {@link MediaCodec.BufferInfo} pair
-     */
-    public static class MediaBuffer {
-        public ByteBuffer buffer;
-        public MediaCodec.BufferInfo info;
-
-        public MediaBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
-            this.buffer = buffer;
-            this.info = info;
         }
     }
 }
