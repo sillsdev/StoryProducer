@@ -76,118 +76,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     @Override
-    protected short getSampleForChannel(int channel) {
-        if(mCurrentState == ConcatState.DATA) {
-            return mSourceBufferA[mPos++];
-        }
-        else {
-            return 0;
-        }
-    }
-
-    @Override
-    protected boolean loadSamplesForTime(long time) {
-        boolean isDone = false;
-
-        if(mCurrentState == ConcatState.TRANSITION) {
-            long transitionUs = mTransitionUs;
-            //For pre-first-source and last source, make the transition half as long.
-            if (mFirstSource != null || mSourceAudioPaths.isEmpty()) {
-                transitionUs /= 2;
-            }
-
-            boolean transitionComplete = time > mTransitionStart + transitionUs;
-            if (transitionComplete) {
-                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime transition complete!");
-
-                //Clear out the current source.
-                if(mSource != null) {
-                    mSource.close();
-                    mSource = null;
-                }
-
-                //Assume DATA state.
-                mCurrentState = ConcatState.DATA;
-
-                //Get a (valid) source or get to DONE state.
-                while (mSource == null && !isDone) {
-                    //If sources are all gone, this component is done.
-                    if (mSourceAudioPaths.isEmpty()) {
-                        isDone = true;
-                        mCurrentState = ConcatState.DONE;
-                    } else {
-                        mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs;
-
-                        mSource = getNextSource();
-                        mSourceExpectedDuration = mSourceExpectedDurations.remove();
-                    }
-                }
-
-                if (mCurrentState == ConcatState.DATA) {
-                    fetchSourceBuffer();
-                }
-            }
-        }
-
-        if(mCurrentState == ConcatState.DATA) {
-            while(mHasBuffer && mPos >= mSize) {
-                releaseSourceBuffer();
-                fetchSourceBuffer();
-            }
-
-            boolean isWithinExpectedTime = mSourceExpectedDuration == 0
-                    || time <= mSourceStart + mSourceExpectedDuration;
-
-            if(!mHasBuffer || !isWithinExpectedTime) {
-                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
-
-                mCurrentState = ConcatState.TRANSITION;
-
-                //Clear out the current source.
-                mSource.close();
-                mSource = null;
-
-                //If no particular duration was expected, start transition now. Otherwise use precise time.
-                if(mSourceExpectedDuration == 0) {
-                    mTransitionStart = time;
-                }
-                else {
-                    mTransitionStart = mSourceStart + mSourceExpectedDuration;
-                }
-            }
-        }
-
-        return !isDone;
-    }
-
-    private PipedMediaByteBufferSource getNextSource() {
-        if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting...");
-
-        PipedMediaByteBufferSource nextSource = null;
-
-        //Since the first source was already setup in setup(), it is held in a special place.
-        if(mFirstSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource first source");
-
-            nextSource = mFirstSource;
-            mFirstSource = null;
-        }
-        else if(!mSourceAudioPaths.isEmpty()) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
-
-            String nextSourcePath = mSourceAudioPaths.remove();
-            nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);
-            try {
-                nextSource.setup();
-                validateSource(nextSource);
-            } catch (IOException | SourceUnacceptableException e) {
-                //If we encounter an error, just let this source be passed over.
-                Log.e(TAG, "Source setup failed!", e);
-                nextSource = null;
-            }
-        }
-
-        return nextSource;
+    public MediaFormat getOutputFormat() {
+        return mOutputFormat;
     }
 
     /**
@@ -250,32 +140,145 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     @Override
-    public MediaFormat getOutputFormat() {
-        return mOutputFormat;
+    protected short getSampleForChannel(int channel) {
+        if(mCurrentState == ConcatState.DATA) {
+            return mSourceBufferA[mPos + channel];
+        }
+        else {
+            return 0;
+        }
+    }
+
+    @Override
+    protected boolean loadSamplesForTime(long time) {
+        boolean isDone = false;
+
+        if(mCurrentState == ConcatState.TRANSITION) {
+            long transitionUs = mTransitionUs;
+            //For pre-first-source and last source, make the transition half as long.
+            if (mFirstSource != null || mSourceAudioPaths.isEmpty()) {
+                transitionUs /= 2;
+            }
+
+            boolean transitionComplete = time > mTransitionStart + transitionUs;
+            if (transitionComplete) {
+                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime transition complete!");
+
+                //Clear out the current source.
+                if(mSource != null) {
+                    mSource.close();
+                    mSource = null;
+                }
+
+                //Assume DATA state.
+                mCurrentState = ConcatState.DATA;
+
+                //Get a (valid) source or get to DONE state.
+                while (mSource == null && !isDone) {
+                    //If sources are all gone, this component is done.
+                    if (mSourceAudioPaths.isEmpty()) {
+                        isDone = true;
+                        mCurrentState = ConcatState.DONE;
+                    } else {
+                        mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs;
+
+                        mSource = getNextSource();
+                        mSourceExpectedDuration = mSourceExpectedDurations.remove();
+                    }
+                }
+
+                if (mCurrentState == ConcatState.DATA) {
+                    fetchSourceBuffer();
+                }
+            }
+        }
+
+        if(mCurrentState == ConcatState.DATA) {
+            mPos += mChannelCount;
+
+            while(mHasBuffer && mPos >= mSize) {
+                releaseSourceBuffer();
+                fetchSourceBuffer();
+            }
+
+            boolean isWithinExpectedTime = mSourceExpectedDuration == 0
+                    || time <= mSourceStart + mSourceExpectedDuration;
+
+            if(!mHasBuffer || !isWithinExpectedTime) {
+                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
+
+                mCurrentState = ConcatState.TRANSITION;
+
+                //Clear out the current source.
+                mSource.close();
+                mSource = null;
+
+                //If no particular duration was expected, start transition now. Otherwise use precise time.
+                if(mSourceExpectedDuration == 0) {
+                    mTransitionStart = time;
+                }
+                else {
+                    mTransitionStart = mSourceStart + mSourceExpectedDuration;
+                }
+            }
+        }
+
+        return !isDone;
+    }
+
+    private void fetchSourceBuffer() {
+        if(mSource.isDone()) {
+            return;
+        }
+
+        //buffer of bytes
+        ByteBuffer buffer = mSource.getBuffer(mInfo);
+        //buffer of shorts (16-bit samples)
+        ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+
+        mPos = 0;
+        mSize = sBuffer.remaining();
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        sBuffer.get(mSourceBufferA, mPos, mSize);
+
+        //Release buffer since data was copied.
+        mSource.releaseBuffer(buffer);
+
+        mHasBuffer = true;
     }
 
     private void releaseSourceBuffer() {
         mHasBuffer = false;
     }
 
-    private void fetchSourceBuffer() {
-        //If our source has no more output, leave the buffers as null (assumed from releaseInputBuffer).
-        if(mSource.isDone()) {
-            return;
+    private PipedMediaByteBufferSource getNextSource() {
+        if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting...");
+
+        PipedMediaByteBufferSource nextSource = null;
+
+        //Since the first source was already setup in setup(), it is held in a special place.
+        if(mFirstSource != null) {
+            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource first source");
+
+            nextSource = mFirstSource;
+            mFirstSource = null;
+        }
+        else if(!mSourceAudioPaths.isEmpty()) {
+            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
+
+            String nextSourcePath = mSourceAudioPaths.remove();
+            nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);
+            try {
+                nextSource.setup();
+                validateSource(nextSource);
+            } catch (IOException | SourceUnacceptableException e) {
+                //If we encounter an error, just let this source be passed over.
+                Log.e(TAG, "Source setup failed!", e);
+                nextSource = null;
+            }
         }
 
-        //Pull in new buffer.
-        ByteBuffer buffer = mSource.getBuffer(mInfo);
-        ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
-
-        mPos = 0;
-        mSize = sBuffer.remaining();
-
-        sBuffer.get(mSourceBufferA, mPos, mSize);
-
-        mSource.releaseBuffer(buffer);
-
-        mHasBuffer = true;
+        return nextSource;
     }
 
     @Override

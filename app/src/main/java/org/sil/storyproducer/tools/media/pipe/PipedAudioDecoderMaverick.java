@@ -60,6 +60,16 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     }
 
     @Override
+    public MediaFormat getOutputFormat() {
+        return mSource.getOutputFormat();
+    }
+
+    @Override
+    public boolean isDone() {
+        return mSource.isDone();
+    }
+
+    @Override
     public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
         mSource.fillBuffer(buffer, info);
     }
@@ -92,16 +102,6 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
         }
 
         mSource.setup();
-    }
-
-    @Override
-    public MediaFormat getOutputFormat() {
-        return mSource.getOutputFormat();
-    }
-
-    @Override
-    public boolean isDone() {
-        return mSource.isDone();
     }
 
     @Override

@@ -37,8 +37,40 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
 
     private long mCurrentPresentationTime;
 
-    public PipedVideoSurfaceEncoder() {
-        //empty default constructor
+    @Override
+    public MediaHelper.MediaType getMediaType() {
+        return MediaHelper.MediaType.VIDEO;
+    }
+
+    /**
+     * Specify a canvas provider for this component in the pipeline.
+     * @param src the preceding component (a canvas drawer) of the pipeline.
+     * @throws SourceUnacceptableException
+     */
+    public void addSource(Source src) throws SourceUnacceptableException {
+        if(mSource != null) {
+            throw new SourceUnacceptableException("I already got a source");
+        }
+        mSource = src;
+    }
+
+    @Override
+    public void setup() throws IOException, SourceUnacceptableException {
+        mSource.setup();
+        mConfigureFormat = mSource.getOutputFormat();
+
+        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
+        mConfigureFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
+
+        mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
+        mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+
+        mSurface = mCodec.createInputSurface();
+
+        mComponentState = State.SETUP;
+
+        start();
     }
 
     @Override
@@ -81,42 +113,6 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         catch (NoSuchElementException e) {
             throw new RuntimeException("Tried to correct time for extra frame", e);
         }
-    }
-
-    /**
-     * Specify a canvas provider for this component in the pipeline.
-     * @param src the preceding component (a canvas drawer) of the pipeline.
-     * @throws SourceUnacceptableException
-     */
-    public void addSource(Source src) throws SourceUnacceptableException {
-        if(mSource != null) {
-            throw new SourceUnacceptableException("I already got a source");
-        }
-        mSource = src;
-    }
-
-    @Override
-    public MediaHelper.MediaType getMediaType() {
-        return MediaHelper.MediaType.VIDEO;
-    }
-
-    @Override
-    public void setup() throws IOException, SourceUnacceptableException {
-        mSource.setup();
-        mConfigureFormat = mSource.getOutputFormat();
-
-        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
-        mConfigureFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
-
-        mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
-        mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
-
-        mSurface = mCodec.createInputSurface();
-
-        mComponentState = State.SETUP;
-
-        start();
     }
 
     /**

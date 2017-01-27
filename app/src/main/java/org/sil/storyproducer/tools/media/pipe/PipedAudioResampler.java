@@ -70,6 +70,11 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mChannelCount = channelCount;
     }
 
+    @Override
+    public MediaFormat getOutputFormat() {
+        return mOutputFormat;
+    }
+
     /**
      * Modify all samples by multiplying applying a constant (multiplication).
      * @param volumeModifier constant to multiply all samples by.
@@ -121,11 +126,6 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         fetchSourceBuffer();
 
         start();
-    }
-
-    @Override
-    public MediaFormat getOutputFormat() {
-        return mOutputFormat;
     }
 
     /**
@@ -230,12 +230,11 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     private void fetchSourceBuffer() {
         mHasBuffer = false;
 
-        //If our source has no more output, leave the buffers as null (assumed from releaseSourceBuffer).
         if(mSource.isDone()) {
             return;
         }
 
-        //Pull in new buffer.
+        //buffer of bytes
         ByteBuffer tempSourceBuffer = mSource.getBuffer(mInfo);
 
         if(MediaHelper.VERBOSE) {
@@ -244,10 +243,15 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
                     + " with" + (tempSourceBuffer.hasArray() ? "" : "out") + " array");
         }
 
+        //buffer of shorts (16-bit samples)
         ShortBuffer tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer);
-        mSourceSize = tempShortBuffer.remaining();
-        tempShortBuffer.get(mSourceBufferA, 0, mSourceSize);
+
         mSourcePos = 0;
+        mSourceSize = tempShortBuffer.remaining();
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        tempShortBuffer.get(mSourceBufferA, mSourcePos, mSourceSize);
+
+        //Release buffer since data was copied.
         mSource.releaseBuffer(tempSourceBuffer);
 
         mHasBuffer = true;

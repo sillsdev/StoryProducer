@@ -18,6 +18,14 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
     private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     @Override
+    public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
+        if(mSource != null) {
+            throw new SourceUnacceptableException("One source already supplied!");
+        }
+        mSource = src;
+    }
+
+    @Override
     protected void spinInput() {
         if(mSource == null) {
             throw new RuntimeException("No source specified for encoder!");
@@ -55,13 +63,5 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
         if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput complete!");
 
         mSource.close();
-    }
-
-    @Override
-    public void addSource(PipedMediaByteBufferSource src) throws SourceUnacceptableException {
-        if(mSource != null) {
-            throw new SourceUnacceptableException("One source already supplied!");
-        }
-        mSource = src;
     }
 }

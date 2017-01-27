@@ -35,8 +35,9 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     private MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
-    public PipedAudioMixer() {
-        //empty default constructor
+    @Override
+    public MediaFormat getOutputFormat() {
+        return mOutputFormat;
     }
 
     @Override
@@ -93,11 +94,6 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         start();
     }
 
-    @Override
-    public MediaFormat getOutputFormat() {
-        return mOutputFormat;
-    }
-
     protected short getSampleForChannel(int channel) {
         return mCurrentSample[channel];
     }
@@ -150,12 +146,20 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
             mSourceBufferAs.set(sourceIndex, null);
             return;
         }
+
+        //buffer of bytes
         ByteBuffer buffer = source.getBuffer(mInfo);
+        //buffer of shorts (16-bit samples)
         ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+
+        int pos = 0;
         int size = sBuffer.remaining();
-        sBuffer.get(mSourceBufferAs.get(sourceIndex), 0, size);
-        mSourcePos.set(sourceIndex, 0);
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        sBuffer.get(mSourceBufferAs.get(sourceIndex), pos, size);
+        mSourcePos.set(sourceIndex, pos);
         mSourceSizes.set(sourceIndex, size);
+
+        //Release buffer since data was copied.
         source.releaseBuffer(buffer);
     }
 

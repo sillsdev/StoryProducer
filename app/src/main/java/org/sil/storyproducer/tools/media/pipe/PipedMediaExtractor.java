@@ -55,13 +55,13 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
     }
 
     @Override
-    public MediaFormat getOutputFormat() {
-        return mFormat;
+    public MediaHelper.MediaType getMediaType() {
+        return mType;
     }
 
     @Override
-    public MediaHelper.MediaType getMediaType() {
-        return mType;
+    public MediaFormat getOutputFormat() {
+        return mFormat;
     }
 
     @Override

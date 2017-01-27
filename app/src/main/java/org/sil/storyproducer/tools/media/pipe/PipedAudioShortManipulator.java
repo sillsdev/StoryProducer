@@ -52,13 +52,13 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     private int mAbsoluteSampleIndex = 0;
 
     @Override
-    public final boolean isDone() {
-        return (mIsDone && mBufferQueue.isEmpty()) || mComponentState == State.CLOSED;
+    public MediaHelper.MediaType getMediaType() {
+        return MediaHelper.MediaType.AUDIO;
     }
 
     @Override
-    public MediaHelper.MediaType getMediaType() {
-        return MediaHelper.MediaType.AUDIO;
+    public final boolean isDone() {
+        return (mIsDone && mBufferQueue.isEmpty()) || mComponentState == State.CLOSED;
     }
 
     @Override
@@ -177,19 +177,6 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     }
 
     /**
-     * <p>Get the sample time from the sample index given a sample rate.</p>
-     *
-     * <p>Note: This method provides more accurate timestamps than simply keeping track
-     * of the current timestamp and incrementing it by the time per sample.</p>
-     * @param sampleRate
-     * @param index
-     * @return
-     */
-    protected final long getTimeFromIndex(long sampleRate, int index) {
-        return index * 1000000L / sampleRate;
-    }
-
-    /**
      * <p>Get a sample for given a channel from the source media pipeline component using linear interpolation.</p>
      *
      * <p>Note: No two calls to this function will elicit information for the same state.</p>
@@ -208,10 +195,35 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
      */
     protected abstract boolean loadSamplesForTime(long time);
 
+    /**
+     * <p>Get the sample time from the sample index given a sample rate.</p>
+     *
+     * <p>Note: This method provides more accurate timestamps than simply keeping track
+     * of the current timestamp and deltas.</p>
+     * @param sampleRate
+     * @param index
+     * @return timestamp associated with index (in microseconds)
+     */
+    protected final long getTimeFromIndex(long sampleRate, int index) {
+        return index * 1000000L / sampleRate;
+    }
+
+    /**
+     * Validate the source as raw audio against channel count and sample rate of this component.
+     * @param source to be validated
+     * @throws SourceUnacceptableException if source is not raw audio or doesn't match specs
+     */
     protected void validateSource(PipedMediaByteBufferSource source) throws SourceUnacceptableException {
         validateSource(source, mChannelCount, mSampleRate);
     }
 
+    /**
+     * Validate the source as raw audio against specified channel count and sample rate.
+     * @param source to be validated
+     * @param channelCount required source channel count (or 0 for any channel count)
+     * @param sampleRate required source sample rate (or 0 for any sample rate)
+     * @throws SourceUnacceptableException if source is not raw audio or doesn't match specs
+     */
     protected void validateSource(PipedMediaByteBufferSource source, int channelCount, int sampleRate)
             throws SourceUnacceptableException {
         MediaFormat format = source.getOutputFormat();

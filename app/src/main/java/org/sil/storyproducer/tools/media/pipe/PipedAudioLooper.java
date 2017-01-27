@@ -74,6 +74,11 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     }
 
     @Override
+    public MediaFormat getOutputFormat() {
+        return mOutputFormat;
+    }
+
+    @Override
     public void setup() throws IOException, SourceUnacceptableException {
         mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
         mSource.setup();
@@ -94,15 +99,10 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     }
 
     @Override
-    public MediaFormat getOutputFormat() {
-        return mOutputFormat;
-    }
-
-    @Override
     protected short getSampleForChannel(int channel) {
         if(mHasBuffer) {
             try {
-                return mSourceBufferA[mPos++];
+                return mSourceBufferA[mPos + channel];
             }
             catch(ArrayIndexOutOfBoundsException e) {
                 Log.e(TAG, "Tried to read beyond buffer", e);
@@ -121,6 +121,8 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
             mSource = null;
             return false;
         }
+
+        mPos += mChannelCount;
 
         while(mHasBuffer && mPos >= mSize) {
             releaseSourceBuffer();
@@ -149,11 +151,17 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
             return;
         }
 
+        //buffer of bytes
         ByteBuffer buffer = mSource.getBuffer(mInfo);
+        //buffer of shorts (16-bit samples)
         ShortBuffer sBuffer = MediaHelper.getShortBuffer(buffer);
+
         mPos = 0;
         mSize = sBuffer.remaining();
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
         sBuffer.get(mSourceBufferA, mPos, mSize);
+
+        //Release buffer since data was copied.
         mSource.releaseBuffer(buffer);
 
         mHasBuffer = true;

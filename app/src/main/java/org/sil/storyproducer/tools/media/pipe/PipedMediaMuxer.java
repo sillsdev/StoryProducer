@@ -70,38 +70,26 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         }
     }
 
-    private void start() throws IOException, SourceUnacceptableException {
-        File output = new File(mPath);
-        //Ensure file exists to avoid bugs on some devices.
-        if(!output.exists()) {
-            output.createNewFile();
+    /**
+     * Get approximate current progress of the audio track (i.e. the latest timestamp in microseconds).
+     * @return approximate microseconds of completed audio
+     */
+    public long getAudioProgress() {
+        if(mAudioThread != null) {
+            return mAudioThread.getProgress();
         }
-        mMuxer = new MediaMuxer(mPath, mFormat);
+        return 0;
+    }
 
-        if (mAudioSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.");
-            mAudioSource.setup();
-
-            mAudioOutputFormat = mAudioSource.getOutputFormat();
-            //TODO: fudge bitrate since it isn't available
-//            mAudioBitrate = mAudioOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
-
-            if(MediaHelper.VERBOSE) Log.v(TAG, "adding audio track.");
-            mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
+    /**
+     * Get approximate current progress of the video track (i.e. the latest timestamp in microseconds).
+     * @return approximate microseconds of completed video
+     */
+    public long getVideoProgress() {
+        if(mVideoThread != null) {
+            return mVideoThread.getProgress();
         }
-        if (mVideoSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up video track.");
-            mVideoSource.setup();
-
-            mVideoOutputFormat = mVideoSource.getOutputFormat();
-            //TODO: fudge bitrate since it isn't available
-//            mVideoBitrate = mVideoOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
-
-            if(MediaHelper.VERBOSE) Log.v(TAG, "adding video track.");
-            mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
-        }
-        if(MediaHelper.VERBOSE) Log.v(TAG, "starting");
-        mMuxer.start();
+        return 0;
     }
 
     /**
@@ -139,6 +127,40 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         }
 
         close();
+    }
+
+    private void start() throws IOException, SourceUnacceptableException {
+        File output = new File(mPath);
+        //Ensure file exists to avoid bugs on some devices.
+        if(!output.exists()) {
+            output.createNewFile();
+        }
+        mMuxer = new MediaMuxer(mPath, mFormat);
+
+        if (mAudioSource != null) {
+            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.");
+            mAudioSource.setup();
+
+            mAudioOutputFormat = mAudioSource.getOutputFormat();
+            //TODO: fudge bitrate since it isn't available
+//            mAudioBitrate = mAudioOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+
+            if(MediaHelper.VERBOSE) Log.v(TAG, "adding audio track.");
+            mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
+        }
+        if (mVideoSource != null) {
+            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up video track.");
+            mVideoSource.setup();
+
+            mVideoOutputFormat = mVideoSource.getOutputFormat();
+            //TODO: fudge bitrate since it isn't available
+//            mVideoBitrate = mVideoOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
+
+            if(MediaHelper.VERBOSE) Log.v(TAG, "adding video track.");
+            mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
+        }
+        if(MediaHelper.VERBOSE) Log.v(TAG, "starting");
+        mMuxer.start();
     }
 
     private class StreamThread extends Thread {
@@ -179,20 +201,6 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         public long getProgress() {
             return mProgress;
         }
-    }
-
-    public long getAudioProgress() {
-        if(mAudioThread != null) {
-            return mAudioThread.getProgress();
-        }
-        return 0;
-    }
-
-    public long getVideoProgress() {
-        if(mVideoThread != null) {
-            return mVideoThread.getProgress();
-        }
-        return 0;
     }
 
     @Override
