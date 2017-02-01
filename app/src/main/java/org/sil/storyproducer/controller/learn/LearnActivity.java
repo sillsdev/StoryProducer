@@ -49,6 +49,7 @@ public class LearnActivity extends AppCompatActivity {
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
     private int slideNum = 0;
+    private int LAST_SLIDE_NUM = 0;
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
@@ -67,6 +68,7 @@ public class LearnActivity extends AppCompatActivity {
 
         //get the story name
         storyName = StoryState.getStoryName();
+        LAST_SLIDE_NUM = FileSystem.getImageAmount(storyName) - 1;      //set the last slide num
 
         //get the ui
         learnImageView = (ImageView) findViewById(R.id.learnImageView);
@@ -173,11 +175,14 @@ public class LearnActivity extends AppCompatActivity {
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < FileSystem.getImageAmount(storyName)) {
+                if(slideNum < LAST_SLIDE_NUM) {
                     playVideo();
                 } else {
-                    videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
+                    videoSeekBar.setProgress(LAST_SLIDE_NUM);
                     backgroundPlayer.releaseAudio();
+                    narrationPlayer.releaseAudio();
+                    playButton.setImageResource(R.drawable.ic_play_gray);
+                    setPic(learnImageView);     //sets the pic to the end image
                     showStartPracticeSnackBar();
                 }
             }
@@ -195,9 +200,16 @@ public class LearnActivity extends AppCompatActivity {
             backgroundPlayer.pauseAudio();
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
-            narrationPlayer.resumeAudio();
-            backgroundPlayer.resumeAudio();
             playButton.setImageResource(R.drawable.ic_pause_gray);
+            if(slideNum >= LAST_SLIDE_NUM) {
+                videoSeekBar.setProgress(0);
+                slideNum = 0;
+                setBackgroundMusic();
+                playVideo();
+            } else {
+                narrationPlayer.resumeAudio();
+                backgroundPlayer.resumeAudio();
+            }
         }
     }
 
@@ -205,7 +217,7 @@ public class LearnActivity extends AppCompatActivity {
      * Sets the seekBar listener for the video seek bar
      */
     private void setSeekBarListener() {
-        videoSeekBar.setMax(FileSystem.getImageAmount(storyName) - 1);      //set the bar to have as many markers as images
+        videoSeekBar.setMax(LAST_SLIDE_NUM);      //set the bar to have as many markers as images
         videoSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar sBar){
@@ -220,8 +232,17 @@ public class LearnActivity extends AppCompatActivity {
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
                     narrationPlayer.releaseAudio();
                     slideNum = progress;
-                    playVideo();
-                    if(notPlayingAudio) narrationPlayer.pauseAudio();
+                    if(slideNum == LAST_SLIDE_NUM) {
+                        backgroundPlayer.releaseAudio();
+                        playButton.setImageResource(R.drawable.ic_play_gray);
+                        setPic(learnImageView);     //sets the pic to the end image
+                        showStartPracticeSnackBar();
+                        narrationPlayer = new AudioPlayer();
+                    } else {
+                        playVideo();
+                    }
+                    if (notPlayingAudio) narrationPlayer.pauseAudio();
+
                 }
             }
         });
@@ -232,6 +253,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
+            playButton.setImageResource(R.drawable.ic_pause_gray);
             Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout_learn),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
@@ -244,6 +266,7 @@ public class LearnActivity extends AppCompatActivity {
                     //reset the story with the volume off
                     videoSeekBar.setProgress(0);
                     slideNum = 0;
+                    narrationPlayer = new AudioPlayer();
                     narrationPlayer.setVolume(0.0f);
                     setBackgroundMusic();
                     backgroundPlayer.setVolume(0.0f);
@@ -351,6 +374,9 @@ public class LearnActivity extends AppCompatActivity {
 
         ImageView slideImage = (ImageView) aView;
         Bitmap slidePicture = FileSystem.getImage(storyName, slideNum);
+        if(slideNum == LAST_SLIDE_NUM) {                //gets the end image if we are at the end of the story
+            slidePicture = FileSystem.getEndImage(storyName);
+        }
 
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();

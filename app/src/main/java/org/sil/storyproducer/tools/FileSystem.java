@@ -176,6 +176,17 @@ public class FileSystem {
         return null;
     }
 
+    public static Bitmap getEndImage(String story) {
+        return getEndImage(story, 1);
+    }
+
+    public static Bitmap getEndImage(String story, int sampleSize) {
+        String path = getStoryPath(story);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sampleSize;
+        return BitmapFactory.decodeFile(path + "/end.jpg", options);
+    }
+
 //    public static String getAudioPath(String story, int number) {
 //        String path = getStoryPath(story);
 //        File f = new File(path);
