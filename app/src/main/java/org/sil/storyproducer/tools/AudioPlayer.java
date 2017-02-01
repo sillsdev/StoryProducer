@@ -17,7 +17,7 @@ public class AudioPlayer {
 
     /**
      * Plays the audio with the given path
-     * @param String for the path where the audio resides
+     * @param path for the path where the audio resides
      */
     public void playWithPath(String path) {
         try {
@@ -39,7 +39,7 @@ public class AudioPlayer {
      * Pauses the audio if it is currenlty being played
      */
     public void pauseAudio() {
-        if(mPlayer.isPlaying()) {
+        if(mPlayer != null && mPlayer.isPlaying()) {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
@@ -53,27 +53,46 @@ public class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     public void resumeAudio() {
-        int pauseSpot = mPlayer.getCurrentPosition();
-        mPlayer.seekTo(pauseSpot);
-        mPlayer.start();
+        if(mPlayer != null) {
+            int pauseSpot = mPlayer.getCurrentPosition();
+            mPlayer.seekTo(pauseSpot);
+            mPlayer.start();
+        }
     }
 
     /**
      * Stops the audio if it is currenlty being played
      */
     public void stopAudio() {
-        try {
-            mPlayer.stop();
-            mPlayer.release();
-        } catch (IllegalStateException e) {
-            //TODO maybe something with this exception
-            e.printStackTrace();
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+                mPlayer.stop();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Stops the audio and releases it if it is currenlty being played
+     */
+    public void releaseAudio() {
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+
+                mPlayer.stop();
+                mPlayer.release();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
         }
     }
 
     /**
      * returns the duration of the audio as an int
-     * @return returns the duration of the audio as an int
+     * @return the duration of the audio as an int
      */
     public int getAudioDurationInSeconds() {
         return (int)(mPlayer.getDuration() * 0.001);
@@ -89,7 +108,7 @@ public class AudioPlayer {
 
     /**
      * sets the volume of the audio
-     * @param the float for the volume from 0.0 to 1.0
+     * @param volume the float for the volume from 0.0 to 1.0
      */
     public void setVolume(float volume) {
         mPlayer.setVolume(volume, volume);
