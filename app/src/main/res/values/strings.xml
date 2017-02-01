@@ -21,11 +21,11 @@
     <string name="language">"Language:  "</string>
 
     <!-- String names for registration -->
-    <string name="registration_general_header">General Information</string>
+    <string name="registration_language_header">Language Information</string>
     <string name="registration_translator_header">Translator Information</string>
     <string name="registration_consultant_header">Consultant Information</string>
     <string name="registration_trainer_header">Trainer Information</string>
-    <string name="registration_database_header">Data Information</string>
+    <string name="registration_archive_header">Archive Information</string>
     <string name="language_hint">Language (being translated into)</string>
     <string name="etnologue_code_hint">Ethnologue Code</string>
     <string name="country_hint">Country</string>
@@ -47,6 +47,7 @@
     <!-- Dialog strings for titles, messages, and buttons -->
     <string name="no">No</string>
     <string name="yes">Yes</string>
+    <string name="question_mark">What is this?</string>
     <string name="registration_skip_title">Skip Registration?</string>
     <string name="registration_skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
     <string name="registration_submit_title">Submit?</string>
@@ -66,6 +67,8 @@
     <string-array name="communication_list">
         <item>Phone</item>
         <item>E-mail</item>
+        <item>WhatsApp</item>
+        <item>Facebook</item>
     </string-array>
 
     <string-array name="location_type_list">
