@@ -13,14 +13,14 @@ import org.sil.storyproducer.R;
  * the fragment for the community check view. The community can make sure the draft is ok
  */
 public class CommunityCheckFrag extends Fragment {
-    private static final String ARG_OBJECT = "object";
+    public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_com_check, container, false);
         Bundle args = getArguments();
-        ((TextView) rootView.findViewById(R.id.textView)).setText("Object " + args.getInt(ARG_OBJECT));
+        ((TextView) rootView.findViewById(R.id.textView)).setText("");
 
         return rootView;
     }

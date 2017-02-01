@@ -10,8 +10,9 @@
 
     <ImageView
         android:id="@+id/trans_image_slide"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/trans_image_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:scaleType="centerCrop"/>
     <RelativeLayout
         android:id="@+id/trans_info_bar"
@@ -44,6 +45,7 @@
             android:layout_height="wrap_content"
             android:text="#1"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:textColor="@color/white"
             android:textSize="@dimen/text_title"/>
     </RelativeLayout>
@@ -80,19 +82,18 @@
             android:textColor="@color/gray"
             />
     </ScrollView>
+
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
         fab:fab_addButtonColorNormal="@color/white"
         fab:fab_addButtonColorPressed="@color/lightGray"
         fab:fab_addButtonPlusIconColor="@color/darkGray"
         fab:fab_labelStyle="@style/menu_labels_style"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        >
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true">
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/trans_play"
             fab:fab_icon="@drawable/ic_play"

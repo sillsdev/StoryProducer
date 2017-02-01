@@ -1,38 +1,48 @@
 package org.sil.storyproducer.controller.learn;
 
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.view.View;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.CompoundButton;
-import android.widget.SeekBar;
-import android.support.design.widget.Snackbar;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class LearnActivity extends AppCompatActivity {
 
+    private RelativeLayout rootView;
     private ImageView learnImageView;
     private ImageButton playButton;
     private SeekBar videoSeekBar;
@@ -44,11 +54,16 @@ public class LearnActivity extends AppCompatActivity {
     private boolean isWatchedOnce = false;
     private float backgroundVolume = 0.4f;
     private GestureDetectorCompat mDetector;
+    private ListView mDrawerList;
+    private ArrayAdapter<String> mAdapter;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
+        rootView = (RelativeLayout) findViewById(R.id.activity_learn);
 
         //get the story name
         storyName = StoryState.getStoryName();
@@ -66,6 +81,7 @@ public class LearnActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("");
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
                                                                                     phase.getColor(), null)));
+        setupDrawer();
 
         setSeekBarListener();
         playVideo();
@@ -100,7 +116,7 @@ public class LearnActivity extends AppCompatActivity {
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.phases_menu_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
         spinner.setSelection(StoryState.getCurrentPhaseIndex());
@@ -121,8 +137,8 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         super.onStop();
-        narrationPlayer.stopAudio();
-        backgroundPlayer.stopAudio();
+        narrationPlayer.releaseAudio();
+        backgroundPlayer.releaseAudio();
     }
 
     @Override
@@ -139,12 +155,13 @@ public class LearnActivity extends AppCompatActivity {
         backgroundPlayer.resumeAudio();
     }
 
+
     /**
      * Plays the video and runs everytime the audio is completed
      */
     void playVideo() {
         //TODO: sync background audio with image
-        learnImageView.setImageBitmap(FileSystem.getImage(storyName, slideNum));          //set the next image
+        setPic(learnImageView);                                                             //set the next image
         narrationPlayer = new AudioPlayer();                                                //set the next audio
         narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
         if(isVolumeOn) {
@@ -160,7 +177,7 @@ public class LearnActivity extends AppCompatActivity {
                     playVideo();
                 } else {
                     videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
-                    backgroundPlayer.stopAudio();
+                    backgroundPlayer.releaseAudio();
                     showStartPracticeSnackBar();
                 }
             }
@@ -201,7 +218,7 @@ public class LearnActivity extends AppCompatActivity {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
-                    narrationPlayer.stopAudio();
+                    narrationPlayer.releaseAudio();
                     slideNum = progress;
                     playVideo();
                     if(notPlayingAudio) narrationPlayer.pauseAudio();
@@ -215,7 +232,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.activity_learn),
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout_learn),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.lightWhite, null));
@@ -263,6 +280,96 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * initializes the items that the drawer needs
+     */
+    private void setupDrawer() {
+        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        mDrawerList = (ListView)findViewById(R.id.navList_learn);
+        mDrawerList.bringToFront();
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_learn);
+        addDrawerItems();
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                R.string.nav_open, R.string.dummy_content) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    /**
+     * adds the items to the drawer from the array resources
+     */
+    private void addDrawerItems() {
+        String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
+        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
+        mDrawerList.setAdapter(mAdapter);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();                                  //needed to make the drawer synced
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mDrawerToggle.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This function allows the picture to scale with the phone's screen size.
+     *
+     * @param aView    The ImageView that will contain the picture.
+     */
+    private void setPic(View aView) {
+        if (aView == null || !(aView instanceof ImageView)) {
+            return;
+        }
+
+        ImageView slideImage = (ImageView) aView;
+        Bitmap slidePicture = FileSystem.getImage(storyName, slideNum);
+
+        if(slidePicture == null){
+            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+        }
+
+        //Get the height of the phone.
+        DisplayMetrics phoneProperties = getResources().getDisplayMetrics();
+        int height = phoneProperties.heightPixels;
+        double scalingFactor = 0.4;
+        height = (int)(height * scalingFactor);
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height);
+
+        //Set the height of the image view
+        slideImage.getLayoutParams().height = height;
+        slideImage.requestLayout();
+
+        slideImage.setImageBitmap(slidePicture);
     }
 
 }

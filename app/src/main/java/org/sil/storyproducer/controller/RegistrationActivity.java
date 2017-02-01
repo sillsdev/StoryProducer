@@ -27,45 +27,42 @@ import org.sil.storyproducer.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
  * The purpose of this class is to create the Registration activity.
- *
+ * <p>
  * <p>Flow of RegistrationActivity:</p>
  * <ol>
- *     <li>onCreate() is called and calls the following:</li>
- *     <ul>
- *         <li>setAccordionListener() is called which adds click listeners to the header sections of the accordion.</li>
- *     </ul>
- *     <li>onPostCreate() is called and calls the following:</li>
- *     <ol>
- *         <li>setupInputFields() is called which takes a root ScrollView.</li>
- *         <ul>
- *             <li>getInputFields() is called and takes the root ScrollView and does an in-order
- *          traversal of the nodes in the registration xml to find the TextInputEditText
- *          and Spinner inputs. Each TextInputEditText and Spinner inputs are added to the
- *          sectionViews[] for parsing and saving.</li>
- *         </ul>
- *         <li>addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input) to check for valid inputs.</li>
- *         <ul>
- *             <li>textFieldParsed() is called. This checks to see if all fields were entered</li>
- *             <li>A confirmation dialog is launched to ask if the user wants to submit the info</li>
- *         </ul>
- *         <li>addRegistrationSkip() is called to set the on click listener for skipping the registration phase temporarily</li>
- *     </ol>
+ * <li>onCreate() is called and calls the following:</li>
+ * <ul>
+ * <li>setAccordionListener() is called which adds click listeners to the header sections of the accordion.</li>
+ * </ul>
+ * <li>onPostCreate() is called and calls the following:</li>
+ * <ol>
+ * <li>setupInputFields() is called which takes a root ScrollView.</li>
+ * <ul>
+ * <li>getInputFields() is called and takes the root ScrollView and does an in-order
+ * traversal of the nodes in the registration xml to find the TextInputEditText
+ * and Spinner inputs. Each TextInputEditText and Spinner inputs are added to the
+ * sectionViews[] for parsing and saving.</li>
+ * </ul>
+ * <li>addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input) to check for valid inputs.</li>
+ * <ul>
+ * <li>textFieldParsed() is called. This checks to see if all fields were entered</li>
+ * <li>A confirmation dialog is launched to ask if the user wants to submit the info</li>
+ * </ul>
+ * <li>addRegistrationSkip() is called to set the on click listener for skipping the registration phase temporarily</li>
  * </ol>
- *  <p>Key classes used in this class:</p>
- *  <ul>
- *      <li>{@link android.widget.Spinner} for input from a selection menu.</li>
- *      <li>{@link android.support.design.widget.TextInputEditText} for inputting text for registration fields.</li>
- *      <li>{@link android.content.SharedPreferences} for saving registration information.</li>
- *  </ul>
- *
+ * </ol>
+ * <p>Key classes used in this class:</p>
+ * <ul>
+ * <li>{@link android.widget.Spinner} for input from a selection menu.</li>
+ * <li>{@link android.support.design.widget.TextInputEditText} for inputting text for registration fields.</li>
+ * <li>{@link android.content.SharedPreferences} for saving registration information.</li>
+ * </ul>
  */
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -75,6 +72,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private final int [] headerIds = {R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header};
     private View[] sectionViews = new View[sectionIds.length];
     private View[] headerViews = new View[headerIds.length];
+    private static final boolean SHOW_KEYBOARD = true;
+    private static final boolean CLOSE_KEYBOARD = false;
+    private static final boolean PARSE_ALL_FIELDS = true;
 
     private List<View> inputFields;
 
@@ -86,7 +86,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
-        for(int i = 0; i < sectionIds.length; i++){
+        for (int i = 0; i < sectionIds.length; i++) {
             sectionViews[i] = findViewById(sectionIds[i]);
             headerViews[i] = findViewById(headerIds[i]);
             setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
@@ -95,7 +95,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState){
+    protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         setupInputFields();
         addSubmitButtonSave();
@@ -106,11 +106,11 @@ public class RegistrationActivity extends AppCompatActivity {
     /**
      * Initializes the inputFields to the inputs of this activity.
      */
-    private void setupInputFields(){
+    private void setupInputFields() {
         View view = findViewById(R.id.scroll_view);
 
         //Find the top level linear layout
-        if(view instanceof ScrollView) {
+        if (view instanceof ScrollView) {
             ScrollView scrollView = (ScrollView) view;
             inputFields = getInputFields(scrollView);
         }
@@ -119,10 +119,8 @@ public class RegistrationActivity extends AppCompatActivity {
     /**
      * Sets the on click listener for the submit button.
      */
-    private void addSubmitButtonSave(){
-        final Button submitButton = (Button)findViewById(R.id.submit_button);
-
-
+    private void addSubmitButtonSave() {
+        final Button submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 final EditText databaseEmailField1 = (EditText)findViewById(R.id.input_database_email_1);
@@ -134,10 +132,17 @@ public class RegistrationActivity extends AppCompatActivity {
                 boolean completeFields;
 
                 submitButton.requestFocus();
-                completeFields = parseTextFields();
                 if (databaseEmail1.isEmpty() && databaseEmail2.isEmpty() && databaseEmail3.isEmpty()) {
                     createErrorDialog(databaseEmailField1);
+                    databaseEmailField1.requestFocus();
+                    for (int i = 0; i < sectionViews.length; i++) {
+                        if (sectionViews[i].findFocus() != null) {
+                            sectionViews[i].setVisibility(View.VISIBLE);
+                            toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1);
+                        }
+                    }
                 } else {
+                    completeFields = parseTextFields();
                     createSubmitConfirmationDialog(completeFields);
                 }
 
@@ -149,7 +154,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sets the on click listener for the registration bypass button
      */
     private void addRegistrationSkip() {
-        final Button skipButton = (Button)findViewById(R.id.bypass_button);
+        final Button skipButton = (Button) findViewById(R.id.bypass_button);
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,38 +191,37 @@ public class RegistrationActivity extends AppCompatActivity {
     /**
      * This function takes a scroll view as the root view of a xml layout and searches for
      * TextInputEditText and spinner_item fields to add to the List.
+     *
      * @param rootScrollView The root scroll view where all the children will be visited to
      *                       check if there is an TextInputEditText field.
-     * @return               The list of input fields that will be parsed either a spinner_item or a
-     *                       TextInputEditText.
+     * @return The list of input fields that will be parsed either a spinner_item or a
+     * TextInputEditText.
      */
-    private List<View> getInputFields(ScrollView rootScrollView){
+    private List<View> getInputFields(ScrollView rootScrollView) {
 
         List<View> inputFieldsList = new ArrayList<>();
         Stack<ViewGroup> viewStack = new Stack<>();
 
         //error check
-        if(rootScrollView == null){
+        if (rootScrollView == null) {
             return inputFieldsList;
         }
 
         viewStack.push(rootScrollView);
 
-        while(viewStack.size() > 0){
+        while (viewStack.size() > 0) {
             ViewGroup currentView = viewStack.pop();
-            if(currentView instanceof TextInputLayout){
+            if (currentView instanceof TextInputLayout) {
                 inputFieldsList.add(((TextInputLayout) currentView).getEditText());
-            }
-            else if(currentView instanceof Spinner){
+            } else if (currentView instanceof Spinner) {
                 inputFieldsList.add(currentView);
-            }
-            else{
+            } else {
                 //push children onto stack from right to left
                 //pushing on in reverse order so that the traversal is in-order traversal
-                for(int i = currentView.getChildCount() - 1; i >= 0; i--){
+                for (int i = currentView.getChildCount() - 1; i >= 0; i--) {
                     View child = currentView.getChildAt(i);
-                    if(child instanceof ViewGroup){
-                        viewStack.push((ViewGroup)child);
+                    if (child instanceof ViewGroup) {
+                        viewStack.push((ViewGroup) child);
                     }
                 }
             }
@@ -228,25 +232,29 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * Parse the text fields when the submit button has been clicked.
+     *
      * @return true if all fields are filled in, false if any field is blank
      */
-    private boolean parseTextFields(){
-        for(int i = 0; i < inputFields.size(); i++){
+    private boolean parseTextFields() {
+        for (int i = 0; i < inputFields.size(); i++) {
             View field = inputFields.get(i);
-            if(field instanceof TextInputEditText) {
-                String inputString = ((TextInputEditText)field).getText().toString();
+            if (field instanceof TextInputEditText) {
+                String inputString = ((TextInputEditText) field).getText().toString();
                 if (inputString.trim().isEmpty()) {
                     // Set focus to first empty field and make section visible if hidden
                     field.requestFocus();
-                    for(int j = 0; j < sectionViews.length; j++){
-                        if(sectionViews[j].findFocus() != null){
+                    for (int j = 0; j < sectionViews.length; j++) {
+                        if (sectionViews[j].findFocus() != null) {
                             sectionViews[j].setVisibility(View.VISIBLE);
                             headerViews[j].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
+                            toggleKeyboard(SHOW_KEYBOARD, field);
+                            return false;
                         }
                     }
                     return false;
                 }
             }
+
         }
         return true;
     }
@@ -255,22 +263,22 @@ public class RegistrationActivity extends AppCompatActivity {
      * This function stores the registration information to the saved preference file. The
      * preference file is located in getString(R.string.Registration_File_Name).
      */
-    private void storeRegistrationInfo(){
+    private void storeRegistrationInfo() {
         SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
         Calendar calendar;
         String date, androidVersion, manufacturer, model;
         String day, month, year, hour, min;
 
-        for(int i = 0; i < inputFields.size(); i++){
+        for (int i = 0; i < inputFields.size(); i++) {
             View field = inputFields.get(i);
-            if(field instanceof TextInputEditText){
-                TextInputEditText textField = (TextInputEditText)field;
+            if (field instanceof TextInputEditText) {
+                TextInputEditText textField = (TextInputEditText) field;
                 String textFieldName = getResources().getResourceEntryName(textField.getId());
                 textFieldName = textFieldName.replace("input_", "");
                 String textFieldText = textField.getText().toString();
                 editor.putString(textFieldName, textFieldText);
             } else if (field instanceof Spinner) {
-                Spinner spinner = (Spinner)field;
+                Spinner spinner = (Spinner) field;
                 String spinnerName = getResources().getResourceEntryName(spinner.getId());
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
@@ -281,7 +289,7 @@ public class RegistrationActivity extends AppCompatActivity {
         // Create timestamp for when the data was submitted
         calendar = Calendar.getInstance();
         day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH));
-        month = Integer.toString(calendar.get(Calendar.MONTH)+1);
+        month = Integer.toString(calendar.get(Calendar.MONTH) + 1);
         year = Integer.toString(calendar.get(Calendar.YEAR));
         hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY));
         min = Integer.toString(calendar.get(Calendar.MINUTE));
@@ -305,8 +313,9 @@ public class RegistrationActivity extends AppCompatActivity {
     /**
      * This function sets the click listeners to implement the accordion functionality
      * for each section of the registration page
-     * @param headerView a variable of type View denoting the field the user will click to open up
-     *                   a section of the registration
+     *
+     * @param headerView  a variable of type View denoting the field the user will click to open up
+     *                    a section of the registration
      * @param sectionView a variable of type View denoting the section that will open up
      */
     private void setAccordionListener(final View headerView, final View sectionView) {
@@ -317,11 +326,11 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (sectionView.getVisibility() == View.GONE) {
                     sectionView.setVisibility(View.VISIBLE);
                     headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
+                    toggleKeyboard(SHOW_KEYBOARD, sectionView);         
                 } else {
                     sectionView.setVisibility(View.GONE);
                     headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.black_semi_transparent, null));
-                    // Hide keyboard on accordion closing
-                    hideKeyboard();
+                    toggleKeyboard(CLOSE_KEYBOARD, sectionView);
                 }
             }
         });
@@ -349,6 +358,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * Shows error dialog if user did not provide an email to send the information to
+     *
      * @param emailTextField the text field to check if it is blank
      */
     private void createErrorDialog(final EditText emailTextField) {
@@ -370,6 +380,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * Creates a dialog to confirm the user wants to submit
+     *
      * @param completeFields true if all fields filled in, false if any fields are empty
      */
     private void createSubmitConfirmationDialog(boolean completeFields) {
@@ -396,22 +407,30 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * Hides keyboard from the view
+     * This function toggles the soft input keyboard. Allowing the user to have the keyboard
+     * to open or close seamlessly alongside the rest UI.
+     * @param showKeyBoard The boolean to be passed in to determine if the keyboard show be shown.
+     * @param aView The view associated with the soft input keyboard.
      */
-    private void hideKeyboard() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    private void toggleKeyboard(boolean showKeyBoard, View aView) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (showKeyBoard) {
+            imm.showSoftInput(aView, 0);
+        } else {
+            imm.hideSoftInputFromWindow(aView.getWindowToken(), 0);
+        }
     }
 
     private static void sendEmail(Activity activity) {
 
         SharedPreferences prefs = activity.getSharedPreferences(activity.getString(R.string.registration_filename), MODE_PRIVATE);
-        Map<String, String> preferences = (Map<String, String>)prefs.getAll();
+        Map<String, String> preferences = (Map<String, String>) prefs.getAll();
 
         String message = formatEmailFromPreferences(prefs);
 
         String[] TO =  { preferences.get("database_email_1"), preferences.get("database_email_2"),
                 preferences.get("database_email_3") };
+
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");
@@ -432,6 +451,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
     /**
      * Takes the preferences file and returns a string of formatted fields in readable format
+     *
      * @param prefs the SharedPreferences object for registration
      * @return a well formatted string of registration information
      */
@@ -439,9 +459,9 @@ public class RegistrationActivity extends AppCompatActivity {
         // Gives the order for retrieval and printing
         // Empty strings ("") are used to separate sections in the printing phase
         String[] keyListOrder = {"date", "", "language", "ethnologue", "country", "location",
-            "town", "lwc", "orthography", "", "translator_name", "translator_education", "translator_languages",
-            "translator_phone", "translator_email", "translator_communication_preference",
-            "translator_location", "", "consultant_name", "consultant_languages",
+                "town", "lwc", "orthography", "", "translator_name", "translator_education", "translator_languages",
+                "translator_phone", "translator_email", "translator_communication_preference",
+                "translator_location", "", "consultant_name", "consultant_languages",
                 "consultant_phone", "consultant_email", "consultant_communication_preference",
                 "consultant_location", "consultant_location_type", "", "trainer_name", "trainer_languages",
                 "trainer_phone", "trainer_email", "trainer_communication_preference",
@@ -454,7 +474,7 @@ public class RegistrationActivity extends AppCompatActivity {
             // Section separation appends newline
             if (keyListOrder[i].isEmpty()) {
                 message.append("\n");
-            // Find key and value and print in clean format
+                // Find key and value and print in clean format
             } else {
                 formattedKey = keyListOrder[i].replace("_", " ");
                 formattedKey = formattedKey.toUpperCase();

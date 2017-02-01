@@ -17,64 +17,82 @@
             android:layout_height="match_parent"
             android:id="@+id/toolbar"/>
     </android.support.design.widget.AppBarLayout>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/logo_large"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/learnImageView" />
-
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@null"
-        android:src="@drawable/ic_pause_gray"
-        android:onClick="onClickPlayPauseButton"
-        android:id="@+id/playButton" />
-
-    <SeekBar
-        android:layout_width="400dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/videoSeekBar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_above="@+id/playButton"
-        android:max="100" />
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:paddingTop="70dp">
-        <ImageView
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/drawer_layout_learn"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@+id/navList_learn"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="left|start"
+            android:background="@color/darkGray"/>
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_menu_play"
-            android:id="@+id/soundOff"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:visibility="gone" />
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/learnImageView" />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/volumeSwitch"
-            android:layout_alignBottom="@+id/soundOn"
-            android:layout_toLeftOf="@+id/soundOff"
-            android:layout_toStartOf="@+id/soundOff"
-            android:visibility="gone" />
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:background="@null"
+                android:src="@drawable/ic_pause_gray"
+                android:onClick="onClickPlayPauseButton"
+                android:layout_marginTop="30dp"
+                android:id="@+id/playButton" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_no_audio"
-            android:id="@+id/soundOn"
-            android:layout_toLeftOf="@+id/volumeSwitch"
-            android:layout_toStartOf="@+id/volumeSwitch"
-            android:visibility="gone"/>
-    </RelativeLayout>
+            <SeekBar
+                android:layout_width="400dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/videoSeekBar"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_above="@+id/playButton"
+                android:max="100" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingTop="70dp">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_menu_play"
+                    android:id="@+id/soundOff"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:visibility="gone" />
 
+                <Switch
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/volumeSwitch"
+                    android:layout_alignBottom="@+id/soundOn"
+                    android:layout_toLeftOf="@+id/soundOff"
+                    android:layout_toStartOf="@+id/soundOff"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_no_audio"
+                    android:id="@+id/soundOn"
+                    android:layout_toLeftOf="@+id/volumeSwitch"
+                    android:layout_toStartOf="@+id/volumeSwitch"
+                    android:visibility="gone"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </android.support.v4.widget.DrawerLayout>
 </RelativeLayout>

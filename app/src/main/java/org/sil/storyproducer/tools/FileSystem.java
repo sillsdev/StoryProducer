@@ -16,8 +16,8 @@ public class FileSystem {
     private static final String TEMPLATES_DIR = "templates",
                                 NARRATION_PREFIX = "narration",
                                 PROJECT_DIR = "projects",
-                                SOUNDTRACK_PREFIX = "SoundTrack";
-
+                                SOUNDTRACK_PREFIX = "SoundTrack",
+                                TRANSLATION_PREFIX = "translation";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
@@ -42,7 +42,7 @@ public class FileSystem {
         projectPaths=new HashMap<>();
 
         File[] storeDirs = getStorageDirs();
-        for(int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
+        for (int storeIndex = 0; storeIndex < storeDirs.length; storeIndex++) {
             File sDir = storeDirs[storeIndex];
 
             if (sDir != null) {
@@ -104,6 +104,7 @@ public class FileSystem {
     private static File[] getStorageDirs() {
         return ContextCompat.getExternalFilesDirs(context, null);
     }
+
     private static File[] getLanguageDirs(File storageDir) {
         return storageDir.listFiles(directoryFilter);
     }
@@ -113,7 +114,7 @@ public class FileSystem {
 
     private static String getStoryPath(String story){
         Map<String, String> storyMap = storyPaths.get(language);
-        if(storyMap != null) {
+        if (storyMap != null) {
             return storyMap.get(story);
         }
         return null;
@@ -121,6 +122,9 @@ public class FileSystem {
 
     public static File getNarrationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
+    }
+    public static File getTranslationAudio(String story, int i){
+        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
     }
 
     public static File getSoundtrackAudio(String story, int i){
@@ -164,7 +168,7 @@ public class FileSystem {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = sampleSize;
 
-        for (int i=0; i < file.length; i++) {
+        for (int i = 0; i < file.length; i++) {
             if (file[i].getName().equals(number + ".jpg")) {
                 return BitmapFactory.decodeFile(path + "/" + file[i].getName(), options);
             }
@@ -172,12 +176,28 @@ public class FileSystem {
         return null;
     }
 
-    public static int getImageAmount(String storyName){
+//    public static String getAudioPath(String story, int number) {
+//        String path = getStoryPath(story);
+//        File f = new File(path);
+//        File file[] = f.listFiles();
+//        String audioName = "narration" + number;
+//
+//        for (int i = 0; i < file.length; i++) {
+//            String[] audioExtensions = {".wav", ".mp3", ".wma"};
+//            for (String extension : audioExtensions) {
+//                if (file[i].getName().equals(audioName + extension)) {
+//                    return file[i].getAbsolutePath();
+//                }
+//            }
+//        }
+//        return null;
+//    }
+    public static int getImageAmount(String storyName) {
         String path = getStoryPath(storyName);
         File f = new File(path);
         File file[] = f.listFiles();
         int count = 0;
-        for(int i=0; i<file.length; i++) {
+        for (int i = 0; i < file.length; i++) {
             if (!file[i].isHidden() && file[i].getName().contains(".jpg")) {
                 count++;
             }
@@ -186,7 +206,8 @@ public class FileSystem {
     }
 
     private static String[] content;
-    public static void loadSlideContent(String storyName, int slideNum){
+
+    public static void loadSlideContent(String storyName, int slideNum) {
         File file = new File(getStoryPath(storyName), (slideNum + ".txt"));
         StringBuilder text = new StringBuilder();
         try {
@@ -198,18 +219,17 @@ public class FileSystem {
                 text.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             //You'll need to add proper error handling here
         }
 
 
         String text1 = text.toString();
         byte[] temp = text1.getBytes();
-        for(int i = 0; i < temp.length - 2; i++) {
+        for (int i = 0; i < temp.length - 2; i++) {
             //Swap out curly apostrophe with ASCII single quote
-            if(temp[i] == -17 && temp[i+1] == -65 && temp[i+2] == -67) {
-                text = text.replace(i, i+1, "'");
+            if (temp[i] == -17 && temp[i + 1] == -65 && temp[i + 2] == -67) {
+                text = text.replace(i, i + 1, "'");
                 text1 = text.toString();
                 temp = text1.getBytes();
             }
@@ -217,20 +237,58 @@ public class FileSystem {
         content = text.toString().split(Pattern.quote("~"));
     }
 
-    public static String getTitle(){
+    public static String getTitle() {
         return content[0];
     }
-    public static String getSubTitle(){
+
+    public static String getSubTitle() {
         return content[1];
     }
-    public static String getSlideVerse(){
+
+    public static String getSlideVerse() {
         return content[2];
     }
-    public static String getSlideContent(){
+
+    public static String getSlideContent() {
         return content[3];
     }
 
     public static String[] getLanguages() {
         return storyPaths.keySet().toArray(new String[storyPaths.size()]);
+    }
+
+    /**
+     * This function searches the directory of the story and finds the total number of
+     * slides associated with the story. The total number of slides will be determined by
+     * the number of .jpg and .txt extensions. The smaller number of .jpg or .txt will be returned.
+     *
+     * @param storyName The story name that needs to find total number of slides.
+     * @return The number of slides total for the story. The smaller number of .txt or .jpg files
+     * found in the directory.
+     */
+    public static int getTotalSlideNum(String storyName) {
+        String rootDirectory = getStoryPath(storyName);
+        File[] files = new File(rootDirectory).listFiles();
+        int totalPics = 0;
+        int totalTexts = 0;
+
+        for (File aFile : files) {
+            String tempNumber;
+            String fileName = aFile.toString();
+            if (fileName.contains(".jpg") || fileName.contains(".txt")) {
+                String extension = (fileName.contains(".jpg")) ? ".jpg" : ".txt";
+                tempNumber = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf(extension));
+                if (tempNumber.matches("^([0-9]+)$")) {
+                    int checkingNumber = Integer.valueOf(tempNumber);
+                    if (extension.equals(".txt")) {
+                        totalTexts = (checkingNumber > totalTexts) ? checkingNumber : totalTexts;
+                    } else {
+                        totalPics = (checkingNumber > totalPics) ? checkingNumber : totalPics;
+                    }
+                }
+            }
+        }
+
+        return (totalPics < totalTexts) ? totalPics : totalTexts;
     }
 }

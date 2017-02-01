@@ -1,8 +1,5 @@
 package org.sil.storyproducer.controller;
 
-import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.*;
-import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +8,7 @@ import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Looper;
+
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -25,8 +23,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import java.io.Serializable;
 
+
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.NavItem;
+import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.FileSystem;
+
+import java.io.Serializable;
 import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
@@ -223,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     public void changeSlide(int slidePosition){
         if(pagerFrag != null) {
             pagerFrag.changeView(slidePosition);
+
+            //ibuprofen
         }
     }
 
