@@ -30,6 +30,8 @@ public class SampleStory extends Thread {
     private static final long SLIDE_TRANSITION_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
 
+    private static final String OUTPUT_EXT = "3gp";
+
     private final File OUTPUT_DIR;
     private final File OUTPUT_FILE;
 
@@ -46,7 +48,7 @@ public class SampleStory extends Thread {
 
     // using Kush Gauge for video bit rate
     private static final int PIXEL_RATE = WIDTH * HEIGHT * VIDEO_FRAME_RATE;
-    private static final int MOTION_FACTOR = 2;                   // 1, 2, or 4
+    private static final int MOTION_FACTOR = 4;                   // 1, 2, or 4
     private static final float KUSH_GAUGE_CONSTANT = 0.07f;
     // bits per second for video
     private static final int VIDEO_BIT_RATE = (int) (PIXEL_RATE * MOTION_FACTOR * KUSH_GAUGE_CONSTANT);
@@ -59,7 +61,7 @@ public class SampleStory extends Thread {
 
     public SampleStory() {
         OUTPUT_DIR = FileSystem.getProjectDirectory("Fiery Furnace");
-        OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+        OUTPUT_FILE = new File(OUTPUT_DIR, WIDTH + "x" + HEIGHT + "." + OUTPUT_EXT);
 
         IMG_1 = FileSystem.getImageFile(STORY, 1);
         IMG_2 = FileSystem.getImageFile(STORY, 4);
