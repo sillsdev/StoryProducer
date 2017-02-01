@@ -48,39 +48,51 @@ public class FileSystem {
             if (sDir != null) {
                 File templateDir = new File(sDir, TEMPLATES_DIR);
 
-                if (templateDir.exists() && templateDir.isDirectory()) {
-                    File[] langDirs = getLanguageDirs(templateDir);
-                    for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
-                        File lDir = langDirs[langIndex];
-                        String lang = lDir.getName();
+                //If there is no template directory, move on from this storage device.
+                if(!templateDir.exists() || !templateDir.isDirectory()) {
+                    continue;
+                }
 
-                        if (!storyPaths.containsKey(lang)) {
-                            storyPaths.put(lang, new HashMap<String, String>());
-                        }
-                        Map<String, String> storyMap = storyPaths.get(lang);
+                File[] langDirs = getLanguageDirs(templateDir);
+                for (int langIndex = 0; langIndex < langDirs.length; langIndex++) {
+                    File lDir = langDirs[langIndex];
+                    String lang = lDir.getName();
 
-                        File[] storyDirs = getStoryDirs(lDir);
-                        for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
-                            File storyDir = storyDirs[storyIndex];
-                            String storyName = storyDir.getName();
-                            String storyPath = storyDir.getPath();
-                            storyMap.put(storyName, storyPath);
+                    if (!storyPaths.containsKey(lang)) {
+                        storyPaths.put(lang, new HashMap<String, String>());
+                    }
+                    Map<String, String> storyMap = storyPaths.get(lang);
+
+                    File[] storyDirs = getStoryDirs(lDir);
+                    for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                        File storyDir = storyDirs[storyIndex];
+                        String storyName = storyDir.getName();
+                        String storyPath = storyDir.getPath();
+                        storyMap.put(storyName, storyPath);
+
+                        //Make sure the corresponding projects directory exists.
+                        File storyWriteDir = new File(new File(sDir, PROJECT_DIR), storyName);
+                        if(!storyWriteDir.isDirectory()) {
+                            storyWriteDir.mkdir();
                         }
                     }
                 }
 
                 File projectDir  = new File(sDir, PROJECT_DIR);
 
-                if (projectDir.exists() && projectDir.isDirectory()) {
-                    File[] storyDirs = getStoryDirs(projectDir);
-                    for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
-                        File storyDir = storyDirs[storyIndex];
-                        String storyName = storyDir.getName();
-                        String storyPath = storyDir.getPath();
-                        projectPaths.put(storyName, storyPath);
-                    }
+                //Make the project directory if it does not exist.
+                //The template creator shouldn't have to remember this step.
+                if(!projectDir.isDirectory()) {
+                    projectDir.mkdir();
                 }
 
+                File[] storyDirs = getStoryDirs(projectDir);
+                for (int storyIndex = 0; storyIndex < storyDirs.length; storyIndex++) {
+                    File storyDir = storyDirs[storyIndex];
+                    String storyName = storyDir.getName();
+                    String storyPath = storyDir.getPath();
+                    projectPaths.put(storyName, storyPath);
+                }
             }
         }
     }
@@ -115,6 +127,10 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
     }
 
+    public static File getSoundtrackAudio(String story, int i){
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+".mp3");
+    }
+    
     public static File getSoundtrack(String story){
         return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
     }
@@ -136,6 +152,10 @@ public class FileSystem {
             return keys.toArray(new String[keys.size()]);
         }
         return new String[0];
+    }
+
+    public static File getImageFile(String story, int number) {
+        return new File(getStoryPath(story), number + ".jpg");
     }
 
     public static Bitmap getImage(String story, int number) {
