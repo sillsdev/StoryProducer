@@ -16,6 +16,25 @@ public class AudioPlayer {
     }
 
     /**
+     * Only sets the path for the audio to
+     * @param path String path for the audio
+     */
+    public void setPath(String path) {
+        try {
+            mPlayer.setDataSource(path);
+        } catch (IOException e) {
+            //TODO maybe something with this exception
+            e.printStackTrace();
+        }
+        try {
+            mPlayer.prepare();
+        } catch (IOException e) {
+            //TODO maybe something with this exception
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Plays the audio with the given path
      * @param path for the path where the audio resides
      */
@@ -83,6 +102,7 @@ public class AudioPlayer {
 
                 mPlayer.stop();
                 mPlayer.release();
+                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
@@ -96,6 +116,22 @@ public class AudioPlayer {
      */
     public int getAudioDurationInSeconds() {
         return (int)(mPlayer.getDuration() * 0.001);
+    }
+
+    /**
+     * returns the duration of the audio as an int in miliseconds
+     * @return the duration of the audio as an int
+     */
+    public int getAudioDurationInMilliseconds() {
+        return (int)mPlayer.getDuration();
+    }
+
+    /**
+     * Seeks to the parameter in miliseconds
+     * @param msec milliseconds for where to seek to in the auio
+     */
+    public void seekTo(int msec) {
+        mPlayer.seekTo(msec);
     }
 
     /**

@@ -40,6 +40,8 @@ import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
+import java.util.ArrayList;
+
 public class LearnActivity extends AppCompatActivity {
 
     private RelativeLayout rootView;
@@ -53,12 +55,13 @@ public class LearnActivity extends AppCompatActivity {
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
-    private float backgroundVolume = 0.4f;
+    private float backgroundVolume = 0.5f;
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
+    private ArrayList<Integer> backgroundAudioJumps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,7 @@ public class LearnActivity extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
                                                                                     phase.getColor(), null)));
         setupDrawer();
+        setBackgroundAudioJumps();
 
         setSeekBarListener();
         playVideo();
@@ -101,6 +105,22 @@ public class LearnActivity extends AppCompatActivity {
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
         backgroundPlayer.setVolume(backgroundVolume);
+    }
+
+    /**
+     * Sets the array list for all the jump points that the background music has to make
+     */
+    private void setBackgroundAudioJumps() {
+        int count = 0;
+        backgroundAudioJumps = new ArrayList<Integer>();
+        backgroundAudioJumps.add(0, count);
+        for(int k = 1; k < LAST_SLIDE_NUM; k++) {
+            narrationPlayer = new AudioPlayer();                                                //set the next audio
+            narrationPlayer.setPath(FileSystem.getNarrationAudio(storyName, k - 1).getPath());
+            count += narrationPlayer.getAudioDurationInMilliseconds();
+            backgroundAudioJumps.add(k, count);
+        }
+        backgroundAudioJumps.add(count);        //this last one is just added for the copyrights slide
     }
 
     /**
@@ -175,9 +195,9 @@ public class LearnActivity extends AppCompatActivity {
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < LAST_SLIDE_NUM) {
+                if(slideNum < LAST_SLIDE_NUM) {     //not at the end of video
                     playVideo();
-                } else {
+                } else {                            //at the end of video so special case
                     videoSeekBar.setProgress(LAST_SLIDE_NUM);
                     backgroundPlayer.releaseAudio();
                     narrationPlayer.releaseAudio();
@@ -201,7 +221,7 @@ public class LearnActivity extends AppCompatActivity {
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            if(slideNum >= LAST_SLIDE_NUM) {
+            if(slideNum >= LAST_SLIDE_NUM) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.setProgress(0);
                 slideNum = 0;
                 setBackgroundMusic();
@@ -217,7 +237,7 @@ public class LearnActivity extends AppCompatActivity {
      * Sets the seekBar listener for the video seek bar
      */
     private void setSeekBarListener() {
-        videoSeekBar.setMax(LAST_SLIDE_NUM);      //set the bar to have as many markers as images
+        videoSeekBar.setMax(LAST_SLIDE_NUM);      //set the progress bar to have as many markers as images
         videoSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar sBar){
@@ -230,19 +250,22 @@ public class LearnActivity extends AppCompatActivity {
                 if(fromUser) {
                     boolean notPlayingAudio = false;
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
-                    narrationPlayer.releaseAudio();
+                    narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
+                    backgroundPlayer.releaseAudio();
                     slideNum = progress;
+                    setBackgroundMusic();       //have to reset the background music because it could have been completed
+                    if (notPlayingAudio) backgroundPlayer.pauseAudio();
+                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNum));
                     if(slideNum == LAST_SLIDE_NUM) {
                         backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
                         showStartPracticeSnackBar();
-                        narrationPlayer = new AudioPlayer();
+                        narrationPlayer = new AudioPlayer();    //create new player so there is one that exists
                     } else {
                         playVideo();
                     }
                     if (notPlayingAudio) narrationPlayer.pauseAudio();
-
                 }
             }
         });
