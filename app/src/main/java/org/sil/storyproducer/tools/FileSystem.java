@@ -17,7 +17,8 @@ public class FileSystem {
                                 NARRATION_PREFIX = "narration",
                                 PROJECT_DIR = "projects",
                                 SOUNDTRACK_PREFIX = "SoundTrack",
-                                TRANSLATION_PREFIX = "translation";
+                                TRANSLATION_PREFIX = "translation",
+                                COMMENT_PREFIX = "comment";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
@@ -133,6 +134,34 @@ public class FileSystem {
     
     public static File getSoundtrack(String story){
         return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
+    }
+
+    public static File getAudioComment(String story, int slide, int commentIndex) {
+        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+commentIndex+".mp3");
+    }
+
+    public static void deleteAudioComment(String story, int slide, int commentIndex) {
+        File file = new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+commentIndex+".mp3");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public static ArrayList<String> getCommentTitles(String story, int slide) {
+        ArrayList<String> commentTitles = new ArrayList<String>();
+        File storyDirectory = new File(getStoryPath(story));
+        File[] storyDirectoryFiles = storyDirectory.listFiles();
+        String filename;
+        for (int i = 0; i < storyDirectoryFiles.length; i++) {
+            filename = storyDirectoryFiles[i].getName();
+            if (filename.contains(COMMENT_PREFIX+slide)) {
+                filename = filename.replace(COMMENT_PREFIX+slide, "Comment ");
+                filename = filename.replace("_", "");
+                filename = filename.replace(".mp3", "");
+                commentTitles.add(filename);
+            }
+        }
+        return commentTitles;
     }
 
     /**
