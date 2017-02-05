@@ -8,7 +8,7 @@ public class DraftEntry extends LogEntry {
     private int slideNum;
     private Type type;
 
-    DraftEntry(long dateTime, Type type, int slideNum) {
+    public DraftEntry(long dateTime, Type type, int slideNum) {
         super(dateTime, Phase.Draft);
         this.slideNum=slideNum;
         this.type=type;

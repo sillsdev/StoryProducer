@@ -1,6 +1,11 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.DraftEntry;
+import org.sil.storyproducer.controller.logging.LearnEntry;
+import org.sil.storyproducer.controller.logging.Log;
+import org.sil.storyproducer.controller.logging.LogView;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;
@@ -50,6 +55,19 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
+
+        Intent goToLogView = new Intent(this, LogView.class);
+        startActivity(goToLogView);
+
+        //Logging.saveLogEntry(new DraftEntry(0L, DraftEntry.Type.MT_pb , 0), "ENG", "TheTaleOfJimbob");
+        //Logging.createABunchOfFakeLogEntries("Spanglish", "NotAStory.com");
+       /* Log log=null;
+        try{
+            log = (Log) Logging.loadObject("/storage/emulated/0/splogs/Spanglish/NotAStory.com/log.ser");
+        }catch(Exception e){
+            System.err.println("So... deserialization failed, I guess.");
+        }
+        System.out.println("items in deserialized log: "+log.size()); */
 
         boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {

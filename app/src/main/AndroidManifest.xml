@@ -22,6 +22,11 @@
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
             android:screenOrientation="portrait" />
+        <!-- Log Viewing Activity -->
+        <activity
+            android:name=".controller.logging.LogView"
+            android:label="Log View"
+             />
 
         <!-- Info Page -->
         <activity

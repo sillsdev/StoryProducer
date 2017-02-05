@@ -8,7 +8,7 @@ public class LearnEntry extends LogEntry {
     private double startPosition;
     private double endPosition;
 
-    LearnEntry(long dateTime, double start, double end){
+    public LearnEntry(long dateTime, double start, double end){
         super(dateTime, Phase.Learn);
         startPosition=start;
         endPosition=end;
