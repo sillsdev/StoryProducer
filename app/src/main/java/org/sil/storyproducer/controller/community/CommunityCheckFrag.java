@@ -213,8 +213,8 @@ public class CommunityCheckFrag extends Fragment {
         });
     }
 
-    public void playComment(int commentIndex) {
-        final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition, commentIndex);
+    public void playComment(String commentTitle) {
+        final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition, commentTitle);
         if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
             draftPlayer.stopAudio();
         }
@@ -228,19 +228,21 @@ public class CommunityCheckFrag extends Fragment {
     }
 
     /**
-     * This function sets the recording and playback buttons (The mic and play button) with their
-     * respective functionalities.
+     * This function sets the recording button with its functionality
      */
     private void setRecordComment(View aView){
         FloatingActionButton recordButton =
                 (FloatingActionButton) aView;
-        int numComments = comments.size();
-        final String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
-                numComments).getPath();
+
 
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Comment index for user starts at 1 so we increment 1 from the 0 based index
+                int nextCommentIndex = comments.size() + 1;
+                String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
+                        "Comment " + nextCommentIndex).getPath();
+
                 //stop all other playback streams.
                 if(commentPlayer != null && commentPlayer.isAudioPlaying()){
                     commentPlayer.stopAudio();
@@ -284,7 +286,7 @@ public class CommunityCheckFrag extends Fragment {
         }catch(RuntimeException stopException){
             Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
         }
-        commentRecorder.reset();
+        commentRecorder.release();
     }
 
 
@@ -294,9 +296,9 @@ public class CommunityCheckFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName){
-        if(commentRecorder == null){
-            commentRecorder = new MediaRecorder();
-        }
+
+        commentRecorder = new MediaRecorder();
+
 
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -309,6 +311,8 @@ public class CommunityCheckFrag extends Fragment {
         commentRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         commentRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        commentRecorder.setAudioEncodingBitRate(16);
+        commentRecorder.setAudioSamplingRate(44100);
         commentRecorder.setOutputFile(fileName);
     }
 }

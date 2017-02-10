@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -36,6 +37,7 @@ import java.io.IOException;
 public class DraftFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slidePosition;
+    private SlideText slideText;
     private AudioPlayer narrationAudioPlayer;
     private AudioPlayer voiceAudioPlayer;
     private View rootView;
@@ -55,7 +57,7 @@ public class DraftFrag extends Fragment {
 
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
+        slideText = FileSystem.getTextContent(StoryState.getStoryName(), slidePosition);
     }
 
     @Override
@@ -174,7 +176,7 @@ public class DraftFrag extends Fragment {
             return;
         }
         TextView textView = (TextView) aView;
-        textView.setText(FileSystem.getSlideContent());
+        textView.setText(slideText.getVerse());
     }
 
     /**
@@ -187,8 +189,8 @@ public class DraftFrag extends Fragment {
         }
         TextView textView = (TextView) aView;
 
-        String[] titleNamePriority = new String[]{FileSystem.getSlideVerse(),
-                FileSystem.getSubTitle(), FileSystem.getTitle()};
+        String[] titleNamePriority = new String[]{slideText.getReference(),
+                slideText.getSubtitle(), slideText.getTitle()};
 
         for (String title : titleNamePriority) {
             if (title != null && !title.equals("")) {
@@ -342,6 +344,8 @@ public class DraftFrag extends Fragment {
         voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        voiceRecorder.setAudioEncodingBitRate(16);
+        voiceRecorder.setAudioSamplingRate(44100);
         voiceRecorder.setOutputFile(fileName);
     }
 

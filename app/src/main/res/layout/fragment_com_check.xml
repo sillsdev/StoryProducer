@@ -31,36 +31,46 @@
         <ListView
             android:id="@+id/audio_comment_list_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/buttonLayout">
         </ListView>
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_commcheck_add_comment_button"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/lightGray"
-            fab:fab_icon="@drawable/ic_mic_black"
-            fab:fab_title="Record"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="17dp"
-            android:layout_marginStart="17dp" />
+            android:layout_alignParentBottom="true">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_draft_playback_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/lightGray"
-            fab:fab_icon="@drawable/ic_play"
-            fab:fab_title="Play"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="17dp"
-            android:layout_marginEnd="17dp" />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fragment_commcheck_add_comment_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_colorPressed="@color/lightGray"
+                fab:fab_icon="@drawable/ic_mic_black"
+                fab:fab_title="Record"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="17dp"
+                android:layout_marginStart="17dp" />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fragment_draft_playback_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                fab:fab_colorNormal="@color/white"
+                fab:fab_colorPressed="@color/lightGray"
+                fab:fab_icon="@drawable/ic_play"
+                fab:fab_title="Play"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="17dp"
+                android:layout_marginEnd="17dp" />
+
+        </RelativeLayout>
+
+
     </RelativeLayout>
 
 </RelativeLayout>

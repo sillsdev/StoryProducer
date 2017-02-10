@@ -4,6 +4,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
+import android.widget.Toast;
+
+import org.sil.storyproducer.model.SlideText;
 
 import java.io.*;
 import java.util.*;
@@ -136,15 +139,28 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
     }
 
-    public static File getAudioComment(String story, int slide, int commentIndex) {
-        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+commentIndex+".mp3");
+    public static File getAudioComment(String story, int slide, String commentTitle) {
+        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+ commentTitle +".mp3");
     }
 
-    public static void deleteAudioComment(String story, int slide, int commentIndex) {
-        File file = new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+commentIndex+".mp3");
+    public static void deleteAudioComment(String story, int slide, String commentTitle) {
+        File file = getAudioComment(story, slide, commentTitle);
         if (file.exists()) {
             file.delete();
         }
+    }
+
+    public static boolean renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
+        File file = getAudioComment(story, slide, oldTitle);
+        boolean renamed = false;
+        if (file.exists()) {
+            String newPathName = file.getAbsolutePath().replace(oldTitle, newTitle);
+            File newFile = new File(newPathName);
+            if (!newFile.exists()) {
+                renamed = file.renameTo(newFile);
+            }
+        }
+        return renamed;
     }
 
     public static ArrayList<String> getCommentTitles(String story, int slide) {
@@ -155,8 +171,7 @@ public class FileSystem {
         for (int i = 0; i < storyDirectoryFiles.length; i++) {
             filename = storyDirectoryFiles[i].getName();
             if (filename.contains(COMMENT_PREFIX+slide)) {
-                filename = filename.replace(COMMENT_PREFIX+slide, "Comment ");
-                filename = filename.replace("_", "");
+                filename = filename.replace(COMMENT_PREFIX+slide+"_", "");
                 filename = filename.replace(".mp3", "");
                 commentTitles.add(filename);
             }
@@ -234,9 +249,8 @@ public class FileSystem {
         return count;
     }
 
-    private static String[] content;
-
-    public static void loadSlideContent(String storyName, int slideNum) {
+    public static SlideText getTextContent(String storyName, int slideNum) {
+        String[] content;
         File file = new File(getStoryPath(storyName), (slideNum + ".txt"));
         StringBuilder text = new StringBuilder();
         try {
@@ -264,22 +278,14 @@ public class FileSystem {
             }
         }
         content = text.toString().split(Pattern.quote("~"));
-    }
 
-    public static String getTitle() {
-        return content[0];
-    }
-
-    public static String getSubTitle() {
-        return content[1];
-    }
-
-    public static String getSlideVerse() {
-        return content[2];
-    }
-
-    public static String getSlideContent() {
-        return content[3];
+        if (content.length == 4) {
+            SlideText slideText = new SlideText(content[0], content[1], content[2], content[3]);
+            return slideText;
+        } else {
+            Toast.makeText(context, "Error loading text", Toast.LENGTH_SHORT).show();
+            return new SlideText();
+        }
     }
 
     public static String[] getLanguages() {

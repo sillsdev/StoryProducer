@@ -3,33 +3,34 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="72dp">
+    android:background="@color/white">
 
-    <Button
+    <ImageButton
         android:id="@+id/audio_comment_play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="Play"/>
+        android:src="@drawable/ic_green_play"
+        android:background="@color/white"/>
 
     <TextView
         android:id="@+id/audio_comment_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:textColor="@color/black_semi_transparent"
         android:textSize="@dimen/text_title"
         android:text="Audio Comment"
-        android:layout_margin="10dp"
-        android:layout_toRightOf="@+id/audio_comment_play_button"
-        android:layout_toEndOf="@+id/audio_comment_play_button"/>
+        android:layout_margin="8dp"
+        android:layout_centerInParent="true" />
 
-    <Button
+    <ImageButton
         android:id="@+id/audio_comment_delete_button"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_margin="8dp"
-        android:text="delete"
-        android:layout_toRightOf="@+id/audio_comment_title"
-        android:layout_toEndOf="@+id/audio_comment_title"/>
+        android:src="@drawable/ic_red_delete"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/white"/>
 
 </RelativeLayout>
