@@ -17,7 +17,8 @@ public class FileSystem {
                                 NARRATION_PREFIX = "narration",
                                 PROJECT_DIR = "projects",
                                 SOUNDTRACK_PREFIX = "SoundTrack",
-                                TRANSLATION_PREFIX = "translation";
+                                TRANSLATION_PREFIX = "translation",
+                                LEARN_PRACTICE_PREFIX = "learnPractice";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
@@ -120,11 +121,29 @@ public class FileSystem {
         return null;
     }
 
+    /**
+     * gets the path to the project folder for the story that is passed
+     * @param story
+     * @return
+     */
+    private static String getProjectPath(String story) {
+        return projectPaths.get(story);
+    }
+
     public static File getNarrationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
     public static File getTranslationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
+    }
+
+    /**
+     * Gets the File for the learn practice recording
+     * @param story
+     * @return
+     */
+    public static File getLearnPracticeAudio(String story){
+        return new File(getProjectPath(story) + "/" + LEARN_PRACTICE_PREFIX + ".mp3");
     }
 
     public static File getSoundtrackAudio(String story, int i){
