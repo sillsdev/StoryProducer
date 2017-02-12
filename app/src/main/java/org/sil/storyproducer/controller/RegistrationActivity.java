@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,9 +68,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
     public static final String SKIP_KEY = "skip";
 
-    private final int[] sectionIds = {R.id.general_section, R.id.translator_section, R.id.consultant_section, R.id.trainer_section, R.id.database_section};
-    private final int[] headerIds = {R.id.general_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.database_header};
+    private final int [] sectionIds = {R.id.language_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.archive_section};
+    private final int [] headerIds = {R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header};
     private View[] sectionViews = new View[sectionIds.length];
+    private View[] headerViews = new View[headerIds.length];
     private static final boolean SHOW_KEYBOARD = true;
     private static final boolean CLOSE_KEYBOARD = false;
     private static final boolean PARSE_ALL_FIELDS = true;
@@ -86,6 +88,7 @@ public class RegistrationActivity extends AppCompatActivity {
         //Add the listeners to the LinearLayouts's header section.
         for (int i = 0; i < sectionIds.length; i++) {
             sectionViews[i] = findViewById(sectionIds[i]);
+            headerViews[i] = findViewById(headerIds[i]);
             setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
         }
 
@@ -97,6 +100,7 @@ public class RegistrationActivity extends AppCompatActivity {
         setupInputFields();
         addSubmitButtonSave();
         addRegistrationSkip();
+        addEthnologueQuestion();
     }
 
     /**
@@ -117,22 +121,24 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void addSubmitButtonSave() {
         final Button submitButton = (Button) findViewById(R.id.submit_button);
-
-
-        submitButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                final EditText databaseEmailField = (EditText) findViewById(R.id.input_database_email);
-                String databaseEmail = databaseEmailField.getText().toString();
+        submitButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                final EditText databaseEmailField1 = (EditText)findViewById(R.id.input_database_email_1);
+                final EditText databaseEmailField2 = (EditText)findViewById(R.id.input_database_email_2);
+                final EditText databaseEmailField3 = (EditText)findViewById(R.id.input_database_email_3);
+                String databaseEmail1 = databaseEmailField1.getText().toString();
+                String databaseEmail2 = databaseEmailField2.getText().toString();
+                String databaseEmail3 = databaseEmailField3.getText().toString();
                 boolean completeFields;
 
                 submitButton.requestFocus();
-                if (databaseEmail.isEmpty()) {
-                    createErrorDialog(databaseEmailField);
-                    databaseEmailField.requestFocus();
+                if (databaseEmail1.isEmpty() && databaseEmail2.isEmpty() && databaseEmail3.isEmpty()) {
+                    createErrorDialog(databaseEmailField1);
+                    databaseEmailField1.requestFocus();
                     for (int i = 0; i < sectionViews.length; i++) {
                         if (sectionViews[i].findFocus() != null) {
                             sectionViews[i].setVisibility(View.VISIBLE);
-                            toggleKeyboard(SHOW_KEYBOARD, databaseEmailField);
+                            toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1);
                         }
                     }
                 } else {
@@ -153,6 +159,23 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showExitAlertDialog();
+            }
+        });
+    }
+
+    /**
+     * Sets the on click listener for help on ethnologue codes, which sends them to
+     * ethnologue.com to browse language names and their corresponding codes
+     */
+    private void addEthnologueQuestion() {
+        final Button questionButton = (Button)findViewById(R.id.ethnologue_question_button);
+        questionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "https://www.ethnologue.com/browse";
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
             }
         });
     }
@@ -223,6 +246,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     for (int j = 0; j < sectionViews.length; j++) {
                         if (sectionViews[j].findFocus() != null) {
                             sectionViews[j].setVisibility(View.VISIBLE);
+                            headerViews[j].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
                             toggleKeyboard(SHOW_KEYBOARD, field);
                             return false;
                         }
@@ -301,9 +325,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
                 if (sectionView.getVisibility() == View.GONE) {
                     sectionView.setVisibility(View.VISIBLE);
-                    toggleKeyboard(SHOW_KEYBOARD, sectionView);
+                    headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
+                    toggleKeyboard(SHOW_KEYBOARD, sectionView);         
                 } else {
                     sectionView.setVisibility(View.GONE);
+                    headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.black_semi_transparent, null));
                     toggleKeyboard(CLOSE_KEYBOARD, sectionView);
                 }
             }
@@ -341,6 +367,11 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setMessage(getString(R.string.registration_error_message))
                 .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        // The index here comes from the index of the archive section and header
+                        // If another section is added or the sections are rearranged, this index
+                        // will need to be changed
+                        sectionViews[4].setVisibility(View.VISIBLE);
+                        headerViews[4].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
                         emailTextField.requestFocus();
                     }
                 }).create();
@@ -397,7 +428,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         String message = formatEmailFromPreferences(prefs);
 
-        String[] TO = {preferences.get("database_email")};
+        String[] TO =  { preferences.get("database_email_1"), preferences.get("database_email_2"),
+                preferences.get("database_email_3") };
+
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
         emailIntent.setType("text/plain");

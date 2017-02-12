@@ -1,5 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/trans_layout"
     android:layout_width="match_parent"
@@ -7,89 +7,115 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
 
+    <LinearLayout
+        android:id="@+id/dummyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/fragment_draft_image_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop" />
+        <ImageView
+            android:id="@+id/fragment_draft_image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+
+        <RelativeLayout
+            android:id="@+id/fragment_draft_Relative_Layout"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/fragment_draft_image_view"
+            android:background="@color/gray"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="10dp">
+
+
+            <TextView
+                android:id="@+id/fragment_draft_reference_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/gray"
+                android:text="TextView"
+                android:textSize="20dp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/fragment_draft_scripture_text"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/fragment_draft_reference_text"
+                android:background="@color/gray"
+                android:text="You should be seeing this!" />
+
+            <ImageButton
+                android:id="@+id/fragment_draft_narration_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fragment_draft_scripture_text"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/fragment_draft_reference_text"
+                android:background="@color/gray"
+                app:srcCompat="@drawable/ic_menu_play" />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/fragment_draft_animated_toolbar"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="0dp"
+        android:tint="@color/white"
+        app:backgroundTint="@android:color/holo_blue_bright"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:fab_icon="@drawable/fab_add_xxhdpi" />
 
     <RelativeLayout
-        android:id="@+id/fragment_draft_Relative_Layout"
+        android:id="@+id/fragment_draft_animated_toolbar"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/fragment_draft_image_view"
-        android:background="@color/gray"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="10dp">
-
-
-        <TextView
-            android:id="@+id/fragment_draft_reference_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@color/gray"
-            android:text="TextView"
-            android:textSize="20dp"
-            android:textStyle="bold|italic" />
-
-        <TextView
-            android:id="@+id/fragment_draft_scripture_text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/fragment_draft_reference_text"
-            android:background="@color/gray"
-            android:text="You should be seeing this!" />
+        android:layout_gravity="bottom|end"
+        android:background="@android:color/holo_blue_bright"
+        android:visibility="invisible">
 
         <ImageButton
-            android:id="@+id/fragment_draft_narration_button"
+            android:id="@+id/fragment_draft_play_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/fragment_draft_scripture_text"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/fragment_draft_reference_text"
-            android:background="@color/gray"
-            fab:srcCompat="@drawable/ic_menu_play" />
+            android:layout_marginStart="7dp"
+            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:visibility="invisible" />
 
-
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_draft_record_button"
+        <ImageButton
+            android:id="@+id/fragment_draft_mic_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/lightGray"
-            fab:fab_icon="@drawable/ic_mic_black"
-            fab:fab_title="Record" />
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_draft_playback_button"
-            android:visibility="invisible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/lightGray"
-            fab:fab_icon="@drawable/ic_play"
-            fab:fab_title="Play"
-            android:layout_alignParentBottom="true"
-            android:layout_toLeftOf="@+id/fragment_draft_record_button"
-            android:layout_toStartOf="@+id/fragment_draft_record_button"
-            android:layout_marginRight="17dp"
-            android:layout_marginEnd="17dp" />
-
+            android:layout_marginStart="41dp"
+            android:layout_toEndOf="@+id/fragment_draft_play_toolbar_button"
+            android:layout_toRightOf="@+id/fragment_draft_play_toolbar_button"
+            android:background="@drawable/ic_mic_white"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_mic_white" />
     </RelativeLayout>
+
+
 </RelativeLayout>
