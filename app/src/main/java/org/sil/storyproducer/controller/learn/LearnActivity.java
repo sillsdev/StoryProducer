@@ -36,9 +36,10 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
+import org.sil.storyproducer.tools.file.ImageFiles;
 
 public class LearnActivity extends AppCompatActivity {
 
@@ -97,7 +98,7 @@ public class LearnActivity extends AppCompatActivity {
     private void setBackgroundMusic() {
         //turn on the background music
         backgroundPlayer = new AudioPlayer();
-        backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
+        backgroundPlayer.playWithPath(AudioFiles.getSoundtrack(storyName).getPath());
         backgroundPlayer.setVolume(backgroundVolume);
     }
 
@@ -163,7 +164,7 @@ public class LearnActivity extends AppCompatActivity {
         //TODO: sync background audio with image
         setPic(learnImageView);                                                             //set the next image
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
+        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
         if(isVolumeOn) {
             narrationPlayer.setVolume(1.0f);
         } else {
@@ -173,10 +174,10 @@ public class LearnActivity extends AppCompatActivity {
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < FileSystem.getImageAmount(storyName)) {
+                if(slideNum < ImageFiles.getAmount(storyName)) {
                     playVideo();
                 } else {
-                    videoSeekBar.setProgress(FileSystem.getImageAmount(storyName) - 1);
+                    videoSeekBar.setProgress(ImageFiles.getAmount(storyName) - 1);
                     backgroundPlayer.releaseAudio();
                     showStartPracticeSnackBar();
                 }
@@ -205,7 +206,7 @@ public class LearnActivity extends AppCompatActivity {
      * Sets the seekBar listener for the video seek bar
      */
     private void setSeekBarListener() {
-        videoSeekBar.setMax(FileSystem.getImageAmount(storyName) - 1);      //set the bar to have as many markers as images
+        videoSeekBar.setMax(ImageFiles.getAmount(storyName) - 1);      //set the bar to have as many markers as images
         videoSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar sBar){
@@ -350,7 +351,7 @@ public class LearnActivity extends AppCompatActivity {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(storyName, slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();

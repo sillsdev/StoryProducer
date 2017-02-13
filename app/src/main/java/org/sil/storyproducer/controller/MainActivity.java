@@ -29,7 +29,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.Serializable;
 

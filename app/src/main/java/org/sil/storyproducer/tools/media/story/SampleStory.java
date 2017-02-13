@@ -6,10 +6,12 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.graphics.BitmapHelper;
+import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 
 import java.io.File;
 
@@ -62,14 +64,14 @@ public class SampleStory extends Thread {
     private static final int AUDIO_BITRATE = 64000;
 
     public SampleStory() {
-        OUTPUT_DIR = FileSystem.getProjectDirectory("Fiery Furnace");
+        OUTPUT_DIR = VideoFiles.getDefaultLocation("Fiery Furnace");
         OUTPUT_FILE = new File(OUTPUT_DIR, WIDTH + "x" + HEIGHT + "." + OUTPUT_EXT);
 
-        IMG_1 = FileSystem.getImageFile(STORY, 1);
-        IMG_2 = FileSystem.getImageFile(STORY, 4);
-        SOUNDTRACK = FileSystem.getSoundtrackAudio(STORY, 0);
-        NARRATION_1 = FileSystem.getNarrationAudio(STORY, 0);
-        NARRATION_2 = FileSystem.getNarrationAudio(STORY, 1);
+        IMG_1 = ImageFiles.getFile(STORY, 1);
+        IMG_2 = ImageFiles.getFile(STORY, 4);
+        SOUNDTRACK = AudioFiles.getSoundtrack(STORY, 0);
+        NARRATION_1 = AudioFiles.getLWC(STORY, 0);
+        NARRATION_2 = AudioFiles.getLWC(STORY, 1);
     }
 
     @Override

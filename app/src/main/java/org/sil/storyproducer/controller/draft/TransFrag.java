@@ -23,8 +23,10 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.controller.DialogListAdapter;
 import org.sil.storyproducer.controller.MainActivity;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,9 +36,7 @@ public class TransFrag extends Fragment {
     private static final String SLIDE_NUM = "slidenum";
     private static final String NUM_OF_SLIDES = "numofslide";
     private static final String STORY_NAME = "storyname";
-    private String outputFile=null;
-    private File output = null;
-    private static final String FILE_BASE = "recording";
+    private String outputPath;
     private int record_count = 2;
     private int failure;
     private boolean isSpeakButtonLongPressed;
@@ -69,8 +69,6 @@ public class TransFrag extends Fragment {
         //stuff for saving and playing the audio
         //TODO test to see where exacly getPath is in our files and if we even need the directory path
 
-        final File output = FileSystem.getProjectDirectory(getArguments().getString(STORY_NAME));
-
         final FloatingActionButton floatingActionButton1 = (FloatingActionButton) view.findViewById(R.id.trans_record);
         final FloatingActionButton floatingActionButton2 = (FloatingActionButton) view.findViewById(R.id.trans_play);
         floatingActionButton2.setVisibility(View.INVISIBLE);
@@ -85,8 +83,10 @@ public class TransFrag extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 v.setPressed(true);
-                outputFile = FILE_BASE + getArguments().getInt(SLIDE_NUM) + ".mp3";
-                audioRecorder = createAudioRecorder(output.getAbsolutePath() + "/" + outputFile);
+                File outputF = AudioFiles.getTranslation(getArguments().getString(STORY_NAME),
+                        getArguments().getInt(SLIDE_NUM));
+                outputPath = outputF.getPath();
+                audioRecorder = createAudioRecorder(outputPath);
                 startAudioRecorder(audioRecorder);
                 Toast.makeText(getContext(), "Recording Started", Toast.LENGTH_SHORT).show();
                 isSpeakButtonLongPressed = true;
@@ -132,7 +132,7 @@ public class TransFrag extends Fragment {
                 MediaPlayer m = new MediaPlayer();
 
                 try {
-                    m.setDataSource(output.getAbsolutePath() + "/" + outputFile);
+                    m.setDataSource(outputPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -158,7 +158,7 @@ public class TransFrag extends Fragment {
             Snackbar.make(getView(), "Playing Narration Audio...", Snackbar.LENGTH_SHORT).show();
             MediaPlayer m = new MediaPlayer();
             try {
-                File narrFile = FileSystem.getNarrationAudio(getArguments().getString(STORY_NAME),
+                File narrFile = AudioFiles.getLWC(getArguments().getString(STORY_NAME),
                         getArguments().getInt(SLIDE_NUM));
                 m.setDataSource(narrFile.getAbsolutePath());
 
@@ -210,22 +210,22 @@ public class TransFrag extends Fragment {
         int currentSlide = getArguments().getInt(SLIDE_NUM);
         String storyName = getArguments().getString(STORY_NAME);
 
-        FileSystem.loadSlideContent(storyName, currentSlide);
+        TextFiles.loadSlideContent(storyName, currentSlide);
 
         ImageView slideImage = (ImageView)view.findViewById(R.id.trans_image_slide);
-        slideImage.setImageBitmap(FileSystem.getImage(storyName, currentSlide));
+        slideImage.setImageBitmap(ImageFiles.getBitmap(storyName, currentSlide));
 
         TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
-        slideTitle.setText(FileSystem.getTitle());
+        slideTitle.setText(TextFiles.getTitle());
 
         TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
-        slideSubTitle.setText(FileSystem.getSlideVerse());
+        slideSubTitle.setText(TextFiles.getSlideVerse());
 
         TextView slideVerse = (TextView)view.findViewById(R.id.trans_scripture_title);
-        slideVerse.setText(FileSystem.getSlideVerse());
+        slideVerse.setText(TextFiles.getSlideVerse());
 
         TextView slideContent = (TextView)view.findViewById(R.id.trans_scripture_body);
-        slideContent.setText(FileSystem.getSlideContent());
+        slideContent.setText(TextFiles.getSlideContent());
 
         TextView slideNum = (TextView)view.findViewById(R.id.trans_slide_indicator);
         slideNum.setText("#" + (getArguments().getInt(SLIDE_NUM) + 1));

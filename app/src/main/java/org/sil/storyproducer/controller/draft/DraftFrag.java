@@ -25,7 +25,9 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +57,7 @@ public class DraftFrag extends Fragment {
 
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
+        TextFiles.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
     }
 
     @Override
@@ -142,7 +144,7 @@ public class DraftFrag extends Fragment {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -174,7 +176,7 @@ public class DraftFrag extends Fragment {
             return;
         }
         TextView textView = (TextView) aView;
-        textView.setText(FileSystem.getSlideContent());
+        textView.setText(TextFiles.getSlideContent());
     }
 
     /**
@@ -187,8 +189,8 @@ public class DraftFrag extends Fragment {
         }
         TextView textView = (TextView) aView;
 
-        String[] titleNamePriority = new String[]{FileSystem.getSlideVerse(),
-                FileSystem.getSubTitle(), FileSystem.getTitle()};
+        String[] titleNamePriority = new String[]{TextFiles.getSlideVerse(),
+                TextFiles.getSubTitle(), TextFiles.getTitle()};
 
         for (String title : titleNamePriority) {
             if (title != null && !title.equals("")) {
@@ -211,7 +213,7 @@ public class DraftFrag extends Fragment {
             return;
         }
 
-        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slidePosition).getPath();
+        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slidePosition).getPath();
         if (narrationFilePath != null) {
             ImageView imageView = (ImageView) aView;
             imageView.setOnClickListener(new View.OnClickListener() {
@@ -262,7 +264,7 @@ public class DraftFrag extends Fragment {
     private void setRecordNPlayback(){
         FloatingActionButton recordButton =
                 (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
-        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
+        recordFilePath = AudioFiles.getTranslation(StoryState.getStoryName(), slidePosition).getPath();
         setVoicePlayBackButton(new File(recordFilePath).exists());
 
         recordButton.setOnClickListener(new View.OnClickListener() {

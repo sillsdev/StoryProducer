@@ -5,7 +5,9 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffectHelper;
@@ -60,10 +62,10 @@ public class AutoStoryMaker extends Thread {
 
         setResolution(mWidth, mHeight);
 
-        mOutputDir = FileSystem.getProjectDirectory("Fiery Furnace");
+        mOutputDir = VideoFiles.getDefaultLocation("Fiery Furnace");
         mOutputFile = new File(mOutputDir, mWidth + "x" + mHeight + "." + mOutputExt);
 
-        mSoundtrack = FileSystem.getSoundtrackAudio(mStory, 0);
+        mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
 
     public void setExtension(String extension) {
@@ -159,12 +161,12 @@ public class AutoStoryMaker extends Thread {
         double widthToHeight = mWidth / (double) mHeight;
 
         for(int iSlide = 0; iSlide < slideCount; iSlide++) {
-            File image = FileSystem.getImageFile(mStory, iSlide);
-            File audio = FileSystem.getTranslationAudio(mStory, iSlide);
+            File image = ImageFiles.getFile(mStory, iSlide);
+            File audio = AudioFiles.getTranslation(mStory, iSlide);
             //fallback to LWC narration
             //TODO: actually fallback
 //            if(!audio.exists()) {
-                audio = FileSystem.getNarrationAudio(mStory, iSlide);
+                audio = AudioFiles.getLWC(mStory, iSlide);
 //            }
             //TODO: get actual KBFX
             KenBurnsEffect kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
