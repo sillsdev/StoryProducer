@@ -15,10 +15,11 @@ import org.sil.storyproducer.tools.media.graphics.KenBurnsEffectHelper;
 import org.sil.storyproducer.tools.media.graphics.TextOverlay;
 import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
-public class AutoStoryMaker extends Thread {
+public class AutoStoryMaker extends Thread implements Closeable {
     private static final String TAG = "SampleStory";
 
     private final String mStory;
@@ -63,6 +64,8 @@ public class AutoStoryMaker extends Thread {
     private boolean mIncludePictures = true;
     private boolean mIncludeText = false;
     private boolean mIncludeKBFX = true;
+
+    private StoryMaker mStoryMaker;
 
     public AutoStoryMaker(String story) {
         mStory = story;
@@ -112,7 +115,14 @@ public class AutoStoryMaker extends Thread {
         mIncludeKBFX = includeKBFX;
     }
 
-    private StoryMaker mStoryMaker;
+    public boolean isDone() {
+        if(mStoryMaker == null) {
+            return false;
+        }
+        else {
+            return mStoryMaker.isDone();
+        }
+    }
 
     @Override
     public void run() {
@@ -211,6 +221,7 @@ public class AutoStoryMaker extends Thread {
 //            if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
 //            }
+
             //TODO: get actual KBFX
             KenBurnsEffect kbfx = null;
             if(mIncludeKBFX) {
@@ -255,5 +266,12 @@ public class AutoStoryMaker extends Thread {
         });
 
         watcher.start();
+    }
+
+    @Override
+    public void close() {
+        if(mStoryMaker != null) {
+            mStoryMaker.close();
+        }
     }
 }

@@ -164,7 +164,10 @@ public class StoryMaker implements Closeable {
     }
 
     public double getProgress() {
-        if(mMuxer != null) {
+        if(mIsDone) {
+            return 1;
+        }
+        else if(mMuxer != null) {
             long audioProgress = mMuxer.getAudioProgress();
             long videoProgress = mMuxer.getVideoProgress();
 

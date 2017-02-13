@@ -51,7 +51,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".controller.export.ExportActivity"
-            android:noHistory="true"></activity>
+            android:noHistory="true"/>
     </application>
 
 </manifest>
