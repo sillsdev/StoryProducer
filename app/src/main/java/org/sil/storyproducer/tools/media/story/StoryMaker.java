@@ -108,7 +108,9 @@ public class StoryMaker implements Closeable {
             audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
-                narrationConcatenator.addSource(page.getNarrationAudio().getPath());
+                File narration = page.getNarrationAudio();
+                String path = narration != null ? narration.getAbsolutePath() : null;
+                narrationConcatenator.addSource(path, page.getDuration());
             }
 
             mMuxer.addSource(videoEncoder);
@@ -150,7 +152,7 @@ public class StoryMaker implements Closeable {
         long durationUs = pages.length * audioTransitionUs;
 
         for(StoryPage page : pages) {
-            durationUs += page.getAudioDuration();
+            durationUs += page.getDuration();
         }
 
         return durationUs;

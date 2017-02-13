@@ -59,7 +59,7 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         //mSlideTransition must never exceed the length of slides in terms of audio.
         //Pre-process pages and clip the slide transition time to fit in all cases.
         for(StoryPage page : pages) {
-            long totalPageUs = page.getAudioDuration() + mAudioTransitionUs;
+            long totalPageUs = page.getDuration() + mAudioTransitionUs;
             if(correctedSlideTransitionUs > totalPageUs) {
                 correctedSlideTransitionUs = totalPageUs;
                 Log.d(TAG, "Corrected slide transition from " + slideTransitionUs + " to " + correctedSlideTransitionUs);
@@ -98,7 +98,7 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
         if(mPages.length > 0) {
-            mNextSlideImgDuration = mPages[0].getAudioDuration() + 2 * mSlideTransitionUs;
+            mNextSlideImgDuration = mPages[0].getDuration() + 2 * mSlideTransitionUs;
         }
     }
 
@@ -125,12 +125,12 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
             StoryPage currentPage = mPages[mCurrentSlideIndex];
 
             mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideExDuration + nextSlideTransitionUs;
-            mCurrentSlideExDuration = currentPage.getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
+            mCurrentSlideExDuration = currentPage.getDuration() + mAudioTransitionUs - mSlideTransitionUs;
             mCurrentSlideImgDuration = mNextSlideImgDuration;
             nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration;
 
             if(mCurrentSlideIndex + 1 < mPages.length) {
-                mNextSlideImgDuration = mPages[mCurrentSlideIndex + 1].getAudioDuration() + 2 * mSlideTransitionUs;
+                mNextSlideImgDuration = mPages[mCurrentSlideIndex + 1].getDuration() + 2 * mSlideTransitionUs;
             }
 
             String text = currentPage.getText();
@@ -179,7 +179,13 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
         float position = (float) (timeOffsetUs / (double) imgDurationUs);
-        Rect drawRect = kbfx.interpolate(position);
+        Rect drawRect;
+        if(kbfx != null) {
+            drawRect = kbfx.interpolate(position);
+        }
+        else {
+            drawRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        }
 
         if (MediaHelper.DEBUG) {
             Log.d(TAG, "drawing bitmap (" + bitmap.getWidth() + "x" + bitmap.getHeight() + ") from "

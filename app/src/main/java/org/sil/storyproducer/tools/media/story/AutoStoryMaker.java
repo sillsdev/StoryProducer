@@ -29,6 +29,8 @@ public class AutoStoryMaker extends Thread {
     private static final long SLIDE_TRANSITION_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
 
+    private static final long COPYRIGHT_SLIDE_US = 2000000;
+
     private String mOutputExt = "mp4";
     private File mOutputDir;
     private File mOutputFile;
@@ -155,12 +157,13 @@ public class AutoStoryMaker extends Thread {
     private StoryPage[] generatePages() {
         //TODO: get actual slide count
         int slideCount = 2;
-        //TODO: add copyright and hymn to count
-        StoryPage[] pages = new StoryPage[slideCount];
+        //TODO: add hymn to count
+        StoryPage[] pages = new StoryPage[slideCount + 1];
 
         double widthToHeight = mWidth / (double) mHeight;
 
-        for(int iSlide = 0; iSlide < slideCount; iSlide++) {
+        int iSlide;
+        for(iSlide = 0; iSlide < slideCount; iSlide++) {
             File image = ImageFiles.getFile(mStory, iSlide);
             File audio = AudioFiles.getTranslation(mStory, iSlide);
             //fallback to LWC narration
@@ -180,7 +183,10 @@ public class AutoStoryMaker extends Thread {
             pages[iSlide] = new StoryPage(image, audio, kbfx, text);
         }
 
-        //TODO: add copyright and hymn
+        File copyrightImage = ImageFiles.getFile(mStory, ImageFiles.SLIDE_NUMBER_COPYRIGHT);
+        pages[iSlide++] = new StoryPage(copyrightImage, COPYRIGHT_SLIDE_US);
+
+        //TODO: add hymn
 
         return pages;
     }
