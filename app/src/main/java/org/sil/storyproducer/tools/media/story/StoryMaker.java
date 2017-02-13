@@ -29,7 +29,7 @@ public class StoryMaker implements Closeable {
     private final MediaFormat mVideoFormat;
     private final MediaFormat mAudioFormat;
     private final StoryPage[] mPages;
-    private final File mSoundTrack;
+    private final File mSoundtrack;
 
     private final long mAudioTransitionUs;
     private final long mSlideTransitionUs;
@@ -62,7 +62,7 @@ public class StoryMaker implements Closeable {
         mVideoFormat = videoFormat;
         mAudioFormat = audioFormat;
         mPages = pages;
-        mSoundTrack = soundtrack;
+        mSoundtrack = soundtrack;
 
         mAudioTransitionUs = audioTransitionUs;
         mSlideTransitionUs = slideTransitionUs;
@@ -93,19 +93,24 @@ public class StoryMaker implements Closeable {
             Log.e(TAG, "StoryMaker already finished!");
         }
 
-        PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
+        PipedAudioLooper soundtrackLooper = null;
+        if(mSoundtrack != null) {
+            soundtrackLooper = new PipedAudioLooper(mSoundtrack.getAbsolutePath(), mDurationUs, mSampleRate, mChannelCount);
+        }
         PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
         StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
         PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
-        mMuxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
+        mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
 
         try {
             mMuxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
-            audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
+            if(soundtrackLooper != null) {
+                audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
+            }
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
                 File narration = page.getNarrationAudio();

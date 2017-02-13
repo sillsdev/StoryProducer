@@ -6,20 +6,27 @@ import android.graphics.BitmapFactory;
 import java.io.File;
 
 public class ImageFiles {
-    public static final int SLIDE_NUMBER_COPYRIGHT = -2;
-
-    private static final String COPYRIGHT_IMAGE_NAME = "end.jpg";
-
     private static final String FILE_EXTENSION = ".jpg";
 
+    public static final int TITLE_BACKGROUND = -1;
+    public static final int TITLE_TEMP = -3;
+    public static final int COPYRIGHT = -2;
+
+    private static final String TITLE_BACK_IMAGE_NAME = "title" + FILE_EXTENSION;
+    private static final String TITLE_TEMP_IMAGE_NAME = "titleTemp" + FILE_EXTENSION;
+    private static final String COPYRIGHT_IMAGE_NAME = "end" + FILE_EXTENSION;
+
     public static File getFile(String story, int number) {
-        String name = number + FILE_EXTENSION;
-
-        if(number == SLIDE_NUMBER_COPYRIGHT) {
-            name = COPYRIGHT_IMAGE_NAME;
+        switch(number) {
+            case TITLE_BACKGROUND:
+                return new File(FileSystem.getProjectDirectory(story), TITLE_BACK_IMAGE_NAME);
+            case TITLE_TEMP:
+                return new File(FileSystem.getTempDir(), TITLE_TEMP_IMAGE_NAME);
+            case COPYRIGHT:
+                return new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
+            default:
+                return new File(FileSystem.getTemplatePath(story), number + FILE_EXTENSION);
         }
-
-        return new File(FileSystem.getTemplatePath(story), name);
     }
 
     public static Bitmap getBitmap(String story, int number) {

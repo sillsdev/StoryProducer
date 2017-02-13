@@ -7,17 +7,22 @@ import android.util.Log;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffectHelper;
+import org.sil.storyproducer.tools.media.graphics.TextOverlay;
+import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 
 import java.io.File;
+import java.io.IOException;
 
 public class AutoStoryMaker extends Thread {
     private static final String TAG = "SampleStory";
 
     private final String mStory;
+    private String mTitle;
 
     // size of a frame, in pixels
     // first size isn't great quality, but runs faster
@@ -61,10 +66,11 @@ public class AutoStoryMaker extends Thread {
 
     public AutoStoryMaker(String story) {
         mStory = story;
+        mTitle = mStory;
 
         setResolution(mWidth, mHeight);
 
-        mOutputDir = VideoFiles.getDefaultLocation("Fiery Furnace");
+        mOutputDir = VideoFiles.getDefaultLocation(mStory);
         mOutputFile = new File(mOutputDir, mWidth + "x" + mHeight + "." + mOutputExt);
 
         mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
@@ -84,6 +90,10 @@ public class AutoStoryMaker extends Thread {
 
         int pixelRate = mWidth * mHeight * VIDEO_FRAME_RATE;
         mVideoBitRate = (int) (pixelRate * MOTION_FACTOR * KUSH_GAUGE_CONSTANT);
+    }
+
+    public void setTitle(String title) {
+        mTitle = title;
     }
 
     public void toggleBackgroundMusic(boolean includeBackgroundMusic) {
@@ -113,10 +123,12 @@ public class AutoStoryMaker extends Thread {
         MediaFormat videoFormat = generateVideoFormat();
         StoryPage[] pages = generatePages();
 
+        File soundtrack = mIncludeBackgroundMusic ? mSoundtrack : null;
+
         long duration = -System.currentTimeMillis();
 
         mStoryMaker = new StoryMaker(mOutputFile, outputFormat, videoFormat, audioFormat,
-                pages, mSoundtrack, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
+                pages, soundtrack, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
 
         watchProgress();
         mStoryMaker.churn();
@@ -162,9 +174,37 @@ public class AutoStoryMaker extends Thread {
 
         double widthToHeight = mWidth / (double) mHeight;
 
+        //Handle title slide
+        File titleBack = ImageFiles.getFile(mStory, ImageFiles.TITLE_BACKGROUND);
+        if(!titleBack.exists()) {
+            titleBack = ImageFiles.getFile(mStory, 0);
+        }
+
+        File title = titleBack;
+
+        File tempTitle = ImageFiles.getFile(mStory, ImageFiles.TITLE_TEMP);
+        TextOverlay titleOverlay = new TextOverlay(mTitle);
+        titleOverlay.setFontSize(20);
+
+        try {
+            TextOverlayHelper.overlayJPEG(titleBack, tempTitle, titleOverlay);
+            title = tempTitle;
+        }
+        catch (IOException e) {
+            Log.e(TAG, "Failed to create temporary title slide!");
+        }
+
         int iSlide;
         for(iSlide = 0; iSlide < slideCount; iSlide++) {
-            File image = ImageFiles.getFile(mStory, iSlide);
+            File image = null;
+            if(mIncludePictures) {
+                if(iSlide == 0) {
+                    image = title;
+                }
+                else {
+                    image = ImageFiles.getFile(mStory, iSlide);
+                }
+            }
             File audio = AudioFiles.getTranslation(mStory, iSlide);
             //fallback to LWC narration
             //TODO: actually fallback
@@ -172,18 +212,21 @@ public class AutoStoryMaker extends Thread {
                 audio = AudioFiles.getLWC(mStory, iSlide);
 //            }
             //TODO: get actual KBFX
-            KenBurnsEffect kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
+            KenBurnsEffect kbfx = null;
+            if(mIncludeKBFX) {
+                kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
+            }
 
             String text = null;
             if(mIncludeText) {
-                //TODO: get actual text
-                text = "The narrator reads the story...";
+                TextFiles.loadSlideContent(mStory, iSlide);
+                text = TextFiles.getSlideContent();
             }
 
             pages[iSlide] = new StoryPage(image, audio, kbfx, text);
         }
 
-        File copyrightImage = ImageFiles.getFile(mStory, ImageFiles.SLIDE_NUMBER_COPYRIGHT);
+        File copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT);
         pages[iSlide++] = new StoryPage(copyrightImage, COPYRIGHT_SLIDE_US);
 
         //TODO: add hymn

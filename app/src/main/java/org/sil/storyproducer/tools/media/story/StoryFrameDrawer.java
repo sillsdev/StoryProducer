@@ -35,7 +35,8 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
 
     private final Paint mBitmapPaint;
 
-    private TextOverlay mTextOverlay;
+    private TextOverlay mCurrentTextOverlay;
+    private TextOverlay mNextTextOverlay;
 
     private int mCurrentSlideIndex = -1; //starts at -1 to allow initial transition
     private long mCurrentSlideExDuration = 0; //exclusive duration of current slide
@@ -98,7 +99,17 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
         if(mPages.length > 0) {
-            mNextSlideImgDuration = mPages[0].getDuration() + 2 * mSlideTransitionUs;
+            StoryPage nextPage = mPages[0];
+            mNextSlideImgDuration = nextPage.getDuration() + 2 * mSlideTransitionUs;
+
+            String nextText = nextPage.getText();
+            if(nextText == null) {
+                mNextTextOverlay = null;
+            }
+            else {
+                mNextTextOverlay = new TextOverlay(nextText);
+                mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+            }
         }
     }
 
@@ -129,37 +140,35 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
             mCurrentSlideImgDuration = mNextSlideImgDuration;
             nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration;
 
+            mCurrentTextOverlay = mNextTextOverlay;
+
             if(mCurrentSlideIndex + 1 < mPages.length) {
-                mNextSlideImgDuration = mPages[mCurrentSlideIndex + 1].getDuration() + 2 * mSlideTransitionUs;
-            }
+                StoryPage nextPage = mPages[mCurrentSlideIndex + 1];
+                mNextSlideImgDuration = nextPage.getDuration() + 2 * mSlideTransitionUs;
 
-            String text = currentPage.getText();
-            if(text == null) {
-                mTextOverlay = null;
+                String nextText = nextPage.getText();
+                if(nextText == null) {
+                    mNextTextOverlay = null;
+                }
+                else {
+                    mNextTextOverlay = new TextOverlay(nextText);
+                    mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                }
             }
-            else {
-                mTextOverlay = new TextOverlay(text);
-                mTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
-            }
-
         }
 
         long timeSinceCurrentSlideStartUs = currentTimeUs - mCurrentSlideStart;
         long currentSlideOffsetUs = timeSinceCurrentSlideStartUs + mSlideTransitionUs;
 
-        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration, 1);
-        if(mTextOverlay != null) {
-            mTextOverlay.draw(canv);
-        }
-
+        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration,
+                1, mCurrentTextOverlay);
 
         if(currentTimeUs > nextSlideTransitionStartUs) {
-            mTextOverlay = null;
-
             long timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs;
             long extraOffsetUs = mSlideTransitionUs - nextSlideTransitionUs; //0 normally, transition/2 for edge cases
             long nextOffsetUs = timeSinceTransitionStartUs + extraOffsetUs;
-            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, mNextSlideImgDuration, nextOffsetUs / (float) nextSlideTransitionUs);
+            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, mNextSlideImgDuration,
+                    nextOffsetUs / (float) nextSlideTransitionUs, mNextTextOverlay);
         }
 
         mCurrentFrame++;
@@ -167,7 +176,8 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         return currentTimeUs;
     }
 
-    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, long imgDurationUs, float alpha) {
+    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, long imgDurationUs,
+                           float alpha, TextOverlay overlay) {
         //In edge cases, draw a black frame with alpha value.
         if(pageIndex < 0 || pageIndex >= mPages.length) {
             canv.drawARGB((int) (alpha * 255), 0, 0, 0);
@@ -176,25 +186,31 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
 
         StoryPage page = mPages[pageIndex];
         Bitmap bitmap = page.getBitmap();
-        KenBurnsEffect kbfx = page.getKenBurnsEffect();
+        if(bitmap != null) {
+            KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
-        float position = (float) (timeOffsetUs / (double) imgDurationUs);
-        Rect drawRect;
-        if(kbfx != null) {
-            drawRect = kbfx.interpolate(position);
+            float position = (float) (timeOffsetUs / (double) imgDurationUs);
+            Rect drawRect;
+            if (kbfx != null) {
+                drawRect = kbfx.interpolate(position);
+            } else {
+                drawRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            }
+
+            if (MediaHelper.DEBUG) {
+                Log.d(TAG, "drawing bitmap (" + bitmap.getWidth() + "x" + bitmap.getHeight() + ") from "
+                        + drawRect + " to canvas " + mScreenRect);
+            }
+
+            mBitmapPaint.setAlpha((int) (alpha * 255));
+
+            canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint);
         }
-        else {
-            drawRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        if(overlay != null) {
+            overlay.setAlpha(alpha);
+            overlay.draw(canv);
         }
-
-        if (MediaHelper.DEBUG) {
-            Log.d(TAG, "drawing bitmap (" + bitmap.getWidth() + "x" + bitmap.getHeight() + ") from "
-                    + drawRect + " to canvas " + mScreenRect);
-        }
-
-        mBitmapPaint.setAlpha((int) (alpha * 255));
-
-        canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint);
     }
 
     @Override

@@ -28,6 +28,8 @@ public class FileSystem {
     private static Map<String, Map<String, String>> templatePaths;
     private static Map<String, String> projectPaths;
 
+    private static File cacheDir;
+
     static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
         public boolean accept(File current, String name) {
@@ -37,6 +39,8 @@ public class FileSystem {
 
     //Populate templatePaths from files in system
     public static void init(Context con) {
+        cacheDir = con.getCacheDir();
+
         //Reset templatePaths
         templatePaths = new HashMap<>();
         projectPaths = new HashMap<>();
@@ -132,6 +136,15 @@ public class FileSystem {
     static File getProjectDirectory(String story) {
         String path = projectPaths.get(story);
         return new File(path); //will throw a null pointer exception if path is null
+    }
+
+    /**
+     * Gets the directory of temporary files.
+     * Note: package-local access intended
+     * @return
+     */
+    static File getTempDir() {
+        return cacheDir;
     }
 
     /**

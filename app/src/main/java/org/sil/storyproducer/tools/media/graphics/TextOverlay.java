@@ -11,10 +11,11 @@ public class TextOverlay {
     private static final int FONT_SIZE_SCALE_FACTOR = 240;
 
     private final String mText;
-    private int mFontSize = 20;
+    private int mFontSize = 12;
+    private float mAlpha = 1f;
     private int mTextColor = Color.WHITE;
     private int mOutlineColor = Color.BLACK;
-    private int mPadding = 8;
+    private int mPadding = 2;
     private int mPaddingActual;
     private Layout.Alignment mHorizontalAlign = Layout.Alignment.ALIGN_CENTER;
     private Layout.Alignment mVerticalAlign = Layout.Alignment.ALIGN_CENTER;
@@ -65,14 +66,26 @@ public class TextOverlay {
         mIsDirty = true;
     }
 
+    public void setAlpha(float alpha) {
+        mAlpha = alpha;
+        if(mTextPaint != null && mTextOutlinePaint != null) {
+            mTextPaint.setAlpha((int) (mAlpha * 255));
+            mTextOutlinePaint.setAlpha((int) (mAlpha * 255));
+        }
+    }
+
     public void setTextColor(int color) {
         mTextColor = color;
-        mIsDirty = true;
+        if(mTextPaint != null) {
+            mTextPaint.setColor(mTextColor);
+        }
     }
 
     public void setOutlineColor(int color) {
         mOutlineColor = color;
-        mIsDirty = true;
+        if(mTextOutlinePaint != null) {
+            mTextOutlinePaint.setColor(mOutlineColor);
+        }
     }
 
     public void setPadding(int padding) {
@@ -95,10 +108,12 @@ public class TextOverlay {
 
         mTextPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setColor(mTextColor);
+        mTextPaint.setAlpha((int) (mAlpha * 255));
         mTextPaint.setTextSize(mFontSize * fontSizeScale);
 
         mTextOutlinePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         mTextOutlinePaint.setColor(mOutlineColor);
+        mTextOutlinePaint.setAlpha((int) (mAlpha * 255));
         mTextOutlinePaint.setTextSize(mTextPaint.getTextSize());
         mTextOutlinePaint.setStyle(Paint.Style.STROKE);
         mTextOutlinePaint.setStrokeWidth(1.5f * fontSizeScale);

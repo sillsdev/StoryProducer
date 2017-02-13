@@ -182,7 +182,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 //                        Looper.loop();
 //                    }
 //                });
-                Thread encodeThread = new AutoStoryMaker("Fiery Furnace");
+                AutoStoryMaker encodeThread = new AutoStoryMaker("Joshua Sends Spies Rahab");
+                encodeThread.toggleText(true);
                 encodeThread.start();
             }
             mDrawerLayout.closeDrawer(mDrawerList);

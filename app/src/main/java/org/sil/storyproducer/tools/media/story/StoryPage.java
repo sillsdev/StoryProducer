@@ -111,7 +111,12 @@ public class StoryPage {
     }
 
     public Bitmap getBitmap() {
-        return mCache.get(mImage.getPath());
+        if(mImage == null) {
+            return null;
+        }
+        else {
+            return mCache.get(mImage.getPath());
+        }
     }
 
     public File getNarrationAudio() {
