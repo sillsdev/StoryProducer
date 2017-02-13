@@ -143,6 +143,12 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+ commentTitle +".mp3");
     }
 
+    /**
+     * deletes the designated audio comment
+     * @param story the story the comment comes from
+     * @param slide the slide the comment comes from
+     * @param commentTitle the name of the comment in question
+     */
     public static void deleteAudioComment(String story, int slide, String commentTitle) {
         File file = getAudioComment(story, slide, commentTitle);
         if (file.exists()) {
@@ -150,6 +156,14 @@ public class FileSystem {
         }
     }
 
+    /**
+     * renames the designated audio comment if the new name is valid and the file exists
+     * @param story the story the comment comes from
+     * @param slide the slide of the story the comment comes from
+     * @param oldTitle the old title of the comment
+     * @param newTitle the proposed new title for the comment
+     * @return returns true if the file renaming was successful
+     */
     public static boolean renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
         File file = getAudioComment(story, slide, oldTitle);
         boolean renamed = false;
@@ -163,6 +177,12 @@ public class FileSystem {
         return renamed;
     }
 
+    /**
+     * Returns a list of comment titles for the story and slide in question
+     * @param story the story where the comments come from
+     * @param slide the slide where the comments come from
+     * @return
+     */
     public static ArrayList<String> getCommentTitles(String story, int slide) {
         ArrayList<String> commentTitles = new ArrayList<String>();
         File storyDirectory = new File(getStoryPath(story));

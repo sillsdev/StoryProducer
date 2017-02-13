@@ -14,20 +14,16 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.CustomAdapter;
-import org.sil.storyproducer.model.ListFiles;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -38,7 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * the fragment for the community check view. The community can make sure the draft is ok
+ * Fragment for the community check view. The purpose of this phase is for the community to make
+ * sure the draft is okay and leave any comments should they feel the need
  */
 public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
@@ -47,17 +44,14 @@ public class CommunityCheckFrag extends Fragment {
     private static AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
     private View rootView;
-    private ListView listView;
     private ArrayList<String> comments;
     private boolean isRecording;
-    private static Context context;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        context = getContext();
     }
 
     @Override
@@ -129,8 +123,11 @@ public class CommunityCheckFrag extends Fragment {
         }
     }
 
+    /**
+     * Updates the list of comments at beginning of fragment creation and after any list change
+     */
     public void updateCommentList() {
-        listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
+        ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
         comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slidePosition);
         String [] commentTitles = new String[comments.size()];
         commentTitles = comments.toArray(commentTitles);
@@ -213,6 +210,10 @@ public class CommunityCheckFrag extends Fragment {
         });
     }
 
+    /**
+     * Plays the audio comment designated by the title
+     * @param commentTitle the title of the comment to play
+     */
     public void playComment(String commentTitle) {
         final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition, commentTitle);
         if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
@@ -221,9 +222,9 @@ public class CommunityCheckFrag extends Fragment {
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
             commentPlayer.playWithPath(commentFile.getPath());
-            Toast.makeText(context, "Playing Comment...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(context, "No Comment Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -277,6 +278,9 @@ public class CommunityCheckFrag extends Fragment {
 
     /**
      * The function that aids in stopping an audio recorder.
+     * According to documentation, it should have been enough to reset the comment recorder
+     * but it was not working, so we go ahead and release it and make another for any subsequent
+     * comments
      */
     private void stopAudioRecorder(){
         try{

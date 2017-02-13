@@ -1,31 +1,25 @@
 package org.sil.storyproducer.controller.community;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.MainActivity;
-import org.sil.storyproducer.controller.RegistrationActivity;
-import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
 
 /**
  * Created by andrewlockridge on 2/4/17.
+ * This class handles the layout inflation for the audio comment list
  */
 
 public class CommentListAdapter extends ArrayAdapter<String> {
@@ -77,6 +71,10 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         return rowView;
     }
 
+    /**
+     * Shows a dialog to the user asking if they really want to delete the comment
+     * @param position the integer position of the comment where the button was pressed
+     */
     private void showDeleteCommentDialog(final int position) {
         AlertDialog dialog = new AlertDialog.Builder(commCheck.getContext())
                 .setTitle(commCheck.getString(R.string.comment_delete_title))
@@ -92,12 +90,23 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         dialog.show();
     }
 
+    /**
+     * Show to the user a dialog to rename the audio comment
+     * @param position the integer position of the comment the user "long-clicked"
+     */
     private void showCommentRenameDialog(final int position) {
         final EditText newName = new EditText(commCheck.getContext());
+
+        // Programmatically set layout properties for edit text field
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
+        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) newName.getLayoutParams();
+        p.setMargins(8,8,8,8);
+
+        // Apply layout properties
         newName.setLayoutParams(params);
+        newName.requestLayout();
 
         AlertDialog dialog = new AlertDialog.Builder(commCheck.getContext())
                 .setTitle(commCheck.getString(R.string.comment_rename_title))
@@ -107,8 +116,13 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
                         boolean renamed;
+                        /* Requirements for file names:
+                                - must be under 20 characters
+                                - must be only contain alphanumeric characters or spaces/underscores
+                                - must not contain the comment designator such as "comment0"
+                         */
                         if (newNameText.length() < 20 && !newNameText.contains("comment"+slidePosition) &&
-                                newNameText.matches("[A-Za-z0-9\\s_]+")) {
+                                newNameText.matches("[A-Za-z0-9 _]+")) {
                             renamed = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                             if (renamed) {
                                 commCheck.updateCommentList();
