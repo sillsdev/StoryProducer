@@ -8,6 +8,8 @@ import android.util.Log;
 
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.media.MediaHelper;
+import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
+import org.sil.storyproducer.tools.media.graphics.BitmapHelper;
 
 import java.io.File;
 
@@ -89,8 +91,8 @@ public class SampleStory extends Thread {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
-        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), StoryBitmapManager.getDimensions(IMG_1.getPath()));
-        Rect r2 = StoryBitmapManager.getDimensions(IMG_2.getPath());
+        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), BitmapHelper.getDimensions(IMG_1.getPath()));
+        Rect r2 = BitmapHelper.getDimensions(IMG_2.getPath());
         if (MediaHelper.VERBOSE) {
             Log.d(TAG, "image 2 rectangle: (" + r2.left + ", " + r2.top + ", "
                     + r2.right + ", " + r2.bottom + ")");
@@ -98,7 +100,7 @@ public class SampleStory extends Thread {
         KenBurnsEffect kbfx2 = new KenBurnsEffect(new Rect(0, 200, r2.right - 500, r2.bottom - 200), new Rect(500, 200, r2.right, r2.bottom - 200));
 
         StoryPage[] pages = {
-                new StoryPage(IMG_1, NARRATION_1, kbfx1),
+                new StoryPage(IMG_1, NARRATION_1, kbfx1, "Some Title text that is really long to see how it fits and reacts and blah, blah, blah on the screen..."),
                 new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
 

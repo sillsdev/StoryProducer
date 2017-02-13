@@ -1,8 +1,11 @@
 package org.sil.storyproducer.tools.media.story;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.v4.util.LruCache;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
+import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 
 import java.io.File;
 
@@ -15,6 +18,16 @@ public class StoryPage {
     private final File mImage;
     private final File mNarrationAudio;
     private final KenBurnsEffect mKBFX;
+    private final String mText;
+
+    private static final int CACHE_SIZE = 3;
+
+    private static final LruCache<String, Bitmap> mCache = new LruCache<String, Bitmap>(CACHE_SIZE) {
+        @Override
+        protected Bitmap create(String key) {
+            return BitmapFactory.decodeFile(key);
+        }
+    };
 
     /**
      * Create page.
@@ -23,9 +36,21 @@ public class StoryPage {
      * @param kbfx Ken Burns effect for the image.
      */
     public StoryPage(File image, File narrationAudio, KenBurnsEffect kbfx) {
+        this(image, narrationAudio, kbfx, null);
+    }
+
+    /**
+     * Create page.
+     * @param image picture for the video.
+     * @param narrationAudio narration for the background of the video.
+     * @param kbfx Ken Burns effect for the image.
+     * @param text text for overlaying page.
+     */
+    public StoryPage(File image, File narrationAudio, KenBurnsEffect kbfx, String text) {
         mImage = image;
         mNarrationAudio = narrationAudio;
         mKBFX = kbfx;
+        mText = text;
     }
 
     /**
@@ -37,7 +62,7 @@ public class StoryPage {
     }
 
     public Bitmap getBitmap() {
-        return StoryBitmapManager.get(mImage.getPath());
+        return mCache.get(mImage.getPath());
     }
 
     public File getNarrationAudio() {
@@ -46,5 +71,9 @@ public class StoryPage {
 
     public KenBurnsEffect getKenBurnsEffect() {
         return mKBFX;
+    }
+
+    public String getText() {
+        return mText;
     }
 }

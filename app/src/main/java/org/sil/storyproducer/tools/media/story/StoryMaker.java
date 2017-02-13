@@ -40,6 +40,7 @@ public class StoryMaker implements Closeable {
     private final long mDurationUs;
 
     private PipedMediaMuxer mMuxer;
+    private boolean mIsDone = false;
 
     /**
      * Create StoryMaker.
@@ -80,10 +81,18 @@ public class StoryMaker implements Closeable {
         mSoundtrackVolumeModifier = modifier;
     }
 
+    public boolean isDone() {
+        return mIsDone;
+    }
+
     /**
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
      */
     public void churn() {
+        if(mIsDone) {
+            Log.e(TAG, "StoryMaker already finished!");
+        }
+
         PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
         PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
@@ -122,6 +131,8 @@ public class StoryMaker implements Closeable {
             videoEncoder.close();
             mMuxer.close();
         }
+
+        mIsDone = true;
     }
 
     public long getStoryDuration() {

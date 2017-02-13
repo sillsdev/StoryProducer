@@ -32,6 +32,8 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
 
 import java.io.Serializable;
+
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
@@ -170,16 +172,17 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 ////                startFragment(position, 0, "");
 //            }
             if(id == 5) {
-                Thread encodeThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        SampleStory test = new SampleStory();
-                        test.run();
-                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
-                });
+//                Thread encodeThread = new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Looper.prepare();
+//                        SampleStory test = new SampleStory();
+//                        test.run();
+//                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+//                        Looper.loop();
+//                    }
+//                });
+                Thread encodeThread = new AutoStoryMaker("Fiery Furnace");
                 encodeThread.start();
             }
             mDrawerLayout.closeDrawer(mDrawerList);

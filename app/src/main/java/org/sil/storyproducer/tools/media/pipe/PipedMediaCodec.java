@@ -114,7 +114,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: output buffers changed");
+                if (MediaHelper.DEBUG) Log.d(TAG, getComponentName() + ".pullBuffer: output buffers changed");
                 mOutputBuffers = mCodec.getOutputBuffers();
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
@@ -127,8 +127,11 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                     return null;
                 }
             }
+            else if(pollCode < 0) {
+                Log.w(TAG, getComponentName() + ".pullBuffer: unrecognized pollCode");
+            }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: codec config buffer");
+                if (MediaHelper.DEBUG) Log.d(TAG, getComponentName() + ".pullBuffer: codec config buffer");
                 //Note: Perhaps these buffers should not be ignored in the future.
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);

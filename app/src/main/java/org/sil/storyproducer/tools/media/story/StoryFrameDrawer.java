@@ -2,16 +2,15 @@ package org.sil.storyproducer.tools.media.story;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaFormat;
 import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
+import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
+import org.sil.storyproducer.tools.media.graphics.TextOverlay;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
 import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
 
@@ -22,17 +21,6 @@ import java.io.IOException;
  */
 class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     private static final String TAG = "StoryFrameDrawer";
-
-    private static final String TEXT = "Something that is really long and should not fit on just a single line of text but should span a significant portion of the frame.";
-
-    private static final int FONT_SIZE = 20;
-    private static final int FONT_SIZE_SCALE_FACTOR = 240;
-    private final float mFontSizeScale;
-
-    private static final int TEXT_COLOR = Color.WHITE;
-    private static final int TEXT_SHADOW_COLOR = Color.BLACK;
-
-    private static final int TEXT_PADDING = 16;
 
     private final MediaFormat mVideoFormat;
     private final StoryPage[] mPages;
@@ -45,10 +33,9 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
     private final int mHeight;
     private final Rect mScreenRect;
 
-    private StaticLayout mTextLayout;
-    private StaticLayout mTextOutlineLayout;
-    private int mTextWidth;
-    private int mTextHeight;
+    private final Paint mBitmapPaint;
+
+    private TextOverlay mTextOverlay;
 
     private int mCurrentSlideIndex = -1; //starts at -1 to allow initial transition
     private long mCurrentSlideExDuration = 0; //exclusive duration of current slide
@@ -87,49 +74,31 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         mHeight = mVideoFormat.getInteger(MediaFormat.KEY_HEIGHT);
         mScreenRect = new Rect(0, 0, mWidth, mHeight);
 
-        mFontSizeScale = mHeight / (float) FONT_SIZE_SCALE_FACTOR;
+        mBitmapPaint = new Paint();
+        mBitmapPaint.setAntiAlias(true);
+        mBitmapPaint.setFilterBitmap(true);
+        mBitmapPaint.setDither(true);
     }
 
-    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, long imgDurationUs, float alpha) {
-        //In edge cases, draw a black frame with alpha value.
-        if(pageIndex < 0 || pageIndex >= mPages.length) {
-            canv.drawARGB((int) (alpha * 255), 0, 0, 0);
-            return;
-        }
+    @Override
+    public MediaHelper.MediaType getMediaType() {
+        return MediaHelper.MediaType.VIDEO;
+    }
 
-        StoryPage page = mPages[pageIndex];
-        Bitmap bitmap = page.getBitmap();
-        KenBurnsEffect kbfx = page.getKenBurnsEffect();
+    @Override
+    public MediaFormat getOutputFormat() {
+        return mVideoFormat;
+    }
 
-        float position = (float) (timeOffsetUs / (double) imgDurationUs);
-        Rect drawRect = kbfx.interpolate(position);
+    @Override
+    public boolean isDone() {
+        return mIsVideoDone;
+    }
 
-        if (MediaHelper.VERBOSE) {
-            Log.v(TAG, "drawer: drawing rectangle (" + drawRect.left + ", " + drawRect.top + ", "
-                    + drawRect.right + ", " + drawRect.bottom + ") of bitmap ("
-                    + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
-        }
-
-        Paint p = new Paint(0);
-        p.setAntiAlias(true);
-        p.setFilterBitmap(true);
-        p.setDither(true);
-        p.setAlpha((int) (alpha * 255));
-
-        canv.drawBitmap(bitmap, drawRect, mScreenRect, p);
-
-
-        if(mTextLayout != null) {
-            // get position of text's top left corner
-            float x = (mWidth - mTextWidth) / 2;
-            float y = (mHeight - mTextHeight);// / 2;
-
-            // draw text to the Canvas center
-            canv.save();
-            canv.translate(x, y);
-            mTextOutlineLayout.draw(canv);
-            mTextLayout.draw(canv);
-            canv.restore();
+    @Override
+    public void setup() throws IOException, SourceUnacceptableException {
+        if(mPages.length > 0) {
+            mNextSlideImgDuration = mPages[0].getAudioDuration() + 2 * mSlideTransitionUs;
         }
     }
 
@@ -153,8 +122,10 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
                 break;
             }
 
+            StoryPage currentPage = mPages[mCurrentSlideIndex];
+
             mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideExDuration + nextSlideTransitionUs;
-            mCurrentSlideExDuration = mPages[mCurrentSlideIndex].getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
+            mCurrentSlideExDuration = currentPage.getAudioDuration() + mAudioTransitionUs - mSlideTransitionUs;
             mCurrentSlideImgDuration = mNextSlideImgDuration;
             nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration;
 
@@ -162,34 +133,14 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
                 mNextSlideImgDuration = mPages[mCurrentSlideIndex + 1].getAudioDuration() + 2 * mSlideTransitionUs;
             }
 
-            // new antialiased Paint
-            TextPaint paint=new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            // text color - #3D3D3D
-            paint.setColor(TEXT_COLOR);
-            // text size in pixels
-            paint.setTextSize((int) (FONT_SIZE * mFontSizeScale));
-            // text shadow
-//            paint.setShadowLayer(0.7f, 0f, 0f, TEXT_SHADOW_COLOR);
-
-            TextPaint outlinePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-            outlinePaint.setColor(TEXT_SHADOW_COLOR);
-            outlinePaint.setTextSize(paint.getTextSize());
-            outlinePaint.setStyle(Paint.Style.STROKE);
-            outlinePaint.setStrokeWidth(1.5f * mFontSizeScale);
-
-            // set text width to canvas width minus 16dp padding
-            mTextWidth = mWidth - (int) (TEXT_PADDING * mFontSizeScale);
-
-            // init StaticLayout for text
-            mTextOutlineLayout = new StaticLayout(
-                    TEXT, outlinePaint, mTextWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
-
-            // init StaticLayout for text
-            mTextLayout = new StaticLayout(
-                    TEXT, paint, mTextWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
-
-            // get height of multiline text
-            mTextHeight = mTextLayout.getHeight() + (int) (TEXT_PADDING * mFontSizeScale);
+            String text = currentPage.getText();
+            if(text == null) {
+                mTextOverlay = null;
+            }
+            else {
+                mTextOverlay = new TextOverlay(text);
+                mTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+            }
 
         }
 
@@ -197,9 +148,13 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         long currentSlideOffsetUs = timeSinceCurrentSlideStartUs + mSlideTransitionUs;
 
         drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration, 1);
+        if(mTextOverlay != null) {
+            mTextOverlay.draw(canv);
+        }
+
 
         if(currentTimeUs > nextSlideTransitionStartUs) {
-            mTextLayout = null;
+            mTextOverlay = null;
 
             long timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs;
             long extraOffsetUs = mSlideTransitionUs - nextSlideTransitionUs; //0 normally, transition/2 for edge cases
@@ -212,26 +167,28 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
         return currentTimeUs;
     }
 
-    @Override
-    public MediaHelper.MediaType getMediaType() {
-        return MediaHelper.MediaType.VIDEO;
-    }
-
-    @Override
-    public void setup() throws IOException, SourceUnacceptableException {
-        if(mPages.length > 0) {
-            mNextSlideImgDuration = mPages[0].getAudioDuration() + 2 * mSlideTransitionUs;
+    private void drawFrame(Canvas canv, int pageIndex, long timeOffsetUs, long imgDurationUs, float alpha) {
+        //In edge cases, draw a black frame with alpha value.
+        if(pageIndex < 0 || pageIndex >= mPages.length) {
+            canv.drawARGB((int) (alpha * 255), 0, 0, 0);
+            return;
         }
-    }
 
-    @Override
-    public MediaFormat getOutputFormat() {
-        return mVideoFormat;
-    }
+        StoryPage page = mPages[pageIndex];
+        Bitmap bitmap = page.getBitmap();
+        KenBurnsEffect kbfx = page.getKenBurnsEffect();
 
-    @Override
-    public boolean isDone() {
-        return mIsVideoDone;
+        float position = (float) (timeOffsetUs / (double) imgDurationUs);
+        Rect drawRect = kbfx.interpolate(position);
+
+        if (MediaHelper.DEBUG) {
+            Log.d(TAG, "drawing bitmap (" + bitmap.getWidth() + "x" + bitmap.getHeight() + ") from "
+                    + drawRect + " to canvas " + mScreenRect);
+        }
+
+        mBitmapPaint.setAlpha((int) (alpha * 255));
+
+        canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint);
     }
 
     @Override
