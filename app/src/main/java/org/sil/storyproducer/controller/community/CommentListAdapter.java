@@ -101,12 +101,8 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
-        ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) newName.getLayoutParams();
-        p.setMargins(8,8,8,8);
-
         // Apply layout properties
         newName.setLayoutParams(params);
-        newName.requestLayout();
 
         AlertDialog dialog = new AlertDialog.Builder(commCheck.getContext())
                 .setTitle(commCheck.getString(R.string.comment_rename_title))
@@ -122,7 +118,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                                 - must not contain the comment designator such as "comment0"
                          */
                         if (newNameText.length() < 20 && !newNameText.contains("comment"+slidePosition) &&
-                                newNameText.matches("[A-Za-z0-9 _]+")) {
+                                newNameText.matches("[A-Za-z0-9\\s_]+")) {
                             renamed = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                             if (renamed) {
                                 commCheck.updateCommentList();
