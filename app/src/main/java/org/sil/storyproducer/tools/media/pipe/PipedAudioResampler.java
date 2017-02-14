@@ -123,7 +123,12 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         }
 
         //Get the first input buffer.
-        fetchSourceBuffer();
+        try {
+            fetchSourceBuffer();
+        } catch (SourceClosedException e) {
+            //This case should not happen.
+            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+        }
 
         start();
     }
@@ -167,7 +172,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     }
 
     @Override
-    protected boolean loadSamplesForTime(long time) {
+    protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         boolean moreInput = true;
 
         mSeekTime = time;
@@ -184,7 +189,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     /**
      * Slide the window forward by one sample.
      */
-    private boolean advanceWindow() {
+    private boolean advanceWindow() throws SourceClosedException {
         boolean isDone = false;
 
         //Set left's values to be right's current values.
@@ -227,7 +232,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         return !isDone;
     }
 
-    private void fetchSourceBuffer() {
+    private void fetchSourceBuffer() throws SourceClosedException {
         mHasBuffer = false;
 
         if(mSource.isDone()) {

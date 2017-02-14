@@ -83,14 +83,18 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                spinInput();
+                try {
+                    spinInput();
+                } catch (SourceClosedException e) {
+                    Log.w(TAG, "spinInput stopped prematurely", e);
+                }
             }
         });
         mComponentState = State.RUNNING;
         mThread.start();
     }
 
-    private void spinInput() {
+    private void spinInput() throws SourceClosedException {
         if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting...");
 
         mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
@@ -193,7 +197,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
      * @param time
      * @return true if the component has more source input to process and false if {@link #spinInput()} should finish
      */
-    protected abstract boolean loadSamplesForTime(long time);
+    protected abstract boolean loadSamplesForTime(long time) throws SourceClosedException;
 
     /**
      * <p>Get the sample time from the sample index given a sample rate.</p>

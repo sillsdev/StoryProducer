@@ -40,7 +40,11 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     @Override
     public MediaFormat getOutputFormat() {
         if(mOutputFormat == null) {
-            pullBuffer(mInfo, true);
+            try {
+                pullBuffer(mInfo, true);
+            } catch (SourceClosedException e) {
+                throw new RuntimeException("format retrieval interrupted", e);
+            }
             if(mOutputFormat == null) {
                 throw new RuntimeException("format was not retrieved from loop");
             }
@@ -54,7 +58,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     }
 
     @Override
-    public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
+    public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) throws SourceClosedException {
         ByteBuffer outputBuffer = pullBuffer(info, false);
         buffer.clear();
         buffer.put(outputBuffer);
@@ -62,12 +66,15 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
     }
 
     @Override
-    public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
+    public ByteBuffer getBuffer(MediaCodec.BufferInfo info) throws SourceClosedException {
         return pullBuffer(info, false);
     }
 
     @Override
-    public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException {
+    public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException, SourceClosedException {
+        if(mComponentState == State.CLOSED) {
+            throw new SourceClosedException();
+        }
         for(int i = 0; i < mOutputBuffers.length; i++) {
             if(mOutputBuffers[i] == buffer) {
                 mCodec.releaseOutputBuffer(i, false);
@@ -85,14 +92,18 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                spinInput();
+                try {
+                    spinInput();
+                } catch (SourceClosedException e) {
+                    Log.w(TAG, "spinInput stopped prematurely", e);
+                }
             }
         });
         mComponentState = State.RUNNING;
         mThread.start();
     }
 
-    private ByteBuffer pullBuffer(MediaCodec.BufferInfo info, boolean getFormat) {
+    private ByteBuffer pullBuffer(MediaCodec.BufferInfo info, boolean getFormat) throws SourceClosedException {
         if(mIsDone) {
             throw new RuntimeException("pullBuffer called after depleted");
         }
@@ -107,6 +118,9 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         long durationNs = -System.nanoTime();
 
         while (!mIsDone) {
+            if(mComponentState == State.CLOSED) {
+                throw new SourceClosedException();
+            }
             int pollCode = mCodec.dequeueOutputBuffer(
                         info, MediaHelper.TIMEOUT_USEC);
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -189,12 +203,21 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
      * <p>Gather input from source, feeding it into mCodec, until source is depleted.</p>
      * <p>Note: This method <b>must return after {@link #mComponentState} becomes CLOSED</b>.</p>
      */
-    protected abstract void spinInput();
+    protected abstract void spinInput() throws SourceClosedException;
 
     @Override
     public void close() {
         //Shutdown child thread
         mComponentState = State.CLOSED;
+
+        //Wait for two times the length of the timeout in the pullBuffer loop to ensure the codec
+        //stops being used.
+        try {
+            Thread.sleep((long) (MediaHelper.TIMEOUT_USEC * 2 / 1E6) + 1);
+        } catch (InterruptedException e) {
+            Log.w(TAG, "sleep interrupted", e);
+        }
+
         if(mThread != null) {
             try {
                 mThread.join();

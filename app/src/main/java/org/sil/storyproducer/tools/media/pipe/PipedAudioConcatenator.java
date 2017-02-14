@@ -150,7 +150,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     @Override
-    protected boolean loadSamplesForTime(long time) {
+    protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         boolean isDone = false;
 
         if(mCurrentState == ConcatState.TRANSITION) {
@@ -233,7 +233,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         return !isDone;
     }
 
-    private void fetchSourceBuffer() {
+    private void fetchSourceBuffer() throws SourceClosedException {
         mHasMoreBuffers = false;
 
         if(mSource.isDone()) {

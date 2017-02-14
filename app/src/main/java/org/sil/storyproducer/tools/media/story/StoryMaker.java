@@ -199,5 +199,6 @@ public class StoryMaker implements Closeable {
         if(mMuxer != null) {
             mMuxer.close();
         }
+        mIsDone = true;
     }
 }

@@ -182,19 +182,24 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         public void run() {
             ByteBuffer buffer;
             MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-            while (!mSource.isDone()) {
-                buffer = mSource.getBuffer(info);
-                if (MediaHelper.VERBOSE)
-                    Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
-                            + info.size + " for time " + info.presentationTimeUs);
+            try {
+                while (!mSource.isDone()) {
+                    buffer = mSource.getBuffer(info);
+                    if (MediaHelper.VERBOSE)
+                        Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
+                                + info.size + " for time " + info.presentationTimeUs);
 
-                //TODO: determine presentation time for end of this buffer if possible
-                mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
+                    //TODO: determine presentation time for end of this buffer if possible
+                    mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
 
-                synchronized (mMuxer) {
-                    mMuxer.writeSampleData(mTrackIndex, buffer, info);
+                    synchronized (mMuxer) {
+                        mMuxer.writeSampleData(mTrackIndex, buffer, info);
+                    }
+                    mSource.releaseBuffer(buffer);
                 }
-                mSource.releaseBuffer(buffer);
+            }
+            catch(SourceClosedException e) {
+                Log.w(TAG, "Source closed forcibly", e);
             }
         }
 

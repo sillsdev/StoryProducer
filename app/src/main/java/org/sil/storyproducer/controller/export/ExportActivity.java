@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
@@ -70,26 +71,11 @@ public class ExportActivity extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                while(mCurrentProgress < 100) {
-//                    try {
-//                        Thread.sleep(100);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Log.d("ExportActivity", "progress: " + mCurrentProgress);
-//                    mProgressBar.setProgress(++mCurrentProgress);
-//                }
-////                mProgressBar.setVisibility(View.INVISIBLE);
-//            }
-//        }.start();
     }
 
     @Override
     public void onDestroy() {
-
+        super.onDestroy();
     }
 
     /**
@@ -200,28 +186,7 @@ public class ExportActivity extends AppCompatActivity {
             storyMaker = new AutoStoryMaker(StoryState.getStoryName());
             storyMaker.start();
 
-            new Thread() {
-                @Override
-                public void run() {
-                    boolean isDone = false;
-                    while(!isDone) {
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        double progress = 0;
-                        synchronized (storyMakerLock) {
-                            progress = storyMaker.getProgress();
-                            isDone = storyMaker.isDone();
-                        }
-                        mProgressBar.setProgress((int) (progress * PROGRESS_MAX));
-                    }
-                    mProgressBar.setProgress(PROGRESS_MAX);
-
-                    onCancelExport(null);
-                }
-            }.start();
+            new Thread(mProgressUpdater).start();
         }
         toggleButtons();
     }
@@ -232,5 +197,34 @@ public class ExportActivity extends AppCompatActivity {
             storyMaker = null;
         }
         toggleButtons();
+        mProgressBar.setProgress(PROGRESS_MAX);
     }
+
+    private final Runnable mProgressUpdater = new Thread() {
+        @Override
+        public void run() {
+            boolean isDone = false;
+            while(!isDone) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                double progress = 0;
+                synchronized (storyMakerLock) {
+                    //Stop if storyMaker was cancelled by someone else.
+                    if(storyMaker == null) {
+                        return;
+                    }
+
+                    progress = storyMaker.getProgress();
+                    isDone = storyMaker.isDone();
+                }
+                mProgressBar.setProgress((int) (progress * PROGRESS_MAX));
+            }
+//            Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+
+            onCancelExport(null);
+        }
+    };
 }
