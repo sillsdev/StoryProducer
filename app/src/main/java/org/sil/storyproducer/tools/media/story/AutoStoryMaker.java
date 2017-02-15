@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class AutoStoryMaker extends Thread implements Closeable {
-    private static final String TAG = "SampleStory";
+    private static final String TAG = "AutoStoryMaker";
+
+    private static final boolean WATCH_PROGRESS = false;
 
     private final String mStory;
     private String mTitle;
@@ -37,9 +39,9 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private static final long COPYRIGHT_SLIDE_US = 2000000;
 
-    private String mOutputExt = "mp4";
-    private File mOutputDir;
+    private String mOutputExt = ".mp4";
     private File mOutputFile;
+    private File mTempFile;
 
     // parameters for the video encoder
     private static final String VIDEO_MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
@@ -73,8 +75,11 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
         setResolution(mWidth, mHeight);
 
-        mOutputDir = VideoFiles.getDefaultLocation(mStory);
-        mOutputFile = new File(mOutputDir, mWidth + "x" + mHeight + "." + mOutputExt);
+        File outputDir = VideoFiles.getDefaultLocation(mStory);
+        mOutputFile = new File(outputDir, mStory.replace(' ', '_') + "_"
+                + mWidth + "x" + mHeight + mOutputExt);
+
+        mTempFile = new File(VideoFiles.getTempLocation(mStory), "partial_video" + mOutputExt);
 
         mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
@@ -125,8 +130,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     }
 
     @Override
-    public void run() {
-        System.out.println("Starting to make story...");
+    public void start() {
         int outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4;
 
         MediaFormat audioFormat = generateAudioFormat();
@@ -135,13 +139,29 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
         File soundtrack = mIncludeBackgroundMusic ? mSoundtrack : null;
 
-        long duration = -System.currentTimeMillis();
-
-        mStoryMaker = new StoryMaker(mOutputFile, outputFormat, videoFormat, audioFormat,
+        mStoryMaker = new StoryMaker(mTempFile, outputFormat, videoFormat, audioFormat,
                 pages, soundtrack, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
 
         watchProgress();
-        mStoryMaker.churn();
+
+        super.start();
+    }
+
+    @Override
+    public void run() {
+        long duration = -System.currentTimeMillis();
+
+        Log.i(TAG, "Starting video creation...");
+        boolean success = mStoryMaker.churn();
+
+        if(success) {
+            Log.v(TAG, "Moving completed video to " + mOutputFile.getAbsolutePath());
+            mTempFile.renameTo(mOutputFile);
+        }
+        else {
+            Log.w(TAG, "Deleting incomplete temporary video...");
+            mTempFile.delete();
+        }
 
         duration += System.currentTimeMillis();
 
@@ -265,7 +285,9 @@ public class AutoStoryMaker extends Thread implements Closeable {
             }
         });
 
-        watcher.start();
+        if(WATCH_PROGRESS) {
+            watcher.start();
+        }
     }
 
     @Override

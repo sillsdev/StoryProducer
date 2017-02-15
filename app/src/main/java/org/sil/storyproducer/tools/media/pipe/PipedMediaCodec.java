@@ -233,7 +233,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 mCodec.stop();
             }
             catch(IllegalStateException e) {
-                Log.e(TAG, getComponentName() + ": Failed to stop MediaCodec!", e);
+                Log.w(TAG, getComponentName() + ": Failed to stop MediaCodec!", e);
             }
             finally {
                 mCodec.release();

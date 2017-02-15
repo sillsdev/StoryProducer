@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -21,12 +22,14 @@ public class FileSystem {
 
     private static String language = "ENG"; //ethnologue code for english
 
+    private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
     private static final String PROJECT_DIR = "projects";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> templatePaths;
     private static Map<String, String> projectPaths;
+    private static Map<String, String> moviesPaths;
 
     private static File cacheDir;
 
@@ -44,10 +47,14 @@ public class FileSystem {
         //Reset templatePaths
         templatePaths = new HashMap<>();
         projectPaths = new HashMap<>();
+        moviesPaths = new HashMap<>();
 
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
-        for (File currentStoreDir : storeDirs) {
+        File[] moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES);
+        for (int i = 0; i < storeDirs.length; i++) {
+            File currentStoreDir = storeDirs[i];
+            File currentMoviesDir = moviesDirs[i];
             if (currentStoreDir != null) {
                 //Get templates directory of current external storage directory.
                 File templateDir = new File(currentStoreDir, TEMPLATES_DIR);
@@ -72,28 +79,22 @@ public class FileSystem {
                     if (!templatePaths.containsKey(lang)) {
                         templatePaths.put(lang, new HashMap<String, String>());
                     }
-                    Map<String, String> storyMap = templatePaths.get(lang);
+                    Map<String, String> storyTemplateMap = templatePaths.get(lang);
 
                     File[] storyDirs = currentLangDir.listFiles(directoryFilter);
                     for (File currentStoryDir : storyDirs) {
                         String storyName = currentStoryDir.getName();
-                        String storyPath = currentStoryDir.getPath();
-                        storyMap.put(storyName, storyPath);
+                        String storyTemplatePath = currentStoryDir.getAbsolutePath();
+                        storyTemplateMap.put(storyName, storyTemplatePath);
 
                         //Make sure the corresponding projects directory exists.
                         File storyWriteDir = new File(new File(currentStoreDir, PROJECT_DIR), storyName);
                         if (!storyWriteDir.isDirectory()) {
                             storyWriteDir.mkdir();
                         }
+                        projectPaths.put(storyName, storyWriteDir.getAbsolutePath());
+                        moviesPaths.put(storyName, currentMoviesDir.getAbsolutePath());
                     }
-                }
-
-                //Iterate story directories and populate projectPaths.
-                File[] storyDirs = projectDir.listFiles(directoryFilter);
-                for (File storyDir : storyDirs) {
-                    String storyName = storyDir.getName();
-                    String storyPath = storyDir.getPath();
-                    projectPaths.put(storyName, storyPath);
                 }
             }
         }
@@ -113,8 +114,7 @@ public class FileSystem {
     }
 
     /**
-     * Gets the directory of a particular story in the <b>templates</b> directory (i.e. LWC-specific
-     * read-only files).
+     * Gets the <b>templates</b> directory (i.e. LWC-specific read-only files) of a particular story.
      * Note: package-local access intended
      * @param story
      * @return
@@ -128,7 +128,7 @@ public class FileSystem {
     }
 
     /**
-     * Gets the directory of a particular story in the <b>projects</b> directory (i.e. writable files).
+     * Gets the <b>projects</b> directory (i.e. writable files) of a particular story.
      * Note: package-local access intended
      * @param story
      * @return
@@ -139,11 +139,38 @@ public class FileSystem {
     }
 
     /**
-     * Gets the directory of temporary files.
+     * Gets the <b>movies</b> directory (i.e. output videos) of a particular story.
+     * Note: package-local access intended
+     * @param story
+     * @return
+     */
+    static File getMoviesDirectory(String story) {
+        String path = moviesPaths.get(story);
+        return new File(path); //will throw a null pointer exception if path is null
+    }
+
+    /**
+     * Gets a special hidden directory for temporary files within the <b>projects</b> directory
+     * of a particular story.
+     * Note: package-local access intended
+     * @param story
+     * @return
+     */
+    static File getHiddenTempDirectory(String story) {
+        String projectPath = projectPaths.get(story);
+        File hiddenTempDir = new File(projectPath, HIDDEN_TEMP_DIR);
+        if(!hiddenTempDir.exists()) {
+            hiddenTempDir.mkdir();
+        }
+        return hiddenTempDir;
+    }
+
+    /**
+     * Gets the directory of temporary files. Use this for small temporary files.
      * Note: package-local access intended
      * @return
      */
-    static File getTempDir() {
+    static File getCacheDirectory() {
         return cacheDir;
     }
 

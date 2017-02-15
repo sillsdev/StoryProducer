@@ -9,11 +9,9 @@ import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
-import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
@@ -87,8 +85,9 @@ public class StoryMaker implements Closeable {
 
     /**
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
+     * @return whether the video creation process finished.
      */
-    public void churn() {
+    public boolean churn() {
         if(mIsDone) {
             Log.e(TAG, "StoryMaker already finished!");
         }
@@ -103,6 +102,8 @@ public class StoryMaker implements Closeable {
         StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
         PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
         mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
+
+        boolean success = false;
 
         try {
             mMuxer.addSource(audioEncoder);
@@ -122,11 +123,11 @@ public class StoryMaker implements Closeable {
 
             videoEncoder.addSource(videoDrawer);
 
-            mMuxer.crunch();
-            System.out.println("Video saved to " + mOutputFile);
+            success = mMuxer.crunch();
+            Log.i(TAG, "Video saved to " + mOutputFile);
         }
-        catch (IOException | SourceUnacceptableException | RuntimeException e) {
-            Log.d(TAG, "Error in story making", e);
+        catch (Exception e) {
+            Log.e(TAG, "Error in story making", e);
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
@@ -140,6 +141,8 @@ public class StoryMaker implements Closeable {
         }
 
         mIsDone = true;
+
+        return success;
     }
 
     public long getStoryDuration() {
@@ -197,6 +200,7 @@ public class StoryMaker implements Closeable {
     @Override
     public void close() {
         if(mMuxer != null) {
+            Log.i(TAG, "Closing media pipeline. Subsequent logged errors may not be cause for concern.");
             mMuxer.close();
         }
         mIsDone = true;

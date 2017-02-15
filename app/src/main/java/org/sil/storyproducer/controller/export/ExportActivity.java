@@ -30,6 +30,7 @@ import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 public class ExportActivity extends AppCompatActivity {
+    private static final String TAG = "ExportActivity";
 
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
@@ -40,9 +41,13 @@ public class ExportActivity extends AppCompatActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
 
+    private static final long BUTTON_LOCK_DURATION_MS = 1000;
+    private static volatile boolean buttonLocked = false;
+
     private ProgressBar mProgressBar;
     private int mCurrentProgress = 0;
     private static final int PROGRESS_MAX = 1000;
+    private Thread mProgressUpdater;
 
     private static final Object storyMakerLock = new Object();
     private static AutoStoryMaker storyMaker;
@@ -66,11 +71,25 @@ public class ExportActivity extends AppCompatActivity {
 
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
-        toggleButtons();
+        toggleVisibleElements();
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        watchProgress();
+    }
+
+    @Override
+    public void onPause() {
+        mProgressUpdater.interrupt();
+
+        super.onPause();
     }
 
     @Override
@@ -164,7 +183,7 @@ public class ExportActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
     }
 
-    private void toggleButtons() {
+    private void toggleVisibleElements() {
         synchronized (storyMakerLock) {
             if (storyMaker == null) {
                 mButtonStart.setVisibility(View.VISIBLE);
@@ -176,31 +195,81 @@ public class ExportActivity extends AppCompatActivity {
         }
     }
 
+    private void watchProgress() {
+        mProgressUpdater = new Thread(new ProgressUpdater());
+        mProgressUpdater.start();
+        toggleVisibleElements();
+    }
+
+    private void stopExport() {
+        synchronized (storyMakerLock) {
+            if (storyMaker != null) {
+                storyMaker.close();
+                storyMaker = null;
+            }
+        }
+        toggleVisibleElements();
+    }
+
+    private void lockButtons() {
+        buttonLocked = true;
+        new Thread(BUTTON_UNLOCKER).start();
+
+        mButtonStart.setEnabled(false);
+        mButtonCancel.setEnabled(false);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item);
     }
 
     public void onStartExport(View view) {
-        synchronized (storyMakerLock) {
+        if(!buttonLocked) {
             storyMaker = new AutoStoryMaker(StoryState.getStoryName());
             storyMaker.start();
-
-            new Thread(mProgressUpdater).start();
+            watchProgress();
         }
-        toggleButtons();
+        lockButtons();
     }
 
     public void onCancelExport(View view) {
-        synchronized (storyMakerLock) {
-            storyMaker.close();
-            storyMaker = null;
+        if(!buttonLocked) {
+            stopExport();
         }
-        toggleButtons();
-        mProgressBar.setProgress(PROGRESS_MAX);
+        lockButtons();
     }
 
-    private final Runnable mProgressUpdater = new Thread() {
+    private void updateProgress(final int progress) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressBar.setProgress(progress);
+            }
+        });
+    }
+
+    private final Runnable BUTTON_UNLOCKER = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(BUTTON_LOCK_DURATION_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                buttonLocked = false;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonStart.setEnabled(true);
+                        mButtonCancel.setEnabled(true);
+                    }
+                });
+            }
+        }
+    };
+
+    private final class ProgressUpdater implements Runnable {
         @Override
         public void run() {
             boolean isDone = false;
@@ -208,23 +277,30 @@ public class ExportActivity extends AppCompatActivity {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    //If progress updater is interrupted, just stop.
+                    return;
                 }
                 double progress = 0;
                 synchronized (storyMakerLock) {
                     //Stop if storyMaker was cancelled by someone else.
                     if(storyMaker == null) {
+                        updateProgress(0);
                         return;
                     }
 
                     progress = storyMaker.getProgress();
                     isDone = storyMaker.isDone();
                 }
-                mProgressBar.setProgress((int) (progress * PROGRESS_MAX));
+                updateProgress((int) (progress * PROGRESS_MAX));
             }
-//            Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
 
-            onCancelExport(null);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    stopExport();
+                    Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     };
 }

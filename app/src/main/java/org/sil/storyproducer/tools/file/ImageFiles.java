@@ -21,7 +21,7 @@ public class ImageFiles {
             case TITLE_BACKGROUND:
                 return new File(FileSystem.getProjectDirectory(story), TITLE_BACK_IMAGE_NAME);
             case TITLE_TEMP:
-                return new File(FileSystem.getTempDir(), TITLE_TEMP_IMAGE_NAME);
+                return new File(FileSystem.getHiddenTempDirectory(story), TITLE_TEMP_IMAGE_NAME);
             case COPYRIGHT:
                 return new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
             default:
