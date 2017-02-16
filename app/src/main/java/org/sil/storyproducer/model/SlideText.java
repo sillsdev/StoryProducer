@@ -8,20 +8,20 @@ public class SlideText {
     String title;
     String subtitle;
     String reference;
-    String verse;
+    String content;
 
     public SlideText() {
         title = "Story Title";
         subtitle = "Story Subtitle";
         reference = "Reference 1:1";
-        verse = "Story Verse";
+        content = "Story Verse";
     }
 
-    public SlideText(String title, String subtitle, String reference, String verse) {
+    public SlideText(String title, String subtitle, String reference, String content) {
         this.title = title;
         this.subtitle = subtitle;
         this.reference = reference;
-        this.verse = verse;
+        this.content = content;
     }
 
     public String getTitle() {
@@ -36,8 +36,8 @@ public class SlideText {
         return reference;
     }
 
-    public String getVerse() {
-        return verse;
+    public String getContent() {
+        return content;
     }
 
     public void setTitle(String title) {
@@ -52,7 +52,7 @@ public class SlideText {
         this.reference = reference;
     }
 
-    public void setVerse(String verse) {
-        this.verse = verse;
+    public void setContent(String content) {
+        this.content = content;
     }
 }

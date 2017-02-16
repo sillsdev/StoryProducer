@@ -23,11 +23,20 @@ public class FileSystem {
                                 PROJECT_DIR = "projects",
                                 SOUNDTRACK_PREFIX = "SoundTrack",
                                 TRANSLATION_PREFIX = "translation",
-                                COMMENT_PREFIX = "comment";
+                                COMMENT_PREFIX = "comment",
+                                MP3_EXTENSION = ".mp3";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
     private static Map<String, String> projectPaths;
+
+    public enum RENAME_CODES {
+        SUCCESS,
+        ERROR_LENGTH,
+        ERROR_SPECIAL_CHARS,
+        ERROR_CONTAINED_DESIGNATOR,
+        ERROR_UNDEFINED
+    }
 
     private static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -130,19 +139,19 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
     public static File getTranslationAudio(String story, int i){
-        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
+        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+MP3_EXTENSION);
     }
 
     public static File getSoundtrackAudio(String story, int i){
-        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+".mp3");
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+MP3_EXTENSION);
     }
     
     public static File getSoundtrack(String story){
-        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+MP3_EXTENSION);
     }
 
     public static File getAudioComment(String story, int slide, String commentTitle) {
-        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+ commentTitle +".mp3");
+        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+ commentTitle +MP3_EXTENSION);
     }
 
     /**
@@ -169,19 +178,36 @@ public class FileSystem {
      * @param slide the slide of the story the comment comes from
      * @param oldTitle the old title of the comment
      * @param newTitle the proposed new title for the comment
-     * @return true if the file renaming was successful
+     * @return returns success or error code of renaming
      */
-    public static boolean renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
+    public static RENAME_CODES renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
+        // Requirements for file names:
+        //        - must be under 20 characters
+        //        - must be only contain alphanumeric characters or spaces/underscores
+        //        - must not contain the comment designator such as "comment0"
+        if (newTitle.length() > 20) {
+            return RENAME_CODES.ERROR_LENGTH;
+        }
+        if (!newTitle.matches("[A-Za-z0-9\\s_]+")) {
+            return RENAME_CODES.ERROR_SPECIAL_CHARS;
+        }
+        if (newTitle.matches("comment[0-9]+")) {
+            return RENAME_CODES.ERROR_CONTAINED_DESIGNATOR;
+        }
         File file = getAudioComment(story, slide, oldTitle);
         boolean renamed = false;
         if (file.exists()) {
-            String newPathName = file.getAbsolutePath().replace(oldTitle, newTitle);
+            String newPathName = file.getAbsolutePath().replace(oldTitle + MP3_EXTENSION, newTitle + MP3_EXTENSION);
             File newFile = new File(newPathName);
             if (!newFile.exists()) {
                 renamed = file.renameTo(newFile);
             }
         }
-        return renamed;
+        if (renamed) {
+            return RENAME_CODES.SUCCESS;
+        } else {
+            return RENAME_CODES.ERROR_UNDEFINED;
+        }
     }
 
     /**
@@ -199,7 +225,7 @@ public class FileSystem {
             filename = storyDirectoryFiles[i].getName();
             if (filename.contains(COMMENT_PREFIX+slide)) {
                 filename = filename.replace(COMMENT_PREFIX+slide+"_", "");
-                filename = filename.replace(".mp3", "");
+                filename = filename.replace(MP3_EXTENSION, "");
                 commentTitles.add(filename);
             }
         }
@@ -277,7 +303,7 @@ public class FileSystem {
         return count;
     }
 
-    public static SlideText getTextContent(String storyName, int slideNum) {
+    public static SlideText getSlideText(String storyName, int slideNum) {
         String[] content;
         File file = new File(getStoryPath(storyName), (slideNum + ".txt"));
         StringBuilder text = new StringBuilder();

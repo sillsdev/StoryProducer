@@ -57,7 +57,7 @@ public class DraftFrag extends Fragment {
 
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        slideText = FileSystem.getTextContent(StoryState.getStoryName(), slidePosition);
+        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slidePosition);
     }
 
     @Override
@@ -176,7 +176,7 @@ public class DraftFrag extends Fragment {
             return;
         }
         TextView textView = (TextView) aView;
-        textView.setText(slideText.getVerse());
+        textView.setText(slideText.getContent());
     }
 
     /**

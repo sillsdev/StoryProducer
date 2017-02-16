@@ -31,7 +31,7 @@ public class StoryFrag extends Fragment {
         final ListFiles[] listFiles = new ListFiles[storyNames.length];
 
         for(int i = 0; i < listFiles.length; i++) {
-            SlideText slideText = FileSystem.getTextContent(storyNames[i], 1);
+            SlideText slideText = FileSystem.getSlideText(storyNames[i], 1);
             listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1, 25), slideText.getTitle(), slideText.getSubtitle());
         }
 

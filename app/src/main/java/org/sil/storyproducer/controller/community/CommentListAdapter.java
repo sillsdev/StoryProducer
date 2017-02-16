@@ -110,24 +110,25 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .setPositiveButton(commCheck.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        boolean renamed;
-                        // Requirements for file names:
-                        //        - must be under 20 characters
-                        //        - must be only contain alphanumeric characters or spaces/underscores
-                        //        - must not contain the comment designator such as "comment0"
-                        if (newNameText.length() < 20 && !newNameText.contains("comment"+slidePosition) &&
-                                newNameText.matches("[A-Za-z0-9\\s_]+")) {
-                            renamed = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
-                            if (renamed) {
-                                commCheck.updateCommentList();
-                            } else {
-                                Toast.makeText(commCheck.getContext(), "Rename Unsuccessful", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(commCheck.getContext(), "Invalid Filename: must be under 20 " +
-                                    "characters and not contain special characters", Toast.LENGTH_LONG).show();
+                        FileSystem.RENAME_CODES returnCode = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
+                        switch(returnCode) {
+                            case SUCCESS:
+                                    commCheck.updateCommentList();
+                                    Toast.makeText(getContext(), "File successfully renamed", Toast.LENGTH_SHORT).show();
+                                    break;
+                            case ERROR_LENGTH:
+                                    Toast.makeText(getContext(), "Filename must be less than 20 characters", Toast.LENGTH_SHORT).show();
+                                    break;
+                            case ERROR_SPECIAL_CHARS:
+                                    Toast.makeText(getContext(), "Filename cannot contain special characters", Toast.LENGTH_SHORT).show();
+                                    break;
+                            case ERROR_CONTAINED_DESIGNATOR:
+                                    Toast.makeText(getContext(), "Invalid filename", Toast.LENGTH_SHORT).show();
+                                    break;
+                            case ERROR_UNDEFINED:
+                                    Toast.makeText(getContext(), "Rename failed", Toast.LENGTH_SHORT).show();
+                                    break;
                         }
-
                     }
                 }).create();
 
