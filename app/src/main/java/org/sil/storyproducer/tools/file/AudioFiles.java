@@ -2,6 +2,9 @@ package org.sil.storyproducer.tools.file;
 
 import java.io.File;
 
+/**
+ * AudioFiles represents an abstraction of the audio resources for story templates and project files.
+ */
 public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String LWC_AUDIO_PREFIX = "narration";
@@ -11,8 +14,8 @@ public class AudioFiles {
         return new File(FileSystem.getTemplatePath(story), LWC_AUDIO_PREFIX +i+".wav");
     }
 
-    public static File getTranslation(String story, int i){
-        return new File(FileSystem.getTemplatePath(story), TRANSLATION_AUDIO_PREFIX +i+".mp3");
+    public static File getDraft(String story, int i){
+        return new File(FileSystem.getProjectDirectory(story), TRANSLATION_AUDIO_PREFIX +i+".mp3");
     }
 
     public static File getSoundtrack(String story){

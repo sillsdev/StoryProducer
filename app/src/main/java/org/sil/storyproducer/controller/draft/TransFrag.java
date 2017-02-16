@@ -83,7 +83,7 @@ public class TransFrag extends Fragment {
             @Override
             public boolean onLongClick(View v) {
                 v.setPressed(true);
-                File outputF = AudioFiles.getTranslation(getArguments().getString(STORY_NAME),
+                File outputF = AudioFiles.getDraft(getArguments().getString(STORY_NAME),
                         getArguments().getInt(SLIDE_NUM));
                 outputPath = outputF.getPath();
                 audioRecorder = createAudioRecorder(outputPath);

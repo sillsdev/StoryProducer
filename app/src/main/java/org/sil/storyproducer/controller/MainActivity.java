@@ -172,17 +172,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 ////                startFragment(position, 0, "");
 //            }
             if(id == 5) {
-//                Thread encodeThread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Looper.prepare();
-//                        SampleStory test = new SampleStory();
-//                        test.run();
-//                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
-//                        Looper.loop();
-//                    }
-//                });
                 AutoStoryMaker encodeThread = new AutoStoryMaker("Joshua Sends Spies Rahab");
+                encodeThread.toggleLogProgress(true);
                 encodeThread.toggleText(true);
                 encodeThread.start();
             }

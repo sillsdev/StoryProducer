@@ -174,10 +174,10 @@ public class LearnActivity extends AppCompatActivity {
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < ImageFiles.getAmount(storyName)) {
+                if(slideNum < ImageFiles.getNumberedAmount(storyName)) {
                     playVideo();
                 } else {
-                    videoSeekBar.setProgress(ImageFiles.getAmount(storyName) - 1);
+                    videoSeekBar.setProgress(ImageFiles.getNumberedAmount(storyName) - 1);
                     backgroundPlayer.releaseAudio();
                     showStartPracticeSnackBar();
                 }
@@ -206,7 +206,7 @@ public class LearnActivity extends AppCompatActivity {
      * Sets the seekBar listener for the video seek bar
      */
     private void setSeekBarListener() {
-        videoSeekBar.setMax(ImageFiles.getAmount(storyName) - 1);      //set the bar to have as many markers as images
+        videoSeekBar.setMax(ImageFiles.getNumberedAmount(storyName) - 1);      //set the bar to have as many markers as images
         videoSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar sBar){

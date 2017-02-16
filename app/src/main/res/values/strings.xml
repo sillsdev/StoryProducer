@@ -81,7 +81,7 @@
         <item>Community Check</item>
         <item>Consultant Check</item>
         <item>Recording Studio</item>
-        <item>Generate Video</item>
+        <item>Generate Sample Video</item>
     </string-array>
     <array name="nav_icons">
         <item>@drawable/ic_list</item>

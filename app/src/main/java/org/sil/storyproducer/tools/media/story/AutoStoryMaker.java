@@ -6,6 +6,7 @@ import android.media.MediaMuxer;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
@@ -19,10 +20,13 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * AutoStoryMaker is a layer of abstraction above {@link StoryMaker} that handles all of the
+ * parameters for StoryMaker according to some defaults, structure of projects/templates, and
+ * minimal customization.
+ */
 public class AutoStoryMaker extends Thread implements Closeable {
     private static final String TAG = "AutoStoryMaker";
-
-    private static final boolean WATCH_PROGRESS = false;
 
     private final String mStory;
     private String mTitle;
@@ -33,6 +37,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private int mHeight = 240;
 //    private int mWidth = 1280;
 //    private int mHeight = 720;
+
+    private static final int TITLE_FONT_SIZE = 20;
 
     private static final long SLIDE_TRANSITION_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
@@ -64,8 +70,11 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private boolean mIncludeBackgroundMusic = true;
     private boolean mIncludePictures = true;
-    private boolean mIncludeText = false;
+    //TODO: change default mIncludeText to false; only true now for early prototype
+    private boolean mIncludeText = true;
     private boolean mIncludeKBFX = true;
+
+    private boolean mLogProgress = false;
 
     private StoryMaker mStoryMaker;
 
@@ -118,6 +127,14 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     public void toggleKenBurns(boolean includeKBFX) {
         mIncludeKBFX = includeKBFX;
+    }
+
+    /**
+     * Set whether progress is periodically logged in console. Default is false (no console logging).
+     * @param logProgress whether progress should be logged in console.
+     */
+    public void toggleLogProgress(boolean logProgress) {
+        mLogProgress = logProgress;
     }
 
     public boolean isDone() {
@@ -197,31 +214,33 @@ public class AutoStoryMaker extends Thread implements Closeable {
     }
 
     private StoryPage[] generatePages() {
-        //TODO: get actual slide count
-        int slideCount = 2;
+        int slideCount = FileSystem.getContentSlideAmount(mStory);
         //TODO: add hymn to count
         StoryPage[] pages = new StoryPage[slideCount + 1];
 
         double widthToHeight = mWidth / (double) mHeight;
 
-        //Handle title slide
+        //Create title slide with overlayed text.
+        //Try to get special background (user provided).
         File titleBack = ImageFiles.getFile(mStory, ImageFiles.TITLE_BACKGROUND);
         if(!titleBack.exists()) {
+            //Fallback to standard title slide.
             titleBack = ImageFiles.getFile(mStory, 0);
         }
 
+        //Default title with no text.
         File title = titleBack;
 
         File tempTitle = ImageFiles.getFile(mStory, ImageFiles.TITLE_TEMP);
         TextOverlay titleOverlay = new TextOverlay(mTitle);
-        titleOverlay.setFontSize(20);
+        titleOverlay.setFontSize(TITLE_FONT_SIZE);
 
         try {
             TextOverlayHelper.overlayJPEG(titleBack, tempTitle, titleOverlay);
             title = tempTitle;
         }
         catch (IOException e) {
-            Log.e(TAG, "Failed to create temporary title slide!");
+            Log.w(TAG, "Failed to create overlayed title slide!");
         }
 
         int iSlide;
@@ -235,16 +254,16 @@ public class AutoStoryMaker extends Thread implements Closeable {
                     image = ImageFiles.getFile(mStory, iSlide);
                 }
             }
-            File audio = AudioFiles.getTranslation(mStory, iSlide);
+            File audio = AudioFiles.getDraft(mStory, iSlide);
             //fallback to LWC narration
-            //TODO: actually fallback
-//            if(!audio.exists()) {
+            if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
-//            }
+            }
 
             //TODO: get actual KBFX
             KenBurnsEffect kbfx = null;
-            if(mIncludeKBFX) {
+            //Only include KBFX if specified and not title slide.
+            if(mIncludeKBFX && iSlide != 0) {
                 kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
             }
 
@@ -285,7 +304,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             }
         });
 
-        if(WATCH_PROGRESS) {
+        if(mLogProgress) {
             watcher.start();
         }
     }

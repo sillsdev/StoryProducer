@@ -5,7 +5,12 @@ import android.graphics.BitmapFactory;
 
 import java.io.File;
 
+/**
+ * ImageFiles represents an abstraction of the image resources for story templates.
+ */
 public class ImageFiles {
+    private static final String TAG = "ImageFiles";
+
     private static final String FILE_EXTENSION = ".jpg";
 
     public static final int TITLE_BACKGROUND = -1;
@@ -16,6 +21,12 @@ public class ImageFiles {
     private static final String TITLE_TEMP_IMAGE_NAME = "titleTemp" + FILE_EXTENSION;
     private static final String COPYRIGHT_IMAGE_NAME = "end" + FILE_EXTENSION;
 
+    /**
+     * Get an image file from the story template.
+     * @param story name of the story template to query.
+     * @param number 0-based slide number or special slide (e.g. {@link #TITLE_BACKGROUND}.
+     * @return image file.
+     */
     public static File getFile(String story, int number) {
         switch(number) {
             case TITLE_BACKGROUND:
@@ -23,7 +34,7 @@ public class ImageFiles {
             case TITLE_TEMP:
                 return new File(FileSystem.getHiddenTempDirectory(story), TITLE_TEMP_IMAGE_NAME);
             case COPYRIGHT:
-                return new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
+                return getCopyrightImageFile(story);
             default:
                 return new File(FileSystem.getTemplatePath(story), number + FILE_EXTENSION);
         }
@@ -44,35 +55,27 @@ public class ImageFiles {
         return null;
     }
 
-    public static int getAmount(String storyName) {
-        String templateDirectory = FileSystem.getTemplatePath(storyName);
-        if(templateDirectory == null) {
+    /**
+     * Get the amount of number-based image files (e.g. "1.jpg") in the template of the story.
+     * @param story name of the story template to query.
+     * @return amount of number-based image files in the template of the story.
+     */
+    public static int getNumberedAmount(String story) {
+        String templateDirPath = FileSystem.getTemplatePath(story);
+        if(templateDirPath == null) {
             return 0;
         }
+        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, FILE_EXTENSION);
+    }
 
-        File[] files = new File(templateDirectory).listFiles();
-        int totalPics = 0;
-        int highestNumber = -1;
-
-        for (File aFile : files) {
-            String tempNumber;
-            String fileName = aFile.toString();
-            if (fileName.endsWith(FILE_EXTENSION)) {
-                tempNumber = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf(FILE_EXTENSION));
-                if (tempNumber.matches("^([0-9]+)$")) {
-                    int checkingNumber = Integer.valueOf(tempNumber);
-                    totalPics++;
-                    if(checkingNumber > highestNumber) {
-                        highestNumber = checkingNumber;
-                    }
-                }
-            }
+    private static File getCopyrightImageFile(String story) {
+        int numberedImages = getNumberedAmount(story);
+        int numberedTexts = TextFiles.getNumberedAmount(story);
+        if(numberedImages == numberedTexts) {
+            return new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
         }
-
-        if(highestNumber + 1 > totalPics) {
-            //TODO: handle missing pictures error case
+        else {
+            return getFile(story, numberedImages - 1);
         }
-
-        return totalPics;
     }
 }

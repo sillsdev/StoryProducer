@@ -20,7 +20,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
-        numOfSlides = FileSystem.getTotalSlideNum(StoryState.getStoryName());
+        numOfSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
     }
 
     /**

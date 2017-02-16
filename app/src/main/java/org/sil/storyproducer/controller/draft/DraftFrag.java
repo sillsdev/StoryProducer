@@ -264,7 +264,7 @@ public class DraftFrag extends Fragment {
     private void setRecordNPlayback(){
         FloatingActionButton recordButton =
                 (FloatingActionButton)rootView.findViewById(R.id.fragment_draft_record_button);
-        recordFilePath = AudioFiles.getTranslation(StoryState.getStoryName(), slidePosition).getPath();
+        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition).getPath();
         setVoicePlayBackButton(new File(recordFilePath).exists());
 
         recordButton.setOnClickListener(new View.OnClickListener() {

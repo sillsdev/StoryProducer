@@ -198,35 +198,90 @@ public class FileSystem {
     /**
      * This function searches the directory of the story and finds the total number of
      * slides associated with the story. The total number of slides will be determined by
-     * the number of .jpg and .txt extensions. The smaller number of .jpg or .txt will be returned.
+     * the number of slide pictures and text files. The number of slides is assumed to be the smaller of the two.
      *
-     * @param storyName The story name that needs to find total number of slides.
-     * @return The number of slides total for the story. The smaller number of .txt or .jpg files
+     * @param story The story name that needs to find total number of slides.
+     * @return The number of slides total for the story. The smaller number of image or text files
      * found in the directory.
      */
-    public static int getTotalSlideNum(String storyName) {
-        String rootDirectory = getTemplatePath(storyName);
-        File[] files = new File(rootDirectory).listFiles();
-        int totalPics = 0;
-        int totalTexts = 0;
+    public static int getContentSlideAmount(String story) {
+        int totalPics = ImageFiles.getNumberedAmount(story);
+        int totalTexts = TextFiles.getNumberedAmount(story);
 
-        for (File aFile : files) {
-            String tempNumber;
-            String fileName = aFile.toString();
-            if (fileName.endsWith(".jpg") || fileName.endsWith(".txt")) {
-                String extension = (fileName.endsWith(".jpg")) ? ".jpg" : ".txt";
-                tempNumber = fileName.substring(fileName.lastIndexOf('/') + 1, fileName.lastIndexOf(extension));
+        return (totalPics < totalTexts) ? totalPics : totalTexts;
+    }
+
+    /**
+     * Search a directory for files of the matching (prefix)[0-9]+(extension) and count them.
+     * In practice, the number returned may not actually be the count of files but how many files
+     * are suggested by an unbroken sequence of file names (with sequentially numbered names). If
+     * there seem to be files missing from the sequence, an exception will be logged.
+     *
+     * @param directory to search.
+     * @param prefix common start of file names.
+     * @param extension file extension (including '.'), though could be any postfix to number.
+     * @return count of numbered files matching format as suggested by highest number in sequence.
+     */
+    static int getNumberedFilesAmount(File directory, String prefix, String extension) {
+        if(directory == null) {
+            return 0;
+        }
+
+        List<Integer> accountedNumbers = new ArrayList<>();
+
+        //Take care of null inputs.
+        String sanPrefix = prefix != null ? prefix : "";
+        String sanExtension = extension != null ? extension : "";
+
+        File[] files = directory.listFiles();
+        int totalFiles = 0;
+        int highestNumber = -1;
+
+        //Iterate files in directory.
+        for (File currentFile : files) {
+            String fileName = currentFile.getName();
+            if (fileName.startsWith(sanPrefix) && fileName.endsWith(sanExtension)) {
+                //Get part of file name expected to be number.
+                String tempNumber = fileName.substring(sanPrefix.length(), fileName.lastIndexOf(sanExtension));
+                //Make sure expected number part is a number.
                 if (tempNumber.matches("^([0-9]+)$")) {
                     int checkingNumber = Integer.valueOf(tempNumber);
-                    if (extension.equals(".txt")) {
-                        totalTexts = (checkingNumber > totalTexts) ? checkingNumber : totalTexts;
-                    } else {
-                        totalPics = (checkingNumber > totalPics) ? checkingNumber : totalPics;
+                    accountedNumbers.add(checkingNumber);
+                    totalFiles++;
+                    if(checkingNumber > highestNumber) {
+                        highestNumber = checkingNumber;
                     }
                 }
             }
         }
 
-        return (totalPics < totalTexts) ? totalPics : totalTexts;
+        //If the highest numbered file doesn't match the total count, we are missing files.
+        if(highestNumber + 1 > totalFiles) {
+            Collections.sort(accountedNumbers);
+
+            //Tally up missing numbers.
+            StringBuilder unaccountedNumbers = new StringBuilder();
+            int previousNum = -1;
+            String delim = "";
+            for(int num : accountedNumbers) {
+                if(previousNum + 1 != num) {
+                    for(int missingNum = previousNum + 1; missingNum < num; missingNum++) {
+                        unaccountedNumbers.append(delim);
+                        unaccountedNumbers.append(sanPrefix + missingNum + sanExtension);
+                        //After first time, comma is used as delimiter.
+                        delim = ", ";
+                    }
+                }
+                previousNum = num;
+            }
+
+            //TODO: Throw this exception?
+            FileMissingException e = new FileMissingException("Missing these files from directory ("
+                    + directory + "): " + unaccountedNumbers);
+            Log.e(TAG, "Files missing!", e);
+        }
+
+        //Go with highest number rather than count.
+        return highestNumber + 1;
     }
 }

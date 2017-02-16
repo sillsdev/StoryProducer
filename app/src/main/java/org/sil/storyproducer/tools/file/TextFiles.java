@@ -6,7 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Pattern;
 
+/**
+ * TextFiles represents an abstraction of the text resources for story templates.
+ */
 public class TextFiles {
+    private static final String TAG = "TextFiles";
+
+    private static final String FILE_EXTENSION = ".txt";
+
     private static String[] content;
 
     public static void loadSlideContent(String storyName, int slideNum) {
@@ -53,5 +60,18 @@ public class TextFiles {
 
     public static String getSlideContent() {
         return content[3];
+    }
+
+    /**
+     * Get the amount of number-based text files (e.g. "1.txt") in the template of the story.
+     * @param story name of the story template to query.
+     * @return amount of number-based text files in the template of the story.
+     */
+    public static int getNumberedAmount(String story) {
+        String templateDirPath = FileSystem.getTemplatePath(story);
+        if(templateDirPath == null) {
+            return 0;
+        }
+        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, FILE_EXTENSION);
     }
 }

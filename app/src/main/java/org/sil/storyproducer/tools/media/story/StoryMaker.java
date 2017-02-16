@@ -19,7 +19,7 @@ import java.io.File;
 public class StoryMaker implements Closeable {
     private static final String TAG = "StoryMaker";
 
-    private float mSoundtrackVolumeModifier = 0.8f;
+    private float mSoundtrackVolumeModifier = 0.5f;
 
     private final File mOutputFile;
     private final int mOutputFormat;
