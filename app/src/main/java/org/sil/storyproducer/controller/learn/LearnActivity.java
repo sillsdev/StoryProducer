@@ -490,6 +490,7 @@ public class LearnActivity extends AppCompatActivity {
                 //stop all other playback streams.
                 if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
                     voiceAudioPlayer.stopAudio();
+                    voiceAudioPlayer.releaseAudio();
                 }
                 if (isRecording) {
                     stopAudioRecorder();

@@ -99,7 +99,6 @@ public class AudioPlayer {
     public void releaseAudio() {
         if(mPlayer!= null && mPlayer.isPlaying()) {
             try {
-
                 mPlayer.stop();
                 mPlayer.release();
             } catch (IllegalStateException e) {
