@@ -102,10 +102,11 @@ public class AudioPlayer {
 
                 mPlayer.stop();
                 mPlayer.release();
-                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
+            } finally {
+                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             }
         }
     }
@@ -127,8 +128,8 @@ public class AudioPlayer {
     }
 
     /**
-     * Seeks to the parameter in miliseconds
-     * @param msec milliseconds for where to seek to in the auio
+     * Seeks to the parameter in milliseconds
+     * @param msec milliseconds for where to seek to in the audio
      */
     public void seekTo(int msec) {
         mPlayer.seekTo(msec);

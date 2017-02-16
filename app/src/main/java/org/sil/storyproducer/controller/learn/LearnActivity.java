@@ -58,6 +58,8 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
+    private final static float BACKGROUNG_VOLUME = 0.5f;
+
     private RelativeLayout rootView;
     private ImageView learnImageView;
     private ImageButton playButton;
@@ -69,7 +71,6 @@ public class LearnActivity extends AppCompatActivity {
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
-    private float backgroundVolume = 0.5f;
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -138,23 +139,23 @@ public class LearnActivity extends AppCompatActivity {
         //turn on the background music
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
-        backgroundPlayer.setVolume(backgroundVolume);
+        backgroundPlayer.setVolume(BACKGROUNG_VOLUME);
     }
 
     /**
      * Sets the array list for all the jump points that the background music has to make
      */
     private void setBackgroundAudioJumps() {
-        int count = 0;
+        int audioStartValue = 0;
         backgroundAudioJumps = new ArrayList<Integer>();
-        backgroundAudioJumps.add(0, count);
+        backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 1; k < LAST_SLIDE_NUM; k++) {
             narrationPlayer = new AudioPlayer();                                                //set the next audio
             narrationPlayer.setPath(FileSystem.getNarrationAudio(storyName, k - 1).getPath());
-            count += narrationPlayer.getAudioDurationInMilliseconds();
-            backgroundAudioJumps.add(k, count);
+            audioStartValue += narrationPlayer.getAudioDurationInMilliseconds();
+            backgroundAudioJumps.add(k, audioStartValue);
         }
-        backgroundAudioJumps.add(count);        //this last one is just added for the copyrights slide
+        backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
     }
 
     /**
@@ -324,7 +325,6 @@ public class LearnActivity extends AppCompatActivity {
      */
     private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
-            playButton.setImageResource(R.drawable.ic_pause_gray);
             Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout_learn),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
@@ -363,7 +363,7 @@ public class LearnActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     narrationPlayer.setVolume(1.0f);
-                    backgroundPlayer.setVolume(backgroundVolume);
+                    backgroundPlayer.setVolume(BACKGROUNG_VOLUME);
                     isVolumeOn = true;
                 } else {
                     narrationPlayer.setVolume(0.0f);
