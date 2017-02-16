@@ -53,15 +53,16 @@ public final class AnimationToolbar {
 
     private boolean toolBarOpen = false;
     private FloatingActionButton fab = null;
-    private RelativeLayout rel = null;
+    private RelativeLayout toolBar = null;
     private AnimationSet fabPress = null;
     private AnimationSet fabUnPress = null;
     private Animation openToolBar = null;
     private Animation closeToolBar = null;
-    private int openToolBarDelay = 60;
     private boolean usingNewAnimators = false;
     private DisplayMetrics displayMetrics = null;
-    private final float dpConversionFactor;
+
+    private final float DP_CONVERSION_FACTOR;
+    private final int OPEN_TOOLBAR_DELAY = 60;
 
 
     /**
@@ -73,21 +74,23 @@ public final class AnimationToolbar {
      * or relativeLayout are not of the correct type of FloatingActionButton or RelativeLayout.
      */
     public AnimationToolbar(View floatingActionBut, View relativeLayout, final Activity currentActivity) throws ClassCastException {
-        if(!(floatingActionBut instanceof FloatingActionButton)|| !(relativeLayout instanceof RelativeLayout)){
-            throw new ClassCastException("Found object of incorrect type!");
+        if(!(floatingActionBut instanceof FloatingActionButton)) {
+            throw new ClassCastException("The floatingActionBut is not of type FloatingActionButton!");
+        }else if(!(relativeLayout instanceof RelativeLayout)){
+            throw new ClassCastException("The relativeLayout is not of type RelativeLayout!");
         }
 
-        usingNewAnimators = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;;
+        usingNewAnimators = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
         displayMetrics = currentActivity.getResources().getDisplayMetrics();
-        dpConversionFactor = ((displayMetrics.densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT) * 1.0f);
+        DP_CONVERSION_FACTOR = ((displayMetrics.densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT) * 1.0f);
 
         this.fab = (FloatingActionButton) floatingActionBut;
-        this.rel = (RelativeLayout) relativeLayout;
+        this.toolBar = (RelativeLayout) relativeLayout;
         setToolBarHeight(currentActivity);
 
         //The addonLayoutChangeListener is used to prevent accessing the relativelayout
         //before the relativelayout has been drawn.
-        rel.addOnLayoutChangeListener(new View.OnLayoutChangeListener(){
+        toolBar.addOnLayoutChangeListener(new View.OnLayoutChangeListener(){
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 setAnimators();
@@ -95,7 +98,7 @@ public final class AnimationToolbar {
             }
         });
         //Hide the relativelayout on start
-        rel.setVisibility(View.INVISIBLE);
+        toolBar.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -109,14 +112,14 @@ public final class AnimationToolbar {
             if(usingNewAnimators){
                 createCloseToolBarAnimator().start();
             }else{
-                rel.startAnimation(closeToolBar);
+                toolBar.startAnimation(closeToolBar);
             }
         }
         toolBarOpen = false;
     }
 
     public boolean isOpen(){
-        return (rel.getVisibility() == View.VISIBLE);
+        return (toolBar.getVisibility() == View.VISIBLE);
     }
 
 
@@ -129,7 +132,7 @@ public final class AnimationToolbar {
         //to be an appropriate height for the size of the toolbar.
         int height = (int)(size.y * .1);
 
-        rel.getLayoutParams().height = height;
+        toolBar.getLayoutParams().height = height;
     }
 
     private void setAnimators(){
@@ -152,12 +155,12 @@ public final class AnimationToolbar {
         fabUnPress.setFillAfter(true);
 
         if(!usingNewAnimators){
-            float relWidthDp = rel.getWidth() / dpConversionFactor;
-            float relHeightDp = rel.getHeight() / dpConversionFactor;
+            float relWidthDp = toolBar.getWidth() / DP_CONVERSION_FACTOR;
+            float relHeightDp = toolBar.getHeight() / DP_CONVERSION_FACTOR;
                                                                           /*pivot x*/                        /*pivot y*/
             openToolBar = new ScaleAnimation(0.0f, 1.0f, .5f, 1.0f, Animation.RELATIVE_TO_SELF,(relWidthDp - 72)/relWidthDp,  Animation.RELATIVE_TO_SELF,(relHeightDp - 16)/relHeightDp);
             openToolBar.setDuration(300);
-            openToolBar.setStartOffset(openToolBarDelay);
+            openToolBar.setStartOffset(OPEN_TOOLBAR_DELAY);
                                                                       /*pivot x*/                        /*pivot y*/
             closeToolBar = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.1f, Animation.RELATIVE_TO_SELF, (relWidthDp - 44)/relWidthDp, Animation.RELATIVE_TO_SELF,(relHeightDp - 44)/relHeightDp);
             closeToolBar.setDuration(150);
@@ -174,7 +177,8 @@ public final class AnimationToolbar {
         if(!usingNewAnimators){
             openToolBar.setAnimationListener(new Animation.AnimationListener() {
                 @Override
-                public void onAnimationStart(Animation animation) {rel.setVisibility(View.VISIBLE);}
+                public void onAnimationStart(Animation animation) {
+                    toolBar.setVisibility(View.VISIBLE);}
 
                 public void onAnimationEnd(Animation animation) {}
 
@@ -184,7 +188,8 @@ public final class AnimationToolbar {
                 @Override
                 public void onAnimationStart(Animation animation) {}
 
-                public void onAnimationEnd(Animation animation) {rel.setVisibility(View.INVISIBLE);}
+                public void onAnimationEnd(Animation animation) {
+                    toolBar.setVisibility(View.INVISIBLE);}
 
                 public void onAnimationRepeat(Animation animation) {}
             });
@@ -220,7 +225,7 @@ public final class AnimationToolbar {
                     if(usingNewAnimators){
                         createOpenToolBarAnimator().start();
                     }else{
-                        rel.startAnimation(openToolBar);
+                        toolBar.startAnimation(openToolBar);
                     }
                     toolBarOpen = true;
                 }
@@ -231,22 +236,22 @@ public final class AnimationToolbar {
     private Animator createOpenToolBarAnimator(){
         Animator toReturn = null;
         //prepare stuff for Opening the relative layout animations
-        //convert from pixels (rel.getWidth() || rel.getHeight()) to dp's
-        float dpWidthOpen = (rel.getWidth() / dpConversionFactor) -72;
-        float dpHeightOpen = (rel.getHeight() / dpConversionFactor) -16;
-        int cx = (int) (dpWidthOpen * dpConversionFactor);
-        int cy = (int) (dpHeightOpen * dpConversionFactor);
+        //convert from pixels (toolBar.getWidth() || toolBar.getHeight()) to dp's
+        float dpWidthOpen = (toolBar.getWidth() / DP_CONVERSION_FACTOR) -72;
+        float dpHeightOpen = (toolBar.getHeight() / DP_CONVERSION_FACTOR) -16;
+        int cx = (int) (dpWidthOpen * DP_CONVERSION_FACTOR);
+        int cy = (int) (dpHeightOpen * DP_CONVERSION_FACTOR);
 
         float finalRadius = (float) Math.hypot(cx, cy);
         // create the animator for this view (the start radius is zero)
         toReturn =
-                ViewAnimationUtils.createCircularReveal(rel, cx, cy, 0, finalRadius);
+                ViewAnimationUtils.createCircularReveal(toolBar, cx, cy, 0, finalRadius);
         toReturn.setStartDelay(100);
         toReturn.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
-                rel.setVisibility(View.VISIBLE);
+                toolBar.setVisibility(View.VISIBLE);
             }
         });
 
@@ -257,24 +262,22 @@ public final class AnimationToolbar {
     private Animator createCloseToolBarAnimator(){
         Animator toReturn = null;
         //prepare stuff for closing the relative layout animations
-        //convert from pixels (rel.getWidth() || rel.getHeight()) to dp's
-        float dpWidthClose = (rel.getWidth()/ dpConversionFactor) - 44;
-        float dpHeightClose = (rel.getHeight()/ dpConversionFactor) -44;
-        int cx = (int) (dpWidthClose * dpConversionFactor);
-        int cy = (int) (dpHeightClose * dpConversionFactor);
+        //convert from pixels (toolBar.getWidth() || toolBar.getHeight()) to dp's
+        float dpWidthClose = (toolBar.getWidth()/ DP_CONVERSION_FACTOR) - 44;
+        float dpHeightClose = (toolBar.getHeight()/ DP_CONVERSION_FACTOR) -44;
+        int cx = (int) (dpWidthClose * DP_CONVERSION_FACTOR);
+        int cy = (int) (dpHeightClose * DP_CONVERSION_FACTOR);
         float initialRadius = (float) Math.hypot(cx, cy);
         toReturn =
-                ViewAnimationUtils.createCircularReveal(rel,cx, cy, initialRadius,0);
+                ViewAnimationUtils.createCircularReveal(toolBar,cx, cy, initialRadius,0);
         toReturn.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
-                rel.setVisibility(View.INVISIBLE);
+                toolBar.setVisibility(View.INVISIBLE);
             }
         });
 
         return toReturn;
     }
-
-
 }
