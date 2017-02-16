@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.model.ListFiles;
 
@@ -30,8 +31,8 @@ public class StoryFrag extends Fragment {
         final ListFiles[] listFiles = new ListFiles[storyNames.length];
 
         for(int i = 0; i < listFiles.length; i++) {
-            FileSystem.loadSlideContent(storyNames[i], 1);
-            listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1, 25), FileSystem.getTitle(), FileSystem.getSubTitle());
+            SlideText slideText = FileSystem.getSlideText(storyNames[i], 1);
+            listFiles[i] = new ListFiles(FileSystem.getImage(storyNames[i], 1, 25), slideText.getTitle(), slideText.getSubtitle());
         }
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);

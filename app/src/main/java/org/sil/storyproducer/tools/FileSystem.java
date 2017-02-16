@@ -4,6 +4,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
+import android.widget.Toast;
+
+import org.sil.storyproducer.model.SlideText;
 
 import java.io.*;
 import java.util.*;
@@ -11,6 +15,7 @@ import java.util.regex.Pattern;
 
 public class FileSystem {
     private static String language = "ENG"; //ethnologue code for english
+    private static final String LOGTAG = "filesystem";
 
     private static Context context;
     private static final String TEMPLATES_DIR = "templates",
@@ -23,6 +28,14 @@ public class FileSystem {
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;
     private static Map<String, String> projectPaths;
+
+    public enum RENAME_CODES {
+        SUCCESS,
+        ERROR_LENGTH,
+        ERROR_SPECIAL_CHARS,
+        ERROR_CONTAINED_DESIGNATOR,
+        ERROR_UNDEFINED
+    }
 
     private static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -134,7 +147,7 @@ public class FileSystem {
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
     public static File getTranslationAudio(String story, int i){
-        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+".mp3");
+        return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+MP3_EXTENSION);
     }
 
     /**
@@ -147,11 +160,94 @@ public class FileSystem {
     }
 
     public static File getSoundtrackAudio(String story, int i){
-        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+".mp3");
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+i+MP3_EXTENSION);
     }
     
     public static File getSoundtrack(String story){
-        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+".mp3");
+        return new File(getStoryPath(story)+"/"+SOUNDTRACK_PREFIX+0+MP3_EXTENSION);
+    }
+
+    public static File getAudioComment(String story, int slide, String commentTitle) {
+        return new File(getStoryPath(story)+"/"+COMMENT_PREFIX+slide+"_"+ commentTitle +MP3_EXTENSION);
+    }
+
+    /**
+     * deletes the designated audio comment
+     * @param story the story the comment comes from
+     * @param slide the slide the comment comes from
+     * @param commentTitle the name of the comment in question
+     */
+    public static void deleteAudioComment(String story, int slide, String commentTitle) {
+        File file = getAudioComment(story, slide, commentTitle);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    public static boolean doesFileExist(String path) {
+        File file = new File(path);
+        return file.exists();
+    }
+
+    /**
+     * renames the designated audio comment if the new name is valid and the file exists
+     * @param story the story the comment comes from
+     * @param slide the slide of the story the comment comes from
+     * @param oldTitle the old title of the comment
+     * @param newTitle the proposed new title for the comment
+     * @return returns success or error code of renaming
+     */
+    public static RENAME_CODES renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
+        // Requirements for file names:
+        //        - must be under 20 characters
+        //        - must be only contain alphanumeric characters or spaces/underscores
+        //        - must not contain the comment designator such as "comment0"
+        if (newTitle.length() > 20) {
+            return RENAME_CODES.ERROR_LENGTH;
+        }
+        if (!newTitle.matches("[A-Za-z0-9\\s_]+")) {
+            return RENAME_CODES.ERROR_SPECIAL_CHARS;
+        }
+        if (newTitle.matches("comment[0-9]+")) {
+            return RENAME_CODES.ERROR_CONTAINED_DESIGNATOR;
+        }
+        File file = getAudioComment(story, slide, oldTitle);
+        boolean renamed = false;
+        if (file.exists()) {
+            String newPathName = file.getAbsolutePath().replace(oldTitle + MP3_EXTENSION, newTitle + MP3_EXTENSION);
+            File newFile = new File(newPathName);
+            if (!newFile.exists()) {
+                renamed = file.renameTo(newFile);
+            }
+        }
+        if (renamed) {
+            return RENAME_CODES.SUCCESS;
+        } else {
+            return RENAME_CODES.ERROR_UNDEFINED;
+        }
+    }
+
+    /**
+     * Returns a list of comment titles for the story and slide in question
+     * @param story the story where the comments come from
+     * @param slide the slide where the comments come from
+     * @return the array of comment titles
+     */
+    public static String[] getCommentTitles(String story, int slide) {
+        ArrayList<String> commentTitles = new ArrayList<String>();
+        File storyDirectory = new File(getStoryPath(story));
+        File[] storyDirectoryFiles = storyDirectory.listFiles();
+        String filename;
+        for (int i = 0; i < storyDirectoryFiles.length; i++) {
+            filename = storyDirectoryFiles[i].getName();
+            if (filename.contains(COMMENT_PREFIX+slide)) {
+                filename = filename.replace(COMMENT_PREFIX+slide+"_", "");
+                filename = filename.replace(MP3_EXTENSION, "");
+                commentTitles.add(filename);
+            }
+        }
+        String[] returnTitlesArray = new String[commentTitles.size()];
+        return commentTitles.toArray(returnTitlesArray);
     }
 
     /**
@@ -235,9 +331,8 @@ public class FileSystem {
         return count;
     }
 
-    private static String[] content;
-
-    public static void loadSlideContent(String storyName, int slideNum) {
+    public static SlideText getSlideText(String storyName, int slideNum) {
+        String[] content;
         File file = new File(getStoryPath(storyName), (slideNum + ".txt"));
         StringBuilder text = new StringBuilder();
         try {
@@ -265,22 +360,14 @@ public class FileSystem {
             }
         }
         content = text.toString().split(Pattern.quote("~"));
-    }
 
-    public static String getTitle() {
-        return content[0];
-    }
-
-    public static String getSubTitle() {
-        return content[1];
-    }
-
-    public static String getSlideVerse() {
-        return content[2];
-    }
-
-    public static String getSlideContent() {
-        return content[3];
+        if (content.length == 4) {
+            SlideText slideText = new SlideText(content[0], content[1], content[2], content[3]);
+            return slideText;
+        } else {
+            Log.e(LOGTAG, "Text file not found for " + storyName + " slide " + slideNum);
+            return new SlideText();
+        }
     }
 
     public static String[] getLanguages() {

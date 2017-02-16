@@ -38,6 +38,7 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
@@ -58,6 +59,7 @@ public final class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slidePosition;
+    private SlideText slideText;
     private AudioPlayer narrationAudioPlayer;
     private AudioPlayer voiceAudioPlayer;
     private String narrationFilePath;
@@ -227,7 +229,7 @@ public final class DraftFrag extends Fragment {
             return;
         }
         TextView textView = (TextView) aView;
-        textView.setText(FileSystem.getSlideContent());
+        textView.setText(slideText.getContent());
     }
 
     /**
@@ -241,8 +243,8 @@ public final class DraftFrag extends Fragment {
         }
         TextView textView = (TextView) aView;
 
-        String[] titleNamePriority = new String[]{FileSystem.getSlideVerse(),
-                FileSystem.getSubTitle(), FileSystem.getTitle()};
+        String[] titleNamePriority = new String[]{slideText.getReference(),
+                slideText.getSubtitle(), slideText.getTitle()};
 
         for (String title : titleNamePriority) {
             if (title != null && !title.equals("")) {
@@ -402,6 +404,8 @@ public final class DraftFrag extends Fragment {
         voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        voiceRecorder.setAudioEncodingBitRate(16);
+        voiceRecorder.setAudioSamplingRate(44100);
         voiceRecorder.setOutputFile(fileName);
     }
 
