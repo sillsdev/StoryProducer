@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.community;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaRecorder;
@@ -11,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +20,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import com.getbase.floatingactionbutton.FloatingActionButton;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
@@ -39,12 +37,13 @@ import java.util.ArrayList;
  */
 public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
+    private final static String LOGTAG = "communityCheck";
     private int slidePosition;
     private static AudioPlayer draftPlayer;
     private static AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
     private View rootView;
-    private ArrayList<String> comments;
+    private String[] comments;
     private boolean isRecording;
 
     @Override
@@ -61,9 +60,9 @@ public class CommunityCheckFrag extends Fragment {
 
         updateCommentList();
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_commcheck_image_view), slidePosition);
-        setDraftPlayback(rootView.findViewById(R.id.fragment_draft_playback_button));
-        setRecordComment(rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
+        setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slidePosition);
+        setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button));
+        setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
 
         return rootView;
     }
@@ -81,12 +80,7 @@ public class CommunityCheckFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if(draftPlayer != null){
-                    draftPlayer.stopAudio();
-                }
-                if(commentPlayer != null){
-                    commentPlayer.stopAudio();
-                }
+                stopAllMedia();
             }
         }
     }
@@ -98,12 +92,7 @@ public class CommunityCheckFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(draftPlayer != null){
-            draftPlayer.stopAudio();
-        }
-        if(commentPlayer != null){
-            commentPlayer.stopAudio();
-        }
+        stopAllMedia();
     }
 
     /**
@@ -113,12 +102,11 @@ public class CommunityCheckFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        stopAllMedia();
         if(draftPlayer != null){
-            draftPlayer.stopAudio();
             draftPlayer.releaseAudio();
         }
         if(commentPlayer != null){
-            commentPlayer.stopAudio();
             commentPlayer.releaseAudio();
         }
     }
@@ -129,9 +117,7 @@ public class CommunityCheckFrag extends Fragment {
     public void updateCommentList() {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
         comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slidePosition);
-        String [] commentTitles = new String[comments.size()];
-        commentTitles = comments.toArray(commentTitles);
-        ListAdapter adapter = new CommentListAdapter(getContext(), commentTitles, slidePosition, this);
+        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slidePosition, this);
         listView.setAdapter(adapter);
     }
 
@@ -149,15 +135,10 @@ public class CommunityCheckFrag extends Fragment {
     /**
      * This function allows the picture to scale with the phone's screen size.
      *
-     * @param aView    The ImageView that will contain the picture.
+     * @param slideImage    The ImageView that will contain the picture.
      * @param slideNum The slide number to grab the picture from the files.
      */
-    private void setPic(View aView, int slideNum) {
-        if (aView == null || !(aView instanceof ImageView)) {
-            return;
-        }
-
-        ImageView slideImage = (ImageView) aView;
+    private void setPic(ImageView slideImage, int slideNum) {
         Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
@@ -183,22 +164,16 @@ public class CommunityCheckFrag extends Fragment {
     /**
      * This function sets the draft playback to the correct audio file. Also, the narration
      * button will have a listener added to it in order to detect playback when pressed.
-     * @param aView
+     * @param button the ImageButton view handler to set the onclicklistener to
      */
-    private void setDraftPlayback(View aView) {
-        if (aView == null || !(aView instanceof ImageButton)) {
-            return;
-        }
+    private void setDraftPlaybackButton(ImageButton button) {
 
         final File draftFile = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition);
-        ImageView imageView = (ImageView) aView;
-        imageView.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             //stop other playback streams.
-            if(commentPlayer != null && commentPlayer.isAudioPlaying()){
-                commentPlayer.stopAudio();
-            }
+            stopAllMedia();
             if (draftFile.exists()) {
                 draftPlayer = new AudioPlayer();
                 draftPlayer.playWithPath(draftFile.getPath());
@@ -216,9 +191,7 @@ public class CommunityCheckFrag extends Fragment {
      */
     public void playComment(String commentTitle) {
         final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition, commentTitle);
-        if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
-            draftPlayer.stopAudio();
-        }
+        stopAllMedia();
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
             commentPlayer.playWithPath(commentFile.getPath());
@@ -231,25 +204,25 @@ public class CommunityCheckFrag extends Fragment {
     /**
      * This function sets the recording button with its functionality
      */
-    private void setRecordComment(View aView){
-        FloatingActionButton recordButton =
-                (FloatingActionButton) aView;
-
-
+    private void setRecordCommentButton(ImageButton recordButton){
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
-                int nextCommentIndex = comments.size() + 1;
+                int nextCommentIndex = comments.length + 1;
                 String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
                         "Comment " + nextCommentIndex).getPath();
-
-                //stop all other playback streams.
-                if(commentPlayer != null && commentPlayer.isAudioPlaying()){
-                    commentPlayer.stopAudio();
+                while (FileSystem.doesFileExist(recordFilePath)) {
+                    nextCommentIndex++;
+                    recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
+                            "Comment " + nextCommentIndex).getPath();
                 }
+                //stop all playback streams.
                 if(draftPlayer != null && draftPlayer.isAudioPlaying()){
                     draftPlayer.stopAudio();
+                }
+                if(commentPlayer != null && commentPlayer.isAudioPlaying()){
+                    commentPlayer.stopAudio();
                 }
                 if(isRecording){
                     stopAudioRecorder();
@@ -272,7 +245,8 @@ public class CommunityCheckFrag extends Fragment {
             isRecording = true;
             Toast.makeText(getContext(), "Recording comment!", Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e){
-            e.printStackTrace();
+            Log.e(LOGTAG, "Error recording comment");
+            Toast.makeText(getContext(), "Error recording comment", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -291,6 +265,7 @@ public class CommunityCheckFrag extends Fragment {
             Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
         }
         commentRecorder.release();
+        commentRecorder = null;
     }
 
 
@@ -312,11 +287,29 @@ public class CommunityCheckFrag extends Fragment {
                     1);
         }
 
+        // The encoding and sampling rates are standards for the AAC encoder
         commentRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         commentRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         commentRecorder.setAudioEncodingBitRate(16);
         commentRecorder.setAudioSamplingRate(44100);
         commentRecorder.setOutputFile(fileName);
+    }
+
+    /**
+     * Stops all media including audio playbacks and active audio recordings
+     */
+    private void stopAllMedia() {
+        if(draftPlayer != null && draftPlayer.isAudioPlaying()){
+            draftPlayer.stopAudio();
+        }
+        if(commentPlayer != null && commentPlayer.isAudioPlaying()){
+            commentPlayer.stopAudio();
+        }
+        if(commentRecorder != null) {
+            stopAudioRecorder();
+            updateCommentList();
+        }
+
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.sil.storyproducer.model.SlideText;
@@ -14,6 +15,7 @@ import java.util.regex.Pattern;
 
 public class FileSystem {
     private static String language = "ENG"; //ethnologue code for english
+    private static final String LOGTAG = "filesystem";
 
     private static Context context;
     private static final String TEMPLATES_DIR = "templates",
@@ -156,13 +158,18 @@ public class FileSystem {
         }
     }
 
+    public static boolean doesFileExist(String path) {
+        File file = new File(path);
+        return file.exists();
+    }
+
     /**
      * renames the designated audio comment if the new name is valid and the file exists
      * @param story the story the comment comes from
      * @param slide the slide of the story the comment comes from
      * @param oldTitle the old title of the comment
      * @param newTitle the proposed new title for the comment
-     * @return returns true if the file renaming was successful
+     * @return true if the file renaming was successful
      */
     public static boolean renameAudioComment(String story, int slide, String oldTitle, String newTitle) {
         File file = getAudioComment(story, slide, oldTitle);
@@ -181,9 +188,9 @@ public class FileSystem {
      * Returns a list of comment titles for the story and slide in question
      * @param story the story where the comments come from
      * @param slide the slide where the comments come from
-     * @return
+     * @return the array of comment titles
      */
-    public static ArrayList<String> getCommentTitles(String story, int slide) {
+    public static String[] getCommentTitles(String story, int slide) {
         ArrayList<String> commentTitles = new ArrayList<String>();
         File storyDirectory = new File(getStoryPath(story));
         File[] storyDirectoryFiles = storyDirectory.listFiles();
@@ -196,7 +203,8 @@ public class FileSystem {
                 commentTitles.add(filename);
             }
         }
-        return commentTitles;
+        String[] returnTitlesArray = new String[commentTitles.size()];
+        return commentTitles.toArray(returnTitlesArray);
     }
 
     /**
@@ -303,7 +311,7 @@ public class FileSystem {
             SlideText slideText = new SlideText(content[0], content[1], content[2], content[3]);
             return slideText;
         } else {
-            Toast.makeText(context, "Error loading text", Toast.LENGTH_SHORT).show();
+            Log.e(LOGTAG, "Text file not found for " + storyName + " slide " + slideNum);
             return new SlideText();
         }
     }

@@ -18,7 +18,6 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.FileSystem;
 
 /**
- * Created by andrewlockridge on 2/4/17.
  * This class handles the layout inflation for the audio comment list
  */
 
@@ -112,11 +111,10 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
                         boolean renamed;
-                        /* Requirements for file names:
-                                - must be under 20 characters
-                                - must be only contain alphanumeric characters or spaces/underscores
-                                - must not contain the comment designator such as "comment0"
-                         */
+                        // Requirements for file names:
+                        //        - must be under 20 characters
+                        //        - must be only contain alphanumeric characters or spaces/underscores
+                        //        - must not contain the comment designator such as "comment0"
                         if (newNameText.length() < 20 && !newNameText.contains("comment"+slidePosition) &&
                                 newNameText.matches("[A-Za-z0-9\\s_]+")) {
                             renamed = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());

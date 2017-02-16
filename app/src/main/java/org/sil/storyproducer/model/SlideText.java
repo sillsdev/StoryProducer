@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model;
 
 /**
- * Created by andrewlockridge on 2/9/17.
  * This class encapsulates the contents of the text files for each slide
  */
 
