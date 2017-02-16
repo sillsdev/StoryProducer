@@ -1,14 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/trans_layout"
+    android:id="@+id/fragment_draft_trans_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
 
     <LinearLayout
-        android:id="@+id/dummyView"
+        android:id="@+id/fragment_draft_dummyView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -72,7 +72,7 @@
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fragment_draft_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/fragment_draft_animated_toolbar"
@@ -97,25 +97,51 @@
         android:visibility="invisible">
 
         <ImageButton
+            android:id="@+id/fragment_draft_pause_toolbar_button"
+            app:srcCompat="@drawable/ic_pause_white_48dp"
+            android:background="@drawable/ic_pause_white_48dp"
+            android:layout_toEndOf="@+id/fragment_draft_play_toolbar_button"
+            android:layout_toRightOf="@+id/fragment_draft_play_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/fragment_draft_mic_toolbar_button" />
+
+        <ImageButton
+            android:id="@+id/fragment_draft_delete_toolbar_button"
+            android:background="@drawable/ic_delete_forever_white_48dp"
+            app:srcCompat="@drawable/ic_delete_forever_white_48dp"
+            android:layout_marginStart="56dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fragment_draft_play_toolbar_button" />
+
+        <ImageButton
             android:id="@+id/fragment_draft_play_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="7dp"
             android:background="@drawable/ic_play_arrow_white_48dp"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:scaleType="centerInside"
+            android:layout_marginStart="56dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fragment_draft_mic_toolbar_button" />
 
         <ImageButton
             android:id="@+id/fragment_draft_mic_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="41dp"
-            android:layout_toEndOf="@+id/fragment_draft_play_toolbar_button"
-            android:layout_toRightOf="@+id/fragment_draft_play_toolbar_button"
+            android:layout_marginStart="22dp"
             android:background="@drawable/ic_mic_white"
             android:visibility="visible"
-            app:srcCompat="@drawable/ic_mic_white" />
+            app:srcCompat="@drawable/ic_mic_white"
+            android:scaleType="centerInside"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
     </RelativeLayout>
-
-
 </RelativeLayout>
