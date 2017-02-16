@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaRecorder;
+import android.net.sip.SipAudioCall;
+import android.net.sip.SipSession;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -60,6 +62,7 @@ public final class DraftFrag extends Fragment {
     private AudioPlayer voiceAudioPlayer;
     private String narrationFilePath;
     private String recordFilePath;
+    private String tempRecordFilePath = null;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
     private AnimationToolbar myToolbar = null;
@@ -68,7 +71,6 @@ public final class DraftFrag extends Fragment {
     private Runnable colorHandlerRunnable;
     private boolean isRed = true;
     private final int RECORDING_ANIMATION_DURATION = 1500;
-    private String tempTranslationAudioRecording = null;
 
     //Toolbar buttons
     private View toolbarMicButton;
@@ -88,7 +90,7 @@ public final class DraftFrag extends Fragment {
         slidePosition = passedArgs.getInt(SLIDE_NUM);
         FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
         recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
-        tempTranslationAudioRecording = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
+        tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
     }
 
     @Override
@@ -166,7 +168,7 @@ public final class DraftFrag extends Fragment {
      */
     private void setUiColors() {
         if (slidePosition == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_trans_layout);
+            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_Relative_Layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
@@ -275,7 +277,7 @@ public final class DraftFrag extends Fragment {
                     //stop other playback streams.
                     stopPlayBackAndRecording();
                     narrationAudioPlayer = new AudioPlayer();
-                    narrationAudioPlayer.playWithPath(narrationFilePath.toString());
+                    narrationAudioPlayer.playWithPath(narrationFilePath);
                     Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -306,7 +308,7 @@ public final class DraftFrag extends Fragment {
         }
 
         //The following allows for a touch from user to close the toolbar and make the fab visible.
-        //This also stops the recording animation.
+        //This also stops the recording animation
         LinearLayout dummyView = (LinearLayout) rootView.findViewById(R.id.fragment_draft_dummyView);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -370,7 +372,7 @@ public final class DraftFrag extends Fragment {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
-        setVoiceRecorder(tempTranslationAudioRecording);
+        setVoiceRecorder(tempRecordFilePath);
         try {
             isRecording = true;
             voiceRecorder.prepare();
@@ -416,7 +418,7 @@ public final class DraftFrag extends Fragment {
         } catch (RuntimeException stopException) {
             Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
-            System.out.println(e.toString());
+            Log.e(getActivity().toString(), e.getMessage());
         }
         voiceRecorder.release();
         voiceRecorder = null;
@@ -562,7 +564,7 @@ public final class DraftFrag extends Fragment {
     }
 
     /**
-     * This function adds two different audio files together to make one aduio file into an
+     * This function adds two different audio files together to make one audio file into an
      * .mp3 file. More comments will be added to this function later.
      */
     private void ConcatenateAudioFiles() {
@@ -572,10 +574,10 @@ public final class DraftFrag extends Fragment {
 
         try {
             if (!new File(recordFilePath).exists()) {
-                movieArray = new Movie[]{MovieCreator.build(tempTranslationAudioRecording)};
+                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
             } else {
                 movieArray = new Movie[]{MovieCreator.build(recordFilePath),
-                        MovieCreator.build(tempTranslationAudioRecording)};
+                        MovieCreator.build(tempRecordFilePath)};
             }
 
             List<Track> audioTrack = new ArrayList<>();
