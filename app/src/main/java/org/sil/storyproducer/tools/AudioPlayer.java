@@ -80,7 +80,7 @@ public class AudioPlayer {
     }
 
     /**
-     * Stops the audio if it is currenlty being played
+     * Stops the audio if it is currently being played
      */
     public void stopAudio() {
         if(mPlayer!= null && mPlayer.isPlaying()) {
@@ -100,11 +100,17 @@ public class AudioPlayer {
         if(mPlayer!= null && mPlayer.isPlaying()) {
             try {
                 mPlayer.stop();
-                mPlayer.release();
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
             } finally {
+                try {
+                    mPlayer.release();
+                } catch (IllegalStateException e) {
+                    //TODO maybe something with this exception
+                    e.printStackTrace();
+                }
+
                 mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             }
         }
@@ -155,6 +161,9 @@ public class AudioPlayer {
      * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
+        if(mPlayer == null) {
+            return false;
+        }
         return mPlayer.isPlaying();
     }
 }

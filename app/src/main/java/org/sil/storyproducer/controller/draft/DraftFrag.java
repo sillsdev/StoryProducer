@@ -681,11 +681,11 @@ public final class DraftFrag extends Fragment {
             toolbarDeleteButton.setVisibility(View.VISIBLE);
             toolbarPlayButton.setVisibility(View.VISIBLE);
         }
-        if (narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()) {
+        if (narrationAudioPlayer != null) {
             narrationAudioPlayer.stopAudio();
             narrationAudioPlayer.releaseAudio();
         }
-        if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
+        if (voiceAudioPlayer != null) {
             voiceAudioPlayer.stopAudio();
             voiceAudioPlayer.releaseAudio();
         }

@@ -51,6 +51,7 @@ import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
+import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,7 +59,7 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private final static float BACKGROUNG_VOLUME = 0.5f;
+    private final static float BACKGROUND_VOLUME = 0.5f;
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -139,7 +140,7 @@ public class LearnActivity extends AppCompatActivity {
         //turn on the background music
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
-        backgroundPlayer.setVolume(BACKGROUNG_VOLUME);
+        backgroundPlayer.setVolume(BACKGROUND_VOLUME);
     }
 
     /**
@@ -150,9 +151,8 @@ public class LearnActivity extends AppCompatActivity {
         backgroundAudioJumps = new ArrayList<Integer>();
         backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 1; k < LAST_SLIDE_NUM; k++) {
-            narrationPlayer = new AudioPlayer();                                                //set the next audio
-            narrationPlayer.setPath(FileSystem.getNarrationAudio(storyName, k - 1).getPath());
-            audioStartValue += narrationPlayer.getAudioDurationInMilliseconds();
+            String narrationPath = FileSystem.getNarrationAudio(storyName, k - 1).getPath();
+            audioStartValue += MediaHelper.getAudioDuration(narrationPath) / 1000;
             backgroundAudioJumps.add(k, audioStartValue);
         }
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
@@ -219,6 +219,12 @@ public class LearnActivity extends AppCompatActivity {
     void playVideo() {
         //TODO: sync background audio with image
         setPic(learnImageView);                                                             //set the next image
+
+        //Clear old narrationPlayer
+        if(narrationPlayer != null) {
+            narrationPlayer.releaseAudio();
+        }
+
         narrationPlayer = new AudioPlayer();                                                //set the next audio
         narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
         if(isVolumeOn) {
@@ -363,7 +369,7 @@ public class LearnActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked) {
                     narrationPlayer.setVolume(1.0f);
-                    backgroundPlayer.setVolume(BACKGROUNG_VOLUME);
+                    backgroundPlayer.setVolume(BACKGROUND_VOLUME);
                     isVolumeOn = true;
                 } else {
                     narrationPlayer.setVolume(0.0f);
@@ -488,7 +494,7 @@ public class LearnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //stop all other playback streams.
-                if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
+                if (voiceAudioPlayer != null) {
                     voiceAudioPlayer.stopAudio();
                     voiceAudioPlayer.releaseAudio();
                 }
@@ -586,9 +592,8 @@ public class LearnActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Stops all other playback streams.
                 if (voiceAudioPlayer != null) {
-                    if (voiceAudioPlayer.isAudioPlaying()) {
-                        voiceAudioPlayer.stopAudio();
-                    }
+                    voiceAudioPlayer.stopAudio();
+                    voiceAudioPlayer.releaseAudio();
                 }
                 if(isRecording){
                     stopAudioRecorder();

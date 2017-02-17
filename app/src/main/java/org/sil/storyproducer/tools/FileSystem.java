@@ -305,9 +305,14 @@ public class FileSystem {
 
     public static Bitmap getEndImage(String story, int sampleSize) {
         String path = getStoryPath(story);
+        File imageFile = new File(path, "end.jpg");
+        //If "end.jpg" doen't exist, use the last numbered picture.
+        if(!imageFile.exists()) {
+            imageFile = new File(path, (getImageAmount(story) - 1) + ".jpg");
+        }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = sampleSize;
-        return BitmapFactory.decodeFile(path + "/end.jpg", options);
+        return BitmapFactory.decodeFile(imageFile.getPath(), options);
     }
 
 //    public static String getAudioPath(String story, int number) {
@@ -414,6 +419,7 @@ public class FileSystem {
             }
         }
 
-        return (totalPics < totalTexts) ? totalPics : totalTexts;
+        //highest numbered audio/image + 1 is amount
+        return ((totalPics < totalTexts) ? totalPics : totalTexts) + 1;
     }
 }
