@@ -5,12 +5,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.sil.storyproducer.model.SlideText;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class FileSystem {
@@ -23,6 +29,7 @@ public class FileSystem {
                                 PROJECT_DIR = "projects",
                                 SOUNDTRACK_PREFIX = "SoundTrack",
                                 TRANSLATION_PREFIX = "translation",
+                                LEARN_PRACTICE_PREFIX = "learnPractice",
                                 COMMENT_PREFIX = "comment",
                                 MP3_EXTENSION = ".mp3";
 
@@ -135,11 +142,29 @@ public class FileSystem {
         return null;
     }
 
+    /**
+     * gets the path to the project folder for the story that is passed
+     * @param story
+     * @return
+     */
+    private static String getProjectPath(String story) {
+        return projectPaths.get(story);
+    }
+
     public static File getNarrationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+NARRATION_PREFIX+i+".wav");
     }
     public static File getTranslationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+MP3_EXTENSION);
+    }
+
+    /**
+     * Gets the File for the learn practice recording
+     * @param story
+     * @return
+     */
+    public static File getLearnPracticeAudio(String story){
+        return new File(getProjectPath(story) + "/" + LEARN_PRACTICE_PREFIX + ".mp3");
     }
 
     public static File getSoundtrackAudio(String story, int i){
@@ -274,6 +299,22 @@ public class FileSystem {
         return null;
     }
 
+    public static Bitmap getEndImage(String story) {
+        return getEndImage(story, 1);
+    }
+
+    public static Bitmap getEndImage(String story, int sampleSize) {
+        String path = getStoryPath(story);
+        File imageFile = new File(path, "end.jpg");
+        //If "end.jpg" doen't exist, use the last numbered picture.
+        if(!imageFile.exists()) {
+            imageFile = new File(path, (getImageAmount(story) - 1) + ".jpg");
+        }
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = sampleSize;
+        return BitmapFactory.decodeFile(imageFile.getPath(), options);
+    }
+
 //    public static String getAudioPath(String story, int number) {
 //        String path = getStoryPath(story);
 //        File f = new File(path);
@@ -378,6 +419,7 @@ public class FileSystem {
             }
         }
 
-        return (totalPics < totalTexts) ? totalPics : totalTexts;
+        //highest numbered audio/image + 1 is amount
+        return ((totalPics < totalTexts) ? totalPics : totalTexts) + 1;
     }
 }

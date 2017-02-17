@@ -1,7 +1,7 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">30dp</dimen>
+    <dimen name="activity_vertical_margin">65dp</dimen>
     <dimen name="setup_edittext_width">300dp</dimen>
     <dimen name="setup_edittext_paddingTopBot">20dp</dimen>
     <dimen name="setup_edittext_paddingLefRig">30dp</dimen>

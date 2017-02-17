@@ -15,8 +15,6 @@ import org.sil.storyproducer.tools.FileSystem;
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
     private int numOfSlides = 0;
-    private static int previousSlide = 0;
-    private static boolean getInitialPosition = false;
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);

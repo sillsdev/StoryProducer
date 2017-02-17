@@ -16,6 +16,25 @@ public class AudioPlayer {
     }
 
     /**
+     * Only sets the path for the audio to
+     * @param path String path for the audio
+     */
+    public void setPath(String path) {
+        try {
+            mPlayer.setDataSource(path);
+        } catch (IOException e) {
+            //TODO maybe something with this exception
+            e.printStackTrace();
+        }
+        try {
+            mPlayer.prepare();
+        } catch (IOException e) {
+            //TODO maybe something with this exception
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Plays the audio with the given path
      * @param path for the path where the audio resides
      */
@@ -61,7 +80,7 @@ public class AudioPlayer {
     }
 
     /**
-     * Stops the audio if it is currenlty being played
+     * Stops the audio if it is currently being played
      */
     public void stopAudio() {
         if(mPlayer!= null && mPlayer.isPlaying()) {
@@ -80,12 +99,19 @@ public class AudioPlayer {
     public void releaseAudio() {
         if(mPlayer!= null && mPlayer.isPlaying()) {
             try {
-
                 mPlayer.stop();
-                mPlayer.release();
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
+            } finally {
+                try {
+                    mPlayer.release();
+                } catch (IllegalStateException e) {
+                    //TODO maybe something with this exception
+                    e.printStackTrace();
+                }
+
+                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             }
         }
     }
@@ -96,6 +122,22 @@ public class AudioPlayer {
      */
     public int getAudioDurationInSeconds() {
         return (int)(mPlayer.getDuration() * 0.001);
+    }
+
+    /**
+     * returns the duration of the audio as an int in miliseconds
+     * @return the duration of the audio as an int
+     */
+    public int getAudioDurationInMilliseconds() {
+        return (int)mPlayer.getDuration();
+    }
+
+    /**
+     * Seeks to the parameter in milliseconds
+     * @param msec milliseconds for where to seek to in the audio
+     */
+    public void seekTo(int msec) {
+        mPlayer.seekTo(msec);
     }
 
     /**
@@ -119,6 +161,9 @@ public class AudioPlayer {
      * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
+        if(mPlayer == null) {
+            return false;
+        }
         return mPlayer.isPlaying();
     }
 }

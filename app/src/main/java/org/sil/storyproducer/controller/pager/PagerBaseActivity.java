@@ -51,8 +51,9 @@ public class PagerBaseActivity extends AppCompatActivity {
         // fragments, so use getSupportFragmentManager.
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setCurrentItem(StoryState.getCurrentStorySlide());
         mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.setCurrentItem(StoryState.getCurrentStorySlide());           //sets view pager to the current slide from the story state
+
 //        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 //            public void onPageScrollStateChanged(int state) {}
 //            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -84,6 +85,12 @@ public class PagerBaseActivity extends AppCompatActivity {
 
         // set up the gesture detector
         mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        StoryState.setCurrentStorySlide( mViewPager.getCurrentItem());      //sets the story state to the current item before the activity is left
     }
 
     /**
