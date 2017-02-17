@@ -5,12 +5,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.sil.storyproducer.model.SlideText;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class FileSystem {
@@ -23,7 +29,9 @@ public class FileSystem {
                                 PROJECT_DIR = "projects",
                                 SOUNDTRACK_PREFIX = "SoundTrack",
                                 TRANSLATION_PREFIX = "translation",
-                                LEARN_PRACTICE_PREFIX = "learnPractice";
+                                LEARN_PRACTICE_PREFIX = "learnPractice",
+                                COMMENT_PREFIX = "comment",
+                                MP3_EXTENSION = ".mp3";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> storyPaths;

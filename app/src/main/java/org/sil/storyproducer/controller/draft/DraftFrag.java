@@ -90,7 +90,7 @@ public final class DraftFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        FileSystem.loadSlideContent(StoryState.getStoryName(), slidePosition/*StoryState.getCurrentStorySlide()*/);
+        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slidePosition);
         recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
         tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
     }
