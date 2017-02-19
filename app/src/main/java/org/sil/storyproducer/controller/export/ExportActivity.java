@@ -79,7 +79,6 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     public void onExportButtonClicked(View view) {
-        System.out.println("clicked export");
         openFileExplorerToExport();
     }
 
