@@ -13,13 +13,21 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     private GregorianCalendar dateTime;
     private Phase phase;
     private Long nanoTime;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy h:m a");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy h:mm a");
+
+    public String getTypeString(){
+        return "";
+    }
 
     LogEntry(long dateTime, Phase phase){
         this.dateTime=new GregorianCalendar();
         this.dateTime.setTimeInMillis(dateTime);
         this.phase = phase;
         this.nanoTime = System.nanoTime();
+    }
+
+    public int getSlideNum(){
+        return -1;
     }
 
     public Phase getPhase(){

@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Random;
 
 /**
  * Created by Michael D. Baxter on 1/22/2017.
@@ -129,15 +130,21 @@ public class Logging {
 
     public static void createFakeLogEntries(String lang, String story, int n){
         HashSet<LogEntry> james = new HashSet<>();
+        Random rand = new Random();
+        double start=0;
+        ComChkEntry.Type[] cchkVals = ComChkEntry.Type.values();
+        DraftEntry.Type[] dVals = DraftEntry.Type.values();
         for(int i=0; i<n; i++){
+
+
             LogEntry jim = new DraftEntry((long) (Math.random()*System.currentTimeMillis()),
-                    DraftEntry.Type.MT_pb, (int)(100*Math.random()));
+                    dVals[rand.nextInt(dVals.length)], rand.nextInt(15));
             james.add(jim);
             jim = new LearnEntry((long) (Math.random()*System.currentTimeMillis()),
-                    Math.random()*100, Math.random()*100);
+                    start = Math.random()*100 , start + Math.random()*100);
             james.add(jim);
             jim = new ComChkEntry((long) (Math.random()*System.currentTimeMillis()),
-                    ComChkEntry.Type.MT_pb, (int) (Math.random()*100));
+                    cchkVals[rand.nextInt(cchkVals.length)], rand.nextInt(15));
             james.add(jim);
         }
         System.out.println("cardinality of james: "+james.size());

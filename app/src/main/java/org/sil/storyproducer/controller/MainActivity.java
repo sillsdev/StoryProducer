@@ -56,8 +56,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-        Intent goToLogView = new Intent(this, LogView.class);
-        startActivity(goToLogView);
+
 
         //Logging.saveLogEntry(new DraftEntry(0L, DraftEntry.Type.MT_pb , 0), "ENG", "TheTaleOfJimbob");
         //Logging.createABunchOfFakeLogEntries("Spanglish", "NotAStory.com");
@@ -70,6 +69,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         System.out.println("items in deserialized log: "+log.size()); */
 
         boolean skipRegistration = checkRegistrationSkip();
+        skipRegistration = true;
+        Intent goToLogView = new Intent(this, LogView.class);
+        goToLogView.putExtra("slide", 1);
+        startActivity(goToLogView);
+
         if (!skipRegistration) {
             // Checks registration file to see if registration has been done yet and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);

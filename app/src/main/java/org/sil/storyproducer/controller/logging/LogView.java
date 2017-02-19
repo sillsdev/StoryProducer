@@ -14,19 +14,33 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 
+import java.util.ArrayList;
+
 public class LogView extends AppCompatActivity {
 
+    private int slide=-1;
 
     private ListView listView = null;
 
     private class LogListAdapter extends BaseAdapter {
 
-        private LogEntry[] logEntries = new LogEntry[0];
+        private LogEntry[] logEntries = null;
 
         private final Context context;
 
         public LogListAdapter(Context c, Log log){
-            this.logEntries=log.toArray(logEntries);
+
+            if(slide>=0) {
+                ArrayList<LogEntry> filteredEntries = new ArrayList<>();
+                for (LogEntry l : log) {
+                    if (slide == l.getSlideNum()) {
+                        filteredEntries.add(l);
+                    }
+                }
+                this.logEntries = filteredEntries.toArray(new LogEntry[0]);
+            } else {
+                this.logEntries = log.toArray(new LogEntry[0]);
+            }
             context = c;
         }
 
@@ -59,11 +73,11 @@ public class LogView extends AppCompatActivity {
 
             //ImageView bananaView = (ImageView) convertView.findViewById(R.id.banana);
             TextView date = (TextView) convertView.findViewById(R.id.textView01);
-            TextView text2 = (TextView) convertView.findViewById(R.id.textView02);
+            TextView info = (TextView) convertView.findViewById(R.id.textView02);
 
             LogEntry entry = getItem(position);
             date.setText(entry.getDateTime());
-            text2.setText(entry.getPhase().toString());
+            info.setText(entry.getPhase().toString() +" - " + entry.getTypeString());
 
             return convertView;
         }
@@ -74,12 +88,13 @@ public class LogView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_view);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        setTitle("Logging!!!");
+        slide = getIntent().getIntExtra("slide", -1);
+        setTitle("Logging - Slide " + slide);
         listView = (ListView) findViewById(R.id.log_list_view);
         Logging.deleteLog("Spanglish", "NotAStory.com");
-        Logging.createFakeLogEntries("Spanglish", "NotAStory.com", 3);
+        Logging.createFakeLogEntries("Spanglish", "NotAStory.com", 200);
         Log log = Logging.getLog("Spanglish", "NotAStory.com");
-        System.out.println("log, broha: "+log);
+        System.out.println("is log null? "+ (log==null ? "yes" : "no")); //TODO: figure out versioning on serialized classes
         LogListAdapter lla = new LogListAdapter(getApplicationContext(), log);
         listView.setAdapter(lla);
 

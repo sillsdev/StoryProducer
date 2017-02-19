@@ -5,6 +5,7 @@ package org.sil.storyproducer.controller.logging;
  */
 
 public class DraftEntry extends LogEntry {
+
     private int slideNum;
     private Type type;
 
@@ -14,7 +15,16 @@ public class DraftEntry extends LogEntry {
         this.type=type;
     }
 
-    public enum Type{
+    @Override
+    public int getSlideNum() {
+        return slideNum;
+    }
+
+    public String getTypeString(){
+        return type.toString();
+    }
+
+    public enum Type {
         LWC_pb("LWC Playback"), MT_rec("Mother Tongue Recording"),
         MT_pb("Mother Tongue Playback");
 

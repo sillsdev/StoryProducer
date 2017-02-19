@@ -14,6 +14,16 @@ public class ComChkEntry extends LogEntry {
         this.slideNum=slideNum;
     }
 
+    @Override
+    public int getSlideNum(){
+        return slideNum;
+    }
+
+    @Override
+    public String getTypeString(){
+        return type.toString();
+    }
+
     public enum Type{
         cmt_pb("Comment Playback"), cmt_rec("Comment Recording"),
         MT_pb("Mother Tongue Playback");
