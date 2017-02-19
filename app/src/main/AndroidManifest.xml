@@ -59,7 +59,7 @@
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".controller.export.ExportActivity"
-            android:noHistory="true"></activity>
+            ></activity>
     </application>
 
 </manifest>
