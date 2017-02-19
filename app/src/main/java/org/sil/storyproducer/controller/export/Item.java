@@ -8,13 +8,13 @@ public class Item implements Comparable<Item>{
     //private String image;
     private boolean isFile;
 
-    public Item(String n,String d, String dt, String p, boolean isFl)
+    public Item(String name,String data, String date, String path, boolean isFile)
     {
-        name = n;
-        data = d;
-        date = dt;
-        path = p;
-        isFile = isFl;
+        this.name = name;
+        this.data = data;
+        this.date = date;
+        this.path = path;
+        this.isFile = isFile;
     }
     public String getName()
     {
@@ -34,7 +34,7 @@ public class Item implements Comparable<Item>{
     }
     //public String getImage() { return image; }
     public boolean isFile() { return isFile; }
-    //public boolean getIsFile() { return isFile; }
+
     public int compareTo(Item o) {
         if(this.name != null)
             return this.name.toLowerCase().compareTo(o.getName().toLowerCase());

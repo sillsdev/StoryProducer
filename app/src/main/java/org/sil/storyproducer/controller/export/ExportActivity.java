@@ -26,6 +26,7 @@ import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
 public class ExportActivity extends AppCompatActivity {
 
+    public static final String PROJECT_DIRECTORY = "projectDirectory";
     private static final int FILE_CHOOSER_CODE = 1;
     private GestureDetectorCompat mDetector;
 
@@ -84,7 +85,7 @@ public class ExportActivity extends AppCompatActivity {
 
     private void openFileExplorerToExport() {
         Intent intent = new Intent(this, FileChooser.class);
-        intent.putExtra("HomeBoyDirectory", FileSystem.getProjectDirectory(StoryState.getStoryName()).getPath());
+        intent.putExtra(PROJECT_DIRECTORY, FileSystem.getProjectDirectory(StoryState.getStoryName()).getPath());
         startActivityForResult(intent, FILE_CHOOSER_CODE);
     }
 

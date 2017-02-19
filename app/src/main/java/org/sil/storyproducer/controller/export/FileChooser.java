@@ -39,67 +39,69 @@ public class FileChooser extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_explorer);
+
+        //Set up toolbar
         Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
-        //actionBar.setMenu();
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-       // currentDir = ContextCompat.getExternalFilesDirs(this.getApplicationContext(), null)[0];
-       // fill(currentDir);
-   //     setContentView(R.activity_file_explorer.activity_file_chooser);
-        File ext = ContextCompat.getExternalFilesDirs(this.getApplicationContext(), null)[0];
-        navigateToFolder(ext);
+
+        //Navigate to folder passed through intent
+        File projectFolder = new File(getIntent().getStringExtra(ExportActivity.PROJECT_DIRECTORY));
+        navigateToFolder(projectFolder);
     }
 
-    private void fill(File f) {
-        File[] contents = f.listFiles();
-        this.setTitle("Current Dir: "+f.getName());
-        //Toolbar actionBar = (Toolbar) findViewById(R.id.toolbar);
-        //actionBar.setTitle("Current Dir: "+f.getName());
+    private void fill(File dir) {
+        File[] contents = dir.listFiles();
+        this.setTitle("Current Dir: "+dir.getName());
 
-        List<Item> dirs = new ArrayList<>();
-        List<Item> fls = new ArrayList<>();
+        List<Item> subdirs = new ArrayList<>();
+        List<Item> files = new ArrayList<>();
 
         if(contents != null){
-            for(File ff: contents){
-                Date lastModDate = new Date(ff.lastModified());
-                DateFormat formater = DateFormat.getDateTimeInstance();
-                String date_modify = formater.format(lastModDate);
-                if(ff.isDirectory()){
+            for(File subdirOrFile: contents){
+                Date lastModDate = new Date(subdirOrFile.lastModified());
+                DateFormat formatter = DateFormat.getDateTimeInstance();
+                String date_modify = formatter.format(lastModDate);
 
-                    File[] fbuf = ff.listFiles();
-                    int buf = 0;
-                    if(fbuf != null){
-                        buf = fbuf.length;
-                    }
-                    String num_item = String.valueOf(buf);
-                    if (buf == 1){
-                        num_item += " item";
+                if(subdirOrFile.isDirectory()){
+
+                    int numContents = subdirOrFile.listFiles().length;
+
+                    String itemCountString = String.valueOf(numContents);
+
+                    if (numContents == 1){
+                        itemCountString += " item";
                     } else {
-                        num_item += " items";
+                        itemCountString += " items";
                     }
 
-                    //String formated = lastModDate.toString();
-                    dirs.add(new Item(ff.getName(),num_item,date_modify,ff.getAbsolutePath(),false));
-                } else {
-                    long size = ff.length();
+                    subdirs.add(new Item(subdirOrFile.getName(),itemCountString, date_modify,
+                            subdirOrFile.getAbsolutePath(),false));
+
+                } else { //subdirOrFile is a file and not a directory
+                    long size = subdirOrFile.length();
                     String units = " bytes";
                     if (size==1){
                         units=" byte";
                     }
-                    fls.add(new Item(ff.getName(),size + units, date_modify, ff.getAbsolutePath(),true));
+                    files.add(new Item(subdirOrFile.getName(),size + units, date_modify,
+                            subdirOrFile.getAbsolutePath(),true));
                 }
             }
         }
 
-        Collections.sort(dirs);
-        Collections.sort(fls);
-        dirs.addAll(fls);
-        String parent = f.getParent();
+        List<Item> displayList = new ArrayList<>();
+        String parent = dir.getParent();
         if(parent != null) {
-            dirs.add(0, new Item("..", "Parent Directory", "", parent, false));
+            displayList.add(0, new Item("..", "Parent Directory", "", parent, false));
         }
-        adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,dirs);
-        //this.setListAdapter(adapter);
+        Collections.sort(subdirs);
+        Collections.sort(files);
+        displayList.addAll(subdirs);
+        displayList.addAll(files);
+
+
+        adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,displayList);
 
         ListView lv = (ListView)findViewById(android.R.id.list);
         lv.setAdapter(adapter);
@@ -107,12 +109,9 @@ public class FileChooser extends AppCompatActivity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-         //       super.onListItemClick(l, v, position, id);
-                Item o = adapter.getItem(position);
-                if(o.isFile()){
-                    onFileClick(o);
-                } else {
-                    navigateToFolder(new File(o.getPath()));
+                Item item = adapter.getItem(position);
+                if(! item.isFile()){
+                    navigateToFolder(new File(item.getPath()));
                 }
             }
         });
@@ -139,16 +138,6 @@ public class FileChooser extends AppCompatActivity {
         return true;
     }
 
-    private void onFileClick(Item o)
-    {
-        //Toast.makeText(this, "Folder Clicked: "+ currentDir, Toast.LENGTH_SHORT).show();
-      /*  Intent intent = new Intent();
-        intent.putExtra("GetPath",currentDir.toString());
-        intent.putExtra("GetFileName",o.getName());
-        setResult(RESULT_OK, intent);
-        finish(); */
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection
@@ -165,7 +154,6 @@ public class FileChooser extends AppCompatActivity {
     }
 
     private void newFolder(){
-        System.out.println("Yo, new folda bro");
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(FileChooser.this);
         final EditText input = new EditText(getApplicationContext());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
