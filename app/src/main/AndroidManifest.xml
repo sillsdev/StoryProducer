@@ -26,7 +26,7 @@
         <!-- File Explorer Launch Page -->
         <activity
             android:name=".controller.export.MainExportActivity"
-            android:label="Bob">
+            android:label="Temp. Export Page">
         </activity>
 
         <!-- File Explorer Launch Page -->
