@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,7 +27,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
-public class FileChooser extends AppCompatActivity {
+public class FileChooserActivity extends AppCompatActivity {
+
+    private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z\\-_ ]");
 
     private File currentDir;
     private FileArrayAdapter adapter;
@@ -101,12 +101,12 @@ public class FileChooser extends AppCompatActivity {
         displayList.addAll(files);
 
 
-        adapter = new FileArrayAdapter(FileChooser.this, R.layout.file_view,displayList);
+        adapter = new FileArrayAdapter(FileChooserActivity.this, R.layout.file_view,displayList);
 
-        ListView lv = (ListView)findViewById(android.R.id.list);
-        lv.setAdapter(adapter);
+        ListView listView = (ListView)findViewById(android.R.id.list);
+        listView.setAdapter(adapter);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> l, View v, int position, long id) {
                 Item item = adapter.getItem(position);
@@ -117,17 +117,17 @@ public class FileChooser extends AppCompatActivity {
         });
     }
 
-    private void navigateToFolder(File f){
-        navigateToFolder(f, true);
+    private void navigateToFolder(File dir){
+        navigateToFolder(dir, true);
     }
 
     private void refresh(){navigateToFolder(currentDir, false);}
 
-    private void navigateToFolder(File f, boolean addToHistory){
+    private void navigateToFolder(File dir, boolean addToHistory){
         if (currentDir != null && addToHistory) {
             history.push(currentDir);
         }
-        currentDir = f;
+        currentDir = dir;
         fill(currentDir);
     }
 
@@ -140,12 +140,12 @@ public class FileChooser extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
+        // Respond to buttons being pressed on the toolbar
         switch (item.getItemId()) {
-            case R.id.new_folder:
+            case R.id.new_folder: //new folder button
                 newFolder();
                 return true;
-            case android.R.id.home:
+            case android.R.id.home: //back button. (I believe this name is built-in. -MDB)
                 goBack();
                 return true;
             default:
@@ -153,8 +153,32 @@ public class FileChooser extends AppCompatActivity {
         }
     }
 
+    public void saveFile(View view){
+        EditText textBox = (EditText) findViewById(R.id.editText3);
+        String fileName = textBox.getText().toString();
+        String fileExtension = ".mp4";
+
+        if( ILLEGAL_CHARS.matcher(fileName).find() ){
+            createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
+        } else if (fileName.length()==0){
+            createErrorDialog("File name cannot be empty.");
+        } else {
+            File newFile = new File(currentDir, fileName + fileExtension);
+            if (newFile.exists()){
+                createErrorDialog("File \""+newFile.getName()+"\" already exists.");
+            } else {
+                Intent intent = new Intent();
+                intent.putExtra("GetPath",currentDir.toString());
+                intent.putExtra("GetFileName",newFile.getAbsolutePath());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+
+    }
+
     private void newFolder(){
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(FileChooser.this);
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(FileChooserActivity.this);
         final EditText input = new EditText(getApplicationContext());
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -167,8 +191,7 @@ public class FileChooser extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 hideKeyboard(input);
-                Pattern illegalChars = Pattern.compile("[^a-zA-Z\\-\\_\\ ]");
-                if( illegalChars.matcher(input.getText()).find() ){
+                if( ILLEGAL_CHARS.matcher(input.getText()).find() ){
                     createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
                 } else if (input.getText().length()==0){
                     createErrorDialog("Folder name cannot be empty.");
@@ -197,17 +220,18 @@ public class FileChooser extends AppCompatActivity {
     }
 
     private void showKeyboard(){
-        //nifty code from Stack Overflow
-        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                .toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                        InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
     private void hideKeyboard(EditText _pay_box_helper){
-        //more nifty code from Stack Overflow
-        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(_pay_box_helper.getWindowToken(), 0);
+        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                .hideSoftInputFromWindow(_pay_box_helper.getWindowToken(), 0);
     }
 
     private AlertDialog createErrorDialog(String text){
-        final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooser.this);
+        final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooserActivity.this);
         errorDialog.setTitle("Error");
         errorDialog.setMessage(text);
         errorDialog.setPositiveButton("OK", null);
@@ -222,29 +246,6 @@ public class FileChooser extends AppCompatActivity {
         }
     }
 
-    public void saveFile(View view){
-        EditText textBox = (EditText) findViewById(R.id.editText3);
-        String fileName = textBox.getText().toString();
-        String fileExtension = ".mp4";
-
-        Pattern illegalChars = Pattern.compile("[^a-zA-Z\\-\\_\\ ]");
-        if( illegalChars.matcher(fileName).find() ){
-            createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
-        } else if (fileName.length()==0){
-            createErrorDialog("File name cannot be empty.");
-        } else {
-            File newFile = new File(currentDir, fileName + fileExtension);
-            if (newFile.exists()){
-                createErrorDialog("File \""+newFile.getName()+"\" already exists.");
-            } else {
-                Intent intent = new Intent();
-                intent.putExtra("GetPath",currentDir.toString());
-                intent.putExtra("GetFileName",newFile.getAbsolutePath());
-                setResult(RESULT_OK, intent);
-                finish();
-            }
-        }
 
 
-    }
 }

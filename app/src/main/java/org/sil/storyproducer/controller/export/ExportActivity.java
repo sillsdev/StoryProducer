@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.export;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Looper;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -84,7 +83,7 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     private void openFileExplorerToExport() {
-        Intent intent = new Intent(this, FileChooser.class);
+        Intent intent = new Intent(this, FileChooserActivity.class);
         intent.putExtra(PROJECT_DIRECTORY, FileSystem.getProjectDirectory(StoryState.getStoryName()).getPath());
         startActivityForResult(intent, FILE_CHOOSER_CODE);
     }

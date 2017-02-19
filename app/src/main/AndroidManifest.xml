@@ -31,7 +31,7 @@
 
         <!-- File Explorer Launch Page -->
         <activity
-            android:name=".controller.export.FileChooser"
+            android:name=".controller.export.FileChooserActivity"
             android:label="FileChooser">
         </activity>
 

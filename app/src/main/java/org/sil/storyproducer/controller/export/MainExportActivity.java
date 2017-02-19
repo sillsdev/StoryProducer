@@ -30,7 +30,7 @@ public class MainExportActivity extends AppCompatActivity {
     }
 
     public void getFile(View view){
-        Intent intent1 = new Intent(this, FileChooser.class);
+        Intent intent1 = new Intent(this, FileChooserActivity.class);
         startActivityForResult(intent1,REQUEST_PATH);
     }
 
