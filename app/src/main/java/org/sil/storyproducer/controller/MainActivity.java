@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.export.MainExportActivity;
 import org.sil.storyproducer.model.*;
 import org.sil.storyproducer.tools.FileSystem;
 import android.Manifest;

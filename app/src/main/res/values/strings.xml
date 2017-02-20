@@ -113,5 +113,10 @@
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatization</string>
     <string name="export_title">Export</string>
+    <string name="Parent_Dir_Label">Parent Directory</string>
+    <string name="byte_unit_singular">" byte"</string>
+    <string name="byte_unit_plural">" bytes"</string>
+    <string name="item_unit_plural">" items"</string>
+    <string name="item_unit_singular">" item"</string>
 
 </resources>

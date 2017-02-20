@@ -27,6 +27,12 @@ import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
 
+
+/**
+ * NOTICE: This code adapted from the tutorial found at
+ * http://custom-android-dn.blogspot.com/2013/01/create-simple-file-explore-in-android.html.
+ */
+
 public class FileChooserActivity extends AppCompatActivity {
 
     private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z\\-_ ]");
@@ -52,7 +58,7 @@ public class FileChooserActivity extends AppCompatActivity {
 
     private void fill(File dir) {
         File[] contents = dir.listFiles();
-        this.setTitle("Current Dir: "+dir.getName());
+        this.setTitle(dir.getName());
 
         List<Item> subdirs = new ArrayList<>();
         List<Item> files = new ArrayList<>();
@@ -70,9 +76,9 @@ public class FileChooserActivity extends AppCompatActivity {
                     String itemCountString = String.valueOf(numContents);
 
                     if (numContents == 1){
-                        itemCountString += " item";
+                        itemCountString += getString(R.string.item_unit_singular);
                     } else {
-                        itemCountString += " items";
+                        itemCountString += getString(R.string.item_unit_plural);
                     }
 
                     subdirs.add(new Item(subdirOrFile.getName(),itemCountString, date_modify,
@@ -80,9 +86,9 @@ public class FileChooserActivity extends AppCompatActivity {
 
                 } else { //subdirOrFile is a file and not a directory
                     long size = subdirOrFile.length();
-                    String units = " bytes";
+                    String units = getString(R.string.byte_unit_plural);
                     if (size==1){
-                        units=" byte";
+                        units=getString(R.string.byte_unit_singular);
                     }
                     files.add(new Item(subdirOrFile.getName(),size + units, date_modify,
                             subdirOrFile.getAbsolutePath(),true));
@@ -93,7 +99,8 @@ public class FileChooserActivity extends AppCompatActivity {
         List<Item> displayList = new ArrayList<>();
         String parent = dir.getParent();
         if(parent != null) {
-            displayList.add(0, new Item("..", "Parent Directory", "", parent, false));
+            displayList.add(0, new Item("..", getString(R.string.Parent_Dir_Label),
+                    "", parent, false));
         }
         Collections.sort(subdirs);
         Collections.sort(files);
@@ -154,7 +161,7 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     public void saveFile(View view){
-        EditText textBox = (EditText) findViewById(R.id.editText3);
+        EditText textBox = (EditText) findViewById(R.id.fileName);
         String fileName = textBox.getText().toString();
         String fileExtension = ".mp4";
 
@@ -200,7 +207,8 @@ public class FileChooserActivity extends AppCompatActivity {
                     if (newFolder.exists()){
                         createErrorDialog("Folder \""+input.getText()+"\" already exists.");
                     } else {
-                        if (! newFolder.mkdir()){
+                        boolean success = newFolder.mkdir();
+                        if (! success){
                             createErrorDialog("Folder creation failed for unknown reason.");
                         } else {
                             refresh();
