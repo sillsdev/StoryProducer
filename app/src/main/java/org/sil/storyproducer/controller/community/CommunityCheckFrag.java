@@ -212,7 +212,7 @@ public class CommunityCheckFrag extends Fragment {
                 int nextCommentIndex = comments.length + 1;
                 File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
                         "Comment " + nextCommentIndex);
-                while (!recordFile.exists()) {
+                while (recordFile.exists()) {
                     nextCommentIndex++;
                     recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
                             "Comment " + nextCommentIndex);
