@@ -65,7 +65,7 @@ public class TransFrag extends Fragment {
         // Inflate the layout for this fragment
         ViewGroup view = (ViewGroup) inflater.inflate(R.layout.fragment_trans, container, false);
         //Load content
-        loadSlideContent(view);
+       // loadSlideContent(view);
         //stuff for saving and playing the audio
         //TODO test to see where exacly getPath is in our files and if we even need the directory path
 
@@ -206,36 +206,36 @@ public class TransFrag extends Fragment {
         return  mediaRecorder;
     }
 
-    private void loadSlideContent(View view){
-        int currentSlide = getArguments().getInt(SLIDE_NUM);
-        String storyName = getArguments().getString(STORY_NAME);
-
-        TextFiles.loadSlideContent(storyName, currentSlide);
-
-        ImageView slideImage = (ImageView)view.findViewById(R.id.trans_image_slide);
-        slideImage.setImageBitmap(ImageFiles.getBitmap(storyName, currentSlide));
-
-        TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
-        slideTitle.setText(TextFiles.getTitle());
-
-        TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
-        slideSubTitle.setText(TextFiles.getSlideVerse());
-
-        TextView slideVerse = (TextView)view.findViewById(R.id.trans_scripture_title);
-        slideVerse.setText(TextFiles.getSlideVerse());
-
-        TextView slideContent = (TextView)view.findViewById(R.id.trans_scripture_body);
-        slideContent.setText(TextFiles.getSlideContent());
-
-        TextView slideNum = (TextView)view.findViewById(R.id.trans_slide_indicator);
-        slideNum.setText("#" + (getArguments().getInt(SLIDE_NUM) + 1));
-        slideNum.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchSlideSelectDialog();
-            }
-        });
-    }
+//    private void loadSlideContent(View view){
+//        int currentSlide = getArguments().getInt(SLIDE_NUM);
+//        String storyName = getArguments().getString(STORY_NAME);
+//
+//        FileSystem.loadSlideContent(storyName, currentSlide);
+//
+//        ImageView slideImage = (ImageView)view.findViewById(R.id.trans_image_slide);
+//        slideImage.setImageBitmap(FileSystem.getImage(storyName, currentSlide));
+//
+//        TextView slideTitle = (TextView)view.findViewById(R.id.trans_slide_title_primary);
+//        slideTitle.setText(FileSystem.getTitle());
+//
+//        TextView slideSubTitle = (TextView)view.findViewById(R.id.trans_slide_title_secondary);
+//        slideSubTitle.setText(FileSystem.getSlideVerse());
+//
+//        TextView slideVerse = (TextView)view.findViewById(R.id.trans_scripture_title);
+//        slideVerse.setText(FileSystem.getSlideVerse());
+//
+//        TextView slideContent = (TextView)view.findViewById(R.id.trans_scripture_body);
+//        slideContent.setText(FileSystem.getSlideContent());
+//
+//        TextView slideNum = (TextView)view.findViewById(R.id.trans_slide_indicator);
+//        slideNum.setText("#" + (getArguments().getInt(SLIDE_NUM) + 1));
+//        slideNum.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                launchSlideSelectDialog();
+//            }
+//        });
+//    }
 
     private void launchSlideSelectDialog() {
         final Dialog dialog = new Dialog(getContext());
