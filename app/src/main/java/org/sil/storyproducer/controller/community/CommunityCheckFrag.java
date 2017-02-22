@@ -190,7 +190,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param commentTitle the title of the comment to play
      */
     public void playComment(String commentTitle) {
-        final File commentFile = AudioFiles.getAudioComment(StoryState.getStoryName(), slidePosition, commentTitle);
+        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
@@ -210,13 +210,16 @@ public class CommunityCheckFrag extends Fragment {
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
                 int nextCommentIndex = comments.length + 1;
-                String recordFilePath = AudioFiles.getAudioComment(StoryState.getStoryName(), slidePosition,
-                        "Comment " + nextCommentIndex).getPath();
-                while (AudioFiles.doesFileExist(recordFilePath)) {
+                File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
+                        "Comment " + nextCommentIndex);
+                while (!recordFile.exists()) {
                     nextCommentIndex++;
-                    recordFilePath = AudioFiles.getAudioComment(StoryState.getStoryName(), slidePosition,
-                            "Comment " + nextCommentIndex).getPath();
+                    recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
+                            "Comment " + nextCommentIndex);
                 }
+
+                String recordFilePath = recordFile.getPath();
+
                 //stop all playback streams.
                 if(draftPlayer != null && draftPlayer.isAudioPlaying()){
                     draftPlayer.stopAudio();

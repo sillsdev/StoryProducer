@@ -269,8 +269,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
             String text = null;
             if(mIncludeText) {
-                TextFiles.loadSlideContent(mStory, iSlide);
-                text = TextFiles.getSlideContent();
+                text = TextFiles.getSlideText(mStory, iSlide).getContent();
             }
 
             pages[iSlide] = new StoryPage(image, audio, kbfx, text);

@@ -81,7 +81,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .setNegativeButton(commCheck.getString(R.string.no), null)
                 .setPositiveButton(commCheck.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        AudioFiles.deleteAudioComment(StoryState.getStoryName(), slidePosition, values[position]);
+                        AudioFiles.deleteComment(StoryState.getStoryName(), slidePosition, values[position]);
                         commCheck.updateCommentList();
                     }
                 }).create();
@@ -110,7 +110,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .setPositiveButton(commCheck.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        AudioFiles.RENAME_CODES returnCode = AudioFiles.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = AudioFiles.renameComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                         switch(returnCode) {
                             case SUCCESS:
                                     commCheck.updateCommentList();

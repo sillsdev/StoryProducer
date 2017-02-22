@@ -92,7 +92,7 @@ public final class DraftFrag extends Fragment {
         slidePosition = passedArgs.getInt(SLIDE_NUM);
         slideText = TextFiles.getSlideText(StoryState.getStoryName(), slidePosition);
         recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition).getPath();
-        tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
+        tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
     }
 
     @Override

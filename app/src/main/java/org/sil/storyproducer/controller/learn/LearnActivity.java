@@ -486,7 +486,7 @@ public class LearnActivity extends AppCompatActivity {
             return;
         }
 
-        recordFilePath = AudioFiles.getLearnPracticeAudio(StoryState.getStoryName()).getPath();
+        recordFilePath = AudioFiles.getLearnPractice(StoryState.getStoryName()).getPath();
         setVoicePlayBackButton(new File(recordFilePath).exists());
 
         final ImageButton recordButton = (ImageButton) recordButt;

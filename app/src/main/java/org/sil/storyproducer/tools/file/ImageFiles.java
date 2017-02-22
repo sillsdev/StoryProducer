@@ -60,7 +60,7 @@ public class ImageFiles {
      * @param story name of the story template to query.
      * @return amount of number-based image files in the template of the story.
      */
-    public static int getNumberedAmount(String story) {
+    static int getNumberedAmount(String story) {
         String templateDirPath = FileSystem.getTemplatePath(story);
         if(templateDirPath == null) {
             return 0;
@@ -69,13 +69,10 @@ public class ImageFiles {
     }
 
     private static File getCopyrightImageFile(String story) {
-        int numberedImages = getNumberedAmount(story);
-        int numberedTexts = TextFiles.getNumberedAmount(story);
-        if(numberedImages == numberedTexts) {
-            return new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
+        File copyrightFile = new File(FileSystem.getTemplatePath(story), COPYRIGHT_IMAGE_NAME);
+        if(!copyrightFile.exists()) {
+            copyrightFile = getFile(story, getNumberedAmount(story) - 1);
         }
-        else {
-            return getFile(story, numberedImages - 1);
-        }
+        return copyrightFile;
     }
 }
