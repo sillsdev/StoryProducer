@@ -35,8 +35,6 @@ public class PagerBaseActivity extends AppCompatActivity {
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private GestureDetectorCompat mDetector;
-    private static boolean getInitialPosition = false;
-    private static int previousPosition = 0;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
