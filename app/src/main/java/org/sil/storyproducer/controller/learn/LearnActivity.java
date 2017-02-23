@@ -227,11 +227,7 @@ public class LearnActivity extends AppCompatActivity {
 
         narrationPlayer = new AudioPlayer();                                                //set the next audio
         narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
-        if(isVolumeOn) {
-            narrationPlayer.setVolume(1.0f);
-        } else {
-            narrationPlayer.setVolume(0.0f);
-        }
+        narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
         videoSeekBar.setProgress(slideNum);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
