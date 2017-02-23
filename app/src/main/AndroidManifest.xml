@@ -25,14 +25,6 @@
             android:screenOrientation="portrait" />
 
         <!-- Info Page -->
-        <activity
-            android:name=".controller.InfoPageActivity"
-            android:label="@string/title_activity_info_page"
-            android:parentActivityName=".controller.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.MainActivity" />
-        </activity>
         <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
