@@ -24,7 +24,6 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
 
-        <!-- Info Page -->
         <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
