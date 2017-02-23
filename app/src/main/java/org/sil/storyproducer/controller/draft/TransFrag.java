@@ -261,7 +261,7 @@ public class TransFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
-                ((MainActivity)getActivity()).changeSlide(dialogListAdapter.getSelectedSlide());
+//                ((MainActivity)getActivity()).changeSlide(dialogListAdapter.getSelectedSlide());
             }
         });
         dialog.show();
