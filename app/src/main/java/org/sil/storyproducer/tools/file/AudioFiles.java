@@ -8,8 +8,9 @@ import java.util.ArrayList;
  */
 public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
+    private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
-    private static final String PREFER_EXTENSION = ".mp3";
+    private static final String PREFER_EXTENSION = ".m4a";
 
     private static final String LEARN_PRACTICE_PREFIX = "learnPractice";
     private static final String LWC_AUDIO_PREFIX = "narration";
@@ -31,7 +32,7 @@ public class AudioFiles {
     }
     //TODO: Some stories have multiple soundtrack files. Is that desired and used?
     public static File getSoundtrack(String story, int i){
-        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + i + PREFER_EXTENSION);
+        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + i + SOUNDTRACK_EXTENSION);
     }
 
     //*** LWC ***

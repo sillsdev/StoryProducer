@@ -573,7 +573,7 @@ public final class DraftFrag extends Fragment {
      */
     private void ConcatenateAudioFiles() {
         Movie finalFile = new Movie();
-        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "final.mp3");
+        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
         Movie movieArray[];
 
         try {
