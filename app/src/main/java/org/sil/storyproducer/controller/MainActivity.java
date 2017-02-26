@@ -60,10 +60,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         boolean skipRegistration = checkRegistrationSkip();
         if (!skipRegistration) {
-            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            // Checks registration file to see if email has been sent and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
-            if (preferences.isEmpty()) {
+            Map<String, ?> preferences = prefs.getAll();
+            Object registrationComplete = preferences.get(RegistrationActivity.EMAIL_SENT);
+            if (registrationComplete == null || !(Boolean)registrationComplete) {
                 Intent intent = new Intent(this, RegistrationActivity.class);
                 startActivity(intent);
             }
