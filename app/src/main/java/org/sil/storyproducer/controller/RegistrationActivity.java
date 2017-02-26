@@ -256,23 +256,30 @@ public class RegistrationActivity extends AppCompatActivity {
         return inputFieldsList;
     }
 
+    /**
+     * Finds the index of the spinner array given the string value
+     * @param value the value to look for
+     * @return index of the spinner array
+     */
     private int getSpinnerIndexFromString(String value) {
-        int index;
-        String[] orthography = getResources().getStringArray(R.array.orthography_list);
-        String[] communication = getResources().getStringArray(R.array.communication_list);
-        String[] location = getResources().getStringArray(R.array.location_type_list);
-        for (int i = 0; i < orthography.length; i++) {
-            if (value.equals(orthography[i])) {
+        String[] search = getResources().getStringArray(R.array.orthography_list);
+
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
                 return i;
             }
         }
-        for (int i = 0; i < communication.length; i++) {
-            if (value.equals(communication[i])) {
+
+        search = getResources().getStringArray(R.array.communication_list);
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
                 return i;
             }
         }
-        for (int i = 0; i < location.length; i++) {
-            if (value.equals(location[i])) {
+
+        search = getResources().getStringArray(R.array.location_type_list);
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
                 return i;
             }
         }

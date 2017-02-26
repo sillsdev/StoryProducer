@@ -116,6 +116,7 @@ public class CommunityCheckFrag extends Fragment {
      */
     public void updateCommentList() {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
+        listView.setScrollbarFadingEnabled(false);
         comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slidePosition);
         ListAdapter adapter = new CommentListAdapter(getContext(), comments, slidePosition, this);
         listView.setAdapter(adapter);
