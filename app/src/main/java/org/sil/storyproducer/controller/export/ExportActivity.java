@@ -100,11 +100,12 @@ public class ExportActivity extends AppCompatActivity {
         // See which child activity is calling us back.
         if (requestCode == FILE_CHOOSER_CODE) {
             if (resultCode == RESULT_OK) {
-                final String path = data.getStringExtra("GetFileName");
+                final String path = data.getStringExtra(FileChooserActivity.FILE_PATH);
                 final AlertDialog.Builder errorDialog = new AlertDialog.Builder(this);
-                errorDialog.setTitle("Info");
+
+                errorDialog.setTitle(R.string.info);
                 errorDialog.setMessage(path);
-                errorDialog.setPositiveButton("OK", null);
+                errorDialog.setPositiveButton(R.string.OK, null);
                 AlertDialog ret = errorDialog.create();
                 ret.show();
             }

@@ -129,6 +129,7 @@
     <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
     <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
     <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
+    <string name="info">Info</string>
 
     <plurals name="file_explorer_numItems">
         <item quantity="one">%d item</item>

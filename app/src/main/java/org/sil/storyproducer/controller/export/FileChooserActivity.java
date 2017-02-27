@@ -42,8 +42,8 @@ public class FileChooserActivity extends AppCompatActivity {
     private FileArrayAdapter adapter;
     private final Stack<File> history=new Stack<>();
     private final String FILE_EXTENSION = ".mp4";
-    private final String FILE_DIR_PATH = "fileDirPath";
-    private final String FILE_PATH = "filePath";
+    public final static  String FILE_DIR_PATH = "fileDirPath";
+    public final static String FILE_PATH = "filePath";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
