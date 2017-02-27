@@ -30,26 +30,29 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         Fragment fragment;
+        Bundle passedArgs = new Bundle();
         switch (StoryState.getCurrentPhase().getTitle()) {
             case "Draft":
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
             case "Community Check":
                 fragment = new CommunityCheckFrag();
+                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
                 break;
             case "Consultant Check":
                 fragment = new ConsultantCheckFrag();
+                passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i);
                 break;
             case "Dramatization":
                 fragment = new DramatizationFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         }
-        Bundle passedArgs = new Bundle();
-        passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         fragment.setArguments(passedArgs);
-        //mapOfTransFrags.put(i, (DraftFrag)fragment);
 
         return fragment;
     }
