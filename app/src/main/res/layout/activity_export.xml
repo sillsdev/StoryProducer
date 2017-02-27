@@ -28,8 +28,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="173dp"
-                android:background="@color/darkGray"
-                android:onClick="onExportButtonClicked" />
+                android:background="@color/darkGray" />
         </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
 

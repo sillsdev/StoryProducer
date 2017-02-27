@@ -116,7 +116,28 @@
     <string name="Parent_Dir_Label">Parent Directory</string>
     <string name="byte_unit_singular">" byte"</string>
     <string name="byte_unit_plural">" bytes"</string>
-    <string name="item_unit_plural">" items"</string>
-    <string name="item_unit_singular">" item"</string>
+    <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
+    <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
+    <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
+    <string name="cancel">Cancel</string>
+    <string name="OK">OK</string>
+    <string name="file_explorer_foldeNamePrompt">Please specify a name for your new folder:</string>
+    <string name="file_explorer_newFolder">New Folder</string>
+    <string name="error">Error</string>
+    <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
+    <string name="file_explorer_fileAlreadyExists_1">File \"</string>
+    <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
+    <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
+    <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
+
+    <plurals name="file_explorer_numItems">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
+    <plurals name="file_explorer_numBytes">
+        <item quantity="one">%d byte</item>
+        <item quantity="other">%d bytes</item>
+    </plurals>
 
 </resources>

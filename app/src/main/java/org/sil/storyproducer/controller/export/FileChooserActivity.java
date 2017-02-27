@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -40,6 +41,9 @@ public class FileChooserActivity extends AppCompatActivity {
     private File currentDir;
     private FileArrayAdapter adapter;
     private final Stack<File> history=new Stack<>();
+    private final String FILE_EXTENSION = ".mp4";
+    private final String FILE_DIR_PATH = "fileDirPath";
+    private final String FILE_PATH = "filePath";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,6 +58,16 @@ public class FileChooserActivity extends AppCompatActivity {
         //Navigate to folder passed through intent
         File projectFolder = new File(getIntent().getStringExtra(ExportActivity.PROJECT_DIRECTORY));
         navigateToFolder(projectFolder);
+
+        //bind onClickListener to save button
+        Button saveButton = (Button) findViewById(R.id.saveButton);
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveFile(v);
+            }
+        });
     }
 
     private void fill(File dir) {
@@ -73,24 +87,31 @@ public class FileChooserActivity extends AppCompatActivity {
 
                     int numContents = subdirOrFile.listFiles().length;
 
-                    String itemCountString = String.valueOf(numContents);
+                    String itemCountString = getResources().getQuantityString(
+                            R.plurals.file_explorer_numItems, numContents, numContents);
 
-                    if (numContents == 1){
-                        itemCountString += getString(R.string.item_unit_singular);
-                    } else {
-                        itemCountString += getString(R.string.item_unit_plural);
-                    }
 
                     subdirs.add(new Item(subdirOrFile.getName(),itemCountString, date_modify,
                             subdirOrFile.getAbsolutePath(),false));
 
                 } else { //subdirOrFile is a file and not a directory
                     long size = subdirOrFile.length();
-                    String units = getString(R.string.byte_unit_plural);
-                    if (size==1){
-                        units=getString(R.string.byte_unit_singular);
+
+                    /**
+                     * We have to use this 'sizePlurality' int because 'size' is a long and can't be
+                     * passed into the getQuantityString method, which takes only an int.
+                     */
+                    int sizePlurality = 2;
+
+                    if(size==1){
+                        sizePlurality = 1;
                     }
-                    files.add(new Item(subdirOrFile.getName(),size + units, date_modify,
+
+                    String sizeWithUnits = getResources().getQuantityString(
+                            R.plurals.file_explorer_numBytes, sizePlurality, size);
+
+
+                    files.add(new Item(subdirOrFile.getName(),sizeWithUnits, date_modify,
                             subdirOrFile.getAbsolutePath(),true));
                 }
             }
@@ -98,7 +119,7 @@ public class FileChooserActivity extends AppCompatActivity {
 
         List<Item> displayList = new ArrayList<>();
         String parent = dir.getParent();
-        if(parent != null) {
+        if(parent != null && new File(parent).canWrite()) {
             displayList.add(0, new Item("..", getString(R.string.Parent_Dir_Label),
                     "", parent, false));
         }
@@ -163,20 +184,20 @@ public class FileChooserActivity extends AppCompatActivity {
     public void saveFile(View view){
         EditText textBox = (EditText) findViewById(R.id.fileName);
         String fileName = textBox.getText().toString();
-        String fileExtension = ".mp4";
 
         if( ILLEGAL_CHARS.matcher(fileName).find() ){
-            createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
+            createErrorDialog(getString(R.string.file_explorer_chars_error));
         } else if (fileName.length()==0){
-            createErrorDialog("File name cannot be empty.");
+            createErrorDialog(getString(R.string.file_explorer_emptyFileName));
         } else {
-            File newFile = new File(currentDir, fileName + fileExtension);
+            File newFile = new File(currentDir, fileName + FILE_EXTENSION);
             if (newFile.exists()){
-                createErrorDialog("File \""+newFile.getName()+"\" already exists.");
+                createErrorDialog(getString(R.string.file_explorer_fileAlreadyExists_1)
+                        +newFile.getName()+getString(R.string.file_explorer_fileAlreadyExists_2));
             } else {
                 Intent intent = new Intent();
-                intent.putExtra("GetPath",currentDir.toString());
-                intent.putExtra("GetFileName",newFile.getAbsolutePath());
+                intent.putExtra(FILE_DIR_PATH,currentDir.toString());
+                intent.putExtra(FILE_PATH,newFile.getAbsolutePath());
                 setResult(RESULT_OK, intent);
                 finish();
             }
@@ -191,25 +212,27 @@ public class FileChooserActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
-        alertDialog.setTitle("New Folder");
-        alertDialog.setMessage("Please specify a name for your new folder:");
+        alertDialog.setTitle(R.string.file_explorer_newFolder);
+        alertDialog.setMessage(R.string.file_explorer_foldeNamePrompt);
         alertDialog.setView(input);
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 hideKeyboard(input);
                 if( ILLEGAL_CHARS.matcher(input.getText()).find() ){
-                    createErrorDialog("Allowed: letters, digits, dash, underscore, space.");
+                    createErrorDialog(getString(R.string.file_explorer_chars_error));
                 } else if (input.getText().length()==0){
-                    createErrorDialog("Folder name cannot be empty.");
+                    createErrorDialog(getString(R.string.file_explorer_emptyFolderName));
                 } else {
                     File newFolder = new File(currentDir, input.getText().toString());
                     if (newFolder.exists()){
-                        createErrorDialog("Folder \""+input.getText()+"\" already exists.");
+                        createErrorDialog(getString(R.string.file_explorer_folderAlreadyExists_1)
+                                +input.getText()
+                                +getString(R.string.file_explorer_folderAlreadyExists_2));
                     } else {
                         boolean success = newFolder.mkdir();
                         if (! success){
-                            createErrorDialog("Folder creation failed for unknown reason.");
+                            createErrorDialog(getString(R.string.file_explorer_folder_creation_failure));
                         } else {
                             refresh();
                         }
@@ -217,7 +240,7 @@ public class FileChooserActivity extends AppCompatActivity {
                 }
             }
         });
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 hideKeyboard(input);
@@ -233,16 +256,16 @@ public class FileChooserActivity extends AppCompatActivity {
                         InputMethodManager.HIDE_IMPLICIT_ONLY);
     }
 
-    private void hideKeyboard(EditText _pay_box_helper){
+    private void hideKeyboard(EditText editText){
         ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
-                .hideSoftInputFromWindow(_pay_box_helper.getWindowToken(), 0);
+                .hideSoftInputFromWindow(editText.getWindowToken(), 0);
     }
 
     private AlertDialog createErrorDialog(String text){
         final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooserActivity.this);
-        errorDialog.setTitle("Error");
+        errorDialog.setTitle(R.string.error);
         errorDialog.setMessage(text);
-        errorDialog.setPositiveButton("OK", null);
+        errorDialog.setPositiveButton(R.string.OK, null);
         AlertDialog ret = errorDialog.create();
         ret.show();
         return ret;

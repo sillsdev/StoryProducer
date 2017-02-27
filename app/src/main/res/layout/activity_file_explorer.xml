@@ -44,9 +44,8 @@
                 android:text="Save"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:id="@+id/button"
-                android:hapticFeedbackEnabled="true"
-                android:onClick="saveFile"/>
+                android:id="@+id/saveButton"
+                android:hapticFeedbackEnabled="true" />
         </LinearLayout>
 
     </LinearLayout>

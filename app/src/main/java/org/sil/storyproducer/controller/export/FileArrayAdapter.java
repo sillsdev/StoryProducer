@@ -42,15 +42,15 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
         View view = convertView;
 
         if (view == null) {
-            LayoutInflater vi = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = vi.inflate(id, null);
+            LayoutInflater li = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = li.inflate(id, null);
         }
 
         final Item item = items.get(position);
         if (item != null) {
-            TextView t1 = (TextView) view.findViewById(R.id.TextView01);
-            TextView t2 = (TextView) view.findViewById(R.id.TextView02);
-            TextView t3 = (TextView) view.findViewById(R.id.TextViewDate);
+            TextView nameField = (TextView) view.findViewById(R.id.TextViewName);
+            TextView dataField = (TextView) view.findViewById(R.id.TextViewData);
+            TextView dateField = (TextView) view.findViewById(R.id.TextViewDate);
 
             ImageView imageView = (ImageView) view.findViewById(R.id.fd_Icon1);
 
@@ -71,12 +71,12 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
             Drawable image = ContextCompat.getDrawable(context, imageID);
             imageView.setImageDrawable(image);
 
-            if(t1!=null)
-                t1.setText(item.getName());
-            if(t2!=null)
-                t2.setText(item.getData());
-            if(t3!=null)
-                t3.setText(item.getDate());
+            if(nameField != null)
+                nameField.setText(item.getName());
+            if(dataField != null)
+                dataField.setText(item.getData());
+            if(dateField != null)
+                dateField.setText(item.getDate());
         }
         return view;
     }

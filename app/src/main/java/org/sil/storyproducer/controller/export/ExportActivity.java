@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
@@ -41,6 +42,15 @@ public class ExportActivity extends AppCompatActivity {
         setSupportActionBar(mActionBarToolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getColor(), null)));
+
+        Button exportButton = (Button) findViewById(R.id.exportButton);
+
+        exportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
 
         mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
     }
@@ -76,10 +86,6 @@ public class ExportActivity extends AppCompatActivity {
     public boolean dispatchTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
         return super.dispatchTouchEvent(event);
-    }
-
-    public void onExportButtonClicked(View view) {
-        openFileExplorerToExport();
     }
 
     private void openFileExplorerToExport() {
