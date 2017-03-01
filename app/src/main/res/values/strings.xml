@@ -60,6 +60,9 @@
     <string name="comment_delete_title">Delete Comment?</string>
     <string name="comment_delete_message">Do you want to delete this audio comment?</string>
     <string name="comment_rename_title">Rename Comment</string>
+    <string name="consultant_password_title">Consultant Password</string>
+    <string name="consultant_password_message">Please enter the consultant password:</string>
+    <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
 

@@ -1,16 +1,24 @@
 package org.sil.storyproducer.controller.consultant;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,11 +38,15 @@ import java.io.File;
 public class ConsultantCheckFrag extends Fragment {
 
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
+    public static final String CONSULTANT_PREFS = "Consultant_Checks";
+    public static final String IS_CONSULTANT_APPROVED = "isApproved";
+    private static final String IS_CHECKED = "isChecked";
+    private String storyName;
     private int slidePosition;
     private View rootView;
     private boolean isChecked;
-    AudioPlayer draftPlayer;
-    SlideText slideText;
+    private AudioPlayer draftPlayer;
+    private SlideText slideText;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -47,7 +59,8 @@ public class ConsultantCheckFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_con_check, container, false);
-        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slidePosition);
+        storyName = StoryState.getStoryName();
+        slideText = FileSystem.getSlideText(storyName, slidePosition);
 
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_concheck_image_view), slidePosition);
@@ -163,18 +176,31 @@ public class ConsultantCheckFrag extends Fragment {
     }
 
     private void setCheckmarkButton(final ImageButton button) {
-        //TODO: persist isChecked in some file and set button accordingly
-        isChecked = false;
-        button.setBackgroundResource(R.drawable.ic_checkmark_red);
+        final SharedPreferences prefs = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        final String prefsKeyString = storyName + slidePosition + IS_CHECKED;
+        isChecked = prefs.getBoolean(prefsKeyString, false);
+        if(isChecked) {
+            button.setBackgroundResource(R.drawable.ic_checkmark_green);
+        } else {
+            button.setBackgroundResource(R.drawable.ic_checkmark_red);
+        }
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isChecked) {
                     button.setBackgroundResource(R.drawable.ic_checkmark_red);
                     isChecked = false;
+                    prefsEditor.putBoolean(prefsKeyString, false);
+                    prefsEditor.apply();
                 } else {
                     button.setBackgroundResource(R.drawable.ic_checkmark_green);
                     isChecked = true;
+                    prefsEditor.putBoolean(prefsKeyString, true);
+                    prefsEditor.commit();
+                    if(checkAllMarked()) {
+                        showConsultantPasswordDialog(false);
+                    }
                 }
             }
             //TODO: check all of stories isChecked to see if story is completely checked
@@ -190,5 +216,62 @@ public class ConsultantCheckFrag extends Fragment {
                 Toast.makeText(getContext(), "Log interface yet to be implemented", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private boolean checkAllMarked() {
+        boolean marked;
+        SharedPreferences prefs = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        int numStorySlides = FileSystem.getTotalSlideNum(storyName);
+        for (int i = 0; i < numStorySlides; i ++) {
+            marked = prefs.getBoolean(storyName + i + IS_CHECKED, false);
+            if (!marked) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void showConsultantPasswordDialog(boolean error) {
+        final EditText password = new EditText(getContext());
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        if (error) {
+            password.setError(getString(R.string.consultant_incorrect_password_message));
+        }
+        // Programmatically set layout properties for edit text field
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT);
+        // Apply layout properties
+        password.setLayoutParams(params);
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setTitle(getString(R.string.consultant_password_title))
+                .setMessage(getString(R.string.consultant_password_message))
+                .setView(password)
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setPositiveButton(getString(R.string.submit), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String passwordText = password.getText().toString();
+                        if (passwordText.contentEquals("magic password")) {
+                            SharedPreferences.Editor prefsEditor = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit();
+                            prefsEditor.putBoolean(storyName + IS_CONSULTANT_APPROVED, true);
+                            prefsEditor.apply();
+                            //TODO: figure out where to send the user, most likely launch dramatization
+                            Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            showConsultantPasswordDialog(true);
+                        }
+
+                    }
+                }).create();
+
+        dialog.show();
+        // show keyboard for renaming, but only on initial popup
+        // if called on error, this code actually ends up closing the keyboard
+        if (!error) {
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            }
+        }
     }
 }
