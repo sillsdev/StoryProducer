@@ -77,12 +77,4 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         return "Page " + (position + 1);
     }
-
-    /**
-     * @param slidePosition
-     * @return
-     */
-    public DraftFrag getDraftFrag(int slidePosition) {
-        return null;
-    }
 }
