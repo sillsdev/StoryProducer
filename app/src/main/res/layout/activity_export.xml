@@ -49,8 +49,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button_export_start"
                     android:layout_weight="1"
-                    android:visibility="gone"
-                    android:onClick="onStartExport" />
+                    android:visibility="gone" />
 
                 <Button
                     android:text="@string/export_cancel"
@@ -58,8 +57,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/button_export_cancel"
                     android:layout_weight="1"
-                    android:visibility="visible"
-                    android:onClick="onCancelExport" />
+                    android:visibility="visible" />
             </LinearLayout>
 
             <ProgressBar

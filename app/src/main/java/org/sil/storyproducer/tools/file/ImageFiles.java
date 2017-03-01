@@ -14,8 +14,8 @@ public class ImageFiles {
     private static final String FILE_EXTENSION = ".jpg";
 
     public static final int TITLE_BACKGROUND = -1;
-    public static final int TITLE_TEMP = -3;
-    public static final int COPYRIGHT = -2;
+    public static final int TITLE_TEMP = -2;
+    public static final int COPYRIGHT = -3;
 
     private static final String TITLE_BACK_IMAGE_NAME = "title" + FILE_EXTENSION;
     private static final String TITLE_TEMP_IMAGE_NAME = "titleTemp" + FILE_EXTENSION;

@@ -71,6 +71,7 @@ public class ExportActivity extends AppCompatActivity {
 
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
+        setOnClickListeners();
         toggleVisibleElements();
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
@@ -224,20 +225,29 @@ public class ExportActivity extends AppCompatActivity {
         return mDrawerToggle.onOptionsItemSelected(item);
     }
 
-    public void onStartExport(View view) {
-        if(!buttonLocked) {
-            storyMaker = new AutoStoryMaker(StoryState.getStoryName());
-            storyMaker.start();
-            watchProgress();
-        }
-        lockButtons();
-    }
+    private void setOnClickListeners() {
+        mButtonStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!buttonLocked) {
+                    storyMaker = new AutoStoryMaker(StoryState.getStoryName());
+                    storyMaker.start();
+                    watchProgress();
+                }
+                lockButtons();
+            }
+        });
 
-    public void onCancelExport(View view) {
-        if(!buttonLocked) {
-            stopExport();
-        }
-        lockButtons();
+        mButtonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!buttonLocked) {
+                    stopExport();
+                }
+                lockButtons();
+            }
+        });
+
     }
 
     private void updateProgress(final int progress) {
