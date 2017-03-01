@@ -21,6 +21,7 @@
         <activity
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
 
         <!-- File Explorer Launch Page -->
@@ -47,13 +48,15 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.RegistrationActivity"></activity>
+        <activity android:name=".controller.RegistrationActivity" />
         <activity
             android:name=".controller.learn.LearnActivity"
-            android:screenOrientation="portrait"></activity>
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
         <activity android:name=".controller.export.ExportActivity"
             ></activity>
     </application>
