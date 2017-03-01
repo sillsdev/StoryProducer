@@ -62,7 +62,7 @@ public class TextFiles {
         content = text.toString().split(Pattern.quote("~"));
 
         if (content.length == 4) {
-            return new SlideText(content[0], content[1], content[2], content[3]);
+            return new SlideText(content[0].trim(), content[1].trim(), content[2].trim(), content[3].trim());
         } else {
             Log.e(TAG, "Text file not found for " + storyName + " slide " + slideNum);
             return new SlideText();
