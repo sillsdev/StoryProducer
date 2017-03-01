@@ -21,13 +21,13 @@
         android:text="Title"
         android:layout_marginStart="72dp"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:textColor="@color/darkGray"/>
+        android:textColor="@color/white"/>
 
     <TextView
         android:id="@+id/story_list_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/gray"
+        android:textColor="@color/white"
         android:textSize="@dimen/text_title_sub"
         android:text="Sub Title"
         android:layout_marginStart="72dp"

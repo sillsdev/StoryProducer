@@ -1,23 +1,106 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_draft_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controller.consultant.ConsultantCheckFrag">
+    android:background="@color/gray">
 
-    <TextView
-        android:text="Test text"
-        android:layout_width="wrap_content"
-        android:layout_height="165dp"
-        android:id="@+id/textView" />
-    <TextView android:layout_width="match_parent"
-        android:text="Próximamente..."
-        android:id="@+id/comingSoon"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="42dp"
-        android:gravity="center"
+    <ImageView
+        android:id="@+id/fragment_concheck_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-    </TextView>
-</FrameLayout>
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:id="@+id/concheck_relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="10dp"
+        android:layout_below="@id/fragment_concheck_image_view"
+        android:layout_above="@+id/concheck_button_layout">
+
+        <TextView
+            android:id="@+id/fragment_concheck_reference_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/gray"
+            android:textSize="20sp"
+            android:textStyle="bold|italic" />
+
+        <ScrollView
+            android:id="@+id/concheck_scripture_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_concheck_reference_text">
+
+            <TextView
+                android:id="@+id/fragment_concheck_scripture_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:background="@color/gray" />
+
+        </ScrollView>
+
+
+        <ImageButton
+            android:id="@+id/fragment_concheck_narration_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/concheck_scripture_scroll"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/fragment_concheck_reference_text"
+            android:layout_toEndOf="@+id/fragment_concheck_reference_text"
+            android:background="@color/gray"
+            app:srcCompat="@drawable/ic_menu_play" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/concheck_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/concheck_logs_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="17dp"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/concheck_draft_playback_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/lightGray"
+            fab:fab_icon="@drawable/ic_play"
+            fab:fab_title="Play"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="17dp"/>
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/concheck_checkmark_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignBaseline="@+id/concheck_draft_playback_button"
+            android:layout_margin="17dp"/>
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>
