@@ -69,6 +69,7 @@ public class RegistrationActivity extends AppCompatActivity {
     public static final String SKIP_KEY = "skip";
     public static final String EMAIL_SENT = "registration_email_sent";
 
+    private static final String ID_PREFIX = "org.sil.storyproducer:id/input_";
     private final int [] sectionIds = {R.id.language_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.archive_section};
     private final int [] headerIds = {R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header};
     private View[] sectionViews = new View[sectionIds.length];
@@ -222,7 +223,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 textFieldView = ((TextInputLayout) currentView).getEditText();
                 if (textFieldView != null) {
                     viewName = getResources().getResourceName(textFieldView.getId());
-                    viewName = viewName.replace("org.sil.storyproducer:id/input_", "");
+                    viewName = viewName.replace(ID_PREFIX, "");
                     storedValue = preferences.getString(viewName, "");
                     if (!storedValue.isEmpty()) {
                         textFieldView.setText(storedValue);
@@ -232,7 +233,7 @@ public class RegistrationActivity extends AppCompatActivity {
             } else if (currentView instanceof Spinner) {
                 spinnerView = (Spinner) currentView;
                 viewName = getResources().getResourceName(spinnerView.getId());
-                viewName = viewName.replace("org.sil.storyproducer:id/input_", "");
+                viewName = viewName.replace(ID_PREFIX, "");
                 storedValue = preferences.getString(viewName, "");
                 if(!storedValue.isEmpty()) {
                     storedSpinnerIndex = getSpinnerIndexFromString(storedValue);
