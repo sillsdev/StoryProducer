@@ -201,8 +201,6 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private List<View> getInputFields(ScrollView rootScrollView) {
 
-        SharedPreferences preferences = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-
         List<View> inputFieldsList = new ArrayList<>();
         Stack<ViewGroup> viewStack = new Stack<>();
         String viewName, storedValue;
@@ -222,9 +220,7 @@ public class RegistrationActivity extends AppCompatActivity {
             if (currentView instanceof TextInputLayout) {
                 textFieldView = ((TextInputLayout) currentView).getEditText();
                 if (textFieldView != null) {
-                    viewName = getResources().getResourceName(textFieldView.getId());
-                    viewName = viewName.replace(ID_PREFIX, "");
-                    storedValue = preferences.getString(viewName, "");
+                    storedValue = getStoredValueForView(textFieldView);
                     if (!storedValue.isEmpty()) {
                         textFieldView.setText(storedValue);
                     }
@@ -232,9 +228,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
             } else if (currentView instanceof Spinner) {
                 spinnerView = (Spinner) currentView;
-                viewName = getResources().getResourceName(spinnerView.getId());
-                viewName = viewName.replace(ID_PREFIX, "");
-                storedValue = preferences.getString(viewName, "");
+                storedValue = getStoredValueForView(spinnerView);
                 if(!storedValue.isEmpty()) {
                     storedSpinnerIndex = getSpinnerIndexFromString(storedValue);
                     if (storedSpinnerIndex >= 0) {
@@ -255,6 +249,18 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         return inputFieldsList;
+    }
+
+    /**
+     * Takes a field and searches the preference file for a value corresponding to it
+     * @param view the view to be queried
+     * @return the value if found or an empty string if no value found
+     */
+    private String getStoredValueForView(View view) {
+        SharedPreferences preferences = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
+        String viewName = getResources().getResourceName(view.getId());
+        viewName = viewName.replace(ID_PREFIX, "");
+        return preferences.getString(viewName, "");
     }
 
     /**
