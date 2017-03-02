@@ -46,7 +46,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 break;
             case "Dramatization":
                 fragment = new DramatizationFrag();
-                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
+                passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();

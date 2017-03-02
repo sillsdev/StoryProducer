@@ -1,23 +1,105 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_dramatization_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <TextView
-        android:text="Test text"
+    <LinearLayout
+        android:id="@+id/fragment_dramatization_dummyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/fragment_dramatization_image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_play_draft_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fragment_dramatization_fab"
         android:layout_width="wrap_content"
-        android:layout_height="165dp"
-        android:id="@+id/textView" />
-    <TextView android:layout_width="match_parent"
-        android:text="快來了..."
-        android:id="@+id/comingSoon"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="42dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-    </TextView>
-</FrameLayout>
+        android:layout_alignEnd="@+id/fragment_dramatization_animated_toolbar"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:elevation="0dp"
+        android:tint="@color/white"
+        app:backgroundTint="@android:color/holo_blue_bright"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:fab_icon="@drawable/fab_add_xxhdpi" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_dramatization_animated_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom|end"
+        android:background="@android:color/holo_blue_bright"
+        android:visibility="invisible">
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_pause_toolbar_button"
+            app:srcCompat="@drawable/ic_pause_white_48dp"
+            android:background="@drawable/ic_pause_white_48dp"
+            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button"
+            android:layout_toRightOf="@+id/fragment_dramatization_play_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/fragment_dramatization_mic_toolbar_button" />
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_delete_toolbar_button"
+            android:background="@drawable/ic_delete_forever_white_48dp"
+            app:srcCompat="@drawable/ic_delete_forever_white_48dp"
+            android:layout_marginStart="56dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button" />
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_play_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:visibility="invisible"
+            android:scaleType="centerInside"
+            android:layout_marginStart="56dp"
+            android:layout_alignParentTop="true"
+            android:layout_toEndOf="@+id/fragment_dramatization_mic_toolbar_button" />
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_mic_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/ic_mic_white"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_mic_white"
+            android:scaleType="centerInside"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>
