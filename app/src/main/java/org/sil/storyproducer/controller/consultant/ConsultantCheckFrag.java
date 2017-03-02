@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.consultant;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
+import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
@@ -41,6 +45,7 @@ public class ConsultantCheckFrag extends Fragment {
     public static final String CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isChecked";
+    private String STORY_NAME = "storyname";
     private String storyName;
     private int slidePosition;
     private View rootView;
@@ -199,7 +204,7 @@ public class ConsultantCheckFrag extends Fragment {
                     prefsEditor.putBoolean(prefsKeyString, true);
                     prefsEditor.commit();
                     if(checkAllMarked()) {
-                        showConsultantPasswordDialog(false);
+                        showConsultantPasswordDialog();
                     }
                 }
             }
@@ -231,47 +236,96 @@ public class ConsultantCheckFrag extends Fragment {
         return true;
     }
 
-    private void showConsultantPasswordDialog(boolean error) {
+    private void showConsultantPasswordDialog() {
         final EditText password = new EditText(getContext());
         password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        if (error) {
-            password.setError(getString(R.string.consultant_incorrect_password_message));
-        }
+
         // Programmatically set layout properties for edit text field
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         // Apply layout properties
         password.setLayoutParams(params);
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        final AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.consultant_password_title))
                 .setMessage(getString(R.string.consultant_password_message))
                 .setView(password)
                 .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.submit), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                .setPositiveButton(getString(R.string.submit), null)
+                .create();
+        // This is set to dismiss the keyboard manually on dialog dismiss
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                toggleKeyboard(false, getView());
+            }
+        });
+
+        // This manually sets the submit button listener so that the dialog doesn't always submit
+        // If the password is incorrect, we want to stay on the dialog and give an error message
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+
+            @Override
+            public void onShow(final DialogInterface dialog) {
+
+                Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
                         String passwordText = password.getText().toString();
                         if (passwordText.contentEquals("magic password")) {
-                            SharedPreferences.Editor prefsEditor = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit();
-                            prefsEditor.putBoolean(storyName + IS_CONSULTANT_APPROVED, true);
-                            prefsEditor.apply();
-                            //TODO: figure out where to send the user, most likely launch dramatization
-                            Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
+                            saveConsultantApproval();
+                            dialog.dismiss();
+                            launchDramatizationPhase();
                         } else {
-                            showConsultantPasswordDialog(true);
+                            password.setError(getString(R.string.consultant_incorrect_password_message));
                         }
-
                     }
-                }).create();
+                });
+            }
+        });
 
         dialog.show();
-        // show keyboard for renaming, but only on initial popup
-        // if called on error, this code actually ends up closing the keyboard
-        if (!error) {
-            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm != null) {
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-            }
+        toggleKeyboard(true, password);
+    }
+
+    /**
+     * Updates the shared preference file to mark the story as approved
+     */
+    private void saveConsultantApproval() {
+        SharedPreferences.Editor prefsEditor = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit();
+        prefsEditor.putBoolean(storyName + IS_CONSULTANT_APPROVED, true);
+        prefsEditor.apply();
+    }
+
+    /**
+     * Launches the dramatization phase for the story and starts back at first slide
+     */
+    private void launchDramatizationPhase() {
+        Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
+        int dramatizationPhaseIndex = 4;
+        Phase[] phases = StoryState.getPhases();
+        StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
+        Intent intent = new Intent(getContext(), phases[dramatizationPhaseIndex].getTheClass());
+        intent.putExtra(STORY_NAME, storyName);
+        intent.putExtra(SLIDE_NUM, 0);
+        getActivity().startActivity(intent);
+    }
+
+    /**
+     * This function toggles the soft input keyboard. Allowing the user to have the keyboard
+     * to open or close seamlessly alongside the rest UI.
+     * @param showKeyBoard The boolean to be passed in to determine if the keyboard show be shown.
+     * @param aView The view associated with the soft input keyboard.
+     */
+    private void toggleKeyboard(boolean showKeyBoard, View aView) {
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (showKeyBoard) {
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        } else {
+            imm.hideSoftInputFromWindow(aView.getWindowToken(), 0);
         }
     }
+
 }
