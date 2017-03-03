@@ -59,7 +59,7 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private final static float BACKGROUND_VOLUME = 0.5f;
+    private final static float BACKGROUND_VOLUME = 0.0f;
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -339,6 +339,7 @@ public class LearnActivity extends AppCompatActivity {
      * helper function that resets the vidio to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
+        playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
         slideNum = 0;
         narrationPlayer = new AudioPlayer();
