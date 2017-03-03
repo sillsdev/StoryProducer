@@ -24,6 +24,12 @@
             android:noHistory="true"
             android:screenOrientation="portrait" />
 
+        <!-- File Explorer Launch Page -->
+        <activity
+            android:name=".controller.export.FileChooserActivity"
+            android:label="FileChooser">
+        </activity>
+
         <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
@@ -40,9 +46,8 @@
             android:name=".controller.learn.LearnActivity"
             android:noHistory="true"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".controller.export.ExportActivity"
-            android:noHistory="true"></activity>
+        <activity android:name=".controller.export.ExportActivity"
+            ></activity>
     </application>
 
 </manifest>

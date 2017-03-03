@@ -28,6 +28,22 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/toolbar"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="515dp"
+            android:background="@color/white">
+
+            <Button
+                android:text="Export"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/exportButton"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="173dp"
+                android:background="@color/darkGray" />
+        </RelativeLayout>
     </android.support.design.widget.AppBarLayout>
 
 </RelativeLayout>
