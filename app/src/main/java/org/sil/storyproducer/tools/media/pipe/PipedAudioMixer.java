@@ -82,7 +82,12 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
             mSourceBufferAs.add(new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]);
             mSourcePos.add(0);
             mSourceSizes.add(0);
-            fetchSourceBuffer(i);
+            try {
+                fetchSourceBuffer(i);
+            } catch (SourceClosedException e) {
+                //This case should not happen.
+                throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+            }
         }
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
@@ -99,7 +104,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
     }
 
     @Override
-    protected boolean loadSamplesForTime(long time) {
+    protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         for(int i = 0; i < mChannelCount; i++) {
             mCurrentSample[i] = 0;
         }
@@ -139,7 +144,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         return !mSources.isEmpty();
     }
 
-    private void fetchSourceBuffer(int sourceIndex) {
+    private void fetchSourceBuffer(int sourceIndex) throws SourceClosedException {
         PipedMediaByteBufferSource source = mSources.get(sourceIndex);
         if(source.isDone()) {
             source.close();

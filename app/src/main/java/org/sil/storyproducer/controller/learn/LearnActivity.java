@@ -48,9 +48,11 @@ import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.FileSystem;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;
@@ -68,7 +70,7 @@ public class LearnActivity extends AppCompatActivity {
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
     private int slideNum = 0;
-    private int LAST_SLIDE_NUM = 0;
+    private int CONTENT_SLIDE_COUNT = 0;
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
@@ -100,7 +102,7 @@ public class LearnActivity extends AppCompatActivity {
 
         //get the story name
         storyName = StoryState.getStoryName();
-        LAST_SLIDE_NUM = FileSystem.getImageAmount(storyName) - 1;      //set the last slide num
+        CONTENT_SLIDE_COUNT = FileSystem.getContentSlideAmount(storyName);
 
         //get the ui
         learnImageView = (ImageView) findViewById(R.id.learnImageView);
@@ -139,7 +141,7 @@ public class LearnActivity extends AppCompatActivity {
     private void setBackgroundMusic() {
         //turn on the background music
         backgroundPlayer = new AudioPlayer();
-        backgroundPlayer.playWithPath(FileSystem.getSoundtrack(storyName).getPath());
+        backgroundPlayer.playWithPath(AudioFiles.getSoundtrack(storyName).getPath());
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
     }
 
@@ -150,9 +152,9 @@ public class LearnActivity extends AppCompatActivity {
         int audioStartValue = 0;
         backgroundAudioJumps = new ArrayList<Integer>();
         backgroundAudioJumps.add(0, audioStartValue);
-        for(int k = 1; k < LAST_SLIDE_NUM; k++) {
-            String narrationPath = FileSystem.getNarrationAudio(storyName, k - 1).getPath();
-            audioStartValue += MediaHelper.getAudioDuration(narrationPath) / 1000;
+        for(int k = 0; k < CONTENT_SLIDE_COUNT; k++) {
+            String lwcPath = AudioFiles.getLWC(storyName, k).getPath();
+            audioStartValue += MediaHelper.getAudioDuration(lwcPath) / 1000;
             backgroundAudioJumps.add(k, audioStartValue);
         }
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
@@ -224,16 +226,16 @@ public class LearnActivity extends AppCompatActivity {
             narrationPlayer.releaseAudio();
         }
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(FileSystem.getNarrationAudio(storyName, slideNum).getPath());
+        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
         narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
         videoSeekBar.setProgress(slideNum);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < LAST_SLIDE_NUM) {     //not at the end of video
+                if(slideNum < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
-                    videoSeekBar.setProgress(LAST_SLIDE_NUM);
+                    videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
                     backgroundPlayer.releaseAudio();
                     narrationPlayer.releaseAudio();
                     playButton.setImageResource(R.drawable.ic_play_gray);
@@ -256,7 +258,7 @@ public class LearnActivity extends AppCompatActivity {
             playButton.setImageResource(R.drawable.ic_play_gray);
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            if(slideNum >= LAST_SLIDE_NUM) {        //reset the video to the beginning because they already finished it
+            if(slideNum >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.setProgress(0);
                 slideNum = 0;
                 setBackgroundMusic();
@@ -272,7 +274,7 @@ public class LearnActivity extends AppCompatActivity {
      * Sets the seekBar listener for the video seek bar
      */
     private void setSeekBarListener() {
-        videoSeekBar.setMax(LAST_SLIDE_NUM);      //set the progress bar to have as many markers as images
+        videoSeekBar.setMax(CONTENT_SLIDE_COUNT);      //set the progress bar to have as many markers as images
         videoSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             @Override
             public void onStopTrackingTouch(SeekBar sBar){
@@ -291,7 +293,7 @@ public class LearnActivity extends AppCompatActivity {
                     setBackgroundMusic();       //have to reset the background music because it could have been completed
                     if (notPlayingAudio) backgroundPlayer.pauseAudio();
                     backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNum));
-                    if(slideNum == LAST_SLIDE_NUM) {
+                    if(slideNum == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
@@ -442,9 +444,9 @@ public class LearnActivity extends AppCompatActivity {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(storyName, slideNum);
-        if(slideNum == LAST_SLIDE_NUM) {                //gets the end image if we are at the end of the story
-            slidePicture = FileSystem.getEndImage(storyName);
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
+        if(slideNum == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
+            slidePicture = ImageFiles.getBitmap(storyName, ImageFiles.COPYRIGHT);
         }
 
         if(slidePicture == null){
@@ -478,7 +480,7 @@ public class LearnActivity extends AppCompatActivity {
             return;
         }
 
-        recordFilePath = FileSystem.getLearnPracticeAudio(StoryState.getStoryName()).getPath();
+        recordFilePath = AudioFiles.getLearnPractice(StoryState.getStoryName()).getPath();
         setVoicePlayBackButton(new File(recordFilePath).exists());
 
         final ImageButton recordButton = (ImageButton) recordButt;

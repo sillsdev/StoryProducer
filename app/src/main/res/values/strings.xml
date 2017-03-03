@@ -89,7 +89,7 @@
         <item>Community Check</item>
         <item>Consultant Check</item>
         <item>Recording Studio</item>
-        <item>Generate Video</item>
+        <item>Generate Sample Video</item>
     </string-array>
     <array name="nav_icons">
         <item>@drawable/ic_list</item>
@@ -100,6 +100,10 @@
         <item>@drawable/ic_search</item>
     </array>
 
+    <!-- Export -->
+    <string name="export_start">Start Export</string>
+    <string name="export_cancel">Cancel</string>
+    <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
 
     <!-- ListView -->
     <string name="playVideo">Play</string>

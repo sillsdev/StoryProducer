@@ -26,7 +26,7 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
     }
 
     @Override
-    protected void spinInput() {
+    protected void spinInput() throws SourceClosedException {
         if(mSource == null) {
             throw new RuntimeException("No source specified for encoder!");
         }

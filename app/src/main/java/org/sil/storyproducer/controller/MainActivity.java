@@ -29,9 +29,11 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.Serializable;
+
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
@@ -162,16 +164,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if(id == 5) {
-                Thread encodeThread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Looper.prepare();
-                        SampleStory test = new SampleStory();
-                        test.run();
-                        Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
-                        Looper.loop();
-                    }
-                });
+                AutoStoryMaker encodeThread = new AutoStoryMaker("Joshua Sends Spies Rahab");
+                encodeThread.toggleLogProgress(true);
+                encodeThread.toggleText(true);
                 encodeThread.start();
             }
             mDrawerLayout.closeDrawer(mDrawerList);

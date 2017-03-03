@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
 
 /**
  * This class handles the layout inflation for the audio comment list
@@ -81,7 +81,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .setNegativeButton(commCheck.getString(R.string.no), null)
                 .setPositiveButton(commCheck.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        FileSystem.deleteAudioComment(StoryState.getStoryName(), slidePosition, values[position]);
+                        AudioFiles.deleteComment(StoryState.getStoryName(), slidePosition, values[position]);
                         commCheck.updateCommentList();
                     }
                 }).create();
@@ -110,7 +110,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .setPositiveButton(commCheck.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        FileSystem.RENAME_CODES returnCode = FileSystem.renameAudioComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = AudioFiles.renameComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                         switch(returnCode) {
                             case SUCCESS:
                                     commCheck.updateCommentList();

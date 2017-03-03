@@ -5,7 +5,6 @@ import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
-import android.util.Log;
 import android.view.Surface;
 
 import org.sil.storyproducer.tools.media.MediaHelper;
@@ -59,7 +58,6 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
         mSource.setup();
         mConfigureFormat = mSource.getOutputFormat();
 
-        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
         mConfigureFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);
 
