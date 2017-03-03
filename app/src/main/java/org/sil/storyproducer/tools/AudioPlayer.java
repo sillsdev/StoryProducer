@@ -26,12 +26,6 @@ public class AudioPlayer {
             //TODO maybe something with this exception
             e.printStackTrace();
         }
-        try {
-            mPlayer.prepare();
-        } catch (IOException e) {
-            //TODO maybe something with this exception
-            e.printStackTrace();
-        }
     }
 
     /**
