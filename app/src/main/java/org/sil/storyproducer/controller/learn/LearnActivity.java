@@ -219,21 +219,15 @@ public class LearnActivity extends AppCompatActivity {
      * Plays the video and runs everytime the audio is completed
      */
     void playVideo() {
-        //TODO: sync background audio with image
         setPic(learnImageView);                                                             //set the next image
 
         //Clear old narrationPlayer
         if(narrationPlayer != null) {
             narrationPlayer.releaseAudio();
         }
-
         narrationPlayer = new AudioPlayer();                                                //set the next audio
         narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
-        if(isVolumeOn) {
-            narrationPlayer.setVolume(1.0f);
-        } else {
-            narrationPlayer.setVolume(0.0f);
-        }
+        narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
         videoSeekBar.setProgress(slideNum);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override

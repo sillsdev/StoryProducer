@@ -68,8 +68,14 @@
                 android:progress="0"
                 android:layout_marginBottom="18dp" />
 
-        </LinearLayout>
+            <Button
+                android:text="Explore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/exportButton" />
 
+        </LinearLayout>
+        
     </android.support.v4.widget.DrawerLayout>
 
 </RelativeLayout>

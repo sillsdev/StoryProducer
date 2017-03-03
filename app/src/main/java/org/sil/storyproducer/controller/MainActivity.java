@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        if(drawerOpen || hideIcon) {
+        if(drawerOpen) {
             menu.findItem(R.id.menu_lang).setVisible(false);
             menu.findItem(R.id.menu_play).setVisible(true);
         } else {
@@ -163,14 +163,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            if(position == 0) {
-//                FragmentManager fm = getFragmentManager();
-//                Toast.makeText(getBaseContext(), "In backstack " + fm.getBackStackEntryCount(), Toast.LENGTH_LONG).show();
-//                for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-//                    Toast.makeText(getBaseContext(), "Found fragment: " + fm.getBackStackEntryAt(entry).getId(), Toast.LENGTH_LONG).show();
-//                }
-////                startFragment(position, 0, "");
-//            }
             if(id == 5) {
                 AutoStoryMaker encodeThread = new AutoStoryMaker("Joshua Sends Spies Rahab");
                 encodeThread.toggleLogProgress(true);
@@ -181,50 +173,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             if(id == 5) {
                 Toast.makeText(getBaseContext(), "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
             }
-        }
-    }
-    private boolean hideIcon = false;
-    private PagerFrag pagerFrag;
-    public void startFragment(int iFragNum, int slideCount, String storyName){
-        String title = "";
-        Fragment fragment = null;
-        switch (iFragNum) {
-            case 0:
-                fragment = new StoryFrag();
-                title = getApplicationContext().getString(R.string.title_activity_story_templates);
-                hideIcon = false;
-                break;
-            case 1:
-                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                fragment = pagerFrag;
-                title = getApplicationContext().getString(R.string.title_fragment_translate);
-                hideIcon = true;
-                break;
-            case 2:
-                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                fragment = pagerFrag;
-                title = getApplicationContext().getString(R.string.title_fragment_community);
-                hideIcon = true;
-                break;
-            case 3:
-                fragment = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title = getApplicationContext().getString(R.string.title_fragment_consultant);
-                hideIcon = true;
-                break;
-
-        }
-        if(fragment != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, title).addToBackStack(null).commit();
-            mActivityTitle = title;
-            getSupportActionBar().setTitle(title);
-            invalidateOptionsMenu();
-        }
-    }
-    public void changeSlide(int slidePosition){
-        if(pagerFrag != null) {
-            pagerFrag.changeView(slidePosition);
-
-            //ibuprofen
         }
     }
 
