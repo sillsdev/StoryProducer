@@ -41,7 +41,6 @@ public class FileChooserActivity extends AppCompatActivity {
     private File currentDir;
     private FileArrayAdapter adapter;
     private final Stack<File> history=new Stack<>();
-    private final String FILE_EXTENSION = ".mp4";
     public final static  String FILE_DIR_PATH = "fileDirPath";
     public final static String FILE_PATH = "filePath";
 
@@ -190,7 +189,7 @@ public class FileChooserActivity extends AppCompatActivity {
         } else if (fileName.length()==0){
             createErrorDialog(getString(R.string.file_explorer_emptyFileName));
         } else {
-            File newFile = new File(currentDir, fileName + FILE_EXTENSION);
+            File newFile = new File(currentDir, fileName);
             if (newFile.exists()){
                 createErrorDialog(getString(R.string.file_explorer_fileAlreadyExists_1)
                         +newFile.getName()+getString(R.string.file_explorer_fileAlreadyExists_2));

@@ -3,14 +3,14 @@ package org.sil.storyproducer.controller.export;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -32,6 +34,10 @@ import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
+import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class ExportActivity extends AppCompatActivity {
     private static final String TAG = "ExportActivity";
 
@@ -43,6 +49,14 @@ public class ExportActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
 
+    private CheckBox mCheckboxSoundtrack;
+    private CheckBox mCheckboxPictures;
+    private CheckBox mCheckboxText;
+    private CheckBox mCheckboxKBFX;
+    private Spinner mSpinnerResolution;
+    private Spinner mSpinnerFormat;
+    private EditText mEditTextLocation;
+    private Button mButtonBrowse;
     private Button mButtonStart;
     private Button mButtonCancel;
 
@@ -71,17 +85,40 @@ public class ExportActivity extends AppCompatActivity {
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getColor(), null)));
 
         setupDrawer();
-        
-        Button exportButton = (Button) findViewById(R.id.exportButton);
 
-        exportButton.setOnClickListener(new View.OnClickListener() {
+        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
+
+        setupViews();
+    }
+
+    private void setupViews() {
+        mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
+        mCheckboxPictures = (CheckBox) findViewById(R.id.checkbox_export_pictures);
+        mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
+        mCheckboxKBFX = (CheckBox) findViewById(R.id.checkbox_export_KBFX);
+
+        mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
+        ArrayAdapter<CharSequence> resolutionAdapter = ArrayAdapter.createFromResource(this,
+                R.array.export_resolution_options, android.R.layout.simple_spinner_item);
+        resolutionAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mSpinnerResolution.setAdapter(resolutionAdapter);
+
+        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
+        ArrayAdapter<CharSequence> formatAdapter = ArrayAdapter.createFromResource(this,
+                R.array.export_format_options, android.R.layout.simple_spinner_item);
+        formatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mSpinnerFormat.setAdapter(formatAdapter);
+
+        mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
+
+        mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
+
+        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileExplorerToExport();
             }
         });
-
-        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
 
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
@@ -151,17 +188,22 @@ public class ExportActivity extends AppCompatActivity {
         startActivityForResult(intent, FILE_CHOOSER_CODE);
     }
 
+    private String mOutputPath;
+    private File mOutputFile;
+
     // Listen for results.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // See which child activity is calling us back.
         if (requestCode == FILE_CHOOSER_CODE) {
             if (resultCode == RESULT_OK) {
-                final String path = data.getStringExtra(FileChooserActivity.FILE_PATH);
+                mOutputPath = data.getStringExtra(FileChooserActivity.FILE_PATH);
                 final AlertDialog.Builder errorDialog = new AlertDialog.Builder(this);
 
+                mEditTextLocation.setText(mOutputPath);
+
                 errorDialog.setTitle(R.string.info);
-                errorDialog.setMessage(path);
+                errorDialog.setMessage(mOutputPath);
                 errorDialog.setPositiveButton(R.string.OK, null);
                 AlertDialog ret = errorDialog.create();
                 ret.show();
@@ -268,9 +310,7 @@ public class ExportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!buttonLocked) {
-                    storyMaker = new AutoStoryMaker(StoryState.getStoryName());
-                    storyMaker.start();
-                    watchProgress();
+                    startExport();
                 }
                 lockButtons();
             }
@@ -286,6 +326,31 @@ public class ExportActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void startExport() {
+        synchronized (storyMakerLock) {
+            storyMaker = new AutoStoryMaker(StoryState.getStoryName());
+
+            storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
+            storyMaker.togglePictures(mCheckboxPictures.isChecked());
+            storyMaker.toggleText(mCheckboxText.isChecked());
+            storyMaker.toggleKenBurns(mCheckboxKBFX.isChecked());
+
+            String resolutionStr = mSpinnerResolution.getSelectedItem().toString();
+            //Parse resolution string of "WIDTHxHEIGHT"
+            Pattern p = Pattern.compile("(\\d+)x(\\d+)");
+            Matcher m = p.matcher(resolutionStr);
+            storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+
+            String ext = mSpinnerFormat.getSelectedItem().toString();
+
+            File output = new File(mOutputPath + ext);
+            storyMaker.setOutputFile(output);
+        }
+
+        storyMaker.start();
+        watchProgress();
     }
 
     private void updateProgress(final int progress) {

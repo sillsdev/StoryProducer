@@ -93,12 +93,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
         mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
 
-    public void setExtension(String extension) {
-        mOutputExt = extension;
-    }
-
-    public void setFilePath(String filePath) {
-        mOutputFile = new File(filePath);
+    public void setOutputFile(File output) {
+        mOutputFile = output;
     }
 
     public void setResolution(int width, int height) {
