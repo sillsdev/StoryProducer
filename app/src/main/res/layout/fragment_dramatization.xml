@@ -20,13 +20,24 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop" />
 
-        <ImageButton
-            android:id="@+id/fragment_dramatization_play_draft_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageButton
+                android:id="@+id/fragment_dramatization_play_draft_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_play_gray"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentTop="true"/>
+
+        </RelativeLayout>
+
 
     </LinearLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fragment_dramatization_fab"
@@ -36,12 +47,10 @@
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:elevation="0dp"
-        android:tint="@color/white"
+        android:background="@color/white"
         app:backgroundTint="@android:color/holo_blue_bright"
         app:layout_anchorGravity="center_vertical|center_horizontal"
-        app:srcCompat="@android:drawable/ic_input_add"
-        app:fab_icon="@drawable/fab_add_xxhdpi" />
+        app:srcCompat="@drawable/ic_add_white_48dp" />
 
     <RelativeLayout
         android:id="@+id/fragment_dramatization_animated_toolbar"
@@ -55,50 +64,50 @@
 
         <ImageButton
             android:id="@+id/fragment_dramatization_pause_toolbar_button"
-            app:srcCompat="@drawable/ic_pause_white_48dp"
-            android:background="@drawable/ic_pause_white_48dp"
-            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button"
-            android:layout_toRightOf="@+id/fragment_dramatization_play_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignStart="@+id/fragment_dramatization_mic_toolbar_button"
+            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button"
+            android:layout_toRightOf="@+id/fragment_dramatization_play_toolbar_button"
+            android:background="@drawable/ic_pause_white_48dp"
             android:scaleType="centerInside"
             android:visibility="invisible"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/fragment_dramatization_mic_toolbar_button" />
+            app:srcCompat="@drawable/ic_pause_white_48dp" />
 
         <ImageButton
             android:id="@+id/fragment_dramatization_delete_toolbar_button"
-            android:background="@drawable/ic_delete_forever_white_48dp"
-            app:srcCompat="@drawable/ic_delete_forever_white_48dp"
-            android:layout_marginStart="56dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button" />
+            android:layout_marginStart="56dp"
+            android:layout_toEndOf="@+id/fragment_dramatization_play_toolbar_button"
+            android:background="@drawable/ic_delete_forever_white_48dp"
+            android:visibility="invisible"
+            app:srcCompat="@drawable/ic_delete_forever_white_48dp" />
 
         <ImageButton
             android:id="@+id/fragment_dramatization_play_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/ic_play_arrow_white_48dp"
-            android:visibility="invisible"
-            android:scaleType="centerInside"
-            android:layout_marginStart="56dp"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/fragment_dramatization_mic_toolbar_button" />
+            android:layout_marginStart="56dp"
+            android:layout_toEndOf="@+id/fragment_dramatization_mic_toolbar_button"
+            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:scaleType="centerInside"
+            android:visibility="invisible" />
 
         <ImageButton
             android:id="@+id/fragment_dramatization_mic_toolbar_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_marginStart="22dp"
             android:background="@drawable/ic_mic_white"
-            android:visibility="visible"
-            app:srcCompat="@drawable/ic_mic_white"
             android:scaleType="centerInside"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_mic_white" />
 
     </RelativeLayout>
 

@@ -7,18 +7,23 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.FileSystem;
+
+import java.io.File;
 
 
 public class DramatizationFrag extends Fragment {
@@ -26,6 +31,8 @@ public class DramatizationFrag extends Fragment {
 
     private View rootView;
     private int slidePosition;
+    private AnimationToolbar myToolbar;
+    private boolean isRecording = false;
 
     @Override
     public void onCreate(Bundle savedState){
@@ -38,11 +45,24 @@ public class DramatizationFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
-        //setUiColors();
+        setUiColors();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slidePosition);
-        setDraftPlayback(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
-
+        setDraftPlayback(rootView.findViewById(R.id.fragment_dramatization_play_draft_button), slidePosition);
+        setToolbar();
         return rootView;
+    }
+
+    public boolean isToolBarOpen(){
+        if(myToolbar != null){
+            return myToolbar.isOpen();
+        }
+        return false;
+    }
+
+    public void closeToolbar(){
+        if(myToolbar!= null && myToolbar.isOpen()){
+            myToolbar.close();
+        }
     }
 
     /**
@@ -51,18 +71,8 @@ public class DramatizationFrag extends Fragment {
      */
     private void setUiColors() {
         if (slidePosition == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
+            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_dramatization_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_Relative_Layout);
-            rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-
-            TextView tv = (TextView) rootView.findViewById(R.id.fragment_draft_scripture_text);
-            tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            tv = (TextView) rootView.findViewById(R.id.fragment_draft_reference_text);
-            tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-
-            ImageButton ib = (ImageButton) rootView.findViewById(R.id.fragment_draft_narration_button);
-            ib.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
 
@@ -99,7 +109,7 @@ public class DramatizationFrag extends Fragment {
             return;
         }
 
-        
+
 
         ImageButton playButton = (ImageButton)aView;
         playButton.setOnClickListener(new View.OnClickListener() {
@@ -109,4 +119,47 @@ public class DramatizationFrag extends Fragment {
             }
         });
     }
+
+    /**
+     * Initializes the toolbar and toolbar buttons.
+     */
+    private void setToolbar(){
+        setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_dramatization_fab),
+                rootView.findViewById(R.id.fragment_dramatization_animated_toolbar));
+      //  setRecordNPlayback();
+       // setToolbarDeleteButton(new File(recordFilePath).exists());
+    }
+
+    /**
+     * This function initializes the animated toobar and click of dummyView to close toolbar.
+     */
+    private void setupToolbarAndRecordAnim(View fab, View relativeLayout) {
+        if (fab == null || relativeLayout == null) {
+            return;
+        }
+        try {
+            myToolbar = new AnimationToolbar(fab, relativeLayout, this.getActivity());
+        } catch (ClassCastException ex) {
+            Log.e(getActivity().toString(), ex.getMessage());
+        }
+
+        //The following allows for a touch from user to close the toolbar and make the fab visible.
+        //This also stops the recording animation
+        LinearLayout dummyView = (LinearLayout) rootView.findViewById(R.id.fragment_dramatization_dummyView);
+        dummyView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (myToolbar != null && myToolbar.isOpen() && !isRecording) {
+                    myToolbar.close();
+                }
+            }
+        });
+
+        //This function must be called before using record animations i.e. calling
+        //setRecordNPlayback()
+        //setupRecordingAnimationHandler();
+    }
+
+
+
 }
