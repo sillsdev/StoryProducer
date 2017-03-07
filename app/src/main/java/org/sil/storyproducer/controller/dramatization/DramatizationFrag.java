@@ -1,8 +1,12 @@
 package org.sil.storyproducer.controller.dramatization;
 
 import android.graphics.Bitmap;
-import android.media.Image;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -15,30 +19,41 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
+import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.FileSystem;
-
-import java.io.File;
 
 
 public class DramatizationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     private View rootView;
-    private int slidePosition;
+    private int slideNumber;
     private AnimationToolbar myToolbar;
     private boolean isRecording = false;
+    private ImageButton playPauseDraftButton;
+    private AudioPlayer draftPlayer;
+    private String draftPlayerPath = null;
+
+    private TransitionDrawable transitionDrawable;
+    private Handler colorHandler;
+    private Runnable colorHandlerRunnable;
+    private boolean isRed = true;
+    private final int RECORDING_ANIMATION_DURATION = 1500;
 
     @Override
-    public void onCreate(Bundle savedState){
+    public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
+        slideNumber = passedArgs.getInt(SLIDE_NUM);
+        if (FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).exists()) {
+            draftPlayerPath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).getPath();
+        }
     }
 
 
@@ -46,21 +61,23 @@ public class DramatizationFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slidePosition);
-        setDraftPlayback(rootView.findViewById(R.id.fragment_dramatization_play_draft_button), slidePosition);
+        setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
+        setDraftPlayback(rootView.findViewById(R.id.fragment_dramatization_play_draft_button), slideNumber);
+        setPlayPauseDraftButton();
         setToolbar();
+
         return rootView;
     }
 
-    public boolean isToolBarOpen(){
-        if(myToolbar != null){
+    public boolean isToolBarOpen() {
+        if (myToolbar != null) {
             return myToolbar.isOpen();
         }
         return false;
     }
 
-    public void closeToolbar(){
-        if(myToolbar!= null && myToolbar.isOpen()){
+    public void closeToolbar() {
+        if (myToolbar != null && myToolbar.isOpen()) {
             myToolbar.close();
         }
     }
@@ -70,14 +87,14 @@ public class DramatizationFrag extends Fragment {
      * clashing of the grey starting picture.
      */
     private void setUiColors() {
-        if (slidePosition == 0) {
+        if (slideNumber == 0) {
             RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_dramatization_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
 
-    private void setPic(View aView, int slideNum){
-        if(aView == null || !(aView instanceof ImageView)){
+    private void setPic(View aView, int slideNum) {
+        if (aView == null || !(aView instanceof ImageView)) {
             return;
         }
 
@@ -104,14 +121,13 @@ public class DramatizationFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
-    void setDraftPlayback(View aView, int slideNum){
-        if(aView == null || !(aView instanceof ImageButton)){
+    private void setDraftPlayback(View aView, int slideNum) {
+        if (aView == null || !(aView instanceof ImageButton)) {
             return;
         }
 
 
-
-        ImageButton playButton = (ImageButton)aView;
+        ImageButton playButton = (ImageButton) aView;
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,14 +136,42 @@ public class DramatizationFrag extends Fragment {
         });
     }
 
+    private void setPlayPauseDraftButton() {
+        View button = rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
+        if (button != null && button instanceof ImageButton) {
+            playPauseDraftButton = (ImageButton) button;
+        }
+
+        draftPlayer = new AudioPlayer();
+
+        playPauseDraftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (draftPlayer.isAudioPlaying()) {
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    draftPlayer.stopAudio();
+                    draftPlayer.releaseAudio();
+                } else {
+                    if (draftPlayerPath != null) {
+                        playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                        draftPlayer = new AudioPlayer();
+                        draftPlayer.playWithPath(draftPlayerPath);
+                        Toast.makeText(getContext(), "Playing back draft recording!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private void setToolbar(){
+    private void setToolbar() {
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_dramatization_fab),
                 rootView.findViewById(R.id.fragment_dramatization_animated_toolbar));
-      //  setRecordNPlayback();
-       // setToolbarDeleteButton(new File(recordFilePath).exists());
+        setRecordNPlayback();
+        // setToolbarDeleteButton(new File(recordFilePath).exists());
+
     }
 
     /**
@@ -157,9 +201,101 @@ public class DramatizationFrag extends Fragment {
 
         //This function must be called before using record animations i.e. calling
         //setRecordNPlayback()
-        //setupRecordingAnimationHandler();
+        setupRecordingAnimationHandler();
     }
 
+    private void setRecordNPlayback(){
+
+    }
+
+
+    /**
+     * <a href="https://developer.android.com/reference/android/os/Handler.html">See for handler</a>
+     * <br/>
+     * <a href="https://developer.android.com/reference/java/lang/Runnable.html">See for runnable</a>
+     * <br/>
+     * <a href="https://developer.android.com/reference/android/graphics/drawable/TransitionDrawable.html">See for transition Drawable</a>
+     * <br/>
+     * <br/>
+     * Call this function prior to setting the button listener of the record button. E.g.: <br/>
+     * setupRecordAnimationHandler();<br/>
+     * button.Handler(){}
+     * <br/>
+     * Essentially the function utilizes a Transition Drawable to interpolate between the red and
+     * the toolbar color. (The colors are defined in an array and used in the transition drawable)
+     * To schedule the running of the transition drawable a handler and runnable are used.<br/>
+     * The handler takes a runnable which schedules the transitiondrawable. The handler function
+     * called postDelayed will delay the running of the next Runnable by the passed in value e.g.:
+     * colorHandler.postDelayed(runnable goes here, time delay in MS).
+     * <br/>
+     * Still confused about handlers, runnables, and the MessageQueue?
+     * <br/>
+     * <a href="http://stackoverflow.com/questions/12877944/what-is-the-relationship-between-looper-handler-and-messagequeue-in-android">See this excellent SO post for more info.</a>
+     */
+    private void setupRecordingAnimationHandler() {
+        int red = Color.rgb(255, 0, 0);
+        int colorOfToolbar = Color.rgb(0, 0, 255); /*Arbitrary color value of blue used initially*/
+
+        RelativeLayout rel = (RelativeLayout) rootView.findViewById(R.id.fragment_dramatization_animated_toolbar);
+        Drawable relBackgroundColor = rel.getBackground();
+        if (relBackgroundColor instanceof ColorDrawable) {
+            colorOfToolbar = ((ColorDrawable) relBackgroundColor).getColor();
+        }
+        transitionDrawable = new TransitionDrawable(new ColorDrawable[]{
+                new ColorDrawable(colorOfToolbar),
+                new ColorDrawable(red)
+        });
+        rel.setBackground(transitionDrawable);
+
+        colorHandler = new Handler();
+        colorHandlerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                //Animation to change the toolbar's color while recording
+                if (isRed) {
+                    transitionDrawable.startTransition(RECORDING_ANIMATION_DURATION);
+                    isRed = false;
+
+                } else {
+                    transitionDrawable.reverseTransition(RECORDING_ANIMATION_DURATION);
+                    isRed = true;
+                }
+                startRecordingAnimation(true, RECORDING_ANIMATION_DURATION);
+            }
+        };
+    }
+
+    /**
+     * This function is used to start the handler to run the runnable.
+     * setupRecordinganimationHandler() should be called first before calling this function
+     * to initialize the colorHandler and colorHandlerRunnable().
+     *
+     * @param isDelayed Used to signify that the runnable will be delayed in running.
+     * @param delay     The time that will be delayed in ms if isDelayed is true.
+     */
+    private void startRecordingAnimation(boolean isDelayed, int delay) {
+        if (colorHandler != null && colorHandlerRunnable != null) {
+            if (isDelayed) {
+                colorHandler.postDelayed(colorHandlerRunnable, delay);
+            } else {
+                colorHandler.post(colorHandlerRunnable);
+            }
+        }
+    }
+
+    /**
+     * Stops the animation from continuing. The removeCallbacks function removes all
+     * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
+     * (transitionDrawable.resetTransition();)
+     */
+    private void stopRecordingAnimation() {
+        if (colorHandler != null && colorHandlerRunnable != null) {
+            colorHandler.removeCallbacks(colorHandlerRunnable);
+        }
+        if (transitionDrawable != null) {
+            transitionDrawable.resetTransition();
+        }
+    }
 
 
 }

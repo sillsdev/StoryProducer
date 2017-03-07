@@ -10,8 +10,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaRecorder;
-import android.net.sip.SipAudioCall;
-import android.net.sip.SipSession;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -58,7 +56,7 @@ import java.util.List;
 public final class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
-    private int slidePosition;
+    private int slideNumber;
     private SlideText slideText;
     private AudioPlayer narrationAudioPlayer;
     private AudioPlayer voiceAudioPlayer;
@@ -89,9 +87,9 @@ public final class DraftFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
-        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slidePosition);
-        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
+        slideNumber = passedArgs.getInt(SLIDE_NUM);
+        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slideNumber);
+        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).getPath();
         tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
     }
 
@@ -107,7 +105,7 @@ public final class DraftFrag extends Fragment {
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slidePosition/*StoryState.getCurrentStorySlide()*/);
+        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber/*StoryState.getCurrentStorySlide()*/);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));
@@ -169,7 +167,7 @@ public final class DraftFrag extends Fragment {
      * clashing of the grey starting picture.
      */
     private void setUiColors() {
-        if (slidePosition == 0) {
+        if (slideNumber == 0) {
             RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_Relative_Layout);
@@ -268,7 +266,7 @@ public final class DraftFrag extends Fragment {
             return;
         }
 
-        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slidePosition).getPath();
+        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slideNumber).getPath();
         ImageView imageView = (ImageView) aView;
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

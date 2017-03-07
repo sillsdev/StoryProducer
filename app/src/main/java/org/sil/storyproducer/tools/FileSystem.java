@@ -31,6 +31,7 @@ public class FileSystem {
                                 TRANSLATION_PREFIX = "translation",
                                 LEARN_PRACTICE_PREFIX = "learnPractice",
                                 COMMENT_PREFIX = "comment",
+                                DRAMATIZATION_PREFIX = "dramatization",
                                 MP3_EXTENSION = ".mp3";
 
     //Paths to template directories from language and story name
@@ -156,6 +157,10 @@ public class FileSystem {
     }
     public static File getTranslationAudio(String story, int i){
         return new File(getStoryPath(story)+"/"+TRANSLATION_PREFIX+i+MP3_EXTENSION);
+    }
+
+    public static File getDramatizedAudio(String story, int i){
+        return new File(getStoryPath(story)+"/"+DRAMATIZATION_PREFIX+i+MP3_EXTENSION);
     }
 
     /**

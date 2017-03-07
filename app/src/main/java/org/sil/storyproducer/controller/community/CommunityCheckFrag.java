@@ -29,7 +29,6 @@ import org.sil.storyproducer.tools.FileSystem;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Fragment for the community check view. The purpose of this phase is for the community to make
@@ -38,7 +37,7 @@ import java.util.ArrayList;
 public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private final static String LOGTAG = "communityCheck";
-    private int slidePosition;
+    private int slideNumber;
     private static AudioPlayer draftPlayer;
     private static AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
@@ -50,7 +49,7 @@ public class CommunityCheckFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
+        slideNumber = passedArgs.getInt(SLIDE_NUM);
     }
 
     @Override
@@ -60,7 +59,7 @@ public class CommunityCheckFrag extends Fragment {
 
         updateCommentList();
         setUiColors();
-        setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slidePosition);
+        setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button));
         setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
 
@@ -116,8 +115,8 @@ public class CommunityCheckFrag extends Fragment {
      */
     public void updateCommentList() {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
-        comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slidePosition);
-        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slidePosition, this);
+        comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slideNumber);
+        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slideNumber, this);
         listView.setAdapter(adapter);
     }
 
@@ -126,7 +125,7 @@ public class CommunityCheckFrag extends Fragment {
      * clashing of the grey starting picture.
      */
     private void setUiColors(){
-        if(slidePosition == 0){
+        if(slideNumber == 0){
             RelativeLayout rl =  (RelativeLayout)rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
@@ -168,7 +167,7 @@ public class CommunityCheckFrag extends Fragment {
      */
     private void setDraftPlaybackButton(ImageButton button) {
 
-        final File draftFile = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition);
+        final File draftFile = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -190,7 +189,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param commentTitle the title of the comment to play
      */
     public void playComment(String commentTitle) {
-        final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition, commentTitle);
+        final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
@@ -210,11 +209,11 @@ public class CommunityCheckFrag extends Fragment {
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
                 int nextCommentIndex = comments.length + 1;
-                String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
+                String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber,
                         "Comment " + nextCommentIndex).getPath();
                 while (FileSystem.doesFileExist(recordFilePath)) {
                     nextCommentIndex++;
-                    recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slidePosition,
+                    recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber,
                             "Comment " + nextCommentIndex).getPath();
                 }
                 //stop all playback streams.
