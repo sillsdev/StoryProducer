@@ -1,13 +1,18 @@
 package org.sil.storyproducer.controller.dramatization;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -28,6 +33,8 @@ import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.FileSystem;
 
+import java.io.IOException;
+
 
 public class DramatizationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
@@ -39,12 +46,18 @@ public class DramatizationFrag extends Fragment {
     private ImageButton playPauseDraftButton;
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
+    private MediaRecorder voiceRecorder;
+    private AudioPlayer dramatizationPlayer;
+    private String dramatizationRecordingPath = null;
+
 
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
     private Runnable colorHandlerRunnable;
     private boolean isRed = true;
     private final int RECORDING_ANIMATION_DURATION = 1500;
+    private ImageButton recordButton;
+    private ImageButton playRecordingButton;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -54,6 +67,7 @@ public class DramatizationFrag extends Fragment {
         if (FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).exists()) {
             draftPlayerPath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).getPath();
         }
+        dramatizationRecordingPath = FileSystem.getDramatizedAudio(StoryState.getStoryName(), slideNumber).getPath();
     }
 
 
@@ -62,11 +76,32 @@ public class DramatizationFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
-        setDraftPlayback(rootView.findViewById(R.id.fragment_dramatization_play_draft_button), slideNumber);
-        setPlayPauseDraftButton();
+        setPlayStopDraftButton();
         setToolbar();
 
         return rootView;
+    }
+
+    /**
+     * This function serves to handle draft page changes and stops the audio streams from
+     * continuing.
+     *
+     * @param isVisibleToUser
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Make sure that we are currently visible
+        if (this.isVisible()) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                stopPlayBackAndRecording();
+                if (myToolbar != null && myToolbar.isOpen()) {
+                    myToolbar.close();
+                }
+            }
+        }
     }
 
     public boolean isToolBarOpen() {
@@ -93,6 +128,12 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
+    /**
+     * This function is used to the set the picture per slide.
+     *
+     * @param aView    The view that will have the picture rendered on it.
+     * @param slideNum The respective slide number for the dramatization slide.
+     */
     private void setPic(View aView, int slideNum) {
         if (aView == null || !(aView instanceof ImageView)) {
             return;
@@ -121,25 +162,18 @@ public class DramatizationFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
-    private void setDraftPlayback(View aView, int slideNum) {
-        if (aView == null || !(aView instanceof ImageButton)) {
-            return;
-        }
-
-
-        ImageButton playButton = (ImageButton) aView;
-        playButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-    }
-
-    private void setPlayPauseDraftButton() {
+    /**
+     * This function serves to set the play and stop button for the draft playback button.
+     */
+    private void setPlayStopDraftButton() {
         View button = rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
         if (button != null && button instanceof ImageButton) {
             playPauseDraftButton = (ImageButton) button;
+        }
+        if (draftPlayerPath == null) {
+            //draft recording does not exist
+            playPauseDraftButton.setVisibility(View.INVISIBLE);
+            return;
         }
 
         draftPlayer = new AudioPlayer();
@@ -153,8 +187,16 @@ public class DramatizationFrag extends Fragment {
                     draftPlayer.releaseAudio();
                 } else {
                     if (draftPlayerPath != null) {
+                        stopPlayBackAndRecording();
                         playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                         draftPlayer = new AudioPlayer();
+                        draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                                draftPlayer.releaseAudio();
+                            }
+                        });
                         draftPlayer.playWithPath(draftPlayerPath);
                         Toast.makeText(getContext(), "Playing back draft recording!", Toast.LENGTH_SHORT).show();
                     }
@@ -170,8 +212,6 @@ public class DramatizationFrag extends Fragment {
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_dramatization_fab),
                 rootView.findViewById(R.id.fragment_dramatization_animated_toolbar));
         setRecordNPlayback();
-        // setToolbarDeleteButton(new File(recordFilePath).exists());
-
     }
 
     /**
@@ -204,8 +244,64 @@ public class DramatizationFrag extends Fragment {
         setupRecordingAnimationHandler();
     }
 
-    private void setRecordNPlayback(){
+    /**
+     * This function sets the recording and playback buttons (The mic and play button) with their
+     * respective functionalities.
+     */
+    private void setRecordNPlayback() {
+        View button = rootView.findViewById(R.id.fragment_dramatization_mic_toolbar_button);
+        View button2 = rootView.findViewById(R.id.fragment_dramatization_play_toolbar_button);
+        dramatizationPlayer = new AudioPlayer();
+        if (button instanceof ImageButton && button2 instanceof ImageButton) {
+            recordButton = (ImageButton) button;
+            playRecordingButton = (ImageButton) button2;
+            if(FileSystem.getDramatizedAudio(StoryState.getStoryName(), slideNumber).exists()){
+                playRecordingButton.setVisibility(View.VISIBLE);
+            }
 
+            recordButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (isRecording) {
+                        playRecordingButton.setVisibility(View.VISIBLE);
+                        stopAudioRecorder();
+                        stopRecordingAnimation();
+                        recordButton.setBackgroundResource(R.drawable.ic_mic_white);
+                    } else {
+                        stopPlayBackAndRecording();
+                        recordButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                        startAudioRecorder();
+                        startRecordingAnimation(false, 0);
+                    }
+                }
+            });
+
+            playRecordingButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (dramatizationPlayer.isAudioPlaying()) {
+                        dramatizationPlayer.stopAudio();
+                        dramatizationPlayer.releaseAudio();
+                        playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    } else {
+                        stopPlayBackAndRecording();
+                        dramatizationPlayer = new AudioPlayer();
+                        dramatizationPlayer.playWithPath(dramatizationRecordingPath);
+                        playRecordingButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                        //on completion of audio playback without user intervention
+                        //set the button to a play button
+                        dramatizationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                                dramatizationPlayer.releaseAudio();
+                            }
+                        });
+
+                    }
+                }
+            });
+        }
     }
 
 
@@ -297,5 +393,83 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
+    /**
+     * The function that aids in starting an audio recorder.
+     */
+    private void startAudioRecorder() {
+        setVoiceRecorder(dramatizationRecordingPath);
+        try {
+            isRecording = true;
+            voiceRecorder.prepare();
+            voiceRecorder.start();
+            Toast.makeText(getContext(), "Recording voice!", Toast.LENGTH_SHORT).show();
+        } catch (IllegalStateException | IOException e) {
+            Log.e(getActivity().toString(), e.getMessage());
+        }
+    }
 
+    /**
+     * The function that aids in stopping an audio recorder.
+     */
+    private void stopAudioRecorder() {
+        try {
+            isRecording = false;
+            //Delay stopping of voiceRecorder to capture all of the voice recorded.
+            Thread.sleep(500);
+            voiceRecorder.stop();
+            Toast.makeText(getContext(), "Stopped recording!", Toast.LENGTH_SHORT).show();
+        } catch (RuntimeException stopException) {
+            Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
+        } catch (InterruptedException e) {
+            Log.e(getActivity().toString(), e.getMessage());
+        }
+        voiceRecorder.release();
+        voiceRecorder = null;
+    }
+
+    /**
+     * This function sets the voice recorder with a new voicerecorder.
+     *
+     * @param fileName The file to output the voice recordings.
+     */
+    private void setVoiceRecorder(String fileName) {
+        voiceRecorder = new MediaRecorder();
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    1);
+        }
+
+        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        voiceRecorder.setAudioEncodingBitRate(16);
+        voiceRecorder.setAudioSamplingRate(44100);
+        voiceRecorder.setOutputFile(fileName);
+    }
+
+    /**
+     * Stops recording and playback streams.
+     */
+    private void stopPlayBackAndRecording(){
+        if(isRecording){
+            playRecordingButton.setVisibility(View.VISIBLE);
+            stopAudioRecorder();
+            stopRecordingAnimation();
+            recordButton.setBackgroundResource(R.drawable.ic_mic_white);
+        }
+        if(draftPlayer != null && draftPlayer.isAudioPlaying()){
+            draftPlayer.stopAudio();
+            draftPlayer.releaseAudio();
+            playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+        }
+        if(dramatizationPlayer != null && dramatizationPlayer.isAudioPlaying()){
+            dramatizationPlayer.stopAudio();
+            dramatizationPlayer.releaseAudio();
+            playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+        }
+    }
 }
