@@ -61,7 +61,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public int getCount() {
-        return numOfSlides + 1;     //the plus 1 is for the circular pager
+        return numOfSlides;
     }
 
     /**
