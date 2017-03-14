@@ -349,6 +349,7 @@ public class ExportActivity extends AppCompatActivity {
             //Parse resolution string of "WIDTHxHEIGHT"
             Pattern p = Pattern.compile("(\\d+)x(\\d+)");
             Matcher m = p.matcher(resolutionStr);
+            m.find();
             storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
 
             String ext = mSpinnerFormat.getSelectedItem().toString();
