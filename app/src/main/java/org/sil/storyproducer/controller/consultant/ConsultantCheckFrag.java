@@ -180,6 +180,10 @@ public class ConsultantCheckFrag extends Fragment {
         });
     }
 
+    /**
+     * Sets on click listener for consultant to check off the slide and approve
+     * @param button the check button
+     */
     private void setCheckmarkButton(final ImageButton button) {
         final SharedPreferences prefs = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -208,11 +212,13 @@ public class ConsultantCheckFrag extends Fragment {
                     }
                 }
             }
-            //TODO: check all of stories isChecked to see if story is completely checked
-            // if story is checked, launch password to unlock dramatization
         });
     }
 
+    /**
+     * Set an on click listener to launch the interface to view the logs for that slide
+     * @param button the logs button
+     */
     private void setLogsButton(ImageButton button) {
         button.setBackgroundResource(R.drawable.ic_logs_blue);
         button.setOnClickListener(new View.OnClickListener() {
@@ -223,6 +229,10 @@ public class ConsultantCheckFrag extends Fragment {
         });
     }
 
+    /**
+     * Checks each slide of the story to see if all slides have been approved
+     * @return true if all approved, otherwise false
+     */
     private boolean checkAllMarked() {
         boolean marked;
         SharedPreferences prefs = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE);
@@ -236,6 +246,9 @@ public class ConsultantCheckFrag extends Fragment {
         return true;
     }
 
+    /**
+     * Launches a dialog for the consultant to enter a password once all slides approved
+     */
     private void showConsultantPasswordDialog() {
         final EditText password = new EditText(getContext());
         password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
