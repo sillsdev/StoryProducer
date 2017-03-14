@@ -56,7 +56,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private static final int VIDEO_IFRAME_INTERVAL = 1;           // 1 second between I-frames
 
     // using Kush Gauge for video bit rate
-    private static final int MOTION_FACTOR = 4;                   // 1, 2, or 4
+    private static final int MOTION_FACTOR = 2;                   // 1, 2, or 4
     private static final float KUSH_GAUGE_CONSTANT = 0.07f;
     // bits per second for video
     private int mVideoBitRate;
@@ -206,6 +206,11 @@ public class AutoStoryMaker extends Thread implements Closeable {
         return audioFormat;
     }
     private MediaFormat generateVideoFormat() {
+        //If no video component, use null format.
+        if(!mIncludePictures && !mIncludeText) {
+            return null;
+        }
+
         MediaFormat videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
@@ -264,7 +269,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             //TODO: get actual KBFX
             KenBurnsEffect kbfx = null;
             //Only include KBFX if specified and not title slide.
-            if(mIncludeKBFX && iSlide != 0) {
+            if(mIncludePictures && mIncludeKBFX && iSlide != 0) {
                 kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
             }
 
@@ -276,7 +281,10 @@ public class AutoStoryMaker extends Thread implements Closeable {
             pages[iSlide] = new StoryPage(image, audio, kbfx, text);
         }
 
-        File copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT);
+        File copyrightImage = null;
+        if(mIncludePictures) {
+            copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT);
+        }
         pages[iSlide++] = new StoryPage(copyrightImage, COPYRIGHT_SLIDE_US);
 
         //TODO: add hymn

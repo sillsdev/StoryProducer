@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -47,6 +48,8 @@ public class ExportActivity extends AppCompatActivity {
     private static final String PREFERENCES_BASE = "ProjExportConfig";
     private static final String PREFERENCES_ALL = "AppExportConfig";
 
+    private static final int LOCATION_MAX_CHAR_DISPLAY = 25;
+
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -58,6 +61,7 @@ public class ExportActivity extends AppCompatActivity {
     private CheckBox mCheckboxPictures;
     private CheckBox mCheckboxText;
     private CheckBox mCheckboxKBFX;
+    private View mLayoutResolution;
     private Spinner mSpinnerResolution;
     private Spinner mSpinnerFormat;
     private EditText mEditTextLocation;
@@ -101,9 +105,22 @@ public class ExportActivity extends AppCompatActivity {
 
         mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
         mCheckboxPictures = (CheckBox) findViewById(R.id.checkbox_export_pictures);
-        mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
+        mCheckboxPictures.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
+                toggleVisibleElements();
+            }
+        });
         mCheckboxKBFX = (CheckBox) findViewById(R.id.checkbox_export_KBFX);
+        mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
+        mCheckboxText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
+                toggleVisibleElements();
+            }
+        });
 
+        mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
         ArrayAdapter<CharSequence> resolutionAdapter = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
@@ -195,14 +212,21 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     private void openFileExplorerToExport() {
+        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
+        String currentLocation = mOutputPath;
+        File currentLocFile = new File(currentLocation);
+        File currentParent = currentLocFile.getParentFile();
+        if(currentLocFile.isDirectory() || (currentParent != null && currentParent.exists())) {
+            initialFileExplorerLocation = currentLocation;
+        }
+
         Intent intent = new Intent(this, FileChooserActivity.class);
         intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
-        intent.putExtra(FileChooserActivity.PROJECT_DIRECTORY, VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath());
+        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation);
         startActivityForResult(intent, FILE_CHOOSER_CODE);
     }
 
     private String mOutputPath;
-    private File mOutputFile;
 
     // Listen for results.
     @Override
@@ -210,10 +234,18 @@ public class ExportActivity extends AppCompatActivity {
         // See which child activity is calling us back.
         if (requestCode == FILE_CHOOSER_CODE) {
             if (resultCode == RESULT_OK) {
-                mOutputPath = data.getStringExtra(FileChooserActivity.FILE_PATH);
-                mEditTextLocation.setText(mOutputPath);
+                setLocation(data.getStringExtra(FileChooserActivity.FILE_PATH));
             }
         }
+    }
+
+    private void setLocation(String path) {
+        mOutputPath = path;
+        String display = path;
+        if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
+            display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
+        }
+        mEditTextLocation.setText(display);
     }
         
     /**
@@ -270,19 +302,24 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     private void toggleVisibleElements() {
+        int visibilityPreExport = View.VISIBLE;
+        int visibilityWhileExport = View.GONE;
         synchronized (storyMakerLock) {
-            if (storyMaker == null) {
-                mLayoutConfiguration.setVisibility(View.VISIBLE);
-                mButtonStart.setVisibility(View.VISIBLE);
-                mButtonCancel.setVisibility(View.GONE);
-                mProgressBar.setVisibility(View.GONE);
-            } else {
-                mLayoutConfiguration.setVisibility(View.GONE);
-                mButtonStart.setVisibility(View.GONE);
-                mButtonCancel.setVisibility(View.VISIBLE);
-                mProgressBar.setVisibility(View.VISIBLE);
+            if (storyMaker != null) {
+                visibilityPreExport = View.GONE;
+                visibilityWhileExport = View.VISIBLE;
             }
         }
+
+        mLayoutConfiguration.setVisibility(visibilityPreExport);
+        mButtonStart.setVisibility(visibilityPreExport);
+        mButtonCancel.setVisibility(visibilityWhileExport);
+        mProgressBar.setVisibility(visibilityWhileExport);
+
+        mCheckboxKBFX.setVisibility(mCheckboxPictures.isChecked() ? View.VISIBLE : View.GONE);
+
+        mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
+                ? View.VISIBLE : View.GONE);
     }
 
     private void watchProgress() {
@@ -349,8 +386,7 @@ public class ExportActivity extends AppCompatActivity {
         setSpinnerValue(mSpinnerResolution, prefAll.getString(PREF_RESOLUTION, null));
         setSpinnerValue(mSpinnerFormat, prefAll.getString(PREF_FORMAT, null));
 
-        mOutputPath = prefMe.getString(PREF_FILE, null);
-        mEditTextLocation.setText(mOutputPath);
+        setLocation(prefMe.getString(PREF_FILE, null));
     }
 
     private void setSpinnerValue(Spinner spinner, String value) {

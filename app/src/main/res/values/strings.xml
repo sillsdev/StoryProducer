@@ -104,7 +104,7 @@
     <string name="export_options_header">Options</string>
 
     <string name="export_include_soundtrack">Include Background Music</string>
-    <string name="export_include_pictures">Include Pictures (uncheck for only audio)</string>
+    <string name="export_include_pictures">Include Pictures</string>
     <string name="export_include_text">Include Text</string>
     <string name="export_include_KBFX">Include Ken Burns Effects</string>
 

@@ -44,7 +44,7 @@ public class FileChooserActivity extends AppCompatActivity {
     private boolean allowOverwrite = false;
 
     public static final String ALLOW_OVERWRITE = "allowOverwrite";
-    public static final String PROJECT_DIRECTORY = "projectDirectory";
+    public static final String INITIAL_PATH = "initialPath";
     public static final String FILE_DIR_PATH = "fileDirPath";
     public static final String FILE_PATH = "filePath";
 
@@ -61,8 +61,13 @@ public class FileChooserActivity extends AppCompatActivity {
         allowOverwrite = getIntent().getBooleanExtra(ALLOW_OVERWRITE, false);
 
         //Navigate to folder passed through intent
-        File projectFolder = new File(getIntent().getStringExtra(PROJECT_DIRECTORY));
-        navigateToFolder(projectFolder);
+        File initialFile = new File(getIntent().getStringExtra(INITIAL_PATH));
+        if(initialFile.isDirectory()) {
+            navigateToFolder(initialFile);
+        }
+        else {
+            navigateToFolder(initialFile.getParentFile());
+        }
 
         //bind onClickListener to save button
         Button saveButton = (Button) findViewById(R.id.saveButton);

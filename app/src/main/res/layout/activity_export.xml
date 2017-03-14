@@ -68,34 +68,41 @@
                         android:text="@string/export_include_pictures" />
 
                     <CheckBox
-                        android:id="@+id/checkbox_export_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/export_include_text" />
-
-                    <CheckBox
                         android:id="@+id/checkbox_export_KBFX"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:checked="true"
                         android:text="@string/export_include_KBFX" />
 
+                    <CheckBox
+                        android:id="@+id/checkbox_export_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/export_include_text" />
+
                     <Space
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
                         android:orientation="vertical" />
 
-                    <TextView
+                    <LinearLayout
+                        android:id="@+id/layout_export_resolution"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/spinner_export_resolution"
-                        android:text="@string/export_resolution_label"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
 
-                    <Spinner
-                        android:id="@+id/spinner_export_resolution"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:labelFor="@+id/spinner_export_resolution"
+                            android:text="@string/export_resolution_label"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                        <Spinner
+                            android:id="@+id/spinner_export_resolution"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
 
                     <TextView
                         android:layout_width="match_parent"
@@ -130,11 +137,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_toStartOf="@+id/button_export_browse"
-                            android:ems="10"
                             android:focusable="false"
                             android:hint="@string/export_location_placeholder"
-                            android:inputType="none"
-                            android:maxLines="1" />
+                            android:inputType="none" />
 
                         <Button
                             android:id="@+id/button_export_browse"
@@ -145,12 +150,12 @@
 
                     </RelativeLayout>
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:orientation="vertical" />
-
                 </LinearLayout>
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="vertical" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
