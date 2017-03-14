@@ -131,7 +131,9 @@ public class StoryMaker implements Closeable {
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
-            soundtrackLooper.close();
+            if(soundtrackLooper != null) {
+                soundtrackLooper.close();
+            }
             narrationConcatenator.close();
             audioMixer.close();
             audioEncoder.close();
