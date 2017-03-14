@@ -48,6 +48,7 @@ public class ExportActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
 
+    private View mLayoutConfiguration;
     private CheckBox mCheckboxSoundtrack;
     private CheckBox mCheckboxPictures;
     private CheckBox mCheckboxText;
@@ -91,6 +92,8 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
+        mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
+
         mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
         mCheckboxPictures = (CheckBox) findViewById(R.id.checkbox_export_pictures);
         mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
@@ -122,11 +125,12 @@ public class ExportActivity extends AppCompatActivity {
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
         setOnClickListeners();
-        toggleVisibleElements();
 
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
+
+        toggleVisibleElements();
     }
 
     @Override
@@ -267,11 +271,15 @@ public class ExportActivity extends AppCompatActivity {
     private void toggleVisibleElements() {
         synchronized (storyMakerLock) {
             if (storyMaker == null) {
+                mLayoutConfiguration.setVisibility(View.VISIBLE);
                 mButtonStart.setVisibility(View.VISIBLE);
                 mButtonCancel.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.GONE);
             } else {
-                mButtonCancel.setVisibility(View.VISIBLE);
+                mLayoutConfiguration.setVisibility(View.GONE);
                 mButtonStart.setVisibility(View.GONE);
+                mButtonCancel.setVisibility(View.VISIBLE);
+                mProgressBar.setVisibility(View.VISIBLE);
             }
         }
     }
