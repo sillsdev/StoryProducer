@@ -41,8 +41,12 @@ public class FileChooserActivity extends AppCompatActivity {
     private File currentDir;
     private FileArrayAdapter adapter;
     private final Stack<File> history=new Stack<>();
-    public final static  String FILE_DIR_PATH = "fileDirPath";
-    public final static String FILE_PATH = "filePath";
+    private boolean allowOverwrite = false;
+
+    public static final String ALLOW_OVERWRITE = "allowOverwrite";
+    public static final String PROJECT_DIRECTORY = "projectDirectory";
+    public static final String FILE_DIR_PATH = "fileDirPath";
+    public static final String FILE_PATH = "filePath";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,8 +58,10 @@ public class FileChooserActivity extends AppCompatActivity {
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        allowOverwrite = getIntent().getBooleanExtra(ALLOW_OVERWRITE, false);
+
         //Navigate to folder passed through intent
-        File projectFolder = new File(getIntent().getStringExtra(ExportActivity.PROJECT_DIRECTORY));
+        File projectFolder = new File(getIntent().getStringExtra(PROJECT_DIRECTORY));
         navigateToFolder(projectFolder);
 
         //bind onClickListener to save button
@@ -190,7 +196,7 @@ public class FileChooserActivity extends AppCompatActivity {
             createErrorDialog(getString(R.string.file_explorer_emptyFileName));
         } else {
             File newFile = new File(currentDir, fileName);
-            if (newFile.exists()){
+            if (newFile.exists() && !allowOverwrite){
                 createErrorDialog(getString(R.string.file_explorer_fileAlreadyExists_1)
                         +newFile.getName()+getString(R.string.file_explorer_fileAlreadyExists_2));
             } else {

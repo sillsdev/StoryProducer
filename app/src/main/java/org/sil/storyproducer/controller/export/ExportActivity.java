@@ -41,7 +41,6 @@ import java.util.regex.Pattern;
 public class ExportActivity extends AppCompatActivity {
     private static final String TAG = "ExportActivity";
 
-    public static final String PROJECT_DIRECTORY = "projectDirectory";
     private static final int FILE_CHOOSER_CODE = 1;
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
@@ -184,7 +183,8 @@ public class ExportActivity extends AppCompatActivity {
 
     private void openFileExplorerToExport() {
         Intent intent = new Intent(this, FileChooserActivity.class);
-        intent.putExtra(PROJECT_DIRECTORY, VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath());
+        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
+        intent.putExtra(FileChooserActivity.PROJECT_DIRECTORY, VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath());
         startActivityForResult(intent, FILE_CHOOSER_CODE);
     }
 
