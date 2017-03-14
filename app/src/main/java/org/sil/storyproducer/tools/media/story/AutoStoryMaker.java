@@ -6,7 +6,6 @@ import android.media.MediaMuxer;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
@@ -19,6 +18,8 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * AutoStoryMaker is a layer of abstraction above {@link StoryMaker} that handles all of the
@@ -70,8 +71,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private boolean mIncludeBackgroundMusic = true;
     private boolean mIncludePictures = true;
-    //TODO: change default mIncludeText to false; only true now for early prototype
-    private boolean mIncludeText = true;
+    private boolean mIncludeText = false;
     private boolean mIncludeKBFX = true;
 
     private boolean mLogProgress = false;
@@ -85,16 +85,21 @@ public class AutoStoryMaker extends Thread implements Closeable {
         setResolution(mWidth, mHeight);
 
         File outputDir = VideoFiles.getDefaultLocation(mStory);
-        mOutputFile = new File(outputDir, mStory.replace(' ', '_') + "_"
-                + mWidth + "x" + mHeight + mOutputExt);
-
-        mTempFile = new File(VideoFiles.getTempLocation(mStory), "partial_video" + mOutputExt);
+        setOutputFile(new File(outputDir, mStory.replace(' ', '_') + "_"
+                + mWidth + "x" + mHeight + mOutputExt));
 
         mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
 
     public void setOutputFile(File output) {
         mOutputFile = output;
+
+        Pattern extPattern = Pattern.compile("\\.\\w+$");
+        Matcher extMatcher = extPattern.matcher(mOutputFile.getName());
+        extMatcher.find();
+        mOutputExt = extMatcher.group();
+
+        mTempFile = new File(VideoFiles.getTempLocation(mStory), "partial_video" + mOutputExt);
     }
 
     public void setResolution(int width, int height) {
