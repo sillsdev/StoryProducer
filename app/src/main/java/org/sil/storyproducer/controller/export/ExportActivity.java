@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.export;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -10,7 +11,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -211,15 +211,7 @@ public class ExportActivity extends AppCompatActivity {
         if (requestCode == FILE_CHOOSER_CODE) {
             if (resultCode == RESULT_OK) {
                 mOutputPath = data.getStringExtra(FileChooserActivity.FILE_PATH);
-                final AlertDialog.Builder errorDialog = new AlertDialog.Builder(this);
-
                 mEditTextLocation.setText(mOutputPath);
-
-                errorDialog.setTitle(R.string.info);
-                errorDialog.setMessage(mOutputPath);
-                errorDialog.setPositiveButton(R.string.OK, null);
-                AlertDialog ret = errorDialog.create();
-                ret.show();
             }
         }
     }
@@ -261,7 +253,7 @@ public class ExportActivity extends AppCompatActivity {
      */
     private void addDrawerItems() {
         String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
+        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
     }
 
@@ -383,7 +375,7 @@ public class ExportActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(!buttonLocked) {
-                    startExport();
+                    tryStartExport();
                 }
                 lockButtons();
             }
@@ -401,7 +393,34 @@ public class ExportActivity extends AppCompatActivity {
 
     }
 
-    private void startExport() {
+    private void tryStartExport() {
+        if(mOutputPath == null || mOutputPath.isEmpty()) {
+            Toast.makeText(this, R.string.export_location_missing_message, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String ext = mSpinnerFormat.getSelectedItem().toString();
+        final File output = new File(mOutputPath + ext);
+
+        if(output.exists()) {
+            android.app.AlertDialog dialog = new android.app.AlertDialog.Builder(this)
+                .setTitle(getString(R.string.export_location_exists_title))
+                .setMessage(getString(R.string.export_location_exists_message))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        startExport(output);
+                    }
+                }).create();
+
+            dialog.show();
+        }
+        else {
+            startExport(output);
+        }
+    }
+
+    private void startExport(File output) {
         synchronized (storyMakerLock) {
             storyMaker = new AutoStoryMaker(StoryState.getStoryName());
 
@@ -417,9 +436,7 @@ public class ExportActivity extends AppCompatActivity {
             m.find();
             storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
 
-            String ext = mSpinnerFormat.getSelectedItem().toString();
 
-            File output = new File(mOutputPath + ext);
             storyMaker.setOutputFile(output);
         }
 
