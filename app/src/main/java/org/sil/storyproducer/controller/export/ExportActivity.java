@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.export;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -42,6 +43,10 @@ public class ExportActivity extends AppCompatActivity {
     private static final String TAG = "ExportActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
+
+    private static final String PREFERENCES_BASE = "ProjExportConfig";
+    private static final String PREFERENCES_ALL = "AppExportConfig";
+
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -130,6 +135,8 @@ public class ExportActivity extends AppCompatActivity {
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
 
+        loadPreferences();
+
         toggleVisibleElements();
     }
 
@@ -142,6 +149,8 @@ public class ExportActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        savePreferences();
+
         mProgressUpdater.interrupt();
 
         super.onPause();
@@ -306,6 +315,62 @@ public class ExportActivity extends AppCompatActivity {
 
         mButtonStart.setEnabled(false);
         mButtonCancel.setEnabled(false);
+    }
+
+    private static final String PREF_INCLUDE_BACKGROUND_MUSIC   = "include_background_music";
+    private static final String PREF_INCLUDE_PICTURES           = "include_pictures";
+    private static final String PREF_INCLUDE_TEXT               = "include_text";
+    private static final String PREF_INCLUDE_KBFX               = "include_kbfx";
+    private static final String PREF_RESOLUTION                 = "resolution";
+    private static final String PREF_FORMAT                     = "format";
+    private static final String PREF_FILE                       = "file";
+
+    private void savePreferences() {
+        SharedPreferences.Editor prefEditorAll = getSharedPreferences(PREFERENCES_ALL, MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefEditorMe = getSharedPreferences(
+                PREFERENCES_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
+
+        prefEditorAll.putBoolean(PREF_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
+        prefEditorAll.putBoolean(PREF_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
+        prefEditorAll.putBoolean(PREF_INCLUDE_TEXT, mCheckboxText.isChecked());
+        prefEditorAll.putBoolean(PREF_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
+
+        prefEditorAll.putString(PREF_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
+        prefEditorAll.putString(PREF_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+
+        prefEditorMe.putString(PREF_FILE, mOutputPath);
+
+        prefEditorAll.apply();
+        prefEditorMe.apply();
+    }
+
+    private void loadPreferences() {
+        SharedPreferences prefAll = getSharedPreferences(PREFERENCES_ALL, MODE_PRIVATE);
+        SharedPreferences prefMe = getSharedPreferences(
+                PREFERENCES_BASE + StoryState.getStoryName(), MODE_PRIVATE);
+
+        mCheckboxSoundtrack.setChecked(prefAll.getBoolean(PREF_INCLUDE_BACKGROUND_MUSIC, true));
+        mCheckboxPictures.setChecked(prefAll.getBoolean(PREF_INCLUDE_PICTURES, true));
+        mCheckboxText.setChecked(prefAll.getBoolean(PREF_INCLUDE_TEXT, false));
+        mCheckboxKBFX.setChecked(prefAll.getBoolean(PREF_INCLUDE_KBFX, true));
+
+        setSpinnerValue(mSpinnerResolution, prefAll.getString(PREF_RESOLUTION, null));
+        setSpinnerValue(mSpinnerFormat, prefAll.getString(PREF_FORMAT, null));
+
+        mOutputPath = prefMe.getString(PREF_FILE, null);
+        mEditTextLocation.setText(mOutputPath);
+    }
+
+    private void setSpinnerValue(Spinner spinner, String value) {
+        if(value == null) {
+            return;
+        }
+
+        for(int i = 0; i < spinner.getCount(); i++) {
+            if(value.equals(spinner.getItemAtPosition(i).toString())) {
+                spinner.setSelection(i);
+            }
+        }
     }
 
     @Override
