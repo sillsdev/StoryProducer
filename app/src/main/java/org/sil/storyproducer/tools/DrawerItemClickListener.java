@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.sil.storyproducer.controller.MainActivity;
+import org.sil.storyproducer.controller.RegistrationActivity;
 
 public class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -24,11 +25,16 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         System.out.println("the position is " + position);
+        Intent intent;
         //TODO add more options
         switch(position) {
             case 0:
-                Intent intent = new Intent(context.getApplicationContext(), MainActivity.class);
+                intent = new Intent(context.getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(intent);
+                break;
+            case 1:
+                intent = new Intent(context, RegistrationActivity.class);
                 context.startActivity(intent);
                 break;
             default:
