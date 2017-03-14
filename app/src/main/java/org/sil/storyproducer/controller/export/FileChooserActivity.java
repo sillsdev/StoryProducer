@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 
 public class FileChooserActivity extends AppCompatActivity {
 
-    private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z\\-_ ]");
+    private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z0-9\\-_ ]");
 
     private File currentDir;
     private FileArrayAdapter adapter;
