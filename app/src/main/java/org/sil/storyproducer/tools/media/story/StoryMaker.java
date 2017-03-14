@@ -9,11 +9,9 @@ import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
-import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * StoryMaker handles all the brunt work of constructing a media pipeline for a given set of StoryPages.
@@ -21,7 +19,7 @@ import java.io.IOException;
 public class StoryMaker implements Closeable {
     private static final String TAG = "StoryMaker";
 
-    private float mSoundtrackVolumeModifier = 0.8f;
+    private float mSoundtrackVolumeModifier = 0.5f;
 
     private final File mOutputFile;
     private final int mOutputFormat;
@@ -29,7 +27,7 @@ public class StoryMaker implements Closeable {
     private final MediaFormat mVideoFormat;
     private final MediaFormat mAudioFormat;
     private final StoryPage[] mPages;
-    private final File mSoundTrack;
+    private final File mSoundtrack;
 
     private final long mAudioTransitionUs;
     private final long mSlideTransitionUs;
@@ -40,6 +38,7 @@ public class StoryMaker implements Closeable {
     private final long mDurationUs;
 
     private PipedMediaMuxer mMuxer;
+    private boolean mIsDone = false;
 
     /**
      * Create StoryMaker.
@@ -61,7 +60,7 @@ public class StoryMaker implements Closeable {
         mVideoFormat = videoFormat;
         mAudioFormat = audioFormat;
         mPages = pages;
-        mSoundTrack = soundtrack;
+        mSoundtrack = soundtrack;
 
         mAudioTransitionUs = audioTransitionUs;
         mSlideTransitionUs = slideTransitionUs;
@@ -80,37 +79,55 @@ public class StoryMaker implements Closeable {
         mSoundtrackVolumeModifier = modifier;
     }
 
+    public boolean isDone() {
+        return mIsDone;
+    }
+
     /**
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
+     * @return whether the video creation process finished.
      */
-    public void churn() {
-        PipedAudioLooper soundtrackLooper = new PipedAudioLooper(mSoundTrack.getPath(), mDurationUs, mSampleRate, mChannelCount);
+    public boolean churn() {
+        if(mIsDone) {
+            Log.e(TAG, "StoryMaker already finished!");
+        }
+
+        PipedAudioLooper soundtrackLooper = null;
+        if(mSoundtrack != null) {
+            soundtrackLooper = new PipedAudioLooper(mSoundtrack.getAbsolutePath(), mDurationUs, mSampleRate, mChannelCount);
+        }
         PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
         StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
         PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
-        mMuxer = new PipedMediaMuxer(mOutputFile.getPath(), mOutputFormat);
+        mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
+
+        boolean success = false;
 
         try {
             mMuxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
-            audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
+            if(soundtrackLooper != null) {
+                audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
+            }
             audioMixer.addSource(narrationConcatenator);
             for (StoryPage page : mPages) {
-                narrationConcatenator.addSource(page.getNarrationAudio().getPath());
+                File narration = page.getNarrationAudio();
+                String path = narration != null ? narration.getAbsolutePath() : null;
+                narrationConcatenator.addSource(path, page.getDuration());
             }
 
             mMuxer.addSource(videoEncoder);
 
             videoEncoder.addSource(videoDrawer);
 
-            mMuxer.crunch();
-            System.out.println("Video saved to " + mOutputFile);
+            success = mMuxer.crunch();
+            Log.i(TAG, "Video saved to " + mOutputFile);
         }
-        catch (IOException | SourceUnacceptableException | RuntimeException e) {
-            Log.d(TAG, "Error in story making", e);
+        catch (Exception e) {
+            Log.e(TAG, "Error in story making", e);
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
@@ -122,6 +139,10 @@ public class StoryMaker implements Closeable {
             videoEncoder.close();
             mMuxer.close();
         }
+
+        mIsDone = true;
+
+        return success;
     }
 
     public long getStoryDuration() {
@@ -139,14 +160,17 @@ public class StoryMaker implements Closeable {
         long durationUs = pages.length * audioTransitionUs;
 
         for(StoryPage page : pages) {
-            durationUs += page.getAudioDuration();
+            durationUs += page.getDuration();
         }
 
         return durationUs;
     }
 
     public double getProgress() {
-        if(mMuxer != null) {
+        if(mIsDone) {
+            return 1;
+        }
+        else if(mMuxer != null) {
             long audioProgress = mMuxer.getAudioProgress();
             long videoProgress = mMuxer.getVideoProgress();
 
@@ -176,7 +200,9 @@ public class StoryMaker implements Closeable {
     @Override
     public void close() {
         if(mMuxer != null) {
+            Log.i(TAG, "Closing media pipeline. Subsequent logged errors may not be cause for concern.");
             mMuxer.close();
         }
+        mIsDone = true;
     }
 }

@@ -85,7 +85,12 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
         validateSource(mSource);
 
-        fetchSourceBuffer();
+        try {
+            fetchSourceBuffer();
+        } catch (SourceClosedException e) {
+            //This case should not happen.
+            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+        }
 
         MediaFormat sourceOutputFormat = mSource.getOutputFormat();
         mSampleRate = sourceOutputFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
@@ -114,7 +119,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
     }
 
     @Override
-    protected boolean loadSamplesForTime(long time) {
+    protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         //Component is done if duration is exceeded.
         if(time >= mDurationUs) {
             mSource.close();
@@ -146,7 +151,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         return true;
     }
 
-    private void fetchSourceBuffer() {
+    private void fetchSourceBuffer() throws SourceClosedException {
         if(mSource.isDone()) {
             return;
         }

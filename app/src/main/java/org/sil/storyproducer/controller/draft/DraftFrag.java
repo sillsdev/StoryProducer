@@ -10,9 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaRecorder;
-import android.net.sip.SipAudioCall;
-import android.net.sip.SipSession;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -28,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Handler;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -43,7 +41,9 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -90,9 +90,9 @@ public final class DraftFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slidePosition);
-        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition).getPath();
-        tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
+        slideText = TextFiles.getSlideText(StoryState.getStoryName(), slidePosition);
+        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition).getPath();
+        tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
     }
 
     @Override
@@ -197,7 +197,7 @@ public final class DraftFrag extends Fragment {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -268,7 +268,7 @@ public final class DraftFrag extends Fragment {
             return;
         }
 
-        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slidePosition).getPath();
+        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slidePosition).getPath();
         ImageView imageView = (ImageView) aView;
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -573,7 +573,7 @@ public final class DraftFrag extends Fragment {
      */
     private void ConcatenateAudioFiles() {
         Movie finalFile = new Movie();
-        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "final.mp3");
+        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
         Movie movieArray[];
 
         try {

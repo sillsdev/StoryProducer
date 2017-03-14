@@ -9,4 +9,8 @@ public class SourceUnacceptableException extends Exception {
     public SourceUnacceptableException(String msg) {
         super(msg);
     }
+
+    public SourceUnacceptableException(String msg, Exception e) {
+        super(msg, e);
+    }
 }

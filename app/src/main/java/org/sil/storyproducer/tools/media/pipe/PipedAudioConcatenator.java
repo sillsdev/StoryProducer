@@ -27,12 +27,12 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private enum ConcatState {
         DATA,
         DONE,
-        //INVALID_SOURCE,
+        BEFORE_SOURCE,
         TRANSITION,
         ;
     }
 
-    private ConcatState mCurrentState = ConcatState.TRANSITION;
+    private ConcatState mCurrentState = ConcatState.TRANSITION; //start in transition
 
     private final Queue<String> mSourceAudioPaths = new LinkedList<>();
     private final Queue<Long> mSourceExpectedDurations = new LinkedList<>();
@@ -46,7 +46,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private long mSourceStart = 0; //timestamp (us) of current source start (i.e. after prior transition)
 
     private final short[] mSourceBufferA = new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]; //short = 2 bytes
-    private boolean mHasBuffer = false;
+    private boolean mHasMoreBuffers = false;
 
     private int mPos;
     private int mSize;
@@ -150,7 +150,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     }
 
     @Override
-    protected boolean loadSamplesForTime(long time) {
+    protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         boolean isDone = false;
 
         if(mCurrentState == ConcatState.TRANSITION) {
@@ -170,6 +170,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                     mSource = null;
                 }
 
+                //Reset these stats so fetchSourceBuffer loop will trigger.
+                mPos = 0;
+                mSize = 0;
+                mHasMoreBuffers = true;
+
                 //Assume DATA state.
                 mCurrentState = ConcatState.DATA;
 
@@ -187,24 +192,26 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                     }
                 }
 
-                if (mCurrentState == ConcatState.DATA) {
-                    fetchSourceBuffer();
+                if(!isDone && mSourceStart > time) {
+                    mCurrentState = ConcatState.BEFORE_SOURCE;
                 }
             }
+        }
+
+        if(mCurrentState == ConcatState.BEFORE_SOURCE && time >= mSourceStart) {
+            mCurrentState = ConcatState.DATA;
         }
 
         if(mCurrentState == ConcatState.DATA) {
             mPos += mChannelCount;
 
-            while(mHasBuffer && mPos >= mSize) {
-                releaseSourceBuffer();
+            while (mHasMoreBuffers && mPos >= mSize) {
                 fetchSourceBuffer();
             }
-
             boolean isWithinExpectedTime = mSourceExpectedDuration == 0
                     || time <= mSourceStart + mSourceExpectedDuration;
 
-            if(!mHasBuffer || !isWithinExpectedTime) {
+            if(!mHasMoreBuffers || !isWithinExpectedTime) {
                 if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
 
                 mCurrentState = ConcatState.TRANSITION;
@@ -226,7 +233,9 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         return !isDone;
     }
 
-    private void fetchSourceBuffer() {
+    private void fetchSourceBuffer() throws SourceClosedException {
+        mHasMoreBuffers = false;
+
         if(mSource.isDone()) {
             return;
         }
@@ -244,11 +253,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         //Release buffer since data was copied.
         mSource.releaseBuffer(buffer);
 
-        mHasBuffer = true;
-    }
-
-    private void releaseSourceBuffer() {
-        mHasBuffer = false;
+        mHasMoreBuffers = true;
     }
 
     private PipedMediaByteBufferSource getNextSource() {
@@ -267,6 +272,10 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
 
             String nextSourcePath = mSourceAudioPaths.remove();
+            if(nextSourcePath == null) {
+                return null;
+            }
+
             nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);
             try {
                 nextSource.setup();
