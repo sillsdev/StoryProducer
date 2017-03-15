@@ -3,36 +3,20 @@ package org.sil.storyproducer.controller.export;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.PhaseGestureListener;
-import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -40,7 +24,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ExportActivity extends AppCompatActivity {
+public class ExportActivity extends PhaseBaseActivity {
     private static final String TAG = "ExportActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
@@ -59,12 +43,6 @@ public class ExportActivity extends AppCompatActivity {
     private static final String PREF_KEY_RESOLUTION = "resolution";
     private static final String PREF_KEY_FORMAT = "format";
     private static final String PREF_KEY_FILE = "file";
-
-    private GestureDetectorCompat mDetector;
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
 
     private View mLayoutConfiguration;
     private CheckBox mCheckboxSoundtrack;
@@ -92,18 +70,6 @@ public class ExportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
 
-        //get the current phase
-        Phase phase = StoryState.getCurrentPhase();
-
-        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mActionBarToolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getColor(), null)));
-
-        setupDrawer();
-
-        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
-
         setupViews();
     }
 
@@ -124,39 +90,6 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     /**
-     * sets the Menu spinner_item object
-     * @param menu
-     * @return
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_phases, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getCurrentPhaseIndex());
-        return true;
-    }
-
-    /**
-     * get the touch event so that it can be passed on to GestureDetector
-     * @param event the MotionEvent
-     * @return the super version of the function
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mDetector.onTouchEvent(event);
-        return super.dispatchTouchEvent(event);
-    }
-
-    /**
      * Listen for callback from FileChooserActivity.
      */
     @Override
@@ -167,18 +100,6 @@ public class ExportActivity extends AppCompatActivity {
                 setLocation(data.getStringExtra(FileChooserActivity.FILE_PATH));
             }
         }
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();                                  //needed to make the drawer synced
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
     }
 
     private void setupViews() {
@@ -236,45 +157,6 @@ public class ExportActivity extends AppCompatActivity {
         loadPreferences();
 
         toggleVisibleElements();
-    }
-
-    /**
-     * initializes the items that the drawer needs
-     */
-    private void setupDrawer() {
-        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerList = (ListView)findViewById(R.id.navList);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-        addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.dummy_content) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    /**
-     * adds the items to the drawer from the array resources
-     */
-    private void addDrawerItems() {
-        String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
-        mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuArray);
-        mDrawerList.setAdapter(mAdapter);
     }
 
     private void toggleVisibleElements() {
@@ -394,11 +276,6 @@ public class ExportActivity extends AppCompatActivity {
                 spinner.setSelection(i);
             }
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mDrawerToggle.onOptionsItemSelected(item);
     }
 
     private void setOnClickListeners() {
