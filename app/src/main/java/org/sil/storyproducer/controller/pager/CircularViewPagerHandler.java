@@ -21,24 +21,10 @@ public class CircularViewPagerHandler implements ViewPager.OnPageChangeListener 
 
     @Override
     public void onPageScrollStateChanged(final int state) {
-        handleScrollState(state);
-        mScrollState = state;
-    }
-
-    private void handleScrollState(final int state) {
-        if (state == ViewPager.SCROLL_STATE_IDLE) {
-            setNextItemIfNeeded();
-        }
-    }
-
-    private void setNextItemIfNeeded() {
-        if (!isScrollStateSettling()) {
+        if (state == ViewPager.SCROLL_STATE_IDLE && mScrollState != ViewPager.SCROLL_STATE_SETTLING) {
             handleSetNextItem();
         }
-    }
-
-    private boolean isScrollStateSettling() {
-        return mScrollState == ViewPager.SCROLL_STATE_SETTLING;
+        mScrollState = state;
     }
 
     private void handleSetNextItem() {

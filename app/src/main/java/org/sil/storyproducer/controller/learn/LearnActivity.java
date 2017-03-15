@@ -59,7 +59,7 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private final static float BACKGROUND_VOLUME = 0.0f;
+    private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -212,7 +212,6 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        resumeNarrationBackgroundAudio();
     }
 
 
@@ -269,7 +268,7 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * helper function for pauseing the video
+     * helper function for pausing the video
      */
     private void pauseVideo() {
         narrationPlayer.pauseAudio();
@@ -285,16 +284,9 @@ public class LearnActivity extends AppCompatActivity {
             playVideo();
             isFirstTime = false;
         } else {
-            resumeNarrationBackgroundAudio();
+            narrationPlayer.resumeAudio();
+            backgroundPlayer.resumeAudio();
         }
-    }
-
-    /**
-     * helper function for resuming the video
-     */
-    private void resumeNarrationBackgroundAudio() {
-        narrationPlayer.resumeAudio();
-        backgroundPlayer.resumeAudio();
     }
 
     /**
