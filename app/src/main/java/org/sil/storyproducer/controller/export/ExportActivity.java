@@ -102,6 +102,9 @@ public class ExportActivity extends PhaseBaseActivity {
         }
     }
 
+    /**
+     * Get handles to all necessary views and add some listeners.
+     */
     private void setupViews() {
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
 
@@ -159,125 +162,9 @@ public class ExportActivity extends PhaseBaseActivity {
         toggleVisibleElements();
     }
 
-    private void toggleVisibleElements() {
-        int visibilityPreExport = View.VISIBLE;
-        int visibilityWhileExport = View.GONE;
-        synchronized (storyMakerLock) {
-            if (storyMaker != null) {
-                visibilityPreExport = View.GONE;
-                visibilityWhileExport = View.VISIBLE;
-            }
-        }
-
-        mLayoutConfiguration.setVisibility(visibilityPreExport);
-        mButtonStart.setVisibility(visibilityPreExport);
-        mButtonCancel.setVisibility(visibilityWhileExport);
-        mProgressBar.setVisibility(visibilityWhileExport);
-
-        mCheckboxKBFX.setVisibility(mCheckboxPictures.isChecked() ? View.VISIBLE : View.GONE);
-
-        mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
-                ? View.VISIBLE : View.GONE);
-    }
-
-    private void openFileExplorerToExport() {
-        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
-        String currentLocation = mOutputPath;
-        File currentLocFile = new File(currentLocation);
-        File currentParent = currentLocFile.getParentFile();
-        if(currentLocFile.isDirectory() || (currentParent != null && currentParent.exists())) {
-            initialFileExplorerLocation = currentLocation;
-        }
-
-        Intent intent = new Intent(this, FileChooserActivity.class);
-        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
-        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation);
-        startActivityForResult(intent, FILE_CHOOSER_CODE);
-    }
-
-    private void setLocation(String path) {
-        if(path == null) {
-            path = "";
-        }
-        mOutputPath = path;
-        String display = path;
-        if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
-            display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
-        }
-        mEditTextLocation.setText(display);
-    }
-        
-    private void watchProgress() {
-        mProgressUpdater = new Thread(PROGRESS_UPDATER);
-        mProgressUpdater.start();
-        toggleVisibleElements();
-    }
-
-    private void stopExport() {
-        synchronized (storyMakerLock) {
-            if (storyMaker != null) {
-                storyMaker.close();
-                storyMaker = null;
-            }
-        }
-        toggleVisibleElements();
-    }
-
-    private void lockButtons() {
-        buttonLocked = true;
-        new Thread(BUTTON_UNLOCKER).start();
-
-        mButtonStart.setEnabled(false);
-        mButtonCancel.setEnabled(false);
-    }
-
-    private void savePreferences() {
-        SharedPreferences.Editor prefEditorAll = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE).edit();
-        SharedPreferences.Editor prefEditorMe = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
-
-        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
-        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
-        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
-        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
-
-        prefEditorAll.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
-        prefEditorAll.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
-
-        prefEditorMe.putString(PREF_KEY_FILE, mOutputPath);
-
-        prefEditorAll.apply();
-        prefEditorMe.apply();
-    }
-
-    private void loadPreferences() {
-        SharedPreferences prefAll = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE);
-        SharedPreferences prefMe = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
-
-        mCheckboxSoundtrack.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
-        mCheckboxPictures.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
-        mCheckboxText.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
-        mCheckboxKBFX.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
-
-        setSpinnerValue(mSpinnerResolution, prefAll.getString(PREF_KEY_RESOLUTION, null));
-        setSpinnerValue(mSpinnerFormat, prefAll.getString(PREF_KEY_FORMAT, null));
-
-        setLocation(prefMe.getString(PREF_KEY_FILE, null));
-    }
-
-    private void setSpinnerValue(Spinner spinner, String value) {
-        if(value == null) {
-            return;
-        }
-
-        for(int i = 0; i < spinner.getCount(); i++) {
-            if(value.equals(spinner.getItemAtPosition(i).toString())) {
-                spinner.setSelection(i);
-            }
-        }
-    }
-
+    /**
+     * Setup listeners for start/cancel.
+     */
     private void setOnClickListeners() {
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -299,6 +186,126 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
 
+    }
+
+    /**
+     * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
+     */
+    private void toggleVisibleElements() {
+        int visibilityPreExport = View.VISIBLE;
+        int visibilityWhileExport = View.GONE;
+        synchronized (storyMakerLock) {
+            if (storyMaker != null) {
+                visibilityPreExport = View.GONE;
+                visibilityWhileExport = View.VISIBLE;
+            }
+        }
+
+        mLayoutConfiguration.setVisibility(visibilityPreExport);
+        mButtonStart.setVisibility(visibilityPreExport);
+        mButtonCancel.setVisibility(visibilityWhileExport);
+        mProgressBar.setVisibility(visibilityWhileExport);
+
+        mCheckboxKBFX.setVisibility(mCheckboxPictures.isChecked() ? View.VISIBLE : View.GONE);
+
+        mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
+                ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Launch the file explorer.
+     */
+    private void openFileExplorerToExport() {
+        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
+        String currentLocation = mOutputPath;
+        File currentLocFile = new File(currentLocation);
+        File currentParent = currentLocFile.getParentFile();
+        if(currentLocFile.isDirectory() || (currentParent != null && currentParent.exists())) {
+            initialFileExplorerLocation = currentLocation;
+        }
+
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
+        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation);
+        startActivityForResult(intent, FILE_CHOOSER_CODE);
+    }
+
+    /**
+     * Set the path for export location, including UI.
+     * @param path
+     */
+    private void setLocation(String path) {
+        if(path == null) {
+            path = "";
+        }
+        mOutputPath = path;
+        String display = path;
+        if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
+            display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
+        }
+        mEditTextLocation.setText(display);
+    }
+
+    /**
+     * Save current configuration options to shared preferences.
+     */
+    private void savePreferences() {
+        //Save preferences universal for app.
+        SharedPreferences.Editor prefEditorApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE).edit();
+
+        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
+        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
+        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
+        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
+
+        prefEditorApp.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
+        prefEditorApp.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+
+        prefEditorApp.apply();
+
+        //Save preferences specific to this project.
+        SharedPreferences.Editor prefEditorProject = getSharedPreferences(
+                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
+        prefEditorProject.putString(PREF_KEY_FILE, mOutputPath);
+        prefEditorProject.apply();
+    }
+
+    /**
+     * Load configuration options from shared preferences.
+     */
+    private void loadPreferences() {
+        //Get preferences universal for app.
+        SharedPreferences prefsApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE);
+
+        mCheckboxSoundtrack.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
+        mCheckboxPictures.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
+        mCheckboxText.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
+        mCheckboxKBFX.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
+
+        setSpinnerValue(mSpinnerResolution, prefsApp.getString(PREF_KEY_RESOLUTION, null));
+        setSpinnerValue(mSpinnerFormat, prefsApp.getString(PREF_KEY_FORMAT, null));
+
+        //Get preferences specific to this project.
+        SharedPreferences prefsProject = getSharedPreferences(
+                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
+        setLocation(prefsProject.getString(PREF_KEY_FILE, null));
+    }
+
+    /**
+     * Attempt to set the value of the spinner to the given string value based on options available.
+     * @param spinner
+     * @param value
+     */
+    private void setSpinnerValue(Spinner spinner, String value) {
+        if(value == null) {
+            return;
+        }
+
+        for(int i = 0; i < spinner.getCount(); i++) {
+            if(value.equals(spinner.getItemAtPosition(i).toString())) {
+                spinner.setSelection(i);
+            }
+        }
     }
 
     private void tryStartExport() {
@@ -352,6 +359,22 @@ public class ExportActivity extends PhaseBaseActivity {
         watchProgress();
     }
 
+    private void stopExport() {
+        synchronized (storyMakerLock) {
+            if (storyMaker != null) {
+                storyMaker.close();
+                storyMaker = null;
+            }
+        }
+        toggleVisibleElements();
+    }
+
+    private void watchProgress() {
+        mProgressUpdater = new Thread(PROGRESS_UPDATER);
+        mProgressUpdater.start();
+        toggleVisibleElements();
+    }
+
     private void updateProgress(final int progress) {
         runOnUiThread(new Runnable() {
             @Override
@@ -360,26 +383,6 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
     }
-
-    private final Runnable BUTTON_UNLOCKER = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(BUTTON_LOCK_DURATION_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } finally {
-                buttonLocked = false;
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mButtonStart.setEnabled(true);
-                        mButtonCancel.setEnabled(true);
-                    }
-                });
-            }
-        }
-    };
 
     private final Runnable PROGRESS_UPDATER = new Runnable() {
         @Override
@@ -413,6 +416,41 @@ public class ExportActivity extends PhaseBaseActivity {
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
                 }
             });
+        }
+    };
+
+    /**
+     * Lock the start/cancel buttons temporarily to give the StoryMaker some time to get started/stopped.
+     */
+    private void lockButtons() {
+        buttonLocked = true;
+        //Unlock button in a short bit.
+        new Thread(BUTTON_UNLOCKER).start();
+
+        mButtonStart.setEnabled(false);
+        mButtonCancel.setEnabled(false);
+    }
+
+    /**
+     * Unlock the start/cancel buttons after a brief time period.
+     */
+    private final Runnable BUTTON_UNLOCKER = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(BUTTON_LOCK_DURATION_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                buttonLocked = false;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mButtonStart.setEnabled(true);
+                        mButtonCancel.setEnabled(true);
+                    }
+                });
+            }
         }
     };
 }
