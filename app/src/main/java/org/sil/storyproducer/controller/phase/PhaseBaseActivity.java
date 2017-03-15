@@ -56,6 +56,8 @@ public class PhaseBaseActivity extends AppCompatActivity {
     public void setContentView(int id) {
         LayoutInflater inflater = getLayoutInflater();
         inflater.inflate(id, mDrawerLayout);
+        //Bring menu to front again.
+        mDrawerList.bringToFront();
     }
 
     /**
