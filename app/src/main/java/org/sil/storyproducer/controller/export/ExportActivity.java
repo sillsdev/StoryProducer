@@ -240,6 +240,9 @@ public class ExportActivity extends AppCompatActivity {
     }
 
     private void setLocation(String path) {
+        if(path == null) {
+            path = "";
+        }
         mOutputPath = path;
         String display = path;
         if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
