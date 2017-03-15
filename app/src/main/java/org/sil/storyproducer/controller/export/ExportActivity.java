@@ -44,11 +44,21 @@ public class ExportActivity extends AppCompatActivity {
     private static final String TAG = "ExportActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
-
-    private static final String PREFERENCES_BASE = "ProjExportConfig";
-    private static final String PREFERENCES_ALL = "AppExportConfig";
-
     private static final int LOCATION_MAX_CHAR_DISPLAY = 25;
+
+    private static final long BUTTON_LOCK_DURATION_MS = 1000;
+    private static final int PROGRESS_MAX = 1000;
+
+    private static final String PREF_FILE_BASE = "ProjExportConfig";
+    private static final String PREF_FILE_ALL = "AppExportConfig";
+
+    private static final String PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music";
+    private static final String PREF_KEY_INCLUDE_PICTURES = "include_pictures";
+    private static final String PREF_KEY_INCLUDE_TEXT = "include_text";
+    private static final String PREF_KEY_INCLUDE_KBFX = "include_kbfx";
+    private static final String PREF_KEY_RESOLUTION = "resolution";
+    private static final String PREF_KEY_FORMAT = "format";
+    private static final String PREF_KEY_FILE = "file";
 
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
@@ -68,15 +78,12 @@ public class ExportActivity extends AppCompatActivity {
     private Button mButtonBrowse;
     private Button mButtonStart;
     private Button mButtonCancel;
-
-    private static final long BUTTON_LOCK_DURATION_MS = 1000;
-    private static volatile boolean buttonLocked = false;
-
     private ProgressBar mProgressBar;
-    private int mCurrentProgress = 0;
-    private static final int PROGRESS_MAX = 1000;
-    private Thread mProgressUpdater;
 
+    private String mOutputPath;
+
+    private static volatile boolean buttonLocked = false;
+    private Thread mProgressUpdater;
     private static final Object storyMakerLock = new Object();
     private static AutoStoryMaker storyMaker;
 
@@ -98,6 +105,80 @@ public class ExportActivity extends AppCompatActivity {
         mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
 
         setupViews();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        watchProgress();
+    }
+
+    @Override
+    public void onPause() {
+        savePreferences();
+
+        mProgressUpdater.interrupt();
+
+        super.onPause();
+    }
+
+    /**
+     * sets the Menu spinner_item object
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_phases, menu);
+
+        MenuItem item = menu.findItem(R.id.spinner);
+        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
+        spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+        spinner.setAdapter(adapter);
+        spinner.setSelection(StoryState.getCurrentPhaseIndex());
+        return true;
+    }
+
+    /**
+     * get the touch event so that it can be passed on to GestureDetector
+     * @param event the MotionEvent
+     * @return the super version of the function
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        mDetector.onTouchEvent(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+    /**
+     * Listen for callback from FileChooserActivity.
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // See which child activity is calling us back.
+        if (requestCode == FILE_CHOOSER_CODE) {
+            if (resultCode == RESULT_OK) {
+                setLocation(data.getStringExtra(FileChooserActivity.FILE_PATH));
+            }
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();                                  //needed to make the drawer synced
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
     }
 
     private void setupViews() {
@@ -157,100 +238,6 @@ public class ExportActivity extends AppCompatActivity {
         toggleVisibleElements();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        watchProgress();
-    }
-
-    @Override
-    public void onPause() {
-        savePreferences();
-
-        mProgressUpdater.interrupt();
-
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    /**
-     * sets the Menu spinner_item object
-     * @param menu
-     * @return
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_phases, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getCurrentPhaseIndex());
-        return true;
-    }
-
-    /**
-     * get the touch event so that it can be passed on to GestureDetector
-     * @param event the MotionEvent
-     * @return the super version of the function
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mDetector.onTouchEvent(event);
-        return super.dispatchTouchEvent(event);
-    }
-
-    private void openFileExplorerToExport() {
-        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
-        String currentLocation = mOutputPath;
-        File currentLocFile = new File(currentLocation);
-        File currentParent = currentLocFile.getParentFile();
-        if(currentLocFile.isDirectory() || (currentParent != null && currentParent.exists())) {
-            initialFileExplorerLocation = currentLocation;
-        }
-
-        Intent intent = new Intent(this, FileChooserActivity.class);
-        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
-        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation);
-        startActivityForResult(intent, FILE_CHOOSER_CODE);
-    }
-
-    private String mOutputPath;
-
-    // Listen for results.
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // See which child activity is calling us back.
-        if (requestCode == FILE_CHOOSER_CODE) {
-            if (resultCode == RESULT_OK) {
-                setLocation(data.getStringExtra(FileChooserActivity.FILE_PATH));
-            }
-        }
-    }
-
-    private void setLocation(String path) {
-        if(path == null) {
-            path = "";
-        }
-        mOutputPath = path;
-        String display = path;
-        if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
-            display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
-        }
-        mEditTextLocation.setText(display);
-    }
-        
     /**
      * initializes the items that the drawer needs
      */
@@ -268,14 +255,12 @@ public class ExportActivity extends AppCompatActivity {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //getSupportActionBar().setTitle("Navigation!");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                //getSupportActionBar().setTitle("blah");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -290,18 +275,6 @@ public class ExportActivity extends AppCompatActivity {
         String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();                                  //needed to make the drawer synced
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
     }
 
     private void toggleVisibleElements() {
@@ -325,8 +298,35 @@ public class ExportActivity extends AppCompatActivity {
                 ? View.VISIBLE : View.GONE);
     }
 
+    private void openFileExplorerToExport() {
+        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
+        String currentLocation = mOutputPath;
+        File currentLocFile = new File(currentLocation);
+        File currentParent = currentLocFile.getParentFile();
+        if(currentLocFile.isDirectory() || (currentParent != null && currentParent.exists())) {
+            initialFileExplorerLocation = currentLocation;
+        }
+
+        Intent intent = new Intent(this, FileChooserActivity.class);
+        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true);
+        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation);
+        startActivityForResult(intent, FILE_CHOOSER_CODE);
+    }
+
+    private void setLocation(String path) {
+        if(path == null) {
+            path = "";
+        }
+        mOutputPath = path;
+        String display = path;
+        if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
+            display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
+        }
+        mEditTextLocation.setText(display);
+    }
+        
     private void watchProgress() {
-        mProgressUpdater = new Thread(new ProgressUpdater());
+        mProgressUpdater = new Thread(PROGRESS_UPDATER);
         mProgressUpdater.start();
         toggleVisibleElements();
     }
@@ -349,47 +349,39 @@ public class ExportActivity extends AppCompatActivity {
         mButtonCancel.setEnabled(false);
     }
 
-    private static final String PREF_INCLUDE_BACKGROUND_MUSIC   = "include_background_music";
-    private static final String PREF_INCLUDE_PICTURES           = "include_pictures";
-    private static final String PREF_INCLUDE_TEXT               = "include_text";
-    private static final String PREF_INCLUDE_KBFX               = "include_kbfx";
-    private static final String PREF_RESOLUTION                 = "resolution";
-    private static final String PREF_FORMAT                     = "format";
-    private static final String PREF_FILE                       = "file";
-
     private void savePreferences() {
-        SharedPreferences.Editor prefEditorAll = getSharedPreferences(PREFERENCES_ALL, MODE_PRIVATE).edit();
+        SharedPreferences.Editor prefEditorAll = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE).edit();
         SharedPreferences.Editor prefEditorMe = getSharedPreferences(
-                PREFERENCES_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
+                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
 
-        prefEditorAll.putBoolean(PREF_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
-        prefEditorAll.putBoolean(PREF_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
-        prefEditorAll.putBoolean(PREF_INCLUDE_TEXT, mCheckboxText.isChecked());
-        prefEditorAll.putBoolean(PREF_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
+        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
+        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
+        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
+        prefEditorAll.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
 
-        prefEditorAll.putString(PREF_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
-        prefEditorAll.putString(PREF_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+        prefEditorAll.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
+        prefEditorAll.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
 
-        prefEditorMe.putString(PREF_FILE, mOutputPath);
+        prefEditorMe.putString(PREF_KEY_FILE, mOutputPath);
 
         prefEditorAll.apply();
         prefEditorMe.apply();
     }
 
     private void loadPreferences() {
-        SharedPreferences prefAll = getSharedPreferences(PREFERENCES_ALL, MODE_PRIVATE);
+        SharedPreferences prefAll = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE);
         SharedPreferences prefMe = getSharedPreferences(
-                PREFERENCES_BASE + StoryState.getStoryName(), MODE_PRIVATE);
+                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
 
-        mCheckboxSoundtrack.setChecked(prefAll.getBoolean(PREF_INCLUDE_BACKGROUND_MUSIC, true));
-        mCheckboxPictures.setChecked(prefAll.getBoolean(PREF_INCLUDE_PICTURES, true));
-        mCheckboxText.setChecked(prefAll.getBoolean(PREF_INCLUDE_TEXT, false));
-        mCheckboxKBFX.setChecked(prefAll.getBoolean(PREF_INCLUDE_KBFX, true));
+        mCheckboxSoundtrack.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
+        mCheckboxPictures.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
+        mCheckboxText.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
+        mCheckboxKBFX.setChecked(prefAll.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
 
-        setSpinnerValue(mSpinnerResolution, prefAll.getString(PREF_RESOLUTION, null));
-        setSpinnerValue(mSpinnerFormat, prefAll.getString(PREF_FORMAT, null));
+        setSpinnerValue(mSpinnerResolution, prefAll.getString(PREF_KEY_RESOLUTION, null));
+        setSpinnerValue(mSpinnerFormat, prefAll.getString(PREF_KEY_FORMAT, null));
 
-        setLocation(prefMe.getString(PREF_FILE, null));
+        setLocation(prefMe.getString(PREF_KEY_FILE, null));
     }
 
     private void setSpinnerValue(Spinner spinner, String value) {
@@ -512,7 +504,7 @@ public class ExportActivity extends AppCompatActivity {
         }
     };
 
-    private final class ProgressUpdater implements Runnable {
+    private final Runnable PROGRESS_UPDATER = new Runnable() {
         @Override
         public void run() {
             boolean isDone = false;
