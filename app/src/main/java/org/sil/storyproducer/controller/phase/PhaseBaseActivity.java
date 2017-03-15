@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.phase;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -45,13 +44,15 @@ public class PhaseBaseActivity extends AppCompatActivity {
         Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(), phase.getColor(), null)));
-
-        setupDrawer();
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
+                phase.getColor(), null)));
 
         mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
+
+        setupDrawer();
     }
 
+    //Override setContentView to coerce into child view.
     @Override
     public void setContentView(int id) {
         LayoutInflater inflater = getLayoutInflater();
@@ -105,11 +106,15 @@ public class PhaseBaseActivity extends AppCompatActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mDrawerToggle.onOptionsItemSelected(item);
+    }
+
     /**
      * initializes the items that the drawer needs
      */
     private void setupDrawer() {
-        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         mDrawerList = (ListView)findViewById(R.id.navList);
@@ -133,7 +138,7 @@ public class PhaseBaseActivity extends AppCompatActivity {
             }
         };
         mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerLayout.addDrawerListener(mDrawerToggle);
     }
 
     /**
@@ -144,11 +149,5 @@ public class PhaseBaseActivity extends AppCompatActivity {
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mDrawerToggle.onOptionsItemSelected(item);
-    }
-
 
 }
