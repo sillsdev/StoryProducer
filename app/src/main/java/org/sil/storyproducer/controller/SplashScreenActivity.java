@@ -21,17 +21,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                boolean skipRegistration = checkRegistrationSkip();
-                if (!skipRegistration) {
-                    // Checks registration file to see if email has been sent and launches registration if it hasn't
-                    SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-                    Map<String, ?> preferences = prefs.getAll();
-                    Object registrationComplete = preferences.get(RegistrationActivity.EMAIL_SENT);
-                    if (registrationComplete == null || !(Boolean)registrationComplete) {
-                        Intent intent = new Intent(SplashScreenActivity.this, RegistrationActivity.class);
-                        startActivity(intent);
-                        return;
-                    }
+                // Checks registration file to see if email has been sent and launches registration if it hasn't
+                SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+                Map<String, ?> preferences = prefs.getAll();
+                Object registrationComplete = preferences.get(RegistrationActivity.EMAIL_SENT);
+                if (registrationComplete == null || !(Boolean)registrationComplete) {
+                    Intent intent = new Intent(SplashScreenActivity.this, RegistrationActivity.class);
+                    intent.putExtra(RegistrationActivity.FIRST_ACTIVITY_KEY, true);
+                    startActivity(intent);
+                    return;
                 }
 
                 Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
@@ -39,19 +37,5 @@ public class SplashScreenActivity extends AppCompatActivity {
                 finish();
             }
         }, TIME_OUT);
-    }
-
-    /**
-     * Checks the bundle variables to see if the user has bypassed registration
-     * @return true if they want to bypass registration, false if not
-     */
-    private boolean checkRegistrationSkip() {
-        // Check to see if registration was skipped by the user
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean(RegistrationActivity.SKIP_KEY)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
