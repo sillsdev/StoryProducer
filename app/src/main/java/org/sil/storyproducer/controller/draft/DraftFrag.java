@@ -105,7 +105,7 @@ public final class DraftFrag extends Fragment {
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber/*StoryState.getCurrentStorySlide()*/);
+        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));

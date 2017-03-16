@@ -31,6 +31,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment;
         Bundle passedArgs = new Bundle();
+        //TODO change the case switch to use constants like: StoryState.DraftPhase instead of string literal "Draft"
         switch (StoryState.getCurrentPhase().getTitle()) {
             case "Draft":
                 fragment = new DraftFrag();
