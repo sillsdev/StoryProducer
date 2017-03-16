@@ -45,7 +45,8 @@ public class ConsultantCheckFrag extends Fragment {
     public static final String CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isChecked";
-    private String STORY_NAME = "storyname";
+    private static final String STORY_NAME = "storyname";
+    private static final String PASSWORD = "magic password";
     private String storyName;
     private int slidePosition;
     private View rootView;
@@ -58,6 +59,7 @@ public class ConsultantCheckFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
+        draftPlayer = new AudioPlayer();
     }
 
     @Override
@@ -76,6 +78,31 @@ public class ConsultantCheckFrag extends Fragment {
         setLogsButton((ImageButton)rootView.findViewById(R.id.concheck_logs_button));
 
         return rootView;
+    }
+
+    /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on pause.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (draftPlayer != null) {
+            draftPlayer.stopAudio();
+        }
+    }
+
+    /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on stop.
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (draftPlayer != null) {
+            draftPlayer.stopAudio();
+            draftPlayer.releaseAudio();
+        }
     }
 
     /**
@@ -170,7 +197,6 @@ public class ConsultantCheckFrag extends Fragment {
                     draftPlayer.stopAudio();
                 }
                 if (draftFile.exists()) {
-                    draftPlayer = new AudioPlayer();
                     draftPlayer.playWithPath(draftFile.getPath());
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
                 } else {
@@ -197,6 +223,11 @@ public class ConsultantCheckFrag extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean isApproved = prefs.getBoolean(storyName + IS_CONSULTANT_APPROVED, false);
+                if (isApproved) {
+                    Toast.makeText(getContext(), "Story already approved", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 if(isChecked) {
                     button.setBackgroundResource(R.drawable.ic_checkmark_red);
                     isChecked = false;
@@ -287,7 +318,7 @@ public class ConsultantCheckFrag extends Fragment {
                     @Override
                     public void onClick(View view) {
                         String passwordText = password.getText().toString();
-                        if (passwordText.contentEquals("magic password")) {
+                        if (passwordText.contentEquals(PASSWORD)) {
                             saveConsultantApproval();
                             dialog.dismiss();
                             launchDramatizationPhase();
@@ -320,8 +351,7 @@ public class ConsultantCheckFrag extends Fragment {
         int dramatizationPhaseIndex = 4;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
-        Intent intent = new Intent(getContext(), phases[dramatizationPhaseIndex].getTheClass());
-        intent.putExtra(STORY_NAME, storyName);
+        Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
         intent.putExtra(SLIDE_NUM, 0);
         getActivity().startActivity(intent);
     }
