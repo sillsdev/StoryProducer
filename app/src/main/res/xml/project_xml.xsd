@@ -1,0 +1,187 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="MSPhotoStory" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="MSPhotoStoryProject">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="VisualUnit" maxOccurs="unbounded" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="Transition" maxOccurs="unbounded" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:float" name="duration" use="required"/>
+                                            <xs:attribute type="xs:integer" name="withPrevImage" use="required"/>
+                                            <xs:attribute type="xs:string" name="type" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Narration" maxOccurs="1" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                            <xs:attribute type="xs:string" name="path" use="required"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Image">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="Edit" maxOccurs="1" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="TextOverlay" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="Font">
+                                                                    <xs:complexType>
+                                                                        <xs:simpleContent>
+                                                                            <xs:extension base="xs:string">
+                                                                                <xs:attribute type="xs:string" name="faceName"/>
+                                                                                <xs:attribute type="xs:integer" name="width"/>
+                                                                                <xs:attribute type="xs:integer" name="height"/>
+                                                                                <xs:attribute type="xs:integer" name="weight"/>
+                                                                                <xs:attribute type="xs:integer" name="strikeout"/>
+                                                                                <xs:attribute type="xs:integer" name="italic"/>
+                                                                                <xs:attribute type="xs:integer" name="underline"/>
+                                                                                <xs:attribute type="xs:integer" name="charset"/>
+                                                                                <xs:attribute type="xs:integer" name="clipprecision"/>
+                                                                                <xs:attribute type="xs:integer" name="escapement"/>
+                                                                                <xs:attribute type="xs:integer" name="orientation"/>
+                                                                                <xs:attribute type="xs:integer" name="outprecision"/>
+                                                                                <xs:attribute type="xs:integer" name="pitchandfamily"/>
+                                                                                <xs:attribute type="xs:integer" name="quality"/>
+                                                                                <xs:attribute type="xs:integer" name="color"/>
+                                                                            </xs:extension>
+                                                                        </xs:simpleContent>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:attribute type="xs:string" name="text"/>
+                                                            <xs:attribute type="xs:integer" name="verticalAlignment"/>
+                                                            <xs:attribute type="xs:integer" name="horizontalAlignment"/>
+                                                            <xs:attribute type="xs:integer" name="fontReferenceWidth"/>
+                                                            <xs:attribute type="xs:integer" name="fontReferenceHeight"/>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                    <xs:element name="RotateAndCrop" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="Rectangle">
+                                                                    <xs:complexType>
+                                                                        <xs:simpleContent>
+                                                                            <xs:extension base="xs:string">
+                                                                                <xs:attribute type="xs:integer" name="upperLeftX" use="required"/>
+                                                                                <xs:attribute type="xs:integer" name="upperLeftY" use="required"/>
+                                                                                <xs:attribute type="xs:integer" name="width" use="required"/>
+                                                                                <xs:attribute type="xs:integer" name="height" use="required"/>
+                                                                            </xs:extension>
+                                                                        </xs:simpleContent>
+                                                                    </xs:complexType>
+                                                                </xs:element>
+                                                            </xs:sequence>
+                                                            <xs:attribute type="xs:integer" name="rotateType" use="required"/>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="Motion" maxOccurs="1" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="Rect" maxOccurs="2" minOccurs="2">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:integer" name="upperLeftX" use="required"/>
+                                                                    <xs:attribute type="xs:integer" name="upperLeftY" use="required"/>
+                                                                    <xs:attribute type="xs:integer" name="width" use="required"/>
+                                                                    <xs:attribute type="xs:integer" name="height" use="required"/>
+                                                                    <xs:attribute type="xs:integer" name="weight" use="required"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:integer" name="manual" use="required"/>
+                                                <xs:attribute type="xs:integer" name="workingImageWidth" use="required"/>
+                                                <xs:attribute type="xs:integer" name="workingImageHeight" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="Motion2" maxOccurs="1" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="RelativeRect" maxOccurs="4" minOccurs="4">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:float" name="left" use="required"/>
+                                                                    <xs:attribute type="xs:float" name="top" use="required"/>
+                                                                    <xs:attribute type="xs:float" name="width" use="required"/>
+                                                                    <xs:attribute type="xs:float" name="height" use="required"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:integer" name="manual" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="Transition2">
+                                            <xs:complexType>
+                                                <xs:simpleContent>
+                                                    <xs:extension base="xs:string">
+                                                        <xs:attribute type="xs:integer" name="type" use="required"/>
+                                                        <xs:attribute type="xs:integer" name="useManualDuration" use="required"/>
+                                                        <xs:attribute type="xs:integer" name="duration" use="required"/>
+                                                    </xs:extension>
+                                                </xs:simpleContent>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="MusicTrack" maxOccurs="1" minOccurs="0">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="SoundTrack" maxOccurs="1" minOccurs="1">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:string" name="comments" use="optional"/>
+                                                                    <xs:attribute type="xs:string" name="path" use="required"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:integer" name="type" use="required"/>
+                                                <xs:attribute type="xs:integer" name="volume" use="required"/>
+                                                <xs:attribute type="xs:integer" name="colorIndex" use="required"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                    <xs:attribute type="xs:string" name="path" use="required"/>
+                                    <xs:attribute type="xs:string" name="comments" use="optional"/>
+                                    <xs:attribute type="xs:string" name="lastModified" use="optional"/>
+                                    <xs:attribute type="xs:integer" name="width" use="required"/>
+                                    <xs:attribute type="xs:integer" name="height" use="required"/>
+                                    <xs:attribute type="xs:integer" name="noNarration" use="required"/>
+                                    <xs:attribute type="xs:integer" name="useManualDuration" use="required"/>
+                                    <xs:attribute type="xs:string" name="narrationTips" use="required"/>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute type="xs:float" name="duration" use="required"/>
+                        <xs:attribute type="xs:integer" name="type" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute type="xs:float" name="schemaVersion"/>
+            <xs:attribute type="xs:string" name="appVersion"/>
+            <xs:attribute type="xs:integer" name="linkOnly"/>
+            <xs:attribute type="xs:integer" name="defaultImageDuration"/>
+            <xs:attribute type="xs:integer" name="visualUnitCount"/>
+            <xs:attribute type="xs:string" name="codecVersion"/>
+            <xs:attribute type="xs:integer" name="sessionSeed"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
