@@ -32,7 +32,10 @@ import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 
@@ -67,7 +70,7 @@ public class ConsultantCheckFrag extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_con_check, container, false);
         storyName = StoryState.getStoryName();
-        slideText = FileSystem.getSlideText(storyName, slidePosition);
+        slideText = TextFiles.getSlideText(storyName, slidePosition);
 
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_concheck_image_view), slidePosition);
@@ -131,7 +134,7 @@ public class ConsultantCheckFrag extends Fragment {
      * @param slideNum The slide number to grab the picture from the files.
      */
     private void setPic(ImageView slideImage, int slideNum) {
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -188,7 +191,7 @@ public class ConsultantCheckFrag extends Fragment {
      */
     private void setDraftPlaybackButton(ImageButton button) {
 
-        final File draftFile = FileSystem.getTranslationAudio(StoryState.getStoryName(), slidePosition);
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -267,7 +270,7 @@ public class ConsultantCheckFrag extends Fragment {
     private boolean checkAllMarked() {
         boolean marked;
         SharedPreferences prefs = getActivity().getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        int numStorySlides = FileSystem.getTotalSlideNum(storyName);
+        int numStorySlides = FileSystem.getContentSlideAmount(storyName);
         for (int i = 0; i < numStorySlides; i ++) {
             marked = prefs.getBoolean(storyName + i + IS_CHECKED, false);
             if (!marked) {
