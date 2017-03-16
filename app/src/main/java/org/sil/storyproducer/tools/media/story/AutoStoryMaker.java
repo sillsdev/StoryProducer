@@ -6,6 +6,7 @@ import android.media.MediaMuxer;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;

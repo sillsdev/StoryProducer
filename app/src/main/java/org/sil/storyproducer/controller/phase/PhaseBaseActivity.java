@@ -121,7 +121,7 @@ public class PhaseBaseActivity extends AppCompatActivity {
         mDrawerList.bringToFront();
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.nav_open, R.string.dummy_content) {
 
