@@ -67,7 +67,9 @@ import java.util.Stack;
 public class RegistrationActivity extends AppCompatActivity {
 
     public static final String SKIP_KEY = "skip";
+    public static final String EMAIL_SENT = "registration_email_sent";
 
+    private static final String ID_PREFIX = "org.sil.storyproducer:id/input_";
     private final int [] sectionIds = {R.id.language_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.archive_section};
     private final int [] headerIds = {R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header};
     private View[] sectionViews = new View[sectionIds.length];
@@ -201,6 +203,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
         List<View> inputFieldsList = new ArrayList<>();
         Stack<ViewGroup> viewStack = new Stack<>();
+        String viewName, storedValue;
+        int storedSpinnerIndex;
+        EditText textFieldView;
+        Spinner spinnerView;
 
         //error check
         if (rootScrollView == null) {
@@ -212,9 +218,24 @@ public class RegistrationActivity extends AppCompatActivity {
         while (viewStack.size() > 0) {
             ViewGroup currentView = viewStack.pop();
             if (currentView instanceof TextInputLayout) {
-                inputFieldsList.add(((TextInputLayout) currentView).getEditText());
+                textFieldView = ((TextInputLayout) currentView).getEditText();
+                if (textFieldView != null) {
+                    storedValue = getStoredValueForView(textFieldView);
+                    if (!storedValue.isEmpty()) {
+                        textFieldView.setText(storedValue);
+                    }
+                    inputFieldsList.add(textFieldView);
+                }
             } else if (currentView instanceof Spinner) {
-                inputFieldsList.add(currentView);
+                spinnerView = (Spinner) currentView;
+                storedValue = getStoredValueForView(spinnerView);
+                if(!storedValue.isEmpty()) {
+                    storedSpinnerIndex = getSpinnerIndexFromString(storedValue);
+                    if (storedSpinnerIndex >= 0) {
+                        spinnerView.setSelection(storedSpinnerIndex);
+                    }
+                }
+                inputFieldsList.add(spinnerView);
             } else {
                 //push children onto stack from right to left
                 //pushing on in reverse order so that the traversal is in-order traversal
@@ -228,6 +249,48 @@ public class RegistrationActivity extends AppCompatActivity {
         }
 
         return inputFieldsList;
+    }
+
+    /**
+     * Takes a field and searches the preference file for a value corresponding to it
+     * @param view the view to be queried
+     * @return the value if found or an empty string if no value found
+     */
+    private String getStoredValueForView(View view) {
+        SharedPreferences preferences = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
+        String viewName = getResources().getResourceName(view.getId());
+        viewName = viewName.replace(ID_PREFIX, "");
+        return preferences.getString(viewName, "");
+    }
+
+    /**
+     * Finds the index of the spinner array given the string value
+     * @param value the value to look for
+     * @return index of the spinner array
+     */
+    private int getSpinnerIndexFromString(String value) {
+        String[] search = getResources().getStringArray(R.array.orthography_list);
+
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
+                return i;
+            }
+        }
+
+        search = getResources().getStringArray(R.array.communication_list);
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
+                return i;
+            }
+        }
+
+        search = getResources().getStringArray(R.array.location_type_list);
+        for (int i = 0; i < search.length; i++) {
+            if (value.equals(search[i])) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -347,6 +410,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        storeRegistrationInfo();
                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                         intent.putExtra(SKIP_KEY, true);
                         startActivity(intent);
@@ -399,7 +463,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         storeRegistrationInfo();
                         Toast saveToast = Toast.makeText(RegistrationActivity.this, R.string.registration_saved_successfully, Toast.LENGTH_LONG);
                         saveToast.show();
-                        sendEmail(RegistrationActivity.this);
+                        sendEmail();
                     }
                 }).create();
 
@@ -421,15 +485,17 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
-    private static void sendEmail(Activity activity) {
+    private void sendEmail() {
 
-        SharedPreferences prefs = activity.getSharedPreferences(activity.getString(R.string.registration_filename), MODE_PRIVATE);
-        Map<String, String> preferences = (Map<String, String>) prefs.getAll();
+        SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
+        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
+        Map<String, ?> preferences = prefs.getAll();
 
         String message = formatEmailFromPreferences(prefs);
 
-        String[] TO =  { preferences.get("database_email_1"), preferences.get("database_email_2"),
-                preferences.get("database_email_3") };
+        String[] TO =  { (String)preferences.get("database_email_1"), (String)preferences.get("database_email_2"),
+                (String)preferences.get("database_email_3"), (String)preferences.get("translator_email"),
+                (String)preferences.get("consultant_email"), (String)preferences.get("trainer_email") };
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
@@ -440,11 +506,13 @@ public class RegistrationActivity extends AppCompatActivity {
         emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 
         try {
-            activity.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-            activity.finish();
+            this.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            this.finish();
+            preferenceEditor.putBoolean(EMAIL_SENT, true);
+            preferenceEditor.apply();
             Log.i("Finished sending email", "");
         } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(activity,
+            Toast.makeText(this,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show();
         }
     }

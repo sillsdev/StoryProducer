@@ -70,17 +70,17 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     }
 
     @Override
-    public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
+    public void fillBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) throws SourceClosedException {
         mSource.fillBuffer(buffer, info);
     }
 
     @Override
-    public ByteBuffer getBuffer(MediaCodec.BufferInfo info) {
+    public ByteBuffer getBuffer(MediaCodec.BufferInfo info) throws SourceClosedException {
         return mSource.getBuffer(info);
     }
 
     @Override
-    public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException {
+    public void releaseBuffer(ByteBuffer buffer) throws InvalidBufferException, SourceClosedException {
         mSource.releaseBuffer(buffer);
     }
 

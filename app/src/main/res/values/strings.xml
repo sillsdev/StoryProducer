@@ -9,6 +9,7 @@
     <string name="title_fragment_translate">Translate</string>
     <string name="title_fragment_community">Community Check</string>
     <string name="title_fragment_consultant">Consultant Check</string>
+    <string name="update_registration">Update Registration</string>
 
     <!--String names for Info Page-->
     <string name="consultant_phone">"Consultant Phone:  "</string>
@@ -49,7 +50,7 @@
     <string name="yes">Yes</string>
     <string name="question_mark">What is this?</string>
     <string name="registration_skip_title">Skip Registration?</string>
-    <string name="registration_skip_message">Are you sure you want to skip registration? Your information will not be saved.</string>
+    <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
     <string name="registration_submit_title">Submit?</string>
     <string name="registration_submit_complete_message">Are you ready to submit?</string>
     <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
@@ -92,7 +93,7 @@
         <item>Community Check</item>
         <item>Consultant Check</item>
         <item>Recording Studio</item>
-        <item>Generate Video</item>
+        <item>Generate Sample Video</item>
     </string-array>
     <array name="nav_icons">
         <item>@drawable/ic_list</item>
@@ -103,6 +104,10 @@
         <item>@drawable/ic_search</item>
     </array>
 
+    <!-- Export -->
+    <string name="export_start">Start Export</string>
+    <string name="export_cancel">Cancel</string>
+    <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
 
     <!-- ListView -->
     <string name="playVideo">Play</string>
@@ -128,5 +133,31 @@
     <string name="dramatization_title">Dramatization</string>
     <string name="export_title">Export</string>
     <string name="title_activity_test_drawer">testDrawer</string>
+    <string name="Parent_Dir_Label">Parent Directory</string>
+    <string name="byte_unit_singular">" byte"</string>
+    <string name="byte_unit_plural">" bytes"</string>
+    <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
+    <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
+    <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
+    <string name="OK">OK</string>
+    <string name="file_explorer_foldeNamePrompt">Please specify a name for your new folder:</string>
+    <string name="file_explorer_newFolder">New Folder</string>
+    <string name="error">Error</string>
+    <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
+    <string name="file_explorer_fileAlreadyExists_1">File \"</string>
+    <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
+    <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
+    <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
+    <string name="info">Info</string>
+
+    <plurals name="file_explorer_numItems">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
+    <plurals name="file_explorer_numBytes">
+        <item quantity="one">%d byte</item>
+        <item quantity="other">%d bytes</item>
+    </plurals>
 
 </resources>

@@ -10,7 +10,7 @@ import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.FileSystem;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -18,7 +18,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
-        numOfSlides = FileSystem.getTotalSlideNum(StoryState.getStoryName());
+        numOfSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
     }
 
     /**

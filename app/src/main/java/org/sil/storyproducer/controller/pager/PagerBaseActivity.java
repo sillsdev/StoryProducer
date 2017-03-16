@@ -35,8 +35,6 @@ public class PagerBaseActivity extends AppCompatActivity {
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private GestureDetectorCompat mDetector;
-    private static boolean getInitialPosition = false;
-    private static int previousPosition = 0;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -53,24 +51,6 @@ public class PagerBaseActivity extends AppCompatActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setCurrentItem(StoryState.getCurrentStorySlide());           //sets view pager to the current slide from the story state
-
-//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            public void onPageScrollStateChanged(int state) {}
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                if(!getInitialPosition){
-//                    getInitialPosition = true;
-//                    previousPosition = position;
-//                }
-//            }
-//            public void onPageSelected(int position) {
-//                if(position != previousPosition){
-//                    TransFrag transFrag = ((PagerAdapter)mViewPager.getAdapter()).getDraftFrag(previousPosition);
-//                    transFrag.stopNarrationRecording();
-//                    previousPosition = position;
-//                }
-//            }
-//        });
-//        return view;);
 
         //get the current phase
         Phase phase = StoryState.getCurrentPhase();
@@ -104,7 +84,7 @@ public class PagerBaseActivity extends AppCompatActivity {
         mDrawerList.bringToFront();
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.nav_open, R.string.dummy_content) {
 
