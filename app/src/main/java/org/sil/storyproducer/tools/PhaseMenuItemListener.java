@@ -46,5 +46,6 @@ public class PhaseMenuItemListener implements OnItemSelectedListener {
         Intent intent = new Intent(activity.getApplicationContext(), phase.getTheClass());
         intent.putExtra(STORY_NAME, StoryState.getStoryName());
         activity.startActivity(intent);
+        activity.finish();
     }
 }

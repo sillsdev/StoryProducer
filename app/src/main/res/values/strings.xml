@@ -49,6 +49,8 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="question_mark">What is this?</string>
+    <string name="registration_exit_title">Exit Registration?</string>
+    <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
     <string name="registration_skip_title">Skip Registration?</string>
     <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
     <string name="registration_submit_title">Submit?</string>

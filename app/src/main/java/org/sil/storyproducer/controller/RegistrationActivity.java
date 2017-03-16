@@ -187,7 +187,17 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
-        showExitAlertDialog();
+        AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle(getString(R.string.registration_exit_title))
+                .setMessage(getString(R.string.registration_exit_message))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        RegistrationActivity.super.onBackPressed();
+                    }
+                }).create();
+
+        dialog.show();
     }
 
     /**
