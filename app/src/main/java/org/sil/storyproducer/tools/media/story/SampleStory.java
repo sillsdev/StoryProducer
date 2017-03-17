@@ -6,8 +6,12 @@ import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
 
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
+import org.sil.storyproducer.tools.media.graphics.BitmapHelper;
+import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 
 import java.io.File;
 
@@ -30,6 +34,8 @@ public class SampleStory extends Thread {
     private static final long SLIDE_TRANSITION_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
 
+    private static final String OUTPUT_EXT = "3gp";
+
     private final File OUTPUT_DIR;
     private final File OUTPUT_FILE;
 
@@ -46,7 +52,7 @@ public class SampleStory extends Thread {
 
     // using Kush Gauge for video bit rate
     private static final int PIXEL_RATE = WIDTH * HEIGHT * VIDEO_FRAME_RATE;
-    private static final int MOTION_FACTOR = 2;                   // 1, 2, or 4
+    private static final int MOTION_FACTOR = 4;                   // 1, 2, or 4
     private static final float KUSH_GAUGE_CONSTANT = 0.07f;
     // bits per second for video
     private static final int VIDEO_BIT_RATE = (int) (PIXEL_RATE * MOTION_FACTOR * KUSH_GAUGE_CONSTANT);
@@ -58,14 +64,14 @@ public class SampleStory extends Thread {
     private static final int AUDIO_BITRATE = 64000;
 
     public SampleStory() {
-        OUTPUT_DIR = FileSystem.getProjectDirectory("Fiery Furnace");
-        OUTPUT_FILE = new File(OUTPUT_DIR, "0SampleStory." + WIDTH + "x" + HEIGHT + ".mp4");
+        OUTPUT_DIR = VideoFiles.getDefaultLocation("Fiery Furnace");
+        OUTPUT_FILE = new File(OUTPUT_DIR, WIDTH + "x" + HEIGHT + "." + OUTPUT_EXT);
 
-        IMG_1 = FileSystem.getImageFile(STORY, 1);
-        IMG_2 = FileSystem.getImageFile(STORY, 4);
-        SOUNDTRACK = FileSystem.getSoundtrackAudio(STORY, 0);
-        NARRATION_1 = FileSystem.getNarrationAudio(STORY, 0);
-        NARRATION_2 = FileSystem.getNarrationAudio(STORY, 1);
+        IMG_1 = ImageFiles.getFile(STORY, 1);
+        IMG_2 = ImageFiles.getFile(STORY, 4);
+        SOUNDTRACK = AudioFiles.getSoundtrack(STORY, 0);
+        NARRATION_1 = AudioFiles.getLWC(STORY, 0);
+        NARRATION_2 = AudioFiles.getLWC(STORY, 1);
     }
 
     @Override
@@ -87,8 +93,8 @@ public class SampleStory extends Thread {
         audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE);
         audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT);
 
-        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), StoryBitmapManager.getDimensions(IMG_1.getPath()));
-        Rect r2 = StoryBitmapManager.getDimensions(IMG_2.getPath());
+        KenBurnsEffect kbfx1 = new KenBurnsEffect(new Rect(300, 150, 800, 500), BitmapHelper.getDimensions(IMG_1.getPath()));
+        Rect r2 = BitmapHelper.getDimensions(IMG_2.getPath());
         if (MediaHelper.VERBOSE) {
             Log.d(TAG, "image 2 rectangle: (" + r2.left + ", " + r2.top + ", "
                     + r2.right + ", " + r2.bottom + ")");
@@ -96,7 +102,7 @@ public class SampleStory extends Thread {
         KenBurnsEffect kbfx2 = new KenBurnsEffect(new Rect(0, 200, r2.right - 500, r2.bottom - 200), new Rect(500, 200, r2.right, r2.bottom - 200));
 
         StoryPage[] pages = {
-                new StoryPage(IMG_1, NARRATION_1, kbfx1),
+                new StoryPage(IMG_1, NARRATION_1, kbfx1, "Some Title text that is really long to see how it fits and reacts and blah, blah, blah on the screen..."),
                 new StoryPage(IMG_2, NARRATION_2, kbfx2),
         };
 

@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -26,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.os.Handler;
 
 import com.coremedia.iso.boxes.Container;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -41,7 +41,9 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +64,7 @@ public final class DraftFrag extends Fragment {
     private AudioPlayer voiceAudioPlayer;
     private String narrationFilePath;
     private String recordFilePath;
-    private String tempRecordFilePath = null;
+    //private String tempRecordFilePath = null;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
     private AnimationToolbar myToolbar = null;
@@ -87,10 +89,11 @@ public final class DraftFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
+
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        slideText = FileSystem.getSlideText(StoryState.getStoryName(), slideNumber);
-        recordFilePath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).getPath();
-        tempRecordFilePath = recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "t.mp3";
+        slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
+        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+        //tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
     }
 
     @Override
@@ -195,7 +198,7 @@ public final class DraftFrag extends Fragment {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -265,8 +268,7 @@ public final class DraftFrag extends Fragment {
         if (aView == null || !(aView instanceof ImageButton)) {
             return;
         }
-
-        narrationFilePath = FileSystem.getNarrationAudio(StoryState.getStoryName(), slideNumber).getPath();
+        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
         ImageView imageView = (ImageView) aView;
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -372,7 +374,7 @@ public final class DraftFrag extends Fragment {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
-        setVoiceRecorder(tempRecordFilePath);
+        setVoiceRecorder(recordFilePath);
         try {
             isRecording = true;
             voiceRecorder.prepare();
@@ -424,7 +426,7 @@ public final class DraftFrag extends Fragment {
         }
         voiceRecorder.release();
         voiceRecorder = null;
-        ConcatenateAudioFiles();
+        //ConcatenateAudioFiles();
     }
 
     /**
@@ -565,75 +567,75 @@ public final class DraftFrag extends Fragment {
         }
     }
 
-    /**
-     * This function adds two different audio files together to make one audio file into an
-     * .mp3 file. More comments will be added to this function later.
-     */
-    private void ConcatenateAudioFiles() {
-        Movie finalFile = new Movie();
-        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".mp3")) + "final.mp3");
-        Movie movieArray[];
-
-        try {
-            if (!new File(recordFilePath).exists()) {
-                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
-            } else {
-                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
-                        MovieCreator.build(tempRecordFilePath)};
-            }
-
-            List<Track> audioTrack = new ArrayList<>();
-
-            for (int i = 0; i < movieArray.length; i++)
-                for (Track t : movieArray[i].getTracks()) {
-                    if (t.getHandler().equals("soun")) {
-                        audioTrack.add(t);
-                    }
-                }
-
-            if (!audioTrack.isEmpty()) {
-                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
-            }
-
-            Container out = new DefaultMp4Builder().build(finalFile);
-
-            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
-            out.writeContainer(fc);
-            fc.close();
-
-            tryDeleteFile(recordFilePath);
-            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
-            if (renamed) {
-                //delete old file
-                tryDeleteFile(writtenToAudioFile);
-            }
-
-        } catch (IOException e) {
-            Log.e(getActivity().toString(), e.getMessage());
-        }
-    }
-
-    /**
-     * Tries to create a new file.
-     *
-     * @param filePath The file path where a file should be created at.
-     * @return The file instantiation of the file that was created at the filePath.
-     */
-    private File tryCreateFile(String filePath) {
-        File toReturnFile = new File(filePath);
-        if (!toReturnFile.exists()) {
-            try {
-                toReturnFile.setExecutable(true);
-                toReturnFile.setReadable(true);
-                toReturnFile.setWritable(true);
-                toReturnFile.createNewFile();
-            } catch (IOException e) {
-                Log.w(getActivity().toString(), "Could not create file for recording!");
-            }
-        }
-
-        return toReturnFile;
-    }
+//    /**
+//     * This function adds two different audio files together to make one audio file into an
+//     * .mp3 file. More comments will be added to this function later.
+//     */
+//    private void ConcatenateAudioFiles() {
+//        Movie finalFile = new Movie();
+//        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
+//        Movie movieArray[];
+//
+//        try {
+//            if (!new File(recordFilePath).exists()) {
+//                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
+//            } else {
+//                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
+//                        MovieCreator.build(tempRecordFilePath)};
+//            }
+//
+//            List<Track> audioTrack = new ArrayList<>();
+//
+//            for (int i = 0; i < movieArray.length; i++)
+//                for (Track t : movieArray[i].getTracks()) {
+//                    if (t.getHandler().equals("soun")) {
+//                        audioTrack.add(t);
+//                    }
+//                }
+//
+//            if (!audioTrack.isEmpty()) {
+//                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
+//            }
+//
+//            Container out = new DefaultMp4Builder().build(finalFile);
+//
+//            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
+//            out.writeContainer(fc);
+//            fc.close();
+//
+//            tryDeleteFile(recordFilePath);
+//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
+//            if (renamed) {
+//                //delete old file
+//                tryDeleteFile(writtenToAudioFile);
+//            }
+//
+//        } catch (IOException e) {
+//            Log.e(getActivity().toString(), e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Tries to create a new file.
+//     *
+//     * @param filePath The file path where a file should be created at.
+//     * @return The file instantiation of the file that was created at the filePath.
+//     */
+//    private File tryCreateFile(String filePath) {
+//        File toReturnFile = new File(filePath);
+//        if (!toReturnFile.exists()) {
+//            try {
+//                toReturnFile.setExecutable(true);
+//                toReturnFile.setReadable(true);
+//                toReturnFile.setWritable(true);
+//                toReturnFile.createNewFile();
+//            } catch (IOException e) {
+//                Log.w(getActivity().toString(), "Could not create file for recording!");
+//            }
+//        }
+//
+//        return toReturnFile;
+//    }
 
     /**
      * Deleting a file at the filePath.

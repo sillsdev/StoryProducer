@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -21,7 +20,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,11 +31,10 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class DramatizationFrag extends Fragment {
@@ -68,10 +65,10 @@ public class DramatizationFrag extends Fragment {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        if (FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).exists()) {
-            draftPlayerPath = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber).getPath();
+        if (AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).exists()) {
+            draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         }
-        dramatizationRecordingPath = FileSystem.getDramatizedAudio(StoryState.getStoryName(), slideNumber).getPath();
+        dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
     }
 
 
@@ -144,7 +141,7 @@ public class DramatizationFrag extends Fragment {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -262,7 +259,7 @@ public class DramatizationFrag extends Fragment {
         if (button instanceof ImageButton && button2 instanceof ImageButton) {
             recordButton = (ImageButton) button;
             playRecordingButton = (ImageButton) button2;
-            if (FileSystem.getDramatizedAudio(StoryState.getStoryName(), slideNumber).exists()) {
+            if ( AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).exists()) {
                 playRecordingButton.setVisibility(View.VISIBLE);
             }
 

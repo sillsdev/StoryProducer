@@ -25,7 +25,8 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.ImageFiles;
 
 import java.io.File;
 import java.io.IOException;
@@ -115,7 +116,8 @@ public class CommunityCheckFrag extends Fragment {
      */
     public void updateCommentList() {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
-        comments = FileSystem.getCommentTitles(StoryState.getStoryName(), slideNumber);
+        listView.setScrollbarFadingEnabled(false);
+        comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
         ListAdapter adapter = new CommentListAdapter(getContext(), comments, slideNumber, this);
         listView.setAdapter(adapter);
     }
@@ -138,7 +140,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param slideNum The slide number to grab the picture from the files.
      */
     private void setPic(ImageView slideImage, int slideNum) {
-        Bitmap slidePicture = FileSystem.getImage(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
             Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
@@ -166,8 +168,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-
-        final File draftFile = FileSystem.getTranslationAudio(StoryState.getStoryName(), slideNumber);
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,7 +190,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param commentTitle the title of the comment to play
      */
     public void playComment(String commentTitle) {
-        final File commentFile = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber, commentTitle);
+        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
@@ -209,13 +210,16 @@ public class CommunityCheckFrag extends Fragment {
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
                 int nextCommentIndex = comments.length + 1;
-                String recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber,
-                        "Comment " + nextCommentIndex).getPath();
-                while (FileSystem.doesFileExist(recordFilePath)) {
+                File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
+                        "Comment " + nextCommentIndex);
+                while (recordFile.exists()) {
                     nextCommentIndex++;
-                    recordFilePath = FileSystem.getAudioComment(StoryState.getStoryName(), slideNumber,
-                            "Comment " + nextCommentIndex).getPath();
+                    recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
+                            "Comment " + nextCommentIndex);
                 }
+
+                String recordFilePath = recordFile.getPath();
+
                 //stop all playback streams.
                 if(draftPlayer != null && draftPlayer.isAudioPlaying()){
                     draftPlayer.stopAudio();

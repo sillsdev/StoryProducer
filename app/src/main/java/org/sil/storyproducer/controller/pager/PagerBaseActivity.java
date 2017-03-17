@@ -35,8 +35,6 @@ public class PagerBaseActivity extends AppCompatActivity {
     private PagerAdapter mPagerAdapter;
     private ViewPager mViewPager;
     private GestureDetectorCompat mDetector;
-    private static boolean getInitialPosition = false;
-    private static int previousPosition = 0;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -86,7 +84,7 @@ public class PagerBaseActivity extends AppCompatActivity {
         mDrawerList.bringToFront();
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(getApplicationContext()));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 R.string.nav_open, R.string.dummy_content) {
 

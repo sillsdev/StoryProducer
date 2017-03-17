@@ -39,6 +39,12 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
     private int mVideoBitrate = -1;
     private StreamThread mVideoThread;
 
+    private volatile boolean mAbnormallyEnded = false;
+
+    private static final Object audioLock = new Object();
+    private static final Object videoLock = new Object();
+    private static final Object muxerLock = new Object();
+
     /**
      * Create a muxer.
      * @param path the output media file.
@@ -94,20 +100,25 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     /**
      * Set the muxer in motion.
+     * @return whether the muxer finished its job.
      * @throws IOException
      * @throws SourceUnacceptableException
      */
-    public void crunch() throws IOException, SourceUnacceptableException {
+    public boolean crunch() throws IOException, SourceUnacceptableException {
         start();
 
-        if(mAudioSource != null) {
-            mAudioThread = new StreamThread(mMuxer, mAudioSource, mAudioTrackIndex, mAudioBitrate);
-            mAudioThread.start();
+        synchronized (audioLock) {
+            if (mAudioSource != null) {
+                mAudioThread = new StreamThread(mMuxer, mAudioSource, mAudioTrackIndex, mAudioBitrate);
+                mAudioThread.start();
+            }
         }
 
-        if(mVideoSource != null) {
-            mVideoThread = new StreamThread(mMuxer, mVideoSource, mVideoTrackIndex, mVideoBitrate);
-            mVideoThread.start();
+        synchronized (videoLock) {
+            if (mVideoSource != null) {
+                mVideoThread = new StreamThread(mMuxer, mVideoSource, mVideoTrackIndex, mVideoBitrate);
+                mVideoThread.start();
+            }
         }
 
         if(mAudioThread != null) {
@@ -127,6 +138,8 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         }
 
         close();
+
+        return !mAbnormallyEnded;
     }
 
     private void start() throws IOException, SourceUnacceptableException {
@@ -135,32 +148,34 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         if(!output.exists()) {
             output.createNewFile();
         }
-        mMuxer = new MediaMuxer(mPath, mFormat);
+        synchronized (muxerLock) {
+            mMuxer = new MediaMuxer(mPath, mFormat);
 
-        if (mAudioSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.");
-            mAudioSource.setup();
+            if (mAudioSource != null) {
+                if (MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.");
+                mAudioSource.setup();
 
-            mAudioOutputFormat = mAudioSource.getOutputFormat();
-            //TODO: fudge bitrate since it isn't available
+                mAudioOutputFormat = mAudioSource.getOutputFormat();
+                //TODO: fudge bitrate since it isn't available
 //            mAudioBitrate = mAudioOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
 
-            if(MediaHelper.VERBOSE) Log.v(TAG, "adding audio track.");
-            mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
-        }
-        if (mVideoSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "setting up video track.");
-            mVideoSource.setup();
+                if (MediaHelper.VERBOSE) Log.v(TAG, "adding audio track.");
+                mAudioTrackIndex = mMuxer.addTrack(mAudioOutputFormat);
+            }
+            if (mVideoSource != null) {
+                if (MediaHelper.VERBOSE) Log.v(TAG, "setting up video track.");
+                mVideoSource.setup();
 
-            mVideoOutputFormat = mVideoSource.getOutputFormat();
-            //TODO: fudge bitrate since it isn't available
+                mVideoOutputFormat = mVideoSource.getOutputFormat();
+                //TODO: fudge bitrate since it isn't available
 //            mVideoBitrate = mVideoOutputFormat.getInteger(MediaFormat.KEY_BIT_RATE);
 
-            if(MediaHelper.VERBOSE) Log.v(TAG, "adding video track.");
-            mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
+                if (MediaHelper.VERBOSE) Log.v(TAG, "adding video track.");
+                mVideoTrackIndex = mMuxer.addTrack(mVideoOutputFormat);
+            }
+            if (MediaHelper.VERBOSE) Log.v(TAG, "starting");
+            mMuxer.start();
         }
-        if(MediaHelper.VERBOSE) Log.v(TAG, "starting");
-        mMuxer.start();
     }
 
     private class StreamThread extends Thread {
@@ -182,19 +197,25 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
         public void run() {
             ByteBuffer buffer;
             MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
-            while (!mSource.isDone()) {
-                buffer = mSource.getBuffer(info);
-                if (MediaHelper.VERBOSE)
-                    Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
-                            + info.size + " for time " + info.presentationTimeUs);
+            try {
+                while (!mSource.isDone()) {
+                    buffer = mSource.getBuffer(info);
+                    if (MediaHelper.VERBOSE)
+                        Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
+                                + info.size + " for time " + info.presentationTimeUs);
 
-                //TODO: determine presentation time for end of this buffer if possible
-                mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
+                    //TODO: determine presentation time for end of this buffer if possible
+                    mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
 
-                synchronized (mMuxer) {
-                    mMuxer.writeSampleData(mTrackIndex, buffer, info);
+                    synchronized (mMuxer) {
+                        mMuxer.writeSampleData(mTrackIndex, buffer, info);
+                    }
+                    mSource.releaseBuffer(buffer);
                 }
-                mSource.releaseBuffer(buffer);
+            }
+            catch(SourceClosedException e) {
+                Log.w(TAG, "Source closed forcibly", e);
+                mAbnormallyEnded = true;
             }
         }
 
@@ -205,28 +226,39 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
 
     @Override
     public void close() {
-        //Close sources.
-        if(mAudioSource != null) {
-            mAudioSource.close();
-            mAudioSource = null;
-        }
-        if(mVideoSource != null) {
-            mVideoSource.close();
-            mVideoSource = null;
-        }
+        synchronized(muxerLock) {
+            //Close sources.
+            synchronized (audioLock) {
+                if (mAudioSource != null) {
+                    mAudioSource.close();
+                    mAudioSource = null;
+                }
+            }
+            synchronized (videoLock) {
+                if (mVideoSource != null) {
+                    mVideoSource.close();
+                    mVideoSource = null;
+                }
+            }
 
-        //Close self.
-        if(mMuxer != null) {
-            try {
-                mMuxer.stop();
+            //Close self.
+            if (mMuxer != null) {
+                try {
+                    mMuxer.stop();
+                } catch (IllegalStateException e) {
+                    Log.w(TAG, "Failed to stop MediaMuxer!", e);
+                } finally {
+                    try {
+                        mMuxer.release();
+                    }
+                    catch(IllegalStateException e) {
+                        //It isn't documented that MediaMuxer.release throws an IllegalStateException
+                        //sometimes, but it has been seen experimentally.
+                        Log.w(TAG, "Failed to release MediaMuxer", e);
+                    }
+                }
+                mMuxer = null;
             }
-            catch(IllegalStateException e) {
-                Log.e(TAG, "Failed to stop MediaMuxer!", e);
-            }
-            finally {
-                mMuxer.release();
-            }
-            mMuxer = null;
         }
     }
 }

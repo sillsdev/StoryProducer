@@ -2,5 +2,6 @@
 <resources>
     <string-array name="global_menu_array">
         <item>@string/menu</item>
+        <item>@string/update_registration</item>
     </string-array>
 </resources>
