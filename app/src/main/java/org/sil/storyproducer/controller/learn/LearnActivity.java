@@ -140,9 +140,24 @@ public class LearnActivity extends AppCompatActivity {
                 rootView.findViewById(R.id.fragment_draft_mic_toolbar_button));
         setRecordNPlayback(rootView.findViewById(R.id.fragment_draft_mic_toolbar_button),
                 rootView.findViewById(R.id.fragment_draft_play_toolbar_button));
+        setWatchedOnce();
 
         mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
 
+    }
+
+    /**
+     * sets that the learn phase has already been gone through once
+     * and the recording button can be shown from the beginng
+     */
+    private void setWatchedOnce() {
+        File recordFile = new File(recordFilePath);
+        if(recordFile.exists()) {
+            setVolumeSwitchAndFloatingButtonVisible();
+            Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+            volumeSwitch.setChecked(true);
+            isWatchedOnce = true;
+        }
     }
 
     /**
