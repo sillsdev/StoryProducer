@@ -63,10 +63,10 @@ public final class DraftFrag extends Fragment {
     private Runnable colorHandlerRunnable;
     private boolean isRed = true;
     private final int RECORDING_ANIMATION_DURATION = 1500;
+    private ImageButton narrationPlayButton;
 
     //Toolbar buttons
     private View toolbarMicButton;
-    private View toolbarDeleteButton;
     private View toolbarPlayButton;
 
 
@@ -92,7 +92,6 @@ public final class DraftFrag extends Fragment {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
         toolbarMicButton = rootView.findViewById(R.id.fragment_draft_mic_toolbar_button);
-        toolbarDeleteButton = rootView.findViewById(R.id.fragment_draft_delete_toolbar_button);
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
         setUiColors();
@@ -168,9 +167,6 @@ public final class DraftFrag extends Fragment {
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             tv = (TextView) rootView.findViewById(R.id.fragment_draft_reference_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-
-            ImageButton ib = (ImageButton) rootView.findViewById(R.id.fragment_draft_narration_button);
-            ib.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
 
@@ -257,8 +253,8 @@ public final class DraftFrag extends Fragment {
             return;
         }
         narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
-        final ImageButton imageView = (ImageButton) aView;
-        imageView.setOnClickListener(new View.OnClickListener() {
+        narrationPlayButton = (ImageButton)aView;
+        narrationPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (narrationFilePath == null) {
@@ -267,16 +263,22 @@ public final class DraftFrag extends Fragment {
                     if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
                         narrationAudioPlayer.stopAudio();
                         narrationAudioPlayer.releaseAudio();
-                        imageView.setBackgroundResource(R.drawable.ic_menu_play);
+                        narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                     }else{
                         //stop other playback streams.
                         stopPlayBackAndRecording();
                         narrationAudioPlayer = new AudioPlayer();
+                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                narrationAudioPlayer.releaseAudio();
+                                narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
+                            }
+                        });
                         narrationAudioPlayer.playWithPath(narrationFilePath);
-                        imageView.setBackgroundResource(R.drawable.ic_stop_white_36dp);
+                        narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
                         Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
                     }
-
                 }
             }
         });
@@ -289,7 +291,6 @@ public final class DraftFrag extends Fragment {
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_draft_fab),
                 rootView.findViewById(R.id.fragment_draft_animated_toolbar));
         setRecordNPlayback();
-        setToolbarDeleteButton(new File(recordFilePath).exists());
     }
 
     /**
@@ -339,34 +340,13 @@ public final class DraftFrag extends Fragment {
                     startAudioRecorder();
                     toolbarPlayButton.setVisibility(View.INVISIBLE);
                     toolbarMicButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    toolbarDeleteButton.setVisibility(View.INVISIBLE);
                 }else{
                     stopRecordingAnimation();
                     stopAudioRecorder();
                     //set playback button visible
                     toolbarPlayButton.setVisibility(View.VISIBLE);
                     toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
-                    toolbarDeleteButton.setVisibility(View.VISIBLE);
                 }
-            }
-        });
-    }
-
-    /**
-     * Function to setup the delete button on the toolbar.
-     * @param fileExist
-     */
-    private void setToolbarDeleteButton(boolean fileExist) {
-        if(fileExist){
-            toolbarDeleteButton.setVisibility(View.VISIBLE);
-        }
-        toolbarDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //stop all other playback streams.
-                stopPlayBackAndRecording();
-                showDeleteWarningDialog();
-
             }
         });
     }
@@ -458,6 +438,7 @@ public final class DraftFrag extends Fragment {
                         voiceAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
+                                voiceAudioPlayer.releaseAudio();
                                 toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                             }
                         });
@@ -632,37 +613,6 @@ public final class DraftFrag extends Fragment {
 //    }
 
     /**
-     * Deleting a file at the filePath.
-     *
-     * @param filePath The filePath where the file will be deleted.
-     * @return A boolean if the file was sucessfully deleted.
-     */
-    private boolean tryDeleteFile(String filePath) {
-        File toDelete = new File(filePath);
-        return toDelete.delete();
-    }
-
-    /**
-     * This is the dialog to prompt for deletion or no deletion.
-     */
-    private void showDeleteWarningDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setTitle("Delete Recording?")
-                .setMessage("Do you want to delete the current recording?")
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (recordFilePath != null) {
-                            tryDeleteFile(recordFilePath);
-                            toolbarDeleteButton.setVisibility(View.INVISIBLE);
-                            toolbarPlayButton.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }).create();
-        dialog.show();
-    }
-
-    /**
      * Stops all playback streams and stops recording as well.
      */
     private void stopPlayBackAndRecording(){
@@ -675,7 +625,8 @@ public final class DraftFrag extends Fragment {
             toolbarPlayButton.setVisibility(View.VISIBLE);
             toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
-        if (narrationAudioPlayer != null) {
+        if (narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()) {
+            narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
             narrationAudioPlayer.stopAudio();
             narrationAudioPlayer.releaseAudio();
         }
@@ -684,6 +635,5 @@ public final class DraftFrag extends Fragment {
             voiceAudioPlayer.stopAudio();
             voiceAudioPlayer.releaseAudio();
         }
-        toolbarDeleteButton.setVisibility(View.VISIBLE);
     }
 }

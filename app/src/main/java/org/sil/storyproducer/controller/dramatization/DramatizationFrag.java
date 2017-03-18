@@ -105,19 +105,6 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
-    public boolean isToolBarOpen() {
-        if (myToolbar != null) {
-            return myToolbar.isOpen();
-        }
-        return false;
-    }
-
-    public void closeToolbar() {
-        if (myToolbar != null && myToolbar.isOpen()) {
-            myToolbar.close();
-        }
-    }
-
     /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
@@ -173,6 +160,7 @@ public class DramatizationFrag extends Fragment {
         }
         if (draftPlayerPath == null) {
             //draft recording does not exist
+            playPauseDraftButton.setAlpha(0.8f);
             playPauseDraftButton.setColorFilter(Color.argb(200, 200, 200, 200));
         }else{
             //remove x mark from Imagebutton play
