@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools;
 
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 import java.io.IOException;
 
@@ -88,7 +89,7 @@ public class AudioPlayer {
     }
 
     /**
-     * Stops the audio and releases it if it is currenlty being played
+     * Stops the audio and releases it if it is currently being played
      */
     public void releaseAudio() {
         if(mPlayer!= null && mPlayer.isPlaying()) {
@@ -108,6 +109,15 @@ public class AudioPlayer {
                 mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             }
         }
+    }
+
+    /**
+     * This allows the user to do something once the audio has completed
+     * via implementing MediaPlayer.OnCompleteListener.
+     * @param OcL
+     */
+    public void onPlayBackStop(MediaPlayer.OnCompletionListener OcL){
+        mPlayer.setOnCompletionListener(OcL);
     }
 
     /**

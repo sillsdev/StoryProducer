@@ -14,6 +14,7 @@ import org.sil.storyproducer.R;
  */
 public class ConsultantCheckFrag extends Fragment {
     private static final String ARG_OBJECT = "object";
+    public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

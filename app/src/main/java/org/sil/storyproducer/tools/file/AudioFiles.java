@@ -17,6 +17,7 @@ public class AudioFiles {
     private static final String DRAFT_TEMP = "draftTemp" + PREFER_EXTENSION;
     private static final String DRAFT_AUDIO_PREFIX = "translation";
     private static final String COMMENT_PREFIX = "comment";
+    private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
 
     public enum RenameCode {
         SUCCESS,
@@ -56,7 +57,7 @@ public class AudioFiles {
     //*** Draft ***
 
     public static File getDraft(String story, int i){
-        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + i + PREFER_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + i + SOUNDTRACK_EXTENSION);
     }
 
     public static File getDraftTemp(String story) {
@@ -142,4 +143,13 @@ public class AudioFiles {
         String[] returnTitlesArray = new String[commentTitles.size()];
         return commentTitles.toArray(returnTitlesArray);
     }
+
+    //*** Consultant Check ***
+
+    //*** Dramatization ***
+
+    public static File getDramatization(String story, int i){
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + i + SOUNDTRACK_EXTENSION);
+    }
+
 }

@@ -69,7 +69,8 @@ public class LearnActivity extends AppCompatActivity {
     private SeekBar videoSeekBar;
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
-    private int slideNum = 0;
+
+    private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
     private String storyName;
     private boolean isVolumeOn = true;
@@ -228,13 +229,13 @@ public class LearnActivity extends AppCompatActivity {
             narrationPlayer.releaseAudio();
         }
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
+        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNumber).getPath());
         narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
-        videoSeekBar.setProgress(slideNum);
+        videoSeekBar.setProgress(slideNumber);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < CONTENT_SLIDE_COUNT) {     //not at the end of video
+                if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
@@ -246,7 +247,7 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         });
-        slideNum++;         //move to the next slide
+        slideNumber++;         //move to the next slide
     }
 
     /**
@@ -258,9 +259,10 @@ public class LearnActivity extends AppCompatActivity {
             pauseVideo();
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            if(slideNum >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
+
+            if(slideNumber >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.setProgress(0);
-                slideNum = 0;
+                slideNumber = 0;
                 setBackgroundMusic();
                 playVideo();
             } else {
@@ -310,11 +312,11 @@ public class LearnActivity extends AppCompatActivity {
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
                     narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
                     backgroundPlayer.releaseAudio();
-                    slideNum = progress;
+                    slideNumber = progress;
                     setBackgroundMusic();       //have to reset the background music because it could have been completed
                     if (notPlayingAudio) backgroundPlayer.pauseAudio();
-                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNum));
-                    if(slideNum == CONTENT_SLIDE_COUNT) {
+                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
+                    if(slideNumber == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
@@ -335,7 +337,7 @@ public class LearnActivity extends AppCompatActivity {
     private void resetVideoWithSoundOff() {
         playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
-        slideNum = 0;
+        slideNumber = 0;
         narrationPlayer = new AudioPlayer();
         narrationPlayer.setVolume(0.0f);
         setBackgroundMusic();
@@ -466,8 +468,8 @@ public class LearnActivity extends AppCompatActivity {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
-        if(slideNum == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNumber);
+        if(slideNumber == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
             slidePicture = ImageFiles.getBitmap(storyName, ImageFiles.COPYRIGHT);
         }
 

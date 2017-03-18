@@ -30,26 +30,30 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         Fragment fragment;
+        Bundle passedArgs = new Bundle();
+        //TODO change the case switch to use constants like: StoryState.DraftPhase instead of string literal "Draft"
         switch (StoryState.getCurrentPhase().getTitle()) {
             case "Draft":
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
             case "Community Check":
                 fragment = new CommunityCheckFrag();
+                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
                 break;
             case "Consultant Check":
                 fragment = new ConsultantCheckFrag();
+                passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i);
                 break;
             case "Dramatization":
                 fragment = new DramatizationFrag();
+                passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         }
-        Bundle passedArgs = new Bundle();
-        passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         fragment.setArguments(passedArgs);
-        //mapOfTransFrags.put(i, (DraftFrag)fragment);
 
         return fragment;
     }
@@ -73,13 +77,5 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return "Page " + (position + 1);
-    }
-
-    /**
-     * @param slidePosition
-     * @return
-     */
-    public DraftFrag getDraftFrag(int slidePosition) {
-        return null;
     }
 }
