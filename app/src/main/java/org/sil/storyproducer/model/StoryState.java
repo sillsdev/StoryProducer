@@ -12,6 +12,13 @@ import org.sil.storyproducer.controller.pager.PagerBaseActivity;
  */
 public final class StoryState {
 
+    public static final String LEARN_PHASE = "Learn";
+    public static final String DRAFT_PHASE = "Draft";
+    public static final String COMMUNITY_PHASE = "Community Check";
+    public static final String CONSULTANT_PHASE = "Consultant Check";
+    public static final String DRAMATIZATION_PHASE = "Dramatization";
+    public static final String EXPORT_PHASE = "Export";
+
     private static Context context;
     private static String storyName;
     private static Phase currentPhase;

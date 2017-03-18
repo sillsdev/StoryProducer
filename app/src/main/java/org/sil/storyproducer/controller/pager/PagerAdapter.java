@@ -31,21 +31,20 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment;
         Bundle passedArgs = new Bundle();
-        //TODO change the case switch to use constants like: StoryState.DraftPhase instead of string literal "Draft"
         switch (StoryState.getCurrentPhase().getTitle()) {
-            case "Draft":
+            case StoryState.DRAFT_PHASE:
                 fragment = new DraftFrag();
                 passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
-            case "Community Check":
+            case StoryState.COMMUNITY_PHASE:
                 fragment = new CommunityCheckFrag();
                 passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Consultant Check":
+            case StoryState.CONSULTANT_PHASE:
                 fragment = new ConsultantCheckFrag();
                 passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Dramatization":
+            case StoryState.DRAMATIZATION_PHASE:
                 fragment = new DramatizationFrag();
                 passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
                 break;
