@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,13 +29,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coremedia.iso.boxes.Container;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.Track;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
@@ -47,10 +41,6 @@ import org.sil.storyproducer.tools.file.TextFiles;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -76,7 +66,6 @@ public final class DraftFrag extends Fragment {
 
     //Toolbar buttons
     private View toolbarMicButton;
-    private View toolbarPauseButton;
     private View toolbarDeleteButton;
     private View toolbarPlayButton;
 
@@ -103,7 +92,6 @@ public final class DraftFrag extends Fragment {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
         toolbarMicButton = rootView.findViewById(R.id.fragment_draft_mic_toolbar_button);
-        toolbarPauseButton = rootView.findViewById(R.id.fragment_draft_pause_toolbar_button);
         toolbarDeleteButton = rootView.findViewById(R.id.fragment_draft_delete_toolbar_button);
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
@@ -269,18 +257,26 @@ public final class DraftFrag extends Fragment {
             return;
         }
         narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
-        ImageView imageView = (ImageView) aView;
+        final ImageButton imageView = (ImageButton) aView;
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (narrationFilePath == null) {
                     Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    //stop other playback streams.
-                    stopPlayBackAndRecording();
-                    narrationAudioPlayer = new AudioPlayer();
-                    narrationAudioPlayer.playWithPath(narrationFilePath);
-                    Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                    if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
+                        narrationAudioPlayer.stopAudio();
+                        narrationAudioPlayer.releaseAudio();
+                        imageView.setBackgroundResource(R.drawable.ic_menu_play);
+                    }else{
+                        //stop other playback streams.
+                        stopPlayBackAndRecording();
+                        narrationAudioPlayer = new AudioPlayer();
+                        narrationAudioPlayer.playWithPath(narrationFilePath);
+                        imageView.setBackgroundResource(R.drawable.ic_stop_white_36dp);
+                        Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -332,20 +328,25 @@ public final class DraftFrag extends Fragment {
      */
     private void setRecordNPlayback() {
         setVoicePlayBackButton( new File(recordFilePath).exists());
-        setPauseButton();
 
         toolbarMicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //stop all other playback streams.
-                stopPlayBackAndRecording();
                 if (!isRecording) {
+                    //stop all other playback streams.
+                    stopPlayBackAndRecording();
                     startRecordingAnimation(false, 0);
                     startAudioRecorder();
                     toolbarPlayButton.setVisibility(View.INVISIBLE);
-                    toolbarMicButton.setVisibility(View.INVISIBLE);
-                    toolbarPauseButton.setVisibility(View.VISIBLE);
+                    toolbarMicButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     toolbarDeleteButton.setVisibility(View.INVISIBLE);
+                }else{
+                    stopRecordingAnimation();
+                    stopAudioRecorder();
+                    //set playback button visible
+                    toolbarPlayButton.setVisibility(View.VISIBLE);
+                    toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
+                    toolbarDeleteButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -430,28 +431,6 @@ public final class DraftFrag extends Fragment {
     }
 
     /**
-     * Function that adds a listener to the pause button.
-     *
-     */
-    private void setPauseButton() {
-        toolbarPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isRecording) {
-                    stopRecordingAnimation();
-                    stopAudioRecorder();
-                    //set playback button visible
-                    toolbarPlayButton.setVisibility(View.VISIBLE);
-                    toolbarMicButton.setVisibility(View.VISIBLE);
-                    toolbarPauseButton.setVisibility(View.INVISIBLE);
-                    toolbarDeleteButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-    }
-
-    /**
      * This function sets the voice play back function. This function is called
      * in private void setRecordNPlayback(). This serves to set the visibility if the audio file
      * already exists.
@@ -463,18 +442,33 @@ public final class DraftFrag extends Fragment {
             toolbarPlayButton.setVisibility(View.VISIBLE);
         }
 
+
+
         toolbarPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Stops all other playback streams.
-                stopPlayBackAndRecording();
-                if (new File(recordFilePath).exists()) {
-                    voiceAudioPlayer = new AudioPlayer();
-                    voiceAudioPlayer.playWithPath(recordFilePath);
-                    Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
+                if(voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()){
+                    stopPlayBackAndRecording();
+                    toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                }else{
+                    //Stops all other playback streams.
+                    stopPlayBackAndRecording();
+                    if (new File(recordFilePath).exists()) {
+                        voiceAudioPlayer = new AudioPlayer();
+                        voiceAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                            }
+                        });
+                        voiceAudioPlayer.playWithPath(recordFilePath);
+                        Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
+                        toolbarPlayButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    } else {
+                        Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         });
     }
@@ -677,17 +671,19 @@ public final class DraftFrag extends Fragment {
             stopRecordingAnimation();
             //set playback button visible
             toolbarMicButton.setVisibility(View.VISIBLE);
-            toolbarPauseButton.setVisibility(View.INVISIBLE);
-            toolbarDeleteButton.setVisibility(View.VISIBLE);
+            toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
             toolbarPlayButton.setVisibility(View.VISIBLE);
+            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
         if (narrationAudioPlayer != null) {
             narrationAudioPlayer.stopAudio();
             narrationAudioPlayer.releaseAudio();
         }
-        if (voiceAudioPlayer != null) {
+        if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
+            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             voiceAudioPlayer.stopAudio();
             voiceAudioPlayer.releaseAudio();
         }
+        toolbarDeleteButton.setVisibility(View.VISIBLE);
     }
 }

@@ -58,8 +58,7 @@
                 android:layout_above="@+id/fragment_draft_scripture_text"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/fragment_draft_reference_text"
-                android:background="@color/gray"
-                app:srcCompat="@drawable/ic_menu_play" />
+                android:background="@drawable/ic_menu_play" />
         </RelativeLayout>
     </LinearLayout>
 
@@ -90,19 +89,6 @@
         android:visibility="invisible">
 
         <ImageButton
-            android:id="@+id/fragment_draft_pause_toolbar_button"
-            app:srcCompat="@drawable/ic_pause_white_48dp"
-            android:background="@drawable/ic_pause_white_48dp"
-            android:layout_toEndOf="@+id/fragment_draft_play_toolbar_button"
-            android:layout_toRightOf="@+id/fragment_draft_play_toolbar_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="centerInside"
-            android:visibility="invisible"
-            android:layout_alignParentTop="true"
-            android:layout_alignStart="@+id/fragment_draft_mic_toolbar_button" />
-
-        <ImageButton
             android:id="@+id/fragment_draft_delete_toolbar_button"
             android:background="@drawable/ic_delete_forever_white_48dp"
             app:srcCompat="@drawable/ic_delete_forever_white_48dp"
@@ -131,7 +117,6 @@
             android:layout_marginStart="22dp"
             android:background="@drawable/ic_mic_white"
             android:visibility="visible"
-            app:srcCompat="@drawable/ic_mic_white"
             android:scaleType="centerInside"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true" />
