@@ -53,7 +53,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:background="@null"
-                android:src="@drawable/ic_pause_gray"
+                android:src="@drawable/ic_play_gray"
                 android:onClick="onClickPlayPauseButton"
                 android:layout_marginTop="30dp"
                 android:id="@+id/playButton" />

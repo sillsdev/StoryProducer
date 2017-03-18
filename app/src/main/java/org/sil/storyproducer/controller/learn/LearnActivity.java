@@ -61,7 +61,7 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private final static float BACKGROUND_VOLUME = 0.5f;
+    private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -87,6 +87,7 @@ public class LearnActivity extends AppCompatActivity {
     private String recordFilePath;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
+    private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
     //recording animation bar
     private AnimationToolbar myToolbar = null;
@@ -122,8 +123,12 @@ public class LearnActivity extends AppCompatActivity {
         setBackgroundAudioJumps();
 
         setSeekBarListener();
-        playVideo();
-        setBackgroundMusic();
+
+        //create audio players
+        narrationPlayer = new AudioPlayer();
+        backgroundPlayer = new AudioPlayer();
+
+        setPic(learnImageView);     //set the first image to show
 
         //setup the recording animation bar
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fab),
@@ -204,15 +209,12 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        narrationPlayer.pauseAudio();
-        backgroundPlayer.pauseAudio();
+        pauseVideo();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        narrationPlayer.resumeAudio();
-        backgroundPlayer.resumeAudio();
     }
 
 
@@ -254,9 +256,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
-            narrationPlayer.pauseAudio();
-            backgroundPlayer.pauseAudio();
-            playButton.setImageResource(R.drawable.ic_play_gray);
+            pauseVideo();
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
 
@@ -266,9 +266,30 @@ public class LearnActivity extends AppCompatActivity {
                 setBackgroundMusic();
                 playVideo();
             } else {
-                narrationPlayer.resumeAudio();
-                backgroundPlayer.resumeAudio();
+               resumeVideo();
             }
+        }
+    }
+
+    /**
+     * helper function for pausing the video
+     */
+    private void pauseVideo() {
+        narrationPlayer.pauseAudio();
+        backgroundPlayer.pauseAudio();
+        playButton.setImageResource(R.drawable.ic_play_gray);
+    }
+
+    /**
+     * helper function for resuming the video
+     */
+    private void resumeVideo() {
+        if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
+            playVideo();
+            isFirstTime = false;
+        } else {
+            narrationPlayer.resumeAudio();
+            backgroundPlayer.resumeAudio();
         }
     }
 
@@ -314,6 +335,7 @@ public class LearnActivity extends AppCompatActivity {
      * helper function that resets the vidio to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
+        playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
         slideNumber = 0;
         narrationPlayer = new AudioPlayer();
