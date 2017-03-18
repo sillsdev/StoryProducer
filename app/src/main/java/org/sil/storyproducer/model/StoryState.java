@@ -6,6 +6,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.export.ExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 
 /**
  * StoryState is a static class that holds the information of the state of a story project
@@ -79,6 +80,19 @@ public final class StoryState {
             }
         }
         currentPhase = p;
+        StorySharedPreferences.setPhaseForStory(p.getTitle(), storyName);   //set the stored preferences
+    }
+
+    public static Phase getSavedPhase() {
+        String phaseTitle = StorySharedPreferences.getPhaseForStory(storyName);
+        Phase phase = null;
+        for(int k = 0; k < phases.length; k++) {
+            if(phaseTitle.equals(phases[k].getTitle())) {
+                phase = phases[k];
+            }
+        }
+        currentPhase = phase;
+        return phase;
     }
 
     /**
@@ -117,6 +131,7 @@ public final class StoryState {
             currentPhaseIndex++;
         }
         currentPhase = phases[currentPhaseIndex];
+        StorySharedPreferences.setPhaseForStory(currentPhase.getTitle(), storyName);
         return currentPhase;
     }
 
@@ -129,6 +144,7 @@ public final class StoryState {
             currentPhaseIndex--;
         }
         currentPhase = phases[currentPhaseIndex];
+        StorySharedPreferences.setPhaseForStory(currentPhase.getTitle(), storyName);
         return currentPhase;
     }
 }

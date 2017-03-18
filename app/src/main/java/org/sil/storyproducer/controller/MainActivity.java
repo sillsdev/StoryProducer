@@ -27,6 +27,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.Serializable;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());
+        StorySharedPreferences.init(getApplicationContext());
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -178,9 +181,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * move to the chosen story
      */
     public void switchToStory(String storyName) {
-        //TODO change the Story State that is stored for each story
         StoryState.setStoryName(storyName);
-        Phase currPhase = StoryState.getCurrentPhase();
+        Phase currPhase = StoryState.getSavedPhase();
+        StoryState.setCurrentPhase(currPhase);
+        StoryState.setCurrentStorySlide(0);
         Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
     }
