@@ -56,6 +56,7 @@ public class ConsultantCheckFrag extends Fragment {
     private boolean isChecked;
     private AudioPlayer draftPlayer;
     private SlideText slideText;
+    private TextView slideTextView;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -79,6 +80,8 @@ public class ConsultantCheckFrag extends Fragment {
         setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.concheck_draft_playback_button));
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.concheck_checkmark_button));
         setLogsButton((ImageButton)rootView.findViewById(R.id.concheck_logs_button));
+        slideTextView = (TextView)rootView.findViewById(R.id.slide_number_text);
+        slideTextView.setText(slidePosition + 1 + "");
 
         return rootView;
     }

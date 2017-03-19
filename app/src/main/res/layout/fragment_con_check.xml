@@ -7,12 +7,32 @@
     android:layout_height="match_parent"
     android:background="@color/gray">
 
-    <ImageView
-        android:id="@+id/fragment_concheck_image_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop" />
+    <RelativeLayout
+        android:id="@+id/image_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/fragment_concheck_image_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+        <TextView
+            android:layout_width="@dimen/triangle_width"
+            android:layout_height="@dimen/triangle_height"
+            android:layout_alignBottom="@id/fragment_concheck_image_view"
+            android:layout_alignRight="@id/fragment_concheck_image_view"
+            android:background="@drawable/triangle_background"/>
+        <TextView
+            android:id="@+id/slide_number_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/fragment_concheck_image_view"
+            android:layout_alignRight="@id/fragment_concheck_image_view"
+            android:paddingRight="7dp"
+            android:text="1"
+            android:textSize="@dimen/text_body"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/concheck_relative_layout"
@@ -22,7 +42,7 @@
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="10dp"
-        android:layout_below="@id/fragment_concheck_image_view"
+        android:layout_below="@id/image_container"
         android:layout_above="@+id/concheck_button_layout">
 
         <TextView
