@@ -15,6 +15,9 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.os.Looper;
+
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -22,7 +25,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,7 +32,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.NavItem;
+import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.file.FileSystem;
+
 import java.io.Serializable;
+
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
+import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -56,18 +69,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
         }
 
-
-
-        //Logging.saveLogEntry(new DraftEntry(0L, DraftEntry.Type.MT_pb , 0), "ENG", "TheTaleOfJimbob");
-        //Logging.createABunchOfFakeLogEntries("Spanglish", "NotAStory.com");
-       /* Log log=null;
-        try{
-            log = (Log) Logging.loadObject("/storage/emulated/0/splogs/Spanglish/NotAStory.com/log.ser");
-        }catch(Exception e){
-            System.err.println("So... deserialization failed, I guess.");
-        }
-        System.out.println("items in deserialized log: "+log.size()); */
-
         boolean skipRegistration = checkRegistrationSkip();
         skipRegistration = true;
         Intent goToLogView = new Intent(this, LogView.class);
@@ -75,10 +76,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         startActivity(goToLogView);
 
         if (!skipRegistration) {
-            // Checks registration file to see if registration has been done yet and launches registration if it hasn't
+            // Checks registration file to see if email has been sent and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-            Map<String, String> preferences = (Map<String, String>)prefs.getAll();
-            if (preferences.isEmpty()) {
+            Map<String, ?> preferences = prefs.getAll();
+            Object registrationComplete = preferences.get(RegistrationActivity.EMAIL_SENT);
+            if (registrationComplete == null || !(Boolean)registrationComplete) {
                 Intent intent = new Intent(this, RegistrationActivity.class);
                 startActivity(intent);
             }
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        if(drawerOpen || hideIcon) {
+        if(drawerOpen) {
             menu.findItem(R.id.menu_lang).setVisible(false);
             menu.findItem(R.id.menu_play).setVisible(true);
         } else {
@@ -176,57 +178,16 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if(position == 0) {
-                FragmentManager fm = getFragmentManager();
-                Toast.makeText(getBaseContext(), "In backstack " + fm.getBackStackEntryCount(), Toast.LENGTH_LONG).show();
-                for(int entry = 0; entry < fm.getBackStackEntryCount(); entry++){
-                    Toast.makeText(getBaseContext(), "Found fragment: " + fm.getBackStackEntryAt(entry).getId(), Toast.LENGTH_LONG).show();
-                }
-//                startFragment(position, 0, "");
+            if(id == 5) {
+                AutoStoryMaker encodeThread = new AutoStoryMaker("Joshua Sends Spies Rahab");
+                encodeThread.toggleLogProgress(true);
+                encodeThread.toggleText(true);
+                encodeThread.start();
             }
             mDrawerLayout.closeDrawer(mDrawerList);
-        }
-    }
-    private boolean hideIcon = false;
-    private PagerFrag pagerFrag;
-    public void startFragment(int iFragNum, int slideCount, String storyName){
-        String title = "";
-        Fragment fragment = null;
-        switch (iFragNum) {
-            case 0:
-                fragment = new StoryFrag();
-                title = getApplicationContext().getString(R.string.title_activity_story_templates);
-                hideIcon = false;
-                break;
-            case 1:
-                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                fragment = pagerFrag;
-                title = getApplicationContext().getString(R.string.title_fragment_translate);
-                hideIcon = true;
-                break;
-            case 2:
-                pagerFrag = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                fragment = pagerFrag;
-                title = getApplicationContext().getString(R.string.title_fragment_community);
-                hideIcon = true;
-                break;
-            case 3:
-                fragment = PagerFrag.newInstance(slideCount, iFragNum, storyName);
-                title = getApplicationContext().getString(R.string.title_fragment_consultant);
-                hideIcon = true;
-                break;
-
-        }
-        if(fragment != null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment, title).addToBackStack(null).commit();
-            mActivityTitle = title;
-            getSupportActionBar().setTitle(title);
-            invalidateOptionsMenu();
-        }
-    }
-    public void changeSlide(int slidePosition){
-        if(pagerFrag != null) {
-            pagerFrag.changeView(slidePosition);
+            if(id == 5) {
+                Toast.makeText(getBaseContext(), "Starting video creation. Please hold.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

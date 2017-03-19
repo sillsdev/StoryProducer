@@ -21,6 +21,7 @@
         <activity
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
         <!-- Log Viewing Activity -->
         <activity
@@ -28,15 +29,12 @@
             android:label="Log View"
              />
 
-        <!-- Info Page -->
+        <!-- File Explorer Launch Page -->
         <activity
-            android:name=".controller.InfoPageActivity"
-            android:label="@string/title_activity_info_page"
-            android:parentActivityName=".controller.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".controller.MainActivity" />
+            android:name=".controller.export.FileChooserActivity"
+            android:label="FileChooser">
         </activity>
+
         <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
@@ -44,14 +42,16 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".controller.RegistrationActivity"></activity>
+        <activity android:name=".controller.RegistrationActivity" />
         <activity
             android:name=".controller.learn.LearnActivity"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".controller.export.ExportActivity"></activity>
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <activity android:name=".controller.export.ExportActivity" />
     </application>
 
 </manifest>

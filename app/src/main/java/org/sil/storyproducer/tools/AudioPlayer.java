@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools;
 
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 import java.io.IOException;
 
@@ -16,8 +17,21 @@ public class AudioPlayer {
     }
 
     /**
+     * Only sets the path for the audio to
+     * @param path String path for the audio
+     */
+    public void setPath(String path) {
+        try {
+            mPlayer.setDataSource(path);
+        } catch (IOException e) {
+            //TODO maybe something with this exception
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Plays the audio with the given path
-     * @param String for the path where the audio resides
+     * @param path for the path where the audio resides
      */
     public void playWithPath(String path) {
         try {
@@ -39,7 +53,7 @@ public class AudioPlayer {
      * Pauses the audio if it is currenlty being played
      */
     public void pauseAudio() {
-        if(mPlayer.isPlaying()) {
+        if(mPlayer != null && mPlayer.isPlaying()) {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
@@ -53,30 +67,81 @@ public class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     public void resumeAudio() {
-        int pauseSpot = mPlayer.getCurrentPosition();
-        mPlayer.seekTo(pauseSpot);
-        mPlayer.start();
-    }
-
-    /**
-     * Stops the audio if it is currenlty being played
-     */
-    public void stopAudio() {
-        try {
-            mPlayer.stop();
-            mPlayer.release();
-        } catch (IllegalStateException e) {
-            //TODO maybe something with this exception
-            e.printStackTrace();
+        if(mPlayer != null) {
+            int pauseSpot = mPlayer.getCurrentPosition();
+            mPlayer.seekTo(pauseSpot);
+            mPlayer.start();
         }
     }
 
     /**
+     * Stops the audio if it is currently being played
+     */
+    public void stopAudio() {
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+                mPlayer.stop();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Stops the audio and releases it if it is currently being played
+     */
+    public void releaseAudio() {
+        if(mPlayer!= null && mPlayer.isPlaying()) {
+            try {
+                mPlayer.stop();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            } finally {
+                try {
+                    mPlayer.release();
+                } catch (IllegalStateException e) {
+                    //TODO maybe something with this exception
+                    e.printStackTrace();
+                }
+
+                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
+            }
+        }
+    }
+
+    /**
+     * This allows the user to do something once the audio has completed
+     * via implementing MediaPlayer.OnCompleteListener.
+     * @param OcL
+     */
+    public void onPlayBackStop(MediaPlayer.OnCompletionListener OcL){
+        mPlayer.setOnCompletionListener(OcL);
+    }
+
+    /**
      * returns the duration of the audio as an int
-     * @return returns the duration of the audio as an int
+     * @return the duration of the audio as an int
      */
     public int getAudioDurationInSeconds() {
         return (int)(mPlayer.getDuration() * 0.001);
+    }
+
+    /**
+     * returns the duration of the audio as an int in miliseconds
+     * @return the duration of the audio as an int
+     */
+    public int getAudioDurationInMilliseconds() {
+        return (int)mPlayer.getDuration();
+    }
+
+    /**
+     * Seeks to the parameter in milliseconds
+     * @param msec milliseconds for where to seek to in the audio
+     */
+    public void seekTo(int msec) {
+        mPlayer.seekTo(msec);
     }
 
     /**
@@ -89,7 +154,7 @@ public class AudioPlayer {
 
     /**
      * sets the volume of the audio
-     * @param the float for the volume from 0.0 to 1.0
+     * @param volume the float for the volume from 0.0 to 1.0
      */
     public void setVolume(float volume) {
         mPlayer.setVolume(volume, volume);
@@ -100,6 +165,9 @@ public class AudioPlayer {
      * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
+        if(mPlayer == null) {
+            return false;
+        }
         return mPlayer.isPlaying();
     }
 }
