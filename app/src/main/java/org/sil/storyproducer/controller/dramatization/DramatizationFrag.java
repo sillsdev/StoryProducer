@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
@@ -31,6 +32,7 @@ public class DramatizationFrag extends Fragment {
     private View rootView;
     private int slideNumber;
     private ImageButton playPauseDraftButton;
+    private TextView slideNumberText;
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
@@ -57,6 +59,8 @@ public class DramatizationFrag extends Fragment {
         setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         setToolbar(rootViewToolbar);
+        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
     }

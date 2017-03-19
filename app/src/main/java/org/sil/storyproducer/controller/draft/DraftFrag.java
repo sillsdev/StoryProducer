@@ -39,6 +39,7 @@ public final class DraftFrag extends Fragment {
     private String narrationFilePath;
     private String recordFilePath;
     private ImageButton narrationPlayButton;
+    private TextView slideNumberText;
     private RecordingToolbar rt;
 
     public DraftFrag() {
@@ -69,6 +70,8 @@ public final class DraftFrag extends Fragment {
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));
         setToolbar(rootViewToolbar);
+        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
     }

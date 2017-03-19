@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
@@ -39,6 +40,7 @@ public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private final static String LOGTAG = "communityCheck";
     private int slideNumber;
+    private TextView slideNumberText;
     private static AudioPlayer draftPlayer;
     private static AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
@@ -63,6 +65,8 @@ public class CommunityCheckFrag extends Fragment {
         setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button));
         setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
+        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
     }
