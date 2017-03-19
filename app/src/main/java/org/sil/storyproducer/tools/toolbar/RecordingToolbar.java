@@ -24,6 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.tools.AudioPlayer;
 
 import java.io.File;
@@ -104,6 +105,20 @@ public class RecordingToolbar extends AnimationToolbar {
         this.recordFilePath = recordFilePath;
         createToolbar();
         setupRecordingAnimationHandler();
+    }
+
+    /**
+     * This fuction is used to show the floating button
+     */
+    public void showFloatingActionButton() {
+        fab.show();
+    }
+
+    /**
+     * this function is used to hide the floating button
+     */
+    public void hideFloatingActionButton() {
+        fab.hide();
     }
 
     /**
