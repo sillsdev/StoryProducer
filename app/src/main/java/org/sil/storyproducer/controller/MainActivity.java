@@ -7,7 +7,7 @@ import org.sil.storyproducer.controller.logging.Log;
 import org.sil.storyproducer.controller.logging.LogView;
 import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.*;
-import org.sil.storyproducer.tools.FileSystem;
+import org.sil.storyproducer.tools.file.FileSystem;
 import android.Manifest;
 import android.app.FragmentManager;
 import android.content.Intent;
