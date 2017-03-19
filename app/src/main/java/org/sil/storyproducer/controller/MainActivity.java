@@ -1,6 +1,15 @@
 package org.sil.storyproducer.controller;
 
+import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.DraftEntry;
+import org.sil.storyproducer.controller.logging.LearnEntry;
+import org.sil.storyproducer.controller.logging.Log;
+import org.sil.storyproducer.controller.logging.LogView;
+import org.sil.storyproducer.controller.logging.Logging;
+import org.sil.storyproducer.model.*;
+import org.sil.storyproducer.tools.file.FileSystem;
 import android.Manifest;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -61,6 +70,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
 
         boolean skipRegistration = checkRegistrationSkip();
+        skipRegistration = true;
+        Intent goToLogView = new Intent(this, LogView.class);
+        goToLogView.putExtra("slide", 1);
+        startActivity(goToLogView);
+
         if (!skipRegistration) {
             // Checks registration file to see if email has been sent and launches registration if it hasn't
             SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
