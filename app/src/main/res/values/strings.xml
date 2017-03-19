@@ -10,6 +10,7 @@
     <string name="title_fragment_community">Community Check</string>
     <string name="title_fragment_consultant">Consultant Check</string>
     <string name="update_registration">Update Registration</string>
+    <string name="view_trans_logs">View Translation Logs</string>
 
     <!--String names for Info Page-->
     <string name="consultant_phone">"Consultant Phone:  "</string>

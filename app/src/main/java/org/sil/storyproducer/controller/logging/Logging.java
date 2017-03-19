@@ -1,5 +1,8 @@
 package org.sil.storyproducer.controller.logging;
 
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.file.FileSystem;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -53,6 +56,14 @@ public class Logging {
             }
         }
         return ret;
+    }
+
+    public static void saveLogEntries(Collection <LogEntry> le){
+        saveLogEntries(le, FileSystem.getLanguage(), StoryState.getStoryName());
+    }
+
+    public static void saveLogEntry(LogEntry le){
+        saveLogEntry(le, FileSystem.getLanguage(), StoryState.getStoryName());
     }
 
     public static void saveLogEntries(Collection<LogEntry> le, String ethnoCode, String storyTitle){

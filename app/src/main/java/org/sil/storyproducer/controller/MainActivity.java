@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         skipRegistration = true;
         Intent goToLogView = new Intent(this, LogView.class);
         goToLogView.putExtra("slide", 1);
-        startActivity(goToLogView);
+       // startActivity(goToLogView);
 
         if (!skipRegistration) {
             // Checks registration file to see if email has been sent and launches registration if it hasn't

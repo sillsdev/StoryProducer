@@ -13,6 +13,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.util.ArrayList;
 
@@ -92,8 +94,7 @@ public class LogView extends AppCompatActivity {
         setTitle("Logging - Slide " + slide);
         listView = (ListView) findViewById(R.id.log_list_view);
         Logging.deleteLog("Spanglish", "NotAStory.com");
-        Logging.createFakeLogEntries("Spanglish", "NotAStory.com", 200);
-        Log log = Logging.getLog("Spanglish", "NotAStory.com");
+        Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         System.out.println("is log null? "+ (log==null ? "yes" : "no")); //TODO: figure out versioning on serialized classes
         LogListAdapter lla = new LogListAdapter(getApplicationContext(), log);
         listView.setAdapter(lla);

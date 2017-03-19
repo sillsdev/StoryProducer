@@ -22,10 +22,13 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.ComChkEntry;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 
 import java.io.File;
@@ -178,6 +181,7 @@ public class CommunityCheckFrag extends Fragment {
                 draftPlayer = new AudioPlayer();
                 draftPlayer.playWithPath(draftFile.getPath());
                 Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                Logging.saveLogEntry(ComChkEntry.Type.MT_pb.makeEntry());
             } else {
                 Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
             }
