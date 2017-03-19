@@ -24,7 +24,7 @@ public class AudioPlayer {
         try {
             mPlayer.setDataSource(path);
         } catch (IOException e) {
-            //TODO maybe something with this exception
+            //TODO maybe initializeToolbar with this exception
             e.printStackTrace();
         }
     }
@@ -37,13 +37,13 @@ public class AudioPlayer {
         try {
             mPlayer.setDataSource(path);
         } catch (IOException e) {
-            //TODO maybe something with this exception
+            //TODO maybe initializeToolbar with this exception
             e.printStackTrace();
         }
         try {
             mPlayer.prepare();
         } catch (IOException e) {
-            //TODO maybe something with this exception
+            //TODO maybe initializeToolbar with this exception
             e.printStackTrace();
         }
         mPlayer.start();
@@ -57,7 +57,7 @@ public class AudioPlayer {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
-                //TODO maybe something with this exception
+                //TODO maybe initializeToolbar with this exception
                 e.printStackTrace();
             }
         }
@@ -82,7 +82,7 @@ public class AudioPlayer {
             try {
                 mPlayer.stop();
             } catch (IllegalStateException e) {
-                //TODO maybe something with this exception
+                //TODO maybe initializeToolbar with this exception
                 e.printStackTrace();
             }
         }
@@ -96,13 +96,13 @@ public class AudioPlayer {
             try {
                 mPlayer.stop();
             } catch (IllegalStateException e) {
-                //TODO maybe something with this exception
+                //TODO maybe initializeToolbar with this exception
                 e.printStackTrace();
             } finally {
                 try {
                     mPlayer.release();
                 } catch (IllegalStateException e) {
-                    //TODO maybe something with this exception
+                    //TODO maybe initializeToolbar with this exception
                     e.printStackTrace();
                 }
 
@@ -112,7 +112,7 @@ public class AudioPlayer {
     }
 
     /**
-     * This allows the user to do something once the audio has completed
+     * This allows the user to do initializeToolbar once the audio has completed
      * via implementing MediaPlayer.OnCompleteListener.
      * @param OcL
      */

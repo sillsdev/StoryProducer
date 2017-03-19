@@ -44,7 +44,7 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AnimationToolbar;
+import org.sil.storyproducer.tools.toolbar.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
