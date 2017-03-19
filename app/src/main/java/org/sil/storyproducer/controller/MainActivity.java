@@ -7,11 +7,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.Looper;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,6 +24,7 @@ import android.widget.Toast;
 
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.NavItemAdapter;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
@@ -34,7 +33,6 @@ import org.sil.storyproducer.tools.file.FileSystem;
 import java.io.Serializable;
 
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
-import org.sil.storyproducer.tools.media.story.SampleStory;
 
 import java.util.ArrayList;
 import java.util.Map;

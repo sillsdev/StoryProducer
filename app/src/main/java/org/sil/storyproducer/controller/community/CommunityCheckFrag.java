@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -35,7 +36,7 @@ import java.io.IOException;
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-public class CommunityCheckFrag extends Fragment {
+public class CommunityCheckFrag extends Fragment implements RecordingsListAdapter.ClickListeners {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private final static String LOGTAG = "communityCheck";
     private int slideNumber;
@@ -118,7 +119,7 @@ public class CommunityCheckFrag extends Fragment {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
         comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
-        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slideNumber, this);
+        ListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
         listView.setAdapter(adapter);
     }
 
@@ -189,7 +190,7 @@ public class CommunityCheckFrag extends Fragment {
      * Plays the audio comment designated by the title
      * @param commentTitle the title of the comment to play
      */
-    public void playComment(String commentTitle) {
+    public void onPlayClickListener(String commentTitle) {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
@@ -199,6 +200,19 @@ public class CommunityCheckFrag extends Fragment {
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onDeleteClickListener(int slidePos, String commentTitle) {
+        AudioFiles.deleteComment(StoryState.getStoryName(), slidePos, commentTitle);
+        updateCommentList();
+    }
+
+    public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
+        return AudioFiles.renameComment(StoryState.getStoryName(), slidePos, name, newName);
+    }
+
+    public void onRenameSuccess() {
+        updateCommentList();
     }
 
     /**

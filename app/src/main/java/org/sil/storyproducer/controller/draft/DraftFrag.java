@@ -1,8 +1,6 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -22,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
@@ -45,7 +45,7 @@ import java.io.IOException;
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-public final class DraftFrag extends Fragment {
+public final class DraftFrag extends Fragment implements RecordingsListAdapter.ClickListeners {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slideNumber;
@@ -95,6 +95,7 @@ public final class DraftFrag extends Fragment {
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
         setUiColors();
+        setRecordingsList();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
@@ -150,6 +151,44 @@ public final class DraftFrag extends Fragment {
         if(myToolbar != null){
             myToolbar.close();
         }
+    }
+
+    private void setRecordingsList() {
+        Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        final DraftFrag draftFrag = this;
+        listRecordingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, draftFrag);
+                modal.show();
+            }
+        });
+    }
+
+    public void onPlayClickListener(String commentTitle) {
+//        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
+//        stopAllMedia();
+//        if (commentFile.exists()) {
+//            commentPlayer = new AudioPlayer();
+//            commentPlayer.playWithPath(commentFile.getPath());
+//            Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
+//        }
+    }
+
+    public void onDeleteClickListener(int slidePos, String commentTitle) {
+//        AudioFiles.deleteComment(StoryState.getStoryName(), slidePos, commentTitle);
+//        updateCommentList();
+    }
+
+    public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
+//        return AudioFiles.renameComment(StoryState.getStoryName(), slidePos, name, newName);
+        return null;
+    }
+
+    public void onRenameSuccess() {
+//        updateCommentList();
     }
 
     /**

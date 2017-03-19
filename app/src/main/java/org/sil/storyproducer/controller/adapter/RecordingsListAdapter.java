@@ -1,6 +1,7 @@
-package org.sil.storyproducer.controller.community;
+package org.sil.storyproducer.controller.adapter;
 
 import android.app.AlertDialog;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.community.CommunityCheckFrag;
+import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
@@ -22,18 +25,38 @@ import org.sil.storyproducer.tools.file.AudioFiles;
  * This class handles the layout inflation for the audio comment list
  */
 
-public class CommentListAdapter extends ArrayAdapter<String> {
+public class RecordingsListAdapter extends ArrayAdapter<String> {
     private final Context context;
     private final String[] values;
     private final int slidePosition;
-    private final CommunityCheckFrag commCheck;
+    private ClickListeners listeners;
 
-    public CommentListAdapter(Context context, String[] values, int slidePosition, CommunityCheckFrag commCheck) {
+    public RecordingsListAdapter(Context context, String[] values, int slidePosition, Fragment fragment) {
         super(context, -1, values);
         this.context = context;
         this.values = values;
         this.slidePosition = slidePosition;
-        this.commCheck = commCheck;
+        if(fragment instanceof CommunityCheckFrag) {
+            listeners = (CommunityCheckFrag) fragment;
+        } else {
+            listeners = (DraftFrag) fragment;
+        }
+    }
+
+//    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DraftFrag draftFrag) {
+//        super(context, -1, values);
+//        this.context = context;
+//        this.values = values;
+//        this.slidePosition = slidePosition;
+//        this.commCheck = null;
+//        ClickListeners listeners = ()draftFrag;
+//    }
+
+    public interface ClickListeners {
+        void onPlayClickListener(String name);
+        void onDeleteClickListener(int slidePos, String name);
+        AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName);
+        void onRenameSuccess();
     }
 
     @Override
@@ -50,7 +73,8 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commCheck.playComment(values[position]);
+//                commCheck.playComment(values[position]);
+                listeners.onPlayClickListener(values[position]);
             }
         });
 
@@ -77,14 +101,15 @@ public class CommentListAdapter extends ArrayAdapter<String> {
      * @param position the integer position of the comment where the button was pressed
      */
     private void showDeleteCommentDialog(final int position) {
-        AlertDialog dialog = new AlertDialog.Builder(commCheck.getContext())
-                .setTitle(commCheck.getString(R.string.comment_delete_title))
-                .setMessage(commCheck.getString(R.string.comment_delete_message))
-                .setNegativeButton(commCheck.getString(R.string.no), null)
-                .setPositiveButton(commCheck.getString(R.string.yes), new DialogInterface.OnClickListener() {
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.comment_delete_title))
+                .setMessage(context.getString(R.string.comment_delete_message))
+                .setNegativeButton(context.getString(R.string.no), null)
+                .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        AudioFiles.deleteComment(StoryState.getStoryName(), slidePosition, values[position]);
-                        commCheck.updateCommentList();
+//                        AudioFiles.deleteComment(StoryState.getStoryName(), slidePosition, values[position]);
+//                        commCheck.updateCommentList();
+                        listeners.onDeleteClickListener(slidePosition, values[position]);
                     }
                 }).create();
 
@@ -97,7 +122,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
      * @param position the integer position of the comment the user "long-clicked"
      */
     private void showCommentRenameDialog(final int position) {
-        final EditText newName = new EditText(commCheck.getContext());
+        final EditText newName = new EditText(context);
 
         // Programmatically set layout properties for edit text field
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
@@ -106,18 +131,20 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         // Apply layout properties
         newName.setLayoutParams(params);
 
-        AlertDialog dialog = new AlertDialog.Builder(commCheck.getContext())
-                .setTitle(commCheck.getString(R.string.comment_rename_title))
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.comment_rename_title))
                 .setView(newName)
-                .setNegativeButton(commCheck.getString(R.string.cancel), null)
-                .setPositiveButton(commCheck.getString(R.string.save), new DialogInterface.OnClickListener() {
+                .setNegativeButton(context.getString(R.string.cancel), null)
+                .setPositiveButton(context.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        AudioFiles.RenameCode returnCode = AudioFiles.renameComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(slidePosition, values[position], newName.getText().toString());
+//                                AudioFiles.renameComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                         switch(returnCode) {
 
                             case SUCCESS:
-                                commCheck.updateCommentList();
+//                                commCheck.updateCommentList();
+                                listeners.onRenameSuccess();
                                 Toast.makeText(getContext(), "File successfully renamed", Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_LENGTH:
