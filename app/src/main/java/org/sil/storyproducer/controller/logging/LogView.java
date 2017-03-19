@@ -31,17 +31,20 @@ public class LogView extends AppCompatActivity {
         private final Context context;
 
         public LogListAdapter(Context c, Log log){
-
-            if(slide>=0) {
-                ArrayList<LogEntry> filteredEntries = new ArrayList<>();
-                for (LogEntry l : log) {
-                    if (slide == l.getSlideNum()) {
-                        filteredEntries.add(l);
+            if(log != null) {
+                if (slide >= 0) {
+                    ArrayList<LogEntry> filteredEntries = new ArrayList<>();
+                    for (LogEntry l : log) {
+                        if (slide == l.getSlideNum()) {
+                            filteredEntries.add(l);
+                        }
                     }
+                    this.logEntries = filteredEntries.toArray(new LogEntry[0]);
+                } else {
+                    this.logEntries = log.toArray(new LogEntry[0]);
                 }
-                this.logEntries = filteredEntries.toArray(new LogEntry[0]);
             } else {
-                this.logEntries = log.toArray(new LogEntry[0]);
+                logEntries = new LogEntry[0];
             }
             context = c;
         }
@@ -87,6 +90,7 @@ public class LogView extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("Creating LogView activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_view);
         setSupportActionBar((Toolbar) findViewById(R.id.toolbar));

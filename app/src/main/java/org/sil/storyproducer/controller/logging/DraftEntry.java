@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.logging;
 
+import org.sil.storyproducer.model.StoryState;
+
 /**
  * Created by user on 1/16/2017.
  */
@@ -29,6 +31,11 @@ public class DraftEntry extends LogEntry {
         MT_pb("Mother Tongue Playback");
 
         private String displayName;
+
+        public DraftEntry makeEntry(){
+            return new DraftEntry(System.currentTimeMillis(), this,
+                    StoryState.getCurrentStorySlide());
+        }
 
         private Type(String displayName){
             this.displayName=displayName;

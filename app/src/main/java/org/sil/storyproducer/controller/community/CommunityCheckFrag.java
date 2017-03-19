@@ -233,6 +233,7 @@ public class CommunityCheckFrag extends Fragment {
                 }
                 if(isRecording){
                     stopAudioRecorder();
+                    Logging.saveLogEntry(ComChkEntry.Type.cmt_rec.makeEntry());
                     updateCommentList();
                 }else{
                     startAudioRecorder(recordFilePath);

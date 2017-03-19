@@ -30,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.DraftEntry;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
@@ -278,6 +280,7 @@ public final class DraftFrag extends Fragment {
                         narrationAudioPlayer.playWithPath(narrationFilePath);
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
                         Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                        Logging.saveLogEntry(DraftEntry.Type.LWC_pb.makeEntry());
                     }
                 }
             }
@@ -355,6 +358,7 @@ public final class DraftFrag extends Fragment {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
+        Logging.saveLogEntry(DraftEntry.Type.MT_rec.makeEntry());
         setVoiceRecorder(recordFilePath);
         try {
             isRecording = true;
@@ -444,6 +448,7 @@ public final class DraftFrag extends Fragment {
                         });
                         voiceAudioPlayer.playWithPath(recordFilePath);
                         Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
+                        Logging.saveLogEntry(DraftEntry.Type.MT_pb.makeEntry());
                         toolbarPlayButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     } else {
                         Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
