@@ -60,6 +60,10 @@ public class RecordingToolbar extends AnimationToolbar {
     private AuxiliaryMedia auxiliaryMedia;
     private ArrayList<AuxiliaryMedia> list;
 
+    /**
+     * Use this class to hold media that should be stopped when a toolbar button is pressed.
+     * Refer to function onToolbarTouchStopAudio() for more information.
+     */
     public static class AuxiliaryMedia {
         View viewThatIsPlayingButton;
         int setButtonToDrawableOnStop;
@@ -77,13 +81,13 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
 
-    /**
-     * @param activity
-     * @param rootViewToolbar
-     * @param rootView
-     * @param enablePlaybackButton
-     * @param enableDeleteButton
-     * @param recordFilePath
+    /** The ctor.
+     * @param activity The activity from the calling class.
+     * @param rootViewToolbar The rootView of the Toolbar layout called toolbar_for_recording.
+     * @param rootView The rootView of the layout that you want to embed the toolbar in.
+     * @param enablePlaybackButton Enable playback of recording.
+     * @param enableDeleteButton Enable the delete button, does not work as of now.
+     * @param recordFilePath The filepath that the recording will be saved under.
      */
     public RecordingToolbar(Activity activity, View rootViewToolbar, View rootView, boolean enablePlaybackButton, boolean enableDeleteButton, String recordFilePath) {
         super(activity);
@@ -104,6 +108,8 @@ public class RecordingToolbar extends AnimationToolbar {
 
     /**
      * This function is used to stop all the media sources on the toolbar from playing or recording.
+     * The auxiliary medias are not stopped because the calling class should be responsible for
+     * those.
      */
     public void stopPlayBackAndRecording() {
         if (isRecording) {
@@ -129,7 +135,7 @@ public class RecordingToolbar extends AnimationToolbar {
      */
     private void stopAllPlayBackAndRecording() {
         stopPlayBackAndRecording();
-        stopAuxilaryMedia();
+        stopAuxiliaryMedia();
     }
 
     /**
@@ -148,15 +154,15 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
-     * This is like onToolbarTouchStopAudio function, but this takes in multiple audio sources.
-     *
+     * This is like onToolbarTouchStopAudio function, but this takes in multiple audio sources
+     * in an arrayList form.
      * @param list
      */
     public void onToolbarTouchStopAudio(ArrayList<AuxiliaryMedia> list) {
         this.list = list;
     }
 
-    public void stopAuxilaryMedia() {
+    public void stopAuxiliaryMedia() {
         if (list != null) {
             for (AuxiliaryMedia am : list) {
                 am.stopPlaying();
@@ -176,6 +182,8 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     public void closeToolbar() {
+        //Calling class should be responsible for all other media
+        //so stopAllPlayBackAndRecording() is not being used here.
         stopPlayBackAndRecording();
         super.close();
     }
@@ -203,6 +211,9 @@ public class RecordingToolbar extends AnimationToolbar {
         setupToolbar();
     }
 
+    /**
+     *
+     */
     private void setupToolbarButtons() {
         rootViewToolbarLayout.removeAllViews();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -246,6 +257,9 @@ public class RecordingToolbar extends AnimationToolbar {
         setOnClickListeners();
     }
 
+    /**
+     *
+     */
     private void setupToolbar() {
         RelativeLayout.LayoutParams[] myParams =
                 new RelativeLayout.LayoutParams[]{new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),
