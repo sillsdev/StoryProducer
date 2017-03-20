@@ -72,6 +72,7 @@ public class PhaseGestureListener extends SimpleOnGestureListener {
         Intent intent = new Intent(activity.getApplicationContext(), phase.getTheClass());
         intent.putExtra(STORY_NAME, StoryState.getStoryName());
         activity.startActivity(intent);
+        activity.finish();
         activity.overridePendingTransition(R.anim.enter_down, R.anim.exit_down);
     }
 
@@ -85,6 +86,7 @@ public class PhaseGestureListener extends SimpleOnGestureListener {
         Intent intent = new Intent(activity.getApplicationContext(), phase.getTheClass());
         intent.putExtra(STORY_NAME, StoryState.getStoryName());
         activity.startActivity(intent);
+        activity.finish();
         activity.overridePendingTransition(R.anim.enter_up, R.anim.exit_up);
     }
 
