@@ -108,7 +108,10 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
             }
             else {
                 mNextTextOverlay = new TextOverlay(nextText);
-                mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                //Push text to bottom if there is a picture.
+                if(nextPage.getBitmap() != null) {
+                    mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                }
             }
         }
     }
@@ -152,7 +155,10 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
                 }
                 else {
                     mNextTextOverlay = new TextOverlay(nextText);
-                    mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                    //Push text to bottom if there is a picture.
+                    if(nextPage.getBitmap() != null) {
+                        mNextTextOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE);
+                    }
                 }
             }
         }
@@ -205,6 +211,10 @@ class StoryFrameDrawer implements PipedVideoSurfaceEncoder.Source {
             mBitmapPaint.setAlpha((int) (alpha * 255));
 
             canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint);
+        }
+        else {
+            //If there is no picture, draw black background for text overlay.
+            canv.drawARGB((int) (alpha * 255), 0, 0, 0);
         }
 
         if(overlay != null) {

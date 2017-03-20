@@ -99,8 +99,12 @@ public class StoryMaker implements Closeable {
         PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
-        StoryFrameDrawer videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
-        PipedVideoSurfaceEncoder videoEncoder = new PipedVideoSurfaceEncoder();
+        StoryFrameDrawer videoDrawer = null;
+        PipedVideoSurfaceEncoder videoEncoder = null;
+        if(mVideoFormat != null) {
+            videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
+            videoEncoder = new PipedVideoSurfaceEncoder();
+        }
         mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
 
         boolean success = false;
@@ -119,10 +123,11 @@ public class StoryMaker implements Closeable {
                 narrationConcatenator.addSource(path, page.getDuration());
             }
 
-            mMuxer.addSource(videoEncoder);
+            if(mVideoFormat != null) {
+                mMuxer.addSource(videoEncoder);
 
-            videoEncoder.addSource(videoDrawer);
-
+                videoEncoder.addSource(videoDrawer);
+            }
             success = mMuxer.crunch();
             Log.i(TAG, "Video saved to " + mOutputFile);
         }
@@ -131,12 +136,16 @@ public class StoryMaker implements Closeable {
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
-            soundtrackLooper.close();
+            if(soundtrackLooper != null) {
+                soundtrackLooper.close();
+            }
             narrationConcatenator.close();
             audioMixer.close();
             audioEncoder.close();
-            videoDrawer.close();
-            videoEncoder.close();
+            if(mVideoFormat != null) {
+                videoDrawer.close();
+                videoEncoder.close();
+            }
             mMuxer.close();
         }
 
