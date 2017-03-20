@@ -5,12 +5,16 @@ package org.sil.storyproducer.controller.logging;
  */
 
 public class LearnEntry extends LogEntry {
-    private double startPosition;
-    private double endPosition;
+    private int startPosition;
+    private int endPosition;
 
-    public LearnEntry(long dateTime, double start, double end){
+    public LearnEntry(long dateTime, int start, int end){
         super(dateTime, Phase.Learn);
         startPosition=start;
         endPosition=end;
+    }
+
+    public static LearnEntry makeEntry(int start, int end){
+        return new LearnEntry(System.currentTimeMillis(), start, end);
     }
 }

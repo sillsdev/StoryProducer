@@ -42,6 +42,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.LearnEntry;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
@@ -88,6 +90,7 @@ public class LearnActivity extends AppCompatActivity {
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
+    private int startPos = 0;
 
     //recording animation bar
     private AnimationToolbar myToolbar = null;
@@ -275,6 +278,8 @@ public class LearnActivity extends AppCompatActivity {
      * helper function for pausing the video
      */
     private void pauseVideo() {
+        Logging.saveLogEntry(LearnEntry.makeEntry(startPos, videoSeekBar.getProgress()));
+        System.out.println("jest saved it");
         narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
         playButton.setImageResource(R.drawable.ic_play_gray);
@@ -284,6 +289,7 @@ public class LearnActivity extends AppCompatActivity {
      * helper function for resuming the video
      */
     private void resumeVideo() {
+        startPos = videoSeekBar.getProgress();
         if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
             playVideo();
             isFirstTime = false;

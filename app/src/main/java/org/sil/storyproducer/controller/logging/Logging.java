@@ -142,7 +142,7 @@ public class Logging {
     public static void createFakeLogEntries(String lang, String story, int n){
         HashSet<LogEntry> james = new HashSet<>();
         Random rand = new Random();
-        double start=0;
+        int start=0;
         ComChkEntry.Type[] cchkVals = ComChkEntry.Type.values();
         DraftEntry.Type[] dVals = DraftEntry.Type.values();
         for(int i=0; i<n; i++){
@@ -152,7 +152,7 @@ public class Logging {
                     dVals[rand.nextInt(dVals.length)], rand.nextInt(15));
             james.add(jim);
             jim = new LearnEntry((long) (Math.random()*System.currentTimeMillis()),
-                    start = Math.random()*100 , start + Math.random()*100);
+                    start = rand.nextInt(100) , start + rand.nextInt(100));
             james.add(jim);
             jim = new ComChkEntry((long) (Math.random()*System.currentTimeMillis()),
                     cchkVals[rand.nextInt(cchkVals.length)], rand.nextInt(15));
