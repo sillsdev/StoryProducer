@@ -7,5 +7,7 @@
     android:layout_height="match_parent"
     tools:context="org.sil.storyproducer.controller.pager.PagerBaseActivity"
     android:id="@+id/pager"
+            android:overScrollMode="never"
     app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <!-- overScrollMode="never" - turns off the animations when hitting the first and last slides of the viewPager -->
 

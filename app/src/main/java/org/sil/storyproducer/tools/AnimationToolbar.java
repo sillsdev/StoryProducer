@@ -119,7 +119,7 @@ public final class AnimationToolbar {
     }
 
     public boolean isOpen(){
-        return (toolBar.getVisibility() == View.VISIBLE);
+        return toolBarOpen;
     }
 
 
