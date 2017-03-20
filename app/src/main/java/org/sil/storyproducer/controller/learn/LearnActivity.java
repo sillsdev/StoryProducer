@@ -61,7 +61,7 @@ import java.util.ArrayList;
 
 public class LearnActivity extends AppCompatActivity {
 
-    private final static float BACKGROUND_VOLUME = 0.5f;
+    private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -69,7 +69,8 @@ public class LearnActivity extends AppCompatActivity {
     private SeekBar videoSeekBar;
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
-    private int slideNum = 0;
+
+    private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
     private String storyName;
     private boolean isVolumeOn = true;
@@ -86,6 +87,7 @@ public class LearnActivity extends AppCompatActivity {
     private String recordFilePath;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
+    private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
     //recording animation bar
     private AnimationToolbar myToolbar = null;
@@ -121,8 +123,12 @@ public class LearnActivity extends AppCompatActivity {
         setBackgroundAudioJumps();
 
         setSeekBarListener();
-        playVideo();
-        setBackgroundMusic();
+
+        //create audio players
+        narrationPlayer = new AudioPlayer();
+        backgroundPlayer = new AudioPlayer();
+
+        setPic(learnImageView);     //set the first image to show
 
         //setup the recording animation bar
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fab),
@@ -203,15 +209,12 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        narrationPlayer.pauseAudio();
-        backgroundPlayer.pauseAudio();
+        pauseVideo();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        narrationPlayer.resumeAudio();
-        backgroundPlayer.resumeAudio();
     }
 
 
@@ -226,13 +229,13 @@ public class LearnActivity extends AppCompatActivity {
             narrationPlayer.releaseAudio();
         }
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
+        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNumber).getPath());
         narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
-        videoSeekBar.setProgress(slideNum);
+        videoSeekBar.setProgress(slideNumber);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < CONTENT_SLIDE_COUNT) {     //not at the end of video
+                if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
@@ -244,7 +247,7 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         });
-        slideNum++;         //move to the next slide
+        slideNumber++;         //move to the next slide
     }
 
     /**
@@ -253,20 +256,40 @@ public class LearnActivity extends AppCompatActivity {
      */
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
-            narrationPlayer.pauseAudio();
-            backgroundPlayer.pauseAudio();
-            playButton.setImageResource(R.drawable.ic_play_gray);
+            pauseVideo();
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            if(slideNum >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
+
+            if(slideNumber >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.setProgress(0);
-                slideNum = 0;
+                slideNumber = 0;
                 setBackgroundMusic();
                 playVideo();
             } else {
-                narrationPlayer.resumeAudio();
-                backgroundPlayer.resumeAudio();
+               resumeVideo();
             }
+        }
+    }
+
+    /**
+     * helper function for pausing the video
+     */
+    private void pauseVideo() {
+        narrationPlayer.pauseAudio();
+        backgroundPlayer.pauseAudio();
+        playButton.setImageResource(R.drawable.ic_play_gray);
+    }
+
+    /**
+     * helper function for resuming the video
+     */
+    private void resumeVideo() {
+        if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
+            playVideo();
+            isFirstTime = false;
+        } else {
+            narrationPlayer.resumeAudio();
+            backgroundPlayer.resumeAudio();
         }
     }
 
@@ -289,11 +312,11 @@ public class LearnActivity extends AppCompatActivity {
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
                     narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
                     backgroundPlayer.releaseAudio();
-                    slideNum = progress;
+                    slideNumber = progress;
                     setBackgroundMusic();       //have to reset the background music because it could have been completed
                     if (notPlayingAudio) backgroundPlayer.pauseAudio();
-                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNum));
-                    if(slideNum == CONTENT_SLIDE_COUNT) {
+                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
+                    if(slideNumber == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
@@ -312,8 +335,9 @@ public class LearnActivity extends AppCompatActivity {
      * helper function that resets the vidio to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
+        playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
-        slideNum = 0;
+        slideNumber = 0;
         narrationPlayer = new AudioPlayer();
         narrationPlayer.setVolume(0.0f);
         setBackgroundMusic();
@@ -444,8 +468,8 @@ public class LearnActivity extends AppCompatActivity {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
-        if(slideNum == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNumber);
+        if(slideNumber == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
             slidePicture = ImageFiles.getBitmap(storyName, ImageFiles.COPYRIGHT);
         }
 
