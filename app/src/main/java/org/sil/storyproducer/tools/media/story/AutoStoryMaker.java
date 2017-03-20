@@ -261,8 +261,12 @@ public class AutoStoryMaker extends Thread implements Closeable {
                     image = ImageFiles.getFile(mStory, iSlide);
                 }
             }
-            File audio = AudioFiles.getDraft(mStory, iSlide);
-            //fallback to LWC narration
+            File audio = AudioFiles.getDramatization(mStory, iSlide);
+            //fallback to draft audio
+            if(!audio.exists()) {
+                audio = AudioFiles.getDraft(mStory, iSlide);
+            }
+            //fallback to LWC audio
             if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
