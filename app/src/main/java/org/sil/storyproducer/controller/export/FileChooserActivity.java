@@ -285,6 +285,9 @@ public class FileChooserActivity extends AppCompatActivity {
         if(! history.isEmpty()){
             navigateToFolder(history.pop(), false);
         }
+        else {
+            finish();
+        }
     }
 
 

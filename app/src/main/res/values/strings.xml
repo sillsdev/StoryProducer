@@ -127,7 +127,7 @@
     <string name="export_location_browse">Browse</string>
     <string name="export_location_missing_message">No save location specified</string>
     <string name="export_location_exists_title">Replace File?</string>
-    <string name="export_location_exists_message">The file specified already exists. Are you sure you want to replace it?</string>
+    <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>

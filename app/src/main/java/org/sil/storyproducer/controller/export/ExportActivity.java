@@ -139,9 +139,14 @@ public class ExportActivity extends PhaseBaseActivity {
         mSpinnerFormat.setAdapter(formatAdapter);
 
         mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
+        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
 
         mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
-
         mButtonBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
