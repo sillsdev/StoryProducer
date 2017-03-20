@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
@@ -221,9 +222,11 @@ public class ConsultantCheckFrag extends Fragment {
         final String prefsKeyString = storyName + slidePosition + IS_CHECKED;
         isChecked = prefs.getBoolean(prefsKeyString, false);
         if(isChecked) {
-            button.setBackgroundResource(R.drawable.ic_checkmark_green);
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
         } else {
-            button.setBackgroundResource(R.drawable.ic_checkmark_red);
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
         }
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,12 +237,14 @@ public class ConsultantCheckFrag extends Fragment {
                     return;
                 }
                 if(isChecked) {
-                    button.setBackgroundResource(R.drawable.ic_checkmark_red);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
                     isChecked = false;
                     prefsEditor.putBoolean(prefsKeyString, false);
                     prefsEditor.apply();
                 } else {
-                    button.setBackgroundResource(R.drawable.ic_checkmark_green);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
                     isChecked = true;
                     prefsEditor.putBoolean(prefsKeyString, true);
                     prefsEditor.commit();
@@ -256,7 +261,8 @@ public class ConsultantCheckFrag extends Fragment {
      * @param button the logs button
      */
     private void setLogsButton(ImageButton button) {
-        button.setBackgroundResource(R.drawable.ic_logs_blue);
+        //TODO: use non-deprecated method; currently used to support older devices
+        button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_logs_blue, null));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
