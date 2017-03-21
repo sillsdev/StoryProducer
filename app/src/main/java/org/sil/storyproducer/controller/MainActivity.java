@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
+
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,6 +25,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -39,10 +41,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());
+        StorySharedPreferences.init(getApplicationContext());
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryFrag()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
 
@@ -160,9 +164,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * move to the chosen story
      */
     public void switchToStory(String storyName) {
-        //TODO change the Story State that is stored for each story
         StoryState.setStoryName(storyName);
-        Phase currPhase = StoryState.getCurrentPhase();
+        Phase currPhase = StoryState.getSavedPhase();
+        StoryState.setCurrentPhase(currPhase);
+        StoryState.setCurrentStorySlide(0);
         Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
     }

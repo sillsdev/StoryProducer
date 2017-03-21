@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
+import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
@@ -31,21 +32,20 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment;
         Bundle passedArgs = new Bundle();
-        //TODO change the case switch to use constants like: StoryState.DraftPhase instead of string literal "Draft"
-        switch (StoryState.getCurrentPhase().getTitle()) {
-            case "Draft":
+        switch (StoryState.getCurrentPhase().getType()) {
+            case DRAFT:
                 fragment = new DraftFrag();
                 passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
-            case "Community Check":
+            case COMMUNITY_CHECK:
                 fragment = new CommunityCheckFrag();
                 passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Consultant Check":
+            case CONSULTANT_CHECK:
                 fragment = new ConsultantCheckFrag();
                 passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Dramatization":
+            case DRAMATIZATION:
                 fragment = new DramatizationFrag();
                 passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
                 break;

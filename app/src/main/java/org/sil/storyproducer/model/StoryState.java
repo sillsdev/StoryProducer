@@ -6,11 +6,14 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.export.ExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 
 /**
  * StoryState is a static class that holds the information of the state of a story project
  */
 public final class StoryState {
+
+    public static final String LEARN_PHASE = "Learn";       //used in StorySharedPreferences
 
     private static Context context;
     private static String storyName;
@@ -27,14 +30,14 @@ public final class StoryState {
      */
     public static void init(Context con) {
         context = con;
-        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class);
+        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
         String[] phaseMenuArray = con.getResources().getStringArray(R.array.phases_menu_array);
-        phases =  new Phase[] {new Phase(phaseMenuArray[0], R.color.learn_phase,LearnActivity.class),
-                            new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class)};
+        phases =  new Phase[] {new Phase(phaseMenuArray[0], R.color.learn_phase,LearnActivity.class, Phase.Type.LEARN),
+                            new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
+                            new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
+                            new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class, Phase.Type.CONSULTANT_CHECK),
+                            new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
+                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class, Phase.Type.EXPORT)};
     }
 
     /**
@@ -72,6 +75,19 @@ public final class StoryState {
             }
         }
         currentPhase = p;
+        StorySharedPreferences.setPhaseForStory(p.getTitle(), storyName);   //set the stored preferences
+    }
+
+    public static Phase getSavedPhase() {
+        String phaseTitle = StorySharedPreferences.getPhaseForStory(storyName);
+        Phase phase = null;
+        for(int k = 0; k < phases.length; k++) {
+            if(phaseTitle.equals(phases[k].getTitle())) {
+                phase = phases[k];
+            }
+        }
+        currentPhase = phase;
+        return phase;
     }
 
     /**
@@ -110,6 +126,7 @@ public final class StoryState {
             currentPhaseIndex++;
         }
         currentPhase = phases[currentPhaseIndex];
+        StorySharedPreferences.setPhaseForStory(currentPhase.getTitle(), storyName);
         return currentPhase;
     }
 
@@ -122,6 +139,7 @@ public final class StoryState {
             currentPhaseIndex--;
         }
         currentPhase = phases[currentPhaseIndex];
+        StorySharedPreferences.setPhaseForStory(currentPhase.getTitle(), storyName);
         return currentPhase;
     }
 }
