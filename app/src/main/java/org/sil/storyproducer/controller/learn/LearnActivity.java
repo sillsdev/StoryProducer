@@ -590,10 +590,10 @@ public class LearnActivity extends AppCompatActivity {
                     1);
         }
         voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(44100);
+        voiceRecorder.setAudioSamplingRate(8000);
         voiceRecorder.setOutputFile(fileName);
     }
 

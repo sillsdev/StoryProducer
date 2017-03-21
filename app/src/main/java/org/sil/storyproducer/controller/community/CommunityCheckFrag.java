@@ -292,10 +292,10 @@ public class CommunityCheckFrag extends Fragment {
 
         // The encoding and sampling rates are standards for the AAC encoder
         commentRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         commentRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         commentRecorder.setAudioEncodingBitRate(16);
-        commentRecorder.setAudioSamplingRate(44100);
+        commentRecorder.setAudioSamplingRate(8000);
         commentRecorder.setOutputFile(fileName);
     }
 

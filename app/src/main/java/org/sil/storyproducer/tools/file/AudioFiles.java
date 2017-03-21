@@ -10,7 +10,7 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
-    private static final String PREFER_EXTENSION = ".m4a";
+    private static final String PREFER_EXTENSION = ".3gp";
 
     private static final String LEARN_PRACTICE_PREFIX = "learnPractice";
     private static final String LWC_AUDIO_PREFIX = "narration";
