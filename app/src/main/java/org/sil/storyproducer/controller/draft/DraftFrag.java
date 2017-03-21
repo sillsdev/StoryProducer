@@ -383,10 +383,10 @@ public final class DraftFrag extends Fragment {
         }
 
         voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
         voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(44100);
+        voiceRecorder.setAudioSamplingRate(8000);
         voiceRecorder.setOutputFile(fileName);
     }
 
