@@ -92,7 +92,7 @@ public class AudioPlayer {
      * Stops the audio and releases it if it is currently being played
      */
     public void releaseAudio() {
-        if(mPlayer.isPlaying()) {
+        if(mPlayer != null && mPlayer.isPlaying()) {
             try {
                 mPlayer.stop();
             } catch (IllegalStateException e) {
