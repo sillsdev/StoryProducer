@@ -7,7 +7,7 @@ import org.sil.storyproducer.model.StoryState;
 
 public class StorySharedPreferences {
 
-    private static final String PHASE = "phase";
+    private static final String PHASE_KEY = "phase";
 
     private static Context context;
 
@@ -17,12 +17,12 @@ public class StorySharedPreferences {
 
     public static void setPhaseForStory(final String phase, final String storyName) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(storyName + PHASE, phase)
+                .putString(storyName + PHASE_KEY, phase)
                 .commit();
     }
 
     public static String getPhaseForStory(String storyName) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(storyName + PHASE, StoryState.LEARN_PHASE);    //learn is the default phase
+                .getString(storyName + PHASE_KEY, StoryState.LEARN_PHASE);    //learn is the default phase
     }
 }
