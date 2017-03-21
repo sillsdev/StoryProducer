@@ -13,12 +13,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences;
  */
 public final class StoryState {
 
-    public static final String LEARN_PHASE = "Learn";
-    public static final String DRAFT_PHASE = "Draft";
-    public static final String COMMUNITY_PHASE = "Community Check";
-    public static final String CONSULTANT_PHASE = "Consultant Check";
-    public static final String DRAMATIZATION_PHASE = "Dramatization";
-    public static final String EXPORT_PHASE = "Export";
+    public static final String LEARN_PHASE = "Learn";       //used in StorySharedPreferences
 
     private static Context context;
     private static String storyName;
@@ -35,14 +30,14 @@ public final class StoryState {
      */
     public static void init(Context con) {
         context = con;
-        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class);
+        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
         String[] phaseMenuArray = con.getResources().getStringArray(R.array.phases_menu_array);
-        phases =  new Phase[] {new Phase(phaseMenuArray[0], R.color.learn_phase,LearnActivity.class),
-                            new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class),
-                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class)};
+        phases =  new Phase[] {new Phase(phaseMenuArray[0], R.color.learn_phase,LearnActivity.class, Phase.Type.LEARN),
+                            new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
+                            new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
+                            new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class, Phase.Type.CONSULTANT_CHECK),
+                            new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
+                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class, Phase.Type.EXPORT)};
     }
 
     /**
