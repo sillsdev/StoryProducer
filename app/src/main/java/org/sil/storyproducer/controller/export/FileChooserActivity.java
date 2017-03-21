@@ -36,14 +36,17 @@ import java.util.regex.Pattern;
 
 public class FileChooserActivity extends AppCompatActivity {
 
-    private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z\\-_ ]");
+    private static final Pattern ILLEGAL_CHARS = Pattern.compile("[^a-zA-Z0-9\\-_ ]");
 
     private File currentDir;
     private FileArrayAdapter adapter;
     private final Stack<File> history=new Stack<>();
-    private final String FILE_EXTENSION = ".mp4";
-    public final static  String FILE_DIR_PATH = "fileDirPath";
-    public final static String FILE_PATH = "filePath";
+    private boolean allowOverwrite = false;
+
+    public static final String ALLOW_OVERWRITE = "allowOverwrite";
+    public static final String INITIAL_PATH = "initialPath";
+    public static final String FILE_DIR_PATH = "fileDirPath";
+    public static final String FILE_PATH = "filePath";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,9 +58,16 @@ public class FileChooserActivity extends AppCompatActivity {
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        allowOverwrite = getIntent().getBooleanExtra(ALLOW_OVERWRITE, false);
+
         //Navigate to folder passed through intent
-        File projectFolder = new File(getIntent().getStringExtra(ExportActivity.PROJECT_DIRECTORY));
-        navigateToFolder(projectFolder);
+        File initialFile = new File(getIntent().getStringExtra(INITIAL_PATH));
+        if(initialFile.isDirectory()) {
+            navigateToFolder(initialFile);
+        }
+        else {
+            navigateToFolder(initialFile.getParentFile());
+        }
 
         //bind onClickListener to save button
         Button saveButton = (Button) findViewById(R.id.saveButton);
@@ -190,8 +200,8 @@ public class FileChooserActivity extends AppCompatActivity {
         } else if (fileName.length()==0){
             createErrorDialog(getString(R.string.file_explorer_emptyFileName));
         } else {
-            File newFile = new File(currentDir, fileName + FILE_EXTENSION);
-            if (newFile.exists()){
+            File newFile = new File(currentDir, fileName);
+            if (newFile.exists() && !allowOverwrite){
                 createErrorDialog(getString(R.string.file_explorer_fileAlreadyExists_1)
                         +newFile.getName()+getString(R.string.file_explorer_fileAlreadyExists_2));
             } else {
@@ -274,6 +284,9 @@ public class FileChooserActivity extends AppCompatActivity {
     private void goBack(){
         if(! history.isEmpty()){
             navigateToFolder(history.pop(), false);
+        }
+        else {
+            finish();
         }
     }
 

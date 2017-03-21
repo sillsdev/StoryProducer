@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -66,7 +65,7 @@ import java.util.Stack;
  */
 public class RegistrationActivity extends AppCompatActivity {
 
-    public static final String SKIP_KEY = "skip";
+    public static final String FIRST_ACTIVITY_KEY = "first";
     public static final String EMAIL_SENT = "registration_email_sent";
 
     private static final String ID_PREFIX = "org.sil.storyproducer:id/input_";
@@ -160,7 +159,7 @@ public class RegistrationActivity extends AppCompatActivity {
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showExitAlertDialog();
+                showSkipAlertDialog();
             }
         });
     }
@@ -400,10 +399,34 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * Creates an alert dialog asking if the user wants to exit registration
-     * If they respond yes, sends them back to MainActivity
+     * Creates an alert dialog asking if the user wants to exit registration (without saving)
+     * If they respond yes, finish activity or send them back to MainActivity
      */
     private void showExitAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
+                .setTitle(getString(R.string.registration_exit_title))
+                .setMessage(getString(R.string.registration_exit_message))
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(isFirstActivity()) {
+                            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            finish();
+                        }
+                    }
+                }).create();
+
+        dialog.show();
+    }
+
+    /**
+     * Creates an alert dialog asking if the user wants to skip registration
+     * If they respond yes, finish activity or send them back to MainActivity
+     */
+    private void showSkipAlertDialog() {
         AlertDialog dialog = new AlertDialog.Builder(RegistrationActivity.this)
                 .setTitle(getString(R.string.registration_skip_title))
                 .setMessage(getString(R.string.registration_skip_message))
@@ -411,13 +434,31 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         storeRegistrationInfo();
-                        Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
-                        intent.putExtra(SKIP_KEY, true);
-                        startActivity(intent);
+                        if(isFirstActivity()) {
+                            Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            finish();
+                        }
                     }
                 }).create();
 
         dialog.show();
+    }
+
+    /**
+     * Checks the bundle variables to see if this activity was launched at the app's start.
+     * @return true if this is opening registration, false if not
+     */
+    private boolean isFirstActivity() {
+        // Check to see if registration is first activity
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.getBoolean(RegistrationActivity.FIRST_ACTIVITY_KEY)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
