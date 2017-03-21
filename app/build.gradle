@@ -8,14 +8,17 @@ android {
         applicationId "org.sil.storyproducer"
         minSdkVersion 18
         targetSdkVersion 25
-        versionCode 1
-        versionName "0.3"
+        versionCode 3
+        versionName "0.7"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    defaultConfig {
+        vectorDrawables.useSupportLibrary = true
     }
 }
 
