@@ -1,8 +1,5 @@
 package org.sil.storyproducer.controller.learn;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,47 +11,29 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.PhaseGestureListener;
-import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;
@@ -455,7 +434,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
-        setVoiceRecorder(recordFilePath, voiceRecorder != null);
+        setVoiceRecorder(recordFilePath);
         try {
             voiceRecorder.prepare();
             voiceRecorder.start();
@@ -486,27 +465,9 @@ public class LearnActivity extends PhaseBaseActivity {
      * voicerecorder.
      *
      * @param fileName               The file to output the voice recordings.
-     * @param createNewMediaRecorder The boolean that dictates an new instantiation of a
-     *                               voice recorder.
      */
-    private void setVoiceRecorder(String fileName, boolean createNewMediaRecorder) {
-        if (createNewMediaRecorder || voiceRecorder == null) {
-            voiceRecorder = new MediaRecorder();
-        }
-
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(8000);
-        voiceRecorder.setOutputFile(fileName);
+    private void setVoiceRecorder(String fileName) {
+        voiceRecorder = new AudioRecorder(fileName, this);
     }
 
     /**

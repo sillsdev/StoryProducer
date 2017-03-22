@@ -1,9 +1,5 @@
 package org.sil.storyproducer.controller.draft;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,7 +10,6 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -33,11 +28,12 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -372,22 +368,7 @@ public final class DraftFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new MediaRecorder();
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(8000);
-        voiceRecorder.setOutputFile(fileName);
+        voiceRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**

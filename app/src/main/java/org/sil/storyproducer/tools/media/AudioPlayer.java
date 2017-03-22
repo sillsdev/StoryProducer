@@ -1,13 +1,12 @@
-package org.sil.storyproducer.tools;
+package org.sil.storyproducer.tools.media;
 
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 
 import java.io.IOException;
 
 public class AudioPlayer {
 
-    MediaPlayer mPlayer;
+    private MediaPlayer mPlayer;
 
     /**
      * Constructor for Audio Player, no params

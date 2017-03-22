@@ -1,12 +1,9 @@
 package org.sil.storyproducer.controller.community;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -23,10 +20,11 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -278,25 +276,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName){
-
-        commentRecorder = new MediaRecorder();
-
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        // The encoding and sampling rates are standards for the AAC encoder
-        commentRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        commentRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        commentRecorder.setAudioEncodingBitRate(16);
-        commentRecorder.setAudioSamplingRate(8000);
-        commentRecorder.setOutputFile(fileName);
+        commentRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**
