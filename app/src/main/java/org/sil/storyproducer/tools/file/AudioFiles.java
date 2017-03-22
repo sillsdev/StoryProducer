@@ -58,7 +58,7 @@ public class AudioFiles {
     //*** Draft ***
 
     public static File getDraft(String story, int i){
-        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + i + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + i + PREFER_EXTENSION);
     }
 
     public static File getDraftTemp(String story) {
