@@ -44,44 +44,30 @@
         android:paddingTop="10dp"
         android:layout_below="@id/image_container"
         android:layout_above="@+id/concheck_button_layout">
-
-        <TextView
-            android:id="@+id/fragment_concheck_reference_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:background="@color/gray"
-            android:textSize="20sp"
-            android:textStyle="bold|italic" />
-
         <ScrollView
             android:id="@+id/concheck_scripture_scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/fragment_concheck_reference_text">
-
-            <TextView
-                android:id="@+id/fragment_concheck_scripture_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:background="@color/gray" />
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/fragment_concheck_reference_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray"
+                    android:textSize="20sp"
+                    android:textStyle="bold|italic"/>
+                <TextView
+                    android:id="@+id/fragment_concheck_scripture_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:background="@color/gray"
+                    android:layout_below="@id/fragment_concheck_reference_text"/>
+            </RelativeLayout>
 
         </ScrollView>
-
-
-        <ImageButton
-            android:id="@+id/fragment_concheck_narration_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/concheck_scripture_scroll"
-            android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/fragment_concheck_reference_text"
-            android:layout_toEndOf="@+id/fragment_concheck_reference_text"
-            android:background="@color/gray"
-            app:srcCompat="@drawable/ic_menu_play" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -96,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:layout_margin="17dp"/>
+            android:layout_margin="10dp"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/concheck_draft_playback_button"
@@ -108,7 +94,7 @@
             fab:fab_title="Play"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_margin="17dp"/>
+            android:layout_margin="10dp"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/concheck_checkmark_button"
@@ -116,7 +102,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_alignBaseline="@+id/concheck_draft_playback_button"
-            android:layout_margin="17dp"/>
+            android:layout_margin="10dp"/>
 
     </RelativeLayout>
 
