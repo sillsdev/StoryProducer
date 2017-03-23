@@ -27,11 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
