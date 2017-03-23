@@ -19,6 +19,8 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * AutoStoryMaker is a layer of abstraction above {@link StoryMaker} that handles all of the
@@ -55,7 +57,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private static final int VIDEO_IFRAME_INTERVAL = 1;           // 1 second between I-frames
 
     // using Kush Gauge for video bit rate
-    private static final int MOTION_FACTOR = 4;                   // 1, 2, or 4
+    private static final int MOTION_FACTOR = 2;                   // 1, 2, or 4
     private static final float KUSH_GAUGE_CONSTANT = 0.07f;
     // bits per second for video
     private int mVideoBitRate;
@@ -70,8 +72,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private boolean mIncludeBackgroundMusic = true;
     private boolean mIncludePictures = true;
-    //TODO: change default mIncludeText to false; only true now for early prototype
-    private boolean mIncludeText = true;
+    private boolean mIncludeText = false;
     private boolean mIncludeKBFX = true;
 
     private boolean mLogProgress = false;
@@ -85,20 +86,21 @@ public class AutoStoryMaker extends Thread implements Closeable {
         setResolution(mWidth, mHeight);
 
         File outputDir = VideoFiles.getDefaultLocation(mStory);
-        mOutputFile = new File(outputDir, mStory.replace(' ', '_') + "_"
-                + mWidth + "x" + mHeight + mOutputExt);
-
-        mTempFile = new File(VideoFiles.getTempLocation(mStory), "partial_video" + mOutputExt);
+        setOutputFile(new File(outputDir, mStory.replace(' ', '_') + "_"
+                + mWidth + "x" + mHeight + mOutputExt));
 
         mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
 
-    public void setExtension(String extension) {
-        mOutputExt = extension;
-    }
+    public void setOutputFile(File output) {
+        mOutputFile = output;
 
-    public void setFilePath(String filePath) {
-        mOutputFile = new File(filePath);
+        Pattern extPattern = Pattern.compile("\\.\\w+$");
+        Matcher extMatcher = extPattern.matcher(mOutputFile.getName());
+        extMatcher.find();
+        mOutputExt = extMatcher.group();
+
+        mTempFile = new File(VideoFiles.getTempLocation(mStory), "partial_video" + mOutputExt);
     }
 
     public void setResolution(int width, int height) {
@@ -205,6 +207,11 @@ public class AutoStoryMaker extends Thread implements Closeable {
         return audioFormat;
     }
     private MediaFormat generateVideoFormat() {
+        //If no video component, use null format.
+        if(!mIncludePictures && !mIncludeText) {
+            return null;
+        }
+
         MediaFormat videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight);
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE);
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate);
@@ -254,8 +261,12 @@ public class AutoStoryMaker extends Thread implements Closeable {
                     image = ImageFiles.getFile(mStory, iSlide);
                 }
             }
-            File audio = AudioFiles.getDraft(mStory, iSlide);
-            //fallback to LWC narration
+            File audio = AudioFiles.getDramatization(mStory, iSlide);
+            //fallback to draft audio
+            if(!audio.exists()) {
+                audio = AudioFiles.getDraft(mStory, iSlide);
+            }
+            //fallback to LWC audio
             if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
@@ -263,7 +274,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             //TODO: get actual KBFX
             KenBurnsEffect kbfx = null;
             //Only include KBFX if specified and not title slide.
-            if(mIncludeKBFX && iSlide != 0) {
+            if(mIncludePictures && mIncludeKBFX && iSlide != 0) {
                 kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
             }
 
@@ -275,7 +286,10 @@ public class AutoStoryMaker extends Thread implements Closeable {
             pages[iSlide] = new StoryPage(image, audio, kbfx, text);
         }
 
-        File copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT);
+        File copyrightImage = null;
+        if(mIncludePictures) {
+            copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT);
+        }
         pages[iSlide++] = new StoryPage(copyrightImage, COPYRIGHT_SLIDE_US);
 
         //TODO: add hymn

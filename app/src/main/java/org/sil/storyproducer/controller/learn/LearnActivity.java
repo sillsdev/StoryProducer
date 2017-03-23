@@ -1,52 +1,38 @@
 package org.sil.storyproducer.controller.learn;
 
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.PhaseGestureListener;
-import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class LearnActivity extends AppCompatActivity {
+public class LearnActivity extends PhaseBaseActivity {
 
     private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
@@ -62,11 +48,6 @@ public class LearnActivity extends AppCompatActivity {
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
-    private GestureDetectorCompat mDetector;
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
     private ArrayList<Integer> backgroundAudioJumps;
 
     //recording toolbar vars
@@ -79,7 +60,7 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
-        rootView = (RelativeLayout) findViewById(R.id.activity_learn);
+        rootView = (RelativeLayout) findViewById(R.id.phase_frame);
 
         //get the story name
         storyName = StoryState.getStoryName();
@@ -90,15 +71,6 @@ public class LearnActivity extends AppCompatActivity {
         playButton = (ImageButton) findViewById(R.id.playButton);
         videoSeekBar = (SeekBar) findViewById(R.id.videoSeekBar);
 
-        //get the current phase
-        Phase phase = StoryState.getCurrentPhase();
-
-        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mActionBarToolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
-                                                                                    phase.getColor(), null)));
-        setupDrawer();
         setBackgroundAudioJumps();
 
         setSeekBarListener();
@@ -115,8 +87,22 @@ public class LearnActivity extends AppCompatActivity {
         setToolbar(rootViewToolbar);
 
 
-        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
+        setIfLearnHasBeenWatched();
 
+    }
+
+    /**
+     * sets that the learn phase has already been gone through once
+     * and the recording button can be shown from the beginning
+     */
+    private void setIfLearnHasBeenWatched() {
+        File recordFile = new File(recordFilePath);
+        if(recordFile.exists()) {
+            setVolumeSwitchAndFloatingButtonVisible();
+            Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+            volumeSwitch.setChecked(true);
+            isWatchedOnce = true;
+        }
     }
 
     /**
@@ -142,39 +128,6 @@ public class LearnActivity extends AppCompatActivity {
             backgroundAudioJumps.add(k, audioStartValue);
         }
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
-    }
-
-    /**
-     * sets the Menu spinner_item object
-     * @param menu
-     * @return
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_phases, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getCurrentPhaseIndex());
-        return true;
-    }
-
-    /**
-     * get the touch event so that it can be passed on to GestureDetector
-     * @param event the MotionEvent
-     * @return the super version of the function
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mDetector.onTouchEvent(event);
-        return super.dispatchTouchEvent(event);
     }
 
     @Override
@@ -335,7 +288,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout_learn),
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.lightWhite, null));
@@ -384,63 +337,6 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * initializes the items that the drawer needs
-     */
-    private void setupDrawer() {
-        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerList = (ListView)findViewById(R.id.navList_learn);
-        mDrawerList.bringToFront();
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_learn);
-        addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.dummy_content) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    /**
-     * adds the items to the drawer from the array resources
-     */
-    private void addDrawerItems() {
-        String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();                                  //needed to make the drawer synced
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mDrawerToggle.onOptionsItemSelected(item);
-    }
-
-    /**
      * This function allows the picture to scale with the phone's screen size.
      *
      * @param aView    The ImageView that will contain the picture.
@@ -484,7 +380,7 @@ public class LearnActivity extends AppCompatActivity {
         rt.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
-        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.click_view_layout);
+        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

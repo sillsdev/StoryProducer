@@ -25,7 +25,8 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.learn.LearnActivity;
-import org.sil.storyproducer.tools.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -497,21 +498,6 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new MediaRecorder();
-
-        if (ContextCompat.checkSelfPermission(appContext,
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(8000);
-        voiceRecorder.setOutputFile(fileName);
+        voiceRecorder = new AudioRecorder(fileName, activity);
     }
 }
