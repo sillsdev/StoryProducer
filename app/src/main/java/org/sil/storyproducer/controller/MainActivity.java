@@ -2,16 +2,13 @@ package org.sil.storyproducer.controller;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import android.os.Looper;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -24,20 +21,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.NavItem;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.Serializable;
-
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
-import org.sil.storyproducer.tools.media.story.SampleStory;
-
 import java.util.ArrayList;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -48,28 +41,18 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());
+        StorySharedPreferences.init(getApplicationContext());
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryFrag()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
 //        getSupportActionBar().setBackgroundDrawable(getResources().getDrawable(R.drawable.action_bar_bg_trans, getTheme()));
         setupNavDrawer();
 
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
-        }
-
-        boolean skipRegistration = checkRegistrationSkip();
-        if (!skipRegistration) {
-            // Checks registration file to see if email has been sent and launches registration if it hasn't
-            SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-            Map<String, ?> preferences = prefs.getAll();
-            Object registrationComplete = preferences.get(RegistrationActivity.EMAIL_SENT);
-            if (registrationComplete == null || !(Boolean)registrationComplete) {
-                Intent intent = new Intent(this, RegistrationActivity.class);
-                startActivity(intent);
-            }
         }
     }
 
@@ -181,25 +164,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * move to the chosen story
      */
     public void switchToStory(String storyName) {
-        //TODO change the Story State that is stored for each story
         StoryState.setStoryName(storyName);
-        Phase currPhase = StoryState.getCurrentPhase();
+        Phase currPhase = StoryState.getSavedPhase();
+        StoryState.setCurrentPhase(currPhase);
+        StoryState.setCurrentStorySlide(0);
         Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
         startActivity(intent);
-    }
-
-    /**
-     * Checks the bundle variables to see if the user has bypassed registration
-     * @return true if they want to bypass registration, false if not
-     */
-    private boolean checkRegistrationSkip() {
-        // Check to see if registration was skipped by the user
-        Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean(RegistrationActivity.SKIP_KEY)) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }
 

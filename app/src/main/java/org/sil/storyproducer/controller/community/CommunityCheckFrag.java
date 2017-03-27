@@ -1,12 +1,9 @@
 package org.sil.storyproducer.controller.community;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -23,10 +20,11 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +36,7 @@ import java.io.IOException;
 public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private final static String LOGTAG = "communityCheck";
-    private int slidePosition;
+    private int slideNumber;
     private static AudioPlayer draftPlayer;
     private static AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
@@ -50,17 +48,17 @@ public class CommunityCheckFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
+        slideNumber = passedArgs.getInt(SLIDE_NUM);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_com_check, container, false);
+        rootView = inflater.inflate(R.layout.fragment_community_check, container, false);
 
         updateCommentList();
         setUiColors();
-        setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slidePosition);
+        setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button));
         setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
 
@@ -117,8 +115,8 @@ public class CommunityCheckFrag extends Fragment {
     public void updateCommentList() {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
-        comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slidePosition);
-        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slidePosition, this);
+        comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
+        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slideNumber, this);
         listView.setAdapter(adapter);
     }
 
@@ -127,7 +125,7 @@ public class CommunityCheckFrag extends Fragment {
      * clashing of the grey starting picture.
      */
     private void setUiColors(){
-        if(slidePosition == 0){
+        if(slideNumber == 0){
             RelativeLayout rl =  (RelativeLayout)rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
@@ -168,8 +166,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,7 +188,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param commentTitle the title of the comment to play
      */
     public void playComment(String commentTitle) {
-        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition, commentTitle);
+        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
             commentPlayer = new AudioPlayer();
@@ -211,11 +208,11 @@ public class CommunityCheckFrag extends Fragment {
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
                 int nextCommentIndex = comments.length + 1;
-                File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
+                File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
                         "Comment " + nextCommentIndex);
                 while (recordFile.exists()) {
                     nextCommentIndex++;
-                    recordFile = AudioFiles.getComment(StoryState.getStoryName(), slidePosition,
+                    recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
                             "Comment " + nextCommentIndex);
                 }
 
@@ -279,25 +276,7 @@ public class CommunityCheckFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName){
-
-        commentRecorder = new MediaRecorder();
-
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        // The encoding and sampling rates are standards for the AAC encoder
-        commentRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        commentRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        commentRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        commentRecorder.setAudioEncodingBitRate(16);
-        commentRecorder.setAudioSamplingRate(44100);
-        commentRecorder.setOutputFile(fileName);
+        commentRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**

@@ -1,23 +1,87 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_dramatization_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <TextView
-        android:text="Test text"
+    <LinearLayout
+        android:id="@+id/fragment_dramatization_dummyView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/fragment_dramatization_picture_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/fragment_dramatization_image_view"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+
+            <ImageButton
+                android:id="@+id/fragment_dramatization_play_draft_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_play_arrow_white_48dp"
+                android:src="@drawable/ic_red_ex_48dp" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fragment_dramatization_fab"
         android:layout_width="wrap_content"
-        android:layout_height="165dp"
-        android:id="@+id/textView" />
-    <TextView android:layout_width="match_parent"
-        android:text="快來了..."
-        android:id="@+id/comingSoon"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="42dp"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
-    </TextView>
-</FrameLayout>
+        android:layout_alignEnd="@+id/fragment_dramatization_animated_toolbar"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:background="@color/white"
+        app:backgroundTint="@android:color/holo_blue_bright"
+        app:layout_anchorGravity="center_vertical|center_horizontal"
+        app:srcCompat="@drawable/ic_add_white_48dp" />
+
+    <RelativeLayout
+        android:id="@+id/fragment_dramatization_animated_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_gravity="bottom|end"
+        android:background="@android:color/holo_blue_bright"
+        android:visibility="invisible">
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_play_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="56dp"
+            android:layout_toEndOf="@+id/fragment_dramatization_mic_toolbar_button"
+            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:scaleType="centerInside"
+            android:visibility="invisible" />
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_mic_toolbar_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="22dp"
+            android:background="@drawable/ic_mic_white"
+            android:scaleType="centerInside"
+            android:visibility="visible" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

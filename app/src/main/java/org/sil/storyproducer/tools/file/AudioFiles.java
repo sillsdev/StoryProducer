@@ -10,6 +10,8 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
+    private static final String LWC_EXTENSION = ".wav";
+
     private static final String PREFER_EXTENSION = ".m4a";
 
     private static final String LEARN_PRACTICE_PREFIX = "learnPractice";
@@ -17,6 +19,7 @@ public class AudioFiles {
     private static final String DRAFT_TEMP = "draftTemp" + PREFER_EXTENSION;
     private static final String DRAFT_AUDIO_PREFIX = "translation";
     private static final String COMMENT_PREFIX = "comment";
+    private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
 
     public enum RenameCode {
         SUCCESS,
@@ -38,7 +41,6 @@ public class AudioFiles {
     //*** LWC ***
 
     public static File getLWC(String story, int i){
-        final String LWC_EXTENSION = ".wav";
         return new File(FileSystem.getTemplatePath(story), LWC_AUDIO_PREFIX + i + LWC_EXTENSION);
     }
 
@@ -142,4 +144,13 @@ public class AudioFiles {
         String[] returnTitlesArray = new String[commentTitles.size()];
         return commentTitles.toArray(returnTitlesArray);
     }
+
+    //*** Consultant Check ***
+
+    //*** Dramatization ***
+
+    public static File getDramatization(String story, int i){
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + i + SOUNDTRACK_EXTENSION);
+    }
+
 }

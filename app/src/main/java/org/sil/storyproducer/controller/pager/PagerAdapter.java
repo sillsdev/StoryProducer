@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
+import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
@@ -30,26 +31,29 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int i) {
         Fragment fragment;
-        switch (StoryState.getCurrentPhase().getTitle()) {
-            case "Draft":
+        Bundle passedArgs = new Bundle();
+        switch (StoryState.getCurrentPhase().getType()) {
+            case DRAFT:
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
                 break;
-            case "Community Check":
+            case COMMUNITY_CHECK:
                 fragment = new CommunityCheckFrag();
+                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Consultant Check":
+            case CONSULTANT_CHECK:
                 fragment = new ConsultantCheckFrag();
+                passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i);
                 break;
-            case "Dramatization":
+            case DRAMATIZATION:
                 fragment = new DramatizationFrag();
+                passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();
+                passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         }
-        Bundle passedArgs = new Bundle();
-        passedArgs.putInt(DraftFrag.SLIDE_NUM, i);
         fragment.setArguments(passedArgs);
-        //mapOfTransFrags.put(i, (DraftFrag)fragment);
 
         return fragment;
     }
@@ -73,13 +77,5 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         return "Page " + (position + 1);
-    }
-
-    /**
-     * @param slidePosition
-     * @return
-     */
-    public DraftFrag getDraftFrag(int slidePosition) {
-        return null;
     }
 }

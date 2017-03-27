@@ -5,9 +5,14 @@ package org.sil.storyproducer.model;
  */
 public class Phase {
 
+    public enum Type {
+        LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, EXPORT
+    }
+
     private String phaseTitle;
     private int phaseColor;
     private Class phaseCls;
+    private Type type;
 
     /**
      * Constructor for the Phase
@@ -15,10 +20,11 @@ public class Phase {
      * @param clr the color for the phase
      * @param cls class for the activity of the phase
      */
-    public Phase(String title, int clr, Class cls) {
+    public Phase(String title, int clr, Class cls, Type type) {
         phaseTitle = title;
         phaseColor = clr;
         phaseCls = cls;
+        this.type = type;
     }
 
     /**
@@ -43,5 +49,9 @@ public class Phase {
      */
     public Class getTheClass() {
         return phaseCls;
+    }
+
+    public Type getType() {
+        return type;
     }
 }

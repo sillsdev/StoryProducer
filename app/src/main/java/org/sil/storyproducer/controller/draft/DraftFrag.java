@@ -1,19 +1,15 @@
 package org.sil.storyproducer.controller.draft;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -28,29 +24,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.coremedia.iso.boxes.Container;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.Track;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -58,13 +44,13 @@ import java.util.List;
 public final class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
-    private int slidePosition;
+    private int slideNumber;
     private SlideText slideText;
     private AudioPlayer narrationAudioPlayer;
     private AudioPlayer voiceAudioPlayer;
     private String narrationFilePath;
     private String recordFilePath;
-    private String tempRecordFilePath = null;
+    //private String tempRecordFilePath = null;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
     private AnimationToolbar myToolbar = null;
@@ -73,11 +59,10 @@ public final class DraftFrag extends Fragment {
     private Runnable colorHandlerRunnable;
     private boolean isRed = true;
     private final int RECORDING_ANIMATION_DURATION = 1500;
+    private ImageButton narrationPlayButton;
 
     //Toolbar buttons
     private View toolbarMicButton;
-    private View toolbarPauseButton;
-    private View toolbarDeleteButton;
     private View toolbarPlayButton;
 
 
@@ -89,10 +74,11 @@ public final class DraftFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
-        slidePosition = passedArgs.getInt(SLIDE_NUM);
-        slideText = TextFiles.getSlideText(StoryState.getStoryName(), slidePosition);
-        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition).getPath();
-        tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
+
+        slideNumber = passedArgs.getInt(SLIDE_NUM);
+        slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
+        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+        //tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
     }
 
     @Override
@@ -102,12 +88,10 @@ public final class DraftFrag extends Fragment {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
         toolbarMicButton = rootView.findViewById(R.id.fragment_draft_mic_toolbar_button);
-        toolbarPauseButton = rootView.findViewById(R.id.fragment_draft_pause_toolbar_button);
-        toolbarDeleteButton = rootView.findViewById(R.id.fragment_draft_delete_toolbar_button);
         toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
 
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slidePosition/*StoryState.getCurrentStorySlide()*/);
+        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));
@@ -169,7 +153,7 @@ public final class DraftFrag extends Fragment {
      * clashing of the grey starting picture.
      */
     private void setUiColors() {
-        if (slidePosition == 0) {
+        if (slideNumber == 0) {
             RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_Relative_Layout);
@@ -179,9 +163,6 @@ public final class DraftFrag extends Fragment {
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             tv = (TextView) rootView.findViewById(R.id.fragment_draft_reference_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-
-            ImageButton ib = (ImageButton) rootView.findViewById(R.id.fragment_draft_narration_button);
-            ib.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
 
@@ -267,20 +248,33 @@ public final class DraftFrag extends Fragment {
         if (aView == null || !(aView instanceof ImageButton)) {
             return;
         }
-
-        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slidePosition).getPath();
-        ImageView imageView = (ImageView) aView;
-        imageView.setOnClickListener(new View.OnClickListener() {
+        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
+        narrationPlayButton = (ImageButton)aView;
+        narrationPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (narrationFilePath == null) {
                     Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    //stop other playback streams.
-                    stopPlayBackAndRecording();
-                    narrationAudioPlayer = new AudioPlayer();
-                    narrationAudioPlayer.playWithPath(narrationFilePath);
-                    Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                    if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
+                        narrationAudioPlayer.stopAudio();
+                        narrationAudioPlayer.releaseAudio();
+                        narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
+                    }else{
+                        //stop other playback streams.
+                        stopPlayBackAndRecording();
+                        narrationAudioPlayer = new AudioPlayer();
+                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                narrationAudioPlayer.releaseAudio();
+                                narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
+                            }
+                        });
+                        narrationAudioPlayer.playWithPath(narrationFilePath);
+                        narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
+                        Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -293,7 +287,6 @@ public final class DraftFrag extends Fragment {
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_draft_fab),
                 rootView.findViewById(R.id.fragment_draft_animated_toolbar));
         setRecordNPlayback();
-        setToolbarDeleteButton(new File(recordFilePath).exists());
     }
 
     /**
@@ -332,40 +325,24 @@ public final class DraftFrag extends Fragment {
      */
     private void setRecordNPlayback() {
         setVoicePlayBackButton( new File(recordFilePath).exists());
-        setPauseButton();
 
         toolbarMicButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //stop all other playback streams.
-                stopPlayBackAndRecording();
                 if (!isRecording) {
+                    //stop all other playback streams.
+                    stopPlayBackAndRecording();
                     startRecordingAnimation(false, 0);
                     startAudioRecorder();
                     toolbarPlayButton.setVisibility(View.INVISIBLE);
-                    toolbarMicButton.setVisibility(View.INVISIBLE);
-                    toolbarPauseButton.setVisibility(View.VISIBLE);
-                    toolbarDeleteButton.setVisibility(View.INVISIBLE);
+                    toolbarMicButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                }else{
+                    stopRecordingAnimation();
+                    stopAudioRecorder();
+                    //set playback button visible
+                    toolbarPlayButton.setVisibility(View.VISIBLE);
+                    toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
                 }
-            }
-        });
-    }
-
-    /**
-     * Function to setup the delete button on the toolbar.
-     * @param fileExist
-     */
-    private void setToolbarDeleteButton(boolean fileExist) {
-        if(fileExist){
-            toolbarDeleteButton.setVisibility(View.VISIBLE);
-        }
-        toolbarDeleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //stop all other playback streams.
-                stopPlayBackAndRecording();
-                showDeleteWarningDialog();
-
             }
         });
     }
@@ -374,7 +351,7 @@ public final class DraftFrag extends Fragment {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
-        setVoiceRecorder(tempRecordFilePath);
+        setVoiceRecorder(recordFilePath);
         try {
             isRecording = true;
             voiceRecorder.prepare();
@@ -391,22 +368,7 @@ public final class DraftFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new MediaRecorder();
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(44100);
-        voiceRecorder.setOutputFile(fileName);
+        voiceRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**
@@ -426,29 +388,7 @@ public final class DraftFrag extends Fragment {
         }
         voiceRecorder.release();
         voiceRecorder = null;
-        ConcatenateAudioFiles();
-    }
-
-    /**
-     * Function that adds a listener to the pause button.
-     *
-     */
-    private void setPauseButton() {
-        toolbarPauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isRecording) {
-                    stopRecordingAnimation();
-                    stopAudioRecorder();
-                    //set playback button visible
-                    toolbarPlayButton.setVisibility(View.VISIBLE);
-                    toolbarMicButton.setVisibility(View.VISIBLE);
-                    toolbarPauseButton.setVisibility(View.INVISIBLE);
-                    toolbarDeleteButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
+        //ConcatenateAudioFiles();
     }
 
     /**
@@ -463,18 +403,34 @@ public final class DraftFrag extends Fragment {
             toolbarPlayButton.setVisibility(View.VISIBLE);
         }
 
+
+
         toolbarPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Stops all other playback streams.
-                stopPlayBackAndRecording();
-                if (new File(recordFilePath).exists()) {
-                    voiceAudioPlayer = new AudioPlayer();
-                    voiceAudioPlayer.playWithPath(recordFilePath);
-                    Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
+                if(voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()){
+                    stopPlayBackAndRecording();
+                    toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                }else{
+                    //Stops all other playback streams.
+                    stopPlayBackAndRecording();
+                    if (new File(recordFilePath).exists()) {
+                        voiceAudioPlayer = new AudioPlayer();
+                        voiceAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                voiceAudioPlayer.releaseAudio();
+                                toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                            }
+                        });
+                        voiceAudioPlayer.playWithPath(recordFilePath);
+                        Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
+                        toolbarPlayButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    } else {
+                        Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
             }
         });
     }
@@ -567,106 +523,75 @@ public final class DraftFrag extends Fragment {
         }
     }
 
-    /**
-     * This function adds two different audio files together to make one audio file into an
-     * .mp3 file. More comments will be added to this function later.
-     */
-    private void ConcatenateAudioFiles() {
-        Movie finalFile = new Movie();
-        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
-        Movie movieArray[];
-
-        try {
-            if (!new File(recordFilePath).exists()) {
-                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
-            } else {
-                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
-                        MovieCreator.build(tempRecordFilePath)};
-            }
-
-            List<Track> audioTrack = new ArrayList<>();
-
-            for (int i = 0; i < movieArray.length; i++)
-                for (Track t : movieArray[i].getTracks()) {
-                    if (t.getHandler().equals("soun")) {
-                        audioTrack.add(t);
-                    }
-                }
-
-            if (!audioTrack.isEmpty()) {
-                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
-            }
-
-            Container out = new DefaultMp4Builder().build(finalFile);
-
-            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
-            out.writeContainer(fc);
-            fc.close();
-
-            tryDeleteFile(recordFilePath);
-            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
-            if (renamed) {
-                //delete old file
-                tryDeleteFile(writtenToAudioFile);
-            }
-
-        } catch (IOException e) {
-            Log.e(getActivity().toString(), e.getMessage());
-        }
-    }
-
-    /**
-     * Tries to create a new file.
-     *
-     * @param filePath The file path where a file should be created at.
-     * @return The file instantiation of the file that was created at the filePath.
-     */
-    private File tryCreateFile(String filePath) {
-        File toReturnFile = new File(filePath);
-        if (!toReturnFile.exists()) {
-            try {
-                toReturnFile.setExecutable(true);
-                toReturnFile.setReadable(true);
-                toReturnFile.setWritable(true);
-                toReturnFile.createNewFile();
-            } catch (IOException e) {
-                Log.w(getActivity().toString(), "Could not create file for recording!");
-            }
-        }
-
-        return toReturnFile;
-    }
-
-    /**
-     * Deleting a file at the filePath.
-     *
-     * @param filePath The filePath where the file will be deleted.
-     * @return A boolean if the file was sucessfully deleted.
-     */
-    private boolean tryDeleteFile(String filePath) {
-        File toDelete = new File(filePath);
-        return toDelete.delete();
-    }
-
-    /**
-     * This is the dialog to prompt for deletion or no deletion.
-     */
-    private void showDeleteWarningDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setTitle("Delete Recording?")
-                .setMessage("Do you want to delete the current recording?")
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (recordFilePath != null) {
-                            tryDeleteFile(recordFilePath);
-                            toolbarDeleteButton.setVisibility(View.INVISIBLE);
-                            toolbarPlayButton.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }).create();
-        dialog.show();
-    }
+//    /**
+//     * This function adds two different audio files together to make one audio file into an
+//     * .mp3 file. More comments will be added to this function later.
+//     */
+//    private void ConcatenateAudioFiles() {
+//        Movie finalFile = new Movie();
+//        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
+//        Movie movieArray[];
+//
+//        try {
+//            if (!new File(recordFilePath).exists()) {
+//                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
+//            } else {
+//                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
+//                        MovieCreator.build(tempRecordFilePath)};
+//            }
+//
+//            List<Track> audioTrack = new ArrayList<>();
+//
+//            for (int i = 0; i < movieArray.length; i++)
+//                for (Track t : movieArray[i].getTracks()) {
+//                    if (t.getHandler().equals("soun")) {
+//                        audioTrack.add(t);
+//                    }
+//                }
+//
+//            if (!audioTrack.isEmpty()) {
+//                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
+//            }
+//
+//            Container out = new DefaultMp4Builder().build(finalFile);
+//
+//            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
+//            out.writeContainer(fc);
+//            fc.close();
+//
+//            tryDeleteFile(recordFilePath);
+//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
+//            if (renamed) {
+//                //delete old file
+//                tryDeleteFile(writtenToAudioFile);
+//            }
+//
+//        } catch (IOException e) {
+//            Log.e(getActivity().toString(), e.getMessage());
+//        }
+//    }
+//
+//    /**
+//     * Tries to create a new file.
+//     *
+//     * @param filePath The file path where a file should be created at.
+//     * @return The file instantiation of the file that was created at the filePath.
+//     */
+//    private File tryCreateFile(String filePath) {
+//        File toReturnFile = new File(filePath);
+//        if (!toReturnFile.exists()) {
+//            try {
+//                toReturnFile.setExecutable(true);
+//                toReturnFile.setReadable(true);
+//                toReturnFile.setWritable(true);
+//                toReturnFile.createNewFile();
+//            } catch (IOException e) {
+//                Log.w(getActivity().toString(), "Could not create file for recording!");
+//            }
+//        }
+//
+//        return toReturnFile;
+//    }
 
     /**
      * Stops all playback streams and stops recording as well.
@@ -677,15 +602,17 @@ public final class DraftFrag extends Fragment {
             stopRecordingAnimation();
             //set playback button visible
             toolbarMicButton.setVisibility(View.VISIBLE);
-            toolbarPauseButton.setVisibility(View.INVISIBLE);
-            toolbarDeleteButton.setVisibility(View.VISIBLE);
+            toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
             toolbarPlayButton.setVisibility(View.VISIBLE);
+            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
-        if (narrationAudioPlayer != null) {
+        if (narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()) {
+            narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
             narrationAudioPlayer.stopAudio();
             narrationAudioPlayer.releaseAudio();
         }
-        if (voiceAudioPlayer != null) {
+        if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
+            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             voiceAudioPlayer.stopAudio();
             voiceAudioPlayer.releaseAudio();
         }

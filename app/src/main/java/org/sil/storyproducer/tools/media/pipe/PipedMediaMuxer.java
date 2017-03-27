@@ -81,10 +81,19 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
      * @return approximate microseconds of completed audio
      */
     public long getAudioProgress() {
+        return getAudioProgress(true);
+    }
+    private long getAudioProgress(boolean allowDeflect) {
         if(mAudioThread != null) {
             return mAudioThread.getProgress();
         }
-        return 0;
+        else if(allowDeflect) {
+            //If there is no audio channel, use the video progress as audio progress.
+            return getVideoProgress(false);
+        }
+        else {
+            return 0;
+        }
     }
 
     /**
@@ -92,10 +101,19 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
      * @return approximate microseconds of completed video
      */
     public long getVideoProgress() {
+        return getVideoProgress(true);
+    }
+    private long getVideoProgress(boolean allowDeflect) {
         if(mVideoThread != null) {
             return mVideoThread.getProgress();
         }
-        return 0;
+        else if(allowDeflect) {
+            //If there is no video channel, use the audio progress as video progress.
+            return getAudioProgress(false);
+        }
+        else {
+            return 0;
+        }
     }
 
     /**

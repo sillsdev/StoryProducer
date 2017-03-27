@@ -1,8 +1,5 @@
 package org.sil.storyproducer.controller.learn;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -14,54 +11,38 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.DrawerItemClickListener;
-import org.sil.storyproducer.tools.PhaseGestureListener;
-import org.sil.storyproducer.tools.PhaseMenuItemListener;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class LearnActivity extends AppCompatActivity {
+public class LearnActivity extends PhaseBaseActivity {
 
-    private final static float BACKGROUND_VOLUME = 0.5f;
+    private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
     private RelativeLayout rootView;
     private ImageView learnImageView;
@@ -69,16 +50,12 @@ public class LearnActivity extends AppCompatActivity {
     private SeekBar videoSeekBar;
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
-    private int slideNum = 0;
+
+    private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
-    private GestureDetectorCompat mDetector;
-    private ListView mDrawerList;
-    private ArrayAdapter<String> mAdapter;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayout mDrawerLayout;
     private ArrayList<Integer> backgroundAudioJumps;
 
     //recording and playback
@@ -86,6 +63,7 @@ public class LearnActivity extends AppCompatActivity {
     private String recordFilePath;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
+    private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
     //recording animation bar
     private AnimationToolbar myToolbar = null;
@@ -98,7 +76,7 @@ public class LearnActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
-        rootView = (RelativeLayout) findViewById(R.id.activity_learn);
+        rootView = (RelativeLayout) findViewById(R.id.phase_frame);
 
         //get the story name
         storyName = StoryState.getStoryName();
@@ -109,20 +87,15 @@ public class LearnActivity extends AppCompatActivity {
         playButton = (ImageButton) findViewById(R.id.playButton);
         videoSeekBar = (SeekBar) findViewById(R.id.videoSeekBar);
 
-        //get the current phase
-        Phase phase = StoryState.getCurrentPhase();
-
-        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mActionBarToolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
-                                                                                    phase.getColor(), null)));
-        setupDrawer();
         setBackgroundAudioJumps();
 
         setSeekBarListener();
-        playVideo();
-        setBackgroundMusic();
+
+        //create audio players
+        narrationPlayer = new AudioPlayer();
+        backgroundPlayer = new AudioPlayer();
+
+        setPic(learnImageView);     //set the first image to show
 
         //setup the recording animation bar
         setupToolbarAndRecordAnim(rootView.findViewById(R.id.fab),
@@ -131,8 +104,22 @@ public class LearnActivity extends AppCompatActivity {
         setRecordNPlayback(rootView.findViewById(R.id.fragment_draft_mic_toolbar_button),
                 rootView.findViewById(R.id.fragment_draft_play_toolbar_button));
 
-        mDetector = new GestureDetectorCompat(this, new PhaseGestureListener(this));
+        setIfLearnHasBeenWatched();
 
+    }
+
+    /**
+     * sets that the learn phase has already been gone through once
+     * and the recording button can be shown from the beginning
+     */
+    private void setIfLearnHasBeenWatched() {
+        File recordFile = new File(recordFilePath);
+        if(recordFile.exists()) {
+            setVolumeSwitchAndFloatingButtonVisible();
+            Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+            volumeSwitch.setChecked(true);
+            isWatchedOnce = true;
+        }
     }
 
     /**
@@ -160,39 +147,6 @@ public class LearnActivity extends AppCompatActivity {
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
     }
 
-    /**
-     * sets the Menu spinner_item object
-     * @param menu
-     * @return
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_phases, menu);
-
-        MenuItem item = menu.findItem(R.id.spinner);
-        Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
-        spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(adapter);
-        spinner.setSelection(StoryState.getCurrentPhaseIndex());
-        return true;
-    }
-
-    /**
-     * get the touch event so that it can be passed on to GestureDetector
-     * @param event the MotionEvent
-     * @return the super version of the function
-     */
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        mDetector.onTouchEvent(event);
-        return super.dispatchTouchEvent(event);
-    }
-
     @Override
     public void onStop() {
         super.onStop();
@@ -203,15 +157,12 @@ public class LearnActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-        narrationPlayer.pauseAudio();
-        backgroundPlayer.pauseAudio();
+        pauseVideo();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        narrationPlayer.resumeAudio();
-        backgroundPlayer.resumeAudio();
     }
 
 
@@ -226,13 +177,13 @@ public class LearnActivity extends AppCompatActivity {
             narrationPlayer.releaseAudio();
         }
         narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNum).getPath());
+        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNumber).getPath());
         narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
-        videoSeekBar.setProgress(slideNum);
+        videoSeekBar.setProgress(slideNumber);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                if(slideNum < CONTENT_SLIDE_COUNT) {     //not at the end of video
+                if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
@@ -244,7 +195,7 @@ public class LearnActivity extends AppCompatActivity {
                 }
             }
         });
-        slideNum++;         //move to the next slide
+        slideNumber++;         //move to the next slide
     }
 
     /**
@@ -253,20 +204,40 @@ public class LearnActivity extends AppCompatActivity {
      */
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
-            narrationPlayer.pauseAudio();
-            backgroundPlayer.pauseAudio();
-            playButton.setImageResource(R.drawable.ic_play_gray);
+            pauseVideo();
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            if(slideNum >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
+
+            if(slideNumber >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.setProgress(0);
-                slideNum = 0;
+                slideNumber = 0;
                 setBackgroundMusic();
                 playVideo();
             } else {
-                narrationPlayer.resumeAudio();
-                backgroundPlayer.resumeAudio();
+               resumeVideo();
             }
+        }
+    }
+
+    /**
+     * helper function for pausing the video
+     */
+    private void pauseVideo() {
+        narrationPlayer.pauseAudio();
+        backgroundPlayer.pauseAudio();
+        playButton.setImageResource(R.drawable.ic_play_gray);
+    }
+
+    /**
+     * helper function for resuming the video
+     */
+    private void resumeVideo() {
+        if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
+            playVideo();
+            isFirstTime = false;
+        } else {
+            narrationPlayer.resumeAudio();
+            backgroundPlayer.resumeAudio();
         }
     }
 
@@ -289,11 +260,11 @@ public class LearnActivity extends AppCompatActivity {
                     notPlayingAudio = !narrationPlayer.isAudioPlaying();
                     narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
                     backgroundPlayer.releaseAudio();
-                    slideNum = progress;
+                    slideNumber = progress;
                     setBackgroundMusic();       //have to reset the background music because it could have been completed
                     if (notPlayingAudio) backgroundPlayer.pauseAudio();
-                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNum));
-                    if(slideNum == CONTENT_SLIDE_COUNT) {
+                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
+                    if(slideNumber == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
@@ -312,8 +283,9 @@ public class LearnActivity extends AppCompatActivity {
      * helper function that resets the vidio to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
+        playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
-        slideNum = 0;
+        slideNumber = 0;
         narrationPlayer = new AudioPlayer();
         narrationPlayer.setVolume(0.0f);
         setBackgroundMusic();
@@ -327,7 +299,7 @@ public class LearnActivity extends AppCompatActivity {
      */
     private void showStartPracticeSnackBar() {
         if(!isWatchedOnce) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout_learn),
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.drawer_layout),
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.lightWhite, null));
@@ -377,63 +349,6 @@ public class LearnActivity extends AppCompatActivity {
     }
 
     /**
-     * initializes the items that the drawer needs
-     */
-    private void setupDrawer() {
-        //TODO maybe take this code off into somewhere so we don't have to duplicate it as much
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerList = (ListView)findViewById(R.id.navList_learn);
-        mDrawerList.bringToFront();
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout_learn);
-        addDrawerItems();
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.dummy_content) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    /**
-     * adds the items to the drawer from the array resources
-     */
-    private void addDrawerItems() {
-        String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
-        mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
-        mDrawerList.setAdapter(mAdapter);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();                                  //needed to make the drawer synced
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);            //needed to make the drawer synced
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return mDrawerToggle.onOptionsItemSelected(item);
-    }
-
-    /**
      * This function allows the picture to scale with the phone's screen size.
      *
      * @param aView    The ImageView that will contain the picture.
@@ -444,8 +359,8 @@ public class LearnActivity extends AppCompatActivity {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
-        if(slideNum == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNumber);
+        if(slideNumber == CONTENT_SLIDE_COUNT) {                //gets the end image if we are at the end of the story
             slidePicture = ImageFiles.getBitmap(storyName, ImageFiles.COPYRIGHT);
         }
 
@@ -519,7 +434,7 @@ public class LearnActivity extends AppCompatActivity {
      * The function that aids in starting an audio recorder.
      */
     private void startAudioRecorder() {
-        setVoiceRecorder(recordFilePath, voiceRecorder != null);
+        setVoiceRecorder(recordFilePath);
         try {
             voiceRecorder.prepare();
             voiceRecorder.start();
@@ -550,25 +465,9 @@ public class LearnActivity extends AppCompatActivity {
      * voicerecorder.
      *
      * @param fileName               The file to output the voice recordings.
-     * @param createNewMediaRecorder The boolean that dictates an new instantiation of a
-     *                               voice recorder.
      */
-    private void setVoiceRecorder(String fileName, boolean createNewMediaRecorder) {
-        if (createNewMediaRecorder || voiceRecorder == null) {
-            voiceRecorder = new MediaRecorder();
-        }
-
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        voiceRecorder.setOutputFile(fileName);
+    private void setVoiceRecorder(String fileName) {
+        voiceRecorder = new AudioRecorder(fileName, this);
     }
 
     /**
@@ -624,7 +523,7 @@ public class LearnActivity extends AppCompatActivity {
 
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This also stops the recording animation.
-        RelativeLayout clickView = (RelativeLayout) rootView.findViewById(R.id.click_view_layout);
+        RelativeLayout clickView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
         clickView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
