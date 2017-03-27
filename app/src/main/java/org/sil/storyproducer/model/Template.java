@@ -6,6 +6,7 @@ import android.util.Log;
 
 import org.sil.storyproducer.tools.file.ProjectXML;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
+import org.sil.storyproducer.tools.media.graphics.RectHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -63,14 +64,24 @@ public class Template {
 
             String imagePath = unit.imageInfo.filename;
 
+            int width = unit.imageInfo.width;
+            int height = unit.imageInfo.height;
+            Rect imageDimensions = new Rect(0, 0, width, height);
+
             Rect start = unit.imageInfo.motion.start;
+            //Ensure the rectangle fits within the image.
+            RectHelper.clip(start, imageDimensions);
+
             Rect end = unit.imageInfo.motion.end;
+            //Ensure the rectangle fits within the image.
+            RectHelper.clip(end, imageDimensions);
+
+            //TODO: Should we use crop here? (Are start and end relative to crop or absolute?)
             Rect crop = null;
             if(unit.imageInfo.edit != null) {
                 crop = unit.imageInfo.edit.crop;
             }
-            //TODO: Should we use crop here? (Are start and end relative to crop or absolute?)
-            KenBurnsEffect kbfx = new KenBurnsEffect(start, end);
+            KenBurnsEffect kbfx = new KenBurnsEffect(start, end, crop);
 
             File soundtrack = null;
             int soundtrackVolume = 0;
@@ -86,7 +97,7 @@ public class Template {
             }
 
             TemplateSlide currentSlide = new TemplateSlide(narration,
-                    new File(imagePath), kbfx, soundtrack, soundtrackVolume);
+                    new File(imagePath), imageDimensions, kbfx, soundtrack, soundtrackVolume);
             slides.add(currentSlide);
         }
 
