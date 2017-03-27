@@ -59,6 +59,7 @@ public class Template {
             ProjectXML.VisualUnit unit = xml.units.get(i);
 
             String narrationPath = unit.narrationFilename;
+            File narration = narrationPath == null ? null : new File(narrationPath);
 
             String imagePath = unit.imageInfo.filename;
 
@@ -84,7 +85,7 @@ public class Template {
                 soundtrackVolume = unit.imageInfo.musicTrack.volume;
             }
 
-            TemplateSlide currentSlide = new TemplateSlide(new File(narrationPath),
+            TemplateSlide currentSlide = new TemplateSlide(narration,
                     new File(imagePath), kbfx, soundtrack, soundtrackVolume);
             slides.add(currentSlide);
         }
