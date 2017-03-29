@@ -12,23 +12,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
-        <!-- Story List Page -->
-        <activity
-            android:name=".controller.MainActivity"
-            android:label="@string/title_activity_story_templates"
-            android:screenOrientation="portrait" />
-        <!-- Pager Base -->
-        <activity
-            android:name=".controller.pager.PagerBaseActivity"
-            android:label="Pager Base"
-            android:screenOrientation="portrait" />
-
-        <!-- File Explorer Launch Page -->
-        <activity
-            android:name=".controller.export.FileChooserActivity"
-            android:label="FileChooser">
-        </activity>
-
         <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
@@ -41,12 +24,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Story List Page -->
+        <activity
+            android:name=".controller.MainActivity"
+            android:label="@string/title_activity_story_templates"
+            android:screenOrientation="portrait" />
+        <!-- Registration -->
         <activity android:name=".controller.RegistrationActivity"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
+        <!-- Learn -->
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".controller.export.ExportActivity" />
+        <!-- Pager Base (for Draft, ... Checks, and Dramatization) -->
+        <activity
+            android:name=".controller.pager.PagerBaseActivity"
+            android:label="Pager Base"
+            android:screenOrientation="portrait" />
+        <!-- Export -->
+        <activity android:name=".controller.export.ExportActivity"
+            android:screenOrientation="portrait" />
+        <!-- File Explorer (part of Export) -->
+        <activity
+            android:name=".controller.export.FileChooserActivity"
+            android:label="FileChooser"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
