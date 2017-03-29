@@ -44,6 +44,7 @@
             android:screenOrientation="portrait" />
         <!-- Export -->
         <activity android:name=".controller.export.ExportActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
         <!-- File Explorer (part of Export) -->
         <activity

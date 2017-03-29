@@ -38,6 +38,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final String PREF_FILE_BASE = "ProjExportConfig";
     private static final String PREF_FILE_ALL = "AppExportConfig";
 
+    private static final String PREF_KEY_TITLE = "title";
     private static final String PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music";
     private static final String PREF_KEY_INCLUDE_PICTURES = "include_pictures";
     private static final String PREF_KEY_INCLUDE_TEXT = "include_text";
@@ -46,6 +47,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final String PREF_KEY_FORMAT = "format";
     private static final String PREF_KEY_FILE = "file";
 
+    private EditText mEditTextTitle;
     private View mLayoutConfiguration;
     private CheckBox mCheckboxSoundtrack;
     private CheckBox mCheckboxPictures;
@@ -108,6 +110,8 @@ public class ExportActivity extends PhaseBaseActivity {
      * Get handles to all necessary views and add some listeners.
      */
     private void setupViews() {
+        mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
+
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
 
         mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
@@ -273,6 +277,7 @@ public class ExportActivity extends PhaseBaseActivity {
         //Save preferences specific to this project.
         SharedPreferences.Editor prefEditorProject = getSharedPreferences(
                 PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
+        prefEditorProject.putString(PREF_KEY_TITLE, mEditTextTitle.getText().toString());
         prefEditorProject.putString(PREF_KEY_FILE, mOutputPath);
         prefEditorProject.apply();
     }
@@ -295,6 +300,7 @@ public class ExportActivity extends PhaseBaseActivity {
         //Get preferences specific to this project.
         SharedPreferences prefsProject = getSharedPreferences(
                 PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
+        mEditTextTitle.setText(prefsProject.getString(PREF_KEY_TITLE, StoryState.getStoryName()));
         setLocation(prefsProject.getString(PREF_KEY_FILE, null));
     }
 
@@ -345,6 +351,8 @@ public class ExportActivity extends PhaseBaseActivity {
     private void startExport(File output) {
         synchronized (storyMakerLock) {
             storyMaker = new AutoStoryMaker(StoryState.getStoryName());
+
+            storyMaker.setTitle(mEditTextTitle.getText().toString());
 
             storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
             storyMaker.togglePictures(mCheckboxPictures.isChecked());

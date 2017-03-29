@@ -107,6 +107,8 @@
     </array>
 
     <!-- Export -->
+    <string name="export_custom_title">Title</string>
+
     <string name="export_options_header">Options</string>
 
     <string name="export_include_soundtrack">Include Background Music</string>
