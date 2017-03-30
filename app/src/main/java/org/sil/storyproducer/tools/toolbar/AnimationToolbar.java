@@ -64,7 +64,6 @@ public class AnimationToolbar {
 
     private Activity currentActivity;
 
-
     /**
      * The constructor of the AnimationToolbar class.
      *
@@ -86,8 +85,6 @@ public class AnimationToolbar {
      * call super(...) as the first line in the child class' constructor)
      *
      * @param currentActivity
-     * @throws ClassCastException Will be thrown if either floatingActionBut
-     *                            or linLayout are not of the correct type of FloatingActionButton or LienarLayout.
      */
     public AnimationToolbar(final Activity currentActivity) {
         usingNewAnimators = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
@@ -97,7 +94,14 @@ public class AnimationToolbar {
         this.currentActivity = currentActivity;
     }
 
-    public void initializeToolbar(View floatingActionBut, View linLayout) throws ClassCastException{
+    /**
+     * This function should be called after the constructor is called.
+     * @param floatingActionBut
+     * @param linLayout
+     * @throws ClassCastException Will be thrown if either floatingActionBut
+     *                            or linLayout are not of the correct type of FloatingActionButton or LienarLayout.
+     */
+    public void initializeToolbar(View floatingActionBut, View linLayout) throws ClassCastException {
         if (!(floatingActionBut instanceof FloatingActionButton)) {
             throw new ClassCastException("The floatingActionBut is not of type FloatingActionButton!");
         } else if (!(linLayout instanceof LinearLayout)) {
@@ -201,9 +205,11 @@ public class AnimationToolbar {
                     toolBar.setVisibility(View.VISIBLE);
                 }
 
+                @Override
                 public void onAnimationEnd(Animation animation) {
                 }
 
+                @Override
                 public void onAnimationRepeat(Animation animation) {
                 }
             });
@@ -212,10 +218,12 @@ public class AnimationToolbar {
                 public void onAnimationStart(Animation animation) {
                 }
 
+                @Override
                 public void onAnimationEnd(Animation animation) {
                     toolBar.setVisibility(View.INVISIBLE);
                 }
 
+                @Override
                 public void onAnimationRepeat(Animation animation) {
                 }
             });
@@ -226,6 +234,7 @@ public class AnimationToolbar {
             public void onAnimationStart(Animation animation) {
             }
 
+            @Override
             public void onAnimationEnd(Animation animation) {
                 fab.setVisibility(View.INVISIBLE);
                 fab.clearAnimation();
@@ -241,9 +250,11 @@ public class AnimationToolbar {
                 fab.setVisibility(View.VISIBLE);
             }
 
+            @Override
             public void onAnimationEnd(Animation animation) {
             }
 
+            @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });

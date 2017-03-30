@@ -106,6 +106,19 @@
         <item>@drawable/ic_search</item>
     </array>
 
+    <!-- Dramatization phase -->
+    <string name="dramatization_no_picture">Could Not Find Picture...</string>
+    <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
+    <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
+
+    <!-- RecordingToolbar -->
+    <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
+    <string name="recording_toolbar_no_recording">No recording available!</string>
+    <string name="recording_toolbar_recording_voice">Recording voice!</string>
+    <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
+    <string name="recording_toolbar_error_recording">Error recording, record again!</string>
+
+
     <!-- Export -->
     <string name="export_options_header">Options</string>
 

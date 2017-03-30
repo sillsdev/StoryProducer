@@ -1,10 +1,8 @@
 package org.sil.storyproducer.tools.toolbar;
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,8 +11,6 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.Space;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
@@ -32,12 +27,25 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * The purpose of this class is to extend the animationToolbar while adding the recording animation
+ * to the toolbar. <br/><br/>
+ * This class utilizes an empty layout for the toolbar and floating action button
+ * (toolbar_for_recording.xml) where buttons are added to toolbar. The toolbar is then placed at the
+ * bottom of the rootViewLayout that is passed in to the this class' constructor. <br/><br/>
+ * This class also saves the recording and allows playback <br/> from the toolbar. see: {@link #createToolbar()}
+ * <br/><br/>
+ *
+ */
 public class RecordingToolbar extends AnimationToolbar {
-    private FloatingActionButton fab;
+    private final int RECORDING_ANIMATION_DURATION = 1500;
+    private final int STOP_RECORDING_DELAY = 0;
+
+    private FloatingActionButton fabPlus;
     private LinearLayout toolbar;
 
     private LinearLayout rootViewToolbarLayout;
-    private View rootView;
+    private View rootViewToEmbedToolbarIn;
     private String recordFilePath;
     private Context appContext;
     private Activity activity;
@@ -45,81 +53,62 @@ public class RecordingToolbar extends AnimationToolbar {
     private ImageButton micButton;
     private ImageButton playButton;
     private ImageButton deleteButton;
+    private ArrayList<AuxiliaryMedia> auxiliaryMediaList;
 
 
     private boolean isRecording;
     private boolean enablePlaybackButton;
     private boolean enableDeleteButton;
 
-    private final int RECORDING_ANIMATION_DURATION = 1500;
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
     private Runnable colorHandlerRunnable;
-    private boolean isRed = true;
+    private boolean isToolbarRed = false;
     private MediaRecorder voiceRecorder;
     private AudioPlayer audioPlayer;
 
-    private AuxiliaryMedia auxiliaryMedia;
-    private ArrayList<AuxiliaryMedia> list;
-
     /**
-     * Use this class to hold media that should be stopped when a toolbar button is pressed.
-     * Refer to function onToolbarTouchStopAudio() for more information.
+     * The ctor.
+     *
+     * @param activity              The activity from the calling class.
+     * @param rootViewToolbarLayout The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
+     *                              must be of type LinearLayout so that buttons can be
+     *                              evenly spaced.
+     * @param rootViewLayout        The rootViewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
+     * @param enablePlaybackButton  Enable playback of recording.
+     * @param enableDeleteButton    Enable the delete button, does not work as of now.
+     * @param recordFilePath        The filepath that the recording will be saved under.
      */
-    public static class AuxiliaryMedia {
-        View viewThatIsPlayingButton;
-        int setButtonToDrawableOnStop;
-        AudioPlayer playingAudio;
-
-        void stopPlaying() {
-            if (playingAudio != null && playingAudio.isAudioPlaying()) {
-                playingAudio.stopAudio();
-                playingAudio.releaseAudio();
-                if (viewThatIsPlayingButton != null) {
-                    viewThatIsPlayingButton.setBackgroundResource(setButtonToDrawableOnStop);
-                }
-            }
-        }
-    }
-
-
-    /** The ctor.
-     * @param activity The activity from the calling class.
-     * @param rootViewToolbar The rootView of the Toolbar layout called toolbar_for_recording.
-     * @param rootView The rootView of the layout that you want to embed the toolbar in.
-     * @param enablePlaybackButton Enable playback of recording.
-     * @param enableDeleteButton Enable the delete button, does not work as of now.
-     * @param recordFilePath The filepath that the recording will be saved under.
-     */
-    public RecordingToolbar(Activity activity, View rootViewToolbar, View rootView, boolean enablePlaybackButton, boolean enableDeleteButton, String recordFilePath) {
+    public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout, boolean enablePlaybackButton, boolean enableDeleteButton, String recordFilePath) throws ClassCastException {
         super(activity);
-        super.initializeToolbar(rootViewToolbar.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbar.findViewById(R.id.toolbar_for_recording_toolbar));
+        super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
         this.activity = activity;
-        this.appContext = activity.getApplicationContext();
-        this.rootViewToolbarLayout = (LinearLayout) rootViewToolbar;
-        this.rootView = rootView;
-        fab = (FloatingActionButton) rootViewToolbar.findViewById(R.id.toolbar_for_recording_fab);
-        this.toolbar = (LinearLayout) rootViewToolbar.findViewById(R.id.toolbar_for_recording_toolbar);
+        this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
+        this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
+        this.rootViewToEmbedToolbarIn = rootViewLayout;
+        fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
+        this.toolbar = (LinearLayout) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
         this.enablePlaybackButton = enablePlaybackButton;
         this.enableDeleteButton = enableDeleteButton;
         this.recordFilePath = recordFilePath;
+        auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
     }
 
     /**
-     * This fuction is used to show the floating button
+     * This function is used to show the floating button
      */
     public void showFloatingActionButton() {
-        fab.show();
+        fabPlus.show();
     }
 
     /**
-     * this function is used to hide the floating button
+     * This function is used to hide the floating button
      */
     public void hideFloatingActionButton() {
-        fab.hide();
+        fabPlus.hide();
     }
 
     /**
@@ -127,7 +116,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * The auxiliary medias are not stopped because the calling class should be responsible for
      * those.
      */
-    public void stopPlayBackAndRecording() {
+    public void stopToolbarMedia() {
         if (isRecording) {
             stopRecording();
             micButton.setBackgroundResource(R.drawable.ic_mic_white);
@@ -147,60 +136,33 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
-     * This function stops all playback and all auxiliary media.
-     */
-    private void stopAllPlayBackAndRecording() {
-        stopPlayBackAndRecording();
-        stopAuxiliaryMedia();
-    }
-
-    /**
      * This function is used so that other potential media sources outside the toolbar can be
      * stopped if the toolbar is pressed.
      *
      * @param viewThatIsPlayingButton The button that is pressed to activate the media playback.
-     * @param setButtonToDrawable     The drawable to set the trigger button to a different drawable.
-     * @param playingAudio            The audio source of playbaack.
+     * @param setButtonToDrawable     The drawable to set the trigger button to a different drawable
+     *                                when the toolbar is touched and the media is stopped.
+     *                                (The reset drawable for the button) Like pause to play button.
+     * @param playingAudio            The audio source of playback.
      */
     public void onToolbarTouchStopAudio(View viewThatIsPlayingButton, int setButtonToDrawable, AudioPlayer playingAudio) {
-        auxiliaryMedia = new AuxiliaryMedia();
+        AuxiliaryMedia auxiliaryMedia = new AuxiliaryMedia();
         auxiliaryMedia.playingAudio = playingAudio;
         auxiliaryMedia.setButtonToDrawableOnStop = setButtonToDrawable;
         auxiliaryMedia.viewThatIsPlayingButton = viewThatIsPlayingButton;
-    }
-
-    /**
-     * This is like onToolbarTouchStopAudio function, but this takes in multiple audio sources
-     * in an arrayList form.
-     * @param list
-     */
-    public void onToolbarTouchStopAudio(ArrayList<AuxiliaryMedia> list) {
-        this.list = list;
-    }
-
-    public void stopAuxiliaryMedia() {
-        if (list != null) {
-            for (AuxiliaryMedia am : list) {
-                am.stopPlaying();
-            }
-        }
-        if (auxiliaryMedia != null) {
-            auxiliaryMedia.stopPlaying();
-        }
-    }
-
-    public boolean isOpen() {
-        return super.isOpen();
+        auxiliaryMediaList.add(auxiliaryMedia);
     }
 
     public boolean isRecording() {
         return isRecording;
     }
 
+    /**
+     * Calling class should be responsible for all other media
+     * so {@link #stopPlayBackAndRecording()} is not being used here.
+     */
     public void closeToolbar() {
-        //Calling class should be responsible for all other media
-        //so stopAllPlayBackAndRecording() is not being used here.
-        stopPlayBackAndRecording();
+        stopToolbarMedia();
         super.close();
     }
 
@@ -214,6 +176,7 @@ public class RecordingToolbar extends AnimationToolbar {
         stopRecordingAnimation();
     }
 
+    //TODO finish adding deletion functionality.
     private boolean deleteRecording() {
         if (enableDeleteButton) {
             return false;
@@ -223,12 +186,12 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     private void createToolbar() {
-        setupToolbarButtons();
         setupToolbar();
+        setupToolbarButtons();
     }
 
     /**
-     *
+     * This function formats and aligns the buttons to the toolbar.
      */
     private void setupToolbarButtons() {
         rootViewToolbarLayout.removeAllViews();
@@ -237,7 +200,7 @@ public class RecordingToolbar extends AnimationToolbar {
         spaceLayoutParams.width = 0;
         int[] drawables;
         ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
-        //imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
+
         //Index of the button corresponds to the drawables array
         micButton = imageButtons[0];
 
@@ -255,48 +218,60 @@ public class RecordingToolbar extends AnimationToolbar {
             deleteButton = imageButtons[2];
         }
 
-        Space spaces = new Space(appContext);
-        spaces.setLayoutParams(spaceLayoutParams);
-        toolbar.addView(spaces);
-
+        Space buttonSpacing = new Space(appContext);
+        buttonSpacing.setLayoutParams(spaceLayoutParams);
+        toolbar.addView(buttonSpacing); //Add a space to the left of the first button.
         for (int i = 0; i < drawables.length; i++) {
             imageButtons[i].setBackgroundResource(drawables[i]);
             imageButtons[i].setVisibility(View.VISIBLE);
             imageButtons[i].setLayoutParams(layoutParams);
             toolbar.addView(imageButtons[i]);
 
-            spaces = new Space(appContext);
-            spaces.setLayoutParams(spaceLayoutParams);
-            toolbar.addView(spaces);
+            buttonSpacing = new Space(appContext);
+            buttonSpacing.setLayoutParams(spaceLayoutParams);
+            toolbar.addView(buttonSpacing);
+        }
+
+        if(playButton != null){
+            playButton.setVisibility((enablePlaybackButton && new File(recordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(deleteButton != null){
+            deleteButton.setVisibility((enableDeleteButton) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
     }
 
     /**
-     *
+     * This function formats and aligns the toolbar and floating action button to the bottom of the relative layout of the
+     * calling class.
      */
     private void setupToolbar() {
         RelativeLayout.LayoutParams[] myParams =
                 new RelativeLayout.LayoutParams[]{new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)};
         int[] myRules = new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_END, RelativeLayout.ALIGN_PARENT_RIGHT};
-        View[] myView = new View[]{fab, toolbar};
+        View[] myView = new View[]{fabPlus, toolbar};
 
+        //Must remove all children of the layout, before appending them to the new rootView
+        rootViewToolbarLayout.removeAllViews();
         for (int i = 0; i < myParams.length; i++) {
             for (int j = 0; j < myRules.length; j++) {
-                myParams[i].addRule(myRules[j], rootView.getId());
+                myParams[i].addRule(myRules[j], rootViewToEmbedToolbarIn.getId());
             }
             myView[i].setLayoutParams(myParams[i]);
-            ((RelativeLayout) rootView).addView(myView[i]);
+            ((RelativeLayout) rootViewToEmbedToolbarIn).addView(myView[i]);
         }
         //Index corresponds to the myView array
-        fab = (FloatingActionButton) myView[0];
+        fabPlus = (FloatingActionButton) myView[0];
         toolbar = (LinearLayout) myView[1];
     }
 
+    /**
+     * Enables the buttons to have the appropriate onClick listeners.
+     */
     private void setOnClickListeners() {
-        View.OnClickListener micList = new View.OnClickListener() {
+        View.OnClickListener micListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (isRecording) {
@@ -309,7 +284,7 @@ public class RecordingToolbar extends AnimationToolbar {
                         playButton.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    stopAllPlayBackAndRecording();
+                    stopPlayBackAndRecording();
                     startRecording();
                     micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     if (enableDeleteButton) {
@@ -321,50 +296,47 @@ public class RecordingToolbar extends AnimationToolbar {
                 }
             }
         };
-        View.OnClickListener playList = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
-                    audioPlayer.releaseAudio();
-                    playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                } else {
-                    stopAllPlayBackAndRecording();
-                    if (new File(recordFilePath).exists()) {
-                        audioPlayer = new AudioPlayer();
-                        audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                audioPlayer.releaseAudio();
-                                playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                            }
-                        });
-                        audioPlayer.playWithPath(recordFilePath);
-                        Toast.makeText(appContext, "Playing back recording!", Toast.LENGTH_SHORT).show();
-                        playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    } else {
-                        Toast.makeText(appContext, "No translation recorded!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        };
-        View.OnClickListener deleteList = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopAllPlayBackAndRecording();
+        micButton.setOnClickListener(micListener);
 
-            }
-        };
-        micButton.setOnClickListener(micList);
         if (enablePlaybackButton) {
-            if (new File(recordFilePath).exists()) {
-                playButton.setVisibility(View.VISIBLE);
-            } else {
-                playButton.setVisibility(View.INVISIBLE);
-            }
-            playButton.setOnClickListener(playList);
+            View.OnClickListener playListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
+                        audioPlayer.releaseAudio();
+                        playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    } else {
+                        stopPlayBackAndRecording();
+                        if (new File(recordFilePath).exists()) {
+                            audioPlayer = new AudioPlayer();
+                            audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    audioPlayer.releaseAudio();
+                                    playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                                }
+                            });
+                            audioPlayer.playWithPath(recordFilePath);
+                            Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
+                            playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                        } else {
+                            Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                }
+            };
+
+            playButton.setOnClickListener(playListener);
         }
         if (enableDeleteButton) {
-            deleteButton.setOnClickListener(deleteList);
+            View.OnClickListener deleteListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    stopPlayBackAndRecording();
+                }
+            };
+            deleteButton.setOnClickListener(deleteListener);
         }
     }
 
@@ -382,12 +354,12 @@ public class RecordingToolbar extends AnimationToolbar {
      * <br/>
      * Essentially the function utilizes a Transition Drawable to interpolate between the red and
      * the toolbar color. (The colors are defined in an array and used in the transition drawable)
-     * To schedule the running of the transition drawable a handler and runnable are used.<br/>
-     * The handler takes a runnable which schedules the transitiondrawable. The handler function
+     * To schedule the running of the transition drawable a handler and runnable are used.<br/><br/>
+     * The handler takes a runnable which schedules the transitionDrawable. The handler function
      * called postDelayed will delay the running of the next Runnable by the passed in value e.g.:
-     * colorHandler.postDelayed(runnable goes here, time delay in MS). Make sure that isRed is set
-     * to true initially.
-     * <br/>
+     * colorHandler.postDelayed(runnable goes here, time delay in MS). Make sure that isToolbarRed is set
+     * to false initially.
+     * <br/><br/>
      * Still confused about handlers, runnables, and the MessageQueue?
      * <br/>
      * <a href="http://stackoverflow.com/questions/12877944/what-is-the-relationship-between-looper-handler-and-messagequeue-in-android">See this excellent SO post for more info.</a>
@@ -396,8 +368,7 @@ public class RecordingToolbar extends AnimationToolbar {
         int red = Color.rgb(255, 0, 0);
         int colorOfToolbar = Color.rgb(0, 0, 255); /*Arbitrary color value of blue used initially*/
 
-        LinearLayout lin = toolbar;
-        Drawable relBackgroundColor = lin.getBackground();
+        Drawable relBackgroundColor = toolbar.getBackground();
         if (relBackgroundColor instanceof ColorDrawable) {
             colorOfToolbar = ((ColorDrawable) relBackgroundColor).getColor();
         }
@@ -405,20 +376,19 @@ public class RecordingToolbar extends AnimationToolbar {
                 new ColorDrawable(colorOfToolbar),
                 new ColorDrawable(red)
         });
-        lin.setBackground(transitionDrawable);
+        toolbar.setBackground(transitionDrawable);
 
         colorHandler = new Handler();
         colorHandlerRunnable = new Runnable() {
             @Override
             public void run() {
                 //Animation to change the toolbar's color while recording
-                if (isRed) {
-                    transitionDrawable.startTransition(RECORDING_ANIMATION_DURATION);
-                    isRed = false;
-
-                } else {
+                if (isToolbarRed) {
                     transitionDrawable.reverseTransition(RECORDING_ANIMATION_DURATION);
-                    isRed = true;
+                    isToolbarRed = false;
+                } else {
+                    transitionDrawable.startTransition(RECORDING_ANIMATION_DURATION);
+                    isToolbarRed = true;
                 }
                 startRecordingAnimation(true, RECORDING_ANIMATION_DURATION);
             }
@@ -426,8 +396,8 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
-     * This function is used to start the handler to run the runnable.
-     * setupRecordinganimationHandler() should be called first before calling this function
+     * This function is used to start the handler to run the runnable. <br/>
+     * {@link #setupRecordingAnimationHandler()} should be called first before calling this function
      * to initialize the colorHandler and colorHandlerRunnable().
      *
      * @param isDelayed Used to signify that the runnable will be delayed in running.
@@ -466,7 +436,7 @@ public class RecordingToolbar extends AnimationToolbar {
             isRecording = true;
             voiceRecorder.prepare();
             voiceRecorder.start();
-            Toast.makeText(appContext, "Recording voice!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e) {
             Log.e(activity.toString(), e.getMessage());
         }
@@ -479,11 +449,11 @@ public class RecordingToolbar extends AnimationToolbar {
         try {
             isRecording = false;
             //Delay stopping of voiceRecorder to capture all of the voice recorded.
-            Thread.sleep(500);
+            Thread.sleep(STOP_RECORDING_DELAY);
             voiceRecorder.stop();
-            Toast.makeText(appContext, "Stopped recording!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(appContext, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show();
         } catch (RuntimeException stopException) {
-            Toast.makeText(appContext, "Please record again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(appContext, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
             Log.e(appContext.toString(), e.getMessage());
         }
@@ -493,11 +463,43 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
-     * This function sets the voice recorder with a new voicerecorder.
+     * This function sets the voice recorder with a new voiceRecorder.
      *
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName) {
         voiceRecorder = new AudioRecorder(fileName, activity);
+    }
+
+    /**
+     * This function stops all playback and all auxiliary media.
+     */
+    private void stopPlayBackAndRecording() {
+        stopToolbarMedia();
+        if (auxiliaryMediaList != null) {
+            for (AuxiliaryMedia am : auxiliaryMediaList) {
+                am.stopPlaying();
+            }
+        }
+    }
+
+    /**
+     * Use this class to hold media that should be stopped when a toolbar button is pressed.
+     * <br/>Refer to function {@link #onToolbarTouchStopAudio(View, int, AudioPlayer)} for more information.
+     */
+    private class AuxiliaryMedia {
+        View viewThatIsPlayingButton;
+        int setButtonToDrawableOnStop;
+        AudioPlayer playingAudio;
+
+        void stopPlaying() {
+            if (playingAudio != null && playingAudio.isAudioPlaying()) {
+                playingAudio.stopAudio();
+                playingAudio.releaseAudio();
+                if (viewThatIsPlayingButton != null) {
+                    viewThatIsPlayingButton.setBackgroundResource(setButtonToDrawableOnStop);
+                }
+            }
+        }
     }
 }

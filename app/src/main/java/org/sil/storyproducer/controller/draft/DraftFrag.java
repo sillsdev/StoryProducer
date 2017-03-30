@@ -235,7 +235,7 @@ public final class DraftFrag extends Fragment {
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                     }else{
                         //stop other playback streams.
-                        rt.stopPlayBackAndRecording();
+                        rt.stopToolbarMedia();
                         narrationAudioPlayer = new AudioPlayer();
                         narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
@@ -258,7 +258,9 @@ public final class DraftFrag extends Fragment {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        rt = new RecordingToolbar(getActivity(),toolbar, rootView, true, false, recordFilePath);
+        if(rootView instanceof RelativeLayout){
+            rt = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, recordFilePath);
+        }
 
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
