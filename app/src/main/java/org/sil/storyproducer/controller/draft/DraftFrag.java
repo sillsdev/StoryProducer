@@ -46,13 +46,13 @@ public final class DraftFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slideNumber;
     private SlideText slideText;
-    private AudioPlayer narrationAudioPlayer;
+    private AudioPlayer narrationPlayer;
     private AudioPlayer voiceAudioPlayer;
-    private String narrationFilePath;
     private String recordFilePath;
-    //private String tempRecordFilePath = null;
     private MediaRecorder voiceRecorder;
     private boolean isRecording = false;
+    private boolean narrationAudioExists;
+
     private AnimationToolbar myToolbar = null;
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
@@ -78,7 +78,15 @@ public final class DraftFrag extends Fragment {
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
         recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-        //tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
+        voiceAudioPlayer = new AudioPlayer();
+        narrationPlayer = new AudioPlayer();
+        File narrationFile = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber);
+        if (narrationFile.exists()) {
+            narrationAudioExists = true;
+            narrationPlayer.setPath(narrationFile.getPath());
+        } else {
+            narrationAudioExists = false;
+        }
     }
 
     @Override
@@ -248,30 +256,26 @@ public final class DraftFrag extends Fragment {
         if (aView == null || !(aView instanceof ImageButton)) {
             return;
         }
-        narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
         narrationPlayButton = (ImageButton)aView;
         narrationPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (narrationFilePath == null) {
+                if (!narrationAudioExists) {
                     Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
                 } else {
-                    if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
-                        narrationAudioPlayer.stopAudio();
-                        narrationAudioPlayer.releaseAudio();
+                    if(narrationPlayer != null && narrationPlayer.isAudioPlaying()){
+                        narrationPlayer.stopAudio();
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                     }else{
                         //stop other playback streams.
                         stopPlayBackAndRecording();
-                        narrationAudioPlayer = new AudioPlayer();
-                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
-                                narrationAudioPlayer.releaseAudio();
                                 narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                             }
                         });
-                        narrationAudioPlayer.playWithPath(narrationFilePath);
+                        narrationPlayer.playAudio();
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
                         Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
                     }
@@ -415,15 +419,14 @@ public final class DraftFrag extends Fragment {
                     //Stops all other playback streams.
                     stopPlayBackAndRecording();
                     if (new File(recordFilePath).exists()) {
-                        voiceAudioPlayer = new AudioPlayer();
                         voiceAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
-                                voiceAudioPlayer.releaseAudio();
                                 toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                             }
                         });
-                        voiceAudioPlayer.playWithPath(recordFilePath);
+                        voiceAudioPlayer.setPath(recordFilePath);
+                        voiceAudioPlayer.playAudio();
                         Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
                         toolbarPlayButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     } else {
@@ -606,15 +609,13 @@ public final class DraftFrag extends Fragment {
             toolbarPlayButton.setVisibility(View.VISIBLE);
             toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
-        if (narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()) {
+        if (narrationPlayer != null && narrationPlayer.isAudioPlaying()) {
             narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
-            narrationAudioPlayer.stopAudio();
-            narrationAudioPlayer.releaseAudio();
+            narrationPlayer.stopAudio();
         }
         if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
             toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             voiceAudioPlayer.stopAudio();
-            voiceAudioPlayer.releaseAudio();
         }
     }
 }

@@ -50,6 +50,7 @@ public class LearnActivity extends PhaseBaseActivity {
     private SeekBar videoSeekBar;
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
+    private boolean backgroundAudioExists;
 
     private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
@@ -92,8 +93,16 @@ public class LearnActivity extends PhaseBaseActivity {
         setSeekBarListener();
 
         //create audio players
+        voiceAudioPlayer = new AudioPlayer();
         narrationPlayer = new AudioPlayer();
         backgroundPlayer = new AudioPlayer();
+        File backgroundAudioFile = AudioFiles.getSoundtrack(StoryState.getStoryName());
+        if (backgroundAudioFile.exists()) {
+            backgroundAudioExists = true;
+            backgroundPlayer.setPath(backgroundAudioFile.getPath());
+        } else {
+            backgroundAudioExists = false;
+        }
 
         setPic(learnImageView);     //set the first image to show
 
@@ -127,9 +136,8 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     private void setBackgroundMusic() {
         //turn on the background music
-        backgroundPlayer = new AudioPlayer();
-        backgroundPlayer.playWithPath(AudioFiles.getSoundtrack(storyName).getPath());
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
+        backgroundPlayer.playAudio();
     }
 
     /**
@@ -145,13 +153,6 @@ public class LearnActivity extends PhaseBaseActivity {
             backgroundAudioJumps.add(k, audioStartValue);
         }
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        narrationPlayer.releaseAudio();
-        backgroundPlayer.releaseAudio();
     }
 
     @Override
@@ -171,14 +172,15 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     void playVideo() {
         setPic(learnImageView);                                                             //set the next image
-
-        //Clear old narrationPlayer
-        if(narrationPlayer != null) {
-            narrationPlayer.releaseAudio();
+        File audioFile = AudioFiles.getLWC(storyName, slideNumber);
+        //set the next audio
+        if (audioFile.exists()) {
+            narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
+            narrationPlayer.setPath(audioFile.getPath());
+            narrationPlayer.playAudio();
         }
-        narrationPlayer = new AudioPlayer();                                                //set the next audio
-        narrationPlayer.playWithPath(AudioFiles.getLWC(storyName, slideNumber).getPath());
-        narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f);       //set the volume on or off based on the boolean
+
+
         videoSeekBar.setProgress(slideNumber);
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -187,8 +189,6 @@ public class LearnActivity extends PhaseBaseActivity {
                     playVideo();
                 } else {                            //at the end of video so special case
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
-                    backgroundPlayer.releaseAudio();
-                    narrationPlayer.releaseAudio();
                     playButton.setImageResource(R.drawable.ic_play_gray);
                     setPic(learnImageView);     //sets the pic to the end image
                     showStartPracticeSnackBar();
@@ -256,40 +256,36 @@ public class LearnActivity extends PhaseBaseActivity {
             @Override
             public void onProgressChanged(SeekBar sBar, int progress, boolean fromUser) {
                 if(fromUser) {
-                    boolean notPlayingAudio = false;
-                    notPlayingAudio = !narrationPlayer.isAudioPlaying();
-                    narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
-                    backgroundPlayer.releaseAudio();
                     slideNumber = progress;
-                    setBackgroundMusic();       //have to reset the background music because it could have been completed
-                    if (notPlayingAudio) backgroundPlayer.pauseAudio();
+                    narrationPlayer.stopAudio();
                     backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
+                    if (!backgroundPlayer.isAudioPlaying()) {
+                        backgroundPlayer.resumeAudio();
+                    }
                     if(slideNumber == CONTENT_SLIDE_COUNT) {
-                        backgroundPlayer.releaseAudio();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
                         showStartPracticeSnackBar();
-                        narrationPlayer = new AudioPlayer();    //create new player so there is one that exists
                     } else {
                         playVideo();
+                        playButton.setImageResource(R.drawable.ic_pause_gray);
                     }
-                    if (notPlayingAudio) narrationPlayer.pauseAudio();
                 }
             }
         });
     }
 
     /**
-     * helper function that resets the vidio to the beginning and turns off the sound
+     * helper function that resets the video to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
         playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
         slideNumber = 0;
-        narrationPlayer = new AudioPlayer();
         narrationPlayer.setVolume(0.0f);
-        setBackgroundMusic();
+        backgroundPlayer.stopAudio();
         backgroundPlayer.setVolume(0.0f);
+        setBackgroundMusic();
         isVolumeOn = false;
         playVideo();
     }
@@ -407,7 +403,6 @@ public class LearnActivity extends PhaseBaseActivity {
                 //stop all other playback streams.
                 if (voiceAudioPlayer != null) {
                     voiceAudioPlayer.stopAudio();
-                    voiceAudioPlayer.releaseAudio();
                 }
                 if (isRecording) {
                     stopAudioRecorder();
@@ -488,7 +483,6 @@ public class LearnActivity extends PhaseBaseActivity {
                 //Stops all other playback streams.
                 if (voiceAudioPlayer != null) {
                     voiceAudioPlayer.stopAudio();
-                    voiceAudioPlayer.releaseAudio();
                 }
                 if(isRecording){
                     stopAudioRecorder();
@@ -496,8 +490,8 @@ public class LearnActivity extends PhaseBaseActivity {
                         stopRecordingAnimation();
                     }
                 }
-                voiceAudioPlayer = new AudioPlayer();
-                voiceAudioPlayer.playWithPath(recordFilePath);
+                voiceAudioPlayer.setPath(recordFilePath);
+                voiceAudioPlayer.playAudio();
                 //set the switch off and turn off volume
                 Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
                 volumeSwitch.setChecked(false);

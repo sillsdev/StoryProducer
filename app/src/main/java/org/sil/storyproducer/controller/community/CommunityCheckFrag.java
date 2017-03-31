@@ -43,12 +43,22 @@ public class CommunityCheckFrag extends Fragment {
     private View rootView;
     private String[] comments;
     private boolean isRecording;
+    private boolean draftAudioExists;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
+        commentPlayer = new AudioPlayer();
+        draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
+        }
     }
 
     @Override
@@ -101,12 +111,6 @@ public class CommunityCheckFrag extends Fragment {
     public void onStop() {
         super.onStop();
         stopAllMedia();
-        if(draftPlayer != null){
-            draftPlayer.releaseAudio();
-        }
-        if(commentPlayer != null){
-            commentPlayer.releaseAudio();
-        }
     }
 
     /**
@@ -166,15 +170,13 @@ public class CommunityCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             //stop other playback streams.
             stopAllMedia();
-            if (draftFile.exists()) {
-                draftPlayer = new AudioPlayer();
-                draftPlayer.playWithPath(draftFile.getPath());
+            if (draftAudioExists) {
+                draftPlayer.playAudio();
                 Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
@@ -191,8 +193,8 @@ public class CommunityCheckFrag extends Fragment {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
-            commentPlayer = new AudioPlayer();
-            commentPlayer.playWithPath(commentFile.getPath());
+            commentPlayer.setPath(commentFile.getPath());
+            commentPlayer.playAudio();
             Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();

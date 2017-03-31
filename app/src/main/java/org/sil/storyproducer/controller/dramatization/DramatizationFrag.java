@@ -32,6 +32,7 @@ import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -44,7 +45,7 @@ public class DramatizationFrag extends Fragment {
     private boolean isRecording = false;
     private ImageButton playPauseDraftButton;
     private AudioPlayer draftPlayer;
-    private String draftPlayerPath = null;
+    private boolean draftAudioExists;
     private MediaRecorder voiceRecorder;
     private AudioPlayer dramatizationPlayer;
     private String dramatizationRecordingPath = null;
@@ -63,9 +64,16 @@ public class DramatizationFrag extends Fragment {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        if (AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).exists()) {
-            draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+
+        draftPlayer = new AudioPlayer();
+        File draftAudioFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        if (draftAudioFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftAudioFile.getPath());
+        } else {
+            draftAudioExists = false;
         }
+        dramatizationPlayer = new AudioPlayer();
         dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
     }
 
@@ -156,39 +164,34 @@ public class DramatizationFrag extends Fragment {
         if (button != null && button instanceof ImageButton) {
             playPauseDraftButton = (ImageButton) button;
         }
-        if (draftPlayerPath == null) {
+        if (!draftAudioExists) {
             //draft recording does not exist
             playPauseDraftButton.setAlpha(0.8f);
             playPauseDraftButton.setColorFilter(Color.argb(200, 200, 200, 200));
-        }else{
+        } else {
             //remove x mark from Imagebutton play
             playPauseDraftButton.setImageResource(0);
         }
 
-        draftPlayer = new AudioPlayer();
-
         playPauseDraftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(draftPlayerPath == null){
+                if(!draftAudioExists){
                     Toast.makeText(getContext(), "Draft recording not available!", Toast.LENGTH_SHORT).show();
                 }
                 else if (draftPlayer.isAudioPlaying()) {
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     draftPlayer.stopAudio();
-                    draftPlayer.releaseAudio();
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                 } else {
                     stopPlayBackAndRecording();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    draftPlayer = new AudioPlayer();
                     draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                            draftPlayer.releaseAudio();
                         }
                     });
-                    draftPlayer.playWithPath(draftPlayerPath);
+                    draftPlayer.playAudio();
                     Toast.makeText(getContext(), "Playing back draft recording!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -241,7 +244,6 @@ public class DramatizationFrag extends Fragment {
     private void setRecordNPlayback() {
         View button = rootView.findViewById(R.id.fragment_dramatization_mic_toolbar_button);
         View button2 = rootView.findViewById(R.id.fragment_dramatization_play_toolbar_button);
-        dramatizationPlayer = new AudioPlayer();
         if (button instanceof ImageButton && button2 instanceof ImageButton) {
             recordButton = (ImageButton) button;
             playRecordingButton = (ImageButton) button2;
@@ -271,12 +273,9 @@ public class DramatizationFrag extends Fragment {
                 public void onClick(View v) {
                     if (dramatizationPlayer.isAudioPlaying()) {
                         dramatizationPlayer.stopAudio();
-                        dramatizationPlayer.releaseAudio();
                         playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     } else {
                         stopPlayBackAndRecording();
-                        dramatizationPlayer = new AudioPlayer();
-                        dramatizationPlayer.playWithPath(dramatizationRecordingPath);
                         playRecordingButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                         //on completion of audio playback without user intervention
                         //set the button to a play button
@@ -284,10 +283,10 @@ public class DramatizationFrag extends Fragment {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                                dramatizationPlayer.releaseAudio();
                             }
                         });
-
+                        dramatizationPlayer.setPath(dramatizationRecordingPath);
+                        dramatizationPlayer.playAudio();
                     }
                 }
             });
@@ -438,12 +437,10 @@ public class DramatizationFrag extends Fragment {
         }
         if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
             draftPlayer.stopAudio();
-            draftPlayer.releaseAudio();
             playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
         if (dramatizationPlayer != null && dramatizationPlayer.isAudioPlaying()) {
             dramatizationPlayer.stopAudio();
-            dramatizationPlayer.releaseAudio();
             playRecordingButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
         }
     }

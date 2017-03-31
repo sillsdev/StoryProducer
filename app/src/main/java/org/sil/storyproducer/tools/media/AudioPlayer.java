@@ -7,12 +7,15 @@ import java.io.IOException;
 public class AudioPlayer {
 
     private MediaPlayer mPlayer;
+    private boolean pathIsSet, isPrepared;
 
     /**
      * Constructor for Audio Player, no params
      */
     public AudioPlayer() {
         mPlayer = new MediaPlayer();
+        pathIsSet = false;
+        isPrepared = false;
     }
 
     /**
@@ -21,7 +24,12 @@ public class AudioPlayer {
      */
     public void setPath(String path) {
         try {
+            if (pathIsSet) {
+                mPlayer.reset();
+                isPrepared = false;
+            }
             mPlayer.setDataSource(path);
+            pathIsSet = true;
         } catch (IOException e) {
             //TODO maybe something with this exception
             e.printStackTrace();
@@ -30,17 +38,13 @@ public class AudioPlayer {
 
     /**
      * Plays the audio with the given path
-     * @param path for the path where the audio resides
      */
-    public void playWithPath(String path) {
+    public void playAudio() {
         try {
-            mPlayer.setDataSource(path);
-        } catch (IOException e) {
-            //TODO maybe something with this exception
-            e.printStackTrace();
-        }
-        try {
-            mPlayer.prepare();
+            if (!isPrepared) {
+                mPlayer.prepare();
+                isPrepared = true;
+            }
         } catch (IOException e) {
             //TODO maybe something with this exception
             e.printStackTrace();
@@ -80,34 +84,11 @@ public class AudioPlayer {
         if(mPlayer!= null && mPlayer.isPlaying()) {
             try {
                 mPlayer.stop();
+                isPrepared = false;
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
             }
-        }
-    }
-
-    /**
-     * Stops the audio and releases it if it is currently being played
-     */
-    public void releaseAudio() {
-        if(mPlayer != null && mPlayer.isPlaying()) {
-            try {
-                mPlayer.stop();
-            } catch (IllegalStateException e) {
-                //TODO maybe something with this exception
-                e.printStackTrace();
-            }
-        }
-        if(mPlayer != null) {
-            try {
-                mPlayer.release();
-            } catch (IllegalStateException e) {
-                //TODO maybe something with this exception
-                e.printStackTrace();
-            }
-
-            mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
         }
     }
 

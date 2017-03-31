@@ -56,6 +56,7 @@ public class ConsultantCheckFrag extends Fragment {
     private AudioPlayer draftPlayer;
     private SlideText slideText;
     private TextView slideTextView;
+    private boolean draftAudioExists;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -63,6 +64,13 @@ public class ConsultantCheckFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
         draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
+        }
     }
 
     @Override
@@ -106,7 +114,6 @@ public class ConsultantCheckFrag extends Fragment {
         super.onStop();
         if (draftPlayer != null) {
             draftPlayer.stopAudio();
-            draftPlayer.releaseAudio();
         }
     }
 
@@ -190,8 +197,6 @@ public class ConsultantCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,8 +204,8 @@ public class ConsultantCheckFrag extends Fragment {
                 if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
                     draftPlayer.stopAudio();
                 }
-                if (draftFile.exists()) {
-                    draftPlayer.playWithPath(draftFile.getPath());
+                if (draftAudioExists) {
+                    draftPlayer.playAudio();
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
