@@ -65,20 +65,6 @@ public class AnimationToolbar {
     private Activity currentActivity;
 
     /**
-     * The constructor of the AnimationToolbar class.
-     *
-     * @param floatingActionBut The floating action to be passed in.
-     * @param linLayout         The relative layout that will act as the toolbar.
-     * @param currentActivity
-     * @throws ClassCastException Will be thrown if either floatingActionBut
-     *                            or linLayout are not of the correct type of FloatingActionButton or LienarLayout.
-     */
-    public AnimationToolbar(View floatingActionBut, View linLayout, final Activity currentActivity) {
-        this(currentActivity);
-        this.initializeToolbar(floatingActionBut, linLayout);
-    }
-
-    /**
      * The constructor of the AnimationToolbar class. The initializeToolbar should be called
      * immediately after the constructor is called.
      * (This constructor is used in cases when the toolbar isn't known yet and the child class must

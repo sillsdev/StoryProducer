@@ -30,8 +30,9 @@ import java.util.ArrayList;
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
  * to the toolbar. <br/><br/>
- * This class utilizes an empty layout for the toolbar and floating action button
- * (toolbar_for_recording.xml) where buttons are added to toolbar. The toolbar is then placed at the
+ * This class utilizes an empty layout for the toolbar and floating action button found in this layout:
+ * (toolbar_for_recording.xml). <br/>
+ * The toolbar is where buttons are added to toolbar. The toolbar is then placed at the
  * bottom of the rootViewLayout that is passed in to the this class' constructor. <br/><br/>
  * This class also saves the recording and allows playback <br/> from the toolbar. see: {@link #createToolbar()}
  * <br/><br/>
@@ -348,10 +349,10 @@ public class RecordingToolbar extends AnimationToolbar {
      * <a href="https://developer.android.com/reference/android/graphics/drawable/TransitionDrawable.html">See for transition Drawable</a>
      * <br/>
      * <br/>
-     * Call this function prior to setting the button listener of the record button. E.g.: <br/>
-     * setupRecordAnimationHandler();<br/>
-     * button.Handler(){}
-     * <br/>
+     * Call this function prior to calling the function to start the animation.  E.g.: <br/>
+     * {@link #setupRecordingAnimationHandler()}, should be called once<br/>
+     * {@link #startRecordingAnimation(boolean, int)}{}
+     * <br/><br/>
      * Essentially the function utilizes a Transition Drawable to interpolate between the red and
      * the toolbar color. (The colors are defined in an array and used in the transition drawable)
      * To schedule the running of the transition drawable a handler and runnable are used.<br/><br/>
@@ -459,7 +460,6 @@ public class RecordingToolbar extends AnimationToolbar {
         }
         voiceRecorder.release();
         voiceRecorder = null;
-        //ConcatenateAudioFiles();
     }
 
     /**
