@@ -37,6 +37,13 @@
         </RelativeLayout>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/list_recordings_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_dramatization_fab"
+        android:text="Recording #2"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fragment_dramatization_fab"
         android:layout_width="wrap_content"

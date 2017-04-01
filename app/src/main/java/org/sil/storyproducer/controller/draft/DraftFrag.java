@@ -24,6 +24,8 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +47,7 @@ import java.io.IOException;
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-public final class DraftFrag extends Fragment implements RecordingsListAdapter.ClickListeners {
+public final class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slideNumber;
@@ -81,7 +83,8 @@ public final class DraftFrag extends Fragment implements RecordingsListAdapter.C
 
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
-        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+
+        setRecordFilePath();
         //tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
     }
 
@@ -163,32 +166,6 @@ public final class DraftFrag extends Fragment implements RecordingsListAdapter.C
                 modal.show();
             }
         });
-    }
-
-    public void onPlayClickListener(String commentTitle) {
-//        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
-//        stopAllMedia();
-//        if (commentFile.exists()) {
-//            commentPlayer = new AudioPlayer();
-//            commentPlayer.playWithPath(commentFile.getPath());
-//            Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
-//        } else {
-//            Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
-//        }
-    }
-
-    public void onDeleteClickListener(int slidePos, String commentTitle) {
-//        AudioFiles.deleteComment(StoryState.getStoryName(), slidePos, commentTitle);
-//        updateCommentList();
-    }
-
-    public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
-//        return AudioFiles.renameComment(StoryState.getStoryName(), slidePos, name, newName);
-        return null;
-    }
-
-    public void onRenameSuccess() {
-//        updateCommentList();
     }
 
     /**
@@ -446,6 +423,8 @@ public final class DraftFrag extends Fragment implements RecordingsListAdapter.C
         }
         voiceRecorder.release();
         voiceRecorder = null;
+
+       setRecordFilePath();
         //ConcatenateAudioFiles();
     }
 
@@ -581,6 +560,18 @@ public final class DraftFrag extends Fragment implements RecordingsListAdapter.C
         }
     }
 
+    private void setRecordFilePath() {
+        int nextDraftIndex = AudioFiles.getDraftTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber,
+                "Draft " + nextDraftIndex);
+        while (recordFile.exists()) {
+            nextDraftIndex++;
+            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber,
+                    "Draft " + nextDraftIndex);
+        }
+        recordFilePath = recordFile.getPath();
+    }
+
 //    /**
 //     * This function adds two different audio files together to make one audio file into an
 //     * .mp3 file. More comments will be added to this function later.
@@ -654,7 +645,7 @@ public final class DraftFrag extends Fragment implements RecordingsListAdapter.C
     /**
      * Stops all playback streams and stops recording as well.
      */
-    private void stopPlayBackAndRecording(){
+    public void stopPlayBackAndRecording(){
         if (isRecording) {
             stopAudioRecorder();
             stopRecordingAnimation();

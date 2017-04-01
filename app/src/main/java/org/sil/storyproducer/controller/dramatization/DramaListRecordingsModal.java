@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.draft;
+package org.sil.storyproducer.controller.dramatization;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,24 +10,25 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
+import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
 import java.io.File;
 
-public class DraftListRecordingsModal implements RecordingsListAdapter.ClickListeners {
+public class DramaListRecordingsModal implements RecordingsListAdapter.ClickListeners {
 
     private Context context;
     private int slidePosition;
-    private DraftFrag parentFragment;
+    private DramatizationFrag parentFragment;
     LinearLayout rootView;
 
-    String[] draftTitles;
+    String[] dramaTitles;
 
     private static AudioPlayer audioPlayer;
 
-    public DraftListRecordingsModal(Context context, int pos, DraftFrag parentFragment) {
+    public DramaListRecordingsModal(Context context, int pos, DramatizationFrag parentFragment) {
         this.context = context;
         this.slidePosition = pos;
         this.parentFragment = parentFragment;
@@ -40,7 +41,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
         createRecordingList();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(R.string.draft_recordings_title)
+        builder.setTitle(R.string.dramatization_recordings_title)
                 .setNegativeButton(R.string.cancel, null)
                 .setView(rootView);
         AlertDialog dialog = builder.create();
@@ -48,35 +49,35 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
     }
 
     /**
-     * Updates the list of draft recordings at beginning of fragment creation and after any list change
+     * Updates the list of dramatization recordings at beginning of fragment creation and after any list change
      */
     private void createRecordingList() {
         ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
-        draftTitles = AudioFiles.getDraftTitles(StoryState.getStoryName(), slidePosition);
-        ListAdapter adapter = new RecordingsListAdapter(context, draftTitles, slidePosition, this);
+        dramaTitles = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slidePosition);
+        ListAdapter adapter = new RecordingsListAdapter(context, dramaTitles, slidePosition, this);
         listView.setAdapter(adapter);
     }
 
     public void onPlayClickListener(String recordingTitle) {
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
+        final File dramaFile = AudioFiles.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         parentFragment.stopPlayBackAndRecording();
-        if (draftFile.exists()) {
+        if (dramaFile.exists()) {
             audioPlayer = new AudioPlayer();
-            audioPlayer.playWithPath(draftFile.getPath());
-            Toast.makeText(parentFragment.getContext(), "Playing Draft...", Toast.LENGTH_SHORT).show();
+            audioPlayer.playWithPath(dramaFile.getPath());
+            Toast.makeText(parentFragment.getContext(), "Playing Dramatization...", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(parentFragment.getContext(), "No Draft Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), "No Dramatization Found...", Toast.LENGTH_SHORT).show();
         }
     }
 
     public void onDeleteClickListener(int slidePos, String recordingTitle) {
-        AudioFiles.deleteDraft(StoryState.getStoryName(), slidePos, recordingTitle);
+        AudioFiles.deleteDramatization(StoryState.getStoryName(), slidePos, recordingTitle);
         createRecordingList();
     }
 
     public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
-        return AudioFiles.renameDraft(StoryState.getStoryName(), slidePos, name, newName);
+        return AudioFiles.renameDramatization(StoryState.getStoryName(), slidePos, name, newName);
     }
 
     public void onRenameSuccess() {

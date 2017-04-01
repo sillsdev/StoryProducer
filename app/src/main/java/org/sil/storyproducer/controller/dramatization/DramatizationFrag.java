@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -27,6 +28,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.draft.DraftFrag;
+import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.AudioPlayer;
@@ -34,6 +37,7 @@ import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 
+import java.io.File;
 import java.io.IOException;
 
 
@@ -68,7 +72,7 @@ public class DramatizationFrag extends Fragment {
         if (AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).exists()) {
             draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         }
-        dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        setRecordFilePath();
     }
 
 
@@ -76,6 +80,7 @@ public class DramatizationFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
+        setRecordingsList();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
         setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
         setToolbar();
@@ -148,6 +153,30 @@ public class DramatizationFrag extends Fragment {
         slideImage.requestLayout();
 
         slideImage.setImageBitmap(slidePicture);
+    }
+
+    private void setRecordingsList() {
+        Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        final DramatizationFrag dramaFrag = this;
+        listRecordingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, dramaFrag);
+                modal.show();
+            }
+        });
+    }
+
+    private void setRecordFilePath() {
+        int nextDraftIndex = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,
+                "Dramatization " + nextDraftIndex);
+        while (recordFile.exists()) {
+            nextDraftIndex++;
+            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,
+                    "Dramatization " + nextDraftIndex);
+        }
+        dramatizationRecordingPath = recordFile.getPath();
     }
 
     /**
@@ -417,6 +446,7 @@ public class DramatizationFrag extends Fragment {
         }
         voiceRecorder.release();
         voiceRecorder = null;
+        setRecordFilePath();
     }
 
     /**
@@ -446,7 +476,7 @@ public class DramatizationFrag extends Fragment {
     /**
      * Stops recording and playback streams.
      */
-    private void stopPlayBackAndRecording() {
+    public void stopPlayBackAndRecording() {
         if (isRecording) {
             playRecordingButton.setVisibility(View.VISIBLE);
             stopAudioRecorder();

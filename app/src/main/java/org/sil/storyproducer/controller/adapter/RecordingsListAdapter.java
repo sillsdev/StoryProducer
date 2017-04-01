@@ -18,6 +18,8 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
+import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
+import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
@@ -38,19 +40,28 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         this.slidePosition = slidePosition;
         if(fragment instanceof CommunityCheckFrag) {
             listeners = (CommunityCheckFrag) fragment;
-        } else {
-            listeners = (DraftFrag) fragment;
         }
     }
 
-//    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DraftFrag draftFrag) {
-//        super(context, -1, values);
-//        this.context = context;
-//        this.values = values;
-//        this.slidePosition = slidePosition;
-//        this.commCheck = null;
-//        ClickListeners listeners = ()draftFrag;
-//    }
+    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DraftListRecordingsModal modal) {
+        super(context, -1, values);
+        this.context = context;
+        this.values = values;
+        this.slidePosition = slidePosition;
+        if(modal instanceof DraftListRecordingsModal) {
+            listeners = modal;
+        }
+    }
+
+    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DramaListRecordingsModal modal) {
+        super(context, -1, values);
+        this.context = context;
+        this.values = values;
+        this.slidePosition = slidePosition;
+        if(modal instanceof DramaListRecordingsModal) {
+            listeners = modal;
+        }
+    }
 
     public interface ClickListeners {
         void onPlayClickListener(String name);
@@ -73,7 +84,6 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                commCheck.playComment(values[position]);
                 listeners.onPlayClickListener(values[position]);
             }
         });
@@ -107,8 +117,6 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-//                        AudioFiles.deleteComment(StoryState.getStoryName(), slidePosition, values[position]);
-//                        commCheck.updateCommentList();
                         listeners.onDeleteClickListener(slidePosition, values[position]);
                     }
                 }).create();
@@ -139,11 +147,9 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
                         AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(slidePosition, values[position], newName.getText().toString());
-//                                AudioFiles.renameComment(StoryState.getStoryName(), slidePosition, values[position], newName.getText().toString());
                         switch(returnCode) {
 
                             case SUCCESS:
-//                                commCheck.updateCommentList();
                                 listeners.onRenameSuccess();
                                 Toast.makeText(getContext(), "File successfully renamed", Toast.LENGTH_SHORT).show();
                                 break;

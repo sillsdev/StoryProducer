@@ -169,7 +169,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, "Draft1");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

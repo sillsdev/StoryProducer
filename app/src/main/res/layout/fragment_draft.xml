@@ -59,16 +59,15 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/fragment_draft_reference_text"
                 android:background="@drawable/ic_menu_play" />
-
-            <Button
-                android:id="@+id/list_recordings_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/fragment_draft_scripture_text"
-                android:text="Recording #2"/>
         </RelativeLayout>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/list_recordings_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_draft_fab"
+        android:text="Recording #2"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fragment_draft_fab"
