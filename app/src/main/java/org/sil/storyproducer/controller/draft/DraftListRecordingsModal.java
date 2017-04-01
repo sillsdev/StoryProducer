@@ -11,8 +11,8 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
 

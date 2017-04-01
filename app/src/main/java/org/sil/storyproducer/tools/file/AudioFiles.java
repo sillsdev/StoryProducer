@@ -10,6 +10,8 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
+    private static final String LWC_EXTENSION = ".wav";
+
     private static final String PREFER_EXTENSION = ".m4a";
 
     private static final String LEARN_PRACTICE_PREFIX = "learnPractice";
@@ -43,7 +45,6 @@ public class AudioFiles {
     //*** LWC ***
 
     public static File getLWC(String story, int i){
-        final String LWC_EXTENSION = ".wav";
         return new File(FileSystem.getTemplatePath(story), LWC_AUDIO_PREFIX + i + LWC_EXTENSION);
     }
 

@@ -1,13 +1,12 @@
-package org.sil.storyproducer.tools;
+package org.sil.storyproducer.tools.media;
 
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 
 import java.io.IOException;
 
 public class AudioPlayer {
 
-    MediaPlayer mPlayer;
+    private MediaPlayer mPlayer;
 
     /**
      * Constructor for Audio Player, no params
@@ -92,22 +91,23 @@ public class AudioPlayer {
      * Stops the audio and releases it if it is currently being played
      */
     public void releaseAudio() {
-        if(mPlayer!= null && mPlayer.isPlaying()) {
+        if(mPlayer != null && mPlayer.isPlaying()) {
             try {
                 mPlayer.stop();
             } catch (IllegalStateException e) {
                 //TODO maybe something with this exception
                 e.printStackTrace();
-            } finally {
-                try {
-                    mPlayer.release();
-                } catch (IllegalStateException e) {
-                    //TODO maybe something with this exception
-                    e.printStackTrace();
-                }
-
-                mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
             }
+        }
+        if(mPlayer != null) {
+            try {
+                mPlayer.release();
+            } catch (IllegalStateException e) {
+                //TODO maybe something with this exception
+                e.printStackTrace();
+            }
+
+            mPlayer = null;   //this set to null so that an error doesn't occur if someone trys to release audio again
         }
     }
 

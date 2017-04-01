@@ -49,6 +49,8 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="question_mark">What is this?</string>
+    <string name="registration_exit_title">Exit Registration?</string>
+    <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
     <string name="registration_skip_title">Skip Registration?</string>
     <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
     <string name="registration_submit_title">Submit?</string>
@@ -63,6 +65,9 @@
     <string name="comment_rename_title">Rename Comment</string>
     <string name="draft_recordings_title">Draft Recordings</string>
     <string name="dramatization_recordings_title">Dramatize Recordings</string>
+    <string name="consultant_password_title">Consultant Password</string>
+    <string name="consultant_password_message">Please enter the consultant password:</string>
+    <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
 
@@ -104,7 +109,34 @@
     </array>
 
     <!-- Export -->
-    <string name="export_start">Start Export</string>
+    <string name="export_options_header">Options</string>
+
+    <string name="export_include_soundtrack">Include Background Music</string>
+    <string name="export_include_pictures">Include Pictures</string>
+    <string name="export_include_text">Include Text</string>
+    <string name="export_include_KBFX">Include Ken Burns Effects</string>
+
+    <string name="export_resolution_label">Resolution</string>
+    <string-array name="export_resolution_options">
+        <item>320x240</item>
+        <item>640x480</item>
+        <item>1280x720</item>
+    </string-array>
+
+    <string name="export_format_label">File Format</string>
+    <string-array name="export_format_options">
+        <item>.mp4</item>
+        <item>.3gp</item>
+    </string-array>
+
+    <string name="export_location_header">Save To</string>
+    <string name="export_location_placeholder">Location</string>
+    <string name="export_location_browse">Browse</string>
+    <string name="export_location_missing_message">No save location specified</string>
+    <string name="export_location_exists_title">Replace File?</string>
+    <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
+
+    <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
 

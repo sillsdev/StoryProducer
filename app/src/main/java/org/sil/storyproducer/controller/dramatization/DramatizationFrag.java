@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller.dramatization;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,7 +10,6 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -32,10 +29,11 @@ import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
-import org.sil.storyproducer.tools.AudioPlayer;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -455,22 +453,7 @@ public class DramatizationFrag extends Fragment {
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new MediaRecorder();
-
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO},
-                    1);
-        }
-
-        voiceRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        voiceRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        voiceRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        voiceRecorder.setAudioEncodingBitRate(16);
-        voiceRecorder.setAudioSamplingRate(44100);
-        voiceRecorder.setOutputFile(fileName);
+        voiceRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**

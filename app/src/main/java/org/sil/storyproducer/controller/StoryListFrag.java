@@ -16,7 +16,7 @@ import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 
-public class StoryFrag extends Fragment {
+public class StoryListFrag extends Fragment {
 
     private ListView listView;
 
