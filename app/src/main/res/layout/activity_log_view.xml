@@ -20,6 +20,68 @@
             android:minHeight="?attr/actionBarSize"
             android:elevation="4dp" />
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="55dp">
+
+            <ImageButton
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@android:drawable/ic_menu_sort_by_size"
+                android:id="@+id/imageButton"
+                android:gravity="center"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:paddingRight="5dp"
+                android:background="@color/learn_phase"
+                >
+
+                <CheckBox
+                    android:text="Learn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/LearnCheckBox"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/draft_phase"
+                android:paddingRight="5dp"
+                >
+
+                <CheckBox
+                    android:text="Draft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/DraftCheckBox"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/comunity_check_phase"
+                android:paddingRight="5dp"
+                >
+
+                <CheckBox
+                    android:text="Community Check"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/CommunityCheckCheckBox"
+                    android:layout_gravity="center"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
