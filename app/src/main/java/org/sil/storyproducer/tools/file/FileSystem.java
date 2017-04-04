@@ -103,13 +103,16 @@ public class FileSystem {
     /**
      * Change the language templates are drawn from.
      * @param lang ethnologue code for new language
+     * @return true if change applied, false if error
      */
-    public static void changeLanguage(String lang) {
+    public static boolean changeLanguage(String lang) {
         if(templatePaths.containsKey(lang)) {
             language = lang;
+            return true;
         }
         else {
             Log.w(TAG, "No templates available for language " + lang + ". Retaining language " + language + ".");
+            return false;
         }
     }
 

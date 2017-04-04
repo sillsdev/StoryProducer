@@ -68,7 +68,7 @@
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
-
+    <string name="change_language_title">Change Language</string>
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
@@ -87,24 +87,11 @@
         <item>Remote</item>
     </string-array>
 
-    <!--Navigation Drawer Labels -->
+    <!--Navigation Drawer Labels (Main Activity) -->
     <string name="nav_open">Options</string>
     <string-array name="nav_labels">
-        <item>Story Templates</item>
-        <item>Translate</item>
-        <item>Community Check</item>
-        <item>Consultant Check</item>
-        <item>Recording Studio</item>
-        <item>Generate Sample Video</item>
+        <item>Register</item>
     </string-array>
-    <array name="nav_icons">
-        <item>@drawable/ic_list</item>
-        <item>@drawable/ic_translate</item>
-        <item>@drawable/ic_community</item>
-        <item>@drawable/ic_consultant</item>
-        <item>@drawable/ic_mic_white</item>
-        <item>@drawable/ic_search</item>
-    </array>
 
     <!-- Export -->
     <string name="export_options_header">Options</string>
