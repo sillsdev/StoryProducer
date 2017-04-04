@@ -1,0 +1,183 @@
+<!-- THIS IS WHERE SPANISH VALUES WILL BE HELD -->
+<!-- CURRENTLY THESE ARE STILL ENGLISH, BUT THIS IS AN EXAMPLE OF HOW IT'S DONE -->
+<!-- DO NOT CHANGE name="some_name" ONLY CHANGE VALUE BETWEEN STRING TAGS -->
+
+<resources>
+    <string name="app_name">Story Producer</string>
+    <string name="action_settings">Settings</string>
+    <string name="menu_info">Registration Info</string>
+    <string name="menu_search">Search</string>
+    <string name="menu">Menu</string>
+    <string name="title_activity_story_templates">Story Templates</string>
+    <string name="title_activity_info_page">Information</string>
+    <string name="title_fragment_translate">Translate</string>
+    <string name="title_fragment_community">Community Check</string>
+    <string name="title_fragment_consultant">Consultant Check</string>
+    <string name="update_registration">Update Registration</string>
+
+    <!--String names for Info Page-->
+    <string name="consultant_phone">"Consultant Phone:  "</string>
+    <string name="consultant_email">"Consultant Email:  "</string>
+    <string name="consultant_name">"Consultant Name:  "</string>
+    <string name="translator_contact_name">"Translation Team Contact:  "</string>
+    <string name="translator_team_name">"Translation Team Name:  "</string>
+    <string name="country">"Country:  "</string>
+    <string name="language_code">"Language Code:  "</string>
+    <string name="language">"Language:  "</string>
+
+    <!-- String names for registration -->
+    <string name="registration_language_header">Language Information</string>
+    <string name="registration_translator_header">Translator Information</string>
+    <string name="registration_consultant_header">Consultant Information</string>
+    <string name="registration_trainer_header">Trainer Information</string>
+    <string name="registration_archive_header">Archive Information</string>
+    <string name="language_hint">Language (being translated into)</string>
+    <string name="etnologue_code_hint">Ethnologue Code</string>
+    <string name="country_hint">Country</string>
+    <string name="location_hint">Province/State/Region</string>
+    <string name="town_hint">Village/Town/City</string>
+    <string name="lwc_hint">Language (being translated from)</string>
+    <string name="orthography_hint">Orthography Status:</string>
+    <string name="name_hint">Name</string>
+    <string name="spoken_language_hint">Spoken Languages</string>
+    <string name="phone_hint">Phone</string>
+    <string name="email_hint">E-mail</string>
+    <string name="person_location_hint">Location</string>
+    <string name="education_hint">Education Level</string>
+    <string name="communication_preference_hint">Communication Preference:</string>
+    <string name="location_type_hint">Location Type: </string>
+    <string name="submit">Submit</string>
+    <string name="bypass_button_text">Skip Registration</string>
+
+    <!-- Dialog strings for titles, messages, and buttons -->
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="question_mark">What is this?</string>
+    <string name="registration_exit_title">Exit Registration?</string>
+    <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
+    <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
+    <string name="registration_submit_title">Submit?</string>
+    <string name="registration_submit_complete_message">Are you ready to submit?</string>
+    <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_error_title">Submission Error</string>
+    <string name="registration_error_message">Please provide an database email address</string>
+    <string name="registration_saved_successfully">Registration information saved!</string>
+    <string name="registration_filename">Registration</string>
+    <string name="comment_delete_title">Delete Comment?</string>
+    <string name="comment_delete_message">Do you want to delete this audio comment?</string>
+    <string name="comment_rename_title">Rename Comment</string>
+    <string name="consultant_password_title">Consultant Password</string>
+    <string name="consultant_password_message">Please enter the consultant password:</string>
+    <string name="consultant_incorrect_password_message">Incorrect Password</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="change_language_title">Change Language</string>
+    <string-array name="orthography_list">
+        <item>None</item>
+        <item>Trial</item>
+        <item>Stable</item>
+    </string-array>
+
+    <string-array name="communication_list">
+        <item>Phone</item>
+        <item>E-mail</item>
+        <item>WhatsApp</item>
+        <item>Facebook</item>
+    </string-array>
+
+    <string-array name="location_type_list">
+        <item>Local</item>
+        <item>Remote</item>
+    </string-array>
+
+    <!--Navigation Drawer Labels (Main Activity) -->
+    <string name="nav_open">Options</string>
+    <string-array name="nav_labels">
+        <item>Register</item>
+    </string-array>
+
+    <!-- Export -->
+    <string name="export_options_header">Options</string>
+
+    <string name="export_include_soundtrack">Include Background Music</string>
+    <string name="export_include_pictures">Include Pictures</string>
+    <string name="export_include_text">Include Text</string>
+    <string name="export_include_KBFX">Include Ken Burns Effects</string>
+
+    <string name="export_resolution_label">Resolution</string>
+    <string-array name="export_resolution_options">
+        <item>320x240</item>
+        <item>640x480</item>
+        <item>1280x720</item>
+    </string-array>
+
+    <string name="export_format_label">File Format</string>
+    <string-array name="export_format_options">
+        <item>.mp4</item>
+        <item>.3gp</item>
+    </string-array>
+
+    <string name="export_location_header">Save To</string>
+    <string name="export_location_placeholder">Location</string>
+    <string name="export_location_browse">Browse</string>
+    <string name="export_location_missing_message">No save location specified</string>
+    <string name="export_location_exists_title">Replace File?</string>
+    <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
+
+    <string name="export_start">Create Video</string>
+    <string name="export_cancel">Cancel</string>
+    <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
+
+    <!-- ListView -->
+    <string name="playVideo">Play</string>
+    <string name="translateVideo">Translate</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="title_activity_splash_screen">Story Producer</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_activity_learn">LearnActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_registration">Registration</string>
+    /* SnackBar Messages */
+    <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="ok">Ok</string>
+
+    /* Phases */
+    <string name="learnTitle">Learn</string>
+    <string name="draftTitle">Draft</string>
+    <string name="community_check_title">Community Check</string>
+    <string name="consultant_check_title">Consultant Check</string>
+    <string name="dramatization_title">Dramatization</string>
+    <string name="export_title">Export</string>
+    <string name="title_activity_test_drawer">testDrawer</string>
+    <string name="Parent_Dir_Label">Parent Directory</string>
+    <string name="byte_unit_singular">" byte"</string>
+    <string name="byte_unit_plural">" bytes"</string>
+    <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
+    <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
+    <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
+    <string name="OK">OK</string>
+    <string name="file_explorer_foldeNamePrompt">Please specify a name for your new folder:</string>
+    <string name="file_explorer_newFolder">New Folder</string>
+    <string name="error">Error</string>
+    <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
+    <string name="file_explorer_fileAlreadyExists_1">File \"</string>
+    <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
+    <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
+    <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
+    <string name="info">Info</string>
+
+    <plurals name="file_explorer_numItems">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+
+    <plurals name="file_explorer_numBytes">
+        <item quantity="one">%d byte</item>
+        <item quantity="other">%d bytes</item>
+    </plurals>
+
+</resources>
