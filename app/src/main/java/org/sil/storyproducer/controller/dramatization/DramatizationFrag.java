@@ -112,6 +112,34 @@ public class DramatizationFrag extends Fragment {
     }
 
     /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on pause.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopPlayBackAndRecording();
+        if (myToolbar != null) {
+            myToolbar.close();
+        }
+    }
+
+    /**
+     * This function serves to stop the audio streams from continuing after the draft has been
+     * put on stop.
+     */
+    @Override
+    public void onStop() {
+        super.onStop();
+        stopPlayBackAndRecording();
+        draftPlayer.release();
+        dramatizationPlayer.release();
+        if(myToolbar != null){
+            myToolbar.close();
+        }
+    }
+
+    /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */

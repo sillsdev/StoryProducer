@@ -166,6 +166,13 @@ public class LearnActivity extends PhaseBaseActivity {
         super.onResume();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        narrationPlayer.release();
+        backgroundPlayer.release();
+        voiceAudioPlayer.release();
+    }
 
     /**
      * Plays the video and runs everytime the audio is completed

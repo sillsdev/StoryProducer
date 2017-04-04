@@ -111,6 +111,8 @@ public class CommunityCheckFrag extends Fragment {
     public void onStop() {
         super.onStop();
         stopAllMedia();
+        draftPlayer.release();
+        commentPlayer.release();
     }
 
     /**

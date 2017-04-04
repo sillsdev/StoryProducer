@@ -151,6 +151,8 @@ public final class DraftFrag extends Fragment {
     public void onStop() {
         super.onStop();
         stopPlayBackAndRecording();
+        narrationPlayer.release();
+        voiceAudioPlayer.release();
         if(myToolbar != null){
             myToolbar.close();
         }

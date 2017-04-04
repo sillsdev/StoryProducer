@@ -93,6 +93,15 @@ public class AudioPlayer {
     }
 
     /**
+     * Releases the MediaPlayer object after completion
+     */
+    public void release() {
+        if (mPlayer != null) {
+            mPlayer.release();
+        }
+    }
+
+    /**
      * This allows the user to do something once the audio has completed
      * via implementing MediaPlayer.OnCompleteListener.
      * @param OcL

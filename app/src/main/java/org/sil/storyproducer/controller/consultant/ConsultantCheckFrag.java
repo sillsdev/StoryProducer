@@ -114,6 +114,7 @@ public class ConsultantCheckFrag extends Fragment {
         super.onStop();
         if (draftPlayer != null) {
             draftPlayer.stopAudio();
+            draftPlayer.release();
         }
     }
 
