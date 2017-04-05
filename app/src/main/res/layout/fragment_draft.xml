@@ -67,6 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/fragment_draft_fab"
+        android:background="@android:color/holo_blue_bright"
         android:text="Recording #2"/>
 
     <android.support.design.widget.FloatingActionButton

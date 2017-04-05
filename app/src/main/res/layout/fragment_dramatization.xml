@@ -41,6 +41,7 @@
         android:id="@+id/list_recordings_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_bright"
         android:layout_above="@+id/fragment_dramatization_fab"
         android:text="Recording #2"/>
 

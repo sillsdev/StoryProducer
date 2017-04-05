@@ -21,6 +21,7 @@ import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
 /**
@@ -82,6 +83,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
 
         titleView.setText(values[position]);
 
+        //things specifically for the modals
         if(listeners instanceof DramaListRecordingsModal || listeners instanceof  DraftListRecordingsModal) {
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -95,6 +97,18 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                     listeners.onRowClickListener(values[position]);
                 }
             });
+            if(listeners instanceof DraftListRecordingsModal &&
+                    StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
+                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));      //have to set the background here as well so the corners are the right color
+                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+            }
+            if(listeners instanceof DramaListRecordingsModal &&
+                    StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
+                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+            }
         }
 
         playButton.setOnClickListener(new View.OnClickListener() {
