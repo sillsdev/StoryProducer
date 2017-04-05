@@ -113,6 +113,15 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
+     * This function can be called so that the toolbar is automatically opened, without animation,
+     * when the fragment is drawn.
+     */
+    public void keepToolbarVisible(){
+        hideFloatingActionButton();
+        toolbar.setVisibility(View.VISIBLE);
+    }
+
+    /**
      * This function is used to stop all the media sources on the toolbar from playing or recording.
      * The auxiliary medias are not stopped because the calling class should be responsible for
      * those.
@@ -471,6 +480,7 @@ public class RecordingToolbar extends AnimationToolbar {
         voiceRecorder = new AudioRecorder(fileName, activity);
     }
 
+    //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev
     /**
      * This function stops all playback and all auxiliary media.
      */
@@ -495,7 +505,7 @@ public class RecordingToolbar extends AnimationToolbar {
         void stopPlaying() {
             if (playingAudio != null && playingAudio.isAudioPlaying()) {
                 playingAudio.stopAudio();
-                playingAudio.releaseAudio();
+                //playingAudio.releaseAudio();
                 if (viewThatIsPlayingButton != null) {
                     viewThatIsPlayingButton.setBackgroundResource(setButtonToDrawableOnStop);
                 }

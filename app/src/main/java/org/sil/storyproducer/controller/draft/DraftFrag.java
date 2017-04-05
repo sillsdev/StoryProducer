@@ -40,7 +40,7 @@ public final class DraftFrag extends Fragment {
     private String recordFilePath;
     private ImageButton narrationPlayButton;
     private TextView slideNumberText;
-    private RecordingToolbar rt;
+    private RecordingToolbar recordingToolbar;
 
     public DraftFrag() {
         super();
@@ -90,8 +90,8 @@ public final class DraftFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if (rt != null) {
-                    rt.closeToolbar();
+                if (recordingToolbar != null) {
+                    recordingToolbar.closeToolbar();
                 }
             }
         }
@@ -104,8 +104,8 @@ public final class DraftFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (rt != null) {
-            rt.closeToolbar();
+        if (recordingToolbar != null) {
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -116,8 +116,8 @@ public final class DraftFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(rt != null){
-            rt.closeToolbar();
+        if(recordingToolbar != null){
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -154,7 +154,7 @@ public final class DraftFrag extends Fragment {
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -208,7 +208,7 @@ public final class DraftFrag extends Fragment {
         }
 
         //TODO Reference a string constant
-        textView.setText("Bible Story!");
+        textView.setText(R.string.draft_bible_story);
     }
 
     /**
@@ -227,7 +227,7 @@ public final class DraftFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 if (narrationFilePath == null) {
-                    Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(rootView, R.string.draft_playback_no_narration_audio, Snackbar.LENGTH_SHORT).show();
                 } else {
                     if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
                         narrationAudioPlayer.stopAudio();
@@ -235,7 +235,7 @@ public final class DraftFrag extends Fragment {
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                     }else{
                         //stop other playback streams.
-                        rt.stopToolbarMedia();
+                        recordingToolbar.stopToolbarMedia();
                         narrationAudioPlayer = new AudioPlayer();
                         narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
@@ -245,9 +245,11 @@ public final class DraftFrag extends Fragment {
                             }
                         });
                         narrationAudioPlayer.playWithPath(narrationFilePath);
-                        rt.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationAudioPlayer);
+                        if(recordingToolbar != null){
+                            recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationAudioPlayer);
+                        }
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
-                        Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.draft_playback_narration_audio, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -259,20 +261,9 @@ public final class DraftFrag extends Fragment {
      */
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
-            rt = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, recordFilePath);
+            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, recordFilePath);
+            recordingToolbar.keepToolbarVisible();
         }
-
-        //The following allows for a touch from user to close the toolbar and make the fab visible.
-        //This does not stop the recording
-        LinearLayout dummyView = (LinearLayout) rootView.findViewById(R.id.fragment_draft_dummyView);
-        dummyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (rt != null && rt.isOpen() && !rt.isRecording()) {
-                    rt.closeToolbar();
-                }
-            }
-        });
     }
 
 //

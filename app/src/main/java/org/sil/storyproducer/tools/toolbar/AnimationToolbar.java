@@ -225,7 +225,7 @@ public class AnimationToolbar {
                 fab.setVisibility(View.INVISIBLE);
                 fab.clearAnimation();
             }
-
+            @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });

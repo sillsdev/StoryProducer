@@ -37,7 +37,7 @@ public class DramatizationFrag extends Fragment {
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
 
-    private RecordingToolbar rt;
+    private RecordingToolbar recordingToolbar;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -71,8 +71,8 @@ public class DramatizationFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (rt != null) {
-            rt.closeToolbar();
+        if (recordingToolbar != null) {
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -83,8 +83,8 @@ public class DramatizationFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(rt != null){
-            rt.closeToolbar();
+        if(recordingToolbar != null){
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -102,8 +102,8 @@ public class DramatizationFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if (rt != null) {
-                    rt.closeToolbar();
+                if (recordingToolbar != null) {
+                    recordingToolbar.closeToolbar();
                 }
             }
         }
@@ -135,7 +135,7 @@ public class DramatizationFrag extends Fragment {
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
-            Snackbar.make(rootView, R.string.dramatization_no_picture, Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -184,7 +184,7 @@ public class DramatizationFrag extends Fragment {
                     draftPlayer.stopAudio();
                     draftPlayer.releaseAudio();
                 } else {
-                    rt.stopToolbarMedia();
+                    recordingToolbar.stopToolbarMedia();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     draftPlayer = new AudioPlayer();
                     draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
@@ -194,6 +194,9 @@ public class DramatizationFrag extends Fragment {
                             draftPlayer.releaseAudio();
                         }
                     });
+                    if(draftPlayer != null){ //if there is a draft available to play
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
+                    }
                     draftPlayer.playWithPath(draftPlayerPath);
                     Toast.makeText(getContext(), R.string.dramatization_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }
@@ -206,18 +209,8 @@ public class DramatizationFrag extends Fragment {
      */
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
-            rt = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, dramatizationRecordingPath);
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, dramatizationRecordingPath);
+            recordingToolbar.keepToolbarVisible();
         }
-        //The following allows for a touch from user to close the toolbar and make the fab visible.
-        //This does not stop the recording
-        LinearLayout dummyView = (LinearLayout) rootView.findViewById(R.id.fragment_dramatization_dummyView);
-        dummyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (rt != null && rt.isOpen() && !rt.isRecording()) {
-                    rt.closeToolbar();
-                }
-            }
-        });
     }
 }

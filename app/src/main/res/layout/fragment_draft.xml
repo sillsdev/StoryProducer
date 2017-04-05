@@ -8,11 +8,13 @@
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
 
     <LinearLayout
-        android:id="@+id/fragment_draft_dummyView"
+        android:id="@+id/fragment_draft_envelope"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <RelativeLayout
+            android:id="@+id/fragment_draft_image_envelope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <ImageView

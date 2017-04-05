@@ -7,12 +7,6 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <LinearLayout
-        android:id="@+id/fragment_dramatization_dummyView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
         <RelativeLayout
             android:id="@+id/fragment_dramatization_picture_frame"
             android:layout_width="wrap_content"
@@ -51,5 +45,4 @@
                 android:textSize="@dimen/text_body"/>
 
         </RelativeLayout>
-    </LinearLayout>
 </RelativeLayout>
