@@ -150,7 +150,7 @@ public class AudioFiles {
     //*** Dramatization ***
 
     public static File getDramatization(String story, int i){
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + i + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + i + PREFER_EXTENSION);
     }
 
 }
