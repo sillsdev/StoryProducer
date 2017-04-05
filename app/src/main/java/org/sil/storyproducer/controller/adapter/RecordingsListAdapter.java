@@ -64,9 +64,10 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     }
 
     public interface ClickListeners {
+        void onRowClickListener(String name);
         void onPlayClickListener(String name);
-        void onDeleteClickListener(int slidePos, String name);
-        AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName);
+        void onDeleteClickListener(String name);
+        AudioFiles.RenameCode onRenameClickListener(String name, String newName);
         void onRenameSuccess();
     }
 
@@ -80,6 +81,21 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
+
+        if(listeners instanceof DramaListRecordingsModal || listeners instanceof  DraftListRecordingsModal) {
+            rowView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listeners.onRowClickListener(values[position]);
+                }
+            });
+            titleView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listeners.onRowClickListener(values[position]);
+                }
+            });
+        }
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +133,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        listeners.onDeleteClickListener(slidePosition, values[position]);
+                        listeners.onDeleteClickListener(values[position]);
                     }
                 }).create();
 
@@ -146,7 +162,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .setPositiveButton(context.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(slidePosition, values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(values[position], newName.getText().toString());
                         switch(returnCode) {
 
                             case SUCCESS:

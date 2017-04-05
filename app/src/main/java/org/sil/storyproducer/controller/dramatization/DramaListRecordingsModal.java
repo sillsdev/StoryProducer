@@ -11,6 +11,7 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
@@ -22,8 +23,11 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
     private int slidePosition;
     private DramatizationFrag parentFragment;
     LinearLayout rootView;
+    AlertDialog dialog;
 
     String[] dramaTitles;
+    String lastNewName;
+    String lastOldName;
 
     private static AudioPlayer audioPlayer;
 
@@ -43,7 +47,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         builder.setTitle(R.string.dramatization_recordings_title)
                 .setNegativeButton(R.string.cancel, null)
                 .setView(rootView);
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
         dialog.show();
     }
 
@@ -58,6 +62,14 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         listView.setAdapter(adapter);
     }
 
+    @Override
+    public void onRowClickListener(String recordingTitle) {
+        StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
+        parentFragment.setRecordingsList();
+        dialog.dismiss();
+    }
+
+    @Override
     public void onPlayClickListener(String recordingTitle) {
         final File dramaFile = AudioFiles.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         parentFragment.stopPlayBackAndRecording();
@@ -70,16 +82,34 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         }
     }
 
-    public void onDeleteClickListener(int slidePos, String recordingTitle) {
-        AudioFiles.deleteDramatization(StoryState.getStoryName(), slidePos, recordingTitle);
+    @Override
+    public void onDeleteClickListener(String recordingTitle) {
+        AudioFiles.deleteDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
+        if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
+            if(dramaTitles.length > 0) {
+                StorySharedPreferences.setDramatizationForSlideAndStory(dramaTitles[dramaTitles.length - 1], slidePosition, StoryState.getStoryName());
+            } else {
+                StorySharedPreferences.setDramatizationForSlideAndStory("", slidePosition, StoryState.getStoryName());       //no stories to set it to
+            }
+
+        }
+        parentFragment.setRecordingsList();
     }
 
-    public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
-        return AudioFiles.renameDramatization(StoryState.getStoryName(), slidePos, name, newName);
+    @Override
+    public AudioFiles.RenameCode onRenameClickListener(String name, String newName) {
+        lastOldName = name;
+        lastNewName = newName;
+        return AudioFiles.renameDramatization(StoryState.getStoryName(), slidePosition, name, newName);
     }
 
+    @Override
     public void onRenameSuccess() {
         createRecordingList();
+        if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
+            StorySharedPreferences.setDramatizationForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
+        }
+        parentFragment.setRecordingsList();
     }
 }

@@ -30,6 +30,7 @@ import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -153,8 +154,11 @@ public class DramatizationFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
-    private void setRecordingsList() {
+    public void setRecordingsList() {
         Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        String savedTitle = StorySharedPreferences.getDramatizationForSlideAndStory(slideNumber, StoryState.getStoryName());
+        String buttonText = (savedTitle == "")? "-----" : savedTitle;
+        listRecordingsButton.setText(buttonText);
         final DramatizationFrag dramaFrag = this;
         listRecordingsButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -184,10 +184,16 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         });
     }
 
+    @Override
+    public void onRowClickListener(String recordingTitle) {
+        //empty because Community check doesn't use this feature
+    }
+
     /**
      * Plays the audio comment designated by the title
      * @param commentTitle the title of the comment to play
      */
+    @Override
     public void onPlayClickListener(String commentTitle) {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
@@ -200,15 +206,18 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         }
     }
 
-    public void onDeleteClickListener(int slidePos, String commentTitle) {
-        AudioFiles.deleteComment(StoryState.getStoryName(), slidePos, commentTitle);
+    @Override
+    public void onDeleteClickListener(String commentTitle) {
+        AudioFiles.deleteComment(StoryState.getStoryName(), slideNumber, commentTitle);
         updateCommentList();
     }
 
-    public AudioFiles.RenameCode onRenameClickListener(int slidePos, String name, String newName) {
-        return AudioFiles.renameComment(StoryState.getStoryName(), slidePos, name, newName);
+    @Override
+    public AudioFiles.RenameCode onRenameClickListener(String name, String newName) {
+        return AudioFiles.renameComment(StoryState.getStoryName(), slideNumber, name, newName);
     }
 
+    @Override
     public void onRenameSuccess() {
         updateCommentList();
     }

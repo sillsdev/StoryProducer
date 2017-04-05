@@ -30,6 +30,7 @@ import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
@@ -151,8 +152,11 @@ public final class DraftFrag extends Fragment {
         }
     }
 
-    private void setRecordingsList() {
+    public void setRecordingsList() {
         Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        String savedTitle = StorySharedPreferences.getDraftForSlideAndStory(slideNumber, StoryState.getStoryName());
+        String buttonText = (savedTitle == "")? "-----" : savedTitle;
+        listRecordingsButton.setText(buttonText);
         final DraftFrag draftFrag = this;
         listRecordingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
