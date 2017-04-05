@@ -1,5 +1,7 @@
 package org.sil.storyproducer.tools.file;
 
+import org.sil.storyproducer.tools.StorySharedPreferences;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -62,7 +64,8 @@ public class AudioFiles {
     //*** Draft ***
 
     public static File getDraft(String story, int slide) {
-        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + "Draft 1" + SOUNDTRACK_EXTENSION);
+        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + SOUNDTRACK_EXTENSION;
+        return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
     public static File getDraft(String story, int slide, String draftTitle) {
@@ -154,7 +157,8 @@ public class AudioFiles {
     //*** Dramatization ***
 
     public static File getDramatization(String story, int slide){
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "Dramatization 1" + SOUNDTRACK_EXTENSION);
+        String fileName = DRAMATIZATION_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDramatizationForSlideAndStory(slide, story) + SOUNDTRACK_EXTENSION;
+        return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
