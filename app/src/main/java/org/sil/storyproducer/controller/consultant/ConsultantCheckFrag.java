@@ -68,7 +68,7 @@ public class ConsultantCheckFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        rootView = inflater.inflate(R.layout.fragment_con_check, container, false);
+        rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false);
         storyName = StoryState.getStoryName();
         slideText = TextFiles.getSlideText(storyName, slidePosition);
 
@@ -124,8 +124,6 @@ public class ConsultantCheckFrag extends Fragment {
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
             tv = (TextView) rootView.findViewById(R.id.fragment_concheck_reference_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            ImageButton ib = (ImageButton) rootView.findViewById(R.id.fragment_concheck_narration_button);
-            ib.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
 
@@ -145,7 +143,7 @@ public class ConsultantCheckFrag extends Fragment {
         //Get the height of the phone.
         DisplayMetrics phoneProperties = getContext().getResources().getDisplayMetrics();
         int height = phoneProperties.heightPixels;
-        double scalingFactor = 0.3;
+        double scalingFactor = 0.4;
         height = (int)(height * scalingFactor);
 
         //scale bitmap
