@@ -1,0 +1,84 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_draft_root_relayout_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray"
+    tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
+
+    <LinearLayout
+        android:id="@+id/fragment_draft_envelope"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/fragment_draft_image_envelope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/fragment_draft_image_view"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+            <TextView
+                android:layout_width="@dimen/triangle_width"
+                android:layout_height="@dimen/triangle_height"
+                android:layout_alignBottom="@id/fragment_draft_image_view"
+                android:layout_alignRight="@id/fragment_draft_image_view"
+                android:background="@drawable/triangle_background"/>
+            <TextView
+                android:id="@+id/slide_number_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/fragment_draft_image_view"
+                android:layout_alignRight="@id/fragment_draft_image_view"
+                android:paddingRight="7dp"
+                android:text="1"
+                android:textSize="@dimen/text_body"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/fragment_draft_Relative_Layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/gray"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="10dp">
+
+            <TextView
+                android:id="@+id/fragment_draft_reference_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:background="@color/gray"
+                android:text="TextView"
+                android:textSize="20sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
+                android:id="@+id/fragment_draft_scripture_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/fragment_draft_reference_text"
+                android:background="@color/gray"
+                android:text="You should be seeing this!"/>
+
+            <ImageButton
+                android:id="@+id/fragment_draft_narration_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fragment_draft_scripture_text"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/fragment_draft_reference_text"
+                android:background="@drawable/ic_menu_play" />
+        </RelativeLayout>
+    </LinearLayout>
+</RelativeLayout>
