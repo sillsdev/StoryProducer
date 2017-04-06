@@ -339,6 +339,7 @@ public final class DraftFrag extends Fragment {
                         ViewGroup.LayoutParams.WRAP_CONTENT);
 
         layoutParams.addRule(RelativeLayout.ABOVE, R.id.toolbar_for_recording_toolbar);
+        layoutParams.bottomMargin = 16;
 
         (rootView.findViewById(R.id.fragment_draft_list_recordings_button)).setLayoutParams(layoutParams);
     }

@@ -89,7 +89,7 @@
         style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_bright"
+        android:background="@color/darkGray"
         android:text="Recording #2"/>
 
 </RelativeLayout>
