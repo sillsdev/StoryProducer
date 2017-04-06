@@ -1,6 +1,9 @@
 package org.sil.storyproducer.controller.logging;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -8,29 +11,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
+import org.sil.storyproducer.controller.export.FileChooserActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class LogView extends AppCompatActivity {
 
-    private int slide=-1;
+ //   private int slide=-1;
 
     private ListView listView = null;
 
-    private class LogListAdapter extends BaseAdapter {
+    private static class LogListAdapter extends BaseAdapter {
 
         private LogEntry[] logEntries = null;
 
         private final Context context;
 
-        public LogListAdapter(Context c, Log log){
+        public LogListAdapter(Context c, Log log, int slide){
             if(log != null) {
                 if (slide >= 0) {
                     ArrayList<LogEntry> filteredEntries = new ArrayList<>();
@@ -90,6 +98,7 @@ public class LogView extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        int slide = -1;
         System.out.println("Creating LogView activity");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_view);
@@ -100,8 +109,27 @@ public class LogView extends AppCompatActivity {
         Logging.deleteLog("Spanglish", "NotAStory.com");
         Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         System.out.println("is log null? "+ (log==null ? "yes" : "no")); //TODO: figure out versioning on serialized classes
-        LogListAdapter lla = new LogListAdapter(getApplicationContext(), log);
+        LogListAdapter lla = new LogListAdapter(getApplicationContext(), log, slide);
         listView.setAdapter(lla);
+
+    }
+
+    public static void makeModal(Context c){
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(c);
+
+        LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View dialoglayout = linf.inflate(R.layout.activity_log_view, null);
+       // alertDialog.setTitle(R.string.file_explorer_newFolder);
+       // alertDialog.setMessage(R.string.file_explorer_foldeNamePrompt);
+        ListView listView = (ListView) dialoglayout.findViewById(R.id.log_list_view);
+        Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+        LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
+        listView.setAdapter(lla);
+        alertDialog.setView(dialoglayout);
+        //alertDialog.setPositiveButton(R.string.OK, null);
+       // alertDialog.setNegativeButton(R.string.cancel, null);
+        AlertDialog t = alertDialog.create();
+        t.show();
 
     }
 }
