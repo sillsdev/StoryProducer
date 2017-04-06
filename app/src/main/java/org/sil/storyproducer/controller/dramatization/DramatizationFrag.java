@@ -158,6 +158,9 @@ public class DramatizationFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
+    /**
+     * sets the recording button that brings up the recordings list
+     */
     public void setRecordingsList() {
         Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
         String savedTitle = StorySharedPreferences.getDramatizationForSlideAndStory(slideNumber, StoryState.getStoryName());
@@ -171,6 +174,14 @@ public class DramatizationFrag extends Fragment {
                 modal.show();
             }
         });
+    }
+
+    /**
+     * sets the playback path
+     */
+    public void setPlayBackPath() {
+        String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /**
@@ -241,7 +252,19 @@ public class DramatizationFrag extends Fragment {
 
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, dramatizationRecordingPath);
+            String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, dramatizationRecordingPath, new RecordingToolbar.OnStopRecordingListener() {
+                @Override
+                public void stoppedRecording() {
+                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
+                    String title = splitPath[1].replace(".mp3", "");
+                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                    setRecordFilePath();
+                    setRecordingsList();
+                    recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
+                    setPlayBackPath();
+                }
+            });
             recordingToolbar.keepToolbarVisible();
         }
     }

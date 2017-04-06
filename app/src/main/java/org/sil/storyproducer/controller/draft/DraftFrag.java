@@ -125,6 +125,9 @@ public final class DraftFrag extends Fragment {
         }
     }
 
+    /**
+     * sets the recording list button
+     */
     public void setRecordingsList() {
         Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
         String savedTitle = StorySharedPreferences.getDraftForSlideAndStory(slideNumber, StoryState.getStoryName());
@@ -138,6 +141,14 @@ public final class DraftFrag extends Fragment {
                 modal.show();
             }
         });
+    }
+
+    /**
+     * sets the playback path
+     */
+    public void setPlayBackPath() {
+        String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /**
@@ -292,7 +303,19 @@ public final class DraftFrag extends Fragment {
      */
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
-            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, recordFilePath);
+            String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, recordFilePath, new RecordingToolbar.OnStopRecordingListener() {
+                @Override
+                public void stoppedRecording() {
+                    String[] splitPath = recordFilePath.split("translation" + "\\d+" + "_");    //get just the title from the path
+                    String title = splitPath[1].replace(".mp3", "");
+                    StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                    setRecordFilePath();
+                    setRecordingsList();
+                    recordingToolbar.setRecordFilePath(recordFilePath);
+                    setPlayBackPath();
+                }
+            });
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }

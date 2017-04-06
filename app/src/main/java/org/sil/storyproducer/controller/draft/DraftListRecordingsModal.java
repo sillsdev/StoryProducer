@@ -66,6 +66,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
     public void onRowClickListener(String recordingTitle) {
         StorySharedPreferences.setDraftForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
         parentFragment.setRecordingsList();
+        parentFragment.setPlayBackPath();
         dialog.dismiss();
     }
 
@@ -95,6 +96,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
 
         }
         parentFragment.setRecordingsList();
+        parentFragment.setPlayBackPath();
     }
 
     @Override
@@ -111,5 +113,6 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
             StorySharedPreferences.setDraftForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
         parentFragment.setRecordingsList();
+        parentFragment.setPlayBackPath();
     }
 }

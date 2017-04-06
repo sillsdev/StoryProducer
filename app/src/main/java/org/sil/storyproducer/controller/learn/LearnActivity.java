@@ -376,7 +376,12 @@ public class LearnActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        rt = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath);
+        rt = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath, recordFilePath, new RecordingToolbar.OnStopRecordingListener() {
+            @Override
+            public void stoppedRecording() {
+                //empty because the learn phase doesn't use this
+            }
+        });
         rt.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
