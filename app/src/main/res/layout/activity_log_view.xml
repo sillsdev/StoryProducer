@@ -13,25 +13,10 @@
         android:orientation="vertical"
         android:animateLayoutChanges="true">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary"
-            android:minHeight="?attr/actionBarSize"
-            android:elevation="4dp" />
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="55dp">
-
-            <ImageButton
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                app:srcCompat="@android:drawable/ic_menu_sort_by_size"
-                android:id="@+id/imageButton"
-                android:gravity="center"/>
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -68,7 +53,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="0.85"
                 android:background="@color/comunity_check_phase"
                 android:paddingRight="5dp"
                 >
