@@ -141,9 +141,18 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
      * @param position the integer position of the comment where the button was pressed
      */
     private void showDeleteCommentDialog(final int position) {
+        String title = "Delete Comment?";
+        String message = "Do you want to delete this audio comment?";
+        if(listeners instanceof DraftListRecordingsModal) {
+            title = "Delete Draft?";
+            message = "Do you want to delete this audio Draft?";
+        } else if(listeners instanceof  DramaListRecordingsModal) {
+            title = "Delete Dramatization?";
+            message = "Do you want to delete this audio dramatization?";
+        }
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.comment_delete_title))
-                .setMessage(context.getString(R.string.comment_delete_message))
+                .setTitle(title)
+                .setMessage(message)
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
