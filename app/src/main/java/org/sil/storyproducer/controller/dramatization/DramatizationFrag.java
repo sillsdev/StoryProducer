@@ -159,7 +159,7 @@ public class DramatizationFrag extends Fragment {
     }
 
     public void setRecordingsList() {
-        Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        Button listRecordingsButton = (Button) rootView.findViewById(R.id.fragment_dramatization_list_recordings_button);
         String savedTitle = StorySharedPreferences.getDramatizationForSlideAndStory(slideNumber, StoryState.getStoryName());
         String buttonText = (savedTitle == "")? "-----" : savedTitle;
         listRecordingsButton.setText(buttonText);
@@ -244,9 +244,25 @@ public class DramatizationFrag extends Fragment {
             recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, dramatizationRecordingPath);
             recordingToolbar.keepToolbarVisible();
         }
+
+        setMultipleRecordingsButton();
+    }
+
+    /**
+     * Sets the multiple recordings button above the toolbar
+     */
+    private void setMultipleRecordingsButton(){
+        RelativeLayout.LayoutParams layoutParams =
+                new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.addRule(RelativeLayout.ABOVE, R.id.toolbar_for_recording_toolbar);
+
+        (rootView.findViewById(R.id.fragment_dramatization_list_recordings_button)).setLayoutParams(layoutParams);
     }
 
     //used in the DramaListREcordingsModal
+    //TODO add to the area where the other public functions in this class.
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
     }

@@ -7,7 +7,7 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/fragment_draft_envelope"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -41,10 +41,11 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/fragment_draft_Relative_Layout"
+            android:id="@+id/fragment_draft_text_envelope"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/gray"
+            android:layout_below="@id/fragment_draft_image_envelope"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="10dp">
@@ -79,15 +80,16 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/fragment_draft_reference_text"
                 android:background="@drawable/ic_menu_play" />
-
-            <Button
-                android:id="@+id/list_recordings_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/fragment_draft_scripture_text"
-                android:background="@android:color/holo_blue_bright"
-                android:text="Recording #2"/>
         </RelativeLayout>
-    </LinearLayout>
+
+
+    </RelativeLayout>
+    <Button
+        android:id="@+id/fragment_draft_list_recordings_button"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_blue_bright"
+        android:text="Recording #2"/>
 
 </RelativeLayout>

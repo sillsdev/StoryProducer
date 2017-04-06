@@ -126,7 +126,7 @@ public final class DraftFrag extends Fragment {
     }
 
     public void setRecordingsList() {
-        Button listRecordingsButton = (Button) rootView.findViewById(R.id.list_recordings_button);
+        Button listRecordingsButton = (Button) rootView.findViewById(R.id.fragment_draft_list_recordings_button);
         String savedTitle = StorySharedPreferences.getDraftForSlideAndStory(slideNumber, StoryState.getStoryName());
         String buttonText = (savedTitle == "")? "-----" : savedTitle;
         listRecordingsButton.setText(buttonText);
@@ -148,8 +148,11 @@ public final class DraftFrag extends Fragment {
         if (slideNumber == 0) {
             RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_Relative_Layout);
+            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_envelope);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
+            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_text_envelope);
+            rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
+
 
             TextView tv = (TextView) rootView.findViewById(R.id.fragment_draft_scripture_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
@@ -226,7 +229,6 @@ public final class DraftFrag extends Fragment {
             }
         }
 
-        //TODO Reference a string constant
         textView.setText(R.string.draft_bible_story);
     }
 
@@ -296,11 +298,26 @@ public final class DraftFrag extends Fragment {
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }
+        setMultipleRecordingsButton();
     }
 
     //used in the DraftListREcordingsModal
+    //TODO add to the area where the other public functions in this class.
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
+    }
+
+    /**
+     * Sets the multiple recordings button above the toolbar
+     */
+    private void setMultipleRecordingsButton(){
+        RelativeLayout.LayoutParams layoutParams =
+                new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.addRule(RelativeLayout.ABOVE, R.id.toolbar_for_recording_toolbar);
+
+        (rootView.findViewById(R.id.fragment_draft_list_recordings_button)).setLayoutParams(layoutParams);
     }
 
 

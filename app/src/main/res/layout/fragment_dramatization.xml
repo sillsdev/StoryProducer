@@ -8,7 +8,7 @@
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
         <RelativeLayout
-            android:id="@+id/fragment_dramatization_picture_frame"
+            android:id="@+id/fragment_dramatization_picture_envelope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -47,11 +47,12 @@
         </RelativeLayout>
 
     <Button
-        android:id="@+id/list_recordings_button"
+        android:id="@+id/fragment_dramatization_list_recordings_button"
+        style="?android:attr/borderlessButtonStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/holo_blue_bright"
-        android:layout_below="@+id/fragment_dramatization_picture_frame"
+        android:layout_below="@+id/fragment_dramatization_picture_envelope"
         android:text="Recording #2"/>
 
 </RelativeLayout>
