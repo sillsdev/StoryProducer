@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.dramatization;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -11,9 +12,11 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +48,7 @@ public class DramatizationFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         if (AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).exists()) {
-            draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+            draftPlayerPath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         }
         dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
     }
@@ -58,6 +61,7 @@ public class DramatizationFrag extends Fragment {
         setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         setToolbar(rootViewToolbar);
+        closeKeyboardOnTouch(rootView);
         slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
@@ -74,6 +78,7 @@ public class DramatizationFrag extends Fragment {
         if (recordingToolbar != null) {
             recordingToolbar.closeToolbar();
         }
+        closeKeyboard(rootView);
     }
 
     /**
@@ -83,9 +88,10 @@ public class DramatizationFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(recordingToolbar != null){
+        if (recordingToolbar != null) {
             recordingToolbar.closeToolbar();
         }
+        closeKeyboard(rootView);
     }
 
     /**
@@ -105,6 +111,7 @@ public class DramatizationFrag extends Fragment {
                 if (recordingToolbar != null) {
                     recordingToolbar.closeToolbar();
                 }
+                closeKeyboard(rootView);
             }
         }
     }
@@ -166,7 +173,7 @@ public class DramatizationFrag extends Fragment {
             //draft recording does not exist
             playPauseDraftButton.setAlpha(0.8f);
             playPauseDraftButton.setColorFilter(Color.argb(200, 200, 200, 200));
-        }else{
+        } else {
             //remove x mark from Imagebutton play
             playPauseDraftButton.setImageResource(0);
         }
@@ -176,10 +183,9 @@ public class DramatizationFrag extends Fragment {
         playPauseDraftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(draftPlayerPath == null){
+                if (draftPlayerPath == null) {
                     Toast.makeText(getContext(), R.string.dramatization_no_draft_recording_available, Toast.LENGTH_SHORT).show();
-                }
-                else if (draftPlayer.isAudioPlaying()) {
+                } else if (draftPlayer.isAudioPlaying()) {
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     draftPlayer.stopAudio();
                     draftPlayer.releaseAudio();
@@ -194,7 +200,7 @@ public class DramatizationFrag extends Fragment {
                             draftPlayer.releaseAudio();
                         }
                     });
-                    if(draftPlayer != null){ //if there is a draft available to play
+                    if (draftPlayer != null) { //if there is a draft available to play
                         recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
                     }
                     draftPlayer.playWithPath(draftPlayerPath);
@@ -207,10 +213,43 @@ public class DramatizationFrag extends Fragment {
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private void setToolbar(View toolbar){
-        if(rootView instanceof RelativeLayout){
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, dramatizationRecordingPath);
+    private void setToolbar(View toolbar) {
+        if (rootView instanceof RelativeLayout) {
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, dramatizationRecordingPath);
             recordingToolbar.keepToolbarVisible();
         }
     }
+
+    /** This function will close the softtouch keyboard and place the focus on the touchedView
+     * parameter. The reason why a view is passed in is because:
+     * The new view can gain focus which will take focus off of an input view (e.g. edit text).
+     * The shift in focus will remove the typing cursor off of the input view.
+     * @param touchedView The view that will gain focus after the keyboard is hidden.
+     */
+    private void closeKeyboardOnTouch(final View touchedView) {
+        if (touchedView == null) {
+            return;
+        }
+        touchedView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeKeyboard(touchedView);
+            }
+        });
+    }
+
+    /**
+     * @param viewToFocus The view that will gain focus after the keyboard is hidden.
+     * The reason why a view is passed in is because:
+     * The new view can gain focus which will take focus off of an input view (e.g. edit text).
+     * The shift in focus will remove the typing cursor off of the input view.
+     */
+    private void closeKeyboard(View viewToFocus) {
+        if(viewToFocus != null){
+            InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(viewToFocus.getWindowToken(), 0);
+            viewToFocus.requestFocus();
+        }
+    }
+
 }
