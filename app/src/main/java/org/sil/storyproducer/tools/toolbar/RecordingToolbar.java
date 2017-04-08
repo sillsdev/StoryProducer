@@ -69,7 +69,7 @@ public class RecordingToolbar extends AnimationToolbar {
     private MediaRecorder voiceRecorder;
     private AudioPlayer audioPlayer;
 
-    private OnStopRecordingListener stopRecordingListener;
+    private RecordingListener recordingListener;
 
     /**
      * The ctor.
@@ -84,7 +84,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param recordFilePath        The filepath that the recording will be saved under.
      */
     public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
-                            boolean enablePlaybackButton, boolean enableDeleteButton, String playbackRecordFilePath, String recordFilePath, OnStopRecordingListener recordingListener) throws ClassCastException {
+                            boolean enablePlaybackButton, boolean enableDeleteButton, String playbackRecordFilePath, String recordFilePath, RecordingListener recordingListener) throws ClassCastException {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
@@ -98,14 +98,15 @@ public class RecordingToolbar extends AnimationToolbar {
         this.enableDeleteButton = enableDeleteButton;
         this.playbackRecordFilePath = playbackRecordFilePath;
         this.recordFilePath = recordFilePath;
-        this.stopRecordingListener = recordingListener;
+        this.recordingListener = recordingListener;
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
     }
 
-    public interface OnStopRecordingListener {
+    public interface RecordingListener {
         void stoppedRecording();
+        void startedRecordingOrPlayback();
     }
 
     /**
@@ -205,12 +206,13 @@ public class RecordingToolbar extends AnimationToolbar {
     private void startRecording() {
         startAudioRecorder();
         startRecordingAnimation(false, 0);
+        recordingListener.startedRecordingOrPlayback();
     }
 
     private void stopRecording() {
         stopAudioRecorder();
         stopRecordingAnimation();
-        stopRecordingListener.stoppedRecording();
+        recordingListener.stoppedRecording();
     }
 
     //TODO finish adding deletion functionality.
@@ -356,6 +358,7 @@ public class RecordingToolbar extends AnimationToolbar {
                             audioPlayer.playWithPath(playbackRecordFilePath);
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                            recordingListener.startedRecordingOrPlayback();
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }

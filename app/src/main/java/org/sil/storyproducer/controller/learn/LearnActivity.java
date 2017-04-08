@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.learn;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -25,7 +24,6 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
@@ -275,8 +273,13 @@ public class LearnActivity extends PhaseBaseActivity {
         playButton.setImageResource(R.drawable.ic_pause_gray);
         videoSeekBar.setProgress(0);
         slideNumber = 0;
+        if(narrationPlayer != null) {
+            narrationPlayer.releaseAudio();
+        }
         narrationPlayer = new AudioPlayer();
         narrationPlayer.setVolume(0.0f);
+        Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+        volumeSwitch.setChecked(false);
         setBackgroundMusic();
         backgroundPlayer.setVolume(0.0f);
         isVolumeOn = false;
@@ -376,10 +379,14 @@ public class LearnActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        rt = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath, recordFilePath, new RecordingToolbar.OnStopRecordingListener() {
+        rt = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath, recordFilePath, new RecordingToolbar.RecordingListener() {
             @Override
             public void stoppedRecording() {
                 //empty because the learn phase doesn't use this
+            }
+            @Override
+            public void startedRecordingOrPlayback() {
+                resetVideoWithSoundOff();
             }
         });
         rt.hideFloatingActionButton();

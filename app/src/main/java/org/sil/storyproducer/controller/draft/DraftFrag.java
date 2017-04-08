@@ -306,7 +306,7 @@ public final class DraftFrag extends Fragment {
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
             String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, recordFilePath, new RecordingToolbar.OnStopRecordingListener() {
+            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, recordFilePath, new RecordingToolbar.RecordingListener() {
                 @Override
                 public void stoppedRecording() {
                     String[] splitPath = recordFilePath.split("translation" + "\\d+" + "_");    //get just the title from the path
@@ -316,6 +316,10 @@ public final class DraftFrag extends Fragment {
                     setRecordingsList();
                     recordingToolbar.setRecordFilePath(recordFilePath);
                     setPlayBackPath();
+                }
+                @Override
+                public void startedRecordingOrPlayback() {
+                    //not used here
                 }
             });
             recordingToolbar.keepToolbarVisible();

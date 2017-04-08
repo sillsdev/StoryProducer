@@ -253,7 +253,7 @@ public class DramatizationFrag extends Fragment {
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
             String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, dramatizationRecordingPath, new RecordingToolbar.OnStopRecordingListener() {
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, dramatizationRecordingPath, new RecordingToolbar.RecordingListener() {
                 @Override
                 public void stoppedRecording() {
                     String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
@@ -263,6 +263,10 @@ public class DramatizationFrag extends Fragment {
                     setRecordingsList();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
                     setPlayBackPath();
+                }
+                @Override
+                public void startedRecordingOrPlayback() {
+                    //not used here
                 }
             });
             recordingToolbar.keepToolbarVisible();
