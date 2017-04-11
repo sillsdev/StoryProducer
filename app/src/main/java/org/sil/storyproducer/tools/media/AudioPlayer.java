@@ -82,7 +82,7 @@ public class AudioPlayer {
      * Stops the audio if it is currently being played
      */
     public void stopAudio() {
-        if(mPlayer!= null && mPlayer.isPlaying()) {
+        if(mPlayer!= null && isPrepared) {
             try {
                 mPlayer.stop();
                 isPrepared = false;

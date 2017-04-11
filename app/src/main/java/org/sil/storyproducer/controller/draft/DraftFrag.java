@@ -1,8 +1,11 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -25,7 +28,10 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.toolbar.AnimationToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
+
+import java.io.File;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -139,7 +145,7 @@ public final class DraftFrag extends Fragment {
     public void onStop() {
         super.onStop();
 
-        stopPlayBackAndRecording();
+        recordingToolbar.stopToolbarMedia();
         narrationPlayer.release();
         voiceAudioPlayer.release();
      
@@ -262,7 +268,7 @@ public final class DraftFrag extends Fragment {
                     }else{
                         //stop other playback streams.
                         recordingToolbar.stopToolbarMedia();
-                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
@@ -271,7 +277,7 @@ public final class DraftFrag extends Fragment {
 
                         narrationPlayer.playAudio();
                         if(recordingToolbar != null){
-                            recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationAudioPlayer);
+                            recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationPlayer);
                         }
 
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
@@ -366,28 +372,5 @@ public final class DraftFrag extends Fragment {
 //    }
   
   /** Don't remove above code!! **/
-
-    /**
-     * Stops all playback streams and stops recording as well.
-     */
-    private void stopPlayBackAndRecording(){
-        if (isRecording) {
-            stopAudioRecorder();
-            stopRecordingAnimation();
-            //set playback button visible
-            toolbarMicButton.setVisibility(View.VISIBLE);
-            toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
-            toolbarPlayButton.setVisibility(View.VISIBLE);
-            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-        }
-        if (narrationPlayer != null && narrationPlayer.isAudioPlaying()) {
-            narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
-            narrationPlayer.stopAudio();
-        }
-        if (voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()) {
-            toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-            voiceAudioPlayer.stopAudio();
-        }
-    }
 
 }

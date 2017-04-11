@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.dramatization;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -98,6 +99,8 @@ public class DramatizationFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        draftPlayer.release();
+        dramatizationPlayer.release();
         if(recordingToolbar != null){
             recordingToolbar.closeToolbar();
         }
@@ -121,34 +124,6 @@ public class DramatizationFrag extends Fragment {
                     recordingToolbar.closeToolbar();
                 }
             }
-        }
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on pause.
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-        stopPlayBackAndRecording();
-        if (myToolbar != null) {
-            myToolbar.close();
-        }
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on stop.
-     */
-    @Override
-    public void onStop() {
-        super.onStop();
-        stopPlayBackAndRecording();
-        draftPlayer.release();
-        dramatizationPlayer.release();
-        if(myToolbar != null){
-            myToolbar.close();
         }
     }
 

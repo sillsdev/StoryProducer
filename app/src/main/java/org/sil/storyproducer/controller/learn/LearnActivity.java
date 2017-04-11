@@ -42,6 +42,7 @@ public class LearnActivity extends PhaseBaseActivity {
     private SeekBar videoSeekBar;
     private AudioPlayer narrationPlayer;
     private AudioPlayer backgroundPlayer;
+    private AudioPlayer voiceAudioPlayer;
     private boolean backgroundAudioExists;
 
     private int slideNumber = 0;
@@ -138,15 +139,6 @@ public class LearnActivity extends PhaseBaseActivity {
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        narrationPlayer.releaseAudio();
-        backgroundPlayer.releaseAudio();
-        if (rt != null) {
-            rt.closeToolbar();
-        }
-    }
 
     @Override
     public void onPause() {
@@ -168,6 +160,9 @@ public class LearnActivity extends PhaseBaseActivity {
         narrationPlayer.release();
         backgroundPlayer.release();
         voiceAudioPlayer.release();
+        if (rt != null) {
+            rt.closeToolbar();
+        }
     }
 
     /**

@@ -291,10 +291,10 @@ public class CommunityCheckFrag extends Fragment {
      * Stops all media including audio playbacks and active audio recordings
      */
     private void stopAllMedia() {
-        if(draftPlayer != null && draftPlayer.isAudioPlaying()){
+        if(draftPlayer != null){
             draftPlayer.stopAudio();
         }
-        if(commentPlayer != null && commentPlayer.isAudioPlaying()){
+        if(commentPlayer != null){
             commentPlayer.stopAudio();
         }
         if(commentRecorder != null) {

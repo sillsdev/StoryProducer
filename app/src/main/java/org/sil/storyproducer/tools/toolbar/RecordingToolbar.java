@@ -96,6 +96,7 @@ public class RecordingToolbar extends AnimationToolbar {
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
+        audioPlayer = new AudioPlayer();
     }
 
     /**
@@ -141,7 +142,6 @@ public class RecordingToolbar extends AnimationToolbar {
         if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             audioPlayer.stopAudio();
-            audioPlayer.releaseAudio();
         }
     }
 
@@ -313,20 +313,19 @@ public class RecordingToolbar extends AnimationToolbar {
                 @Override
                 public void onClick(View view) {
                     if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
-                        audioPlayer.releaseAudio();
+                        audioPlayer.stopAudio();
                         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     } else {
                         stopPlayBackAndRecording();
                         if (new File(recordFilePath).exists()) {
-                            audioPlayer = new AudioPlayer();
                             audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
-                                    audioPlayer.releaseAudio();
                                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                                 }
                             });
-                            audioPlayer.playWithPath(recordFilePath);
+                            audioPlayer.setPath(recordFilePath);
+                            audioPlayer.playAudio();
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                         } else {
