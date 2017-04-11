@@ -48,7 +48,7 @@ public class ConsultantCheckFrag extends Fragment {
     public static final String CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isChecked";
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "appr00ved";
     private String storyName;
     private int slidePosition;
     private View rootView;
