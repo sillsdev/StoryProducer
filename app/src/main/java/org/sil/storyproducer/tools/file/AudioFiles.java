@@ -35,7 +35,8 @@ public class AudioFiles {
     }
     //TODO: Some stories have multiple soundtrack files. Is that desired and used?
     public static File getSoundtrack(String story, int i){
-        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + i + SOUNDTRACK_EXTENSION);
+        //TODO: actually get the appropriate soundtrack for slide i
+        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + 0 + SOUNDTRACK_EXTENSION);
     }
 
     //*** LWC ***

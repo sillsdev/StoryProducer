@@ -17,6 +17,7 @@ import java.io.File;
 public class StoryPage {
     private final File mImage;
     private final File mNarrationAudio;
+    private final File mSoundtrackAudio;
     private final long mDuration;
     private final KenBurnsEffect mKBFX;
     private final String mText;
@@ -90,11 +91,26 @@ public class StoryPage {
      * @param text text for overlaying page.
      */
     private StoryPage(File image, File narrationAudio, long duration, KenBurnsEffect kbfx, String text) {
+        this(image, narrationAudio, duration, kbfx, text, null);
+    }
+
+    /**
+     * Create page.
+     * @param image picture for the video.
+     * @param narrationAudio narration for the background of the video.
+     * @param duration length of page in microseconds.
+     * @param kbfx Ken Burns effect for the image.
+     * @param text text for overlaying page.
+     * @param soundtrackAudio soundtrack for page
+     */
+    public StoryPage(File image, File narrationAudio, long duration, KenBurnsEffect kbfx,
+                      String text, File soundtrackAudio) {
         mImage = image;
         mNarrationAudio = narrationAudio;
         mDuration = duration;
         mKBFX = kbfx;
         mText = text;
+        mSoundtrackAudio = soundtrackAudio;
     }
 
     /**
@@ -121,6 +137,10 @@ public class StoryPage {
 
     public File getNarrationAudio() {
         return mNarrationAudio;
+    }
+
+    public File getSoundtrackAudio() {
+        return mSoundtrackAudio;
     }
 
     public KenBurnsEffect getKenBurnsEffect() {

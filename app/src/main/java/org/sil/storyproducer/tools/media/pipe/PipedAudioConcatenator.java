@@ -34,7 +34,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private ConcatState mCurrentState = ConcatState.TRANSITION; //start in transition
 
-    private final Queue<String> mSourceAudioPaths = new LinkedList<>();
+    private final Queue<PipedMediaByteBufferSource> mSources = new LinkedList<>();
     private final Queue<Long> mSourceExpectedDurations = new LinkedList<>();
 
     private PipedMediaByteBufferSource mFirstSource;
@@ -60,19 +60,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
      */
     public PipedAudioConcatenator(long transitionUs) {
-        this(transitionUs, 0, 0);
-    }
-
-    /**
-     * Create concatenator with specified transition time, resampling the audio stream.
-     * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
-     * @param sampleRate desired sample rate.
-     * @param channelCount desired channel count.
-     */
-    public PipedAudioConcatenator(long transitionUs, int sampleRate, int channelCount) {
         mTransitionUs = transitionUs;
-        mSampleRate = sampleRate;
-        mChannelCount = channelCount;
     }
 
     @Override
@@ -83,10 +71,10 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
      *
-     * @param sourcePath source audio path.
+     * @param source source audio path.
      */
-    public void addSource(String sourcePath) throws SourceUnacceptableException {
-        addSource(sourcePath, 0);
+    public void addSource(PipedMediaByteBufferSource source) {
+        addSource(source, 0);
     }
 
     /**
@@ -95,31 +83,82 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * <p>In other words, if a duration is specified for all sources, the output audio stream is
      * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
      *
+     * @param source source audio path.
+     * @param duration expected duration of the source audio stream.
+     */
+    public void addSource(PipedMediaByteBufferSource source, long duration) {
+        mSources.add(source);
+        mSourceExpectedDurations.add(duration);
+    }
+
+    /**
+     * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
+     *
+     * @param sourcePath source audio path.
+     */
+    public void addSourcePath(String sourcePath) throws SourceUnacceptableException {
+        addSourcePath(sourcePath, 0);
+    }
+
+    /**
+     * <p>Add a source with an expected duration. The expected duration is guaranteed.</p>
+     *
+     * <p>In other words, if a duration is specified for all sources, the output audio stream is
+     * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
+     *
+     * <p>This function differs from {@link #addLoopingSourcePath(String, long)} by padding the source audio
+     * with silence until the duration has elapsed. If duration is shorter than the source audio length, both
+     * functions will behave the same.</p>
+     *
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
      */
-    public void addSource(String sourcePath, long duration) {
-        mSourceAudioPaths.add(sourcePath);
-        mSourceExpectedDurations.add(duration);
+    public void addSourcePath(String sourcePath, long duration) {
+        PipedMediaByteBufferSource source;
+        //If sample rate and channel count were specified, apply them.
+        if(mSampleRate > 0) {
+            source = new PipedAudioDecoderMaverick(sourcePath, mSampleRate, mChannelCount);
+        }
+        else {
+            source = new PipedAudioDecoderMaverick(sourcePath);
+        }
+
+        addSource(source, duration);
+    }
+
+    /**
+     * <p>Add a source with an expected duration. The expected duration is guaranteed.</p>
+     *
+     * <p>In other words, if a duration is specified for all sources, the output audio stream is
+     * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
+     *
+     * <p>This function differs from {@link #addSourcePath(String, long)} by looping the source audio
+     * until the duration has elapsed. If duration is shorter than the source audio length, both
+     * functions will behave the same.</p>
+     *
+     * @param sourcePath source audio path.
+     * @param duration expected duration of the source audio stream.
+     */
+    public void addLoopingSourcePath(String sourcePath, long duration) {
+        PipedMediaByteBufferSource source;
+        //If sample rate and channel count were specified, apply them.
+        if(mSampleRate > 0) {
+            source = new PipedAudioLooper(sourcePath, duration, mSampleRate, mChannelCount);
+        }
+        else {
+            source = new PipedAudioLooper(sourcePath, duration);
+        }
+
+        addSource(source, duration);
     }
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        if(mSourceAudioPaths.isEmpty()) {
+        if(mSources.isEmpty()) {
             throw new SourceUnacceptableException("No sources provided!");
         }
 
-        String nextSourcePath = mSourceAudioPaths.remove();
-        PipedAudioDecoderMaverick firstSource;
-
-        //If sample rate and channel count were specified, apply them to the first source.
-        if(mSampleRate > 0) {
-            firstSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount);
-        }
-        else {
-            firstSource = new PipedAudioDecoderMaverick(nextSourcePath);
-        }
-
+        PipedMediaByteBufferSource firstSource = mSources.remove();
         firstSource.setup();
 
         MediaFormat format = firstSource.getOutputFormat();
@@ -156,7 +195,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         if(mCurrentState == ConcatState.TRANSITION) {
             long transitionUs = mTransitionUs;
             //For pre-first-source and last source, make the transition half as long.
-            if (mFirstSource != null || mSourceAudioPaths.isEmpty()) {
+            if (mFirstSource != null || mSources.isEmpty()) {
                 transitionUs /= 2;
             }
 
@@ -181,7 +220,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                 //Get a (valid) source or get to DONE state.
                 while (mSource == null && !isDone) {
                     //If sources are all gone, this component is done.
-                    if (mSourceAudioPaths.isEmpty()) {
+                    if (mSources.isEmpty()) {
                         isDone = true;
                         mCurrentState = ConcatState.DONE;
                     } else {
@@ -268,15 +307,14 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             nextSource = mFirstSource;
             mFirstSource = null;
         }
-        else if(!mSourceAudioPaths.isEmpty()) {
+        else if(!mSources.isEmpty()) {
             if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
 
-            String nextSourcePath = mSourceAudioPaths.remove();
-            if(nextSourcePath == null) {
+            nextSource = mSources.remove();
+            if(nextSource == null) {
                 return null;
             }
 
-            nextSource = new PipedAudioDecoderMaverick(nextSourcePath, mSampleRate, mChannelCount, 1);
             try {
                 nextSource.setup();
                 validateSource(nextSource);

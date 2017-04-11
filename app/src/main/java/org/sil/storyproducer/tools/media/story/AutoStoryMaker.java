@@ -69,8 +69,6 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BIT_RATE = 64000;
 
-    private final File mSoundtrack;
-
     private boolean mIncludeBackgroundMusic = true;
     private boolean mIncludePictures = true;
     private boolean mIncludeText = false;
@@ -89,8 +87,6 @@ public class AutoStoryMaker extends Thread implements Closeable {
         File outputDir = VideoFiles.getDefaultLocation(mStory);
         setOutputFile(new File(outputDir, mStory.replace(' ', '_') + "_"
                 + mWidth + "x" + mHeight + mOutputExt));
-
-        mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
     }
 
     public void setOutputFile(File output) {
@@ -157,10 +153,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
         MediaFormat videoFormat = generateVideoFormat();
         StoryPage[] pages = generatePages();
 
-        File soundtrack = mIncludeBackgroundMusic ? mSoundtrack : null;
-
         mStoryMaker = new StoryMaker(mTempFile, outputFormat, videoFormat, audioFormat,
-                pages, soundtrack, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
+                pages, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
 
         watchProgress();
 
@@ -272,6 +266,11 @@ public class AutoStoryMaker extends Thread implements Closeable {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
 
+            File soundtrack = null;
+            if(mIncludeBackgroundMusic) {
+                soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
+            }
+
             KenBurnsEffect kbfx = null;
             if(mIncludePictures && mIncludeKBFX && iSlide != 0) {
                 kbfx = KenBurnsSpec.getKenBurnsEffect(mStory, iSlide);
@@ -282,7 +281,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
                 text = TextFiles.getSlideText(mStory, iSlide).getContent();
             }
 
-            pages[iSlide] = new StoryPage(image, audio, kbfx, text);
+            pages[iSlide] = new StoryPage(image, audio, 0, kbfx, text, soundtrack);
         }
 
         File copyrightImage = null;
