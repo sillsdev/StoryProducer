@@ -1,9 +1,12 @@
 package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
+import org.sil.storyproducer.controller.MainActivity;
 
 import java.io.*;
 import java.util.*;
@@ -20,7 +23,7 @@ import java.util.*;
 public class FileSystem {
     private static final String TAG = "FileSystem";
 
-    private static String language = "ENG"; //ethnologue code for english
+    private static String language;
 
     private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
@@ -48,6 +51,10 @@ public class FileSystem {
         templatePaths = new HashMap<>();
         projectPaths = new HashMap<>();
         moviesPaths = new HashMap<>();
+
+        // Get the LWC language from preferences (defaults to ENG if none set)
+        SharedPreferences prefs = con.getSharedPreferences(MainActivity.LANGUAGE_PREFS, Context.MODE_PRIVATE);
+        language = prefs.getString(MainActivity.LWC_LANGUAGE, "ENG");
 
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);

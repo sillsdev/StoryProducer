@@ -2,8 +2,10 @@ package org.sil.storyproducer.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
@@ -27,6 +29,8 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    public static final String LANGUAGE_PREFS = "languages";
+    public static final String LWC_LANGUAGE = "lwc language";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +106,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                         if (!languageChanged) {
                             Toast.makeText(MainActivity.this, "Error: could not change language", Toast.LENGTH_SHORT).show();
                         } else {
+                            final SharedPreferences prefs = getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
+                            final SharedPreferences.Editor prefsEditor = prefs.edit();
+                            prefsEditor.putString(LWC_LANGUAGE, selectedLanguage);
+                            prefsEditor.apply();
                             MainActivity.this.reloadStories();
                         }
                     }
