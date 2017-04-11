@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
@@ -35,9 +33,9 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final long BUTTON_LOCK_DURATION_MS = 1000;
     private static final int PROGRESS_MAX = 1000;
 
-    private static final String PREF_FILE_BASE = "ProjExportConfig";
-    private static final String PREF_FILE_ALL = "AppExportConfig";
+    private static final String PREF_FILE = "Export_Config";
 
+    private static final String PREF_KEY_TITLE = "title";
     private static final String PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music";
     private static final String PREF_KEY_INCLUDE_PICTURES = "include_pictures";
     private static final String PREF_KEY_INCLUDE_TEXT = "include_text";
@@ -46,6 +44,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final String PREF_KEY_FORMAT = "format";
     private static final String PREF_KEY_FILE = "file";
 
+    private EditText mEditTextTitle;
     private View mLayoutConfiguration;
     private CheckBox mCheckboxSoundtrack;
     private CheckBox mCheckboxPictures;
@@ -59,6 +58,8 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
+
+    private String mStory;
 
     private String mOutputPath;
 
@@ -78,6 +79,11 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        mStory = StoryState.getStoryName();
+
+        loadPreferences();
+        toggleVisibleElements();
 
         watchProgress();
     }
@@ -108,6 +114,8 @@ public class ExportActivity extends PhaseBaseActivity {
      * Get handles to all necessary views and add some listeners.
      */
     private void setupViews() {
+        mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
+
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
 
         mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
@@ -163,10 +171,6 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
-
-        loadPreferences();
-
-        toggleVisibleElements();
     }
 
     /**
@@ -223,7 +227,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * Launch the file explorer.
      */
     private void openFileExplorerToExport() {
-        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
+        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(mStory).getPath();
         String currentLocation = mOutputPath;
         File currentLocFile = new File(currentLocation);
         File currentParent = currentLocFile.getParentFile();
@@ -257,45 +261,38 @@ public class ExportActivity extends PhaseBaseActivity {
      * Save current configuration options to shared preferences.
      */
     private void savePreferences() {
-        //Save preferences universal for app.
-        SharedPreferences.Editor prefEditorApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(PREF_FILE, MODE_PRIVATE).edit();
 
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
 
-        prefEditorApp.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
-        prefEditorApp.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
+        editor.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
 
-        prefEditorApp.apply();
+        editor.putString(mStory + PREF_KEY_TITLE, mEditTextTitle.getText().toString());
+        editor.putString(mStory + PREF_KEY_FILE, mOutputPath);
 
-        //Save preferences specific to this project.
-        SharedPreferences.Editor prefEditorProject = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
-        prefEditorProject.putString(PREF_KEY_FILE, mOutputPath);
-        prefEditorProject.apply();
+        editor.apply();
     }
 
     /**
      * Load configuration options from shared preferences.
      */
     private void loadPreferences() {
-        //Get preferences universal for app.
-        SharedPreferences prefsApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
 
-        mCheckboxSoundtrack.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
-        mCheckboxPictures.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
-        mCheckboxText.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
-        mCheckboxKBFX.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
+        mCheckboxSoundtrack.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
+        mCheckboxPictures.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
+        mCheckboxText.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
+        mCheckboxKBFX.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
 
-        setSpinnerValue(mSpinnerResolution, prefsApp.getString(PREF_KEY_RESOLUTION, null));
-        setSpinnerValue(mSpinnerFormat, prefsApp.getString(PREF_KEY_FORMAT, null));
+        setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null));
+        setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
 
-        //Get preferences specific to this project.
-        SharedPreferences prefsProject = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
-        setLocation(prefsProject.getString(PREF_KEY_FILE, null));
+        mEditTextTitle.setText(prefs.getString(mStory + PREF_KEY_TITLE, mStory));
+        setLocation(prefs.getString(mStory + PREF_KEY_FILE, null));
     }
 
     /**
@@ -344,7 +341,9 @@ public class ExportActivity extends PhaseBaseActivity {
 
     private void startExport(File output) {
         synchronized (storyMakerLock) {
-            storyMaker = new AutoStoryMaker(StoryState.getStoryName());
+            storyMaker = new AutoStoryMaker(mStory);
+
+            storyMaker.setTitle(mEditTextTitle.getText().toString());
 
             storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
             storyMaker.togglePictures(mCheckboxPictures.isChecked());
