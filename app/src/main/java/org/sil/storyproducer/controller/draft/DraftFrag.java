@@ -1,19 +1,12 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,16 +20,12 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.AnimationToolbar;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.AudioRecorder;
-
-import java.io.File;
-import java.io.IOException;
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -46,6 +35,7 @@ public final class DraftFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slideNumber;
     private SlideText slideText;
+
     private AudioPlayer narrationPlayer;
     private AudioPlayer voiceAudioPlayer;
     private String recordFilePath;
@@ -59,12 +49,10 @@ public final class DraftFrag extends Fragment {
     private Runnable colorHandlerRunnable;
     private boolean isRed = true;
     private final int RECORDING_ANIMATION_DURATION = 1500;
+
     private ImageButton narrationPlayButton;
-
-    //Toolbar buttons
-    private View toolbarMicButton;
-    private View toolbarPlayButton;
-
+    private TextView slideNumberText;
+    private RecordingToolbar recordingToolbar;
 
     public DraftFrag() {
         super();
@@ -78,6 +66,7 @@ public final class DraftFrag extends Fragment {
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
         recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+
         voiceAudioPlayer = new AudioPlayer();
         narrationPlayer = new AudioPlayer();
         File narrationFile = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber);
@@ -95,15 +84,16 @@ public final class DraftFrag extends Fragment {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
-        toolbarMicButton = rootView.findViewById(R.id.fragment_draft_mic_toolbar_button);
-        toolbarPlayButton = rootView.findViewById(R.id.fragment_draft_play_toolbar_button);
+        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
 
         setUiColors();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
         setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));
-        setToolbar();
+        setToolbar(rootViewToolbar);
+        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
     }
@@ -122,9 +112,8 @@ public final class DraftFrag extends Fragment {
         if (this.isVisible()) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                stopPlayBackAndRecording();
-                if (myToolbar != null) {
-                    myToolbar.close();
+                if (recordingToolbar != null) {
+                    recordingToolbar.closeToolbar();
                 }
             }
         }
@@ -137,9 +126,8 @@ public final class DraftFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        stopPlayBackAndRecording();
-        if (myToolbar != null) {
-            myToolbar.close();
+        if (recordingToolbar != null) {
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -150,11 +138,13 @@ public final class DraftFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+
         stopPlayBackAndRecording();
         narrationPlayer.release();
         voiceAudioPlayer.release();
-        if(myToolbar != null){
-            myToolbar.close();
+     
+        if(recordingToolbar != null){
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -191,7 +181,7 @@ public final class DraftFrag extends Fragment {
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if (slidePicture == null) {
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -245,7 +235,7 @@ public final class DraftFrag extends Fragment {
         }
 
         //TODO Reference a string constant
-        textView.setText("Bible Story!");
+        textView.setText(R.string.draft_bible_story);
     }
 
     /**
@@ -262,24 +252,30 @@ public final class DraftFrag extends Fragment {
         narrationPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (!narrationAudioExists) {
-                    Snackbar.make(rootView, "Could Not Find Narration Audio...", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(rootView, R.string.draft_playback_no_narration_audio, Snackbar.LENGTH_SHORT).show();
                 } else {
                     if(narrationPlayer != null && narrationPlayer.isAudioPlaying()){
                         narrationPlayer.stopAudio();
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                     }else{
                         //stop other playback streams.
-                        stopPlayBackAndRecording();
-                        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                        recordingToolbar.stopToolbarMedia();
+                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
                             }
                         });
+
                         narrationPlayer.playAudio();
+                        if(recordingToolbar != null){
+                            recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationAudioPlayer);
+                        }
+
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
-                        Toast.makeText(getContext(), "Playing Narration Audio...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.draft_playback_narration_audio, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -289,245 +285,16 @@ public final class DraftFrag extends Fragment {
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private void setToolbar(){
-        setupToolbarAndRecordAnim(rootView.findViewById(R.id.fragment_draft_fab),
-                rootView.findViewById(R.id.fragment_draft_animated_toolbar));
-        setRecordNPlayback();
-    }
-
-    /**
-     * This function initializes the animated toobar and click of dummyView to close toolbar.
-     */
-    private void setupToolbarAndRecordAnim(View fab, View relativeLayout) {
-        if (fab == null || relativeLayout == null) {
-            return;
-        }
-        try {
-            myToolbar = new AnimationToolbar(fab, relativeLayout, this.getActivity());
-        } catch (ClassCastException ex) {
-            Log.e(getActivity().toString(), ex.getMessage());
-        }
-
-        //The following allows for a touch from user to close the toolbar and make the fab visible.
-        //This also stops the recording animation
-        LinearLayout dummyView = (LinearLayout) rootView.findViewById(R.id.fragment_draft_dummyView);
-        dummyView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (myToolbar != null && myToolbar.isOpen() && !isRecording) {
-                    myToolbar.close();
-                }
-            }
-        });
-
-        //This function must be called before using record animations i.e. calling
-        //setRecordNPlayback()
-        setupRecordingAnimationHandler();
-    }
-
-    /**
-     * This function sets the recording and playback buttons (The mic and play button) with their
-     * respective functionalities.
-     */
-    private void setRecordNPlayback() {
-        setVoicePlayBackButton( new File(recordFilePath).exists());
-
-        toolbarMicButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isRecording) {
-                    //stop all other playback streams.
-                    stopPlayBackAndRecording();
-                    startRecordingAnimation(false, 0);
-                    startAudioRecorder();
-                    toolbarPlayButton.setVisibility(View.INVISIBLE);
-                    toolbarMicButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                }else{
-                    stopRecordingAnimation();
-                    stopAudioRecorder();
-                    //set playback button visible
-                    toolbarPlayButton.setVisibility(View.VISIBLE);
-                    toolbarMicButton.setBackgroundResource(R.drawable.ic_mic_white);
-                }
-            }
-        });
-    }
-
-    /**
-     * The function that aids in starting an audio recorder.
-     */
-    private void startAudioRecorder() {
-        setVoiceRecorder(recordFilePath);
-        try {
-            isRecording = true;
-            voiceRecorder.prepare();
-            voiceRecorder.start();
-            Toast.makeText(getContext(), "Recording voice!", Toast.LENGTH_SHORT).show();
-        } catch (IllegalStateException | IOException e) {
-            Log.e(getActivity().toString(), e.getMessage());
+    private void setToolbar(View toolbar){
+        if(rootView instanceof RelativeLayout){
+            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, recordFilePath);
+            recordingToolbar.keepToolbarVisible();
         }
     }
 
-    /**
-     * This function sets the voice recorder with a new voicerecorder.
-     *
-     * @param fileName The file to output the voice recordings.
-     */
-    private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new AudioRecorder(fileName, getActivity());
-    }
-
-    /**
-     * The function that aids in stopping an audio recorder.
-     */
-    private void stopAudioRecorder() {
-        try {
-            isRecording = false;
-            //Delay stopping of voiceRecorder to capture all of the voice recorded.
-            Thread.sleep(500);
-            voiceRecorder.stop();
-            Toast.makeText(getContext(), "Stopped recording!", Toast.LENGTH_SHORT).show();
-        } catch (RuntimeException stopException) {
-            Toast.makeText(getContext(), "Please record again!", Toast.LENGTH_SHORT).show();
-        } catch (InterruptedException e) {
-            Log.e(getActivity().toString(), e.getMessage());
-        }
-        voiceRecorder.release();
-        voiceRecorder = null;
-        //ConcatenateAudioFiles();
-    }
-
-    /**
-     * This function sets the voice play back function. This function is called
-     * in private void setRecordNPlayback(). This serves to set the visibility if the audio file
-     * already exists.
-     *
-     * @param audioFileExists The boolean to check if the recording file exists.
-     */
-    private void setVoicePlayBackButton( boolean audioFileExists) {
-        if (audioFileExists) {
-            toolbarPlayButton.setVisibility(View.VISIBLE);
-        }
 
 
-
-        toolbarPlayButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(voiceAudioPlayer != null && voiceAudioPlayer.isAudioPlaying()){
-                    stopPlayBackAndRecording();
-                    toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                }else{
-                    //Stops all other playback streams.
-                    stopPlayBackAndRecording();
-                    if (new File(recordFilePath).exists()) {
-                        voiceAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                toolbarPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                            }
-                        });
-                        voiceAudioPlayer.setPath(recordFilePath);
-                        voiceAudioPlayer.playAudio();
-                        Toast.makeText(getContext(), "Playing back recording!", Toast.LENGTH_SHORT).show();
-                        toolbarPlayButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    } else {
-                        Toast.makeText(getContext(), "No translation recorded!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-            }
-        });
-    }
-
-    /**
-     * <a href="https://developer.android.com/reference/android/os/Handler.html">See for handler</a>
-     * <br/>
-     * <a href="https://developer.android.com/reference/java/lang/Runnable.html">See for runnable</a>
-     * <br/>
-     * <a href="https://developer.android.com/reference/android/graphics/drawable/TransitionDrawable.html">See for transition Drawable</a>
-     * <br/>
-     * <br/>
-     * Call this function prior to setting the button listener of the record button. E.g.: <br/>
-     * setupRecordAnimationHandler();<br/>
-     * button.Handler(){}
-     * <br/>
-     * Essentially the function utilizes a Transition Drawable to interpolate between the red and
-     * the toolbar color. (The colors are defined in an array and used in the transition drawable)
-     * To schedule the running of the transition drawable a handler and runnable are used.<br/>
-     * The handler takes a runnable which schedules the transitiondrawable. The handler function
-     * called postDelayed will delay the running of the next Runnable by the passed in value e.g.:
-     * colorHandler.postDelayed(runnable goes here, time delay in MS).
-     * <br/>
-     * Still confused about handlers, runnables, and the MessageQueue?
-     * <br/>
-     * <a href="http://stackoverflow.com/questions/12877944/what-is-the-relationship-between-looper-handler-and-messagequeue-in-android">See this excellent SO post for more info.</a>
-     */
-    private void setupRecordingAnimationHandler() {
-        int red = Color.rgb(255, 0, 0);
-        int colorOfToolbar = Color.rgb(0, 0, 255); /*Arbitrary color value of blue used initially*/
-
-        RelativeLayout rel = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_animated_toolbar);
-        Drawable relBackgroundColor = rel.getBackground();
-        if (relBackgroundColor instanceof ColorDrawable) {
-            colorOfToolbar = ((ColorDrawable) relBackgroundColor).getColor();
-        }
-        transitionDrawable = new TransitionDrawable(new ColorDrawable[]{
-                new ColorDrawable(colorOfToolbar),
-                new ColorDrawable(red)
-        });
-        rel.setBackground(transitionDrawable);
-
-        colorHandler = new Handler();
-        colorHandlerRunnable = new Runnable() {
-            @Override
-            public void run() {
-                //Animation to change the toolbar's color while recording
-                if (isRed) {
-                    transitionDrawable.startTransition(RECORDING_ANIMATION_DURATION);
-                    isRed = false;
-
-                } else {
-                    transitionDrawable.reverseTransition(RECORDING_ANIMATION_DURATION);
-                    isRed = true;
-                }
-                startRecordingAnimation(true, RECORDING_ANIMATION_DURATION);
-            }
-        };
-    }
-
-    /**
-     * This function is used to start the handler to run the runnable.
-     * setupRecordinganimationHandler() should be called first before calling this function
-     * to initialize the colorHandler and colorHandlerRunnable().
-     *
-     * @param isDelayed Used to signify that the runnable will be delayed in running.
-     * @param delay     The time that will be delayed in ms if isDelayed is true.
-     */
-    private void startRecordingAnimation(boolean isDelayed, int delay) {
-        if (colorHandler != null && colorHandlerRunnable != null) {
-            if (isDelayed) {
-                colorHandler.postDelayed(colorHandlerRunnable, delay);
-            } else {
-                colorHandler.post(colorHandlerRunnable);
-            }
-        }
-    }
-
-    /**
-     * Stops the animation from continuing. The removeCallbacks function removes all
-     * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
-     * (transitionDrawable.resetTransition();)
-     */
-    private void stopRecordingAnimation() {
-        if (colorHandler != null && colorHandlerRunnable != null) {
-            colorHandler.removeCallbacks(colorHandlerRunnable);
-        }
-        if (transitionDrawable != null) {
-            transitionDrawable.resetTransition();
-        }
-    }
-
+    /** Don't remove! below code  **/
 //    /**
 //     * This function adds two different audio files together to make one audio file into an
 //     * .mp3 file. More comments will be added to this function later.
@@ -597,6 +364,8 @@ public final class DraftFrag extends Fragment {
 //
 //        return toReturnFile;
 //    }
+  
+  /** Don't remove above code!! **/
 
     /**
      * Stops all playback streams and stops recording as well.
@@ -620,4 +389,5 @@ public final class DraftFrag extends Fragment {
             voiceAudioPlayer.stopAudio();
         }
     }
+
 }

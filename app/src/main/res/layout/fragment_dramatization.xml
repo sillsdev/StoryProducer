@@ -7,12 +7,6 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <LinearLayout
-        android:id="@+id/fragment_dramatization_dummyView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
         <RelativeLayout
             android:id="@+id/fragment_dramatization_picture_frame"
             android:layout_width="wrap_content"
@@ -34,54 +28,21 @@
                 android:background="@drawable/ic_play_arrow_white_48dp"
                 android:src="@drawable/ic_red_ex_48dp" />
 
+            <TextView
+                android:layout_width="@dimen/triangle_width"
+                android:layout_height="@dimen/triangle_height"
+                android:layout_alignBottom="@id/fragment_dramatization_image_view"
+                android:layout_alignRight="@id/fragment_dramatization_image_view"
+                android:background="@drawable/triangle_background"/>
+            <TextView
+                android:id="@+id/slide_number_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@id/fragment_dramatization_image_view"
+                android:layout_alignRight="@id/fragment_dramatization_image_view"
+                android:paddingRight="7dp"
+                android:text="1"
+                android:textSize="@dimen/text_body"/>
+
         </RelativeLayout>
-    </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fragment_dramatization_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/fragment_dramatization_animated_toolbar"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:background="@color/white"
-        app:backgroundTint="@android:color/holo_blue_bright"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        app:srcCompat="@drawable/ic_add_white_48dp" />
-
-    <RelativeLayout
-        android:id="@+id/fragment_dramatization_animated_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="bottom|end"
-        android:background="@android:color/holo_blue_bright"
-        android:visibility="invisible">
-
-        <ImageButton
-            android:id="@+id/fragment_dramatization_play_toolbar_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="56dp"
-            android:layout_toEndOf="@+id/fragment_dramatization_mic_toolbar_button"
-            android:background="@drawable/ic_play_arrow_white_48dp"
-            android:scaleType="centerInside"
-            android:visibility="invisible" />
-
-        <ImageButton
-            android:id="@+id/fragment_dramatization_mic_toolbar_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="22dp"
-            android:background="@drawable/ic_mic_white"
-            android:scaleType="centerInside"
-            android:visibility="visible" />
-
-    </RelativeLayout>
-
 </RelativeLayout>
