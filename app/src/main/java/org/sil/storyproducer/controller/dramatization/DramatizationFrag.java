@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.dramatization;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -19,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -30,7 +33,9 @@ public class DramatizationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     private View rootView;
+    private String storyName;
     private int slideNumber;
+    private boolean phaseUnlocked;
     private ImageButton playPauseDraftButton;
     private TextView slideNumberText;
     private AudioPlayer draftPlayer;
@@ -44,10 +49,14 @@ public class DramatizationFrag extends Fragment {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        if (AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).exists()) {
-            draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+        storyName = StoryState.getStoryName();
+        if (AudioFiles.getDraft(storyName, slideNumber).exists()) {
+            draftPlayerPath =  AudioFiles.getDraft(storyName, slideNumber).getPath();
         }
-        dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        dramatizationRecordingPath = AudioFiles.getDramatization(storyName, slideNumber).getPath();
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(ConsultantCheckFrag.CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        phaseUnlocked = prefs.getBoolean(storyName + ConsultantCheckFrag.IS_CONSULTANT_APPROVED, false);
     }
 
     @Override
@@ -55,12 +64,17 @@ public class DramatizationFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
-        setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
-        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
-        setToolbar(rootViewToolbar);
         slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
+        if (phaseUnlocked) {
+            setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
+            View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+            setToolbar(rootViewToolbar);
+            rootView.findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
+        } else {
+            diableViewAndChildren(rootView);
+        }
         return rootView;
     }
 
@@ -109,6 +123,17 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
+    private static void diableViewAndChildren(View view) {
+        view.setEnabled(false);
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                diableViewAndChildren(child);
+            }
+        }
+    }
+
     /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
@@ -132,7 +157,7 @@ public class DramatizationFrag extends Fragment {
         }
 
         ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
