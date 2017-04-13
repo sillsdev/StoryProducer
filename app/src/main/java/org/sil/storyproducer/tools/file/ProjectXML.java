@@ -38,7 +38,6 @@ public class ProjectXML {
     private static final String XML_FILE_NAME = "project.xml";
 
     public List<VisualUnit> units = new ArrayList<>();
-    public String name;
 
     private static File getProjectXMLFile(String story) {
         return new File(FileSystem.getTemplatePath(story), XML_FILE_NAME);
@@ -58,15 +57,13 @@ public class ProjectXML {
         parser.setInput(in, null);
         parser.nextTag();
 
-        name = story;
-
         parser.require(XmlPullParser.START_TAG, null, "MSPhotoStoryProject");
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String name = parser.getName();
-            switch(name) {
+            String tag = parser.getName();
+            switch(tag) {
                 case "VisualUnit":
                     units.add(parseVisualUnit(parser));
                     break;
@@ -101,8 +98,8 @@ public class ProjectXML {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String name = parser.getName();
-            switch(name) {
+            String tag = parser.getName();
+            switch(tag) {
                 case "Narration":
                     slide.narrationFilename = parseNarration(parser);
                     break;
@@ -200,8 +197,8 @@ public class ProjectXML {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String name = parser.getName();
-            switch(name) {
+            String tag = parser.getName();
+            switch(tag) {
                 case "RotateAndCrop":
                     parser.nextTag();
                     info.crop = parseRect(parser, "Rectangle");
