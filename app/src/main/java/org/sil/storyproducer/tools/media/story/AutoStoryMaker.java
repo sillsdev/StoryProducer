@@ -8,6 +8,7 @@ import android.util.Log;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.KenBurnsSpec;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
@@ -271,11 +272,9 @@ public class AutoStoryMaker extends Thread implements Closeable {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
 
-            //TODO: get actual KBFX
             KenBurnsEffect kbfx = null;
-            //Only include KBFX if specified and not title slide.
             if(mIncludePictures && mIncludeKBFX && iSlide != 0) {
-                kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
+                kbfx = KenBurnsSpec.getKenBurnsEffect(mStory, iSlide);
             }
 
             String text = null;
