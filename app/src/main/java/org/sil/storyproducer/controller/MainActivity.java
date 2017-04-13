@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         int id = item.getItemId();
         if (id == R.id.menu_lang) {
             launchChangeLWCDialog();
+        } else if (id == R.id.menu_registration) {
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
