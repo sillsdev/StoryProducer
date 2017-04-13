@@ -129,8 +129,8 @@ public class ProjectXML {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-            String name = parser.getName();
-            switch(name) {
+            String tag = parser.getName();
+            switch(tag) {
                 case "Edit":
                     image.edit = parseEdit(parser);
                     break;
