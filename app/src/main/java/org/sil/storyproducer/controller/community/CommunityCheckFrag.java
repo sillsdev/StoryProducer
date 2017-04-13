@@ -39,8 +39,8 @@ public class CommunityCheckFrag extends Fragment {
     private final static String LOGTAG = "communityCheck";
     private int slideNumber;
     private TextView slideNumberText;
-    private static AudioPlayer draftPlayer;
-    private static AudioPlayer commentPlayer;
+    private AudioPlayer draftPlayer;
+    private AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
     private View rootView;
     private String[] comments;
