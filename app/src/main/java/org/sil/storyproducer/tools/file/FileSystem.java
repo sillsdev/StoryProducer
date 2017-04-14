@@ -1,9 +1,12 @@
 package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+
+import org.sil.storyproducer.controller.MainActivity;
 
 import java.io.*;
 import java.util.*;
@@ -20,11 +23,13 @@ import java.util.*;
 public class FileSystem {
     private static final String TAG = "FileSystem";
 
-    private static String language = "ENG"; //ethnologue code for english
+    private static String language;
 
     private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
     private static final String PROJECT_DIR = "projects";
+    private static final String LANGUAGE_PREFS = "languages";
+    private static final String LWC_LANGUAGE = "lwc language";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> templatePaths;
@@ -48,6 +53,10 @@ public class FileSystem {
         templatePaths = new HashMap<>();
         projectPaths = new HashMap<>();
         moviesPaths = new HashMap<>();
+
+        // Get the LWC language from preferences (defaults to ENG if none set)
+        SharedPreferences prefs = con.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
+        language = prefs.getString(LWC_LANGUAGE, "ENG");
 
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
@@ -103,13 +112,20 @@ public class FileSystem {
     /**
      * Change the language templates are drawn from.
      * @param lang ethnologue code for new language
+     * @return true if change applied, false if error
      */
-    public static void changeLanguage(String lang) {
+    public static boolean changeLanguage(String lang, Context context) {
         if(templatePaths.containsKey(lang)) {
             language = lang;
+            final SharedPreferences prefs = context.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
+            final SharedPreferences.Editor prefsEditor = prefs.edit();
+            prefsEditor.putString(LWC_LANGUAGE, lang);
+            prefsEditor.apply();
+            return true;
         }
         else {
             Log.w(TAG, "No templates available for language " + lang + ". Retaining language " + language + ".");
+            return false;
         }
     }
 
