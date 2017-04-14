@@ -1,11 +1,8 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -15,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +24,6 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.toolbar.AnimationToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
@@ -39,25 +34,16 @@ import java.io.File;
 public final class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
+    private String storyName;
     private int slideNumber;
     private SlideText slideText;
 
-    private AudioPlayer narrationPlayer;
-    private AudioPlayer voiceAudioPlayer;
+    private AudioPlayer LWCAudioPlayer;
+    private boolean LWCAudioExists;
+    private ImageButton LWCPlayButton;
+
     private String recordFilePath;
-    private MediaRecorder voiceRecorder;
-    private boolean isRecording = false;
-    private boolean narrationAudioExists;
 
-    private AnimationToolbar myToolbar = null;
-    private TransitionDrawable transitionDrawable;
-    private Handler colorHandler;
-    private Runnable colorHandlerRunnable;
-    private boolean isRed = true;
-    private final int RECORDING_ANIMATION_DURATION = 1500;
-
-    private ImageButton narrationPlayButton;
-    private TextView slideNumberText;
     private RecordingToolbar recordingToolbar;
 
     public DraftFrag() {
@@ -68,20 +54,10 @@ public final class DraftFrag extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
-
+        storyName = StoryState.getStoryName();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
-        recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-
-        voiceAudioPlayer = new AudioPlayer();
-        narrationPlayer = new AudioPlayer();
-        File narrationFile = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber);
-        if (narrationFile.exists()) {
-            narrationAudioExists = true;
-            narrationPlayer.setPath(narrationFile.getPath());
-        } else {
-            narrationAudioExists = false;
-        }
+        slideText = TextFiles.getSlideText(storyName, slideNumber);
+        recordFilePath = AudioFiles.getDraft(storyName, slideNumber).getPath();
     }
 
     @Override
@@ -92,23 +68,25 @@ public final class DraftFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
 
+        LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
+
         setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
-        setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
-        setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
-        setNarrationButton(rootView.findViewById(R.id.fragment_draft_narration_button));
+        setPic((ImageView)rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
+        setScriptureText((TextView)rootView.findViewById(R.id.fragment_draft_scripture_text));
+        setReferenceText((TextView)rootView.findViewById(R.id.fragment_draft_reference_text));
+        setLWCAudioButton(LWCPlayButton);
         setToolbar(rootViewToolbar);
-        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
     }
 
     /**
-     * This function serves to handle draft page changes and stops the audio streams from
+     * This function serves to handle page changes and stops the audio streams from
      * continuing.
      *
-     * @param isVisibleToUser
+     * @param isVisibleToUser whether fragment is currently visible to user
      */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -123,6 +101,26 @@ public final class DraftFrag extends Fragment {
                 }
             }
         }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        LWCAudioPlayer = new AudioPlayer();
+        File LWCFile = AudioFiles.getLWC(storyName, slideNumber);
+        if (LWCFile.exists()) {
+            LWCAudioExists = true;
+            LWCAudioPlayer.setPath(LWCFile.getPath());
+        } else {
+            LWCAudioExists = false;
+        }
+
+        LWCAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                LWCPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
+            }
+        });
     }
 
     /**
@@ -146,12 +144,13 @@ public final class DraftFrag extends Fragment {
         super.onStop();
 
         recordingToolbar.stopToolbarMedia();
-        narrationPlayer.release();
-        voiceAudioPlayer.release();
+        LWCAudioPlayer.release();
      
         if(recordingToolbar != null){
             recordingToolbar.closeToolbar();
+            recordingToolbar.releaseToolbarAudio();
         }
+
     }
 
     /**
@@ -175,16 +174,11 @@ public final class DraftFrag extends Fragment {
     /**
      * This function allows the picture to scale with the phone's screen size.
      *
-     * @param aView    The ImageView that will contain the picture.
+     * @param slideImage    The ImageView that will contain the picture.
      * @param slideNum The slide number to grab the picture from the files.
      */
-    private void setPic(View aView, int slideNum) {
-        if (aView == null || !(aView instanceof ImageView)) {
-            return;
-        }
-
-        ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
+    private void setPic(final ImageView slideImage, int slideNum) {
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
@@ -209,27 +203,18 @@ public final class DraftFrag extends Fragment {
     /**
      * Sets the main text of the layout.
      *
-     * @param aView The text view that will be filled with the verse's text.
+     * @param textView The text view that will be filled with the verse's text.
      */
-    private void setScriptureText(View aView) {
-        if (aView == null || !(aView instanceof TextView)) {
-            return;
-        }
-        TextView textView = (TextView) aView;
+    private void setScriptureText(final TextView textView) {
         textView.setText(slideText.getContent());
     }
 
     /**
      * This function sets the reference text.
      *
-     * @param aView The view that will be populated with the reference text.
+     * @param textView The view that will be populated with the reference text.
      */
-    private void setReferenceText(View aView) {
-        if (aView == null || !(aView instanceof TextView)) {
-            return;
-        }
-        TextView textView = (TextView) aView;
-
+    private void setReferenceText(final TextView textView) {
         String[] titleNamePriority = new String[]{slideText.getReference(),
                 slideText.getSubtitle(), slideText.getTitle()};
 
@@ -239,51 +224,37 @@ public final class DraftFrag extends Fragment {
                 return;
             }
         }
-
-        //TODO Reference a string constant
         textView.setText(R.string.draft_bible_story);
     }
 
     /**
-     * This function sets the narration playback to the correct audio file. Also, the narration
+     * This function sets the LWC playback to the correct audio file. Also, the LWC narration
      * button will have a listener added to it in order to detect playback when pressed.
      *
-     * @param aView
+     * @param LWCPlayButton the button to set the listeners for
      */
-    private void setNarrationButton(View aView) {
-        if (aView == null || !(aView instanceof ImageButton)) {
-            return;
-        }
-        narrationPlayButton = (ImageButton)aView;
-        narrationPlayButton.setOnClickListener(new View.OnClickListener() {
+    private void setLWCAudioButton(final ImageButton LWCPlayButton) {
+        LWCPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (!narrationAudioExists) {
-                    Snackbar.make(rootView, R.string.draft_playback_no_narration_audio, Snackbar.LENGTH_SHORT).show();
-                } else {
-                    if(narrationPlayer != null && narrationPlayer.isAudioPlaying()){
-                        narrationPlayer.stopAudio();
-                        narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
-                    }else{
-                        //stop other playback streams.
-                        recordingToolbar.stopToolbarMedia();
-                        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
-                            }
-                        });
-
-                        narrationPlayer.playAudio();
-                        if(recordingToolbar != null){
-                            recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationPlayer);
-                        }
-
-                        narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
-                        Toast.makeText(getContext(), R.string.draft_playback_narration_audio, Toast.LENGTH_SHORT).show();
+            if (!LWCAudioExists) {
+                Snackbar.make(rootView, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show();
+            } else {
+                if(LWCAudioPlayer.isAudioPlaying()){
+                    LWCAudioPlayer.stopAudio();
+                    LWCPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
+                }else{
+                    //stop other playback streams.
+                    recordingToolbar.stopToolbarMedia();
+                    LWCAudioPlayer.playAudio();
+                    if(recordingToolbar != null){
+                        recordingToolbar.onToolbarTouchStopAudio(LWCPlayButton, R.drawable.ic_menu_play, LWCAudioPlayer);
                     }
+
+                    LWCPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
+                    Toast.makeText(getContext(), R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show();
                 }
+            }
             }
         });
     }
@@ -300,7 +271,7 @@ public final class DraftFrag extends Fragment {
 
 
 
-    /** Don't remove! below code  **/
+    /* Don't remove! below code  */
 //    /**
 //     * This function adds two different audio files together to make one audio file into an
 //     * .mp3 file. More comments will be added to this function later.
@@ -371,6 +342,6 @@ public final class DraftFrag extends Fragment {
 //        return toReturnFile;
 //    }
   
-  /** Don't remove above code!! **/
+  /* Don't remove above code!! */
 
 }

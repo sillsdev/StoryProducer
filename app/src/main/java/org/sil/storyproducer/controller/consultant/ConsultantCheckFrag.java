@@ -63,14 +63,6 @@ public class ConsultantCheckFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        draftPlayer = new AudioPlayer();
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
-        if (draftFile.exists()) {
-            draftAudioExists = true;
-            draftPlayer.setPath(draftFile.getPath());
-        } else {
-            draftAudioExists = false;
-        }
     }
 
     @Override
@@ -92,6 +84,36 @@ public class ConsultantCheckFrag extends Fragment {
 
         return rootView;
     }
+    /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     * @param isVisibleToUser
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Make sure that we are currently visible
+        if (this.isVisible()) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                draftPlayer.stopAudio();
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(storyName, slidePosition);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
+        }
+    }
 
     /**
      * This function serves to stop the audio streams from continuing after the draft has been
@@ -100,9 +122,7 @@ public class ConsultantCheckFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (draftPlayer != null) {
-            draftPlayer.stopAudio();
-        }
+        draftPlayer.stopAudio();
     }
 
     /**
@@ -112,10 +132,8 @@ public class ConsultantCheckFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (draftPlayer != null) {
-            draftPlayer.stopAudio();
-            draftPlayer.release();
-        }
+        draftPlayer.stopAudio();
+        draftPlayer.release();
     }
 
     /**

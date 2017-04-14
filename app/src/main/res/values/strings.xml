@@ -109,8 +109,8 @@
 
     <!-- Draft -->
     <string name="draft_bible_story">Bible Story!</string>
-    <string name="draft_playback_no_narration_audio">Could Not Find Narration Audio...</string>
-    <string name="draft_playback_narration_audio">Playing Narration Audio...</string>
+    <string name="draft_playback_no_lwc_audio">Could Not Find Narration Audio...</string>
+    <string name="draft_playback_lwc_audio">Playing Narration Audio...</string>
 
     <!-- Dramatization phase -->
     <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>

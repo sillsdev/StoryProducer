@@ -52,15 +52,6 @@ public class CommunityCheckFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        commentPlayer = new AudioPlayer();
-        draftPlayer = new AudioPlayer();
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
-        if (draftFile.exists()) {
-            draftAudioExists = true;
-            draftPlayer.setPath(draftFile.getPath());
-        } else {
-            draftAudioExists = false;
-        }
     }
 
     @Override
@@ -80,7 +71,7 @@ public class CommunityCheckFrag extends Fragment {
     }
 
     /**
-     * This function serves to handle draft page changes and stops the audio streams from
+     * This function serves to handle page changes and stops the audio streams from
      * continuing.
      * @param isVisibleToUser
      */
@@ -94,6 +85,20 @@ public class CommunityCheckFrag extends Fragment {
             if (!isVisibleToUser) {
                 stopAllMedia();
             }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        commentPlayer = new AudioPlayer();
+        draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
         }
     }
 

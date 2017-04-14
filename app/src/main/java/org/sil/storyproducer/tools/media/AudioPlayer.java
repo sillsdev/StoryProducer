@@ -7,14 +7,14 @@ import java.io.IOException;
 public class AudioPlayer {
 
     private MediaPlayer mPlayer;
-    private boolean pathIsSet, isPrepared;
+    private boolean isPathSet, isPrepared;
 
     /**
      * Constructor for Audio Player, no params
      */
     public AudioPlayer() {
         mPlayer = new MediaPlayer();
-        pathIsSet = false;
+        isPathSet = false;
         isPrepared = false;
     }
 
@@ -24,12 +24,12 @@ public class AudioPlayer {
      */
     public void setPath(String path) {
         try {
-            if (pathIsSet) {
+            if (isPathSet) {
                 mPlayer.reset();
                 isPrepared = false;
             }
             mPlayer.setDataSource(path);
-            pathIsSet = true;
+            isPathSet = true;
         } catch (IOException e) {
             //TODO maybe initializeToolbar with this exception
             e.printStackTrace();
@@ -57,7 +57,7 @@ public class AudioPlayer {
      * Pauses the audio if it is currenlty being played
      */
     public void pauseAudio() {
-        if(mPlayer != null && mPlayer.isPlaying()) {
+        if(mPlayer.isPlaying()) {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
@@ -71,18 +71,16 @@ public class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     public void resumeAudio() {
-        if(mPlayer != null) {
-            int pauseSpot = mPlayer.getCurrentPosition();
-            mPlayer.seekTo(pauseSpot);
-            mPlayer.start();
-        }
+        int pauseSpot = mPlayer.getCurrentPosition();
+        mPlayer.seekTo(pauseSpot);
+        mPlayer.start();
     }
 
     /**
      * Stops the audio if it is currently being played
      */
     public void stopAudio() {
-        if(mPlayer!= null && isPrepared) {
+        if(isPrepared) {
             try {
                 mPlayer.stop();
                 isPrepared = false;
@@ -97,15 +95,13 @@ public class AudioPlayer {
      * Releases the MediaPlayer object after completion
      */
     public void release() {
-        if (mPlayer != null) {
-            mPlayer.release();
-        }
+        mPlayer.release();
     }
 
     /**
      * This allows the user to do initializeToolbar once the audio has completed
      * via implementing MediaPlayer.OnCompleteListener.
-     * @param OcL
+     * @param OcL handler for OnCompletionListener
      */
     public void onPlayBackStop(MediaPlayer.OnCompletionListener OcL){
         mPlayer.setOnCompletionListener(OcL);
@@ -124,7 +120,7 @@ public class AudioPlayer {
      * @return the duration of the audio as an int
      */
     public int getAudioDurationInMilliseconds() {
-        return (int)mPlayer.getDuration();
+        return mPlayer.getDuration();
     }
 
     /**
@@ -137,7 +133,7 @@ public class AudioPlayer {
 
     /**
      * sets the completion listener
-     * @param listener
+     * @param listener handler for OnCompletionListener
      */
     public void audioCompletionListener(MediaPlayer.OnCompletionListener listener) {
         mPlayer.setOnCompletionListener(listener);
@@ -156,9 +152,6 @@ public class AudioPlayer {
      * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
-        if(mPlayer == null) {
-            return false;
-        }
         return mPlayer.isPlaying();
     }
 }

@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.dramatization;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,11 +23,9 @@ import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
-import java.io.IOException;
 
 
 public class DramatizationFrag extends Fragment {
@@ -37,13 +33,11 @@ public class DramatizationFrag extends Fragment {
 
     private View rootView;
     private int slideNumber;
-    private ImageButton playPauseDraftButton;
-    private TextView slideNumberText;
+    private String storyName;
     private AudioPlayer draftPlayer;
-
     private boolean draftAudioExists;
-    private MediaRecorder voiceRecorder;
-    private AudioPlayer dramatizationPlayer;
+    private ImageButton draftPlayButton;
+
     private String dramatizationRecordingPath = null;
 
     private RecordingToolbar recordingToolbar;
@@ -53,31 +47,41 @@ public class DramatizationFrag extends Fragment {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
+        storyName = StoryState.getStoryName();
+        dramatizationRecordingPath = AudioFiles.getDramatization(storyName, slideNumber).getPath();
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
+        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
+        setUiColors();
+        setPic((ImageView)rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
+        setPlayStopDraftButton(draftPlayButton);
+        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+        setToolbar(rootViewToolbar);
+        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        slideNumberText.setText(slideNumber + 1 + "");
+
+        return rootView;
+    }
+
+    public void onStart() {
+        super.onStart();
         draftPlayer = new AudioPlayer();
-        File draftAudioFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
             draftPlayer.setPath(draftAudioFile.getPath());
         } else {
             draftAudioExists = false;
         }
-        dramatizationPlayer = new AudioPlayer();
-        dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
-        setUiColors();
-        setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
-        setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
-        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
-        setToolbar(rootViewToolbar);
-        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        slideNumberText.setText(slideNumber + 1 + "");
-
-        return rootView;
+        draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                draftPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+            }
+        });
     }
 
     /**
@@ -100,17 +104,18 @@ public class DramatizationFrag extends Fragment {
     public void onStop() {
         super.onStop();
         draftPlayer.release();
-        dramatizationPlayer.release();
         if(recordingToolbar != null){
             recordingToolbar.closeToolbar();
+            recordingToolbar.releaseToolbarAudio();
         }
+
     }
 
     /**
      * This function serves to handle draft page changes and stops the audio streams from
      * continuing.
      *
-     * @param isVisibleToUser
+     * @param isVisibleToUser whether fragment is visible to user
      */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -141,16 +146,11 @@ public class DramatizationFrag extends Fragment {
     /**
      * This function is used to the set the picture per slide.
      *
-     * @param aView    The view that will have the picture rendered on it.
+     * @param slideImage    The view that will have the picture rendered on it.
      * @param slideNum The respective slide number for the dramatization slide.
      */
-    private void setPic(View aView, int slideNum) {
-        if (aView == null || !(aView instanceof ImageView)) {
-            return;
-        }
-
-        ImageView slideImage = (ImageView) aView;
-        Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
+    private void setPic(final ImageView slideImage, int slideNum) {
+        Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if (slidePicture == null) {
             Snackbar.make(rootView, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show();
@@ -175,11 +175,8 @@ public class DramatizationFrag extends Fragment {
     /**
      * This function serves to set the play and stop button for the draft playback button.
      */
-    private void setPlayStopDraftButton(View playPauseDraftBut) {
-        View button = playPauseDraftBut;
-        if (button != null && button instanceof ImageButton) {
-            playPauseDraftButton = (ImageButton) button;
-        }
+    private void setPlayStopDraftButton(final ImageButton playPauseDraftButton) {
+
         if (!draftAudioExists) {
             //draft recording does not exist
             playPauseDraftButton.setAlpha(0.8f);
@@ -188,7 +185,6 @@ public class DramatizationFrag extends Fragment {
             //remove x mark from Imagebutton play
             playPauseDraftButton.setImageResource(0);
         }
-
         playPauseDraftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,13 +198,6 @@ public class DramatizationFrag extends Fragment {
                 } else {
                     recordingToolbar.stopToolbarMedia();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                        }
-                    });
-
                     draftPlayer.playAudio();
                     if(draftPlayer != null){ //if there is a draft available to play
                         recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
