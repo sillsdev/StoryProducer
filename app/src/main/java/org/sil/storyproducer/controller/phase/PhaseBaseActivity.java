@@ -127,7 +127,7 @@ public class PhaseBaseActivity extends AppCompatActivity {
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.dummy_content) {
+                R.string.nav_open, R.string.nav_close) {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {

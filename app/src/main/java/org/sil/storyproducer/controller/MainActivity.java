@@ -29,8 +29,6 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-    public static final String LANGUAGE_PREFS = "languages";
-    public static final String LWC_LANGUAGE = "lwc language";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,14 +103,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                 .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String selectedLanguage = languageSpinner.getSelectedItem().toString();
-                        boolean languageChanged = FileSystem.changeLanguage(selectedLanguage);
+                        boolean languageChanged = FileSystem.changeLanguage(selectedLanguage, getApplicationContext());
                         if (!languageChanged) {
                             Toast.makeText(MainActivity.this, "Error: could not change language", Toast.LENGTH_SHORT).show();
                         } else {
-                            final SharedPreferences prefs = getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
-                            final SharedPreferences.Editor prefsEditor = prefs.edit();
-                            prefsEditor.putString(LWC_LANGUAGE, selectedLanguage);
-                            prefsEditor.apply();
                             MainActivity.this.reloadStories();
                         }
                     }

@@ -28,6 +28,8 @@ public class FileSystem {
     private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
     private static final String PROJECT_DIR = "projects";
+    private static final String LANGUAGE_PREFS = "languages";
+    private static final String LWC_LANGUAGE = "lwc language";
 
     //Paths to template directories from language and story name
     private static Map<String, Map<String, String>> templatePaths;
@@ -53,8 +55,8 @@ public class FileSystem {
         moviesPaths = new HashMap<>();
 
         // Get the LWC language from preferences (defaults to ENG if none set)
-        SharedPreferences prefs = con.getSharedPreferences(MainActivity.LANGUAGE_PREFS, Context.MODE_PRIVATE);
-        language = prefs.getString(MainActivity.LWC_LANGUAGE, "ENG");
+        SharedPreferences prefs = con.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
+        language = prefs.getString(LWC_LANGUAGE, "ENG");
 
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
@@ -112,9 +114,13 @@ public class FileSystem {
      * @param lang ethnologue code for new language
      * @return true if change applied, false if error
      */
-    public static boolean changeLanguage(String lang) {
+    public static boolean changeLanguage(String lang, Context context) {
         if(templatePaths.containsKey(lang)) {
             language = lang;
+            final SharedPreferences prefs = context.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
+            final SharedPreferences.Editor prefsEditor = prefs.edit();
+            prefsEditor.putString(LWC_LANGUAGE, lang);
+            prefsEditor.apply();
             return true;
         }
         else {

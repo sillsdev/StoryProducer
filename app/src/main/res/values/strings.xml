@@ -89,9 +89,7 @@
 
     <!--Navigation Drawer Labels (Main Activity) -->
     <string name="nav_open">Options</string>
-    <string-array name="nav_labels">
-        <item>Register</item>
-    </string-array>
+    <string name="nav_close">Close</string>
 
     <!-- Export -->
     <string name="export_options_header">Options</string>
