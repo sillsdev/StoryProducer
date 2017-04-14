@@ -197,10 +197,12 @@ public class DramatizationFrag extends Fragment {
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                 } else {
                     recordingToolbar.stopToolbarMedia();
+
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     draftPlayer.playAudio();
+
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
                     }
                     Toast.makeText(getContext(), R.string.dramatization_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }

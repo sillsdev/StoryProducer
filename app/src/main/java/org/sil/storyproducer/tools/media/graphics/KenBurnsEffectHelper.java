@@ -22,6 +22,11 @@ public class KenBurnsEffectHelper {
         ;
     }
 
+    public static KenBurnsEffect getRandom(String src, double widthToHeight) {
+        //TODO: actually randomize
+        return getScroll(src, widthToHeight, null);
+    }
+
     /**
      *
      * @param src
