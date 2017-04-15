@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
+import org.sil.storyproducer.controller.MainActivity;
 import org.sil.storyproducer.model.StoryState;
 
 public class StorySharedPreferences {
