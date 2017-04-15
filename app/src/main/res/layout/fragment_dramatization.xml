@@ -19,15 +19,6 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop" />
 
-        <ImageButton
-            android:id="@+id/fragment_dramatization_play_draft_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_play_arrow_white_48dp"
-            android:src="@drawable/ic_red_ex_48dp" />
-
         <TextView
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
