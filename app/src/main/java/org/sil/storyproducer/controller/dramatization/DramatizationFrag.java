@@ -191,22 +191,22 @@ public class DramatizationFrag extends Fragment {
                     Toast.makeText(getContext(), R.string.dramatization_no_draft_recording_available, Toast.LENGTH_SHORT).show();
                 }
                 else if (draftPlayer.isAudioPlaying()) {
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                     draftPlayer.stopAudio();
                     draftPlayer.releaseAudio();
                 } else {
                     recordingToolbar.stopToolbarMedia();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_gray);
                     draftPlayer = new AudioPlayer();
                     draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
-                            playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                            playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                             draftPlayer.releaseAudio();
                         }
                     });
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
                     }
                     draftPlayer.playWithPath(draftPlayerPath);
                     Toast.makeText(getContext(), R.string.dramatization_playback_draft_recording, Toast.LENGTH_SHORT).show();
