@@ -140,6 +140,7 @@
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
+    <string name="share_video">Share Video</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
@@ -194,5 +195,9 @@
         <item quantity="one">%d byte</item>
         <item quantity="other">%d bytes</item>
     </plurals>
+
+    <string name="no_videos">No Videos to Share</string>
+    <string name="send_video">Send Video:</string>
+    <string name="file_view">File view:</string>
 
 </resources>

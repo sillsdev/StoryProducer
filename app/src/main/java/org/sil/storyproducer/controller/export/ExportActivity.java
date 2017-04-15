@@ -10,17 +10,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +62,10 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
+    private TextView mNoVideosText;
+    private ListView mVideosListView;
 
+    private ExportedVideosAdapter videosAdapter;
     private String mStory;
 
     private String mOutputPath;
@@ -72,7 +79,6 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
-
         setupViews();
     }
 
@@ -171,6 +177,15 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
+
+        //share view
+
+        videosAdapter = new ExportedVideosAdapter(this);
+        mVideosListView = (ListView) findViewById(R.id.videos_list);
+        mVideosListView.setAdapter(videosAdapter);
+        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
+        setVideoAdapterPaths();
+
     }
 
     /**
@@ -255,6 +270,21 @@ public class ExportActivity extends PhaseBaseActivity {
             display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
         }
         mEditTextLocation.setText(display);
+    }
+
+    private void setVideoAdapterPaths() {
+        ArrayList<String> actualPaths = new ArrayList<>();
+        ArrayList<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(StoryState.getStoryName());
+        for(String path : videoPaths) {          //make sure the file actually exists
+            File file = new File(path);
+            if(file.exists()) {
+                actualPaths.add(path);
+            }
+        }
+        if(actualPaths.size() > 0) {
+            mNoVideosText.setVisibility(View.GONE);
+        }
+        videosAdapter.setVideoPaths(actualPaths);
     }
 
     /**
@@ -372,6 +402,8 @@ public class ExportActivity extends PhaseBaseActivity {
                 storyMaker = null;
             }
         }
+        //update the list view
+        setVideoAdapterPaths();
         toggleVisibleElements();
     }
 
@@ -419,7 +451,12 @@ public class ExportActivity extends PhaseBaseActivity {
                 @Override
                 public void run() {
                     stopExport();
+                    //save the file only when the video file is actually created
+                    String ext = mSpinnerFormat.getSelectedItem().toString();
+                    File output = new File(mOutputPath + ext);
+                    StorySharedPreferences.setExportedVideoForStory(output.getAbsolutePath(), StoryState.getStoryName());
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+
                 }
             });
         }
