@@ -20,6 +20,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -75,15 +76,14 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String storyName = StoryState.getStoryName();
-        SharedPreferences prefs = getSharedPreferences(ConsultantCheckFrag.CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        boolean phaseUnlocked = prefs.getBoolean(storyName + ConsultantCheckFrag.IS_CONSULTANT_APPROVED, false);
+        boolean phaseUnlocked = StorySharedPreferences.isApproved(storyName, this);
         setContentView(R.layout.activity_export);
         setupViews();
         if (phaseUnlocked) {
             findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
             View mainLayout = findViewById(R.id.main_linear_layout);
-            diableViewAndChildren(mainLayout);
+            PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
     }
 
@@ -182,17 +182,6 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
-    }
-
-    private static void diableViewAndChildren(View view) {
-        view.setEnabled(false);
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                diableViewAndChildren(child);
-            }
-        }
     }
 
     /**

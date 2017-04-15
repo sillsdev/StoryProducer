@@ -353,6 +353,7 @@ public class ConsultantCheckFrag extends Fragment {
 
     /**
      * Launches the dramatization phase for the story and starts back at first slide
+     * TODO: moving back to first slide is currently broken
      */
     private void launchDramatizationPhase() {
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();

@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller.dramatization;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
@@ -15,15 +13,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -55,8 +53,7 @@ public class DramatizationFrag extends Fragment {
         }
         dramatizationRecordingPath = AudioFiles.getDramatization(storyName, slideNumber).getPath();
 
-        SharedPreferences prefs = getActivity().getSharedPreferences(ConsultantCheckFrag.CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        phaseUnlocked = prefs.getBoolean(storyName + ConsultantCheckFrag.IS_CONSULTANT_APPROVED, false);
+        phaseUnlocked = StorySharedPreferences.isApproved(storyName, getContext());
     }
 
     @Override
@@ -73,7 +70,7 @@ public class DramatizationFrag extends Fragment {
             setToolbar(rootViewToolbar);
             rootView.findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
-            diableViewAndChildren(rootView);
+            PhaseBaseActivity.disableViewAndChildren(rootView);
         }
         return rootView;
     }
@@ -119,17 +116,6 @@ public class DramatizationFrag extends Fragment {
                 if (recordingToolbar != null) {
                     recordingToolbar.closeToolbar();
                 }
-            }
-        }
-    }
-
-    private static void diableViewAndChildren(View view) {
-        view.setEnabled(false);
-        if (view instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) view;
-            for (int i = 0; i < viewGroup.getChildCount(); i++) {
-                View child = viewGroup.getChildAt(i);
-                diableViewAndChildren(child);
             }
         }
     }
