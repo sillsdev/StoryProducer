@@ -12,7 +12,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -25,7 +24,9 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
@@ -36,6 +37,7 @@ public class DramatizationFrag extends Fragment {
     private int slideNumber;
     private ImageButton playPauseDraftButton;
     private TextView slideNumberText;
+    private EditText slideText;
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
@@ -64,6 +66,8 @@ public class DramatizationFrag extends Fragment {
         closeKeyboardOnTouch(rootView);
         slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
+        slideText = (EditText)rootView.findViewById(R.id.fragment_dramatization_edit_text);
+        slideText.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), slideNumber), TextView.BufferType.EDITABLE);
 
         return rootView;
     }
@@ -79,6 +83,7 @@ public class DramatizationFrag extends Fragment {
             recordingToolbar.closeToolbar();
         }
         closeKeyboard(rootView);
+        TextFiles.setDramatizationText(StoryState.getStoryName(), slideNumber, slideText.getText().toString());
     }
 
     /**
@@ -92,6 +97,7 @@ public class DramatizationFrag extends Fragment {
             recordingToolbar.closeToolbar();
         }
         closeKeyboard(rootView);
+        TextFiles.setDramatizationText(StoryState.getStoryName(), slideNumber, slideText.getText().toString());
     }
 
     /**
@@ -112,6 +118,7 @@ public class DramatizationFrag extends Fragment {
                     recordingToolbar.closeToolbar();
                 }
                 closeKeyboard(rootView);
+                TextFiles.setDramatizationText(StoryState.getStoryName(), slideNumber, slideText.getText().toString());
             }
         }
     }

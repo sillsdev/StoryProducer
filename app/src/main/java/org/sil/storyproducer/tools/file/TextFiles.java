@@ -6,8 +6,17 @@ import org.sil.storyproducer.model.SlideText;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 /**
@@ -17,6 +26,8 @@ public class TextFiles {
     private static final String TAG = "TextFiles";
 
     private static final String FILE_EXTENSION = ".txt";
+    private static final String DRAMATIZATION_FILE_PREFIX = "dramatizationText";
+    private static final String CHARACTER_ENCODING = "UTF-8";
 
     /**
      * Get the amount of number-based text files (e.g. "1.txt") in the template of the story.
@@ -66,6 +77,52 @@ public class TextFiles {
         } else {
             Log.e(TAG, "Text file not found for " + storyName + " slide " + slideNum);
             return new SlideText();
+        }
+    }
+
+     /** The purpose of this function is to save the EditText field in the dramatization phase.
+     * @param storyName
+     * @param slideNum
+     * @return
+     */
+    public static String getDramatizationText(String storyName, int slideNum){
+        StringBuilder dramTextBuilder = null;
+        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_EXTENSION);
+        if(dramFile.exists()){
+            Scanner scanner;
+            try{
+                scanner = new Scanner(dramFile);
+                dramTextBuilder = new StringBuilder();
+                while(scanner.hasNextLine()){
+                    dramTextBuilder.append(scanner.nextLine() + "\n");
+                }
+                scanner.close();
+            }catch(IOException ex){
+                Log.e("TextFilesClass", "Could not find dramatization file");
+            }
+            return dramTextBuilder.toString();
+        }else{
+            return "";
+        }
+    }
+
+    /**The purpose of this function is to get the text for the EditText field in dramatization phase.
+     *
+     * @param storyName
+     * @param slideNum
+     * @param text
+     */
+    public static void setDramatizationText(String storyName, int slideNum, String text){
+        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_EXTENSION);
+
+        try{
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(
+                            new FileOutputStream(dramFile, false), Charset.forName(CHARACTER_ENCODING)), false);
+            pw.write(""); //clear the file first
+            pw.write(text);
+            pw.close();
+        }catch(FileNotFoundException ex){
+            Log.e("TextFilesClass", "Could not write to dramatization file");
         }
     }
 }
