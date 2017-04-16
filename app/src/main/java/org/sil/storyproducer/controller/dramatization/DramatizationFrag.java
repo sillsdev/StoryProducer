@@ -18,8 +18,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -32,8 +34,12 @@ public class DramatizationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     private View rootView;
+    private String storyName;
     private int slideNumber;
     private String storyName;
+    private boolean phaseUnlocked;
+    private ImageButton playPauseDraftButton;
+    private TextView slideNumberText;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
     private ImageButton draftPlayButton;
@@ -49,6 +55,7 @@ public class DramatizationFrag extends Fragment {
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
         dramatizationRecordingPath = AudioFiles.getDramatization(storyName, slideNumber).getPath();
+        phaseUnlocked = StorySharedPreferences.isApproved(storyName, getContext());
     }
 
     @Override
@@ -63,6 +70,14 @@ public class DramatizationFrag extends Fragment {
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
+        if (phaseUnlocked) {
+            setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
+            View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+            setToolbar(rootViewToolbar);
+            rootView.findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
+        } else {
+            PhaseBaseActivity.disableViewAndChildren(rootView);
+        }
         return rootView;
     }
 
@@ -150,6 +165,7 @@ public class DramatizationFrag extends Fragment {
      * @param slideNum The respective slide number for the dramatization slide.
      */
     private void setPic(final ImageView slideImage, int slideNum) {
+
         Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if (slidePicture == null) {
