@@ -45,14 +45,4 @@
                 android:textSize="@dimen/text_body"/>
 
         </RelativeLayout>
-
-    <Button
-        android:id="@+id/fragment_dramatization_list_recordings_button"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/darkGray"
-        android:layout_below="@+id/fragment_dramatization_picture_envelope"
-        android:text="Recording #2"/>
-
 </RelativeLayout>

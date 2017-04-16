@@ -65,7 +65,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
     @Override
     public void onRowClickListener(String recordingTitle) {
         StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        parentFragment.setRecordingsList();
+        parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
         dialog.dismiss();
     }
@@ -95,7 +95,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
             }
 
         }
-        parentFragment.setRecordingsList();
+        parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 
@@ -112,7 +112,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setDramatizationForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
-        parentFragment.setRecordingsList();
+        parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 }

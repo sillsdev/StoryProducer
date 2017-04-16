@@ -27,6 +27,8 @@ import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
+
 
 import java.io.File;
 
@@ -44,6 +46,7 @@ public final class DraftFrag extends Fragment {
     private ImageButton narrationPlayButton;
     private TextView slideNumberText;
     private RecordingToolbar recordingToolbar;
+    private View.OnClickListener multiRecordButtonListener;
 
     public DraftFrag() {
         super();
@@ -68,7 +71,7 @@ public final class DraftFrag extends Fragment {
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
 
         setUiColors();
-        setRecordingsList();
+        setMultiRecordButtonListener();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
@@ -120,7 +123,7 @@ public final class DraftFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if(recordingToolbar != null){
+        if (recordingToolbar != null) {
             recordingToolbar.closeToolbar();
         }
     }
@@ -128,19 +131,15 @@ public final class DraftFrag extends Fragment {
     /**
      * sets the recording list button
      */
-    public void setRecordingsList() {
-        Button listRecordingsButton = (Button) rootView.findViewById(R.id.fragment_draft_list_recordings_button);
-        String savedTitle = StorySharedPreferences.getDraftForSlideAndStory(slideNumber, StoryState.getStoryName());
-        String buttonText = (savedTitle == "")? "-----" : savedTitle;
-        listRecordingsButton.setText(buttonText);
+    public void setMultiRecordButtonListener() {
         final DraftFrag draftFrag = this;
-        listRecordingsButton.setOnClickListener(new View.OnClickListener() {
+        multiRecordButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, draftFrag);
                 modal.show();
             }
-        });
+        };
     }
 
     /**
@@ -254,18 +253,18 @@ public final class DraftFrag extends Fragment {
             return;
         }
         narrationFilePath = AudioFiles.getLWC(StoryState.getStoryName(), slideNumber).getPath();
-        narrationPlayButton = (ImageButton)aView;
+        narrationPlayButton = (ImageButton) aView;
         narrationPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (narrationFilePath == null) {
                     Snackbar.make(rootView, R.string.draft_playback_no_narration_audio, Snackbar.LENGTH_SHORT).show();
                 } else {
-                    if(narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()){
+                    if (narrationAudioPlayer != null && narrationAudioPlayer.isAudioPlaying()) {
                         narrationAudioPlayer.stopAudio();
                         narrationAudioPlayer.releaseAudio();
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_menu_play);
-                    }else{
+                    } else {
                         //stop other playback streams.
                         recordingToolbar.stopToolbarMedia();
                         narrationAudioPlayer = new AudioPlayer();
@@ -277,7 +276,7 @@ public final class DraftFrag extends Fragment {
                             }
                         });
                         narrationAudioPlayer.playWithPath(narrationFilePath);
-                        if(recordingToolbar != null){
+                        if (recordingToolbar != null) {
                             recordingToolbar.onToolbarTouchStopAudio(narrationPlayButton, R.drawable.ic_menu_play, narrationAudioPlayer);
                         }
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
@@ -303,29 +302,30 @@ public final class DraftFrag extends Fragment {
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private void setToolbar(View toolbar){
-        if(rootView instanceof RelativeLayout){
+    private void setToolbar(View toolbar) {
+        if (rootView instanceof RelativeLayout) {
             String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-            recordingToolbar = new RecordingToolbar(getActivity(),toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, recordFilePath, new RecordingToolbar.RecordingListener() {
+            RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void stoppedRecording() {
                     String[] splitPath = recordFilePath.split("translation" + "\\d+" + "_");    //get just the title from the path
                     String title = splitPath[1].replace(".mp3", "");
                     StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
-                    setRecordingsList();
+                    setMultiRecordButtonListener();
                     recordingToolbar.setRecordFilePath(recordFilePath);
                     setPlayBackPath();
                 }
+
                 @Override
                 public void startedRecordingOrPlayback() {
                     //not used here
                 }
-            });
+            };
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, multiRecordButtonListener, recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }
-        setMultipleRecordingsButton();
     }
 
     //used in the DraftListREcordingsModal
@@ -333,21 +333,6 @@ public final class DraftFrag extends Fragment {
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
     }
-
-    /**
-     * Sets the multiple recordings button above the toolbar
-     */
-    private void setMultipleRecordingsButton(){
-        RelativeLayout.LayoutParams layoutParams =
-                new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        layoutParams.addRule(RelativeLayout.ABOVE, R.id.toolbar_for_recording_toolbar);
-        layoutParams.bottomMargin = 16;
-
-        (rootView.findViewById(R.id.fragment_draft_list_recordings_button)).setLayoutParams(layoutParams);
-    }
-
 
     /** Don't remove! below code  **/
 //    /**

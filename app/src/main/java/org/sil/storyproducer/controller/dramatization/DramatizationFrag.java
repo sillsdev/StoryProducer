@@ -11,7 +11,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,6 +25,7 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 import java.io.File;
 
@@ -39,6 +39,7 @@ public class DramatizationFrag extends Fragment {
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
+    private View.OnClickListener multiRecordButtonListener;
 
     private RecordingToolbar recordingToolbar;
 
@@ -57,7 +58,7 @@ public class DramatizationFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
-        setRecordingsList();
+        setMultiRecordButtonListener();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
         setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
@@ -159,21 +160,17 @@ public class DramatizationFrag extends Fragment {
     }
 
     /**
-     * sets the recording button that brings up the recordings list
+     * Sets up the listener for the multiple recordings button
      */
-    public void setRecordingsList() {
-        Button listRecordingsButton = (Button) rootView.findViewById(R.id.fragment_dramatization_list_recordings_button);
-        String savedTitle = StorySharedPreferences.getDramatizationForSlideAndStory(slideNumber, StoryState.getStoryName());
-        String buttonText = (savedTitle == "")? "-----" : savedTitle;
-        listRecordingsButton.setText(buttonText);
+    public void setMultiRecordButtonListener() {
         final DramatizationFrag dramaFrag = this;
-        listRecordingsButton.setOnClickListener(new View.OnClickListener() {
+        multiRecordButtonListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, dramaFrag);
                 modal.show();
             }
-        });
+        };
     }
 
     /**
@@ -249,18 +246,17 @@ public class DramatizationFrag extends Fragment {
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-
     private void setToolbar(View toolbar){
         if(rootView instanceof RelativeLayout){
             String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, playBackFilePath, dramatizationRecordingPath, new RecordingToolbar.RecordingListener() {
+            RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void stoppedRecording() {
                     String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
                     String title = splitPath[1].replace(".mp3", "");
                     StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
-                    setRecordingsList();
+                    setMultiRecordButtonListener();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
                     setPlayBackPath();
                 }
@@ -268,25 +264,10 @@ public class DramatizationFrag extends Fragment {
                 public void startedRecordingOrPlayback() {
                     //not used here
                 }
-            });
+            };
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, multiRecordButtonListener,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
-
-        setMultipleRecordingsButton();
-    }
-
-    /**
-     * Sets the multiple recordings button above the toolbar
-     */
-    private void setMultipleRecordingsButton(){
-        RelativeLayout.LayoutParams layoutParams =
-                new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-
-        layoutParams.addRule(RelativeLayout.ABOVE, R.id.toolbar_for_recording_toolbar);
-        layoutParams.bottomMargin = 16;
-
-        (rootView.findViewById(R.id.fragment_dramatization_list_recordings_button)).setLayoutParams(layoutParams);
     }
 
     //used in the DramaListREcordingsModal

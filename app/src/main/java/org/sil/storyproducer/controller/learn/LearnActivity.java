@@ -50,7 +50,7 @@ public class LearnActivity extends PhaseBaseActivity {
 
     //recording toolbar vars
     private String recordFilePath;
-    private RecordingToolbar rt;
+    private RecordingToolbar recordingToolbar;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
@@ -133,8 +133,8 @@ public class LearnActivity extends PhaseBaseActivity {
         super.onStop();
         narrationPlayer.releaseAudio();
         backgroundPlayer.releaseAudio();
-        if (rt != null) {
-            rt.closeToolbar();
+        if (recordingToolbar != null) {
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -142,8 +142,8 @@ public class LearnActivity extends PhaseBaseActivity {
     public void onPause() {
         super.onPause();
         pauseVideo();
-        if (rt != null) {
-            rt.closeToolbar();
+        if (recordingToolbar != null) {
+            recordingToolbar.closeToolbar();
         }
     }
 
@@ -315,7 +315,7 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     private void setVolumeSwitchAndFloatingButtonVisible() {
         //make the floating button visible
-        rt.showFloatingActionButton();
+        recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
         ImageView soundOff = (ImageView) findViewById(R.id.soundOff);
         ImageView soundOn = (ImageView) findViewById(R.id.soundOn);
@@ -379,7 +379,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        rt = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath, recordFilePath, new RecordingToolbar.RecordingListener() {
+        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
             public void stoppedRecording() {
                 //empty because the learn phase doesn't use this
@@ -389,15 +389,15 @@ public class LearnActivity extends PhaseBaseActivity {
                 resetVideoWithSoundOff();
             }
         });
-        rt.hideFloatingActionButton();
+        recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
         RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (rt != null && rt.isOpen() && !rt.isRecording()) {
-                    rt.closeToolbar();
+                if (recordingToolbar != null && recordingToolbar.isOpen() && !recordingToolbar.isRecording()) {
+                    recordingToolbar.closeToolbar();
                 }
             }
         });
