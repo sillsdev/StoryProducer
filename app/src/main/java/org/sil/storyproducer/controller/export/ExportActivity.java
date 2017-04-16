@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -70,6 +71,12 @@ public class ExportActivity extends PhaseBaseActivity {
 
     private String mOutputPath;
 
+    //accordion variables
+    private final int [] sectionIds = {R.id.export_section, R.id.share_section};
+    private final int [] headerIds = {R.id.export_header, R.id.share_header};
+    private View[] sectionViews = new View[sectionIds.length];
+    private View[] headerViews = new View[headerIds.length];
+
     private static volatile boolean buttonLocked = false;
     private Thread mProgressUpdater;
     private static final Object storyMakerLock = new Object();
@@ -80,6 +87,7 @@ public class ExportActivity extends PhaseBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
         setupViews();
+        setVideoOrShareSectionOpen();
     }
 
     @Override
@@ -120,6 +128,15 @@ public class ExportActivity extends PhaseBaseActivity {
      * Get handles to all necessary views and add some listeners.
      */
     private void setupViews() {
+
+        //Initialize sectionViews[] with the integer id's of the various LinearLayouts
+        //Add the listeners to the LinearLayouts's header section.
+        for (int i = 0; i < sectionIds.length; i++) {
+            sectionViews[i] = findViewById(sectionIds[i]);
+            headerViews[i] = findViewById(headerIds[i]);
+            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
+        }
+
         mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
 
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
@@ -179,7 +196,6 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar.setProgress(0);
 
         //share view
-
         videosAdapter = new ExportedVideosAdapter(this);
         mVideosListView = (ListView) findViewById(R.id.videos_list);
         mVideosListView.setAdapter(videosAdapter);
@@ -211,6 +227,57 @@ public class ExportActivity extends PhaseBaseActivity {
                 lockButtons();
             }
         });
+
+    }
+
+    /**
+     * sets which one of the accordians starts open on the activity start
+     */
+    private void setVideoOrShareSectionOpen() {
+        ArrayList<String> actualPaths = getExportedVideosForStory();
+        if(actualPaths.size() > 0) {        //open the share view
+            setSectionsClosedExceptView(findViewById(R.id.share_section));
+        } else {                            //open the video creation view
+            setSectionsClosedExceptView(findViewById(R.id.export_section));
+        }
+    }
+
+    /**
+     * This function sets the click listeners to implement the accordion functionality
+     * for each section of the registration page
+     *
+     * @param headerView  a variable of type View denoting the field the user will click to open up
+     *                    a section of the registration
+     * @param sectionView a variable of type View denoting the section that will open up
+     */
+    private void setAccordionListener(final View headerView, final View sectionView) {
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sectionView.getVisibility() == View.GONE) {
+                    setSectionsClosedExceptView(sectionView);
+                } else {
+                    sectionView.setVisibility(View.GONE);
+                    headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
+                }
+            }
+        });
+    }
+
+    /**
+     * sets all the accordion sections closed except for the one passed
+     * @param sectionView that is wanted to be made open
+     */
+    private void setSectionsClosedExceptView(View sectionView) {
+        for(int k = 0; k < sectionViews.length; k++) {
+            if(sectionViews[k] == sectionView) {
+                sectionViews[k].setVisibility(View.VISIBLE);
+                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
+            } else {
+                sectionViews[k].setVisibility(View.GONE);
+                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
+            }
+        }
 
     }
 
@@ -272,7 +339,23 @@ public class ExportActivity extends PhaseBaseActivity {
         mEditTextLocation.setText(display);
     }
 
+
+    /**
+     * sets the videos for the list adapter
+     */
     private void setVideoAdapterPaths() {
+        ArrayList<String> actualPaths = getExportedVideosForStory();
+        if(actualPaths.size() > 0) {
+            mNoVideosText.setVisibility(View.GONE);
+        }
+        videosAdapter.setVideoPaths(actualPaths);
+    }
+
+    /**
+     * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
+     * @return Array list of video paths
+     */
+    private ArrayList<String> getExportedVideosForStory() {
         ArrayList<String> actualPaths = new ArrayList<>();
         ArrayList<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(StoryState.getStoryName());
         for(String path : videoPaths) {          //make sure the file actually exists
@@ -281,10 +364,7 @@ public class ExportActivity extends PhaseBaseActivity {
                 actualPaths.add(path);
             }
         }
-        if(actualPaths.size() > 0) {
-            mNoVideosText.setVisibility(View.GONE);
-        }
-        videosAdapter.setVideoPaths(actualPaths);
+        return actualPaths;
     }
 
     /**
@@ -455,6 +535,7 @@ public class ExportActivity extends PhaseBaseActivity {
                     String ext = mSpinnerFormat.getSelectedItem().toString();
                     File output = new File(mOutputPath + ext);
                     StorySharedPreferences.setExportedVideoForStory(output.getAbsolutePath(), StoryState.getStoryName());
+                    setSectionsClosedExceptView(findViewById(R.id.share_section));
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
 
                 }

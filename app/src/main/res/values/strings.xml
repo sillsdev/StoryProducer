@@ -140,6 +140,8 @@
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
+    <string name="video_creation">Video Creation</string>
+    <string name="video_sharing">Video Sharing</string>
     <string name="share_video">Share Video</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>

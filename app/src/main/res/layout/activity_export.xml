@@ -12,165 +12,204 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/layout_export_configuration"
+        <TextView
+            android:id="@+id/export_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:text="@string/video_creation"
+            android:textSize="@dimen/header_text"
+            android:gravity="center"
+            android:background="@color/gray"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:padding="8dp"/>
 
-            <EditText
-                android:id="@+id/editText_export_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/export_custom_title"
-                android:inputType="textCapWords" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_options_header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_soundtrack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_soundtrack" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_pictures"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_pictures" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_KBFX"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_KBFX" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_include_text" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:orientation="vertical" />
+        <LinearLayout
+            android:id="@+id/export_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp">
 
             <LinearLayout
-                android:id="@+id/layout_export_resolution"
+                android:id="@+id/layout_export_configuration"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/editText_export_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="@string/export_custom_title"
+                    android:inputType="textCapWords" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:labelFor="@+id/spinner_export_resolution"
-                    android:text="@string/export_resolution_label"
+                    android:text="@string/export_options_header"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_export_soundtrack"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/export_include_soundtrack" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_export_pictures"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/export_include_pictures" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_export_KBFX"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/export_include_KBFX" />
+
+                <CheckBox
+                    android:id="@+id/checkbox_export_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/export_include_text" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/layout_export_resolution"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:labelFor="@+id/spinner_export_resolution"
+                        android:text="@string/export_resolution_label"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                    <Spinner
+                        android:id="@+id/spinner_export_resolution"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@+id/spinner_export_format"
+                    android:text="@string/export_format_label"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
                 <Spinner
-                    android:id="@+id/spinner_export_resolution"
+                    android:id="@+id/spinner_export_format"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:labelFor="@+id/editText_export_location"
+                    android:text="@string/export_location_header"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/editText_export_location"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_toStartOf="@+id/button_export_browse"
+                        android:focusable="false"
+                        android:hint="@string/export_location_placeholder"
+                        android:inputType="none" />
+
+                    <Button
+                        android:id="@+id/button_export_browse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="@string/export_location_browse" />
+
+                </RelativeLayout>
+
             </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:labelFor="@+id/spinner_export_format"
-                android:text="@string/export_format_label"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <Spinner
-                android:id="@+id/spinner_export_format"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="5dp"
                 android:orientation="vertical" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:labelFor="@+id/editText_export_location"
-                android:text="@string/export_location_header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/editText_export_location"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_toStartOf="@+id/button_export_browse"
-                    android:focusable="false"
-                    android:hint="@string/export_location_placeholder"
-                    android:inputType="none" />
+                android:orientation="horizontal">
 
                 <Button
-                    android:id="@+id/button_export_browse"
+                    android:id="@+id/button_export_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:text="@string/export_location_browse" />
+                    android:layout_weight="1"
+                    android:text="@string/export_start"
+                    android:visibility="gone" />
 
-            </RelativeLayout>
+                <Button
+                    android:id="@+id/button_export_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/export_cancel"
+                    android:visibility="visible" />
+            </LinearLayout>
 
+            <ProgressBar
+                android:id="@+id/progress_bar_export"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="18dp"
+                android:progress="0" />
         </LinearLayout>
 
-        <Space
+        <TextView
+            android:id="@+id/share_header"
             android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:orientation="vertical" />
+            android:layout_height="wrap_content"
+            android:text="@string/video_sharing"
+            android:textSize="@dimen/header_text"
+            android:gravity="center"
+            android:background="@color/gray"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:padding="8dp"/>
 
         <LinearLayout
+            android:id="@+id/share_section"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/button_export_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/export_start"
-                android:visibility="gone" />
-
-            <Button
-                android:id="@+id/button_export_cancel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/export_cancel"
-                android:visibility="visible" />
-        </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progress_bar_export"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"
-            android:progress="0" />
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp">
             <ListView
                 android:id="@+id/videos_list"
                 android:layout_width="match_parent"
