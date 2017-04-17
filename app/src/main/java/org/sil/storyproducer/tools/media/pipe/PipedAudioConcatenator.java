@@ -19,6 +19,7 @@ import java.util.Queue;
  */
 public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private static final String TAG = "PipedAudioConcatenator";
+
     @Override
     protected String getComponentName() {
         return TAG;
@@ -37,6 +38,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private final Queue<PipedMediaByteBufferSource> mSources = new LinkedList<>();
     private final Queue<Long> mSourceExpectedDurations = new LinkedList<>();
 
+    private long mFadeOutUs = 1000000L;
+
     private PipedMediaByteBufferSource mFirstSource;
     private PipedMediaByteBufferSource mSource; //current source
     private long mSourceExpectedDuration; //current source expected duration (us)
@@ -50,6 +53,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
 
     private int mPos;
     private int mSize;
+    private float mVolumeModifier;
 
     private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
@@ -181,7 +185,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     @Override
     protected short getSampleForChannel(int channel) {
         if(mCurrentState == ConcatState.DATA) {
-            return mSourceBufferA[mPos + channel];
+            return (short) (mVolumeModifier * mSourceBufferA[mPos + channel]);
         }
         else {
             return 0;
@@ -191,6 +195,9 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     @Override
     protected boolean loadSamplesForTime(long time) throws SourceClosedException {
         boolean isDone = false;
+
+        //Reset volume modifier.
+        mVolumeModifier = 1;
 
         if(mCurrentState == ConcatState.TRANSITION) {
             long transitionUs = mTransitionUs;
@@ -244,11 +251,18 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         if(mCurrentState == ConcatState.DATA) {
             mPos += mChannelCount;
 
+            long sourceEnd = mSourceStart + mSourceExpectedDuration;
+            long sourceRemainingDuration = sourceEnd - time;
+
+            if(sourceRemainingDuration < mFadeOutUs) {
+                mVolumeModifier = sourceRemainingDuration / (float) mFadeOutUs;
+            }
+
             while (mHasMoreBuffers && mPos >= mSize) {
                 fetchSourceBuffer();
             }
             boolean isWithinExpectedTime = mSourceExpectedDuration == 0
-                    || time <= mSourceStart + mSourceExpectedDuration;
+                    || time <= sourceEnd;
 
             if(!mHasMoreBuffers || !isWithinExpectedTime) {
                 if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
@@ -264,7 +278,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                     mTransitionStart = time;
                 }
                 else {
-                    mTransitionStart = mSourceStart + mSourceExpectedDuration;
+                    mTransitionStart = sourceEnd;
                 }
             }
         }
@@ -320,7 +334,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
                 validateSource(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
-                Log.e(TAG, "Source setup failed!", e);
+                Log.e(TAG, "Silencing failed source setup....", e);
                 nextSource = null;
             }
         }
