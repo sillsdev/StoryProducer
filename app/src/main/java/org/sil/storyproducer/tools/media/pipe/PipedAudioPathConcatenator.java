@@ -74,13 +74,14 @@ public class PipedAudioPathConcatenator implements PipedMediaByteBufferSource {
      * @param duration expected duration of the source audio stream.
      */
     public void addSource(String sourcePath, long duration) {
-        PipedMediaByteBufferSource source;
-        //If sample rate and channel count were specified, apply them.
-        if(mSampleRate > 0) {
-            source = new PipedAudioDecoderMaverick(sourcePath, mSampleRate, mChannelCount);
-        }
-        else {
-            source = new PipedAudioDecoderMaverick(sourcePath);
+        PipedMediaByteBufferSource source = null;
+        if(sourcePath != null) {
+            //If sample rate and channel count were specified, apply them.
+            if (mSampleRate > 0) {
+                source = new PipedAudioDecoderMaverick(sourcePath, mSampleRate, mChannelCount);
+            } else {
+                source = new PipedAudioDecoderMaverick(sourcePath);
+            }
         }
 
         mBase.addSource(source, duration);
@@ -100,13 +101,14 @@ public class PipedAudioPathConcatenator implements PipedMediaByteBufferSource {
      * @param duration expected duration of the source audio stream.
      */
     public void addLoopingSource(String sourcePath, long duration) {
-        PipedMediaByteBufferSource source;
-        //If sample rate and channel count were specified, apply them.
-        if(mSampleRate > 0) {
-            source = new PipedAudioLooper(sourcePath, duration, mSampleRate, mChannelCount);
-        }
-        else {
-            source = new PipedAudioLooper(sourcePath, duration);
+        PipedMediaByteBufferSource source = null;
+        if(sourcePath != null) {
+            //If sample rate and channel count were specified, apply them.
+            if (mSampleRate > 0) {
+                source = new PipedAudioLooper(sourcePath, duration, mSampleRate, mChannelCount);
+            } else {
+                source = new PipedAudioLooper(sourcePath, duration);
+            }
         }
 
         mBase.addSource(source, duration);

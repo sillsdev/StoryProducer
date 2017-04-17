@@ -1,9 +1,11 @@
 package org.sil.storyproducer.tools.media.story;
 
+import android.content.Context;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -13,7 +15,6 @@ import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffectHelper;
 import org.sil.storyproducer.tools.media.graphics.TextOverlay;
 import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 
@@ -43,7 +44,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private static final int TITLE_FONT_SIZE = 20;
 
-    private static final long SLIDE_TRANSITION_US = 3000000;
+    private static final long SLIDE_CROSS_FADE_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
 
     private static final long COPYRIGHT_SLIDE_US = 2000000;
@@ -78,6 +79,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private StoryMaker mStoryMaker;
 
+    private Context mContext;
+
     public AutoStoryMaker(String story) {
         mStory = story;
         mTitle = mStory;
@@ -87,6 +90,16 @@ public class AutoStoryMaker extends Thread implements Closeable {
         File outputDir = VideoFiles.getDefaultLocation(mStory);
         setOutputFile(new File(outputDir, mStory.replace(' ', '_') + "_"
                 + mWidth + "x" + mHeight + mOutputExt));
+    }
+
+    /**
+     * Set a context for the AutoStoryMaker if {@link android.widget.Toast} error messages are desired.
+     * If no context is set, console logging will be used instead.
+     *
+     * @param context
+     */
+    public void setContext(Context context) {
+        mContext = context;
     }
 
     public void setOutputFile(File output) {
@@ -153,8 +166,13 @@ public class AutoStoryMaker extends Thread implements Closeable {
         MediaFormat videoFormat = generateVideoFormat();
         StoryPage[] pages = generatePages();
 
+        //If pages weren't generated, exit.
+        if(pages == null) {
+            return;
+        }
+
         mStoryMaker = new StoryMaker(mTempFile, outputFormat, videoFormat, audioFormat,
-                pages, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
+                pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US);
 
         watchProgress();
 
@@ -265,10 +283,18 @@ public class AutoStoryMaker extends Thread implements Closeable {
             if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
+            //error
+            if(!audio.exists()) {
+                error("Audio missing for slide " + (iSlide + 1));
+                return null;
+            }
 
             File soundtrack = null;
             if(mIncludeBackgroundMusic) {
                 soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
+                if(soundtrack != null && !soundtrack.exists()) {
+                    error("Soundtrack missing: " + soundtrack.getName());
+                }
             }
 
             KenBurnsEffect kbfx = null;
@@ -317,6 +343,15 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
         if(mLogProgress) {
             watcher.start();
+        }
+    }
+
+    private void error(String message) {
+        if(mContext != null) {
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Log.e(TAG, message);
         }
     }
 

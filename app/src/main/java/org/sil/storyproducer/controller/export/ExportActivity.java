@@ -346,6 +346,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private void startExport(File output) {
         synchronized (storyMakerLock) {
             storyMaker = new AutoStoryMaker(mStory);
+            storyMaker.setContext(this);
 
             storyMaker.setTitle(mEditTextTitle.getText().toString());
 
