@@ -17,7 +17,7 @@ import java.util.Queue;
  * in between streams. Note that this transition time is halved for the beginning and end of the stream.</p>
  * <p>This component also optionally ensures that each audio stream matches an expected duration.</p>
  */
-public class PipedAudioConcatenator extends PipedAudioShortManipulator {
+public class PipedAudioConcatenator extends PipedAudioShortManipulator implements PipedMediaByteBufferDest {
     private static final String TAG = "PipedAudioConcatenator";
 
     @Override
@@ -38,13 +38,14 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
     private final Queue<PipedMediaByteBufferSource> mSources = new LinkedList<>();
     private final Queue<Long> mSourceExpectedDurations = new LinkedList<>();
 
-    private long mFadeOutUs = 1000000L;
+    private long mFadeOutUs = 0;
 
     private PipedMediaByteBufferSource mFirstSource;
     private PipedMediaByteBufferSource mSource; //current source
     private long mSourceExpectedDuration; //current source expected duration (us)
 
     private final long mTransitionUs; //duration of the audio transition
+
     private long mTransitionStart = 0; //timestamp (us) of current transition start
     private long mSourceStart = 0; //timestamp (us) of current source start (i.e. after prior transition)
 
@@ -64,7 +65,27 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
      */
     public PipedAudioConcatenator(long transitionUs) {
+        this(transitionUs, 0, 0);
+    }
+
+    /**
+     * Create concatenator with specified transition time, resampling the audio stream.
+     * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
+     * @param sampleRate desired sample rate.
+     * @param channelCount desired channel count.
+     */
+    public PipedAudioConcatenator(long transitionUs, int sampleRate, int channelCount) {
         mTransitionUs = transitionUs;
+        mSampleRate = sampleRate;
+        mChannelCount = channelCount;
+    }
+
+    /**
+     * Set a duration for each audio segment to fade out before the transition period after it (or the end).
+     * @param fadeOutUs microseconds to fade out each audio segment.
+     */
+    public void setFadeOut(long fadeOutUs) {
+        mFadeOutUs = fadeOutUs;
     }
 
     @Override
@@ -77,7 +98,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      *
      * @param source source audio path.
      */
-    public void addSource(PipedMediaByteBufferSource source) {
+    @Override
+    public void addSource(PipedMediaByteBufferSource source) throws SourceUnacceptableException {
         addSource(source, 0);
     }
 
@@ -90,7 +112,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param source source audio path.
      * @param duration expected duration of the source audio stream.
      */
-    public void addSource(PipedMediaByteBufferSource source, long duration) {
+    public void addSource(PipedMediaByteBufferSource source, long duration) throws SourceUnacceptableException {
         mSources.add(source);
         mSourceExpectedDurations.add(duration);
     }
@@ -117,17 +139,13 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
      */
-    public void addSourcePath(String sourcePath, long duration) {
-        PipedMediaByteBufferSource source;
-        //If sample rate and channel count were specified, apply them.
-        if(mSampleRate > 0) {
-            source = new PipedAudioDecoderMaverick(sourcePath, mSampleRate, mChannelCount);
+    public void addSourcePath(String sourcePath, long duration) throws SourceUnacceptableException {
+        if(sourcePath != null) {
+            addSource(new PipedAudioDecoderMaverick(sourcePath), duration);
         }
         else {
-            source = new PipedAudioDecoderMaverick(sourcePath);
+            addSource(null, duration);
         }
-
-        addSource(source, duration);
     }
 
     /**
@@ -143,17 +161,13 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
      */
-    public void addLoopingSourcePath(String sourcePath, long duration) {
-        PipedMediaByteBufferSource source;
-        //If sample rate and channel count were specified, apply them.
-        if(mSampleRate > 0) {
-            source = new PipedAudioLooper(sourcePath, duration, mSampleRate, mChannelCount);
+    public void addLoopingSourcePath(String sourcePath, long duration) throws SourceUnacceptableException {
+        if(sourcePath != null) {
+            addSource(new PipedAudioLooper(sourcePath, duration), duration);
         }
         else {
-            source = new PipedAudioLooper(sourcePath, duration);
+            addSource(null, duration);
         }
-
-        addSource(source, duration);
     }
 
     @Override
@@ -163,6 +177,13 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
         }
 
         PipedMediaByteBufferSource firstSource = mSources.remove();
+
+        if(mSampleRate > 0) {
+            PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
+            resampler.addSource(firstSource);
+            firstSource = resampler;
+        }
+
         firstSource.setup();
 
         MediaFormat format = firstSource.getOutputFormat();
@@ -330,6 +351,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator {
             }
 
             try {
+                //Apply specified sample rate and channel count.
+                PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
+                resampler.addSource(nextSource);
+                nextSource = resampler;
+
                 nextSource.setup();
                 validateSource(nextSource);
             } catch (IOException | SourceUnacceptableException e) {

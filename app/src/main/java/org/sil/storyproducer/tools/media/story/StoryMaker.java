@@ -3,8 +3,8 @@ package org.sil.storyproducer.tools.media.story;
 import android.media.MediaFormat;
 import android.util.Log;
 
+import org.sil.storyproducer.tools.media.pipe.PipedAudioConcatenator;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
-import org.sil.storyproducer.tools.media.pipe.PipedAudioPathConcatenator;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaMuxer;
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder;
@@ -19,6 +19,7 @@ public class StoryMaker implements Closeable {
     private static final String TAG = "StoryMaker";
 
     private float mSoundtrackVolumeModifier = 0.5f;
+    private static final long SOUNDTRACK_FADE_OUT_US = 1000000;
 
     private final File mOutputFile;
     private final int mOutputFormat;
@@ -88,8 +89,9 @@ public class StoryMaker implements Closeable {
             Log.e(TAG, "StoryMaker already finished!");
         }
 
-        PipedAudioPathConcatenator soundtrackConcatenator = new PipedAudioPathConcatenator(0, mSampleRate, mChannelCount);
-        PipedAudioPathConcatenator narrationConcatenator = new PipedAudioPathConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
+        PipedAudioConcatenator soundtrackConcatenator = new PipedAudioConcatenator(0, mSampleRate, mChannelCount);
+        soundtrackConcatenator.setFadeOut(SOUNDTRACK_FADE_OUT_US);
+        PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
         StoryFrameDrawer videoDrawer = null;
@@ -122,7 +124,7 @@ public class StoryMaker implements Closeable {
                 //Otherwise, continue playing last soundtrack.
                 if(soundtrack != null && !soundtrack.equals(lastSoundtrack)) {
                     if(lastSoundtrack != null) {
-                        soundtrackConcatenator.addSource(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
+                        soundtrackConcatenator.addSourcePath(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
                     }
 
                     lastSoundtrack = soundtrack;
@@ -133,12 +135,12 @@ public class StoryMaker implements Closeable {
                 }
 
                 String path = narration != null ? narration.getAbsolutePath() : null;
-                narrationConcatenator.addSource(path, audioDuration);
+                narrationConcatenator.addSourcePath(path, audioDuration);
             }
 
             //Add last soundtrack
             if(lastSoundtrack != null) {
-                soundtrackConcatenator.addSource(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
+                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
             }
 
 

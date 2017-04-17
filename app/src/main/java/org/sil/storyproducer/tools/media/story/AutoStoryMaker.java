@@ -293,7 +293,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             if(mIncludeBackgroundMusic) {
                 soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
                 if(soundtrack != null && !soundtrack.exists()) {
-                    error("Soundtrack missing: " + soundtrack.getName());
+                    error("Soundtrack missing from template: " + soundtrack.getName());
                 }
             }
 
