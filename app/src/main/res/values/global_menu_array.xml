@@ -3,5 +3,6 @@
     <string-array name="global_menu_array">
         <item>@string/menu</item>
         <item>@string/update_registration</item>
+        <item>@string/view_trans_logs</item>
     </string-array>
 </resources>

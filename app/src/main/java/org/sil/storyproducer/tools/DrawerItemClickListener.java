@@ -8,6 +8,8 @@ import android.widget.ListView;
 
 import org.sil.storyproducer.controller.MainActivity;
 import org.sil.storyproducer.controller.RegistrationActivity;
+import org.sil.storyproducer.controller.logging.LogView;
+import org.sil.storyproducer.model.StoryState;
 
 public class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -36,6 +38,12 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
             case 1:
                 intent = new Intent(context, RegistrationActivity.class);
                 context.startActivity(intent);
+                break;
+            case 2:
+            //    Intent goToLogView = new Intent(context, LogView.class);
+            //    goToLogView.putExtra("slide", -1 /* StoryState.getCurrentStorySlide() */);
+            //    context.startActivity(goToLogView);
+                LogView.makeModal(context);
                 break;
             default:
         }

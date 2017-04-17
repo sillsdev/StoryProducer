@@ -109,6 +109,10 @@ public class FileSystem {
         }
     }
 
+    public static String getLanguage(){
+        return language;
+    }
+
     /**
      * Change the language templates are drawn from.
      * @param lang ethnologue code for new language
