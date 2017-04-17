@@ -20,6 +20,10 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.DraftEntry;
+import org.sil.storyproducer.controller.logging.Logging;
+import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
@@ -177,6 +181,9 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     private void startRecording() {
+        if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT){
+            Logging.saveLogEntry(DraftEntry.Type.draft_rec.makeEntry());
+        }
         startAudioRecorder();
         startRecordingAnimation(false, 0);
     }
@@ -329,6 +336,7 @@ public class RecordingToolbar extends AnimationToolbar {
                             audioPlayer.playWithPath(recordFilePath);
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                            Logging.saveLogEntry(DraftEntry.Type.draft_pb.makeEntry());
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }

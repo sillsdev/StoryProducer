@@ -22,8 +22,6 @@ public class Logging {
 
     private static final String LOGS_ROOT_DIR = "/storage/emulated/0/splogs/";
     private static Log currentLog = null;
-    private static String currentLang = null; //ethnologue code
-    private static String currentStory = null;
 
     public static void saveLogEntry(LogEntry le, String ethnoCode, String storyTitle){
         saveLogEntries(Collections.singleton(le), ethnoCode, storyTitle);

@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.logging;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.provider.Telephony;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -25,6 +28,8 @@ import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.TreeSet;
 
 public class LogView extends AppCompatActivity {
 
@@ -34,42 +39,64 @@ public class LogView extends AppCompatActivity {
 
     private static class LogListAdapter extends BaseAdapter {
 
-        private LogEntry[] logEntries = null;
+        private LogEntry[] displayEntries = null;
+        private ArrayList<LearnEntry> learnEntries = new ArrayList<>();
+        private ArrayList<DraftEntry> draftEntries = new ArrayList<>();
+        private ArrayList<ComChkEntry> comChkEntries = new ArrayList<>();
 
         private final Context context;
 
         public LogListAdapter(Context c, Log log, int slide){
-            if(log != null) {
-                if (slide >= 0) {
-                    ArrayList<LogEntry> filteredEntries = new ArrayList<>();
-                    for (LogEntry l : log) {
-                        if (slide == l.getSlideNum()) {
-                            filteredEntries.add(l);
+            context = c;
+            if(log == null) {
+                displayEntries = new LogEntry[0];
+            } else {
+                if (slide < 0) {
+                    displayEntries = log.toArray(new LogEntry[0]);
+                } else {
+                    for (LogEntry le : log) {
+                        if (slide == le.getSlideNum() || le.getPhase().equals(Phase.Learn)) {
+                            if(le.getPhase().equals(Phase.Learn)){
+                                learnEntries.add((LearnEntry) le);
+                            } else if (le.getPhase().equals(Phase.Draft)){
+                                draftEntries.add((DraftEntry) le);
+                            } else if (le.getPhase().equals(Phase.CommCheck)){
+                                comChkEntries.add((ComChkEntry) le);
+                            }
                         }
                     }
-                    this.logEntries = filteredEntries.toArray(new LogEntry[0]);
-                } else {
-                    this.logEntries = log.toArray(new LogEntry[0]);
+                    TreeSet<LogEntry> sorter = new TreeSet<>();
+                    sorter.addAll(learnEntries);
+                    sorter.addAll(draftEntries);
+                    sorter.addAll(comChkEntries);
+                    displayEntries = sorter.toArray(new LogEntry[0]);
                 }
-            } else {
-                logEntries = new LogEntry[0];
             }
-            context = c;
         }
 
-        public void updateList(Log l){
-            this.logEntries = l.toArray(logEntries);
+        public void updateList(boolean learn, boolean draft, boolean comCheck){
+            TreeSet<LogEntry> sorter = new TreeSet<>();
+            if(learn){
+                sorter.addAll(learnEntries);
+            }
+            if(draft){
+                sorter.addAll(draftEntries);
+            }
+            if(comCheck){
+                sorter.addAll(comChkEntries);
+            }
+            displayEntries = sorter.toArray(new LogEntry[0]);
             notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
-            return logEntries.length;
+            return displayEntries.length;
         }
 
         @Override
         public LogEntry getItem(int position) {
-            return logEntries[position];
+            return displayEntries[position];
         }
 
         @Override
@@ -84,7 +111,6 @@ public class LogView extends AppCompatActivity {
                         .inflate(R.layout.log_list_item, parent, false);
             }
 
-            //ImageView bananaView = (ImageView) convertView.findViewById(R.id.banana);
             TextView date = (TextView) convertView.findViewById(R.id.textView01);
             TextView info = (TextView) convertView.findViewById(R.id.textView02);
 
@@ -116,18 +142,36 @@ public class LogView extends AppCompatActivity {
 
     public static void makeModal(Context c){
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(c);
-
+        int slide = StoryState.getCurrentStorySlide();
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = linf.inflate(R.layout.activity_log_view, null);
-       // alertDialog.setTitle(R.string.file_explorer_newFolder);
-       // alertDialog.setMessage(R.string.file_explorer_foldeNamePrompt);
+        //alertDialog.setTitle("Logs: Slide "+(slide+1));
         ListView listView = (ListView) dialoglayout.findViewById(R.id.log_list_view);
         Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-        LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
+        final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
         listView.setAdapter(lla);
+        final CheckBox learnCB = (CheckBox) dialoglayout.findViewById(R.id.LearnCheckBox);
+        final CheckBox draftCB = (CheckBox) dialoglayout.findViewById(R.id.DraftCheckBox);
+        final CheckBox comChkCB = (CheckBox) dialoglayout.findViewById(R.id.CommunityCheckCheckBox);
+        learnCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                lla.updateList(checked, draftCB.isChecked(), comChkCB.isChecked());
+            }
+        });
+        draftCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                lla.updateList(learnCB.isChecked(), checked, comChkCB.isChecked());
+            }
+        });
+        comChkCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                lla.updateList(learnCB.isChecked(), draftCB.isChecked(), checked);
+            }
+        });
         alertDialog.setView(dialoglayout);
-        //alertDialog.setPositiveButton(R.string.OK, null);
-       // alertDialog.setNegativeButton(R.string.cancel, null);
         AlertDialog t = alertDialog.create();
         t.show();
 

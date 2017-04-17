@@ -28,7 +28,7 @@ public class ComChkEntry extends LogEntry {
 
     public enum Type{
         cmt_pb("Comment Playback"), cmt_rec("Comment Recording"),
-        MT_pb("Mother Tongue Playback");
+        draft_pb("Draft Playback");
 
         private String displayName;
 

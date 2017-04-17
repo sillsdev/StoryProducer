@@ -27,8 +27,8 @@ public class DraftEntry extends LogEntry {
     }
 
     public enum Type {
-        LWC_pb("LWC Playback"), MT_rec("Mother Tongue Recording"),
-        MT_pb("Mother Tongue Playback");
+        LWC_pb("LWC Playback"), draft_rec("Draft Recording"),
+        draft_pb("Draft Playback");
 
         private String displayName;
 

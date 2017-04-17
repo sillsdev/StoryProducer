@@ -18,6 +18,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.LearnEntry;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -55,6 +57,8 @@ public class LearnActivity extends PhaseBaseActivity {
     private RecordingToolbar rt;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
+
+    private int startPos = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,6 +216,8 @@ public class LearnActivity extends PhaseBaseActivity {
      * helper function for pausing the video
      */
     private void pauseVideo() {
+        Logging.saveLogEntry(LearnEntry.makeEntry(startPos, videoSeekBar.getProgress()));
+        System.out.println("Jest saved it");
         narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
         playButton.setImageResource(R.drawable.ic_play_gray);
@@ -221,6 +227,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * helper function for resuming the video
      */
     private void resumeVideo() {
+        startPos = videoSeekBar.getProgress();
         if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
             playVideo();
             isFirstTime = false;

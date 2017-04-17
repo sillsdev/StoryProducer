@@ -49,11 +49,6 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
-        <!-- Pager Base (for Draft, ... Checks, and Dramatization) -->
-        <activity
-            android:name=".controller.pager.PagerBaseActivity"
-            android:label="Pager Base"
-            android:screenOrientation="portrait" />
         <!-- Export -->
         <activity android:name=".controller.export.ExportActivity"
             android:windowSoftInputMode="stateHidden"
