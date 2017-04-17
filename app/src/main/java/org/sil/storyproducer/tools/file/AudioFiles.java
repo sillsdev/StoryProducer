@@ -1,5 +1,8 @@
 package org.sil.storyproducer.tools.file;
 
+import org.sil.storyproducer.model.Template;
+import org.sil.storyproducer.model.TemplateSlide;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -31,12 +34,17 @@ public class AudioFiles {
     }
 
     public static File getSoundtrack(String story){
-        return getSoundtrack(story, 0);
-    }
-    //TODO: Some stories have multiple soundtrack files. Is that desired and used?
-    public static File getSoundtrack(String story, int i){
-        //TODO: actually get the appropriate soundtrack for slide i
         return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + 0 + SOUNDTRACK_EXTENSION);
+    }
+
+    public static File getSoundtrack(String story, int i){
+        TemplateSlide slide = Template.getSlide(story, i);
+        if(slide != null) {
+            return slide.getSoundtrack();
+        }
+        else {
+            return getSoundtrack(story);
+        }
     }
 
     //*** LWC ***

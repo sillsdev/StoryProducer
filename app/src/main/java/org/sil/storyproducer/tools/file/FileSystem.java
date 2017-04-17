@@ -115,11 +115,11 @@ public class FileSystem {
 
     /**
      * Gets the <b>templates</b> directory (i.e. LWC-specific read-only files) of a particular story.
-     * Note: package-local access intended
+     * Note: This method should be used sparingly, primarily by classes within this package.
      * @param story
      * @return
      */
-    static String getTemplatePath(String story){
+    public static String getTemplatePath(String story){
         Map<String, String> storyMap = templatePaths.get(language);
         if (storyMap != null) {
             return storyMap.get(story);

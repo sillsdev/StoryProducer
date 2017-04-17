@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ProjectXML;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
 import org.sil.storyproducer.tools.media.graphics.RectHelper;
@@ -47,6 +48,8 @@ public class Template {
      * @return list of story's slides or null if unable to read/parse project.xml.
      */
     private static List<TemplateSlide> createSlidesFromProjectXML(String story) {
+        String templatePath = FileSystem.getTemplatePath(story);
+
         ProjectXML xml;
         try {
             xml = new ProjectXML(story);
@@ -60,7 +63,7 @@ public class Template {
             ProjectXML.VisualUnit unit = xml.units.get(i);
 
             String narrationPath = unit.narrationFilename;
-            File narration = narrationPath == null ? null : new File(narrationPath);
+            File narration = narrationPath == null ? null : new File(templatePath, narrationPath);
 
             String imagePath = unit.imageInfo.filename;
 
@@ -92,7 +95,7 @@ public class Template {
             }
             if(unit.imageInfo.musicTrack != null) {
                 String soundtrackPath = unit.imageInfo.musicTrack.filename;
-                soundtrack = new File(soundtrackPath);
+                soundtrack = new File(templatePath, soundtrackPath);
                 soundtrackVolume = unit.imageInfo.musicTrack.volume;
             }
 

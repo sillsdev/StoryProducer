@@ -28,7 +28,7 @@ public class StoryMaker implements Closeable {
     private final StoryPage[] mPages;
 
     private final long mAudioTransitionUs;
-    private final long mSlideTransitionUs;
+    private final long mSlideCrossFadeUs;
 
     private final int mSampleRate;
     private final int mChannelCount;
@@ -48,10 +48,10 @@ public class StoryMaker implements Closeable {
      * @param pages pages of this story.
      * @param audioTransitionUs transition duration, in microseconds, between narration segments.
      *                          Note: this helps drive length of video.
-     * @param slideTransitionUs transition duration, in microseconds, of cross-fade between page images.
+     * @param slideCrossFadeUs cross-fade duration, in microseconds, between page images.
      */
     public StoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat,
-                      StoryPage[] pages, long audioTransitionUs, long slideTransitionUs) {
+                      StoryPage[] pages, long audioTransitionUs, long slideCrossFadeUs) {
         mOutputFile = output;
         mOutputFormat = outputFormat;
         mVideoFormat = videoFormat;
@@ -59,7 +59,7 @@ public class StoryMaker implements Closeable {
         mPages = pages;
 
         mAudioTransitionUs = audioTransitionUs;
-        mSlideTransitionUs = slideTransitionUs;
+        mSlideCrossFadeUs = slideCrossFadeUs;
 
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
@@ -95,7 +95,7 @@ public class StoryMaker implements Closeable {
         StoryFrameDrawer videoDrawer = null;
         PipedVideoSurfaceEncoder videoEncoder = null;
         if(mVideoFormat != null) {
-            videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
+            videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideCrossFadeUs);
             videoEncoder = new PipedVideoSurfaceEncoder();
         }
         mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
@@ -112,23 +112,28 @@ public class StoryMaker implements Closeable {
             long soundtrackDuration = 0;
             File lastSoundtrack = null;
             for (StoryPage page : mPages) {
-                long duration = page.getDuration();
                 File narration = page.getNarrationAudio();
+                long audioDuration = page.getAudioDuration();
+
                 File soundtrack = page.getSoundtrackAudio();
-                if(!soundtrack.equals(lastSoundtrack)) {
+                long pageDuration = page.getDuration(mAudioTransitionUs);
+
+                //If we encounter a new soundtrack, stop the current one and start the new one.
+                //Otherwise, continue playing last soundtrack.
+                if(soundtrack != null && !soundtrack.equals(lastSoundtrack)) {
                     if(lastSoundtrack != null) {
                         soundtrackConcatenator.addSource(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
                     }
 
-                    soundtrackDuration = duration;
+                    lastSoundtrack = soundtrack;
+                    soundtrackDuration = pageDuration;
                 }
                 else {
-                    soundtrackDuration += duration;
+                    soundtrackDuration += pageDuration;
                 }
 
-                lastSoundtrack = soundtrack;
                 String path = narration != null ? narration.getAbsolutePath() : null;
-                narrationConcatenator.addSource(path, duration);
+                narrationConcatenator.addSource(path, audioDuration);
             }
 
             //Add last soundtrack
@@ -178,10 +183,10 @@ public class StoryMaker implements Closeable {
      * @return expected duration of the produced video in microseconds.
      */
     public static long getStoryDuration(StoryPage[] pages, long audioTransitionUs) {
-        long durationUs = pages.length * audioTransitionUs;
+        long durationUs = 0;
 
         for(StoryPage page : pages) {
-            durationUs += page.getDuration();
+            durationUs += page.getDuration(audioTransitionUs);
         }
 
         return durationUs;
