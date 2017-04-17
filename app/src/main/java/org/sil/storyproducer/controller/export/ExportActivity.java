@@ -73,28 +73,32 @@ public class ExportActivity extends PhaseBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
 
+        mStory = StoryState.getStoryName();
         setupViews();
+        loadPreferences();
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
 
-        mStory = StoryState.getStoryName();
-
-        loadPreferences();
         toggleVisibleElements();
 
         watchProgress();
     }
 
     @Override
-    public void onPause() {
-        savePreferences();
-
+    protected void onPause() {
         mProgressUpdater.interrupt();
 
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        savePreferences();
+
+        super.onDestroy();
     }
 
     /**
