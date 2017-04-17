@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         setSupportActionBar(toolbar);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
 
+//        System.out.println("Language: "+FileSystem.changeLanguage("ThisLanguageIsFake", getApplicationContext()));
+
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
