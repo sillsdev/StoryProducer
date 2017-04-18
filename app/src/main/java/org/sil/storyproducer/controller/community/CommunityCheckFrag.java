@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.community;
 
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -38,9 +39,10 @@ public class CommunityCheckFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private final static String LOGTAG = "communityCheck";
     private int slideNumber;
-    private TextView slideNumberText;
     private AudioPlayer draftPlayer;
+    private ImageButton draftPlaybackButton;
     private AudioPlayer commentPlayer;
+    private ImageButton commentButtonClicked;
     private MediaRecorder commentRecorder;
     private View rootView;
     private String[] comments;
@@ -58,13 +60,14 @@ public class CommunityCheckFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false);
+        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button);
 
         updateCommentList();
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
-        setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button));
+        setDraftPlaybackButton(draftPlaybackButton);
         setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
-        slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
@@ -73,7 +76,7 @@ public class CommunityCheckFrag extends Fragment {
     /**
      * This function serves to handle page changes and stops the audio streams from
      * continuing.
-     * @param isVisibleToUser
+     * @param isVisibleToUser whether fragment is visible to user anymore
      */
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -100,6 +103,12 @@ public class CommunityCheckFrag extends Fragment {
         } else {
             draftAudioExists = false;
         }
+        draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                draftPlaybackButton.setBackgroundResource(R.drawable.ic_play_blue);
+            }
+        });
     }
 
     /**
@@ -180,18 +189,24 @@ public class CommunityCheckFrag extends Fragment {
      * button will have a listener added to it in order to detect playback when pressed.
      * @param button the ImageButton view handler to set the onclicklistener to
      */
-    private void setDraftPlaybackButton(ImageButton button) {
+    private void setDraftPlaybackButton(final ImageButton button) {
+        button.setBackgroundResource(R.drawable.ic_play_blue);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            //stop other playback streams.
-            stopAllMedia();
-            if (draftAudioExists) {
-                draftPlayer.playAudio();
-                Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
-            }
+                //stop other playback streams
+
+                boolean wasPlaying = draftPlayer.isAudioPlaying();
+                stopAllMedia();
+                if (draftAudioExists && !wasPlaying) {
+                    draftPlayer.playAudio();
+                    button.setBackgroundResource(R.drawable.ic_stop_red);
+                    Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                } else if (wasPlaying) {
+                    button.setBackgroundResource(R.drawable.ic_play_blue);
+                } else {
+                    Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -200,13 +215,33 @@ public class CommunityCheckFrag extends Fragment {
      * Plays the audio comment designated by the title
      * @param commentTitle the title of the comment to play
      */
-    public void playComment(String commentTitle) {
+    public void playCommentClicked(String commentTitle, final ImageButton button) {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
+
+        boolean wasPlaying = commentPlayer.isAudioPlaying();
+
+        // Different play button clicked while other still playing
+        // Sets old button back to play image and sets was playing so new comment will still play
+        if (commentButtonClicked != null && !button.equals(commentButtonClicked) && wasPlaying) {
+            commentButtonClicked.setImageResource(R.drawable.ic_green_play);
+            wasPlaying = false;
+        }
         stopAllMedia();
-        if (commentFile.exists()) {
+        commentButtonClicked = button;
+        if (commentFile.exists() && !wasPlaying) {
             commentPlayer.setPath(commentFile.getPath());
             commentPlayer.playAudio();
+            button.setImageResource(R.drawable.ic_stop_red);
+            commentPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    button.setImageResource(R.drawable.ic_green_play);
+                }
+            });
             Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
+        } else if (wasPlaying) {
+            commentPlayer.stopAudio();
+            button.setImageResource(R.drawable.ic_green_play);
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
         }
@@ -215,7 +250,8 @@ public class CommunityCheckFrag extends Fragment {
     /**
      * This function sets the recording button with its functionality
      */
-    private void setRecordCommentButton(ImageButton recordButton){
+    private void setRecordCommentButton(final ImageButton recordButton){
+        recordButton.setBackgroundResource(R.drawable.ic_mic_blue);
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -240,9 +276,11 @@ public class CommunityCheckFrag extends Fragment {
                 }
                 if(isRecording){
                     stopAudioRecorder();
+                    recordButton.setBackgroundResource(R.drawable.ic_mic_blue);
                     updateCommentList();
                 }else{
                     startAudioRecorder(recordFilePath);
+                    recordButton.setBackgroundResource(R.drawable.ic_stop_red);
                 }
             }
         });
@@ -298,9 +336,13 @@ public class CommunityCheckFrag extends Fragment {
     private void stopAllMedia() {
         if(draftPlayer != null){
             draftPlayer.stopAudio();
+            draftPlaybackButton.setBackgroundResource(R.drawable.ic_play_blue);
         }
         if(commentPlayer != null){
             commentPlayer.stopAudio();
+            if (commentButtonClicked != null) {
+                commentButtonClicked.setImageResource(R.drawable.ic_green_play);
+            }
         }
         if(commentRecorder != null) {
             stopAudioRecorder();
