@@ -96,6 +96,13 @@ public class RecordingToolbar extends AnimationToolbar {
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
+        audioPlayer = new AudioPlayer();
+        audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+            }
+        });
     }
 
     /**
@@ -138,11 +145,14 @@ public class RecordingToolbar extends AnimationToolbar {
                 playButton.setVisibility(View.VISIBLE);
             }
         }
-        if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
+        if (audioPlayer.isAudioPlaying()) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             audioPlayer.stopAudio();
-            audioPlayer.releaseAudio();
         }
+    }
+
+    public void releaseToolbarAudio() {
+        audioPlayer.release();
     }
 
     /**
@@ -312,21 +322,14 @@ public class RecordingToolbar extends AnimationToolbar {
             View.OnClickListener playListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
-                        audioPlayer.releaseAudio();
+                    if (audioPlayer.isAudioPlaying()) {
+                        audioPlayer.stopAudio();
                         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     } else {
                         stopPlayBackAndRecording();
                         if (new File(recordFilePath).exists()) {
-                            audioPlayer = new AudioPlayer();
-                            audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    audioPlayer.releaseAudio();
-                                    playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                                }
-                            });
-                            audioPlayer.playWithPath(recordFilePath);
+                            audioPlayer.setPath(recordFilePath);
+                            audioPlayer.playAudio();
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                         } else {
