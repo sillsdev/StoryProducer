@@ -248,7 +248,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
                 //Get a (valid) source or get to DONE state.
                 while (mSource == null && !isDone) {
                     //If sources are all gone, this component is done.
-                    if (mSources.isEmpty()) {
+                    if (mFirstSource == null && mSources.isEmpty()) {
                         isDone = true;
                         mCurrentState = ConcatState.DONE;
                     } else {
