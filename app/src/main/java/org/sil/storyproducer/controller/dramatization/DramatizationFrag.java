@@ -34,12 +34,9 @@ public class DramatizationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
 
     private View rootView;
-    private String storyName;
     private int slideNumber;
     private String storyName;
     private boolean phaseUnlocked;
-    private ImageButton playPauseDraftButton;
-    private TextView slideNumberText;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
     private ImageButton draftPlayButton;
@@ -64,14 +61,11 @@ public class DramatizationFrag extends Fragment {
         draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
-        setPlayStopDraftButton(draftPlayButton);
-        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
-        setToolbar(rootViewToolbar);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
         if (phaseUnlocked) {
-            setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
+            setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
             View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
             setToolbar(rootViewToolbar);
             rootView.findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
