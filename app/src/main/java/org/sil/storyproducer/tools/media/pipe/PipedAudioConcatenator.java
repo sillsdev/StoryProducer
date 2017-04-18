@@ -163,7 +163,14 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      */
     public void addLoopingSourcePath(String sourcePath, long duration) throws SourceUnacceptableException {
         if(sourcePath != null) {
-            addSource(new PipedAudioLooper(sourcePath, duration), duration);
+            long sourceDuration = MediaHelper.getAudioDuration(sourcePath);
+            if(sourceDuration < duration) {
+                //Only add a looper if necessary
+                addSource(new PipedAudioLooper(sourcePath, duration), duration);
+            }
+            else {
+                addSourcePath(sourcePath, duration);
+            }
         }
         else {
             addSource(null, duration);
@@ -172,33 +179,33 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         if(mSources.isEmpty()) {
             throw new SourceUnacceptableException("No sources provided!");
         }
 
-        PipedMediaByteBufferSource firstSource = mSources.remove();
+        mFirstSource = mSources.remove();
+        mFirstSource.setup();
 
-        if(mSampleRate > 0) {
-            PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
-            resampler.addSource(firstSource);
-            firstSource = resampler;
-        }
+        mFirstSource = PipedAudioResampler.correctSampling(mFirstSource, mSampleRate, mChannelCount);
+        mFirstSource.setup();
 
-        firstSource.setup();
-
-        MediaFormat format = firstSource.getOutputFormat();
+        MediaFormat format = mFirstSource.getOutputFormat();
 
         //In any event, the first source's sample rate and channel count become the standard.
         mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
-        mFirstSource = firstSource;
-
-        validateSource(mFirstSource);
+        validateSource(this.mFirstSource);
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        mComponentState = State.SETUP;
 
         start();
     }
@@ -351,12 +358,11 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
             }
 
             try {
-                //Apply specified sample rate and channel count.
-                PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
-                resampler.addSource(nextSource);
-                nextSource = resampler;
-
                 nextSource.setup();
+
+                nextSource = PipedAudioResampler.correctSampling(nextSource, mSampleRate, mChannelCount);
+                nextSource.setup();
+
                 validateSource(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
