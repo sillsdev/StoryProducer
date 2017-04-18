@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -153,21 +154,8 @@ public class ExportActivity extends PhaseBaseActivity {
         mSpinnerFormat.setAdapter(formatAdapter);
 
         mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
-        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });
 
         mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
-        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });
-
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
         setOnClickListeners();
@@ -181,6 +169,20 @@ public class ExportActivity extends PhaseBaseActivity {
      * Setup listeners for start/cancel.
      */
     private void setOnClickListeners() {
+        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
+
+        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
+
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -247,7 +249,7 @@ public class ExportActivity extends PhaseBaseActivity {
 
     /**
      * Set the path for export location, including UI.
-     * @param path
+     * @param path new export location.
      */
     private void setLocation(String path) {
         if(path == null) {
@@ -301,8 +303,8 @@ public class ExportActivity extends PhaseBaseActivity {
 
     /**
      * Attempt to set the value of the spinner to the given string value based on options available.
-     * @param spinner
-     * @param value
+     * @param spinner spinner to update value.
+     * @param value new value of spinner.
      */
     private void setSpinnerValue(Spinner spinner, String value) {
         if(value == null) {
@@ -356,11 +358,16 @@ public class ExportActivity extends PhaseBaseActivity {
             storyMaker.toggleKenBurns(mCheckboxKBFX.isChecked());
 
             String resolutionStr = mSpinnerResolution.getSelectedItem().toString();
-            //Parse resolution string of "WIDTHxHEIGHT"
+            //Parse resolution string of "[WIDTH]x[HEIGHT]"
             Pattern p = Pattern.compile("(\\d+)x(\\d+)");
             Matcher m = p.matcher(resolutionStr);
-            m.find();
-            storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+            boolean found = m.find();
+            if(found) {
+                storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+            }
+            else {
+                Log.e(TAG, "Resolution in spinner un-parsable.");
+            }
 
 
             storyMaker.setOutputFile(output);
@@ -406,7 +413,7 @@ public class ExportActivity extends PhaseBaseActivity {
                     //If progress updater is interrupted, just stop.
                     return;
                 }
-                double progress = 0;
+                double progress;
                 synchronized (storyMakerLock) {
                     //Stop if storyMaker was cancelled by someone else.
                     if(storyMaker == null) {
