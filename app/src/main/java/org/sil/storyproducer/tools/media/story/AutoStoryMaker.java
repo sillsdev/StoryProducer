@@ -263,6 +263,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             Log.w(TAG, "Failed to create overlayed title slide!");
         }
 
+        File lastSoundtrack = null;
         int iSlide;
         for(iSlide = 0; iSlide < slideCount; iSlide++) {
             File image = null;
@@ -292,9 +293,15 @@ public class AutoStoryMaker extends Thread implements Closeable {
             File soundtrack = null;
             if(mIncludeBackgroundMusic) {
                 soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
-                if(soundtrack != null && !soundtrack.exists()) {
+                if(soundtrack == null) {
+                    //Try not to leave nulls in so null may be reserved for no soundtrack.
+                    soundtrack = lastSoundtrack;
+                }
+                else if(!soundtrack.exists()) {
                     error("Soundtrack missing from template: " + soundtrack.getName());
                 }
+
+                lastSoundtrack = soundtrack;
             }
 
             KenBurnsEffect kbfx = null;

@@ -122,9 +122,12 @@ public class StoryMaker implements Closeable {
 
                 //If we encounter a new soundtrack, stop the current one and start the new one.
                 //Otherwise, continue playing last soundtrack.
-                if(soundtrack != null && !soundtrack.equals(lastSoundtrack)) {
+                if(soundtrack == null || !soundtrack.equals(lastSoundtrack)) {
                     if(lastSoundtrack != null) {
                         soundtrackConcatenator.addSourcePath(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
+                    }
+                    else if(soundtrackDuration > 0) {
+                        soundtrackConcatenator.addSource(null, soundtrackDuration);
                     }
 
                     lastSoundtrack = soundtrack;

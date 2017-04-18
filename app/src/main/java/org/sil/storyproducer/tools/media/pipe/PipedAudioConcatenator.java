@@ -96,6 +96,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
      *
+     * <p>First source added must not be null.</p>
+     *
      * @param source source audio path.
      */
     @Override
@@ -109,6 +111,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      * <p>In other words, if a duration is specified for all sources, the output audio stream is
      * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
      *
+     * <p>First source added must not be null.</p>
+     *
      * @param source source audio path.
      * @param duration expected duration of the source audio stream.
      */
@@ -119,6 +123,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
 
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
+     *
+     * <p>First source added must not be null.</p>
      *
      * @param sourcePath source audio path.
      */
@@ -135,6 +141,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      * <p>This function differs from {@link #addLoopingSourcePath(String, long)} by padding the source audio
      * with silence until the duration has elapsed. If duration is shorter than the source audio length, both
      * functions will behave the same.</p>
+     *
+     * <p>First source added must not be null.</p>
      *
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
