@@ -35,7 +35,7 @@ import java.io.File;
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-public final class DraftFrag extends Fragment {
+public class DraftFrag extends Fragment {
     private View rootView;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private int slideNumber;

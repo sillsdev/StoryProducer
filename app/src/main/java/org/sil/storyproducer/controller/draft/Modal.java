@@ -8,7 +8,7 @@ package org.sil.storyproducer.controller.draft;
  * See the children classes here:
  * {@link org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal} {@link DraftListRecordingsModal}
  */
-public class Modal {
+public final class Modal {
     public Modal() {
     }
 
