@@ -11,6 +11,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.Space;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +21,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
+import org.sil.storyproducer.controller.draft.Modal;
+import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
@@ -43,6 +47,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
     private FloatingActionButton fabPlus;
     private LinearLayout toolbar;
+    private Modal multiRecordModal;
 
     private LinearLayout rootViewToolbarLayout;
     private View rootViewToEmbedToolbarIn;
@@ -55,7 +60,6 @@ public class RecordingToolbar extends AnimationToolbar {
     private ImageButton playButton;
     private ImageButton deleteButton;
     private ImageButton multiRecordButton;
-    private View.OnClickListener multiRecordButtonListener;
     private ArrayList<AuxiliaryMedia> auxiliaryMediaList;
 
 
@@ -86,7 +90,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param recordFilePath        The filepath that the recording will be saved under.
      */
     public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
-                            boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton, String playbackRecordFilePath, String recordFilePath, View.OnClickListener multiRecordButtonListener, RecordingListener recordingListener) throws ClassCastException {
+                            boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton, String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
@@ -102,7 +106,7 @@ public class RecordingToolbar extends AnimationToolbar {
         this.playbackRecordFilePath = playbackRecordFilePath;
         this.recordFilePath = recordFilePath;
         this.recordingListener = recordingListener;
-        this.multiRecordButtonListener = multiRecordButtonListener;
+        this.multiRecordModal = multiRecordModal;
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
@@ -378,7 +382,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
             playButton.setOnClickListener(playListener);
         }
-        if (enableDeleteButton) {
+        if (enableDeleteButton && deleteButton != null) {
             View.OnClickListener deleteListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -387,9 +391,21 @@ public class RecordingToolbar extends AnimationToolbar {
             };
             deleteButton.setOnClickListener(deleteListener);
         }
-        if (enableMultiRecordButton && multiRecordButtonListener != null) {
-            stopPlayBackAndRecording();
-            multiRecordButton.setOnClickListener(multiRecordButtonListener);
+        if (enableMultiRecordButton && multiRecordButton != null) {
+            if(multiRecordModal != null){
+                if(multiRecordModal instanceof DramaListRecordingsModal || multiRecordModal instanceof DraftListRecordingsModal){
+                    View.OnClickListener multiRecordModalButtonListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            stopPlayBackAndRecording();
+                            multiRecordModal.show();
+                        }
+                    };
+
+                    multiRecordButton.setOnClickListener(multiRecordModalButtonListener);
+                }
+            }
+
         }
     }
 

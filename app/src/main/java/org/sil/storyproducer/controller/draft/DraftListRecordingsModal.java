@@ -17,7 +17,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
 
-public class DraftListRecordingsModal implements RecordingsListAdapter.ClickListeners {
+public class DraftListRecordingsModal extends Modal implements RecordingsListAdapter.ClickListeners {
 
     private Context context;
     private int slidePosition;
@@ -65,7 +65,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
     @Override
     public void onRowClickListener(String recordingTitle) {
         StorySharedPreferences.setDraftForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        parentFragment.setMultiRecordButtonListener();
+        //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
         dialog.dismiss();
     }
@@ -95,7 +95,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
             }
 
         }
-        parentFragment.setMultiRecordButtonListener();
+        //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 
@@ -112,7 +112,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
         if(StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setDraftForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
-        parentFragment.setMultiRecordButtonListener();
+        //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 }

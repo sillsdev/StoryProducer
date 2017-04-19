@@ -46,7 +46,6 @@ public final class DraftFrag extends Fragment {
     private ImageButton narrationPlayButton;
     private TextView slideNumberText;
     private RecordingToolbar recordingToolbar;
-    private View.OnClickListener multiRecordButtonListener;
 
     public DraftFrag() {
         super();
@@ -71,7 +70,6 @@ public final class DraftFrag extends Fragment {
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
 
         setUiColors();
-        setMultiRecordButtonListener();
         setPic(rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText(rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText(rootView.findViewById(R.id.fragment_draft_reference_text));
@@ -126,20 +124,6 @@ public final class DraftFrag extends Fragment {
         if (recordingToolbar != null) {
             recordingToolbar.closeToolbar();
         }
-    }
-
-    /**
-     * sets the recording list button
-     */
-    public void setMultiRecordButtonListener() {
-        final DraftFrag draftFrag = this;
-        multiRecordButtonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, draftFrag);
-                modal.show();
-            }
-        };
     }
 
     /**
@@ -312,7 +296,6 @@ public final class DraftFrag extends Fragment {
                     String title = splitPath[1].replace(".mp3", "");
                     StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
-                    setMultiRecordButtonListener();
                     recordingToolbar.setRecordFilePath(recordFilePath);
                     setPlayBackPath();
                 }
@@ -322,7 +305,9 @@ public final class DraftFrag extends Fragment {
                     //not used here
                 }
             };
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, multiRecordButtonListener, recordingListener);
+            DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, this);
+
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, modal , recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
+import org.sil.storyproducer.controller.draft.Modal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -17,7 +18,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
 
-public class DramaListRecordingsModal implements RecordingsListAdapter.ClickListeners {
+public class DramaListRecordingsModal extends Modal implements RecordingsListAdapter.ClickListeners {
 
     private Context context;
     private int slidePosition;
@@ -37,6 +38,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         this.parentFragment = parentFragment;
     }
 
+    @Override
     public void show() {
         LayoutInflater inflater = parentFragment.getActivity().getLayoutInflater();
         rootView = (LinearLayout)inflater.inflate(R.layout.recordings_list, null);
@@ -65,7 +67,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
     @Override
     public void onRowClickListener(String recordingTitle) {
         StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        parentFragment.setMultiRecordButtonListener();
+        //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
         dialog.dismiss();
     }
@@ -95,7 +97,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
             }
 
         }
-        parentFragment.setMultiRecordButtonListener();
+       // parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 
@@ -112,7 +114,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setDramatizationForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
-        parentFragment.setMultiRecordButtonListener();
+       // parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 }

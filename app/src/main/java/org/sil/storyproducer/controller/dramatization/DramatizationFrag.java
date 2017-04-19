@@ -39,7 +39,6 @@ public class DramatizationFrag extends Fragment {
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
-    private View.OnClickListener multiRecordButtonListener;
 
     private RecordingToolbar recordingToolbar;
 
@@ -58,7 +57,6 @@ public class DramatizationFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
         setUiColors();
-        setMultiRecordButtonListener();
         setPic(rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
         setPlayStopDraftButton(rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
         View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
@@ -160,20 +158,6 @@ public class DramatizationFrag extends Fragment {
     }
 
     /**
-     * Sets up the listener for the multiple recordings button
-     */
-    public void setMultiRecordButtonListener() {
-        final DramatizationFrag dramaFrag = this;
-        multiRecordButtonListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, dramaFrag);
-                modal.show();
-            }
-        };
-    }
-
-    /**
      * sets the playback path
      */
     public void setPlayBackPath() {
@@ -256,7 +240,6 @@ public class DramatizationFrag extends Fragment {
                     String title = splitPath[1].replace(".mp3", "");
                     StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
-                    setMultiRecordButtonListener();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
                     setPlayBackPath();
                 }
@@ -265,7 +248,9 @@ public class DramatizationFrag extends Fragment {
                     //not used here
                 }
             };
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, multiRecordButtonListener,recordingListener);
+            DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
+
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
     }
