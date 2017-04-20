@@ -11,7 +11,6 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.Space;
 import android.util.Log;
 import android.view.View;
@@ -54,7 +53,7 @@ public class RecordingToolbar extends AnimationToolbar {
     private String recordFilePath;
     private String playbackRecordFilePath;
     private Context appContext;
-    private Activity activity;
+    //private Activity currentActivity;
 
     private ImageButton micButton;
     private ImageButton playButton;
@@ -80,7 +79,7 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * The ctor.
      *
-     * @param activity              The activity from the calling class.
+     * @param activity              The currentActivity from the calling class.
      * @param rootViewToolbarLayout The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
      *                              must be of type LinearLayout so that buttons can be
      *                              evenly spaced.
@@ -94,8 +93,8 @@ public class RecordingToolbar extends AnimationToolbar {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
-        this.activity = activity;
-        this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
+        this.currentActivity = activity;
+        this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because currentActivity.getContext() cannot be accessed publicly.
         this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
         this.rootViewToEmbedToolbarIn = rootViewLayout;
         fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
@@ -114,7 +113,6 @@ public class RecordingToolbar extends AnimationToolbar {
 
     public interface RecordingListener {
         void stoppedRecording();
-
         void startedRecordingOrPlayback();
     }
 
@@ -227,7 +225,7 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     //TODO finish adding deletion functionality.
-    private boolean deleteRecording() {
+    protected boolean deleteRecording() {
         if (enableDeleteButton) {
             return false;
         } else {
@@ -243,7 +241,7 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * This function formats and aligns the buttons to the toolbar.
      */
-    private void setupToolbarButtons() {
+    protected void setupToolbarButtons() {
         rootViewToolbarLayout.removeAllViews();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
@@ -292,7 +290,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * This function formats and aligns the toolbar and floating action button to the bottom of the relative layout of the
      * calling class.
      */
-    private void setupToolbar() {
+    protected void setupToolbar() {
         RelativeLayout.LayoutParams[] myParams =
                 new RelativeLayout.LayoutParams[]{new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)};
@@ -316,7 +314,7 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * Enables the buttons to have the appropriate onClick listeners.
      */
-    private void setOnClickListeners() {
+    protected void setOnClickListeners() {
         View.OnClickListener micListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -499,7 +497,7 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * The function that aids in starting an audio recorder.
      */
-    private void startAudioRecorder() {
+    protected void startAudioRecorder() {
         setVoiceRecorder(recordFilePath);
         try {
             isRecording = true;
@@ -507,14 +505,14 @@ public class RecordingToolbar extends AnimationToolbar {
             voiceRecorder.start();
             Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e) {
-            Log.e(activity.toString(), e.getMessage());
+            Log.e(currentActivity.toString(), e.getMessage());
         }
     }
 
     /**
      * The function that aids in stopping an audio recorder.
      */
-    private void stopAudioRecorder() {
+    protected void stopAudioRecorder() {
         try {
             isRecording = false;
             //Delay stopping of voiceRecorder to capture all of the voice recorded.
@@ -535,15 +533,15 @@ public class RecordingToolbar extends AnimationToolbar {
      *
      * @param fileName The file to output the voice recordings.
      */
-    private void setVoiceRecorder(String fileName) {
-        voiceRecorder = new AudioRecorder(fileName, activity);
+    protected void setVoiceRecorder(String fileName) {
+        voiceRecorder = new AudioRecorder(fileName, currentActivity);
     }
 
     //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev
     /**
      * This function stops all playback and all auxiliary media.
      */
-    private void stopPlayBackAndRecording() {
+    protected void stopPlayBackAndRecording() {
         stopToolbarMedia();
         if (auxiliaryMediaList != null) {
             for (AuxiliaryMedia am : auxiliaryMediaList) {
@@ -556,7 +554,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * Use this class to hold media that should be stopped when a toolbar button is pressed.
      * <br/>Refer to function {@link #onToolbarTouchStopAudio(View, int, AudioPlayer)} for more information.
      */
-    private class AuxiliaryMedia {
+    protected class AuxiliaryMedia {
         View viewThatIsPlayingButton;
         int setButtonToDrawableOnStop;
         AudioPlayer playingAudio;

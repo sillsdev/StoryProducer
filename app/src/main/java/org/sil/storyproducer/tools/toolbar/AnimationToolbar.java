@@ -62,11 +62,11 @@ public class AnimationToolbar {
     private final float DP_CONVERSION_FACTOR;
     private final int OPEN_TOOLBAR_DELAY = 60;
 
-    private Activity currentActivity;
+    protected Activity currentActivity;
 
     /**
      * The constructor of the AnimationToolbar class. The initializeToolbar should be called
-     * immediately after the constructor is called.
+     * immediately after the constructor is called. {@link #initializeToolbar(View, View)} <br/> <br/>
      * (This constructor is used in cases when the toolbar isn't known yet and the child class must
      * call super(...) as the first line in the child class' constructor)
      *
