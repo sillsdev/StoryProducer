@@ -13,17 +13,25 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     private GregorianCalendar dateTime;
     private Phase phase;
     private Long nanoTime;
+    private int color;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy h:mm a");
 
-    public String getTypeString(){
+    public String getDescription(){
+
         return "";
+
     }
 
-    LogEntry(long dateTime, Phase phase){
+    LogEntry(long dateTime, Phase phase, int color){
         this.dateTime=new GregorianCalendar();
         this.dateTime.setTimeInMillis(dateTime);
         this.phase = phase;
         this.nanoTime = System.nanoTime();
+        this.color = color;
+    }
+
+    public int getColor(){
+        return color;
     }
 
     public int getSlideNum(){

@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.logging;
 
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 
 /**
@@ -12,7 +13,7 @@ public class DraftEntry extends LogEntry {
     private Type type;
 
     public DraftEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime, Phase.Draft);
+        super(dateTime, Phase.Draft, R.color.draft_phase);
         this.slideNum=slideNum;
         this.type=type;
     }
@@ -22,7 +23,7 @@ public class DraftEntry extends LogEntry {
         return slideNum;
     }
 
-    public String getTypeString(){
+    public String getDescription(){
         return type.toString();
     }
 

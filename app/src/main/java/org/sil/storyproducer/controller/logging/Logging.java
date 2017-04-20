@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.logging;
 
+import android.app.Application;
+
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
@@ -18,10 +20,16 @@ import java.util.Random;
  * Created by Michael D. Baxter on 1/22/2017.
  */
 
-public class Logging {
+public class Logging extends Application {
 
-    private static final String LOGS_ROOT_DIR = "/storage/emulated/0/splogs/";
+    private static String mLogsRootDir = null; //should be constant. initialized in onCreate.
     private static Log currentLog = null;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mLogsRootDir = new File(getFilesDir(), "logs").getAbsolutePath()+"/";
+    }
 
     public static void saveLogEntry(LogEntry le, String ethnoCode, String storyTitle){
         saveLogEntries(Collections.singleton(le), ethnoCode, storyTitle);
@@ -32,7 +40,7 @@ public class Logging {
     }
 
     public static boolean deleteLog(String ethnoCode, String storyTitle){
-        File file = new File(LOGS_ROOT_DIR+ethnoCode+"/"+storyTitle+"/log.ser");
+        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
         return file.delete();
     }
 
@@ -43,7 +51,7 @@ public class Logging {
      * @return the log for the story with this language and title, or null if there isn't one
      */
     public static Log getLog(String ethnoCode, String storyTitle){
-        File file = new File(LOGS_ROOT_DIR+ethnoCode+"/"+storyTitle+"/log.ser");
+        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
         Log ret = null;
         if(file.exists()) {
             try {
@@ -70,7 +78,7 @@ public class Logging {
          */
 
         //TODO: find a place to put logs for each story, based on ethnocode and title
-        File file = new File(LOGS_ROOT_DIR+ethnoCode+"/"+storyTitle+"/log.ser");
+        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
         File dir = file.getParentFile(); //yes, getParentFile gives you a directory. Not a file.
 
         if(! dir.exists()){
@@ -137,6 +145,7 @@ public class Logging {
         return ret;
     }
 
+    /*
     public static void createFakeLogEntries(String lang, String story, int n){
         HashSet<LogEntry> james = new HashSet<>();
         Random rand = new Random();
@@ -159,5 +168,6 @@ public class Logging {
         System.out.println("cardinality of james: "+james.size());
         saveLogEntries(james, lang, story);
     }
+    */
 
 }

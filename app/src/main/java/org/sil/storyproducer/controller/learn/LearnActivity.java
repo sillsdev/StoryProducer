@@ -59,6 +59,7 @@ public class LearnActivity extends PhaseBaseActivity {
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
     private int startPos = 0;
+    private long startTime = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,6 +199,9 @@ public class LearnActivity extends PhaseBaseActivity {
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
             pauseVideo();
+            LearnEntry.saveFilteredLogEntry(startPos, videoSeekBar.getProgress(),
+                    System.currentTimeMillis()-startTime);
+            System.out.println("Jest saved it");
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
 
@@ -216,8 +220,6 @@ public class LearnActivity extends PhaseBaseActivity {
      * helper function for pausing the video
      */
     private void pauseVideo() {
-        Logging.saveLogEntry(LearnEntry.makeEntry(startPos, videoSeekBar.getProgress()));
-        System.out.println("Jest saved it");
         narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
         playButton.setImageResource(R.drawable.ic_play_gray);
@@ -228,6 +230,7 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     private void resumeVideo() {
         startPos = videoSeekBar.getProgress();
+        startTime = System.currentTimeMillis();
         if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
             playVideo();
             isFirstTime = false;

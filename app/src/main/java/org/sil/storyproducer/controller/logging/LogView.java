@@ -1,9 +1,7 @@
 package org.sil.storyproducer.controller.logging;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.provider.Telephony;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,21 +12,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
-import org.sil.storyproducer.controller.export.FileChooserActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.TreeSet;
 
 public class LogView extends AppCompatActivity {
@@ -116,7 +108,8 @@ public class LogView extends AppCompatActivity {
 
             LogEntry entry = getItem(position);
             date.setText(entry.getDateTime());
-            info.setText(entry.getPhase().toString() +" - " + entry.getTypeString());
+            info.setText(entry.getPhase().toString() +" - " + entry.getDescription());
+            convertView.setBackgroundColor(ContextCompat.getColor(context, entry.getColor()));
 
             return convertView;
         }
@@ -145,11 +138,15 @@ public class LogView extends AppCompatActivity {
         int slide = StoryState.getCurrentStorySlide();
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = linf.inflate(R.layout.activity_log_view, null);
-        //alertDialog.setTitle("Logs: Slide "+(slide+1));
+        //alertDialog.setTitle("Logs: Slide "+(slide+1)+"\n");
+
         ListView listView = (ListView) dialoglayout.findViewById(R.id.log_list_view);
         Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
         listView.setAdapter(lla);
+        Toolbar tb = (Toolbar) dialoglayout.findViewById(R.id.toolbar2);
+        tb.setTitle("Logs: Slide "+(slide+1));
+        ImageButton exit = (ImageButton) dialoglayout.findViewById(R.id.exitButton);
         final CheckBox learnCB = (CheckBox) dialoglayout.findViewById(R.id.LearnCheckBox);
         final CheckBox draftCB = (CheckBox) dialoglayout.findViewById(R.id.DraftCheckBox);
         final CheckBox comChkCB = (CheckBox) dialoglayout.findViewById(R.id.CommunityCheckCheckBox);
@@ -172,7 +169,13 @@ public class LogView extends AppCompatActivity {
             }
         });
         alertDialog.setView(dialoglayout);
-        AlertDialog t = alertDialog.create();
+        final AlertDialog t = alertDialog.create();
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                t.hide();
+            }
+        });
         t.show();
 
     }

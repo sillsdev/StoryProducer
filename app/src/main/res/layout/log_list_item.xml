@@ -2,11 +2,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content" android:orientation="vertical" android:layout_width="fill_parent">
-    <ImageView
-        android:id="@+id/fd_Icon1"
-        android:layout_width="50dip"
-        android:layout_height="50dip" >
-    </ImageView>
 
     <TextView
         android:text="Date"

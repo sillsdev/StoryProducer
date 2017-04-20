@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.logging;
 
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 
 /**
@@ -11,7 +12,7 @@ public class ComChkEntry extends LogEntry {
     private Type type;
 
     public ComChkEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime, Phase.CommCheck);
+        super(dateTime, Phase.CommCheck, R.color.comunity_check_phase);
         this.type=type;
         this.slideNum=slideNum;
     }
@@ -22,7 +23,7 @@ public class ComChkEntry extends LogEntry {
     }
 
     @Override
-    public String getTypeString(){
+    public String getDescription(){
         return type.toString();
     }
 
