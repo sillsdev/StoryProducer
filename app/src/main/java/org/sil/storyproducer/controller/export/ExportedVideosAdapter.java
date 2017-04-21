@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,21 +48,23 @@ public class ExportedVideosAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder = null;
+    public View getView(int position, View rowView, ViewGroup parent) {
+        RowViewHolder holder = null;
 
         final String path = videoPaths.get(position);
 
+        //split the path so we can get just the file name witch will be used in the view
         String[] splitPath = path.split("/");
         final String fileName = splitPath[splitPath.length - 1];
 
         //recreate the holder every time because the views are changing around
-        holder = new ViewHolder();
-        convertView = mInflater.inflate(R.layout.exported_video_row, null);
-        holder.textView = (TextView) convertView.findViewById(R.id.video_title);
-        holder.fileViewButton = (ImageButton) convertView.findViewById(R.id.file_view_button);
-        holder.shareButton = (ImageButton) convertView.findViewById(R.id.file_share_button);
+        holder = new RowViewHolder();
+        rowView = mInflater.inflate(R.layout.exported_video_row, null);
+        holder.textView = (TextView) rowView.findViewById(R.id.video_title);
+        holder.fileViewButton = (ImageButton) rowView.findViewById(R.id.file_view_button);
+        holder.shareButton = (ImageButton) rowView.findViewById(R.id.file_share_button);
 
+        //set the two different button listners
         holder.fileViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,14 +78,14 @@ public class ExportedVideosAdapter extends BaseAdapter {
                 showShareFileChooser(path, fileName);
             }
         });
-        convertView.setTag(holder);
+        rowView.setTag(holder);
 
         holder.textView.setText(fileName);
 
-        return convertView;
+        return rowView;
     }
 
-    public static class ViewHolder {
+    public static class RowViewHolder {
         public TextView textView;
         public ImageButton fileViewButton;
         public ImageButton shareButton;

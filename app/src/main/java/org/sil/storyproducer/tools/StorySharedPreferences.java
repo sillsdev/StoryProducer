@@ -3,49 +3,48 @@ package org.sil.storyproducer.tools;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.sil.storyproducer.controller.MainActivity;
 import org.sil.storyproducer.model.StoryState;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StorySharedPreferences {
 
     private static final String PHASE_KEY = "phase";
     private static final String EXPORTED_VIDEOS_KEY = "exported_videos";
 
-    private static Context context;
+    private static SharedPreferences prefs;
 
     public static void init(Context con) {
-        context = con;
+        prefs = PreferenceManager.getDefaultSharedPreferences(con);
     }
 
     public static void setPhaseForStory(final String phase, final String storyName) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit()
+        prefs.edit()
                 .putString(storyName + PHASE_KEY, phase)
                 .commit();
     }
 
     public static String getPhaseForStory(String storyName) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(storyName + PHASE_KEY, StoryState.LEARN_PHASE);    //learn is the default phase
+        return prefs.getString(storyName + PHASE_KEY, StoryState.LEARN_PHASE);    //learn is the default phase
     }
 
-    public static void setExportedVideoForStory(String videoPath, String storyName) {
-        ArrayList<String> paths = getStringArrayPref(storyName + EXPORTED_VIDEOS_KEY);
+    public static void addExportedVideoForStory(String videoPath, String storyName) {
+        List<String> paths = getStringArrayPref(storyName + EXPORTED_VIDEOS_KEY);
         paths.add(videoPath);
         setStringArrayPref(storyName + EXPORTED_VIDEOS_KEY, paths);
     }
 
-    public static ArrayList<String> getExportedVideosForStory(String storyName) {
+    public static List<String> getExportedVideosForStory(String storyName) {
         return getStringArrayPref(storyName + EXPORTED_VIDEOS_KEY);
     }
 
     //helper functions for saving the string arrays
-    private static void setStringArrayPref(String key, ArrayList<String> values) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private static void setStringArrayPref(String key, List<String> values) {
         SharedPreferences.Editor editor = prefs.edit();
         JSONArray a = new JSONArray();
         for (int i = 0; i < values.size(); i++) {
@@ -59,10 +58,9 @@ public class StorySharedPreferences {
         editor.commit();
     }
 
-    private static ArrayList<String> getStringArrayPref(String key) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    private static List<String> getStringArrayPref(String key) {
         String json = prefs.getString(key, null);
-        ArrayList<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (json != null) {
             try {
                 JSONArray a = new JSONArray(json);
@@ -71,7 +69,7 @@ public class StorySharedPreferences {
                     values.add(str);
                 }
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("STRING ARRAY PREF ERROR", e.getMessage());
             }
         }
         return values;

@@ -26,6 +26,7 @@ import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,6 +86,7 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
         setContentView(R.layout.activity_export);
         setupViews();
         setVideoOrShareSectionOpen();
@@ -93,8 +95,6 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-
-        mStory = StoryState.getStoryName();
 
         loadPreferences();
         toggleVisibleElements();
@@ -234,7 +234,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * sets which one of the accordians starts open on the activity start
      */
     private void setVideoOrShareSectionOpen() {
-        ArrayList<String> actualPaths = getExportedVideosForStory();
+        List<String> actualPaths = getExportedVideosForStory();
         if(actualPaths.size() > 0) {        //open the share view
             setSectionsClosedExceptView(findViewById(R.id.share_section));
         } else {                            //open the video creation view
@@ -344,7 +344,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * sets the videos for the list adapter
      */
     private void setVideoAdapterPaths() {
-        ArrayList<String> actualPaths = getExportedVideosForStory();
+        List<String> actualPaths = getExportedVideosForStory();
         if(actualPaths.size() > 0) {
             mNoVideosText.setVisibility(View.GONE);
         }
@@ -355,9 +355,9 @@ public class ExportActivity extends PhaseBaseActivity {
      * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
      * @return Array list of video paths
      */
-    private ArrayList<String> getExportedVideosForStory() {
-        ArrayList<String> actualPaths = new ArrayList<>();
-        ArrayList<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(StoryState.getStoryName());
+    private List<String> getExportedVideosForStory() {
+        List<String> actualPaths = new ArrayList<>();
+        List<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(mStory);
         for(String path : videoPaths) {          //make sure the file actually exists
             File file = new File(path);
             if(file.exists()) {
@@ -534,7 +534,7 @@ public class ExportActivity extends PhaseBaseActivity {
                     //save the file only when the video file is actually created
                     String ext = mSpinnerFormat.getSelectedItem().toString();
                     File output = new File(mOutputPath + ext);
-                    StorySharedPreferences.setExportedVideoForStory(output.getAbsolutePath(), StoryState.getStoryName());
+                    StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
                     setSectionsClosedExceptView(findViewById(R.id.share_section));
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
 
