@@ -10,12 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -23,9 +20,9 @@ import java.util.regex.Pattern;
  * TextFiles represents an abstraction of the text resources for story templates.
  */
 public class TextFiles {
-    private static final String TAG = "TextFiles";
+    private static final String TAG = "TextFilesClass";
 
-    private static final String FILE_EXTENSION = ".txt";
+    private static final String FILE_TEXT_EXTENSION = ".txt";
     private static final String DRAMATIZATION_FILE_PREFIX = "dramatizationText";
     private static final String CHARACTER_ENCODING = "UTF-8";
 
@@ -39,12 +36,12 @@ public class TextFiles {
         if(templateDirPath == null) {
             return 0;
         }
-        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, FILE_EXTENSION);
+        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, FILE_TEXT_EXTENSION);
     }
 
     public static SlideText getSlideText(String storyName, int slideNum) {
         String[] content;
-        File file = new File(FileSystem.getTemplatePath(storyName), (slideNum + ".txt"));
+        File file = new File(FileSystem.getTemplatePath(storyName), (slideNum + FILE_TEXT_EXTENSION));
         StringBuilder text = new StringBuilder();
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -80,14 +77,14 @@ public class TextFiles {
         }
     }
 
-     /** The purpose of this function is to save the EditText field in the dramatization phase.
-     * @param storyName
-     * @param slideNum
-     * @return
+     /** The purpose of this function is to get the EditText field in the dramatization phase.
+     * @param storyName The story that the dramatization text is associated with.
+     * @param slideNum The particular slide number that the text is associated with.
+     * @return The text for the EditText field in dramatization phase.
      */
     public static String getDramatizationText(String storyName, int slideNum){
         StringBuilder dramTextBuilder = null;
-        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_EXTENSION);
+        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_TEXT_EXTENSION);
         if(dramFile.exists()){
             Scanner scanner;
             try{
@@ -98,7 +95,7 @@ public class TextFiles {
                 }
                 scanner.close();
             }catch(IOException ex){
-                Log.e("TextFilesClass", "Could not find dramatization file");
+                Log.e(TAG, "Could not find dramatization text file");
             }
             return dramTextBuilder.toString();
         }else{
@@ -106,23 +103,22 @@ public class TextFiles {
         }
     }
 
-    /**The purpose of this function is to get the text for the EditText field in dramatization phase.
-     *
-     * @param storyName
-     * @param slideNum
-     * @param text
+    /**
+     * The purpose of this function is to set the text for the EditText field in dramatization phase.
+     * @param storyName The story that the dramatization text is associated with.
+     * @param slideNum The particular slide number that the text is associated with.
+     * @param text The text from the EditText field in dramatization phase.
      */
     public static void setDramatizationText(String storyName, int slideNum, String text){
-        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_EXTENSION);
+        File dramFile = new File(FileSystem.getProjectDirectory(storyName), DRAMATIZATION_FILE_PREFIX + slideNum + FILE_TEXT_EXTENSION);
 
         try{
             PrintWriter pw = new PrintWriter(new OutputStreamWriter(
                             new FileOutputStream(dramFile, false), Charset.forName(CHARACTER_ENCODING)), false);
-            pw.write(""); //clear the file first
             pw.write(text);
             pw.close();
         }catch(FileNotFoundException ex){
-            Log.e("TextFilesClass", "Could not write to dramatization file");
+            Log.e(TAG, "Could not write to dramatization text file");
         }
     }
 }
