@@ -20,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());
         StorySharedPreferences.init(getApplicationContext());
+        Logging.init(getApplicationContext());
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);

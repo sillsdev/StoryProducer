@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.logging;
 
 import android.app.Application;
+import android.content.Context;
 
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -20,15 +21,14 @@ import java.util.Random;
  * Created by Michael D. Baxter on 1/22/2017.
  */
 
-public class Logging extends Application {
+public class Logging {
 
-    private static String mLogsRootDir = null; //should be constant. initialized in onCreate.
+    private static String mLogsRootDir = null; //should be constant. initialized in init.
     private static Log currentLog = null;
+    private static String SLASH = File.pathSeparator;
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mLogsRootDir = new File(getFilesDir(), "logs").getAbsolutePath()+"/";
+    public static void init(Context context) {
+        mLogsRootDir = new File(context.getFilesDir(), "logs").getAbsolutePath()+SLASH;
     }
 
     public static void saveLogEntry(LogEntry le, String ethnoCode, String storyTitle){
@@ -40,7 +40,7 @@ public class Logging extends Application {
     }
 
     public static boolean deleteLog(String ethnoCode, String storyTitle){
-        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
+        File file = new File(mLogsRootDir +ethnoCode+SLASH+storyTitle+SLASH+"log.ser");
         return file.delete();
     }
 
@@ -51,7 +51,7 @@ public class Logging extends Application {
      * @return the log for the story with this language and title, or null if there isn't one
      */
     public static Log getLog(String ethnoCode, String storyTitle){
-        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
+        File file = new File(mLogsRootDir +ethnoCode+SLASH+storyTitle+SLASH+"log.ser");
         Log ret = null;
         if(file.exists()) {
             try {
@@ -77,9 +77,8 @@ public class Logging extends Application {
         that means loading a log object by deserializing it, or creating a new log object
          */
 
-        //TODO: find a place to put logs for each story, based on ethnocode and title
-        File file = new File(mLogsRootDir +ethnoCode+"/"+storyTitle+"/log.ser");
-        File dir = file.getParentFile(); //yes, getParentFile gives you a directory. Not a file.
+        File file = new File(mLogsRootDir +ethnoCode+SLASH+storyTitle+SLASH+"log.ser");
+        File dir = file.getParentFile();
 
         if(! dir.exists()){
             dir.mkdirs();
