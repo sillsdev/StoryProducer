@@ -58,7 +58,7 @@ public class LearnActivity extends PhaseBaseActivity {
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
 
-    private int startPos = 0;
+    private int startPos = -1;
     private long startTime = -1;
 
     @Override
@@ -145,6 +145,21 @@ public class LearnActivity extends PhaseBaseActivity {
         }
     }
 
+    private void makeLogIfNecessary(){
+        makeLogIfNecessary(false);
+    }
+
+    private void makeLogIfNecessary(boolean request){
+        if(narrationPlayer.isAudioPlaying() || backgroundPlayer.isAudioPlaying()
+                || request){
+            if(startPos!=-1) {
+                LearnEntry.saveFilteredLogEntry(startPos, videoSeekBar.getProgress(),
+                        System.currentTimeMillis() - startTime);
+                startPos=-1;
+            }
+        }
+    }
+
     @Override
     public void onPause() {
         super.onPause();
@@ -180,6 +195,7 @@ public class LearnActivity extends PhaseBaseActivity {
                 if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
+                    makeLogIfNecessary(true);
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
                     backgroundPlayer.releaseAudio();
                     narrationPlayer.releaseAudio();
@@ -199,8 +215,6 @@ public class LearnActivity extends PhaseBaseActivity {
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
             pauseVideo();
-            LearnEntry.saveFilteredLogEntry(startPos, videoSeekBar.getProgress(),
-                    System.currentTimeMillis()-startTime);
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
 
@@ -219,6 +233,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * helper function for pausing the video
      */
     private void pauseVideo() {
+        makeLogIfNecessary();
         narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
         playButton.setImageResource(R.drawable.ic_play_gray);
@@ -264,6 +279,7 @@ public class LearnActivity extends PhaseBaseActivity {
                     backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
                     if(slideNumber == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
+                        makeLogIfNecessary();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
                         showStartPracticeSnackBar();
