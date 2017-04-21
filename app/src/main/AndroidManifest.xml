@@ -19,7 +19,6 @@
         <activity
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
-            android:noHistory="true"
             android:screenOrientation="portrait" />
 
         <!-- Splash Screen -->
