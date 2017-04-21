@@ -3,8 +3,6 @@ package org.sil.storyproducer.controller.logging;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,11 +21,7 @@ import org.sil.storyproducer.tools.file.FileSystem;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-public class LogView extends AppCompatActivity {
-
- //   private int slide=-1;
-
-    private ListView listView = null;
+public class LogView {
 
     private static class LogListAdapter extends BaseAdapter {
 
@@ -115,30 +109,12 @@ public class LogView extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        int slide = -1;
-        System.out.println("Creating LogView activity");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_view);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
-        slide = getIntent().getIntExtra("slide", -1);
-        setTitle("Logging - Slide " + slide);
-        listView = (ListView) findViewById(R.id.log_list_view);
-        Logging.deleteLog("Spanglish", "NotAStory.com");
-        Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-        System.out.println("is log null? "+ (log==null ? "yes" : "no")); //TODO: figure out versioning on serialized classes
-        LogListAdapter lla = new LogListAdapter(getApplicationContext(), log, slide);
-        listView.setAdapter(lla);
-
-    }
-
+    //TODO: figure out versioning on serialized classes?
     public static void makeModal(Context c){
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(c);
         int slide = StoryState.getCurrentStorySlide();
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialoglayout = linf.inflate(R.layout.activity_log_view, null);
-        //alertDialog.setTitle("Logs: Slide "+(slide+1)+"\n");
 
         ListView listView = (ListView) dialoglayout.findViewById(R.id.log_list_view);
         Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
