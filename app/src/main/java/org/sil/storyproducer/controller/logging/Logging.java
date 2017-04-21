@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.logging;
 
-import android.app.Application;
 import android.content.Context;
 
 import org.sil.storyproducer.model.StoryState;
