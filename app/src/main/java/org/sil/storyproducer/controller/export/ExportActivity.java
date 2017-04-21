@@ -530,13 +530,13 @@ public class ExportActivity extends PhaseBaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    stopExport();
                     //save the file only when the video file is actually created
                     String ext = mSpinnerFormat.getSelectedItem().toString();
                     File output = new File(mOutputPath + ext);
                     StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
-                    setSectionsClosedExceptView(findViewById(R.id.share_section));
+                    stopExport();
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+                    setSectionsClosedExceptView(findViewById(R.id.share_section));
 
                 }
             });
