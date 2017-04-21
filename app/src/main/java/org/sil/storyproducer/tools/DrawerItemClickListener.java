@@ -8,8 +8,6 @@ import android.widget.ListView;
 
 import org.sil.storyproducer.controller.MainActivity;
 import org.sil.storyproducer.controller.RegistrationActivity;
-import org.sil.storyproducer.controller.logging.LogView;
-import org.sil.storyproducer.model.StoryState;
 
 public class DrawerItemClickListener implements ListView.OnItemClickListener {
 
