@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -44,6 +45,7 @@ public class CommunityCheckFrag extends Fragment {
     private AudioPlayer commentPlayer;
     private ImageButton commentButtonClicked;
     private MediaRecorder commentRecorder;
+    private ImageButton commentRecordButton;
     private View rootView;
     private String[] comments;
     private boolean isRecording;
@@ -61,12 +63,13 @@ public class CommunityCheckFrag extends Fragment {
 
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false);
         draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button);
+        commentRecordButton = (ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button);
 
         updateCommentList();
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton(draftPlaybackButton);
-        setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
+        setRecordCommentButton(commentRecordButton);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
@@ -106,7 +109,8 @@ public class CommunityCheckFrag extends Fragment {
         draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                draftPlaybackButton.setBackgroundResource(R.drawable.ic_play_blue);
+                //TODO: use non-deprecated method; currently used to support older devices
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
             }
         });
     }
@@ -190,7 +194,8 @@ public class CommunityCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(final ImageButton button) {
-        button.setBackgroundResource(R.drawable.ic_play_blue);
+        //TODO: use non-deprecated method; currently used to support older devices
+        button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,10 +205,12 @@ public class CommunityCheckFrag extends Fragment {
                 stopAllMedia();
                 if (draftAudioExists && !wasPlaying) {
                     draftPlayer.playAudio();
-                    button.setBackgroundResource(R.drawable.ic_stop_red);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_stop_red, null));
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
                 } else if (wasPlaying) {
-                    button.setBackgroundResource(R.drawable.ic_play_blue);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
                     Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
                 }
@@ -215,33 +222,33 @@ public class CommunityCheckFrag extends Fragment {
      * Plays the audio comment designated by the title
      * @param commentTitle the title of the comment to play
      */
-    public void playCommentClicked(String commentTitle, final ImageButton button) {
+    public void playCommentClicked(String commentTitle, final ImageButton buttonClickedNow) {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
 
         boolean wasPlaying = commentPlayer.isAudioPlaying();
 
         // Different play button clicked while other still playing
         // Sets old button back to play image and sets was playing so new comment will still play
-        if (commentButtonClicked != null && !button.equals(commentButtonClicked) && wasPlaying) {
+        if (wasPlaying && !buttonClickedNow.equals(commentButtonClicked)) {
             commentButtonClicked.setImageResource(R.drawable.ic_green_play);
             wasPlaying = false;
         }
         stopAllMedia();
-        commentButtonClicked = button;
+        commentButtonClicked = buttonClickedNow;
         if (commentFile.exists() && !wasPlaying) {
             commentPlayer.setPath(commentFile.getPath());
             commentPlayer.playAudio();
-            button.setImageResource(R.drawable.ic_stop_red);
+            buttonClickedNow.setImageResource(R.drawable.ic_stop_red);
             commentPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    button.setImageResource(R.drawable.ic_green_play);
+                    buttonClickedNow.setImageResource(R.drawable.ic_green_play);
                 }
             });
             Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
         } else if (wasPlaying) {
             commentPlayer.stopAudio();
-            button.setImageResource(R.drawable.ic_green_play);
+            buttonClickedNow.setImageResource(R.drawable.ic_green_play);
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
         }
@@ -251,7 +258,8 @@ public class CommunityCheckFrag extends Fragment {
      * This function sets the recording button with its functionality
      */
     private void setRecordCommentButton(final ImageButton recordButton){
-        recordButton.setBackgroundResource(R.drawable.ic_mic_blue);
+        //TODO: use non-deprecated method; currently used to support older devices
+        recordButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_mic_blue, null));
         recordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,17 +278,24 @@ public class CommunityCheckFrag extends Fragment {
                 //stop all playback streams.
                 if(draftPlayer != null && draftPlayer.isAudioPlaying()){
                     draftPlayer.stopAudio();
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 }
                 if(commentPlayer != null && commentPlayer.isAudioPlaying()){
                     commentPlayer.stopAudio();
+                    if (commentButtonClicked != null) {
+                        commentButtonClicked.setImageResource(R.drawable.ic_green_play);
+                    }
                 }
                 if(isRecording){
                     stopAudioRecorder();
-                    recordButton.setBackgroundResource(R.drawable.ic_mic_blue);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    recordButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_mic_blue, null));
                     updateCommentList();
                 }else{
                     startAudioRecorder(recordFilePath);
-                    recordButton.setBackgroundResource(R.drawable.ic_stop_red);
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    recordButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_stop_red, null));
                 }
             }
         });
@@ -336,7 +351,8 @@ public class CommunityCheckFrag extends Fragment {
     private void stopAllMedia() {
         if(draftPlayer != null){
             draftPlayer.stopAudio();
-            draftPlaybackButton.setBackgroundResource(R.drawable.ic_play_blue);
+            //TODO: use non-deprecated method; currently used to support older devices
+            draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
         }
         if(commentPlayer != null){
             commentPlayer.stopAudio();
@@ -346,6 +362,8 @@ public class CommunityCheckFrag extends Fragment {
         }
         if(commentRecorder != null) {
             stopAudioRecorder();
+            //TODO: use non-deprecated method; currently used to support older devices
+            commentRecordButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_mic_blue, null));
             updateCommentList();
         }
 
