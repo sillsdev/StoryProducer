@@ -13,11 +13,25 @@ import org.sil.storyproducer.model.StoryState;
 public class ComChkEntry extends LogEntry {
     private int slideNum;
     private Type type;
+    private static Context mContext = null;
+
+    public static void init(Context context){
+        mContext=context;
+        Type.init(context);
+    }
 
     private ComChkEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime, Phase.CommCheck, R.color.comunity_check_phase);
+        super(dateTime);
         this.type=type;
         this.slideNum=slideNum;
+    }
+
+    public int getColor(){
+        return R.color.comunity_check_phase;
+    }
+
+    public String getPhase(){
+        return mContext.getString(R.string.community_check_title);
     }
 
     @Override

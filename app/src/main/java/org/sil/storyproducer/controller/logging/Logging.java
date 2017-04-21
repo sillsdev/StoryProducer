@@ -30,8 +30,8 @@ public class Logging {
     public static void init(Context context) {
         mContext = context;
         mLogsRootDir = new File(context.getFilesDir(), "logs").getAbsolutePath()+SLASH;
-        DraftEntry.Type.init(context);
-        ComChkEntry.Type.init(context);
+        DraftEntry.init(context);
+        ComChkEntry.init(context);
         LearnEntry.init(context);
     }
 

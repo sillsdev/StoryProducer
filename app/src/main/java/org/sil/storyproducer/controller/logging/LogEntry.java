@@ -11,9 +11,7 @@ import java.text.SimpleDateFormat;
 
 public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     private GregorianCalendar dateTime;
-    private Phase phase;
     private Long nanoTime;
-    private int color;
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy h:mm a");
 
     public String getDescription(){
@@ -22,24 +20,18 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
 
     }
 
-    LogEntry(long dateTime, Phase phase, int color){
+    LogEntry(long dateTime){
         this.dateTime=new GregorianCalendar();
         this.dateTime.setTimeInMillis(dateTime);
-        this.phase = phase;
         this.nanoTime = System.nanoTime();
-        this.color = color;
     }
 
-    public int getColor(){
-        return color;
-    }
+    public abstract int getColor();
+
+    public abstract String getPhase();
 
     public int getSlideNum(){
         return -1;
-    }
-
-    public Phase getPhase(){
-        return phase;
     }
 
     public String getDateTime(){

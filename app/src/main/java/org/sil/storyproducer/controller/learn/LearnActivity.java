@@ -201,7 +201,6 @@ public class LearnActivity extends PhaseBaseActivity {
             pauseVideo();
             LearnEntry.saveFilteredLogEntry(startPos, videoSeekBar.getProgress(),
                     System.currentTimeMillis()-startTime);
-            System.out.println("Jest saved it");
         } else {
             playButton.setImageResource(R.drawable.ic_pause_gray);
 

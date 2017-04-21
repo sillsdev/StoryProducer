@@ -14,11 +14,25 @@ public class DraftEntry extends LogEntry {
 
     private int slideNum;
     private Type type;
+    private static Context mContext=null;
+
+    public static void init(Context context){
+        mContext = context;
+        Type.init(context);
+    }
 
     private DraftEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime, Phase.Draft, R.color.draft_phase);
+        super(dateTime);
         this.slideNum=slideNum;
         this.type=type;
+    }
+
+    public int getColor(){
+        return R.color.draft_phase;
+    }
+
+    public String getPhase(){
+        return mContext.getString(R.string.draftTitle);
     }
 
     @Override

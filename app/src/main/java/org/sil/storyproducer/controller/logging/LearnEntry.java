@@ -24,10 +24,18 @@ public class LearnEntry extends LogEntry {
     }
 
     private LearnEntry(long dateTime, int start, int end, long duration){
-        super(dateTime, Phase.Learn, R.color.learn_phase);
+        super(dateTime);
         startSlide =start;
         endSlide =end;
         this.duration=duration;
+    }
+
+    public String getPhase(){
+        return mContext.getString(R.string.learnTitle);
+    }
+
+    public int getColor(){
+        return R.color.learn_phase;
     }
 
     @Override

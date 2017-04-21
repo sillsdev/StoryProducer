@@ -41,12 +41,12 @@ public class LogView {
                     displayEntries = log.toArray(new LogEntry[0]);
                 } else {
                     for (LogEntry le : log) {
-                        if (slide == le.getSlideNum() || le.getPhase().equals(Phase.Learn)) {
-                            if(le.getPhase().equals(Phase.Learn)){
+                        if (slide == le.getSlideNum() || le instanceof LearnEntry) {
+                            if(le instanceof LearnEntry){
                                 learnEntries.add((LearnEntry) le);
-                            } else if (le.getPhase().equals(Phase.Draft)){
+                            } else if (le instanceof DraftEntry){
                                 draftEntries.add((DraftEntry) le);
-                            } else if (le.getPhase().equals(Phase.CommCheck)){
+                            } else if (le instanceof ComChkEntry){
                                 comChkEntries.add((ComChkEntry) le);
                             }
                         }
@@ -102,7 +102,7 @@ public class LogView {
 
             LogEntry entry = getItem(position);
             date.setText(entry.getDateTime());
-            info.setText(entry.getPhase().toString() +" - " + entry.getDescription());
+            info.setText(entry.getPhase() +" - " + entry.getDescription());
             convertView.setBackgroundColor(ContextCompat.getColor(context, entry.getColor()));
 
             return convertView;
@@ -114,18 +114,18 @@ public class LogView {
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(c);
         int slide = StoryState.getCurrentStorySlide();
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View dialoglayout = linf.inflate(R.layout.activity_log_view, null);
+        View dialogLayout = linf.inflate(R.layout.activity_log_view, null);
 
-        ListView listView = (ListView) dialoglayout.findViewById(R.id.log_list_view);
+        ListView listView = (ListView) dialogLayout.findViewById(R.id.log_list_view);
         Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
         listView.setAdapter(lla);
-        Toolbar tb = (Toolbar) dialoglayout.findViewById(R.id.toolbar2);
+        Toolbar tb = (Toolbar) dialogLayout.findViewById(R.id.toolbar2);
         tb.setTitle("Logs: Slide "+(slide+1));
-        ImageButton exit = (ImageButton) dialoglayout.findViewById(R.id.exitButton);
-        final CheckBox learnCB = (CheckBox) dialoglayout.findViewById(R.id.LearnCheckBox);
-        final CheckBox draftCB = (CheckBox) dialoglayout.findViewById(R.id.DraftCheckBox);
-        final CheckBox comChkCB = (CheckBox) dialoglayout.findViewById(R.id.CommunityCheckCheckBox);
+        ImageButton exit = (ImageButton) dialogLayout.findViewById(R.id.exitButton);
+        final CheckBox learnCB = (CheckBox) dialogLayout.findViewById(R.id.LearnCheckBox);
+        final CheckBox draftCB = (CheckBox) dialogLayout.findViewById(R.id.DraftCheckBox);
+        final CheckBox comChkCB = (CheckBox) dialogLayout.findViewById(R.id.CommunityCheckCheckBox);
         learnCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
@@ -144,7 +144,7 @@ public class LogView {
                 lla.updateList(learnCB.isChecked(), draftCB.isChecked(), checked);
             }
         });
-        alertDialog.setView(dialoglayout);
+        alertDialog.setView(dialogLayout);
         final AlertDialog t = alertDialog.create();
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
