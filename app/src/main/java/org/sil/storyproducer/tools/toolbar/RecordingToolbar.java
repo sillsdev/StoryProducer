@@ -277,7 +277,7 @@ public class RecordingToolbar extends AnimationToolbar {
             }
         }
 
-        if (playButton != null) {
+        if (playButton != null && multiRecordButton != null) {
             playButton.setVisibility((enablePlaybackButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
             multiRecordButton.setVisibility((enablePlaybackButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
         }
