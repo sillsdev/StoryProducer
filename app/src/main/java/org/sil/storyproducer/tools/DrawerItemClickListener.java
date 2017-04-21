@@ -39,11 +39,6 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
                 intent = new Intent(context, RegistrationActivity.class);
                 context.startActivity(intent);
                 break;
-            case 2:
-            //    Intent goToLogView = new Intent(context, LogView.class);
-            //    goToLogView.putExtra("slide", -1 /* StoryState.getCurrentStorySlide() */);
-            //    context.startActivity(goToLogView);
-                break;
             default:
         }
     }
