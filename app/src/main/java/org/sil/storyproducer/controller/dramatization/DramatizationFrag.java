@@ -172,9 +172,8 @@ public class DramatizationFrag extends Fragment {
      * This function serves to set the play and stop button for the draft playback button.
      */
     private void setPlayStopDraftButton(View playPauseDraftBut) {
-        View button = playPauseDraftBut;
-        if (button != null && button instanceof ImageButton) {
-            playPauseDraftButton = (ImageButton) button;
+        if (playPauseDraftBut != null && playPauseDraftBut instanceof ImageButton) {
+            playPauseDraftButton = (ImageButton) playPauseDraftBut;
         }
         if (draftPlayerPath == null) {
             //draft recording does not exist
@@ -227,29 +226,31 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
-    /** This function will close the softtouch keyboard and place the focus on the touchedView
-     * parameter. The reason why a view is passed in is because:
-     * The new view can gain focus which will take focus off of an input view (e.g. edit text).
-     * The shift in focus will remove the typing cursor off of the input view.
-     * @param touchedView The view that will gain focus after the keyboard is hidden.
+    /**
+     * This function will set a listener to the passed in view so that when the passed in view
+     * is touched the keyboard close function will be called see: {@link #closeKeyboard(View)}.
+     *
+     * @param touchedView The view that will have an on touch listener assigned so that a touch of
+     *                    the view will close the softkeyboard.
      */
     private void closeKeyboardOnTouch(final View touchedView) {
-        if (touchedView == null) {
-            return;
+        if (touchedView != null) {
+            touchedView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    closeKeyboard(touchedView);
+                }
+            });
         }
-        touchedView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                closeKeyboard(touchedView);
-            }
-        });
     }
 
     /**
+     * This function closes the keyboard. The passed in view will gain focus after the keyboard is
+     * hidden. The reestablished focus allows the removal of a cursor or any other focus indicator
+     * from the previously focused view.
+     *
      * @param viewToFocus The view that will gain focus after the keyboard is hidden.
-     * The reason why a view is passed in is because:
-     * The new view can gain focus which will take focus off of an input view (e.g. edit text).
-     * The shift in focus will remove the typing cursor off of the input view.
+     *
      */
     private void closeKeyboard(View viewToFocus) {
         if(viewToFocus != null){
