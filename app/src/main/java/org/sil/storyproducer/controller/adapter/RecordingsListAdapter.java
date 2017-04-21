@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
-import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
@@ -121,7 +120,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDeleteCommentDialog(position);
+                showDeleteItemDialog(position);
             }
         });
 
@@ -140,15 +139,15 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
      *
      * @param position the integer position of the comment where the button was pressed
      */
-    private void showDeleteCommentDialog(final int position) {
-        String title = "Delete Comment?";
-        String message = "Do you want to delete this audio comment?";
+    private void showDeleteItemDialog(final int position) {
+        String title = context.getResources().getString(R.string.delete_comment_title);
+        String message = context.getResources().getString(R.string.delete_comment_message);
         if(listeners instanceof DraftListRecordingsModal) {
-            title = "Delete Draft?";
-            message = "Do you want to delete this audio Draft?";
+            title = context.getResources().getString(R.string.delete_draft_title);
+            message = context.getResources().getString(R.string.delete_draft_message);
         } else if(listeners instanceof  DramaListRecordingsModal) {
-            title = "Delete Dramatization?";
-            message = "Do you want to delete this audio dramatization?";
+            title = context.getResources().getString(R.string.delete_dramatize_title);
+            message = context.getResources().getString(R.string.delete_dramatize_message);
         }
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setTitle(title)
@@ -190,19 +189,19 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
 
                             case SUCCESS:
                                 listeners.onRenameSuccess();
-                                Toast.makeText(getContext(), "File successfully renamed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.renamed_success), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_LENGTH:
-                                Toast.makeText(getContext(), "Filename must be less than 20 characters", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_SPECIAL_CHARS:
-                                Toast.makeText(getContext(), "Filename cannot contain special characters", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_CONTAINED_DESIGNATOR:
-                                Toast.makeText(getContext(), "Invalid filename", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.invalid_filename), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_UNDEFINED:
-                                Toast.makeText(getContext(), "Rename failed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_failed), Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }

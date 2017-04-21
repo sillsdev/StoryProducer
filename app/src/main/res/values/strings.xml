@@ -126,6 +126,18 @@
     <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
     <string name="recording_toolbar_error_recording">Error recording, record again!</string>
 
+    <!-- Multiple Recording Dialog -->
+    <string name="delete_comment_title">Delete Comment?</string>
+    <string name="delete_comment_message">Do you want to delete this audio comment?</string>
+    <string name="delete_draft_title">Delete Draft?</string>
+    <string name="delete_draft_message">Do you want to delete this audio Draft?</string>
+    <string name="delete_dramatize_title">Delete Dramatization?</string>
+    <string name="delete_dramatize_message">Do you want to delete this audio dramatization?</string>
+    <string name="renamed_success">File successfully renamed</string>
+    <string name="rename_must_be_20">Filename must be less than 20 characters</string>
+    <string name="rename_no_special">Filename cannot contain special characters</string>
+    <string name="invalid_filename">Invalid filename</string>
+    <string name="rename_failed">Rename failed</string>
 
     <!-- Export -->
     <string name="export_options_header">Options</string>
