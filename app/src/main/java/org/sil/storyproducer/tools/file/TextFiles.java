@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * TextFiles represents an abstraction of the text resources for story templates.
  */
 public class TextFiles {
-    private static final String TAG = "TextFilesClass";
+    private static final String TAG = "TextFiles";
 
     private static final String FILE_TEXT_EXTENSION = ".txt";
     private static final String DRAMATIZATION_FILE_PREFIX = "dramatizationText";
@@ -97,7 +97,9 @@ public class TextFiles {
             }catch(IOException ex){
                 Log.e(TAG, "Could not find dramatization text file");
             }
-            return dramTextBuilder.toString();
+            String dramText = dramTextBuilder.toString();
+            //Return an empty string if dramText is full of white space.
+            return dramText.trim().length() >  0  ? dramText.trim() : "";
         }else{
             return "";
         }
