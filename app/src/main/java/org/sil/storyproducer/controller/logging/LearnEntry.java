@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.logging;
 
+import android.content.Context;
+
 import org.sil.storyproducer.R;
 
 import java.text.DecimalFormat;
@@ -15,9 +17,11 @@ public class LearnEntry extends LogEntry {
     private int startSlide;
     private int endSlide;
     private long duration;
-    private static final DecimalFormat twoDecPlaces = new DecimalFormat("0.00");
+    private static Context mContext = null;
 
-
+    public static void init(Context context){
+        mContext = context;
+    }
 
     private LearnEntry(long dateTime, int start, int end, long duration){
         super(dateTime, Phase.Learn, R.color.learn_phase);
@@ -26,28 +30,31 @@ public class LearnEntry extends LogEntry {
         this.duration=duration;
     }
 
+    @Override
     public String getDescription(){
-        String ret = null;
+        String ret;
         if(startSlide ==endSlide ){
-            ret = "Slide "+(startSlide+1);
+            ret = mContext.getResources().getQuantityString(R.plurals.logging_numSlides, 1)+" "+(startSlide+1);
         } else {
-            ret = "Slides "+(startSlide+1)+"-"+(endSlide+1);
+            ret = mContext.getResources().getQuantityString(R.plurals.logging_numSlides, 2)+" "+(startSlide+1)+"-"+(endSlide+1);
         }
         ret+=" ("+formatDuration(duration)+")";
         return ret;
     }
 
     private String formatDuration(long duration){
+        String secUnit = mContext.getString(R.string.SECONDS_ABBREVIATION);
+        String minUnit = mContext.getString(R.string.MINUTES_ABBREVIATION);
         if(duration<1000){
-            return ("<1 sec");
+            return ("<1 "+secUnit);
         }
         int roundedSecs = (int) ((duration/1000.0)+0.5);
         int mins = roundedSecs / 60;
         String minString = "";
         if(mins > 0){
-            minString = mins+" min ";
+            minString = mins+" "+minUnit+" ";
         }
-        return minString+(roundedSecs % 60)+" sec";
+        return minString+(roundedSecs % 60)+" "+secUnit;
     }
 
     /**
@@ -58,7 +65,6 @@ public class LearnEntry extends LogEntry {
      * @return
      */
     public static boolean saveFilteredLogEntry(int start, int end, long duration){
-        System.out.println("duration: "+duration);
         if (duration < MIN_DURATION){
             return false;
         }

@@ -185,6 +185,13 @@
     <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
     <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
     <string name="info">Info</string>
+    <string name="LWC_PLAYBACK">LWC Playback</string>
+    <string name="DRAFT_RECORDING">Draft Recording</string>
+    <string name="DRAFT_PLAYBACK">Draft Playback</string>
+    <string name="COMMENT_PLAYBACK">Comment Playback</string>
+    <string name="COMMENT_RECORDING">Comment Recording</string>
+    <string name="SECONDS_ABBREVIATION">sec</string>
+    <string name="MINUTES_ABBREVIATION">min</string>
 
     <plurals name="file_explorer_numItems">
         <item quantity="one">%d item</item>
@@ -194,6 +201,11 @@
     <plurals name="file_explorer_numBytes">
         <item quantity="one">%d byte</item>
         <item quantity="other">%d bytes</item>
+    </plurals>
+
+    <plurals name="logging_numSlides">
+        <item quantity="one">Slide</item>
+        <item quantity="other">Slides</item>
     </plurals>
 
 </resources>

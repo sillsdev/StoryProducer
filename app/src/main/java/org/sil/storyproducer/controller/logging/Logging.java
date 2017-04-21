@@ -25,9 +25,18 @@ public class Logging {
     private static String mLogsRootDir = null; //should be constant. initialized in init.
     private static Log currentLog = null;
     private static String SLASH = File.pathSeparator;
+    private static Context mContext = null;
 
     public static void init(Context context) {
+        mContext = context;
         mLogsRootDir = new File(context.getFilesDir(), "logs").getAbsolutePath()+SLASH;
+        DraftEntry.Type.init(context);
+        ComChkEntry.Type.init(context);
+        LearnEntry.init(context);
+    }
+
+    public static Context getContext(){
+        return mContext;
     }
 
     public static void saveLogEntry(LogEntry le, String ethnoCode, String storyTitle){

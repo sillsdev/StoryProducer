@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -252,7 +251,7 @@ public final class DraftFrag extends Fragment {
                         }
                         narrationPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
                         Toast.makeText(getContext(), R.string.draft_playback_narration_audio, Toast.LENGTH_SHORT).show();
-                        Logging.saveLogEntry(DraftEntry.Type.LWC_pb.makeEntry());
+                        Logging.saveLogEntry(DraftEntry.Type.LWC_PLAYBACK.makeEntry());
                     }
                 }
             }

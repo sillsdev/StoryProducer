@@ -53,7 +53,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 commCheck.playComment(values[position]);
-                Logging.saveLogEntry(ComChkEntry.Type.cmt_pb.makeEntry());
+                Logging.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
             }
         });
 

@@ -182,7 +182,7 @@ public class CommunityCheckFrag extends Fragment {
                 draftPlayer = new AudioPlayer();
                 draftPlayer.playWithPath(draftFile.getPath());
                 Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
-                Logging.saveLogEntry(ComChkEntry.Type.draft_pb.makeEntry());
+                Logging.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
             } else {
                 Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
             }
@@ -234,7 +234,7 @@ public class CommunityCheckFrag extends Fragment {
                 }
                 if(isRecording){
                     stopAudioRecorder();
-                    Logging.saveLogEntry(ComChkEntry.Type.cmt_rec.makeEntry());
+                    Logging.saveLogEntry(ComChkEntry.Type.COMMENT_RECORDING.makeEntry());
                     updateCommentList();
                 }else{
                     startAudioRecorder(recordFilePath);
