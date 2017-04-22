@@ -359,7 +359,7 @@ public class RecordingToolbar extends AnimationToolbar {
                         stopPlayBackAndRecording();
                         if (new File(playbackRecordFilePath).exists()) {
                             audioPlayer = new AudioPlayer();
-                            audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                            audioPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     audioPlayer.releaseAudio();

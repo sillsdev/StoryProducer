@@ -12,6 +12,8 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
+
+    private static final String PCM_EXTENSION = ".pcm";
     private static final String LWC_EXTENSION = ".wav";
 
     private static final String PREFER_EXTENSION = ".m4a";
@@ -70,6 +72,11 @@ public class AudioFiles {
 
     public static File getDraftWav(String story, int slide){
         String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + LWC_EXTENSION;
+        return new File(FileSystem.getProjectDirectory(story), fileName);
+    }
+
+    public static File getDraftPCM(String story, int slide){
+        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + PCM_EXTENSION;
         return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 

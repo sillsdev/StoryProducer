@@ -198,7 +198,7 @@ public class DramatizationFrag extends Fragment {
                     recordingToolbar.stopToolbarMedia();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     draftPlayer = new AudioPlayer();
-                    draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                    draftPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
                         @Override
                         public void onCompletion(MediaPlayer mp) {
                             playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);

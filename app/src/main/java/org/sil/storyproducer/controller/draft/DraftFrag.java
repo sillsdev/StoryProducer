@@ -1,6 +1,9 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -26,12 +29,15 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.WavAudioRecorder;
+import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -82,25 +88,59 @@ public class DraftFrag extends Fragment {
         slideNumberText.setText(slideNumber + 1 + "");
 
 
-
-        setTestButton(rootViewToolbar.findViewById(R.id.fragment_draft_test_button));
-        wavAudioRecorder = new WavAudioRecorder(getActivity(), AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber).getPath());
+        setTestButtons(rootView.findViewById(R.id.fragment_draft_test_button1), rootView.findViewById(R.id.fragment_draft_test_button2));
+        wavAudioRecorder = new WavAudioRecorder(getActivity(), AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber).getPath(), slideNumber);
 
         return rootView;
     }
 
-    public void setTestButton(View view){
+    public void setTestButtons(View... view){
         Button testButton;
-        if(view instanceof Button){
-            testButton = (Button)view;
+        if(view[0] instanceof Button){
+            testButton = (Button)view[0];
 
             testButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(!wavAudioRecorder.isRecording()){
                         wavAudioRecorder.startRecording();
+                        Toast.makeText(getContext(), "started to record.", Toast.LENGTH_SHORT).show();
+
                     }else{
                         wavAudioRecorder.stopRecording();
+                        Toast.makeText(getContext(), "stopped recording.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
+        if(view[1] instanceof Button){
+            testButton = (Button)view[1];
+
+            testButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    File file = AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber);
+
+                    if(file.exists()){
+                        try{
+                            FileInputStream fil = new FileInputStream(file);
+                            byte [] bytes = new byte[(int)file.length()];
+                            fil.read(bytes);
+                            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT , (int)file.length(), AudioTrack.MODE_STREAM);
+                            audioTrack.play();
+                            audioTrack.write(bytes, 0, bytes.length);
+                        }catch(FileNotFoundException e){
+
+                        }catch(IOException e){
+
+                        }catch(Exception e){
+
+                        }
+
+
+                    }else{
+                        Toast.makeText(getContext(), "Recording does not exist!", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -280,7 +320,7 @@ public class DraftFrag extends Fragment {
                         //stop other playback streams.
                         recordingToolbar.stopToolbarMedia();
                         narrationAudioPlayer = new AudioPlayer();
-                        narrationAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+                        narrationAudioPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
                             @Override
                             public void onCompletion(MediaPlayer mp) {
                                 narrationAudioPlayer.releaseAudio();

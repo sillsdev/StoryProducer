@@ -87,8 +87,17 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/fragment_draft_test_button"
+        android:id="@+id/fragment_draft_test_button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
+        android:text="Record" />
+
+    <Button
+        android:id="@+id/fragment_draft_test_button2"
+        android:layout_below="@+id/fragment_draft_test_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play" />
+
+
 </RelativeLayout>
