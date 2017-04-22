@@ -116,7 +116,7 @@
     <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
     <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
-    <string name="dramatization_edit_text_hint">Notes</string>
+    <string name="dramatization_edit_text_hint">Translation</string>
 
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
