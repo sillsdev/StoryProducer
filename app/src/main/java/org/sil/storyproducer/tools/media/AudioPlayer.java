@@ -112,15 +112,6 @@ public class AudioPlayer {
     }
 
     /**
-     * This allows the user to do initializeToolbar once the audio has completed
-     * via implementing MediaPlayer.OnCompleteListener.
-     * @param OcL
-     */
-    public void onPlayBackStop(MediaPlayer.OnCompletionListener OcL){
-        mPlayer.setOnCompletionListener(OcL);
-    }
-
-    /**
      * returns the duration of the audio as an int
      * @return the duration of the audio as an int
      */
