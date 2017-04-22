@@ -10,6 +10,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -25,6 +26,7 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
+import org.sil.storyproducer.tools.media.WavAudioRecorder;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
@@ -45,6 +47,8 @@ public class DraftFrag extends Fragment {
     private ImageButton narrationPlayButton;
     private TextView slideNumberText;
     private RecordingToolbar recordingToolbar;
+
+    private WavAudioRecorder wavAudioRecorder;
 
     public DraftFrag() {
         super();
@@ -77,7 +81,32 @@ public class DraftFrag extends Fragment {
         slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
+
+
+        setTestButton(rootViewToolbar.findViewById(R.id.fragment_draft_test_button));
+        wavAudioRecorder = new WavAudioRecorder(getActivity(), AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber).getPath());
+
         return rootView;
+    }
+
+    public void setTestButton(View view){
+        Button testButton;
+        if(view instanceof Button){
+            testButton = (Button)view;
+
+            testButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(!wavAudioRecorder.isRecording()){
+                        wavAudioRecorder.startRecording();
+                    }else{
+                        wavAudioRecorder.stopRecording();
+                    }
+                }
+            });
+        }
+
+
     }
 
     /**

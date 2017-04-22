@@ -68,6 +68,11 @@ public class AudioFiles {
         return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
+    public static File getDraftWav(String story, int slide){
+        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + LWC_EXTENSION;
+        return new File(FileSystem.getProjectDirectory(story), fileName);
+    }
+
     public static File getDraft(String story, int slide, String draftTitle) {
         return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + SOUNDTRACK_EXTENSION);
     }
