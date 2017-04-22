@@ -197,9 +197,6 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                             case ERROR_SPECIAL_CHARS:
                                 Toast.makeText(getContext(), context.getResources().getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show();
                                 break;
-                            case ERROR_CONTAINED_DESIGNATOR:
-                                Toast.makeText(getContext(), context.getResources().getString(R.string.invalid_filename), Toast.LENGTH_SHORT).show();
-                                break;
                             case ERROR_UNDEFINED:
                                 Toast.makeText(getContext(), context.getResources().getString(R.string.rename_failed), Toast.LENGTH_SHORT).show();
                                 break;

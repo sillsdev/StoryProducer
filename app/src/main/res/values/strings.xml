@@ -136,7 +136,6 @@
     <string name="renamed_success">File successfully renamed</string>
     <string name="rename_must_be_20">Filename must be less than 20 characters</string>
     <string name="rename_no_special">Filename cannot contain special characters</string>
-    <string name="invalid_filename">Invalid filename</string>
     <string name="rename_failed">Rename failed</string>
 
     <!-- Export -->

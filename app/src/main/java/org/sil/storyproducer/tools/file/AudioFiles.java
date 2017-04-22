@@ -4,6 +4,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
@@ -31,7 +32,6 @@ public class AudioFiles {
         SUCCESS,
         ERROR_LENGTH,
         ERROR_SPECIAL_CHARS,
-        ERROR_CONTAINED_DESIGNATOR,
         ERROR_UNDEFINED,
         ;
     }
@@ -205,15 +205,11 @@ public class AudioFiles {
         // Requirements for file names:
         //        - must be under 20 characters
         //        - must be only contain alphanumeric characters or spaces/underscores
-        //        - must not contain the comment designator such as "comment0"
         if (newTitle.length() > 20) {
             return RenameCode.ERROR_LENGTH;
         }
         if (!newTitle.matches("[A-Za-z0-9\\s_]+")) {
             return RenameCode.ERROR_SPECIAL_CHARS;
-        }
-        if (newTitle.matches(type + "[0-9]+")) {
-            return RenameCode.ERROR_CONTAINED_DESIGNATOR;
         }
         File file = getComment(story, slide, oldTitle);
         switch(type) {                  //set the file based on the different file types
@@ -243,16 +239,16 @@ public class AudioFiles {
         }
     }
 
-    private static String[] getRecordingTitlesHelper(String story, int slide, String prefix, String soundTrackExtension) {
-        ArrayList<String> titles = new ArrayList<>();
+    private static String[] getRecordingTitlesHelper(String story, int slide, String prefix, String extension) {
+        List<String> titles = new ArrayList<>();
         File storyDirectory = FileSystem.getProjectDirectory(story);
         File[] storyDirectoryFiles = storyDirectory.listFiles();
         String filename;
         for (int i = 0; i < storyDirectoryFiles.length; i++) {
             filename = storyDirectoryFiles[i].getName();
             if (filename.startsWith(prefix+slide+"_")) {
-                filename = filename.replace(prefix+slide+"_", "");
-                filename = filename.replace(soundTrackExtension, "");
+                filename = filename.replaceFirst(prefix+slide+"_", "");
+                filename = filename.replace(extension, "");
                 titles.add(filename);
             }
         }
