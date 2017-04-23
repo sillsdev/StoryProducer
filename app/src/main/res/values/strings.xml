@@ -98,6 +98,10 @@
     <string name="draft_playback_no_narration_audio">Could Not Find Narration Audio...</string>
     <string name="draft_playback_narration_audio">Playing Narration Audio...</string>
 
+    <!-- Logging -->
+    <string name="logging_item_date">Date</string>
+    <string name="logging_item_type">Type</string>
+
     <!-- Dramatization phase -->
     <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>

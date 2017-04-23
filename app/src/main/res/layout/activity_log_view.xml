@@ -52,7 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:checked="true"
-                    android:text="Learn" />
+                    android:text="@string/learnTitle" />
             </FrameLayout>
 
             <FrameLayout
@@ -69,7 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:checked="true"
-                    android:text="Draft" />
+                    android:text="@string/draftTitle" />
             </FrameLayout>
 
             <FrameLayout
@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:checked="true"
-                    android:text="Community Check" />
+                    android:text="@string/community_check_title" />
             </FrameLayout>
 
         </LinearLayout>

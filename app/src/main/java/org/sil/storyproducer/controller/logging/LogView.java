@@ -99,8 +99,8 @@ public class LogView {
                         .inflate(R.layout.log_list_item, parent, false);
             }
 
-            TextView date = (TextView) convertView.findViewById(R.id.textView01);
-            TextView info = (TextView) convertView.findViewById(R.id.textView02);
+            TextView date = (TextView) convertView.findViewById(R.id.textView_logging_date);
+            TextView info = (TextView) convertView.findViewById(R.id.textView_logging_type);
 
             LogEntry entry = getItem(position);
             date.setText(entry.getDateTime());
