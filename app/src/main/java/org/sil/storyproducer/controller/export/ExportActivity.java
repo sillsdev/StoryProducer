@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,8 +21,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -76,10 +79,18 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        String storyName = StoryState.getStoryName();
+        boolean phaseUnlocked = StorySharedPreferences.isApproved(storyName, this);
         setContentView(R.layout.activity_export);
-
         mStory = StoryState.getStoryName();
         setupViews();
+        if (phaseUnlocked) {
+            findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
+        } else {
+            View mainLayout = findViewById(R.id.main_linear_layout);
+            PhaseBaseActivity.disableViewAndChildren(mainLayout);
+        }
+
         loadPreferences();
     }
 

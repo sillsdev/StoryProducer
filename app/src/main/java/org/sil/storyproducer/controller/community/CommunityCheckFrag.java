@@ -39,12 +39,13 @@ public class CommunityCheckFrag extends Fragment {
     private final static String LOGTAG = "communityCheck";
     private int slideNumber;
     private TextView slideNumberText;
-    private static AudioPlayer draftPlayer;
-    private static AudioPlayer commentPlayer;
+    private AudioPlayer draftPlayer;
+    private AudioPlayer commentPlayer;
     private MediaRecorder commentRecorder;
     private View rootView;
     private String[] comments;
     private boolean isRecording;
+    private boolean draftAudioExists;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -70,7 +71,7 @@ public class CommunityCheckFrag extends Fragment {
     }
 
     /**
-     * This function serves to handle draft page changes and stops the audio streams from
+     * This function serves to handle page changes and stops the audio streams from
      * continuing.
      * @param isVisibleToUser
      */
@@ -84,6 +85,20 @@ public class CommunityCheckFrag extends Fragment {
             if (!isVisibleToUser) {
                 stopAllMedia();
             }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        commentPlayer = new AudioPlayer();
+        draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
         }
     }
 
@@ -105,12 +120,8 @@ public class CommunityCheckFrag extends Fragment {
     public void onStop() {
         super.onStop();
         stopAllMedia();
-        if(draftPlayer != null){
-            draftPlayer.releaseAudio();
-        }
-        if(commentPlayer != null){
-            commentPlayer.releaseAudio();
-        }
+        draftPlayer.release();
+        commentPlayer.release();
     }
 
     /**
@@ -170,15 +181,13 @@ public class CommunityCheckFrag extends Fragment {
      * @param button the ImageButton view handler to set the onclicklistener to
      */
     private void setDraftPlaybackButton(ImageButton button) {
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
             //stop other playback streams.
             stopAllMedia();
-            if (draftFile.exists()) {
-                draftPlayer = new AudioPlayer();
-                draftPlayer.playWithPath(draftFile.getPath());
+            if (draftAudioExists) {
+                draftPlayer.playAudio();
                 Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
@@ -195,8 +204,8 @@ public class CommunityCheckFrag extends Fragment {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
         stopAllMedia();
         if (commentFile.exists()) {
-            commentPlayer = new AudioPlayer();
-            commentPlayer.playWithPath(commentFile.getPath());
+            commentPlayer.setPath(commentFile.getPath());
+            commentPlayer.playAudio();
             Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
@@ -287,10 +296,10 @@ public class CommunityCheckFrag extends Fragment {
      * Stops all media including audio playbacks and active audio recordings
      */
     private void stopAllMedia() {
-        if(draftPlayer != null && draftPlayer.isAudioPlaying()){
+        if(draftPlayer != null){
             draftPlayer.stopAudio();
         }
-        if(commentPlayer != null && commentPlayer.isAudioPlaying()){
+        if(commentPlayer != null){
             commentPlayer.stopAudio();
         }
         if(commentRecorder != null) {
