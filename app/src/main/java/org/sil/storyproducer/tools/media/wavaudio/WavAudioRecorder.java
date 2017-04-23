@@ -20,27 +20,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ShortBuffer;
 
 /**
- * Designed to create PCM (WAV) file audio recording
+ * Designed to create WAV file audio recording.
  */
 public class WavAudioRecorder {
     private static final String TAG = "WavAudioRecorder";
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
-    private static final int SAMPLE_RATE = 48000;
-    private static final int INPUT_SOURCE = MediaRecorder.AudioSource.MIC;
-    private static final int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
-    private int slideNumber;
+    private static final int SAMPLE_RATE = 44100;
+    private static final int INPUT_SOURCE = MediaRecorder.AudioSource.VOICE_RECOGNITION;
+    private static int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
 
     private boolean isRecording = false;
     private Runnable readToFileRunnable;
-    private String filePathToWrite;
+    private File filePathToWriteWav;
+    private File filePathToWritePcm;
 
     private AudioRecord audioRecord;
 
-    public WavAudioRecorder(Activity activity, String filePathToRecordTo, int slideNumber) {
+    public WavAudioRecorder(Activity activity, File filePathToRecordTo, int slideNumber) {
         if (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
@@ -48,14 +47,15 @@ public class WavAudioRecorder {
                     new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         }
 
-        this.filePathToWrite = removeWavFileExtension(filePathToRecordTo);
+        this.filePathToWriteWav = filePathToRecordTo;
+        this.filePathToWritePcm = AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber);
 
         readToFileRunnable = new Runnable() {
             @Override
             public void run() {
                 DataOutputStream dataOutputStream = null;
                 try {
-                    dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePathToWrite)));
+                    dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePathToWritePcm)));
                     while (isRecording) {
                         short[] audioData = new short[minBufferSize];
                         int amountRead = audioRecord.read(audioData, 0, minBufferSize);
@@ -72,13 +72,12 @@ public class WavAudioRecorder {
                 }
             }
         };
-        this.slideNumber = slideNumber;
+
         audioRecord = new AudioRecord(INPUT_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize);
     }
 
-    public void startRecording(String filePathToWrite) {
-        this.filePathToWrite = removeWavFileExtension(filePathToWrite);
-        startRecording();
+    public void recordToPath(File newWavFilePath) {
+        filePathToWriteWav = newWavFilePath;
     }
 
     public void startRecording() {
@@ -100,43 +99,48 @@ public class WavAudioRecorder {
     public void stopRecording() {
         if (isRecording && audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             isRecording = false;
-
-            File file = AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber);
-
-            if(file.exists()){
-                try{
-                    FileInputStream fil = new FileInputStream(file);
-                    byte [] bytes = new byte[(int)file.length()];
-                    fil.read(bytes);
-
-                    bytes = WavHeader.createWavFile(bytes, new WavHeader.AudioAttributes(AUDIO_FORMAT, CHANNEL_CONFIG, SAMPLE_RATE));
-
-                    FileOutputStream fos = new FileOutputStream(AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber));
-                    fos.write(bytes);
-                    fos.close();
-                    fil.close();
-                }catch(FileNotFoundException e){
-
-                }catch(IOException e){
-
-                }catch(Exception e){
-
-                }
-                audioRecord.release();
+            createWavFile();
+            audioRecord.release();
         }
-    }}
+    }
 
     public boolean isRecording() {
         return isRecording;
     }
 
-    private String removeWavFileExtension(String fileName) {
-        String tempFileName = fileName.toLowerCase();
-        if (tempFileName.contains(".wav") && tempFileName.indexOf(".wav") == tempFileName.length() - 4) {
-            return fileName.substring(0, tempFileName.length() - 4);
-        } else {
-            return fileName;
+    private void createWavFile() {
+        if (filePathToWritePcm.exists()) {
+            try {
+                byte[] bytes = new byte[(int) filePathToWritePcm.length()];
+                //read raw audio file from phone
+                FileInputStream fil = new FileInputStream(filePathToWritePcm);
+                fil.read(bytes);
+
+                byte[] wavBytes = WavFileCreator.createWavFile(bytes, new WavFileCreator.AudioAttributes(AUDIO_FORMAT, CHANNEL_CONFIG, SAMPLE_RATE));
+
+                //write the WAV file to phone
+                FileOutputStream fos = new FileOutputStream(filePathToWriteWav);
+                fos.write(wavBytes);
+                fos.close();
+                fil.close();
+
+                //delete the raw audio data file (pcm file)
+                filePathToWritePcm.delete();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "Could not find PCM file");
+            } catch (IOException e) {
+                Log.e(TAG, "Could not read/write to/from file!");
+            }
         }
     }
+//
+//    private String removeWavFileExtension(String fileName) {
+//        String tempFileName = fileName.toLowerCase();
+//        if (tempFileName.contains(".wav") && tempFileName.indexOf(".wav") == tempFileName.length() - 4) {
+//            return fileName.substring(0, tempFileName.length() - 4);
+//        } else {
+//            return fileName;
+//        }
+//    }
 
 }

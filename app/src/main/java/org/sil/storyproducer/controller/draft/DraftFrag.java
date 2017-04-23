@@ -30,6 +30,7 @@ import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder;
+import org.sil.storyproducer.tools.media.wavaudio.WavFileConcatenator;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
@@ -89,7 +90,13 @@ public class DraftFrag extends Fragment {
 
 
         setTestButtons(rootView.findViewById(R.id.fragment_draft_test_button1), rootView.findViewById(R.id.fragment_draft_test_button2));
-        wavAudioRecorder = new WavAudioRecorder(getActivity(), AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber).getPath(), slideNumber);
+
+        File fil = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
+        if(!fil.exists()){
+            wavAudioRecorder = new WavAudioRecorder(getActivity(), fil, slideNumber);
+        }else{
+            wavAudioRecorder = new WavAudioRecorder(getActivity(),  AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber), slideNumber);
+        }
 
         return rootView;
     }
@@ -102,12 +109,24 @@ public class DraftFrag extends Fragment {
             testButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    File fil = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
+                    if(fil.exists()){
+                        wavAudioRecorder.recordToPath(AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber));
+                    }
                     if(!wavAudioRecorder.isRecording()){
                         wavAudioRecorder.startRecording();
                         Toast.makeText(getContext(), "started to record.", Toast.LENGTH_SHORT).show();
 
                     }else{
                         wavAudioRecorder.stopRecording();
+                        if(AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber).exists()){
+                            try{
+                                WavFileConcatenator.ConcatenateAudioFiles(AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber), AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber));
+                            }catch(IOException e){
+
+                            }
+                        }
+
                         Toast.makeText(getContext(), "stopped recording.", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -120,23 +139,31 @@ public class DraftFrag extends Fragment {
             testButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    File file = AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber);
+                    File file = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
 
                     if(file.exists()){
-                        try{
-                            FileInputStream fil = new FileInputStream(file);
-                            byte [] bytes = new byte[(int)file.length()];
-                            fil.read(bytes);
-                            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT , (int)file.length(), AudioTrack.MODE_STREAM);
-                            audioTrack.play();
-                            audioTrack.write(bytes, 0, bytes.length);
-                        }catch(FileNotFoundException e){
-
-                        }catch(IOException e){
-
-                        }catch(Exception e){
-
-                        }
+                        final AudioPlayer audioPlayer = new AudioPlayer();
+                        audioPlayer.playWithPath(file.getPath());
+                        audioPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                audioPlayer.releaseAudio();
+                            }
+                        });
+//                        try{
+//                            FileInputStream fil = new FileInputStream(file);
+//                            byte [] bytes = new byte[(int)file.length()];
+//                            fil.read(bytes);
+//                            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 44100, AudioFormat.CHANNEL_OUT_MONO,AudioFormat.ENCODING_PCM_16BIT , (int)file.length(), AudioTrack.MODE_STREAM);
+//                            audioTrack.play();
+//                            audioTrack.write(bytes, 0, bytes.length);
+//                        }catch(FileNotFoundException e){
+//
+//                        }catch(IOException e){
+//
+//                        }catch(Exception e){
+//
+//                        }
 
 
                     }else{

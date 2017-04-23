@@ -75,6 +75,11 @@ public class AudioFiles {
         return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
+    public static File getDraftTempWav(String story, int slide){
+        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + "T" + LWC_EXTENSION;
+        return new File(FileSystem.getProjectDirectory(story), fileName);
+    }
+
     public static File getDraftPCM(String story, int slide){
         String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + PCM_EXTENSION;
         return new File(FileSystem.getProjectDirectory(story), fileName);

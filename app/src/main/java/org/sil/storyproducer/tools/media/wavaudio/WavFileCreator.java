@@ -6,9 +6,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /**
- * Class created to append a header to an audio file.
+ * Class created to append a header to a PCM file.
+ * The header of the Wav file resembles Microsoft's RIFF specification.<br/>
+ * A specification can be found <a href=http://soundfile.sapp.org/doc/WaveFormat/>here</a>.
  */
-public class WavHeader {
+public class WavFileCreator {
     private static final int HEADER_SIZE_BYTES = 44;
     private static byte[] audioData;
     private static byte[] fileHeader;
