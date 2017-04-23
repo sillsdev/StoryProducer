@@ -87,8 +87,17 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
+
+        boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
         setContentView(R.layout.activity_export);
         setupViews();
+
+        if (phaseUnlocked) {
+            findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
+        } else {
+            View mainLayout = findViewById(R.id.main_linear_layout);
+            PhaseBaseActivity.disableViewAndChildren(mainLayout);
+        }
         setVideoOrShareSectionOpen();
     }
 

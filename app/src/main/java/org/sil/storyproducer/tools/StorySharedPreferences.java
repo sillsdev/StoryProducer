@@ -7,6 +7,7 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.model.StoryState;
 
 import java.util.ArrayList;
@@ -31,6 +32,11 @@ public class StorySharedPreferences {
 
     public static String getPhaseForStory(String storyName) {
         return prefs.getString(storyName + PHASE_KEY, StoryState.LEARN_PHASE);    //learn is the default phase
+    }
+
+    public static boolean isApproved(String storyName, Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(ConsultantCheckFrag.CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        return prefs.getBoolean(storyName + ConsultantCheckFrag.IS_CONSULTANT_APPROVED, false);
     }
 
     public static void addExportedVideoForStory(String videoPath, String storyName) {
