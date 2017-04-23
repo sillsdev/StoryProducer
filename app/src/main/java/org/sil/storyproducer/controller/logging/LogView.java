@@ -19,6 +19,8 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.TreeSet;
 
 public class LogView {
@@ -26,9 +28,9 @@ public class LogView {
     private static class LogListAdapter extends BaseAdapter {
 
         private LogEntry[] displayEntries = null;
-        private ArrayList<LearnEntry> learnEntries = new ArrayList<>();
-        private ArrayList<DraftEntry> draftEntries = new ArrayList<>();
-        private ArrayList<ComChkEntry> comChkEntries = new ArrayList<>();
+        private List<LearnEntry> learnEntries = new ArrayList<>();
+        private List<DraftEntry> draftEntries = new ArrayList<>();
+        private List<ComChkEntry> comChkEntries = new ArrayList<>();
 
         private final Context context;
 
@@ -51,7 +53,7 @@ public class LogView {
                             }
                         }
                     }
-                    TreeSet<LogEntry> sorter = new TreeSet<>();
+                    Collection<LogEntry> sorter = new TreeSet<>();
                     sorter.addAll(learnEntries);
                     sorter.addAll(draftEntries);
                     sorter.addAll(comChkEntries);
@@ -61,7 +63,7 @@ public class LogView {
         }
 
         public void updateList(boolean learn, boolean draft, boolean comCheck){
-            TreeSet<LogEntry> sorter = new TreeSet<>();
+            Collection<LogEntry> sorter = new TreeSet<>();
             if(learn){
                 sorter.addAll(learnEntries);
             }

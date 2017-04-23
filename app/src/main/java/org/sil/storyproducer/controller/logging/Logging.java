@@ -13,10 +13,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Random;
 
 public class Logging {
+
+    private static final String TAG = "Logging";
 
     private static String mLogsRootDir = null; //should be constant. initialized in init.
     private static Log currentLog = null;
@@ -61,7 +61,7 @@ public class Logging {
             try {
                 ret = (Log) loadObject(file.getAbsolutePath());
             } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
+                android.util.Log.e(TAG, "Failed to load log!", e);
                 ret = null;
             }
         }
@@ -91,8 +91,6 @@ public class Logging {
         if(currentLog == null
                 || (! currentLog.getLang().equals(ethnoCode) )
                 || (! currentLog.getStory().equals(storyTitle) )){
-            currentLog = null;
-
             currentLog = getLog(ethnoCode, storyTitle);
 
             if(currentLog == null) { //no pre-existing log file, or old file failed to load
@@ -107,7 +105,7 @@ public class Logging {
         try {
             saveObject(currentLog, file.getAbsolutePath());
         } catch (IOException e) {
-            e.printStackTrace();
+            android.util.Log.e(TAG, "Failed to save log object!", e);
         }
 
 
@@ -147,30 +145,4 @@ public class Logging {
         }
         return ret;
     }
-
-    /*
-    public static void createFakeLogEntries(String lang, String story, int n){
-        HashSet<LogEntry> james = new HashSet<>();
-        Random rand = new Random();
-        int start=0;
-        ComChkEntry.Type[] cchkVals = ComChkEntry.Type.values();
-        DraftEntry.Type[] dVals = DraftEntry.Type.values();
-        for(int i=0; i<n; i++){
-
-
-            LogEntry jim = new DraftEntry((long) (Math.random()*System.currentTimeMillis()),
-                    dVals[rand.nextInt(dVals.length)], rand.nextInt(15));
-            james.add(jim);
-            jim = new LearnEntry((long) (Math.random()*System.currentTimeMillis()),
-                    start = rand.nextInt(100) , start + rand.nextInt(100));
-            james.add(jim);
-            jim = new ComChkEntry((long) (Math.random()*System.currentTimeMillis()),
-                    cchkVals[rand.nextInt(cchkVals.length)], rand.nextInt(15));
-            james.add(jim);
-        }
-        System.out.println("cardinality of james: "+james.size());
-        saveLogEntries(james, lang, story);
-    }
-    */
-
 }
