@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.logging;
+package org.sil.storyproducer.model.logging;
 
 import android.content.Context;
 

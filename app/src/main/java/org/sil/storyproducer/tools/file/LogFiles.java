@@ -1,9 +1,13 @@
-package org.sil.storyproducer.controller.logging;
+package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
 
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.model.logging.LearnEntry;
+import org.sil.storyproducer.model.logging.Log;
+import org.sil.storyproducer.model.logging.LogEntry;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,9 +18,9 @@ import java.io.ObjectOutputStream;
 import java.util.Collection;
 import java.util.Collections;
 
-public class Logging {
+public class LogFiles {
 
-    private static final String TAG = "Logging";
+    private static final String TAG = "LogFiles";
 
     private static String mLogsRootDir = null; //should be constant. initialized in init.
     private static Log currentLog = null;

@@ -1,9 +1,10 @@
-package org.sil.storyproducer.controller.logging;
+package org.sil.storyproducer.model.logging;
 
 import android.content.Context;
 import android.content.res.Resources;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.tools.file.LogFiles;
 
 public class LearnEntry extends LogEntry {
     private static long MIN_DURATION = 500;
@@ -70,7 +71,7 @@ public class LearnEntry extends LogEntry {
         if (duration < MIN_DURATION){
             return false;
         }
-        Logging.saveLogEntry(new LearnEntry(System.currentTimeMillis(), start, end, duration));
+        LogFiles.saveLogEntry(new LearnEntry(System.currentTimeMillis(), start, end, duration));
         return true;
     }
 

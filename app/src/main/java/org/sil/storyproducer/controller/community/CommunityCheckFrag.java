@@ -20,8 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.logging.ComChkEntry;
-import org.sil.storyproducer.controller.logging.Logging;
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -182,7 +182,7 @@ public class CommunityCheckFrag extends Fragment {
                 draftPlayer = new AudioPlayer();
                 draftPlayer.playWithPath(draftFile.getPath());
                 Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
-                Logging.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
+                LogFiles.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
             } else {
                 Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
             }
@@ -234,7 +234,7 @@ public class CommunityCheckFrag extends Fragment {
                 }
                 if(isRecording){
                     stopAudioRecorder();
-                    Logging.saveLogEntry(ComChkEntry.Type.COMMENT_RECORDING.makeEntry());
+                    LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_RECORDING.makeEntry());
                     updateCommentList();
                 }else{
                     startAudioRecorder(recordFilePath);

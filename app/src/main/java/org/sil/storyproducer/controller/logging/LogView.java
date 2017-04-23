@@ -16,7 +16,13 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.model.logging.LearnEntry;
+import org.sil.storyproducer.model.logging.Log;
+import org.sil.storyproducer.model.logging.LogEntry;
 import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.file.LogFiles;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,7 +125,7 @@ public class LogView {
         View dialogLayout = linf.inflate(R.layout.activity_log_view, null);
 
         ListView listView = (ListView) dialogLayout.findViewById(R.id.log_list_view);
-        Log log = Logging.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+        Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
         listView.setAdapter(lla);
         Toolbar tb = (Toolbar) dialogLayout.findViewById(R.id.toolbar2);

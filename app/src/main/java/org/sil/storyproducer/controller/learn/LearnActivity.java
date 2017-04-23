@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.learn;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -18,8 +17,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.logging.LearnEntry;
-import org.sil.storyproducer.controller.logging.Logging;
+import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -27,7 +25,6 @@ import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.AudioRecorder;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 

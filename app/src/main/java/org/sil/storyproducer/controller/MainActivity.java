@@ -2,13 +2,10 @@ package org.sil.storyproducer.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +17,6 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.logging.Logging;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -38,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         FileSystem.init(getApplicationContext());
         StoryState.init(getApplicationContext());
         StorySharedPreferences.init(getApplicationContext());
-        Logging.init(getApplicationContext());
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
