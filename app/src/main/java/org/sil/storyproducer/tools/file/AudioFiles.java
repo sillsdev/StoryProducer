@@ -243,13 +243,13 @@ public class AudioFiles {
         List<String> titles = new ArrayList<>();
         File storyDirectory = FileSystem.getProjectDirectory(story);
         File[] storyDirectoryFiles = storyDirectory.listFiles();
-        String filename;
         for (int i = 0; i < storyDirectoryFiles.length; i++) {
-            filename = storyDirectoryFiles[i].getName();
+            String filename = storyDirectoryFiles[i].getName();
             if (filename.startsWith(prefix+slide+"_")) {
-                filename = filename.replaceFirst(prefix+slide+"_", "");
-                filename = filename.replace(extension, "");
-                titles.add(filename);
+                //extract title from file name
+                //Note: Assume no dots in filename.
+                String title = filename.replaceFirst(prefix+slide+"_", "").replace(extension, "");
+                titles.add(title);
             }
         }
         String[] returnTitlesArray = new String[titles.size()];
