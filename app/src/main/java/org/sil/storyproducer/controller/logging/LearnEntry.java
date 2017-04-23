@@ -1,11 +1,9 @@
 package org.sil.storyproducer.controller.logging;
 
 import android.content.Context;
+import android.content.res.Resources;
 
 import org.sil.storyproducer.R;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 public class LearnEntry extends LogEntry {
     private static long MIN_DURATION = 500;
@@ -13,10 +11,10 @@ public class LearnEntry extends LogEntry {
     private int startSlide;
     private int endSlide;
     private long duration;
-    private static Context mContext = null;
+    private static Resources mResources;
 
     public static void init(Context context){
-        mContext = context;
+        mResources = context.getResources();
     }
 
     private LearnEntry(long dateTime, int start, int end, long duration){
@@ -27,7 +25,7 @@ public class LearnEntry extends LogEntry {
     }
 
     public String getPhase(){
-        return mContext.getString(R.string.learnTitle);
+        return mResources.getString(R.string.learnTitle);
     }
 
     public int getColor(){
@@ -38,17 +36,17 @@ public class LearnEntry extends LogEntry {
     public String getDescription(){
         String ret;
         if(startSlide ==endSlide ){
-            ret = mContext.getResources().getQuantityString(R.plurals.logging_numSlides, 1)+" "+(startSlide+1);
+            ret = mResources.getQuantityString(R.plurals.logging_numSlides, 1)+" "+(startSlide+1);
         } else {
-            ret = mContext.getResources().getQuantityString(R.plurals.logging_numSlides, 2)+" "+(startSlide+1)+"-"+(endSlide+1);
+            ret = mResources.getQuantityString(R.plurals.logging_numSlides, 2)+" "+(startSlide+1)+"-"+(endSlide+1);
         }
         ret+=" ("+formatDuration(duration)+")";
         return ret;
     }
 
     private String formatDuration(long duration){
-        String secUnit = mContext.getString(R.string.SECONDS_ABBREVIATION);
-        String minUnit = mContext.getString(R.string.MINUTES_ABBREVIATION);
+        String secUnit = mResources.getString(R.string.SECONDS_ABBREVIATION);
+        String minUnit = mResources.getString(R.string.MINUTES_ABBREVIATION);
         if(duration<1000){
             return ("<1 "+secUnit);
         }

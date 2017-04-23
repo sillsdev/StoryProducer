@@ -8,10 +8,10 @@ import org.sil.storyproducer.model.StoryState;
 public class ComChkEntry extends LogEntry {
     private int slideNum;
     private Type type;
-    private static Context mContext = null;
+    private static String mPhase;
 
     public static void init(Context context){
-        mContext=context;
+        mPhase = context.getString(R.string.community_check_title);
         Type.init(context);
     }
 
@@ -26,7 +26,7 @@ public class ComChkEntry extends LogEntry {
     }
 
     public String getPhase(){
-        return mContext.getString(R.string.community_check_title);
+        return mPhase;
     }
 
     @Override

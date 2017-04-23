@@ -9,10 +9,10 @@ public class DraftEntry extends LogEntry {
 
     private int slideNum;
     private Type type;
-    private static Context mContext=null;
+    private static String mPhase;
 
     public static void init(Context context){
-        mContext = context;
+        mPhase = context.getString(R.string.draftTitle);
         Type.init(context);
     }
 
@@ -27,7 +27,7 @@ public class DraftEntry extends LogEntry {
     }
 
     public String getPhase(){
-        return mContext.getString(R.string.draftTitle);
+        return mPhase;
     }
 
     @Override
