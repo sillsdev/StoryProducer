@@ -102,6 +102,7 @@ public class ConsultantCheckFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 draftPlayer.stopAudio();
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
             }
         }
     }
