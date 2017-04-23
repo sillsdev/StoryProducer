@@ -59,7 +59,7 @@ public class Logging {
         Log ret = null;
         if(file.exists()) {
             try {
-                ret = (Log) loadObject(file.getAbsolutePath());
+                ret = loadLog(file.getAbsolutePath());
             } catch (ClassNotFoundException | IOException e) {
                 android.util.Log.e(TAG, "Failed to load log!", e);
                 ret = null;
@@ -103,7 +103,7 @@ public class Logging {
         currentLog.addAll(le);
 
         try {
-            saveObject(currentLog, file.getAbsolutePath());
+            saveLog(currentLog, file.getAbsolutePath());
         } catch (IOException e) {
             android.util.Log.e(TAG, "Failed to save log object!", e);
         }
@@ -111,13 +111,14 @@ public class Logging {
 
     }
 
-    private static void saveObject(Object obj, String fileName) throws IOException {
+    private static void saveLog(Log log, String fileName) throws IOException {
+        //TODO: consider using some kind of custom serialization
 
         FileOutputStream fOut = new FileOutputStream(fileName);
         try {
             ObjectOutputStream oOut = new ObjectOutputStream(fOut);
             try {
-                oOut.writeObject(obj);
+                oOut.writeObject(log);
             } finally {
                 oOut.close();
             }
@@ -129,7 +130,7 @@ public class Logging {
             */
     }
 
-    private static Object loadObject(String fileName) throws IOException, ClassNotFoundException {
+    private static Log loadLog(String fileName) throws IOException, ClassNotFoundException {
         Object ret=null;
 
         FileInputStream fIn = new FileInputStream(fileName);
@@ -143,6 +144,6 @@ public class Logging {
         } finally {
             fIn.close();
         }
-        return ret;
+        return (Log) ret;
     }
 }
