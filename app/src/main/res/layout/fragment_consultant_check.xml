@@ -88,10 +88,6 @@
             android:id="@+id/concheck_draft_playback_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_colorPressed="@color/lightGray"
-            fab:fab_icon="@drawable/ic_play"
-            fab:fab_title="Play"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_margin="10dp"/>

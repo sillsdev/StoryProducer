@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -57,6 +58,8 @@ public class ConsultantCheckFrag extends Fragment {
     private SlideText slideText;
     private TextView slideTextView;
     private boolean draftAudioExists;
+    private boolean draftAudioPaused;
+    private ImageButton draftPlaybackButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -69,6 +72,7 @@ public class ConsultantCheckFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false);
+        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.concheck_draft_playback_button);
         storyName = StoryState.getStoryName();
         slideText = TextFiles.getSlideText(storyName, slidePosition);
 
@@ -98,6 +102,7 @@ public class ConsultantCheckFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 draftPlayer.stopAudio();
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
             }
         }
     }
@@ -113,6 +118,14 @@ public class ConsultantCheckFrag extends Fragment {
         } else {
             draftAudioExists = false;
         }
+        draftAudioPaused = false;
+        draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //TODO: use non-deprecated method; currently used to support older devices
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
+            }
+        });
     }
 
     /**
@@ -215,17 +228,29 @@ public class ConsultantCheckFrag extends Fragment {
      * button will have a listener added to it in order to detect playback when pressed.
      * @param button the ImageButton view handler to set the onclicklistener to
      */
-    private void setDraftPlaybackButton(ImageButton button) {
+    private void setDraftPlaybackButton(final ImageButton button) {
+        //TODO: use non-deprecated method; currently used to support older devices
+        button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //stop other playback streams.
-                if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
-                    draftPlayer.stopAudio();
-                }
-                if (draftAudioExists) {
-                    draftPlayer.playAudio();
+                boolean wasPlaying = draftPlayer.isAudioPlaying();
+                if (draftAudioExists && !wasPlaying) {
+                    if (draftAudioPaused) {
+                        draftPlayer.resumeAudio();
+                        draftAudioPaused = false;
+                    } else {
+                        draftPlayer.playAudio();
+                    }
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_pause_blue, null));
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                } else if (wasPlaying) {
+                    draftPlayer.pauseAudio();
+                    draftAudioPaused = true;
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
                     Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
                 }

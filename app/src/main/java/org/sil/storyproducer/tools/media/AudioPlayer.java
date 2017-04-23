@@ -71,9 +71,18 @@ public class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     public void resumeAudio() {
-        int pauseSpot = mPlayer.getCurrentPosition();
-        mPlayer.seekTo(pauseSpot);
-        mPlayer.start();
+        try {
+            if (!isPrepared) {
+                mPlayer.prepare();
+                isPrepared = true;
+            }
+            int pauseSpot = mPlayer.getCurrentPosition();
+            mPlayer.seekTo(pauseSpot);
+            mPlayer.start();
+        } catch (IOException e) {
+            //TODO maybe initializeToolbar with this exception
+            e.printStackTrace();
+        }
     }
 
     /**
