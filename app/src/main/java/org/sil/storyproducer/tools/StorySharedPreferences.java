@@ -69,7 +69,7 @@ public class StorySharedPreferences {
                     values.add(str);
                 }
             } catch (JSONException e) {
-                Log.e("STRING ARRAY PREF ERROR", e.getMessage());
+                Log.e("StorySharedPrefs", "something broke in getStringArrayPref", e);
             }
         }
         return values;
