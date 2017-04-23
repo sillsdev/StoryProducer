@@ -45,27 +45,27 @@ public class RecordingToolbar extends AnimationToolbar {
     private final int STOP_RECORDING_DELAY = 0;
 
     private FloatingActionButton fabPlus;
-    private LinearLayout toolbar;
+    protected LinearLayout toolbar;
     private Modal multiRecordModal;
 
-    private LinearLayout rootViewToolbarLayout;
+    protected LinearLayout rootViewToolbarLayout;
     private View rootViewToEmbedToolbarIn;
     private String recordFilePath;
-    private String playbackRecordFilePath;
-    private Context appContext;
+    protected String playbackRecordFilePath;
+    protected Context appContext;
     //private Activity currentActivity;
 
-    private ImageButton micButton;
-    private ImageButton playButton;
-    private ImageButton deleteButton;
-    private ImageButton multiRecordButton;
+    protected ImageButton micButton;
+    protected ImageButton playButton;
+    protected ImageButton deleteButton;
+    protected ImageButton multiRecordButton;
     private ArrayList<AuxiliaryMedia> auxiliaryMediaList;
 
 
-    private boolean isRecording;
-    private boolean enablePlaybackButton;
-    private boolean enableDeleteButton;
-    private boolean enableMultiRecordButton;
+    protected boolean isRecording;
+    protected boolean enablePlaybackButton;
+    protected boolean enableDeleteButton;
+    protected boolean enableMultiRecordButton;
 
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
@@ -212,13 +212,13 @@ public class RecordingToolbar extends AnimationToolbar {
         super.close();
     }
 
-    private void startRecording() {
+    protected void startRecording() {
         startAudioRecorder();
         startRecordingAnimation(false, 0);
         recordingListener.startedRecordingOrPlayback();
     }
 
-    private void stopRecording() {
+    protected void stopRecording() {
         stopAudioRecorder();
         stopRecordingAnimation();
         recordingListener.stoppedRecording();

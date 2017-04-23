@@ -9,6 +9,9 @@ import java.nio.ByteOrder;
  * Class created to append a header to a PCM file.
  * The header of the Wav file resembles Microsoft's RIFF specification.<br/>
  * A specification can be found <a href=http://soundfile.sapp.org/doc/WaveFormat/>here</a>.
+ *
+ * Recommend using the class WavAudioRecorder {@link org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder} <br/>
+ * or use AudioRecord {@link android.media.AudioRecord} to save to raw PCM audio.
  */
 public class WavFileCreator {
     private static final int HEADER_SIZE_BYTES = 44;
@@ -18,24 +21,32 @@ public class WavFileCreator {
     private static byte[] audioDataHeader;
     private static AudioAttributes audioAttributes;
 
-    public static byte[] createWavFile(short[] audData, AudioAttributes audioAttrib) {
+    public static byte[] createWavFileInBytes(short[] audData, AudioAttributes audioAttrib) {
         //convert using ByteBuffer
         ByteBuffer byteBuffer = ByteBuffer.allocate(audData.length * 2);
         for (short s : audData) {
             byteBuffer.putShort(s);
         }
 
-        return createWavFile(byteBuffer.array(), audioAttrib);
+        return createWavFileInBytes(byteBuffer.array(), audioAttrib);
     }
 
-    public static byte[] createWavFile(byte[] audioDat, AudioAttributes audioAttrib) {
-        audioData = audioDat;
+    /**
+     * Creates the WAV file and header from the PCM file. Saves the file in a byte array.
+     * To save to a file use a FileOutputStream {@link java.io.FileOutputStream} to efficiently
+     * store the byte array.
+     * @param audioDatPcm The raw audio saved in PCM file format.
+     * @param audioAttrib The specifications of how the PCM file was recorded. {@link org.sil.storyproducer.tools.media.wavaudio.WavFileCreator.AudioAttributes}
+     * @return The byte representation of the Wav file.
+     */
+    public static byte[] createWavFileInBytes(byte[] audioDatPcm, AudioAttributes audioAttrib) {
+        audioData = audioDatPcm;
         audioAttributes = audioAttrib;
         makeHeaders();
         byte[] totalFile = new byte[HEADER_SIZE_BYTES + audioData.length];
-        byte[][] headerFiles = new byte[][]{fileHeader, fmtHeader, audioDataHeader, convertToLittleAudData(audioData)};
+        byte[][] headersAndAudio = new byte[][]{fileHeader, fmtHeader, audioDataHeader, convertToLittleAudData(audioData)};
         int i = 0;
-        for (byte[] bArr : headerFiles) {
+        for (byte[] bArr : headersAndAudio) {
             for (byte bite : bArr) {
                 totalFile[i++] = bite;
             }
@@ -45,7 +56,7 @@ public class WavFileCreator {
     }
 
     /**
-     * Specifying the various attributes of the raw data and how the raw data was captured.
+     * Specifying the various attributes of the raw PCM data and how the raw data was captured.
      */
     public static class AudioAttributes {
         private int outputFormat;

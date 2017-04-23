@@ -1,9 +1,6 @@
 package org.sil.storyproducer.controller.draft;
 
 import android.graphics.Bitmap;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -36,9 +33,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -92,56 +87,56 @@ public class DraftFrag extends Fragment {
         setTestButtons(rootView.findViewById(R.id.fragment_draft_test_button1), rootView.findViewById(R.id.fragment_draft_test_button2));
 
         File fil = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
-        if(!fil.exists()){
+        if (!fil.exists()) {
             wavAudioRecorder = new WavAudioRecorder(getActivity(), fil, slideNumber);
-        }else{
-            wavAudioRecorder = new WavAudioRecorder(getActivity(),  AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber), slideNumber);
+        } else {
+            wavAudioRecorder = new WavAudioRecorder(getActivity(), AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber), slideNumber);
         }
 
         return rootView;
     }
 
-    public void setTestButtons(View... view){
+    public void setTestButtons(View... view) {
         Button testButton;
-        if(view[0] instanceof Button){
-            testButton = (Button)view[0];
+        if (view[0] instanceof Button) {
+            testButton = (Button) view[0];
 
             testButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     File fil = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
-                    if(fil.exists()){
+                    if (fil.exists()) {
                         wavAudioRecorder.recordToPath(AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber));
                     }
-                    if(!wavAudioRecorder.isRecording()){
+                    if (!wavAudioRecorder.isRecording()) {
                         wavAudioRecorder.startRecording();
                         Toast.makeText(getContext(), "started to record.", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else {
                         wavAudioRecorder.stopRecording();
-                        if(AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber).exists()){
-                            try{
+                        Toast.makeText(getContext(), "stopped recording.", Toast.LENGTH_SHORT).show();
+                        if (AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber).exists()) {
+                            try {
                                 WavFileConcatenator.ConcatenateAudioFiles(AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber), AudioFiles.getDraftTempWav(StoryState.getStoryName(), slideNumber));
-                            }catch(IOException e){
+                            } catch (FileNotFoundException e) {
 
                             }
-                        }
 
-                        Toast.makeText(getContext(), "stopped recording.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             });
         }
 
-        if(view[1] instanceof Button){
-            testButton = (Button)view[1];
+        if (view[1] instanceof Button) {
+            testButton = (Button) view[1];
 
             testButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     File file = AudioFiles.getDraftWav(StoryState.getStoryName(), slideNumber);
 
-                    if(file.exists()){
+                    if (file.exists()) {
                         final AudioPlayer audioPlayer = new AudioPlayer();
                         audioPlayer.playWithPath(file.getPath());
                         audioPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -166,7 +161,7 @@ public class DraftFrag extends Fragment {
 //                        }
 
 
-                    }else{
+                    } else {
                         Toast.makeText(getContext(), "Recording does not exist!", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -402,13 +397,13 @@ public class DraftFrag extends Fragment {
             };
             DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, modal , recordingListener);
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, modal, recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }
     }
 
-    //used in the DraftListREcordingsModal
+    //used in the DraftListRecordingsModal
     //TODO add to the area where the other public functions in this class.
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
