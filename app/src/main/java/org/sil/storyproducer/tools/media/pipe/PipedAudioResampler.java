@@ -70,6 +70,29 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mChannelCount = channelCount;
     }
 
+    /**
+     * <p>Gets a {@link PipedMediaByteBufferSource} with the correct sampling.</p>
+     * <p>This method works by checking the output format of an already setup source
+     * against the desired sampling parameters. If the source already matches, it is merely
+     * returned. Otherwise, a resampler is inserted into the pipeline.</p>
+     */
+    public static PipedMediaByteBufferSource correctSampling(PipedMediaByteBufferSource src, int sampleRate, int channelCount)
+            throws IOException, SourceUnacceptableException {
+        MediaFormat format = src.getOutputFormat();
+
+        boolean isSamplingCorrect = (sampleRate == 0 || format.getInteger(MediaFormat.KEY_SAMPLE_RATE) == sampleRate)
+                && (channelCount == 0 || format.getInteger(MediaFormat.KEY_CHANNEL_COUNT) == channelCount);
+
+        if(!isSamplingCorrect) {
+            PipedAudioResampler resampler = new PipedAudioResampler(sampleRate, channelCount);
+            resampler.addSource(src);
+            return resampler;
+        }
+        else {
+            return src;
+        }
+    }
+
     @Override
     public MediaFormat getOutputFormat() {
         return mOutputFormat;
@@ -93,6 +116,10 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         if(mSource == null) {
             throw new SourceUnacceptableException("Source cannot be null!");
         }
@@ -129,6 +156,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             //This case should not happen.
             throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
         }
+
+        mComponentState = State.SETUP;
 
         start();
     }

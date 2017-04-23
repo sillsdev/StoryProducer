@@ -17,6 +17,7 @@ import java.io.File;
 public class StoryPage {
     private final File mImage;
     private final File mNarrationAudio;
+    private final File mSoundtrackAudio;
     private final long mDuration;
     private final KenBurnsEffect mKBFX;
     private final String mText;
@@ -90,18 +91,33 @@ public class StoryPage {
      * @param text text for overlaying page.
      */
     private StoryPage(File image, File narrationAudio, long duration, KenBurnsEffect kbfx, String text) {
+        this(image, narrationAudio, duration, kbfx, text, null);
+    }
+
+    /**
+     * Create page.
+     * @param image picture for the video.
+     * @param narrationAudio narration for the background of the video.
+     * @param duration length of page in microseconds.
+     * @param kbfx Ken Burns effect for the image.
+     * @param text text for overlaying page.
+     * @param soundtrackAudio soundtrack for page
+     */
+    public StoryPage(File image, File narrationAudio, long duration, KenBurnsEffect kbfx,
+                      String text, File soundtrackAudio) {
         mImage = image;
         mNarrationAudio = narrationAudio;
         mDuration = duration;
         mKBFX = kbfx;
         mText = text;
+        mSoundtrackAudio = soundtrackAudio;
     }
 
     /**
-     * Get the audio duration.
+     * Get the audio duration without any transition time.
      * @return duration in microseconds.
      */
-    public long getDuration() {
+    public long getAudioDuration() {
         if(mNarrationAudio != null) {
             return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
         }
@@ -123,11 +139,39 @@ public class StoryPage {
         return mNarrationAudio;
     }
 
+    public File getSoundtrackAudio() {
+        return mSoundtrackAudio;
+    }
+
     public KenBurnsEffect getKenBurnsEffect() {
         return mKBFX;
     }
 
     public String getText() {
         return mText;
+    }
+
+    /**
+     * Get the duration of a page. This duration includes audio transition time.
+     */
+    public long getDuration(long audioTransition) {
+        //audio duration plus two half audio transition periods of silence on either end
+        return getAudioDuration() + audioTransition;
+    }
+
+    /**
+     * Gets the duration this page is the only page showing.
+     */
+    public long getExclusiveDuration(long audioTransition, long slideCrossFade) {
+        //page duration minus two half slide cross-fades on either end
+        return getDuration(audioTransition) - slideCrossFade;
+    }
+
+    /**
+     * Gets the duration this page is visible, including overlap time with other slides.
+     */
+    public long getVisibleDuration(long audioTransition, long slideCrossFade) {
+        //page duration plus two half slide cross-fades on either end
+        return getDuration(audioTransition) + slideCrossFade;
     }
 }
