@@ -1,11 +1,6 @@
 package org.sil.storyproducer.controller.logging;
 
-import java.io.Serializable;
 import java.util.TreeSet;
-
-/**
- * Created by user on 1/23/2017.
- */
 
 //use composition or inheritance w/ a TreeSet to add some extra data to it, like its lang & story
 

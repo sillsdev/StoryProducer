@@ -5,10 +5,6 @@ import java.util.GregorianCalendar;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 
-/**
- * Created by user on 1/15/2017.
- */
-
 public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     private GregorianCalendar dateTime;
     private Long nanoTime;

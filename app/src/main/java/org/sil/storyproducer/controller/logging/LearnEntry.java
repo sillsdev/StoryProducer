@@ -7,10 +7,6 @@ import org.sil.storyproducer.R;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-/**
- * Created by user on 1/15/2017.
- */
-
 public class LearnEntry extends LogEntry {
     private static long MIN_DURATION = 500;
 

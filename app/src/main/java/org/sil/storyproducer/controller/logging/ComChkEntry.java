@@ -5,11 +5,6 @@ import android.content.Context;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.StoryState;
 
-/**
- * Created by Michael D. Baxter on 1/16/2017.
- *
- */
-
 public class ComChkEntry extends LogEntry {
     private int slideNum;
     private Type type;

@@ -16,10 +16,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
 
-/**
- * Created by Michael D. Baxter on 1/22/2017.
- */
-
 public class Logging {
 
     private static String mLogsRootDir = null; //should be constant. initialized in init.
