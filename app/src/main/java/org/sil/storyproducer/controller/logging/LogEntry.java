@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     private GregorianCalendar dateTime;
     private Long nanoTime;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd yyyy h:mm a");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("EEE MMM dd yyyy h:mm a");
 
     public String getDescription(){
 
@@ -31,7 +31,7 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
     }
 
     public String getDateTime(){
-        return dateFormat.format(dateTime.getTime());
+        return DATE_FORMAT.format(dateTime.getTime());
     }
 
 
