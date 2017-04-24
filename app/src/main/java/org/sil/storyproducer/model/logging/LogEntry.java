@@ -26,9 +26,7 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
 
     public abstract String getPhase();
 
-    public int getSlideNum(){
-        return -1;
-    }
+    public abstract boolean appliesToSlideNum(int slideNum);
 
     public String getDateTime(){
         return DATE_FORMAT.format(dateTime.getTime());

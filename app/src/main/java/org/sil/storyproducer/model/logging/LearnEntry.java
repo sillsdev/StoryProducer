@@ -25,10 +25,17 @@ public class LearnEntry extends LogEntry {
         this.duration=duration;
     }
 
+    @Override
     public String getPhase(){
         return mResources.getString(R.string.learnTitle);
     }
 
+    @Override
+    public boolean appliesToSlideNum(int slideNum) {
+        return slideNum >= startSlide && slideNum <= endSlide;
+    }
+
+    @Override
     public int getColor(){
         return R.color.learn_phase;
     }

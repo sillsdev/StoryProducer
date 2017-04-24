@@ -49,7 +49,7 @@ public class LogView {
                     displayEntries = log.toArray(new LogEntry[0]);
                 } else {
                     for (LogEntry le : log) {
-                        if (slide == le.getSlideNum() || le instanceof LearnEntry) {
+                        if (le.appliesToSlideNum(slide)) {
                             if(le instanceof LearnEntry){
                                 learnEntries.add((LearnEntry) le);
                             } else if (le instanceof DraftEntry){

@@ -22,17 +22,19 @@ public class DraftEntry extends LogEntry {
         this.type=type;
     }
 
+    @Override
     public int getColor(){
         return R.color.draft_phase;
     }
 
+    @Override
     public String getPhase(){
         return mPhase;
     }
 
     @Override
-    public int getSlideNum() {
-        return slideNum;
+    public boolean appliesToSlideNum(int slideNum) {
+        return slideNum == this.slideNum;
     }
 
     @Override

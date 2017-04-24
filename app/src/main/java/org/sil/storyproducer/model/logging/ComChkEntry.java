@@ -21,17 +21,19 @@ public class ComChkEntry extends LogEntry {
         this.slideNum=slideNum;
     }
 
+    @Override
     public int getColor(){
         return R.color.comunity_check_phase;
     }
 
+    @Override
     public String getPhase(){
         return mPhase;
     }
 
     @Override
-    public int getSlideNum(){
-        return slideNum;
+    public boolean appliesToSlideNum(int slideNum) {
+        return slideNum == this.slideNum;
     }
 
     @Override

@@ -17,9 +17,9 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -30,6 +30,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LearnActivity extends PhaseBaseActivity {
 
@@ -47,7 +48,7 @@ public class LearnActivity extends PhaseBaseActivity {
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
-    private ArrayList<Integer> backgroundAudioJumps;
+    private List<Integer> backgroundAudioJumps;
 
     //recording toolbar vars
     private String recordFilePath;
@@ -122,7 +123,7 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     private void setBackgroundAudioJumps() {
         int audioStartValue = 0;
-        backgroundAudioJumps = new ArrayList<Integer>();
+        backgroundAudioJumps = new ArrayList<>();
         backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 0; k < CONTENT_SLIDE_COUNT; k++) {
             String lwcPath = AudioFiles.getLWC(storyName, k).getPath();
@@ -142,6 +143,11 @@ public class LearnActivity extends PhaseBaseActivity {
         }
     }
 
+    private void markLogStart() {
+        startPos = slideNumber;
+        startTime = System.currentTimeMillis();
+    }
+
     private void makeLogIfNecessary(){
         makeLogIfNecessary(false);
     }
@@ -150,7 +156,7 @@ public class LearnActivity extends PhaseBaseActivity {
         if(narrationPlayer.isAudioPlaying() || backgroundPlayer.isAudioPlaying()
                 || request){
             if(startPos!=-1) {
-                LearnEntry.saveFilteredLogEntry(startPos, videoSeekBar.getProgress(),
+                LearnEntry.saveFilteredLogEntry(startPos, slideNumber,
                         System.currentTimeMillis() - startTime);
                 startPos=-1;
             }
@@ -173,7 +179,7 @@ public class LearnActivity extends PhaseBaseActivity {
 
 
     /**
-     * Plays the video and runs everytime the audio is completed
+     * Plays the video and runs every time the audio is completed
      */
     void playVideo() {
         setPic(learnImageView);                                                             //set the next image
@@ -206,13 +212,15 @@ public class LearnActivity extends PhaseBaseActivity {
     }
 
     /**
-     * Button actin for playing/pausing the audio
+     * Button action for playing/pausing the audio
      * @param view
      */
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
             pauseVideo();
         } else {
+            markLogStart();
+
             playButton.setImageResource(R.drawable.ic_pause_gray);
 
             if(slideNumber >= CONTENT_SLIDE_COUNT) {        //reset the video to the beginning because they already finished it
@@ -240,8 +248,6 @@ public class LearnActivity extends PhaseBaseActivity {
      * helper function for resuming the video
      */
     private void resumeVideo() {
-        startPos = videoSeekBar.getProgress();
-        startTime = System.currentTimeMillis();
         if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
             playVideo();
             isFirstTime = false;
@@ -266,8 +272,9 @@ public class LearnActivity extends PhaseBaseActivity {
             @Override
             public void onProgressChanged(SeekBar sBar, int progress, boolean fromUser) {
                 if(fromUser) {
-                    boolean notPlayingAudio = false;
-                    notPlayingAudio = !narrationPlayer.isAudioPlaying();
+                    makeLogIfNecessary();
+
+                    boolean notPlayingAudio = !narrationPlayer.isAudioPlaying();
                     narrationPlayer.releaseAudio();             //clear the two audios because they have to be restarted
                     backgroundPlayer.releaseAudio();
                     slideNumber = progress;
@@ -276,7 +283,6 @@ public class LearnActivity extends PhaseBaseActivity {
                     backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
                     if(slideNumber == CONTENT_SLIDE_COUNT) {
                         backgroundPlayer.releaseAudio();
-                        makeLogIfNecessary();
                         playButton.setImageResource(R.drawable.ic_play_gray);
                         setPic(learnImageView);     //sets the pic to the end image
                         showStartPracticeSnackBar();
@@ -284,14 +290,20 @@ public class LearnActivity extends PhaseBaseActivity {
                     } else {
                         playVideo();
                     }
-                    if (notPlayingAudio) narrationPlayer.pauseAudio();
+                    if (notPlayingAudio) {
+                        narrationPlayer.pauseAudio();
+                    }
+                    else {
+                        //Start a log entry if audio is playing.
+                        markLogStart();
+                    }
                 }
             }
         });
     }
 
     /**
-     * helper function that resets the vidio to the beginning and turns off the sound
+     * helper function that resets the video to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
         playButton.setImageResource(R.drawable.ic_pause_gray);
@@ -302,6 +314,9 @@ public class LearnActivity extends PhaseBaseActivity {
         setBackgroundMusic();
         backgroundPlayer.setVolume(0.0f);
         isVolumeOn = false;
+
+        markLogStart();
+
         playVideo();
     }
 
