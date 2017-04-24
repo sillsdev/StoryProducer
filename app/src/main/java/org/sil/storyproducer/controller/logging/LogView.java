@@ -157,7 +157,7 @@ public class LogView {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                t.hide();
+                t.dismiss();
             }
         });
         t.show();
