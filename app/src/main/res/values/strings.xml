@@ -95,8 +95,8 @@
 
     <!-- Draft -->
     <string name="draft_bible_story">Bible Story!</string>
-    <string name="draft_playback_no_narration_audio">Could Not Find Narration Audio...</string>
-    <string name="draft_playback_narration_audio">Playing Narration Audio...</string>
+    <string name="draft_playback_no_lwc_audio">Could Not Find Narration Audio...</string>
+    <string name="draft_playback_lwc_audio">Playing Narration Audio...</string>
 
     <!-- Logging -->
     <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
@@ -146,6 +146,8 @@
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
+    <string name="export_video_creation_header">Video Creation</string>
+    <string name="export_video_sharing_header">Video Sharing</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
@@ -212,5 +214,9 @@
         <item quantity="one">Slide</item>
         <item quantity="other">Slides</item>
     </plurals>
+
+    <string name="no_videos">No Videos to Share</string>
+    <string name="send_video">Send Video:</string>
+    <string name="file_view">File view:</string>
 
 </resources>

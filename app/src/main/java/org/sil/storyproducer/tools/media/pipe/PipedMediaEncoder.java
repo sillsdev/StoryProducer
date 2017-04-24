@@ -34,6 +34,10 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         mSource.setup();
         mSourceFormat = mSource.getOutputFormat();
 

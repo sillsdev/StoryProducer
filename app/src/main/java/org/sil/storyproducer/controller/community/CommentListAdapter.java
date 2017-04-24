@@ -44,7 +44,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.audio_comment_list_item, parent, false);
         TextView titleView = (TextView) rowView.findViewById(R.id.audio_comment_title);
-        ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
+        final ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
         ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
@@ -52,7 +52,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                commCheck.playComment(values[position]);
+                commCheck.playCommentClicked(values[position], playButton);
                 LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
             }
         });
