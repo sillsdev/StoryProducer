@@ -24,7 +24,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
 /**
- * This class handles the layout inflation for the audio comment list
+ * This class handles the layout inflation for an audio recording list
  */
 
 public class RecordingsListAdapter extends ArrayAdapter<String> {
@@ -64,10 +64,10 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     }
 
     public interface ClickListeners {
-        void onRowClickListener(String name);
-        void onPlayClickListener(String name);
-        void onDeleteClickListener(String name);
-        AudioFiles.RenameCode onRenameClickListener(String name, String newName);
+        void onRowClick(String name);
+        void onPlayClick(String name);
+        void onDeleteClick(String name);
+        AudioFiles.RenameCode onRenameClick(String name, String newName);
         void onRenameSuccess();
     }
 
@@ -87,13 +87,13 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listeners.onRowClickListener(values[position]);
+                    listeners.onRowClick(values[position]);
                 }
             });
             titleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listeners.onRowClickListener(values[position]);
+                    listeners.onRowClick(values[position]);
                 }
             });
             if(listeners instanceof DraftListRecordingsModal &&
@@ -113,7 +113,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listeners.onPlayClickListener(values[position]);
+                listeners.onPlayClick(values[position]);
             }
         });
 
@@ -127,7 +127,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         titleView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showCommentRenameDialog(position);
+                showItemRenameDialog(position);
                 return true;
             }
         });
@@ -135,9 +135,9 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     }
 
     /**
-     * Shows a dialog to the user asking if they really want to delete the comment
+     * Shows a dialog to the user asking if they really want to delete the recording
      *
-     * @param position the integer position of the comment where the button was pressed
+     * @param position the integer position of the recording where the button was pressed
      */
     private void showDeleteItemDialog(final int position) {
         String title = context.getResources().getString(R.string.delete_comment_title);
@@ -155,7 +155,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        listeners.onDeleteClickListener(values[position]);
+                        listeners.onDeleteClick(values[position]);
                     }
                 }).create();
 
@@ -167,7 +167,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
      *
      * @param position the integer position of the comment the user "long-clicked"
      */
-    private void showCommentRenameDialog(final int position) {
+    private void showItemRenameDialog(final int position) {
         final EditText newName = new EditText(context);
 
         // Programmatically set layout properties for edit text field
@@ -178,13 +178,13 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         newName.setLayoutParams(params);
 
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.comment_rename_title))
+                .setTitle(context.getString(R.string.rename_title))
                 .setView(newName)
                 .setNegativeButton(context.getString(R.string.cancel), null)
                 .setPositiveButton(context.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = listeners.onRenameClick(values[position], newName.getText().toString());
                         switch(returnCode) {
 
                             case SUCCESS:

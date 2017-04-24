@@ -24,9 +24,9 @@ public class AudioFiles {
     private static final String COMMENT_PREFIX = "comment";
     private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
 
-    private final static String DRAFT = "Draft";
-    private final static String COMMUNITY = "Comment";
-    private final static String DRAMATIZATION = "Dramatization";
+    private enum ModalType {
+        DRAFT, COMMUNITY, DRAMATIZATION
+    }
 
     public enum RenameCode {
         SUCCESS,
@@ -64,8 +64,7 @@ public class AudioFiles {
     //*** Draft ***
 
     public static File getDraft(String story, int slide) {
-        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + SOUNDTRACK_EXTENSION;
-        return new File(FileSystem.getProjectDirectory(story), fileName);
+        return getDraft(story, slide, StorySharedPreferences.getDraftForSlideAndStory(slide, story));
     }
 
     public static File getDraft(String story, int slide, String draftTitle) {
@@ -94,7 +93,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDraft(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, DRAFT, SOUNDTRACK_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, SOUNDTRACK_EXTENSION);
     }
 
     /**
@@ -114,7 +113,7 @@ public class AudioFiles {
     //*** Community Check ***
 
     public static File getComment(String story, int slide, String commentTitle) {
-        return new File(FileSystem.getProjectDirectory(story), COMMENT_PREFIX+slide+"_"+ commentTitle + PREFER_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), COMMENT_PREFIX+slide + "_" + commentTitle + PREFER_EXTENSION);
     }
 
     /**
@@ -139,7 +138,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameComment(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, COMMUNITY, PREFER_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.COMMUNITY, PREFER_EXTENSION);
     }
 
     /**
@@ -157,8 +156,7 @@ public class AudioFiles {
     //*** Dramatization ***
 
     public static File getDramatization(String story, int slide){
-        String fileName = DRAMATIZATION_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDramatizationForSlideAndStory(slide, story) + SOUNDTRACK_EXTENSION;
-        return new File(FileSystem.getProjectDirectory(story), fileName);
+        return getDramatization(story, slide, StorySharedPreferences.getDramatizationForSlideAndStory(slide, story));
     }
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
@@ -187,7 +185,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDramatization(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, DRAMATIZATION, SOUNDTRACK_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, SOUNDTRACK_EXTENSION);
     }
 
     /**
@@ -201,7 +199,7 @@ public class AudioFiles {
     }
 
     //**** Helpers ***//
-    private static RenameCode renameAudioFileHelper(String story, int slide, String oldTitle, String newTitle, String type, String extension) {
+    private static RenameCode renameAudioFileHelper(String story, int slide, String oldTitle, String newTitle, ModalType type, String extension) {
         // Requirements for file names:
         //        - must be under 20 characters
         //        - must be only contain alphanumeric characters or spaces/underscores

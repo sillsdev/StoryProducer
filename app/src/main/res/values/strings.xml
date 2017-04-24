@@ -63,6 +63,7 @@
     <string name="comment_delete_title">Delete Comment?</string>
     <string name="comment_delete_message">Do you want to delete this audio comment?</string>
     <string name="comment_rename_title">Rename Comment</string>
+    <string name="rename_title">Rename Title</string>
     <string name="draft_recordings_title">Draft Recordings</string>
     <string name="dramatization_recordings_title">Dramatize Recordings</string>
     <string name="consultant_password_title">Consultant Password</string>
@@ -130,7 +131,7 @@
     <string name="delete_comment_title">Delete Comment?</string>
     <string name="delete_comment_message">Do you want to delete this audio comment?</string>
     <string name="delete_draft_title">Delete Draft?</string>
-    <string name="delete_draft_message">Do you want to delete this audio Draft?</string>
+    <string name="delete_draft_message">Do you want to delete this audio draft?</string>
     <string name="delete_dramatize_title">Delete Dramatization?</string>
     <string name="delete_dramatize_message">Do you want to delete this audio dramatization?</string>
     <string name="renamed_success">File successfully renamed</string>

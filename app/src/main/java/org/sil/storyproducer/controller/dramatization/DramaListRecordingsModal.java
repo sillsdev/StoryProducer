@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
-import org.sil.storyproducer.controller.draft.Modal;
+import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -65,7 +65,7 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onRowClickListener(String recordingTitle) {
+    public void onRowClick(String recordingTitle) {
         StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
         //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
@@ -73,7 +73,7 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onPlayClickListener(String recordingTitle) {
+    public void onPlayClick(String recordingTitle) {
         final File dramaFile = AudioFiles.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         parentFragment.stopPlayBackAndRecording();
         if (dramaFile.exists()) {
@@ -86,7 +86,7 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onDeleteClickListener(String recordingTitle) {
+    public void onDeleteClick(String recordingTitle) {
         AudioFiles.deleteDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
@@ -102,7 +102,7 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public AudioFiles.RenameCode onRenameClickListener(String name, String newName) {
+    public AudioFiles.RenameCode onRenameClick(String name, String newName) {
         lastOldName = name;
         lastNewName = newName;
         return AudioFiles.renameDramatization(StoryState.getStoryName(), slidePosition, name, newName);

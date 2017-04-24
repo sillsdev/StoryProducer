@@ -1,5 +1,7 @@
-package org.sil.storyproducer.controller.draft;
+package org.sil.storyproducer.controller;
 
+
+import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 
 /**
  * The purpose of this class is to have a parent class of the DraftListRecordingsModal and DramaListRecordingsModal classes.

@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -63,7 +64,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onRowClickListener(String recordingTitle) {
+    public void onRowClick(String recordingTitle) {
         StorySharedPreferences.setDraftForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
         //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
@@ -71,7 +72,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onPlayClickListener(String recordingTitle) {
+    public void onPlayClick(String recordingTitle) {
         final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
         parentFragment.stopPlayBackAndRecording();
         if (draftFile.exists()) {
@@ -84,7 +85,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public void onDeleteClickListener(String recordingTitle) {
+    public void onDeleteClick(String recordingTitle) {
         AudioFiles.deleteDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if(StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
@@ -100,7 +101,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     }
 
     @Override
-    public AudioFiles.RenameCode onRenameClickListener(String name, String newName) {
+    public AudioFiles.RenameCode onRenameClick(String name, String newName) {
         lastOldName = name;
         lastNewName = newName;
         return AudioFiles.renameDraft(StoryState.getStoryName(), slidePosition, name, newName);
