@@ -7,7 +7,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.tools.file.LogFiles;
 
 public class LearnEntry extends LogEntry {
-    private static long MIN_DURATION = 500;
+    private static final long MIN_DURATION_MS = 500;
 
     private int startSlide;
     private int endSlide;
@@ -18,8 +18,8 @@ public class LearnEntry extends LogEntry {
         mResources = context.getResources();
     }
 
-    private LearnEntry(long dateTime, int start, int end, long duration){
-        super(dateTime);
+    private LearnEntry(long timestamp, int start, int end, long duration){
+        super(timestamp);
         startSlide =start;
         endSlide =end;
         this.duration=duration;
@@ -75,7 +75,7 @@ public class LearnEntry extends LogEntry {
      * @return
      */
     public static boolean saveFilteredLogEntry(int start, int end, long duration){
-        if (duration < MIN_DURATION){
+        if (duration < MIN_DURATION_MS){
             return false;
         }
         LogFiles.saveLogEntry(new LearnEntry(System.currentTimeMillis(), start, end, duration));

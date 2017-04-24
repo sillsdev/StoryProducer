@@ -16,9 +16,9 @@ public abstract class LogEntry implements Serializable, Comparable<LogEntry> {
 
     }
 
-    LogEntry(long dateTime){
+    LogEntry(long timestamp){
         this.dateTime=new GregorianCalendar();
-        this.dateTime.setTimeInMillis(dateTime);
+        this.dateTime.setTimeInMillis(timestamp);
         this.nanoTime = System.nanoTime();
     }
 

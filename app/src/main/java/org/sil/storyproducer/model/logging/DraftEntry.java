@@ -16,8 +16,8 @@ public class DraftEntry extends LogEntry {
         Type.init(context);
     }
 
-    private DraftEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime);
+    private DraftEntry(long timestamp, Type type, int slideNum) {
+        super(timestamp);
         this.slideNum=slideNum;
         this.type=type;
     }

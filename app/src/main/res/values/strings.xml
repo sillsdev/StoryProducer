@@ -99,6 +99,7 @@
     <string name="draft_playback_narration_audio">Playing Narration Audio...</string>
 
     <!-- Logging -->
+    <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
     <string name="logging_item_date">Date</string>
     <string name="logging_item_type">Type</string>
 

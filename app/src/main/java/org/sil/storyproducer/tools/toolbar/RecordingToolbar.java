@@ -181,6 +181,7 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     private void startRecording() {
+        //TODO: make this logging more robust and encapsulated
         if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT){
             LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry());
         }
@@ -336,7 +337,10 @@ public class RecordingToolbar extends AnimationToolbar {
                             audioPlayer.playWithPath(recordFilePath);
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                            LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry());
+                            //TODO: make this logging more robust and encapsulated
+                            if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT) {
+                                LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry());
+                            }
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }

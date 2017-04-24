@@ -15,8 +15,8 @@ public class ComChkEntry extends LogEntry {
         Type.init(context);
     }
 
-    private ComChkEntry(long dateTime, Type type, int slideNum) {
-        super(dateTime);
+    private ComChkEntry(long timestamp, Type type, int slideNum) {
+        super(timestamp);
         this.type=type;
         this.slideNum=slideNum;
     }
