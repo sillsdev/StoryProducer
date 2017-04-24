@@ -31,7 +31,7 @@ public class AudioPlayer {
             mPlayer.setDataSource(path);
             isPathSet = true;
         } catch (IOException e) {
-            //TODO maybe initializeToolbar with this exception
+            //TODO maybe do something with this exception
             e.printStackTrace();
         }
     }
@@ -47,21 +47,21 @@ public class AudioPlayer {
                 isPrepared = true;
             }
         } catch (IOException e) {
-            //TODO maybe initializeToolbar with this exception
+            //TODO maybe do something with this exception
             e.printStackTrace();
         }
         mPlayer.start();
     }
 
     /**
-     * Pauses the audio if it is currenlty being played
+     * Pauses the audio if it is currently being played
      */
     public void pauseAudio() {
         if(mPlayer.isPlaying()) {
             try {
                 mPlayer.pause();
             } catch (IllegalStateException e) {
-                //TODO maybe initializeToolbar with this exception
+                //TODO maybe do something with this exception
                 e.printStackTrace();
             }
         }
@@ -80,7 +80,7 @@ public class AudioPlayer {
             mPlayer.seekTo(pauseSpot);
             mPlayer.start();
         } catch (IOException e) {
-            //TODO maybe initializeToolbar with this exception
+            //TODO maybe do something with this exception
             e.printStackTrace();
         }
     }
@@ -94,7 +94,7 @@ public class AudioPlayer {
                 mPlayer.stop();
                 isPrepared = false;
             } catch (IllegalStateException e) {
-                //TODO maybe initializeToolbar with this exception
+                //TODO maybe do something with this exception
                 e.printStackTrace();
             }
         }
@@ -125,7 +125,7 @@ public class AudioPlayer {
     }
 
     /**
-     * returns the duration of the audio as an int in miliseconds
+     * returns the duration of the audio as an int in milliseconds
      * @return the duration of the audio as an int
      */
     public int getAudioDurationInMilliseconds() {
@@ -137,7 +137,16 @@ public class AudioPlayer {
      * @param msec milliseconds for where to seek to in the audio
      */
     public void seekTo(int msec) {
-        mPlayer.seekTo(msec);
+        try {
+            if (!isPrepared) {
+                mPlayer.prepare();
+                isPrepared = true;
+            }
+            mPlayer.seekTo(msec);
+        } catch (IOException e) {
+            //TODO maybe do something with this exception
+            e.printStackTrace();
+        }
     }
 
     /**
