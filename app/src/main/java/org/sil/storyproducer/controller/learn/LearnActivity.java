@@ -189,6 +189,7 @@ public class LearnActivity extends PhaseBaseActivity {
         narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                slideNumber++;         //move to the next slide
                 if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
                     playVideo();
                 } else {                            //at the end of video so special case
@@ -202,7 +203,6 @@ public class LearnActivity extends PhaseBaseActivity {
                 }
             }
         });
-        slideNumber++;         //move to the next slide
     }
 
     /**
