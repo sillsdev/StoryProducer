@@ -98,11 +98,9 @@ public class LearnActivity extends PhaseBaseActivity {
     }
 
     /**
-     * Sets up the background music player
+     * Starts the background music player
      */
     private void playBackgroundMusic() {
-        //turn on the background music
-        backgroundPlayer.setVolume(BACKGROUND_VOLUME);
         if (backgroundAudioExists) {
             backgroundPlayer.playAudio();
         }
@@ -142,6 +140,7 @@ public class LearnActivity extends PhaseBaseActivity {
         });
 
         backgroundPlayer = new AudioPlayer();
+        backgroundPlayer.setVolume(BACKGROUND_VOLUME);
         File backgroundAudioFile = AudioFiles.getSoundtrack(StoryState.getStoryName());
         if (backgroundAudioFile.exists()) {
             backgroundAudioExists = true;
@@ -179,7 +178,7 @@ public class LearnActivity extends PhaseBaseActivity {
     }
 
     /**
-     * Plays the video and runs everytime the audio is completed
+     * Plays the video and runs every time the audio is completed
      */
     void playVideo() {
         setPic(learnImageView);                                                             //set the next image
@@ -234,7 +233,9 @@ public class LearnActivity extends PhaseBaseActivity {
             isFirstTime = false;
         } else {
             narrationPlayer.resumeAudio();
-            backgroundPlayer.resumeAudio();
+            if(backgroundAudioExists) {
+                backgroundPlayer.resumeAudio();
+            }
         }
     }
 
@@ -255,9 +256,11 @@ public class LearnActivity extends PhaseBaseActivity {
                 if(fromUser) {
                     slideNumber = progress;
                     narrationPlayer.stopAudio();
-                    backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
-                    if (!backgroundPlayer.isAudioPlaying()) {
-                        backgroundPlayer.resumeAudio();
+                    if(backgroundAudioExists) {
+                        backgroundPlayer.seekTo(backgroundAudioJumps.get(slideNumber));
+                        if (!backgroundPlayer.isAudioPlaying()) {
+                            backgroundPlayer.resumeAudio();
+                        }
                     }
                     if(slideNumber == CONTENT_SLIDE_COUNT) {
                         playButton.setImageResource(R.drawable.ic_play_gray);
