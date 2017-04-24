@@ -92,6 +92,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
                 StorySharedPreferences.setDraftForSlideAndStory(draftTitles[draftTitles.length - 1], slidePosition, StoryState.getStoryName());
             } else {
                 StorySharedPreferences.setDraftForSlideAndStory("", slidePosition, StoryState.getStoryName());       //no stories to set it to
+                parentFragment.hideButtonsToolbar();
             }
 
         }

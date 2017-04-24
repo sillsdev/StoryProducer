@@ -94,6 +94,7 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
                 StorySharedPreferences.setDramatizationForSlideAndStory(dramaTitles[dramaTitles.length - 1], slidePosition, StoryState.getStoryName());
             } else {
                 StorySharedPreferences.setDramatizationForSlideAndStory("", slidePosition, StoryState.getStoryName());       //no stories to set it to
+                parentFragment.hideButtonsToolbar();
             }
 
         }

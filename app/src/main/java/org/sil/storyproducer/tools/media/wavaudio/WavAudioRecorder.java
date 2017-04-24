@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class WavAudioRecorder {
     private static final String TAG = "WavAudioRecorder";
+    private static final String PCM_EXTENSION = ".pcm";
     private static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;
     private static final int CHANNEL_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     private static final int SAMPLE_RATE = 44100;
@@ -45,9 +46,8 @@ public class WavAudioRecorder {
      *
      * @param activity
      * @param filePathToRecordTo
-     * @param slideNumber
      */
-    public WavAudioRecorder(Activity activity, File filePathToRecordTo, int slideNumber) {
+    public WavAudioRecorder(Activity activity, File filePathToRecordTo) {
         if (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
 
@@ -56,7 +56,7 @@ public class WavAudioRecorder {
         }
 
         this.filePathToWriteWav = filePathToRecordTo;
-        this.filePathToWritePcm = AudioFiles.getDraftPCM(StoryState.getStoryName(), slideNumber);
+        this.filePathToWritePcm = new File(filePathToRecordTo.getPath() + PCM_EXTENSION);
 
         writePcmToFileRunnable = new Runnable() {
             @Override

@@ -24,7 +24,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
+import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 import java.io.File;
@@ -40,7 +40,8 @@ public class DramatizationFrag extends Fragment {
     private String draftPlayerPath = null;
     private String dramatizationRecordingPath = null;
 
-    private RecordingToolbar recordingToolbar;
+//    private RecordingToolbar recordingToolbar;
+    private PausingRecordingToolbar recordingToolbar;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -110,6 +111,17 @@ public class DramatizationFrag extends Fragment {
                 }
             }
         }
+    }
+
+    public void stopPlayBackAndRecording() {
+        recordingToolbar.stopToolbarMedia();
+    }
+
+    /**
+     * Used to hide the play and multiple recordings button.
+     */
+    public void hideButtonsToolbar(){
+        recordingToolbar.hideButtons();
     }
 
     /**
@@ -236,28 +248,31 @@ public class DramatizationFrag extends Fragment {
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void stoppedRecording() {
-                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
-                    String title = splitPath[1].replace(".mp3", "");
-                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+//                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
+//                    String title = splitPath[1].replace(".wav", "");
+//                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+//                    //update to new recording path
+//                    setRecordFilePath();
+//                    recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
+//                    //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+//                    setPlayBackPath();
+                    //update to new recording path
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
-                    setPlayBackPath();
                 }
                 @Override
                 public void startedRecordingOrPlayback() {
-                    //not used here
+                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
+                    String title = splitPath[1].replace(".wav", "");
+                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                    //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                    setPlayBackPath();
                 }
             };
             DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, modal,recordingListener);
+            recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
-    }
-
-    //used in the DramaListREcordingsModal
-    //TODO add to the area where the other public functions in this class.
-    public void stopPlayBackAndRecording() {
-        recordingToolbar.stopToolbarMedia();
     }
 }

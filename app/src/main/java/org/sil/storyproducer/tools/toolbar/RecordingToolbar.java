@@ -50,7 +50,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
     protected LinearLayout rootViewToolbarLayout;
     private View rootViewToEmbedToolbarIn;
-    private String recordFilePath;
+    protected String recordFilePath;
     protected String playbackRecordFilePath;
     protected Context appContext;
     //private Activity currentActivity;
@@ -72,9 +72,9 @@ public class RecordingToolbar extends AnimationToolbar {
     private Runnable colorHandlerRunnable;
     private boolean isToolbarRed = false;
     private MediaRecorder voiceRecorder;
-    private AudioPlayer audioPlayer;
+    protected AudioPlayer audioPlayer;
 
-    private RecordingListener recordingListener;
+    protected RecordingListener recordingListener;
 
     /**
      * The ctor.
@@ -212,6 +212,18 @@ public class RecordingToolbar extends AnimationToolbar {
         super.close();
     }
 
+    public void hideButtons(){
+        if(enablePlaybackButton){
+            playButton.setVisibility(View.INVISIBLE);
+        }
+        if(enableMultiRecordButton){
+            multiRecordButton.setVisibility(View.INVISIBLE);
+        }
+        if(enableDeleteButton){
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
     protected void startRecording() {
         startAudioRecorder();
         startRecordingAnimation(false, 0);
@@ -246,7 +258,7 @@ public class RecordingToolbar extends AnimationToolbar {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
         spaceLayoutParams.width = 0;
-        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_record_voice_over_white_48dp};
+        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp};
         ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
         boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton};
 
@@ -276,8 +288,9 @@ public class RecordingToolbar extends AnimationToolbar {
         }
 
         if (playButton != null) {
-            playButton.setVisibility((enablePlaybackButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
-            multiRecordButton.setVisibility((enablePlaybackButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+            boolean playBackFileExist = new File(playbackRecordFilePath).exists();
+            playButton.setVisibility((enablePlaybackButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+            multiRecordButton.setVisibility((enableMultiRecordButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
         if (deleteButton != null) {
             deleteButton.setVisibility((enableDeleteButton) ? View.VISIBLE : View.INVISIBLE);
@@ -369,7 +382,7 @@ public class RecordingToolbar extends AnimationToolbar {
                             audioPlayer.playWithPath(playbackRecordFilePath);
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                            recordingListener.startedRecordingOrPlayback();
+                            //recordingListener.startedRecordingOrPlayback();
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }
@@ -470,7 +483,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param isDelayed Used to signify that the runnable will be delayed in running.
      * @param delay     The time that will be delayed in ms if isDelayed is true.
      */
-    private void startRecordingAnimation(boolean isDelayed, int delay) {
+    protected void startRecordingAnimation(boolean isDelayed, int delay) {
         if (colorHandler != null && colorHandlerRunnable != null) {
             if (isDelayed) {
                 colorHandler.postDelayed(colorHandlerRunnable, delay);
@@ -485,7 +498,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
      * (transitionDrawable.resetTransition();)
      */
-    private void stopRecordingAnimation() {
+    protected void stopRecordingAnimation() {
         if (colorHandler != null && colorHandlerRunnable != null) {
             colorHandler.removeCallbacks(colorHandlerRunnable);
         }

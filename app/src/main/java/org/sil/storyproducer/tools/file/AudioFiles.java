@@ -12,9 +12,8 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
-
-    private static final String PCM_EXTENSION = ".pcm";
     private static final String LWC_EXTENSION = ".wav";
+    private static final String WAV_EXTENSION = LWC_EXTENSION;
 
     private static final String PREFER_EXTENSION = ".m4a";
 
@@ -77,11 +76,6 @@ public class AudioFiles {
 
     public static File getDraftTempWav(String story, int slide){
         String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + "T" + LWC_EXTENSION;
-        return new File(FileSystem.getProjectDirectory(story), fileName);
-    }
-
-    public static File getDraftPCM(String story, int slide){
-        String fileName = DRAFT_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDraftForSlideAndStory(slide, story) + PCM_EXTENSION;
         return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
@@ -174,12 +168,16 @@ public class AudioFiles {
     //*** Dramatization ***
 
     public static File getDramatization(String story, int slide){
-        String fileName = DRAMATIZATION_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDramatizationForSlideAndStory(slide, story) + SOUNDTRACK_EXTENSION;
+        String fileName = DRAMATIZATION_AUDIO_PREFIX + slide + "_" + StorySharedPreferences.getDramatizationForSlideAndStory(slide, story) + WAV_EXTENSION;
         return new File(FileSystem.getProjectDirectory(story), fileName);
     }
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + WAV_EXTENSION);
+    }
+
+    public static File getDramatizationTemp(String story){
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T"  + WAV_EXTENSION);
     }
 
     /**
@@ -214,7 +212,7 @@ public class AudioFiles {
      * @return the array of dramatization titles
      */
     public static String[] getDramatizationTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, SOUNDTRACK_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, WAV_EXTENSION);
     }
 
     //**** Helpers ***//
