@@ -93,10 +93,10 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      * so {@link #stopPlayBackAndRecording()} is not being used here.
      */
     public void closeToolbar() {
-        stopToolbarMedia();
         stopPlayBackAndRecording();
         if(isAppendingOn){
-
+            //simulate a finish recording session and set isAppendingOn to false
+            checkButton.callOnClick();
         }
         super.close();
     }
@@ -121,6 +121,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
             checkButton.setVisibility(View.INVISIBLE);
         }
         if(isAppendingOn){
+            //simulate a finish recording session and set isAppendingOn to false
             checkButton.callOnClick();
         }
     }
