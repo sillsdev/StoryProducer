@@ -276,12 +276,14 @@ public class RecordingToolbar extends AnimationToolbar {
             }
         }
 
-        if (playButton != null && multiRecordButton != null) {
-            playButton.setVisibility((enablePlaybackButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
-            multiRecordButton.setVisibility((enableMultiRecordButton && new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+        if (enablePlaybackButton) {
+            playButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
         }
-        if (deleteButton != null) {
-            deleteButton.setVisibility((enableDeleteButton) ? View.VISIBLE : View.INVISIBLE);
+        if(enableMultiRecordButton){
+            multiRecordButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if (enableDeleteButton) {
+            deleteButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
@@ -381,7 +383,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
             playButton.setOnClickListener(playListener);
         }
-        if (enableDeleteButton && deleteButton != null) {
+        if (enableDeleteButton) {
             View.OnClickListener deleteListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -390,7 +392,7 @@ public class RecordingToolbar extends AnimationToolbar {
             };
             deleteButton.setOnClickListener(deleteListener);
         }
-        if (enableMultiRecordButton && multiRecordButton != null) {
+        if (enableMultiRecordButton) {
             if(multiRecordModal != null){
                     View.OnClickListener multiRecordModalButtonListener = new View.OnClickListener() {
                         @Override
