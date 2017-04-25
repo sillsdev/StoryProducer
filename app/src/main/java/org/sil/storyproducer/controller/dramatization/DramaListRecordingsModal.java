@@ -66,9 +66,13 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
 
     @Override
     public void onRowClickListener(String recordingTitle) {
-        StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        //parentFragment.setMultiRecordButtonListener();
-        parentFragment.setPlayBackPath();
+        String previousTitle = StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName());
+        if(!previousTitle.equals(recordingTitle)){
+            StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
+            parentFragment.setPlayBackPath();
+            parentFragment.stopAppendingRecordingFile();
+        }
+
         dialog.dismiss();
     }
 

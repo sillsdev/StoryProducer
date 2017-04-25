@@ -34,20 +34,20 @@ public class PausingRecordingToolbar extends RecordingToolbar {
 
     /**
      * Ctor
-     * @param activity                  The currentActivity from the calling class.
-     * @param rootViewToolbarLayout     The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
-     *                                  must be of type LinearLayout so that buttons can be
-     *                                  evenly spaced.
-     * @param rootViewLayout            The rootViewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
-     * @param enablePlaybackButton      Enable playback of recording.
-     * @param enableDeleteButton        Enable the delete button, does not work as of now.
-     * @param enableMultiRecordButton   Enabled the play list button on the toolbar.
-     * @param playbackRecordFilePath    The file path where the toolbar will play from.
-     * @param recordFilePath            The file path that the recording will be saved under.
-     * @param multiRecordModal          The modal that houses the multiple recordings.
-     * @param recordingListener         The listener responsible for interactions between toolbar
-     *                                  and corresponding class. Used on stop and start of recording.
      *
+     * @param activity                The currentActivity from the calling class.
+     * @param rootViewToolbarLayout   The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
+     *                                must be of type LinearLayout so that buttons can be
+     *                                evenly spaced.
+     * @param rootViewLayout          The rootViewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
+     * @param enablePlaybackButton    Enable playback of recording.
+     * @param enableDeleteButton      Enable the delete button, does not work as of now.
+     * @param enableMultiRecordButton Enabled the play list button on the toolbar.
+     * @param playbackRecordFilePath  The file path where the toolbar will play from.
+     * @param recordFilePath          The file path that the recording will be saved under.
+     * @param multiRecordModal        The modal that houses the multiple recordings.
+     * @param recordingListener       The listener responsible for interactions between toolbar
+     *                                and corresponding class. Used on stop and start of recording.
      */
     public PausingRecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
                                    boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton,
@@ -74,10 +74,10 @@ public class PausingRecordingToolbar extends RecordingToolbar {
             if (enablePlaybackButton) {
                 playButton.setVisibility(View.VISIBLE);
             }
-            if(enableMultiRecordButton){
+            if (enableMultiRecordButton) {
                 multiRecordButton.setVisibility(View.VISIBLE);
             }
-            if(enableCheckButton){
+            if (enableCheckButton) {
                 multiRecordButton.setVisibility(View.VISIBLE);
             }
         }
@@ -88,17 +88,29 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         }
     }
 
+    /*
+    Stop the appending session for the toolbar.
+     */
+    public void stopAppendingSession() {
+        if (isAppendingOn) {
+            //simulate a finish recording session and set isAppendingOn to false
+            checkButton.callOnClick();
+        }
+    }
+
     /**
      * Calling class should be responsible for all other media
      * so {@link #stopPlayBackAndRecording()} is not being used here.
      */
-    public void closeToolbar() {
-        stopPlayBackAndRecording();
-        if(isAppendingOn){
-            //simulate a finish recording session and set isAppendingOn to false
-            checkButton.callOnClick();
+    @Override
+    public void onClose() {
+        if (isRecording) {
+            //simulate a stop of recording.
+            micButton.callOnClick();
         }
-        super.close();
+        //else stop other media from playing.
+        stopToolbarMedia();
+        stopAppendingSession();
     }
 
     /**
@@ -115,12 +127,12 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      * Used to hide any buttons that need to be hidden
      */
     @Override
-    public void hideButtons(){
+    public void hideButtons() {
         super.hideButtons();
-        if(enableCheckButton){
+        if (enableCheckButton) {
             checkButton.setVisibility(View.INVISIBLE);
         }
-        if(isAppendingOn){
+        if (isAppendingOn) {
             //simulate a finish recording session and set isAppendingOn to false
             checkButton.callOnClick();
         }
@@ -175,7 +187,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
     }
 
     /**
-     * Stopt the wav audio recorder.
+     * Stop the wav audio recorder.
      */
     @Override
     protected void stopRecording() {

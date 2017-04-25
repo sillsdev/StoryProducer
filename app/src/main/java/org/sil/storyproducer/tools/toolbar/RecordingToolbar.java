@@ -155,6 +155,9 @@ public class RecordingToolbar extends AnimationToolbar {
             if (enablePlaybackButton) {
                 playButton.setVisibility(View.VISIBLE);
             }
+            if(enableMultiRecordButton){
+                multiRecordButton.setVisibility(View.VISIBLE);
+            }
         }
         if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
@@ -207,9 +210,8 @@ public class RecordingToolbar extends AnimationToolbar {
      * Calling class should be responsible for all other media
      * so {@link #stopPlayBackAndRecording()} is not being used here.
      */
-    public void closeToolbar() {
+    public void onClose() {
         stopToolbarMedia();
-        super.close();
     }
 
     public void hideButtons(){

@@ -134,7 +134,7 @@ public class LearnActivity extends PhaseBaseActivity {
         narrationPlayer.releaseAudio();
         backgroundPlayer.releaseAudio();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -143,7 +143,7 @@ public class LearnActivity extends PhaseBaseActivity {
         super.onPause();
         pauseVideo();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -397,7 +397,7 @@ public class LearnActivity extends PhaseBaseActivity {
             @Override
             public void onClick(View view) {
                 if (recordingToolbar != null && recordingToolbar.isOpen() && !recordingToolbar.isRecording()) {
-                    recordingToolbar.closeToolbar();
+                    recordingToolbar.onClose();
                 }
             }
         });

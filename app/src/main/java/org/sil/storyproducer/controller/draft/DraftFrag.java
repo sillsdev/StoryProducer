@@ -10,7 +10,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -27,13 +26,11 @@ import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder;
-import org.sil.storyproducer.tools.media.wavaudio.WavFileConcatenator;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -102,7 +99,7 @@ public class DraftFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.closeToolbar();
+                    recordingToolbar.onClose();
                 }
             }
         }
@@ -116,7 +113,7 @@ public class DraftFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -128,7 +125,7 @@ public class DraftFrag extends Fragment {
     public void onStop() {
         super.onStop();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 

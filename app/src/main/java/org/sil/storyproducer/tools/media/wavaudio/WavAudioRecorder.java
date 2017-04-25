@@ -170,14 +170,4 @@ public class WavAudioRecorder {
             }
         }
     }
-//
-//    private String removeWavFileExtension(String fileName) {
-//        String tempFileName = fileName.toLowerCase();
-//        if (tempFileName.contains(".wav") && tempFileName.indexOf(".wav") == tempFileName.length() - 4) {
-//            return fileName.substring(0, tempFileName.length() - 4);
-//        } else {
-//            return fileName;
-//        }
-//    }
-
 }

@@ -76,7 +76,7 @@ public class DramatizationFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -88,7 +88,7 @@ public class DramatizationFrag extends Fragment {
     public void onStop() {
         super.onStop();
         if(recordingToolbar != null){
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -107,7 +107,7 @@ public class DramatizationFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.closeToolbar();
+                    recordingToolbar.onClose();
                 }
             }
         }
@@ -122,6 +122,13 @@ public class DramatizationFrag extends Fragment {
      */
     public void hideButtonsToolbar(){
         recordingToolbar.hideButtons();
+    }
+
+    /**
+     * Stop the toolbar from continuing the appending session.
+     */
+    public void stopAppendingRecordingFile(){
+        recordingToolbar.stopAppendingSession();
     }
 
     /**

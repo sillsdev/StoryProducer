@@ -40,7 +40,7 @@ public class WavFileConcatenator {
 
         readInFiles(firstAudioFile, secondAudioFile);
         concatenateAudioFiles((int) firstAudioFile.length(), ((int) secondAudioFile.length()));
-        writeTotalFile();
+        writeFinalFile();
     }
 
     /**
@@ -118,7 +118,7 @@ public class WavFileConcatenator {
     /**
      * Write the totalFile byte array to file.
      */
-    private static void writeTotalFile() {
+    private static void writeFinalFile() {
         try {
             FileOutputStream fos = new FileOutputStream(firstFile);
             fos.write(totalFile);
