@@ -32,8 +32,10 @@ import java.util.ArrayList;
  * to the toolbar. <br/><br/>
  * This class utilizes an empty layout for the toolbar and floating action button found in this layout:
  * (toolbar_for_recording.xml). <br/>
- * The toolbar is where buttons are added to toolbar. The toolbar is then placed at the
- * bottom of the rootViewLayout that is passed in to the this class' constructor. <br/><br/>
+ * The toolbar is where buttons are added to.<br/> The toolbar is then placed at the
+ * bottom of the rootViewLayout that is passed in to the this class' constructor. So, the rootViewLayout
+ * must be of type RelativeLayout because the code related to placing the toolbar in the
+ * rootViewLayout requires the rootViewLayout to be of type RelativeLayout. See: {@link #setupToolbar()}<br/><br/>
  * This class also saves the recording and allows playback <br/> from the toolbar. see: {@link #createToolbar()}
  * <br/><br/>
  *

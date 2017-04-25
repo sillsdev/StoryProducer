@@ -8,7 +8,7 @@
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
     <RelativeLayout
-        android:id="@+id/fragment_dramatization_picture_frame"
+        android:id="@+id/fragment_dramatization_picture_envelope"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
@@ -19,12 +19,22 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop" />
 
+
+        <ImageButton
+            android:id="@+id/fragment_dramatization_play_draft_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:src="@drawable/ic_red_ex_48dp" />
         <TextView
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
             android:layout_alignBottom="@id/fragment_dramatization_image_view"
             android:layout_alignRight="@id/fragment_dramatization_image_view"
-            android:background="@drawable/triangle_background"/>
+            android:background="@drawable/triangle_background" />
+
         <TextView
             android:id="@+id/slide_number_text"
             android:layout_width="wrap_content"
@@ -33,17 +43,26 @@
             android:layout_alignRight="@id/fragment_dramatization_image_view"
             android:paddingRight="7dp"
             android:text="1"
-            android:textSize="@dimen/text_body"/>
-        <ImageButton
-            android:id="@+id/fragment_dramatization_play_draft_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_play_gray"
-            android:src="@drawable/ic_red_ex_48dp" />
+            android:textSize="@dimen/text_body" />
+
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/fragment_dramatization_edit_text_envelope"
+        android:layout_below="@+id/fragment_dramatization_picture_envelope"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+        <EditText
+            android:id="@+id/fragment_dramatization_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/dramatization_edit_text_hint"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLength="20000"
+            android:maxLines="10" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/lock_overlay"
