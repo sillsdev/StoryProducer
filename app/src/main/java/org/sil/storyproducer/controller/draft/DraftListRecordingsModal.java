@@ -59,7 +59,9 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
         ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         draftTitles = AudioFiles.getDraftTitles(StoryState.getStoryName(), slidePosition);
-        ListAdapter adapter = new RecordingsListAdapter(context, draftTitles, slidePosition, this);
+        RecordingsListAdapter adapter = new RecordingsListAdapter(context, draftTitles, slidePosition, this);
+        adapter.setDeleteTitle(context.getResources().getString(R.string.delete_draft_title));
+        adapter.setDeleteMessage(context.getResources().getString(R.string.delete_draft_message));
         listView.setAdapter(adapter);
     }
 

@@ -60,7 +60,9 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
         ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         dramaTitles = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slidePosition);
-        ListAdapter adapter = new RecordingsListAdapter(context, dramaTitles, slidePosition, this);
+        RecordingsListAdapter adapter = new RecordingsListAdapter(context, dramaTitles, slidePosition, this);
+        adapter.setDeleteTitle(context.getResources().getString(R.string.delete_dramatize_title));
+        adapter.setDeleteMessage(context.getResources().getString(R.string.delete_dramatize_message));
         listView.setAdapter(adapter);
     }
 

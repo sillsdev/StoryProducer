@@ -32,6 +32,8 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     private final String[] values;
     private final int slidePosition;
     private ClickListeners listeners;
+    private String deleteTitle;
+    private String deleteMessage;
 
     public RecordingsListAdapter(Context context, String[] values, int slidePosition, ClickListeners listeners) {
         super(context, -1, values);
@@ -140,6 +142,14 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 }).create();
 
         dialog.show();
+    }
+
+    public void setDeleteTitle(String title) {
+        deleteTitle = title;
+    }
+
+    public void setDeleteMessage(String message) {
+        deleteMessage = message;
     }
 
     /**
