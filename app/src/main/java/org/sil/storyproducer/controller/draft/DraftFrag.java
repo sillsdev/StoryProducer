@@ -80,7 +80,6 @@ public class DraftFrag extends Fragment {
         slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
-
         return rootView;
     }
 
