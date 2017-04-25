@@ -18,7 +18,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
 
-public class DramaListRecordingsModal extends Modal implements RecordingsListAdapter.ClickListeners {
+public class DramaListRecordingsModal implements RecordingsListAdapter.ClickListeners, Modal  {
 
     private Context context;
     private int slidePosition;
