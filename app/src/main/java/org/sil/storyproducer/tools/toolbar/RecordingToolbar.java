@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
-import org.sil.storyproducer.controller.draft.Modal;
+import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;

@@ -9,7 +9,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.draft.Modal;
+import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder;
@@ -176,11 +176,15 @@ public class PausingRecordingToolbar extends RecordingToolbar {
             }
         }
 
-        if (playButton != null) {
-            boolean playBackFileExist = new File(playbackRecordFilePath).exists();
-            playButton.setVisibility((enablePlaybackButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
-            multiRecordButton.setVisibility((enableMultiRecordButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
-            checkButton.setVisibility((enableCheckButton && playBackFileExist && isAppendingOn) ? View.VISIBLE : View.INVISIBLE);
+        boolean playBackFileExist = new File(playbackRecordFilePath).exists();
+        if(enablePlaybackButton){
+            playButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(enableMultiRecordButton){
+            multiRecordButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(enableCheckButton){
+            checkButton.setVisibility((playBackFileExist && isAppendingOn) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
@@ -268,23 +272,26 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         };
         micButton.setOnClickListener(micListener);
 
-        View.OnClickListener checkListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Delete the temp file wav file
-                stopPlayBackAndRecording();
-                File tempFile = AudioFiles.getDramatizationTemp(StoryState.getStoryName());
-                if (tempFile != null && tempFile.exists()) {
-                    tempFile.delete();
+        if (enableCheckButton) {
+            View.OnClickListener checkListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Delete the temp file wav file
+                    stopPlayBackAndRecording();
+                    File tempFile = AudioFiles.getDramatizationTemp(StoryState.getStoryName());
+                    if (tempFile != null && tempFile.exists()) {
+                        tempFile.delete();
+                    }
+                    recordingListener.stoppedRecording();
+                    //make the button invisible till after the next new recording
+                    isAppendingOn = false;
+                    checkButton.setVisibility(View.INVISIBLE);
+                    micButton.setBackgroundResource(R.drawable.ic_mic_white);
                 }
-                recordingListener.stoppedRecording();
-                //make the button invisible till after the next new recording
-                isAppendingOn = false;
-                checkButton.setVisibility(View.INVISIBLE);
-                micButton.setBackgroundResource(R.drawable.ic_mic_white);
-            }
-        };
+            };
 
-        checkButton.setOnClickListener(checkListener);
+            checkButton.setOnClickListener(checkListener);
+        }
+
     }
 }

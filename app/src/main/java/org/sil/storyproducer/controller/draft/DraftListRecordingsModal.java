@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -17,7 +18,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
 
-public class DraftListRecordingsModal extends Modal implements RecordingsListAdapter.ClickListeners {
+public class DraftListRecordingsModal implements RecordingsListAdapter.ClickListeners, Modal {
 
     private Context context;
     private int slidePosition;
