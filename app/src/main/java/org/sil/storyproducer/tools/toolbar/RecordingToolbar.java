@@ -392,7 +392,6 @@ public class RecordingToolbar extends AnimationToolbar {
         }
         if (enableMultiRecordButton && multiRecordButton != null) {
             if(multiRecordModal != null){
-                if(multiRecordModal instanceof DramaListRecordingsModal || multiRecordModal instanceof DraftListRecordingsModal){
                     View.OnClickListener multiRecordModalButtonListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -402,7 +401,6 @@ public class RecordingToolbar extends AnimationToolbar {
                     };
 
                     multiRecordButton.setOnClickListener(multiRecordModalButtonListener);
-                }
             }
 
         }
