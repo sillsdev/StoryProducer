@@ -23,14 +23,14 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     private Context context;
     private int slidePosition;
     private DraftFrag parentFragment;
-    LinearLayout rootView;
-    AlertDialog dialog;
+    private LinearLayout rootView;
+    private AlertDialog dialog;
 
-    String[] draftTitles;
-    String lastNewName;
-    String lastOldName;
+    private String[] draftTitles;
+    private String lastNewName;
+    private String lastOldName;
 
-    private static AudioPlayer audioPlayer;
+    private AudioPlayer audioPlayer;
 
     public DraftListRecordingsModal(Context context, int pos, DraftFrag parentFragment) {
         this.context = context;
@@ -66,8 +66,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
     @Override
     public void onRowClick(String recordingTitle) {
         StorySharedPreferences.setDraftForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        //parentFragment.setMultiRecordButtonListener();
-        parentFragment.setPlayBackPath();
+        parentFragment.updatePlayBackPath();
         dialog.dismiss();
     }
 
@@ -78,9 +77,9 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
         if (draftFile.exists()) {
             audioPlayer = new AudioPlayer();
             audioPlayer.playWithPath(draftFile.getPath());
-            Toast.makeText(parentFragment.getContext(), "Playing Draft...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.playing_draft), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(parentFragment.getContext(), "No Draft Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.no_draft_found), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -96,8 +95,7 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
             }
 
         }
-        //parentFragment.setMultiRecordButtonListener();
-        parentFragment.setPlayBackPath();
+        parentFragment.updatePlayBackPath();
     }
 
     @Override
@@ -113,7 +111,6 @@ public class DraftListRecordingsModal extends Modal implements RecordingsListAda
         if(StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setDraftForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
-        //parentFragment.setMultiRecordButtonListener();
-        parentFragment.setPlayBackPath();
+        parentFragment.updatePlayBackPath();
     }
 }

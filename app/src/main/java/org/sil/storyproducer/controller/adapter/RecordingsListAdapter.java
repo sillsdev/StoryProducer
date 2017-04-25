@@ -33,34 +33,12 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     private final int slidePosition;
     private ClickListeners listeners;
 
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, Fragment fragment) {
+    public RecordingsListAdapter(Context context, String[] values, int slidePosition, ClickListeners listeners) {
         super(context, -1, values);
         this.context = context;
         this.values = values;
         this.slidePosition = slidePosition;
-        if(fragment instanceof CommunityCheckFrag) {
-            listeners = (CommunityCheckFrag) fragment;
-        }
-    }
-
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DraftListRecordingsModal modal) {
-        super(context, -1, values);
-        this.context = context;
-        this.values = values;
-        this.slidePosition = slidePosition;
-        if(modal instanceof DraftListRecordingsModal) {
-            listeners = modal;
-        }
-    }
-
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DramaListRecordingsModal modal) {
-        super(context, -1, values);
-        this.context = context;
-        this.values = values;
-        this.slidePosition = slidePosition;
-        if(modal instanceof DramaListRecordingsModal) {
-            listeners = modal;
-        }
+        this.listeners = listeners;
     }
 
     public interface ClickListeners {
@@ -98,15 +76,11 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
             });
             if(listeners instanceof DraftListRecordingsModal &&
                     StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
-                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));      //have to set the background here as well so the corners are the right color
-                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                setUiForSelectedView(rowView, deleteButton, playButton);
             }
             if(listeners instanceof DramaListRecordingsModal &&
                     StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
-                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                setUiForSelectedView(rowView, deleteButton, playButton);
             }
         }
 
@@ -132,6 +106,12 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
             }
         });
         return rowView;
+    }
+
+    private void setUiForSelectedView(View rowView, ImageButton deleteButton, ImageButton playButton) {
+        rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+        deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));      //have to set the background here as well so the corners are the right color
+        playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
     }
 
     /**

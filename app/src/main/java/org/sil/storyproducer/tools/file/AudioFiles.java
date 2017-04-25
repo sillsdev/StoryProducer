@@ -71,6 +71,11 @@ public class AudioFiles {
         return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + SOUNDTRACK_EXTENSION);
     }
 
+    public static String getTitleFromTranslationFilePath(String path) {
+        String[] splitPath = path.split("translation" + "\\d+" + "_");    //get just the title from the path
+        return splitPath[1].replace(".mp3", "");
+    }
+
     /**
      * deletes the designated audio draft
      * @param story the story the draft comes from
@@ -161,6 +166,11 @@ public class AudioFiles {
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
         return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + SOUNDTRACK_EXTENSION);
+    }
+
+    public static String getTitleFromDramatizationFilePath(String path) {
+        String[] splitPath = path.split("dramatization" + "\\d+" + "_");    //get just the title from the path
+        return splitPath[1].replace(".mp3", "");
     }
 
     /**

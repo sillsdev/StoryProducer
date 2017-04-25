@@ -23,12 +23,12 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     private Context context;
     private int slidePosition;
     private DramatizationFrag parentFragment;
-    LinearLayout rootView;
-    AlertDialog dialog;
+    private LinearLayout rootView;
+    private AlertDialog dialog;
 
-    String[] dramaTitles;
-    String lastNewName;
-    String lastOldName;
+    private String[] dramaTitles;
+    private String lastNewName;
+    private String lastOldName;
 
     private static AudioPlayer audioPlayer;
 
@@ -67,7 +67,6 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
     @Override
     public void onRowClick(String recordingTitle) {
         StorySharedPreferences.setDramatizationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
-        //parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
         dialog.dismiss();
     }
@@ -79,9 +78,9 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
         if (dramaFile.exists()) {
             audioPlayer = new AudioPlayer();
             audioPlayer.playWithPath(dramaFile.getPath());
-            Toast.makeText(parentFragment.getContext(), "Playing Dramatization...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.playing_dramatize), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(parentFragment.getContext(), "No Dramatization Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.no_drama_found), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -97,7 +96,6 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
             }
 
         }
-       // parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 
@@ -114,7 +112,6 @@ public class DramaListRecordingsModal extends Modal implements RecordingsListAda
         if(StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setDramatizationForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
-       // parentFragment.setMultiRecordButtonListener();
         parentFragment.setPlayBackPath();
     }
 }

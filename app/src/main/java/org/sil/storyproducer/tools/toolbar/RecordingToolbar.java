@@ -112,9 +112,9 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     public interface RecordingListener {
-        void stoppedRecording();
+        void onStoppedRecording();
 
-        void startedRecordingOrPlayback();
+        void onStartedRecordingOrPlayback();
     }
 
     /**
@@ -216,13 +216,13 @@ public class RecordingToolbar extends AnimationToolbar {
     private void startRecording() {
         startAudioRecorder();
         startRecordingAnimation(false, 0);
-        recordingListener.startedRecordingOrPlayback();
+        recordingListener.onStartedRecordingOrPlayback();
     }
 
     private void stopRecording() {
         stopAudioRecorder();
         stopRecordingAnimation();
-        recordingListener.stoppedRecording();
+        recordingListener.onStoppedRecording();
     }
 
     //TODO finish adding deletion functionality.
@@ -370,7 +370,7 @@ public class RecordingToolbar extends AnimationToolbar {
                             audioPlayer.playWithPath(playbackRecordFilePath);
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                            recordingListener.startedRecordingOrPlayback();
+                            recordingListener.onStartedRecordingOrPlayback();
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }

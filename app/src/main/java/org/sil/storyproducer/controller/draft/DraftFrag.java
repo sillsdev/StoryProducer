@@ -10,7 +10,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -129,7 +128,7 @@ public class DraftFrag extends Fragment {
     /**
      * sets the playback path
      */
-    public void setPlayBackPath() {
+    public void updatePlayBackPath() {
         String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
@@ -273,12 +272,10 @@ public class DraftFrag extends Fragment {
 
     private void setRecordFilePath() {
         int nextDraftIndex = AudioFiles.getDraftTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber,
-                "Draft " + nextDraftIndex);
+        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_draft_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber,
-                    "Draft " + nextDraftIndex);
+            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_draft_name, nextDraftIndex));
         }
         recordFilePath = recordFile.getPath();
     }
@@ -291,17 +288,16 @@ public class DraftFrag extends Fragment {
             String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
-                public void stoppedRecording() {
-                    String[] splitPath = recordFilePath.split("translation" + "\\d+" + "_");    //get just the title from the path
-                    String title = splitPath[1].replace(".mp3", "");
-                    StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                public void onStoppedRecording() {
+                    String title = AudioFiles.getTitleFromTranslationFilePath(recordFilePath);
+                    StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());     //save the draft  title for the recording
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(recordFilePath);
-                    setPlayBackPath();
+                    updatePlayBackPath();
                 }
 
                 @Override
-                public void startedRecordingOrPlayback() {
+                public void onStartedRecordingOrPlayback() {
                     //not used here
                 }
             };
@@ -313,7 +309,7 @@ public class DraftFrag extends Fragment {
         }
     }
 
-    //used in the DraftListREcordingsModal
+    //used in the link DraftListRecordingsModal
     //TODO add to the area where the other public functions in this class.
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();

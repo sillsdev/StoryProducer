@@ -381,11 +381,11 @@ public class LearnActivity extends PhaseBaseActivity {
     private void setToolbar(View toolbar){
         recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
-            public void stoppedRecording() {
+            public void onStoppedRecording() {
                 //empty because the learn phase doesn't use this
             }
             @Override
-            public void startedRecordingOrPlayback() {
+            public void onStartedRecordingOrPlayback() {
                 resetVideoWithSoundOff();
             }
         });

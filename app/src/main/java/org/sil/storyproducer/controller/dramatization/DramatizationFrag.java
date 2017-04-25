@@ -217,12 +217,10 @@ public class DramatizationFrag extends Fragment {
 
     private void setRecordFilePath() {
         int nextDraftIndex = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,
-                "Dramatization " + nextDraftIndex);
+        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.record_file_drama_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,
-                    "Dramatization " + nextDraftIndex);
+            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_drama_name, nextDraftIndex));
         }
         dramatizationRecordingPath = recordFile.getPath();
     }
@@ -235,16 +233,15 @@ public class DramatizationFrag extends Fragment {
             String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
-                public void stoppedRecording() {
-                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
-                    String title = splitPath[1].replace(".mp3", "");
+                public void onStoppedRecording() {
+                    String title = AudioFiles.getTitleFromDramatizationFilePath(dramatizationRecordingPath);
                     StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
                     setPlayBackPath();
                 }
                 @Override
-                public void startedRecordingOrPlayback() {
+                public void onStartedRecordingOrPlayback() {
                     //not used here
                 }
             };
@@ -255,7 +252,7 @@ public class DramatizationFrag extends Fragment {
         }
     }
 
-    //used in the DramaListREcordingsModal
+    //used in the DramaListRecordingsModal
     //TODO add to the area where the other public functions in this class.
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
