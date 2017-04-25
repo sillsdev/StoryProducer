@@ -1,3 +1,7 @@
+<!-- THIS IS WHERE SPANISH VALUES WILL BE HELD -->
+<!-- CURRENTLY THESE ARE STILL ENGLISH, BUT THIS IS AN EXAMPLE OF HOW IT'S DONE -->
+<!-- DO NOT CHANGE name="some_name" ONLY CHANGE VALUE BETWEEN STRING TAGS -->
+
 <resources>
     <string name="app_name">Story Producer</string>
     <string name="action_settings">Settings</string>
@@ -89,31 +93,11 @@
 
     <!--Navigation Drawer Labels (Main Activity) -->
     <string name="nav_open">Options</string>
-    <string name="nav_close">Close</string>
-
-
-    <!-- Draft -->
-    <string name="draft_bible_story">Bible Story!</string>
-    <string name="draft_playback_no_lwc_audio">Could Not Find Narration Audio...</string>
-    <string name="draft_playback_lwc_audio">Playing Narration Audio...</string>
-
-    <!-- Dramatization phase -->
-    <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>
-    <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
-    <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
-    <string name="dramatization_edit_text_hint">Translation</string>
-
-    <!-- RecordingToolbar -->
-    <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
-    <string name="recording_toolbar_no_recording">No recording available!</string>
-    <string name="recording_toolbar_recording_voice">Recording voice!</string>
-    <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
-    <string name="recording_toolbar_error_recording">Error recording, record again!</string>
-
+    <string-array name="nav_labels">
+        <item>Register</item>
+    </string-array>
 
     <!-- Export -->
-    <string name="export_custom_title">Title</string>
-
     <string name="export_options_header">Options</string>
 
     <string name="export_include_soundtrack">Include Background Music</string>
@@ -141,8 +125,6 @@
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
-    <string name="export_video_creation_header">Video Creation</string>
-    <string name="export_video_sharing_header">Video Sharing</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
@@ -197,9 +179,5 @@
         <item quantity="one">%d byte</item>
         <item quantity="other">%d bytes</item>
     </plurals>
-
-    <string name="no_videos">No Videos to Share</string>
-    <string name="send_video">Send Video:</string>
-    <string name="file_view">File view:</string>
 
 </resources>

@@ -62,6 +62,10 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         if(mSources.isEmpty()) {
             throw new SourceUnacceptableException("No sources specified!");
         }
@@ -95,6 +99,8 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
 
         mCurrentSample = new short[mChannelCount];
+
+        mComponentState = State.SETUP;
 
         start();
     }

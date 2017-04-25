@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
@@ -48,7 +49,7 @@ public class ConsultantCheckFrag extends Fragment {
     public static final String CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isChecked";
-    private static final String PASSWORD = "password";
+    private static final String PASSWORD = "appr00ved";
     private String storyName;
     private int slidePosition;
     private View rootView;
@@ -56,19 +57,22 @@ public class ConsultantCheckFrag extends Fragment {
     private AudioPlayer draftPlayer;
     private SlideText slideText;
     private TextView slideTextView;
+    private boolean draftAudioExists;
+    private boolean draftAudioPaused;
+    private ImageButton draftPlaybackButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
-        draftPlayer = new AudioPlayer();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false);
+        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.concheck_draft_playback_button);
         storyName = StoryState.getStoryName();
         slideText = TextFiles.getSlideText(storyName, slidePosition);
 
@@ -84,6 +88,45 @@ public class ConsultantCheckFrag extends Fragment {
 
         return rootView;
     }
+    /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     * @param isVisibleToUser
+     */
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        // Make sure that we are currently visible
+        if (this.isVisible()) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                draftPlayer.stopAudio();
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
+            }
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        draftPlayer = new AudioPlayer();
+        final File draftFile = AudioFiles.getDraft(storyName, slidePosition);
+        if (draftFile.exists()) {
+            draftAudioExists = true;
+            draftPlayer.setPath(draftFile.getPath());
+        } else {
+            draftAudioExists = false;
+        }
+        draftAudioPaused = false;
+        draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                //TODO: use non-deprecated method; currently used to support older devices
+                draftPlaybackButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
+            }
+        });
+    }
 
     /**
      * This function serves to stop the audio streams from continuing after the draft has been
@@ -92,9 +135,7 @@ public class ConsultantCheckFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (draftPlayer != null) {
-            draftPlayer.stopAudio();
-        }
+        draftPlayer.stopAudio();
     }
 
     /**
@@ -104,10 +145,8 @@ public class ConsultantCheckFrag extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        if (draftPlayer != null) {
-            draftPlayer.stopAudio();
-            draftPlayer.releaseAudio();
-        }
+        draftPlayer.stopAudio();
+        draftPlayer.release();
     }
 
     /**
@@ -189,19 +228,29 @@ public class ConsultantCheckFrag extends Fragment {
      * button will have a listener added to it in order to detect playback when pressed.
      * @param button the ImageButton view handler to set the onclicklistener to
      */
-    private void setDraftPlaybackButton(ImageButton button) {
-
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition);
+    private void setDraftPlaybackButton(final ImageButton button) {
+        //TODO: use non-deprecated method; currently used to support older devices
+        button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //stop other playback streams.
-                if (draftPlayer != null && draftPlayer.isAudioPlaying()) {
-                    draftPlayer.stopAudio();
-                }
-                if (draftFile.exists()) {
-                    draftPlayer.playWithPath(draftFile.getPath());
+                boolean wasPlaying = draftPlayer.isAudioPlaying();
+                if (draftAudioExists && !wasPlaying) {
+                    if (draftAudioPaused) {
+                        draftPlayer.resumeAudio();
+                        draftAudioPaused = false;
+                    } else {
+                        draftPlayer.playAudio();
+                    }
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_pause_blue, null));
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                } else if (wasPlaying) {
+                    draftPlayer.pauseAudio();
+                    draftAudioPaused = true;
+                    //TODO: use non-deprecated method; currently used to support older devices
+                    button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
                     Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
                 }
@@ -353,6 +402,7 @@ public class ConsultantCheckFrag extends Fragment {
 
     /**
      * Launches the dramatization phase for the story and starts back at first slide
+     * TODO: moving back to first slide is currently broken
      */
     private void launchDramatizationPhase() {
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();

@@ -1,18 +1,20 @@
 package org.sil.storyproducer.tools.media.story;
 
+import android.content.Context;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.KenBurnsSpec;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffectHelper;
 import org.sil.storyproducer.tools.media.graphics.TextOverlay;
 import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper;
 
@@ -42,7 +44,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
     private static final int TITLE_FONT_SIZE = 20;
 
-    private static final long SLIDE_TRANSITION_US = 3000000;
+    private static final long SLIDE_CROSS_FADE_US = 3000000;
     private static final long AUDIO_TRANSITION_US = 500000;
 
     private static final long COPYRIGHT_SLIDE_US = 2000000;
@@ -68,8 +70,6 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private static final int AUDIO_CHANNEL_COUNT = 1;
     private static final int AUDIO_BIT_RATE = 64000;
 
-    private final File mSoundtrack;
-
     private boolean mIncludeBackgroundMusic = true;
     private boolean mIncludePictures = true;
     private boolean mIncludeText = false;
@@ -78,6 +78,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
     private boolean mLogProgress = false;
 
     private StoryMaker mStoryMaker;
+
+    private Context mContext;
 
     public AutoStoryMaker(String story) {
         mStory = story;
@@ -88,8 +90,16 @@ public class AutoStoryMaker extends Thread implements Closeable {
         File outputDir = VideoFiles.getDefaultLocation(mStory);
         setOutputFile(new File(outputDir, mStory.replace(' ', '_') + "_"
                 + mWidth + "x" + mHeight + mOutputExt));
+    }
 
-        mSoundtrack = AudioFiles.getSoundtrack(mStory, 0);
+    /**
+     * Set a context for the AutoStoryMaker if {@link android.widget.Toast} error messages are desired.
+     * If no context is set, console logging will be used instead.
+     *
+     * @param context
+     */
+    public void setContext(Context context) {
+        mContext = context;
     }
 
     public void setOutputFile(File output) {
@@ -156,10 +166,13 @@ public class AutoStoryMaker extends Thread implements Closeable {
         MediaFormat videoFormat = generateVideoFormat();
         StoryPage[] pages = generatePages();
 
-        File soundtrack = mIncludeBackgroundMusic ? mSoundtrack : null;
+        //If pages weren't generated, exit.
+        if(pages == null) {
+            return;
+        }
 
         mStoryMaker = new StoryMaker(mTempFile, outputFormat, videoFormat, audioFormat,
-                pages, soundtrack, AUDIO_TRANSITION_US, SLIDE_TRANSITION_US);
+                pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US);
 
         watchProgress();
 
@@ -250,6 +263,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             Log.w(TAG, "Failed to create overlayed title slide!");
         }
 
+        File lastSoundtrack = null;
         int iSlide;
         for(iSlide = 0; iSlide < slideCount; iSlide++) {
             File image = null;
@@ -270,12 +284,29 @@ public class AutoStoryMaker extends Thread implements Closeable {
             if(!audio.exists()) {
                 audio = AudioFiles.getLWC(mStory, iSlide);
             }
+            //error
+            if(!audio.exists()) {
+                error("Audio missing for slide " + (iSlide + 1));
+                return null;
+            }
 
-            //TODO: get actual KBFX
+            File soundtrack = null;
+            if(mIncludeBackgroundMusic) {
+                soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
+                if(soundtrack == null) {
+                    //Try not to leave nulls in so null may be reserved for no soundtrack.
+                    soundtrack = lastSoundtrack;
+                }
+                else if(!soundtrack.exists()) {
+                    error("Soundtrack missing from template: " + soundtrack.getName());
+                }
+
+                lastSoundtrack = soundtrack;
+            }
+
             KenBurnsEffect kbfx = null;
-            //Only include KBFX if specified and not title slide.
             if(mIncludePictures && mIncludeKBFX && iSlide != 0) {
-                kbfx = KenBurnsEffectHelper.getScroll(image.getPath(), widthToHeight, null);
+                kbfx = KenBurnsSpec.getKenBurnsEffect(mStory, iSlide);
             }
 
             String text = null;
@@ -284,7 +315,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
                 text = text.equals("") ? null : text;
             }
 
-            pages[iSlide] = new StoryPage(image, audio, kbfx, text);
+            pages[iSlide] = new StoryPage(image, audio, 0, kbfx, text, soundtrack);
         }
 
         File copyrightImage = null;
@@ -320,6 +351,15 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
         if(mLogProgress) {
             watcher.start();
+        }
+    }
+
+    private void error(String message) {
+        if(mContext != null) {
+            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
+        else {
+            Log.e(TAG, message);
         }
     }
 

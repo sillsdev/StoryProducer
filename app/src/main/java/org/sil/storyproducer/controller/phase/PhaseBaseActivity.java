@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -127,7 +128,7 @@ public class PhaseBaseActivity extends AppCompatActivity {
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.string.nav_open, R.string.dummy_content) {
+                R.string.nav_open, R.string.nav_close) {
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
@@ -152,6 +153,17 @@ public class PhaseBaseActivity extends AppCompatActivity {
         String[] menuArray = getResources().getStringArray(R.array.global_menu_array);
         mAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuArray);
         mDrawerList.setAdapter(mAdapter);
+    }
+
+    public static void disableViewAndChildren(View view) {
+        view.setEnabled(false);
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                disableViewAndChildren(child);
+            }
+        }
     }
 
 }
