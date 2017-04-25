@@ -41,7 +41,7 @@ public class DraftFrag extends Fragment {
     private SlideText slideText;
     private AudioPlayer narrationAudioPlayer;
     private String narrationFilePath;
-    private String recordFilePath;
+    private File recordFile;
     private ImageButton narrationPlayButton;
     private TextView slideNumberText;
     private RecordingToolbar recordingToolbar;
@@ -277,7 +277,7 @@ public class DraftFrag extends Fragment {
             nextDraftIndex++;
             recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_draft_name, nextDraftIndex));
         }
-        recordFilePath = recordFile.getPath();
+        this.recordFile = recordFile;
     }
 
     /**
@@ -289,10 +289,10 @@ public class DraftFrag extends Fragment {
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
-                    String title = AudioFiles.getTitleFromTranslationFilePath(recordFilePath);
+                    String title = AudioFiles.getDraftTitle(recordFile);
                     StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());     //save the draft  title for the recording
                     setRecordFilePath();
-                    recordingToolbar.setRecordFilePath(recordFilePath);
+                    recordingToolbar.setRecordFilePath(recordFile.getAbsolutePath());
                     updatePlayBackPath();
                 }
 
@@ -303,7 +303,8 @@ public class DraftFrag extends Fragment {
             };
             DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, true, playBackFilePath, recordFilePath, modal , recordingListener);
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
+                    true, false, true, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }
@@ -322,14 +323,14 @@ public class DraftFrag extends Fragment {
 //     */
 //    private void ConcatenateAudioFiles() {
 //        Movie finalFile = new Movie();
-//        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
+//        String writtenToAudioFile = String.format(recordFile.substring(0, recordFile.indexOf(".m4a")) + "final.m4a");
 //        Movie movieArray[];
 //
 //        try {
-//            if (!new File(recordFilePath).exists()) {
+//            if (!new File(recordFile).exists()) {
 //                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
 //            } else {
-//                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
+//                movieArray = new Movie[]{MovieCreator.build(recordFile),
 //                        MovieCreator.build(tempRecordFilePath)};
 //            }
 //
@@ -352,8 +353,8 @@ public class DraftFrag extends Fragment {
 //            out.writeContainer(fc);
 //            fc.close();
 //
-//            tryDeleteFile(recordFilePath);
-//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
+//            tryDeleteFile(recordFile);
+//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFile)));
 //            if (renamed) {
 //                //delete old file
 //                tryDeleteFile(writtenToAudioFile);

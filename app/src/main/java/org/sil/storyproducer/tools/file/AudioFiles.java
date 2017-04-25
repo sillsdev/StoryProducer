@@ -68,12 +68,12 @@ public class AudioFiles {
     }
 
     public static File getDraft(String story, int slide, String draftTitle) {
-        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + PREFER_EXTENSION);
     }
 
-    public static String getTitleFromTranslationFilePath(String path) {
-        String[] splitPath = path.split("translation" + "\\d+" + "_");    //get just the title from the path
-        return splitPath[1].replace(".mp3", "");
+    public static String getDraftTitle(File file) {
+        String filename = file.getName();
+        return getTitleFromPath(filename, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
     /**
@@ -98,7 +98,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDraft(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, SOUNDTRACK_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, PREFER_EXTENSION);
     }
 
     /**
@@ -108,7 +108,7 @@ public class AudioFiles {
      * @return the array of draft titles
      */
     public static String[] getDraftTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, SOUNDTRACK_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
     public static File getDraftTemp(String story) {
@@ -165,12 +165,12 @@ public class AudioFiles {
     }
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + PREFER_EXTENSION);
     }
 
-    public static String getTitleFromDramatizationFilePath(String path) {
-        String[] splitPath = path.split("dramatization" + "\\d+" + "_");    //get just the title from the path
-        return splitPath[1].replace(".mp3", "");
+    public static String getDramatizationTitle(File file) {
+        String filename = file.getName();
+        return getTitleFromPath(filename, DRAMATIZATION_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
     /**
@@ -195,7 +195,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDramatization(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, SOUNDTRACK_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, PREFER_EXTENSION);
     }
 
     /**
@@ -205,7 +205,7 @@ public class AudioFiles {
      * @return the array of dramatization titles
      */
     public static String[] getDramatizationTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, SOUNDTRACK_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
     //**** Helpers ***//
@@ -254,14 +254,19 @@ public class AudioFiles {
         for (int i = 0; i < storyDirectoryFiles.length; i++) {
             String filename = storyDirectoryFiles[i].getName();
             if (filename.startsWith(prefix+slide+"_")) {
-                //extract title from file name
-                //Note: Assume no dots in filename.
-                String title = filename.replaceFirst(prefix+slide+"_", "").replace(extension, "");
-                titles.add(title);
+                titles.add(getTitleFromPath(filename, prefix, extension));
             }
         }
         String[] returnTitlesArray = new String[titles.size()];
         return titles.toArray(returnTitlesArray);
+    }
+
+    /**
+     * Extract title from path.
+     */
+    private static String getTitleFromPath(String filename, String prefix, String extension) {
+        //Note: Assume no dots in filename.
+        return filename.replaceFirst(prefix + "\\d+" + "_", "").replace(extension, "");
     }
 
 }

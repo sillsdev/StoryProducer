@@ -38,7 +38,7 @@ public class DramatizationFrag extends Fragment {
     private TextView slideNumberText;
     private AudioPlayer draftPlayer;
     private String draftPlayerPath = null;
-    private String dramatizationRecordingPath = null;
+    private File dramatizationRecordingFile = null;
 
     private RecordingToolbar recordingToolbar;
 
@@ -222,7 +222,7 @@ public class DramatizationFrag extends Fragment {
             nextDraftIndex++;
             recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_drama_name, nextDraftIndex));
         }
-        dramatizationRecordingPath = recordFile.getPath();
+        dramatizationRecordingFile = recordFile;
     }
 
     /**
@@ -234,10 +234,10 @@ public class DramatizationFrag extends Fragment {
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
-                    String title = AudioFiles.getTitleFromDramatizationFilePath(dramatizationRecordingPath);
+                    String title = AudioFiles.getDramatizationTitle(dramatizationRecordingFile);
                     StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                     setRecordFilePath();
-                    recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
+                    recordingToolbar.setRecordFilePath(dramatizationRecordingFile.getAbsolutePath());
                     setPlayBackPath();
                 }
                 @Override
@@ -247,7 +247,8 @@ public class DramatizationFrag extends Fragment {
             };
             DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true, false, true, playBackFilePath, dramatizationRecordingPath, modal,recordingListener);
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true,
+                    false, true, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
     }
