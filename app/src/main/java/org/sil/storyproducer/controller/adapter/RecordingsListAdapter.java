@@ -122,18 +122,9 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
      * @param position the integer position of the recording where the button was pressed
      */
     private void showDeleteItemDialog(final int position) {
-        String title = context.getResources().getString(R.string.delete_comment_title);
-        String message = context.getResources().getString(R.string.delete_comment_message);
-        if(listeners instanceof DraftListRecordingsModal) {
-            title = context.getResources().getString(R.string.delete_draft_title);
-            message = context.getResources().getString(R.string.delete_draft_message);
-        } else if(listeners instanceof  DramaListRecordingsModal) {
-            title = context.getResources().getString(R.string.delete_dramatize_title);
-            message = context.getResources().getString(R.string.delete_dramatize_message);
-        }
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
+                .setTitle(deleteTitle)
+                .setMessage(deleteMessage)
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
