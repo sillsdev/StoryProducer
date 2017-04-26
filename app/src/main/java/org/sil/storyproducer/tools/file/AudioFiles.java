@@ -253,7 +253,7 @@ public class AudioFiles {
         File[] storyDirectoryFiles = storyDirectory.listFiles();
         for (int i = 0; i < storyDirectoryFiles.length; i++) {
             String filename = storyDirectoryFiles[i].getName();
-            if (filename.startsWith(prefix+slide+"_")) {
+            if (filename.startsWith(prefix+slide+"_") && filename.endsWith(extension)) {
                 titles.add(getTitleFromPath(filename, prefix, extension));
             }
         }
