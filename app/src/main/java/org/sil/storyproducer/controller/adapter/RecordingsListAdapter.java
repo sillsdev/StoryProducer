@@ -45,7 +45,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
 
     public interface ClickListeners {
         void onRowClick(String name);
-        void onPlayClick(String name);
+        void onPlayClick(String name, ImageButton buttonClickedNow);
         void onDeleteClick(String name);
         AudioFiles.RenameCode onRenameClick(String name, String newName);
         void onRenameSuccess();
@@ -57,7 +57,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.audio_comment_list_item, parent, false);
         TextView titleView = (TextView) rowView.findViewById(R.id.audio_comment_title);
-        ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
+        final ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
         ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
@@ -89,7 +89,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listeners.onPlayClick(values[position]);
+                listeners.onPlayClick(values[position], playButton);
             }
         });
 

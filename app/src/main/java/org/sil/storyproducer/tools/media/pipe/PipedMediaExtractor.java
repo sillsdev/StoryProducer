@@ -18,10 +18,13 @@ import java.nio.ByteBuffer;
 public class PipedMediaExtractor implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedMediaExtractor";
 
+    private State mComponentState = State.UNINITIALIZED;
+
     private MediaExtractor mExtractor;
 
     private MediaFormat mFormat;
     private MediaHelper.MediaType mType;
+    private String mPath;
 
     private boolean mIsDone = false;
 
@@ -31,27 +34,36 @@ public class PipedMediaExtractor implements PipedMediaByteBufferSource {
      * Create extractor from specified file.
      * @param path path of the media file.
      * @param type (audio/video) track to select from file.
-     * @throws IOException
      */
-    public PipedMediaExtractor(String path, MediaHelper.MediaType type) throws IOException {
+    public PipedMediaExtractor(String path, MediaHelper.MediaType type) {
+        mPath = path;
         mType = type;
-
-        mExtractor = new MediaExtractor();
-        mExtractor.setDataSource(path);
-
-        for(int i = 0; i < mExtractor.getTrackCount(); i++) {
-            mFormat = mExtractor.getTrackFormat(i);
-            if(MediaHelper.getTypeFromFormat(mFormat) == type) {
-                mExtractor.selectTrack(i);
-                return;
-            }
-        }
-        throw new IOException("File does not contain track of type " + type.name());
     }
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        //Do nothing.
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
+        mExtractor = new MediaExtractor();
+        mExtractor.setDataSource(mPath);
+
+        boolean foundTrack = false;
+
+        for(int i = 0; i < mExtractor.getTrackCount(); i++) {
+            mFormat = mExtractor.getTrackFormat(i);
+            if(!foundTrack && MediaHelper.getTypeFromFormat(mFormat) == mType) {
+                mExtractor.selectTrack(i);
+                foundTrack = true;
+            }
+        }
+
+        if(!foundTrack) {
+            throw new IOException("File does not contain track of type " + mType.name());
+        }
+
+        mComponentState = State.SETUP;
     }
 
     @Override

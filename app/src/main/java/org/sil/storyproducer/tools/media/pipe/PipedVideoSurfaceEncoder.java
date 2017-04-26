@@ -55,6 +55,10 @@ public class PipedVideoSurfaceEncoder extends PipedMediaCodec {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         mSource.setup();
         mConfigureFormat = mSource.getOutputFormat();
 
