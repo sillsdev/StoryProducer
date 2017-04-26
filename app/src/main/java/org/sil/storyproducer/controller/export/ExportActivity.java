@@ -1,28 +1,39 @@
 package org.sil.storyproducer.controller.export;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
-import android.view.WindowManager;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,9 +46,9 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final long BUTTON_LOCK_DURATION_MS = 1000;
     private static final int PROGRESS_MAX = 1000;
 
-    private static final String PREF_FILE_BASE = "ProjExportConfig";
-    private static final String PREF_FILE_ALL = "AppExportConfig";
+    private static final String PREF_FILE = "Export_Config";
 
+    private static final String PREF_KEY_TITLE = "title";
     private static final String PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music";
     private static final String PREF_KEY_INCLUDE_PICTURES = "include_pictures";
     private static final String PREF_KEY_INCLUDE_TEXT = "include_text";
@@ -46,6 +57,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private static final String PREF_KEY_FORMAT = "format";
     private static final String PREF_KEY_FILE = "file";
 
+    private EditText mEditTextTitle;
     private View mLayoutConfiguration;
     private CheckBox mCheckboxSoundtrack;
     private CheckBox mCheckboxPictures;
@@ -59,8 +71,19 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
+    private TextView mNoVideosText;
+    private ListView mVideosListView;
+
+    private ExportedVideosAdapter videosAdapter;
+    private String mStory;
 
     private String mOutputPath;
+
+    //accordion variables
+    private final int [] sectionIds = {R.id.export_section, R.id.share_section};
+    private final int [] headerIds = {R.id.export_header, R.id.share_header};
+    private View[] sectionViews = new View[sectionIds.length];
+    private View[] headerViews = new View[headerIds.length];
 
     private static volatile boolean buttonLocked = false;
     private Thread mProgressUpdater;
@@ -70,25 +93,43 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_export);
+        mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
 
+        boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
+        setContentView(R.layout.activity_export);
+        mStory = StoryState.getStoryName();
         setupViews();
+
+        if (phaseUnlocked) {
+            findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
+        } else {
+            View mainLayout = findViewById(R.id.main_linear_layout);
+            PhaseBaseActivity.disableViewAndChildren(mainLayout);
+        }
+        setVideoOrShareSectionOpen();
+        loadPreferences();
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
+        toggleVisibleElements();
 
         watchProgress();
     }
 
     @Override
-    public void onPause() {
-        savePreferences();
-
+    protected void onPause() {
         mProgressUpdater.interrupt();
 
         super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        savePreferences();
+
+        super.onDestroy();
     }
 
     /**
@@ -105,9 +146,40 @@ public class ExportActivity extends PhaseBaseActivity {
     }
 
     /**
+     * Remove focus from EditText when tapping outside. See http://stackoverflow.com/a/28939113/4639640
+     */
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if ( v instanceof EditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int)event.getRawX(), (int)event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent( event );
+    }
+
+    /**
      * Get handles to all necessary views and add some listeners.
      */
     private void setupViews() {
+
+        //Initialize sectionViews[] with the integer id's of the various LinearLayouts
+        //Add the listeners to the LinearLayouts's header section.
+        for (int i = 0; i < sectionIds.length; i++) {
+            sectionViews[i] = findViewById(sectionIds[i]);
+            headerViews[i] = findViewById(headerIds[i]);
+            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
+        }
+
+        mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
+
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
 
         mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
@@ -141,21 +213,8 @@ public class ExportActivity extends PhaseBaseActivity {
         mSpinnerFormat.setAdapter(formatAdapter);
 
         mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
-        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });
 
         mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
-        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });
-
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
         setOnClickListeners();
@@ -164,15 +223,33 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
 
-        loadPreferences();
+        //share view
+        videosAdapter = new ExportedVideosAdapter(this);
+        mVideosListView = (ListView) findViewById(R.id.videos_list);
+        mVideosListView.setAdapter(videosAdapter);
+        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
+        setVideoAdapterPaths();
 
-        toggleVisibleElements();
     }
 
     /**
      * Setup listeners for start/cancel.
      */
     private void setOnClickListeners() {
+        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
+
+        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFileExplorerToExport();
+            }
+        });
+
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,6 +269,57 @@ public class ExportActivity extends PhaseBaseActivity {
                 lockButtons();
             }
         });
+
+    }
+
+    /**
+     * sets which one of the accordians starts open on the activity start
+     */
+    private void setVideoOrShareSectionOpen() {
+        List<String> actualPaths = getExportedVideosForStory();
+        if(actualPaths.size() > 0) {        //open the share view
+            setSectionsClosedExceptView(findViewById(R.id.share_section));
+        } else {                            //open the video creation view
+            setSectionsClosedExceptView(findViewById(R.id.export_section));
+        }
+    }
+
+    /**
+     * This function sets the click listeners to implement the accordion functionality
+     * for each section of the registration page
+     *
+     * @param headerView  a variable of type View denoting the field the user will click to open up
+     *                    a section of the registration
+     * @param sectionView a variable of type View denoting the section that will open up
+     */
+    private void setAccordionListener(final View headerView, final View sectionView) {
+        headerView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (sectionView.getVisibility() == View.GONE) {
+                    setSectionsClosedExceptView(sectionView);
+                } else {
+                    sectionView.setVisibility(View.GONE);
+                    headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
+                }
+            }
+        });
+    }
+
+    /**
+     * sets all the accordion sections closed except for the one passed
+     * @param sectionView that is wanted to be made open
+     */
+    private void setSectionsClosedExceptView(View sectionView) {
+        for(int k = 0; k < sectionViews.length; k++) {
+            if(sectionViews[k] == sectionView) {
+                sectionViews[k].setVisibility(View.VISIBLE);
+                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
+            } else {
+                sectionViews[k].setVisibility(View.GONE);
+                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
+            }
+        }
 
     }
 
@@ -223,7 +351,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * Launch the file explorer.
      */
     private void openFileExplorerToExport() {
-        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(StoryState.getStoryName()).getPath();
+        String initialFileExplorerLocation = VideoFiles.getDefaultLocation(mStory).getPath();
         String currentLocation = mOutputPath;
         File currentLocFile = new File(currentLocation);
         File currentParent = currentLocFile.getParentFile();
@@ -239,7 +367,7 @@ public class ExportActivity extends PhaseBaseActivity {
 
     /**
      * Set the path for export location, including UI.
-     * @param path
+     * @param path new export location.
      */
     private void setLocation(String path) {
         if(path == null) {
@@ -253,55 +381,76 @@ public class ExportActivity extends PhaseBaseActivity {
         mEditTextLocation.setText(display);
     }
 
+
+    /**
+     * sets the videos for the list adapter
+     */
+    private void setVideoAdapterPaths() {
+        List<String> actualPaths = getExportedVideosForStory();
+        if(actualPaths.size() > 0) {
+            mNoVideosText.setVisibility(View.GONE);
+        }
+        videosAdapter.setVideoPaths(actualPaths);
+    }
+
+    /**
+     * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
+     * @return Array list of video paths
+     */
+    private List<String> getExportedVideosForStory() {
+        List<String> actualPaths = new ArrayList<>();
+        List<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(mStory);
+        for(String path : videoPaths) {          //make sure the file actually exists
+            File file = new File(path);
+            if(file.exists()) {
+                actualPaths.add(path);
+            }
+        }
+        return actualPaths;
+    }
+
     /**
      * Save current configuration options to shared preferences.
      */
     private void savePreferences() {
-        //Save preferences universal for app.
-        SharedPreferences.Editor prefEditorApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getSharedPreferences(PREF_FILE, MODE_PRIVATE).edit();
 
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
-        prefEditorApp.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked());
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
 
-        prefEditorApp.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
-        prefEditorApp.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
+        editor.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
 
-        prefEditorApp.apply();
+        editor.putString(mStory + PREF_KEY_TITLE, mEditTextTitle.getText().toString());
+        editor.putString(mStory + PREF_KEY_FILE, mOutputPath);
 
-        //Save preferences specific to this project.
-        SharedPreferences.Editor prefEditorProject = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE).edit();
-        prefEditorProject.putString(PREF_KEY_FILE, mOutputPath);
-        prefEditorProject.apply();
+        editor.apply();
     }
 
     /**
      * Load configuration options from shared preferences.
      */
     private void loadPreferences() {
-        //Get preferences universal for app.
-        SharedPreferences prefsApp = getSharedPreferences(PREF_FILE_ALL, MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(PREF_FILE, MODE_PRIVATE);
 
-        mCheckboxSoundtrack.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
-        mCheckboxPictures.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
-        mCheckboxText.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
-        mCheckboxKBFX.setChecked(prefsApp.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
+        mCheckboxSoundtrack.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true));
+        mCheckboxPictures.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true));
+        mCheckboxText.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false));
+        mCheckboxKBFX.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
 
-        setSpinnerValue(mSpinnerResolution, prefsApp.getString(PREF_KEY_RESOLUTION, null));
-        setSpinnerValue(mSpinnerFormat, prefsApp.getString(PREF_KEY_FORMAT, null));
+        setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null));
+        setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
 
-        //Get preferences specific to this project.
-        SharedPreferences prefsProject = getSharedPreferences(
-                PREF_FILE_BASE + StoryState.getStoryName(), MODE_PRIVATE);
-        setLocation(prefsProject.getString(PREF_KEY_FILE, null));
+        mEditTextTitle.setText(prefs.getString(mStory + PREF_KEY_TITLE, mStory));
+        setLocation(prefs.getString(mStory + PREF_KEY_FILE, null));
     }
 
     /**
      * Attempt to set the value of the spinner to the given string value based on options available.
-     * @param spinner
-     * @param value
+     * @param spinner spinner to update value.
+     * @param value new value of spinner.
      */
     private void setSpinnerValue(Spinner spinner, String value) {
         if(value == null) {
@@ -344,7 +493,10 @@ public class ExportActivity extends PhaseBaseActivity {
 
     private void startExport(File output) {
         synchronized (storyMakerLock) {
-            storyMaker = new AutoStoryMaker(StoryState.getStoryName());
+            storyMaker = new AutoStoryMaker(mStory);
+            storyMaker.setContext(this);
+
+            storyMaker.setTitle(mEditTextTitle.getText().toString());
 
             storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
             storyMaker.togglePictures(mCheckboxPictures.isChecked());
@@ -352,11 +504,16 @@ public class ExportActivity extends PhaseBaseActivity {
             storyMaker.toggleKenBurns(mCheckboxKBFX.isChecked());
 
             String resolutionStr = mSpinnerResolution.getSelectedItem().toString();
-            //Parse resolution string of "WIDTHxHEIGHT"
+            //Parse resolution string of "[WIDTH]x[HEIGHT]"
             Pattern p = Pattern.compile("(\\d+)x(\\d+)");
             Matcher m = p.matcher(resolutionStr);
-            m.find();
-            storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+            boolean found = m.find();
+            if(found) {
+                storyMaker.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)));
+            }
+            else {
+                Log.e(TAG, "Resolution in spinner un-parsable.");
+            }
 
 
             storyMaker.setOutputFile(output);
@@ -373,6 +530,8 @@ public class ExportActivity extends PhaseBaseActivity {
                 storyMaker = null;
             }
         }
+        //update the list view
+        setVideoAdapterPaths();
         toggleVisibleElements();
     }
 
@@ -402,7 +561,7 @@ public class ExportActivity extends PhaseBaseActivity {
                     //If progress updater is interrupted, just stop.
                     return;
                 }
-                double progress = 0;
+                double progress;
                 synchronized (storyMakerLock) {
                     //Stop if storyMaker was cancelled by someone else.
                     if(storyMaker == null) {
@@ -419,8 +578,14 @@ public class ExportActivity extends PhaseBaseActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    //save the file only when the video file is actually created
+                    String ext = mSpinnerFormat.getSelectedItem().toString();
+                    File output = new File(mOutputPath + ext);
+                    StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
                     stopExport();
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
+                    setSectionsClosedExceptView(findViewById(R.id.share_section));
+
                 }
             });
         }

@@ -84,7 +84,6 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             audioPlayer.stopAudio();
-            audioPlayer.releaseAudio();
         }
     }
 
@@ -252,7 +251,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     stopPlayBackAndRecording();
                     startRecording();
                     if (!isAppendingOn) {
-                        recordingListener.startedRecordingOrPlayback();
+                        recordingListener.onStartedRecordingOrPlayback(true);
                     }
                     micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     if (enableDeleteButton) {
@@ -282,7 +281,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     if (tempFile != null && tempFile.exists()) {
                         tempFile.delete();
                     }
-                    recordingListener.stoppedRecording();
+                    recordingListener.onStoppedRecording();
                     //make the button invisible till after the next new recording
                     isAppendingOn = false;
                     checkButton.setVisibility(View.INVISIBLE);

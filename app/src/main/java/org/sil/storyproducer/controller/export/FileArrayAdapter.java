@@ -2,7 +2,7 @@ package org.sil.storyproducer.controller.export;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +68,7 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
             }
 
             //set the image based on the ID
-            Drawable image = ContextCompat.getDrawable(context, imageID);
+            Drawable image = VectorDrawableCompat.create(context.getResources(), imageID, null);
             imageView.setImageDrawable(image);
 
             if(nameField != null)

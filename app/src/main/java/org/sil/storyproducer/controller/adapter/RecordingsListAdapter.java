@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
-import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
@@ -25,7 +24,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
 /**
- * This class handles the layout inflation for the audio comment list
+ * This class handles the layout inflation for an audio recording list
  */
 
 public class RecordingsListAdapter extends ArrayAdapter<String> {
@@ -33,42 +32,22 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
     private final String[] values;
     private final int slidePosition;
     private ClickListeners listeners;
+    private String deleteTitle;
+    private String deleteMessage;
 
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, Fragment fragment) {
+    public RecordingsListAdapter(Context context, String[] values, int slidePosition, ClickListeners listeners) {
         super(context, -1, values);
         this.context = context;
         this.values = values;
         this.slidePosition = slidePosition;
-        if(fragment instanceof CommunityCheckFrag) {
-            listeners = (CommunityCheckFrag) fragment;
-        }
-    }
-
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DraftListRecordingsModal modal) {
-        super(context, -1, values);
-        this.context = context;
-        this.values = values;
-        this.slidePosition = slidePosition;
-        if(modal instanceof DraftListRecordingsModal) {
-            listeners = modal;
-        }
-    }
-
-    public RecordingsListAdapter(Context context, String[] values, int slidePosition, DramaListRecordingsModal modal) {
-        super(context, -1, values);
-        this.context = context;
-        this.values = values;
-        this.slidePosition = slidePosition;
-        if(modal instanceof DramaListRecordingsModal) {
-            listeners = modal;
-        }
+        this.listeners = listeners;
     }
 
     public interface ClickListeners {
-        void onRowClickListener(String name);
-        void onPlayClickListener(String name);
-        void onDeleteClickListener(String name);
-        AudioFiles.RenameCode onRenameClickListener(String name, String newName);
+        void onRowClick(String name);
+        void onPlayClick(String name, ImageButton buttonClickedNow);
+        void onDeleteClick(String name);
+        AudioFiles.RenameCode onRenameClick(String name, String newName);
         void onRenameSuccess();
     }
 
@@ -78,7 +57,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.audio_comment_list_item, parent, false);
         TextView titleView = (TextView) rowView.findViewById(R.id.audio_comment_title);
-        ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
+        final ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
         ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
@@ -88,79 +67,80 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listeners.onRowClickListener(values[position]);
+                    listeners.onRowClick(values[position]);
                 }
             });
             titleView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listeners.onRowClickListener(values[position]);
+                    listeners.onRowClick(values[position]);
                 }
             });
             if(listeners instanceof DraftListRecordingsModal &&
                     StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
-                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));      //have to set the background here as well so the corners are the right color
-                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                setUiForSelectedView(rowView, deleteButton, playButton);
             }
             if(listeners instanceof DramaListRecordingsModal &&
                     StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
-                rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
-                playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+                setUiForSelectedView(rowView, deleteButton, playButton);
             }
         }
 
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listeners.onPlayClickListener(values[position]);
+                listeners.onPlayClick(values[position], playButton);
             }
         });
 
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showDeleteCommentDialog(position);
+                showDeleteItemDialog(position);
             }
         });
 
         titleView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                showCommentRenameDialog(position);
+                showItemRenameDialog(position);
                 return true;
             }
         });
         return rowView;
     }
 
+    private void setUiForSelectedView(View rowView, ImageButton deleteButton, ImageButton playButton) {
+        rowView.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+        deleteButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));      //have to set the background here as well so the corners are the right color
+        playButton.setBackgroundColor(context.getResources().getColor(android.R.color.holo_blue_light));
+    }
+
     /**
-     * Shows a dialog to the user asking if they really want to delete the comment
+     * Shows a dialog to the user asking if they really want to delete the recording
      *
-     * @param position the integer position of the comment where the button was pressed
+     * @param position the integer position of the recording where the button was pressed
      */
-    private void showDeleteCommentDialog(final int position) {
-        String title = "Delete Comment?";
-        String message = "Do you want to delete this audio comment?";
-        if(listeners instanceof DraftListRecordingsModal) {
-            title = "Delete Draft?";
-            message = "Do you want to delete this audio Draft?";
-        } else if(listeners instanceof  DramaListRecordingsModal) {
-            title = "Delete Dramatization?";
-            message = "Do you want to delete this audio dramatization?";
-        }
+    private void showDeleteItemDialog(final int position) {
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(title)
-                .setMessage(message)
+                .setTitle(deleteTitle)
+                .setMessage(deleteMessage)
                 .setNegativeButton(context.getString(R.string.no), null)
                 .setPositiveButton(context.getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        listeners.onDeleteClickListener(values[position]);
+                        listeners.onDeleteClick(values[position]);
                     }
                 }).create();
 
         dialog.show();
+    }
+
+    public void setDeleteTitle(String title) {
+        deleteTitle = title;
+    }
+
+    public void setDeleteMessage(String message) {
+        deleteMessage = message;
     }
 
     /**
@@ -168,7 +148,7 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
      *
      * @param position the integer position of the comment the user "long-clicked"
      */
-    private void showCommentRenameDialog(final int position) {
+    private void showItemRenameDialog(final int position) {
         final EditText newName = new EditText(context);
 
         // Programmatically set layout properties for edit text field
@@ -179,30 +159,27 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         newName.setLayoutParams(params);
 
         AlertDialog dialog = new AlertDialog.Builder(context)
-                .setTitle(context.getString(R.string.comment_rename_title))
+                .setTitle(context.getString(R.string.rename_title))
                 .setView(newName)
                 .setNegativeButton(context.getString(R.string.cancel), null)
                 .setPositiveButton(context.getString(R.string.save), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         String newNameText = newName.getText().toString();
-                        AudioFiles.RenameCode returnCode = listeners.onRenameClickListener(values[position], newName.getText().toString());
+                        AudioFiles.RenameCode returnCode = listeners.onRenameClick(values[position], newName.getText().toString());
                         switch(returnCode) {
 
                             case SUCCESS:
                                 listeners.onRenameSuccess();
-                                Toast.makeText(getContext(), "File successfully renamed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.renamed_success), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_LENGTH:
-                                Toast.makeText(getContext(), "Filename must be less than 20 characters", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_SPECIAL_CHARS:
-                                Toast.makeText(getContext(), "Filename cannot contain special characters", Toast.LENGTH_SHORT).show();
-                                break;
-                            case ERROR_CONTAINED_DESIGNATOR:
-                                Toast.makeText(getContext(), "Invalid filename", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show();
                                 break;
                             case ERROR_UNDEFINED:
-                                Toast.makeText(getContext(), "Rename failed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), context.getResources().getString(R.string.rename_failed), Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }

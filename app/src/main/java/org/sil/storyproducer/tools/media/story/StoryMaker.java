@@ -4,7 +4,6 @@ import android.media.MediaFormat;
 import android.util.Log;
 
 import org.sil.storyproducer.tools.media.pipe.PipedAudioConcatenator;
-import org.sil.storyproducer.tools.media.pipe.PipedAudioLooper;
 import org.sil.storyproducer.tools.media.pipe.PipedAudioMixer;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaEncoder;
 import org.sil.storyproducer.tools.media.pipe.PipedMediaMuxer;
@@ -20,6 +19,7 @@ public class StoryMaker implements Closeable {
     private static final String TAG = "StoryMaker";
 
     private float mSoundtrackVolumeModifier = 0.5f;
+    private static final long SOUNDTRACK_FADE_OUT_US = 1000000;
 
     private final File mOutputFile;
     private final int mOutputFormat;
@@ -27,10 +27,9 @@ public class StoryMaker implements Closeable {
     private final MediaFormat mVideoFormat;
     private final MediaFormat mAudioFormat;
     private final StoryPage[] mPages;
-    private final File mSoundtrack;
 
     private final long mAudioTransitionUs;
-    private final long mSlideTransitionUs;
+    private final long mSlideCrossFadeUs;
 
     private final int mSampleRate;
     private final int mChannelCount;
@@ -48,22 +47,20 @@ public class StoryMaker implements Closeable {
      * @param videoFormat desired output video format.
      * @param audioFormat desired output audio format.
      * @param pages pages of this story.
-     * @param soundtrack background music for this story.
      * @param audioTransitionUs transition duration, in microseconds, between narration segments.
      *                          Note: this helps drive length of video.
-     * @param slideTransitionUs transition duration, in microseconds, of cross-fade between page images.
+     * @param slideCrossFadeUs cross-fade duration, in microseconds, between page images.
      */
     public StoryMaker(File output, int outputFormat, MediaFormat videoFormat, MediaFormat audioFormat,
-                      StoryPage[] pages, File soundtrack, long audioTransitionUs, long slideTransitionUs) {
+                      StoryPage[] pages, long audioTransitionUs, long slideCrossFadeUs) {
         mOutputFile = output;
         mOutputFormat = outputFormat;
         mVideoFormat = videoFormat;
         mAudioFormat = audioFormat;
         mPages = pages;
-        mSoundtrack = soundtrack;
 
         mAudioTransitionUs = audioTransitionUs;
-        mSlideTransitionUs = slideTransitionUs;
+        mSlideCrossFadeUs = slideCrossFadeUs;
 
         mSampleRate = mAudioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         mChannelCount = mAudioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
@@ -92,17 +89,15 @@ public class StoryMaker implements Closeable {
             Log.e(TAG, "StoryMaker already finished!");
         }
 
-        PipedAudioLooper soundtrackLooper = null;
-        if(mSoundtrack != null) {
-            soundtrackLooper = new PipedAudioLooper(mSoundtrack.getAbsolutePath(), mDurationUs, mSampleRate, mChannelCount);
-        }
+        PipedAudioConcatenator soundtrackConcatenator = new PipedAudioConcatenator(0, mSampleRate, mChannelCount);
+        soundtrackConcatenator.setFadeOut(SOUNDTRACK_FADE_OUT_US);
         PipedAudioConcatenator narrationConcatenator = new PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount);
         PipedAudioMixer audioMixer = new PipedAudioMixer();
         PipedMediaEncoder audioEncoder = new PipedMediaEncoder(mAudioFormat);
         StoryFrameDrawer videoDrawer = null;
         PipedVideoSurfaceEncoder videoEncoder = null;
         if(mVideoFormat != null) {
-            videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideTransitionUs);
+            videoDrawer = new StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideCrossFadeUs);
             videoEncoder = new PipedVideoSurfaceEncoder();
         }
         mMuxer = new PipedMediaMuxer(mOutputFile.getAbsolutePath(), mOutputFormat);
@@ -113,15 +108,44 @@ public class StoryMaker implements Closeable {
             mMuxer.addSource(audioEncoder);
 
             audioEncoder.addSource(audioMixer);
-            if(soundtrackLooper != null) {
-                audioMixer.addSource(soundtrackLooper, mSoundtrackVolumeModifier);
-            }
+            audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier);
             audioMixer.addSource(narrationConcatenator);
+
+            long soundtrackDuration = 0;
+            File lastSoundtrack = null;
             for (StoryPage page : mPages) {
                 File narration = page.getNarrationAudio();
+                long audioDuration = page.getAudioDuration();
+
+                File soundtrack = page.getSoundtrackAudio();
+                long pageDuration = page.getDuration(mAudioTransitionUs);
+
+                //If we encounter a new soundtrack, stop the current one and start the new one.
+                //Otherwise, continue playing last soundtrack.
+                if(soundtrack == null || !soundtrack.equals(lastSoundtrack)) {
+                    if(lastSoundtrack != null) {
+                        soundtrackConcatenator.addSourcePath(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
+                    }
+                    else if(soundtrackDuration > 0) {
+                        soundtrackConcatenator.addSource(null, soundtrackDuration);
+                    }
+
+                    lastSoundtrack = soundtrack;
+                    soundtrackDuration = pageDuration;
+                }
+                else {
+                    soundtrackDuration += pageDuration;
+                }
+
                 String path = narration != null ? narration.getAbsolutePath() : null;
-                narrationConcatenator.addSource(path, page.getDuration());
+                narrationConcatenator.addSourcePath(path, audioDuration);
             }
+
+            //Add last soundtrack
+            if(lastSoundtrack != null) {
+                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack.getAbsolutePath(), soundtrackDuration);
+            }
+
 
             if(mVideoFormat != null) {
                 mMuxer.addSource(videoEncoder);
@@ -136,9 +160,7 @@ public class StoryMaker implements Closeable {
         }
         finally {
             //Everything should be closed automatically, but close everything just in case.
-            if(soundtrackLooper != null) {
-                soundtrackLooper.close();
-            }
+            soundtrackConcatenator.close();
             narrationConcatenator.close();
             audioMixer.close();
             audioEncoder.close();
@@ -166,10 +188,10 @@ public class StoryMaker implements Closeable {
      * @return expected duration of the produced video in microseconds.
      */
     public static long getStoryDuration(StoryPage[] pages, long audioTransitionUs) {
-        long durationUs = pages.length * audioTransitionUs;
+        long durationUs = 0;
 
         for(StoryPage page : pages) {
-            durationUs += page.getDuration();
+            durationUs += page.getDuration(audioTransitionUs);
         }
 
         return durationUs;

@@ -20,9 +20,11 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.Modal;
-import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
+import org.sil.storyproducer.model.Phase;
+import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
@@ -35,8 +37,10 @@ import java.util.ArrayList;
  * to the toolbar. <br/><br/>
  * This class utilizes an empty layout for the toolbar and floating action button found in this layout:
  * (toolbar_for_recording.xml). <br/>
- * The toolbar is where buttons are added to toolbar. The toolbar is then placed at the
- * bottom of the rootViewLayout that is passed in to the this class' constructor. <br/><br/>
+ * The toolbar is where buttons are added to.<br/> The toolbar is then placed at the
+ * bottom of the rootViewLayout that is passed in to the this class' constructor. So, the rootViewLayout
+ * must be of type RelativeLayout because the code related to placing the toolbar in the
+ * rootViewLayout requires the rootViewLayout to be of type RelativeLayout. See: {@link #setupToolbar()}<br/><br/>
  * This class also saves the recording and allows playback <br/> from the toolbar. see: {@link #createToolbar()}
  * <br/><br/>
  */
@@ -109,11 +113,18 @@ public class RecordingToolbar extends AnimationToolbar {
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
+        audioPlayer = new AudioPlayer();
+        audioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+            }
+        });
     }
 
     public interface RecordingListener {
-        void stoppedRecording();
-        void startedRecordingOrPlayback();
+        void onStoppedRecording();
+        void onStartedRecordingOrPlayback(boolean isRecording);
     }
 
     /**
@@ -159,11 +170,14 @@ public class RecordingToolbar extends AnimationToolbar {
                 multiRecordButton.setVisibility(View.VISIBLE);
             }
         }
-        if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
+        if (audioPlayer.isAudioPlaying()) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             audioPlayer.stopAudio();
-            audioPlayer.releaseAudio();
         }
+    }
+
+    public void releaseToolbarAudio() {
+        audioPlayer.release();
     }
 
     /**
@@ -227,15 +241,19 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     protected void startRecording() {
+        //TODO: make this logging more robust and encapsulated
+        if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT){
+            LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry());
+        }
         startAudioRecorder();
         startRecordingAnimation(false, 0);
-        recordingListener.startedRecordingOrPlayback();
+        recordingListener.onStartedRecordingOrPlayback(true);
     }
 
     protected void stopRecording() {
         stopAudioRecorder();
         stopRecordingAnimation();
-        recordingListener.stoppedRecording();
+        recordingListener.onStoppedRecording();
     }
 
     //TODO finish adding deletion functionality.
@@ -369,24 +387,21 @@ public class RecordingToolbar extends AnimationToolbar {
             View.OnClickListener playListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
-                        audioPlayer.releaseAudio();
+                    if (audioPlayer.isAudioPlaying()) {
+                        audioPlayer.stopAudio();
                         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     } else {
                         stopPlayBackAndRecording();
                         if (new File(playbackRecordFilePath).exists()) {
-                            audioPlayer = new AudioPlayer();
-                            audioPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                @Override
-                                public void onCompletion(MediaPlayer mp) {
-                                    audioPlayer.releaseAudio();
-                                    playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-                                }
-                            });
-                            audioPlayer.playWithPath(playbackRecordFilePath);
+                            audioPlayer.setPath(playbackRecordFilePath);
+                            audioPlayer.playAudio();
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                            //recordingListener.startedRecordingOrPlayback();
+                            recordingListener.onStartedRecordingOrPlayback(false);
+                            //TODO: make this logging more robust and encapsulated
+                            if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT) {
+                                LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry());
+                            }
                         } else {
                             Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show();
                         }
@@ -397,7 +412,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
             playButton.setOnClickListener(playListener);
         }
-        if (enableDeleteButton && deleteButton != null) {
+        if (enableDeleteButton) {
             View.OnClickListener deleteListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -406,9 +421,8 @@ public class RecordingToolbar extends AnimationToolbar {
             };
             deleteButton.setOnClickListener(deleteListener);
         }
-        if (enableMultiRecordButton && multiRecordButton != null) {
+        if (enableMultiRecordButton) {
             if(multiRecordModal != null){
-                if(multiRecordModal instanceof DramaListRecordingsModal || multiRecordModal instanceof DraftListRecordingsModal){
                     View.OnClickListener multiRecordModalButtonListener = new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -418,7 +432,6 @@ public class RecordingToolbar extends AnimationToolbar {
                     };
 
                     multiRecordButton.setOnClickListener(multiRecordModalButtonListener);
-                }
             }
 
         }

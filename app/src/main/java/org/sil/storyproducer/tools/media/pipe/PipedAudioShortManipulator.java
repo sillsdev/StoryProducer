@@ -79,7 +79,14 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
         mBufferQueue.releaseUsedBuffer(buffer);
     }
 
-    protected void start() {
+    protected void start() throws SourceUnacceptableException {
+        if(mSampleRate == 0) {
+            throw new SourceUnacceptableException(getComponentName() + ": Sample rate not specified!");
+        }
+        if(mChannelCount == 0) {
+            throw new SourceUnacceptableException(getComponentName() + ": Channel count not specified!");
+        }
+
         mThread = new Thread(new Runnable() {
             @Override
             public void run() {
