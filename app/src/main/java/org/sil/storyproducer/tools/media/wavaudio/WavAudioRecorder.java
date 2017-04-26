@@ -101,12 +101,18 @@ public class WavAudioRecorder {
         }
     }
 
+    /**
+     * Checks if the WavAudioRecorder is currently recording.
+     * @return true if recording is happening.
+     */
     public boolean isRecording() {
         return isRecording;
     }
 
-    //This function continuously polls the mic and saves to the file stream. Stops polling
-    //when the isRecording is set to false in the stopRecording() function.
+    /**
+     * This function continuously polls the mic and saves to the file stream. Stops polling
+     when the isRecording is set to false in the stopRecording() function.
+     */
     private void createPcmFile() {
         DataOutputStream dataOutputStream = null;
         try {

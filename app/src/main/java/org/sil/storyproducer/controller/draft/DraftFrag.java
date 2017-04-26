@@ -329,8 +329,4 @@ public class DraftFrag extends Fragment {
         }
     }
 
-    //used in the DraftListRecordingsModal
-    //TODO add to the area where the other public functions in this class.
-
-
 }
