@@ -294,10 +294,10 @@ public class RecordingToolbar extends AnimationToolbar {
             playButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
         if(enableMultiRecordButton){
-            multiRecordButton.setVisibility((enableMultiRecordButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+            multiRecordButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
-        if (deleteButton != null) {
-            deleteButton.setVisibility((enableDeleteButton) ? View.VISIBLE : View.INVISIBLE);
+        if (enableDeleteButton) {
+            deleteButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
