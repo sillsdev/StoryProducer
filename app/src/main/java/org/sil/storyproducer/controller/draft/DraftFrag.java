@@ -144,6 +144,13 @@ public class DraftFrag extends Fragment {
     }
 
     /**
+     * Stops the toolbar from recording or playing back media
+     */
+    public void stopPlayBackAndRecording() {
+        recordingToolbar.stopToolbarMedia();
+    }
+
+    /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
@@ -324,82 +331,6 @@ public class DraftFrag extends Fragment {
 
     //used in the DraftListRecordingsModal
     //TODO add to the area where the other public functions in this class.
-    public void stopPlayBackAndRecording() {
-        recordingToolbar.stopToolbarMedia();
-    }
 
-    /** Don't remove! below code  **/
-//    /**
-//     * This function adds two different audio files together to make one audio file into an
-//     * .mp3 file. More comments will be added to this function later.
-//     */
-//    private void ConcatenateAudioFiles() {
-//        Movie finalFile = new Movie();
-//        String writtenToAudioFile = String.format(recordFilePath.substring(0, recordFilePath.indexOf(".m4a")) + "final.m4a");
-//        Movie movieArray[];
-//
-//        try {
-//            if (!new File(recordFilePath).exists()) {
-//                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
-//            } else {
-//                movieArray = new Movie[]{MovieCreator.build(recordFilePath),
-//                        MovieCreator.build(tempRecordFilePath)};
-//            }
-//
-//            List<Track> audioTrack = new ArrayList<>();
-//
-//            for (int i = 0; i < movieArray.length; i++)
-//                for (Track t : movieArray[i].getTracks()) {
-//                    if (t.getHandler().equals("soun")) {
-//                        audioTrack.add(t);
-//                    }
-//                }
-//
-//            if (!audioTrack.isEmpty()) {
-//                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
-//            }
-//
-//            Container out = new DefaultMp4Builder().build(finalFile);
-//
-//            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
-//            out.writeContainer(fc);
-//            fc.close();
-//
-//            tryDeleteFile(recordFilePath);
-//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFilePath)));
-//            if (renamed) {
-//                //delete old file
-//                tryDeleteFile(writtenToAudioFile);
-//            }
-//
-//        } catch (IOException e) {
-//            Log.e(getActivity().toString(), e.getMessage());
-//        }
-//    }
-//
-//    /**
-//     * Tries to create a new file.
-//     *
-//     * @param filePath The file path where a file should be created at.
-//     * @return The file instantiation of the file that was created at the filePath.
-//     */
-//    private File tryCreateFile(String filePath) {
-//        File toReturnFile = new File(filePath);
-//        if (!toReturnFile.exists()) {
-//            try {
-//                toReturnFile.setExecutable(true);
-//                toReturnFile.setReadable(true);
-//                toReturnFile.setWritable(true);
-//                toReturnFile.createNewFile();
-//            } catch (IOException e) {
-//                Log.w(getActivity().toString(), "Could not create file for recording!");
-//            }
-//        }
-//
-//        return toReturnFile;
-//    }
-
-
-    /** Don't remove above code!! **/
 
 }
