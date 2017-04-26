@@ -17,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -253,6 +255,7 @@ public final class DraftFrag extends Fragment {
 
                     LWCPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp);
                     Toast.makeText(getContext(), R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show();
+                    LogFiles.saveLogEntry(DraftEntry.Type.LWC_PLAYBACK.makeEntry());
                 }
             }
             }

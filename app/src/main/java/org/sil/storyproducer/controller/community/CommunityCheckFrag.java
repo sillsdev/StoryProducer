@@ -22,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -208,6 +210,7 @@ public class CommunityCheckFrag extends Fragment {
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_stop_red, null));
                     Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                    LogFiles.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
                 } else if (wasPlaying) {
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
@@ -289,6 +292,7 @@ public class CommunityCheckFrag extends Fragment {
                 }
                 if(isRecording){
                     stopAudioRecorder();
+                    LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_RECORDING.makeEntry());
                     //TODO: use non-deprecated method; currently used to support older devices
                     recordButton.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_mic_blue, null));
                     updateCommentList();

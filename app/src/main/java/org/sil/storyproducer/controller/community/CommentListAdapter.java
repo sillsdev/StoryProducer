@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.AudioFiles;
 
@@ -51,6 +53,7 @@ public class CommentListAdapter extends ArrayAdapter<String> {
             @Override
             public void onClick(View v) {
                 commCheck.playCommentClicked(values[position], playButton);
+                LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
             }
         });
 

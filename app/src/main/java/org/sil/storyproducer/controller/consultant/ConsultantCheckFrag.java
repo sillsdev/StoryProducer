@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.logging.LogView;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.model.StoryState;
@@ -312,7 +313,7 @@ public class ConsultantCheckFrag extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getContext(), "Log interface yet to be implemented", Toast.LENGTH_SHORT).show();
+                LogView.makeModal(getContext());
             }
         });
     }
