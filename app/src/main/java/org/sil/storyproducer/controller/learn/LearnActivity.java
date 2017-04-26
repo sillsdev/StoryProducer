@@ -13,6 +13,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -105,8 +107,16 @@ public class LearnActivity extends PhaseBaseActivity {
                 rootView.findViewById(R.id.fragment_draft_play_toolbar_button));
 
         setIfLearnHasBeenWatched();
-
+        invalidateOptionsMenu();
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_learn);
+        return true;
+    }
+
 
     /**
      * sets that the learn phase has already been gone through once

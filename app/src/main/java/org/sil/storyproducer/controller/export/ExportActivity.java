@@ -4,6 +4,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -59,6 +62,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
+    private Menu menu;
 
     private String mOutputPath;
 
@@ -71,8 +75,8 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_export);
-
         setupViews();
+        invalidateOptionsMenu();
     }
 
     @Override
@@ -167,6 +171,13 @@ public class ExportActivity extends PhaseBaseActivity {
         loadPreferences();
 
         toggleVisibleElements();
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_export);
+        return true;
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.app.AlertDialog;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.ListFiles;
@@ -28,9 +30,17 @@ public class StoryListFrag extends Fragment {
         // Get ListView object from xml
         listView = (ListView)getActivity().findViewById(R.id.story_list_view);
 
+
         // Defined Array storyNames to show in ListView
         final String[] storyNames = FileSystem.getStoryNames();
-        final ListFiles[] listFiles = new ListFiles[storyNames.length];
+        if (storyNames.length<1 ) {
+            AlertDialog dialog = new AlertDialog.Builder(this.getContext())
+                    .setTitle(getString(R.string.error))
+                    .setMessage(getString(R.string.stories_not_found))
+                    .setPositiveButton(getString(R.string.ok), null).create();
+            dialog.show();
+        }
+         final ListFiles[] listFiles = new ListFiles[storyNames.length];
 
         for(int i = 0; i < listFiles.length; i++) {
             SlideText slideText = TextFiles.getSlideText(storyNames[i], 1);

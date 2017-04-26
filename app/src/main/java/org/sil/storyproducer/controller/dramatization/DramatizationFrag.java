@@ -15,6 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -67,6 +70,7 @@ public class DramatizationFrag extends Fragment {
             draftPlayerPath =  AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         }
         dramatizationRecordingPath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        setHasOptionsMenu(true);
     }
 
 
@@ -79,6 +83,12 @@ public class DramatizationFrag extends Fragment {
         setToolbar();
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item =  menu.getItem(0);
+        super.onCreateOptionsMenu(menu, inflater);
+        item.setIcon(R.drawable.ic_dramatize);
     }
 
     /**

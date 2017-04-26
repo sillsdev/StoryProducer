@@ -14,6 +14,9 @@ import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -63,6 +66,7 @@ public class ConsultantCheckFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
         draftPlayer = new AudioPlayer();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -83,6 +87,12 @@ public class ConsultantCheckFrag extends Fragment {
         slideTextView.setText(slidePosition + 1 + "");
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item =  menu.getItem(0);
+        super.onCreateOptionsMenu(menu, inflater);
+        item.setIcon(R.drawable.ic_concheck);
     }
 
     /**

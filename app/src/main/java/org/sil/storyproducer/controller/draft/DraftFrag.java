@@ -15,6 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -79,6 +82,7 @@ public final class DraftFrag extends Fragment {
         slideText = TextFiles.getSlideText(StoryState.getStoryName(), slideNumber);
         recordFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         //tempRecordFilePath = AudioFiles.getDraftTemp(StoryState.getStoryName()).getPath();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -98,6 +102,12 @@ public final class DraftFrag extends Fragment {
         setToolbar();
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+        MenuItem item =  menu.getItem(0);
+        super.onCreateOptionsMenu(menu, inflater);
+        item.setIcon(R.drawable.ic_draft);
     }
 
     /**

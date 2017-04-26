@@ -9,6 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -46,9 +49,11 @@ public class CommunityCheckFrag extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState){
+        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -63,6 +68,12 @@ public class CommunityCheckFrag extends Fragment {
         setRecordCommentButton((ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button));
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        MenuItem item =  menu.getItem(0);
+        super.onCreateOptionsMenu(menu, inflater);
+        item.setIcon(R.drawable.ic_comcheck);
     }
 
     /**
