@@ -272,10 +272,10 @@ public class DraftFrag extends Fragment {
 
     private void setRecordFilePath() {
         int nextDraftIndex = AudioFiles.getDraftTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_draft_name, nextDraftIndex));
+        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_draft_name, nextDraftIndex));
+            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
         }
         this.recordFile = recordFile;
     }

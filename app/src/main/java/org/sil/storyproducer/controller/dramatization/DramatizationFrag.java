@@ -217,10 +217,10 @@ public class DramatizationFrag extends Fragment {
 
     private void setRecordFilePath() {
         int nextDraftIndex = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.record_file_drama_name, nextDraftIndex));
+        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.record_file_drama_name, nextDraftIndex));
+            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
         }
         dramatizationRecordingFile = recordFile;
     }

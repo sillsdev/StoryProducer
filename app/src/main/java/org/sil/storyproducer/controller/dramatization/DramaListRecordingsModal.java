@@ -80,9 +80,9 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         if (dramaFile.exists()) {
             audioPlayer = new AudioPlayer();
             audioPlayer.playWithPath(dramaFile.getPath());
-            Toast.makeText(parentFragment.getContext(), context.getString(R.string.playing_dramatize), Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.dramatization_playing_dramatize), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(parentFragment.getContext(), context.getString(R.string.no_drama_found), Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.dramatization_no_drama_found), Toast.LENGTH_SHORT).show();
         }
     }
 

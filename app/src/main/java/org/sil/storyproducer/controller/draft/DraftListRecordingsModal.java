@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -79,9 +78,9 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
         if (draftFile.exists()) {
             audioPlayer = new AudioPlayer();
             audioPlayer.playWithPath(draftFile.getPath());
-            Toast.makeText(parentFragment.getContext(), context.getString(R.string.playing_draft), Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.draft_playing_draft), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(parentFragment.getContext(), context.getString(R.string.no_draft_found), Toast.LENGTH_SHORT).show();
+            Toast.makeText(parentFragment.getContext(), context.getString(R.string.draft_no_draft_found), Toast.LENGTH_SHORT).show();
         }
     }
 

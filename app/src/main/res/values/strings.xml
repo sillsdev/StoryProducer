@@ -114,16 +114,16 @@
     <string name="draft_bible_story">Bible Story!</string>
     <string name="draft_playback_no_narration_audio">Could Not Find Narration Audio...</string>
     <string name="draft_playback_narration_audio">Playing Narration Audio...</string>
-    <string name="record_file_draft_name">Draft %1$d</string>
-    <string name="playing_draft">Playing Draft...</string>
+    <string name="draft_record_file_draft_name">Draft %1$d</string>
+    <string name="draft_playing_draft">Playing Draft...</string>
     <string name="draft_no_draft_found">No Draft Found...</string>
-    <string name="draft_no_drama_found">No Dramatization Found...</string>
 
     <!-- Dramatization phase -->
     <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
     <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
     <string name="dramatization_playing_dramatize">Playing Dramatization...</string>
+    <string name="dramatization_no_drama_found">No Dramatization Found...</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
 
     <!-- RecordingToolbar -->
