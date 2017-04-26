@@ -289,9 +289,11 @@ public class RecordingToolbar extends AnimationToolbar {
             }
         }
 
-        if (playButton != null) {
-            boolean playBackFileExist = new File(playbackRecordFilePath).exists();
-            playButton.setVisibility((enablePlaybackButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        boolean playBackFileExist = new File(playbackRecordFilePath).exists();
+        if (enablePlaybackButton) {
+            playButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if(enableMultiRecordButton){
             multiRecordButton.setVisibility((enableMultiRecordButton && playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
         if (deleteButton != null) {
