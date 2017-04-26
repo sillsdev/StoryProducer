@@ -31,6 +31,9 @@ import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
+
+import java.io.File;
 
 import java.io.File;
 
@@ -45,9 +48,9 @@ public class DramatizationFrag extends Fragment {
     private boolean phaseUnlocked;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
+    private File dramatizationRecordingFile = null;
     private ImageButton draftPlayButton;
 
-    private String dramatizationRecordingPath = null;
 
     private RecordingToolbar recordingToolbar;
 
@@ -57,8 +60,8 @@ public class DramatizationFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
-        dramatizationRecordingPath = AudioFiles.getDramatization(storyName, slideNumber).getPath();
         phaseUnlocked = StorySharedPreferences.isApproved(storyName, getContext());
+        setRecordFilePath();
     }
 
     @Override
@@ -73,7 +76,6 @@ public class DramatizationFrag extends Fragment {
         slideText.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), slideNumber), TextView.BufferType.EDITABLE);
 
         if (phaseUnlocked) {
-            setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
             View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
             setToolbar(rootViewToolbar);
             closeKeyboardOnTouch(rootView);
@@ -100,6 +102,8 @@ public class DramatizationFrag extends Fragment {
                 draftPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             }
         });
+
+        setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button));
     }
 
     /**
@@ -198,6 +202,14 @@ public class DramatizationFrag extends Fragment {
     }
 
     /**
+     * sets the playback path
+     */
+    public void setPlayBackPath() {
+        String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+    }
+
+    /**
      * This function serves to set the play and stop button for the draft playback button.
      */
 
@@ -208,7 +220,7 @@ public class DramatizationFrag extends Fragment {
             playPauseDraftButton.setAlpha(0.8f);
             playPauseDraftButton.setColorFilter(Color.argb(200, 200, 200, 200));
         } else {
-            //remove x mark from Imagebutton play
+            //remove x mark from ImageButton play
             playPauseDraftButton.setImageResource(0);
         }
         playPauseDraftButton.setOnClickListener(new View.OnClickListener() {
@@ -226,7 +238,7 @@ public class DramatizationFrag extends Fragment {
                     draftPlayer.playAudio();
 
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
                     }
                     Toast.makeText(getContext(), R.string.dramatization_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }
@@ -234,14 +246,48 @@ public class DramatizationFrag extends Fragment {
         });
     }
 
+    private void setRecordFilePath() {
+        int nextDraftIndex = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
+        while (recordFile.exists()) {
+            nextDraftIndex++;
+            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
+        }
+        dramatizationRecordingFile = recordFile;
+    }
+
     /**
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar) {
         if (rootView instanceof RelativeLayout) {
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView, true, false, dramatizationRecordingPath);
+            String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+            RecordingListener recordingListener = new RecordingListener() {
+                @Override
+                public void onStoppedRecording() {
+                    String title = AudioFiles.getDramatizationTitle(dramatizationRecordingFile);
+                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                    setRecordFilePath();
+                    recordingToolbar.setRecordFilePath(dramatizationRecordingFile.getAbsolutePath());
+                    setPlayBackPath();
+                }
+                @Override
+                public void onStartedRecordingOrPlayback() {
+                    //not used here
+                }
+            };
+            DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
+
+            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView, true,
+                    false, true, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
+    }
+
+    //used in the DramaListRecordingsModal
+    //TODO add to the area where the other public functions in this class.
+    public void stopPlayBackAndRecording() {
+        recordingToolbar.stopToolbarMedia();
     }
 
     /**

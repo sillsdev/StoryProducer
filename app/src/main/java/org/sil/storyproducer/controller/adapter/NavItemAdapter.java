@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller;
+package org.sil.storyproducer.controller.adapter;
 
 import android.app.Activity;
 import android.content.Context;

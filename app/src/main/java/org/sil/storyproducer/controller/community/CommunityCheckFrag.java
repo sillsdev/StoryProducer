@@ -15,13 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.logging.ComChkEntry;
 import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.StoryState;
@@ -38,9 +38,9 @@ import java.io.IOException;
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-public class CommunityCheckFrag extends Fragment {
+public class CommunityCheckFrag extends Fragment implements RecordingsListAdapter.ClickListeners {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
-    private final static String LOGTAG = "communityCheck";
+    private final static String LOG_TAG = "CommunityCheckFrag";
     private int slideNumber;
     private AudioPlayer draftPlayer;
     private ImageButton draftPlaybackButton;
@@ -146,7 +146,9 @@ public class CommunityCheckFrag extends Fragment {
         ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
         comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
-        ListAdapter adapter = new CommentListAdapter(getContext(), comments, slideNumber, this);
+        RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
+        adapter.setDeleteTitle(getResources().getString(R.string.delete_comment_title));
+        adapter.setDeleteMessage(getResources().getString(R.string.delete_comment_message));
         listView.setAdapter(adapter);
     }
 
@@ -221,11 +223,17 @@ public class CommunityCheckFrag extends Fragment {
         });
     }
 
+    @Override
+    public void onRowClick(String recordingTitle) {
+        //empty because Community check doesn't use this feature
+    }
+
     /**
      * Plays the audio comment designated by the title
      * @param commentTitle the title of the comment to play
      */
-    public void playCommentClicked(String commentTitle, final ImageButton buttonClickedNow) {
+    @Override
+    public void onPlayClick(String commentTitle, final ImageButton buttonClickedNow) {
         final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
 
         boolean wasPlaying = commentPlayer.isAudioPlaying();
@@ -255,6 +263,22 @@ public class CommunityCheckFrag extends Fragment {
         } else {
             Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onDeleteClick(String commentTitle) {
+        AudioFiles.deleteComment(StoryState.getStoryName(), slideNumber, commentTitle);
+        updateCommentList();
+    }
+
+    @Override
+    public AudioFiles.RenameCode onRenameClick(String name, String newName) {
+        return AudioFiles.renameComment(StoryState.getStoryName(), slideNumber, name, newName);
+    }
+
+    @Override
+    public void onRenameSuccess() {
+        updateCommentList();
     }
 
     /**
@@ -316,7 +340,7 @@ public class CommunityCheckFrag extends Fragment {
             isRecording = true;
             Toast.makeText(getContext(), "Recording comment!", Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e){
-            Log.e(LOGTAG, "Error recording comment");
+            Log.e(LOG_TAG, "Error recording comment");
             Toast.makeText(getContext(), "Error recording comment", Toast.LENGTH_SHORT).show();
         }
     }

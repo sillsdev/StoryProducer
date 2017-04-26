@@ -17,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.NavItemAdapter;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;

@@ -20,6 +20,9 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
+import org.sil.storyproducer.controller.Modal;
+import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.logging.DraftEntry;
 import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.Phase;
@@ -42,7 +45,6 @@ import java.util.ArrayList;
  * rootViewLayout requires the rootViewLayout to be of type RelativeLayout. See: {@link #setupToolbar()}<br/><br/>
  * This class also saves the recording and allows playback <br/> from the toolbar. see: {@link #createToolbar()}
  * <br/><br/>
- *
  */
 public class RecordingToolbar extends AnimationToolbar {
     private final int RECORDING_ANIMATION_DURATION = 1500;
@@ -50,22 +52,26 @@ public class RecordingToolbar extends AnimationToolbar {
 
     private FloatingActionButton fabPlus;
     private LinearLayout toolbar;
+    private Modal multiRecordModal;
 
     private LinearLayout rootViewToolbarLayout;
     private View rootViewToEmbedToolbarIn;
     private String recordFilePath;
+    private String playbackRecordFilePath;
     private Context appContext;
     private Activity activity;
 
     private ImageButton micButton;
     private ImageButton playButton;
     private ImageButton deleteButton;
+    private ImageButton multiRecordButton;
     private ArrayList<AuxiliaryMedia> auxiliaryMediaList;
 
 
     private boolean isRecording;
     private boolean enablePlaybackButton;
     private boolean enableDeleteButton;
+    private boolean enableMultiRecordButton;
 
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
@@ -73,6 +79,8 @@ public class RecordingToolbar extends AnimationToolbar {
     private boolean isToolbarRed = false;
     private MediaRecorder voiceRecorder;
     private AudioPlayer audioPlayer;
+
+    private RecordingListener recordingListener;
 
     /**
      * The ctor.
@@ -86,7 +94,8 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param enableDeleteButton    Enable the delete button, does not work as of now.
      * @param recordFilePath        The filepath that the recording will be saved under.
      */
-    public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout, boolean enablePlaybackButton, boolean enableDeleteButton, String recordFilePath) throws ClassCastException {
+    public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
+                            boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton, String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
@@ -98,7 +107,11 @@ public class RecordingToolbar extends AnimationToolbar {
         this.toolbar = (LinearLayout) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
         this.enablePlaybackButton = enablePlaybackButton;
         this.enableDeleteButton = enableDeleteButton;
+        this.enableMultiRecordButton = enableMultiRecordButton;
+        this.playbackRecordFilePath = playbackRecordFilePath;
         this.recordFilePath = recordFilePath;
+        this.recordingListener = recordingListener;
+        this.multiRecordModal = multiRecordModal;
         auxiliaryMediaList = new ArrayList<>();
         createToolbar();
         setupRecordingAnimationHandler();
@@ -109,6 +122,12 @@ public class RecordingToolbar extends AnimationToolbar {
                 playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
             }
         });
+    }
+
+    public interface RecordingListener {
+        void onStoppedRecording();
+
+        void onStartedRecordingOrPlayback();
     }
 
     /**
@@ -129,7 +148,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * This function can be called so that the toolbar is automatically opened, without animation,
      * when the fragment is drawn.
      */
-    public void keepToolbarVisible(){
+    public void keepToolbarVisible() {
         hideFloatingActionButton();
         toolbar.setVisibility(View.VISIBLE);
     }
@@ -184,6 +203,24 @@ public class RecordingToolbar extends AnimationToolbar {
     }
 
     /**
+     * set the recording file path
+     *
+     * @param path to set the recording path to
+     */
+    public void setRecordFilePath(String path) {
+        recordFilePath = path;
+    }
+
+    /**
+     * set the recording file path for playing back audio
+     *
+     * @param path to set the recording path to
+     */
+    public void setPlaybackRecordFilePath(String path) {
+        playbackRecordFilePath = path;
+    }
+
+    /**
      * Calling class should be responsible for all other media
      * so {@link #stopPlayBackAndRecording()} is not being used here.
      */
@@ -199,11 +236,13 @@ public class RecordingToolbar extends AnimationToolbar {
         }
         startAudioRecorder();
         startRecordingAnimation(false, 0);
+        recordingListener.onStartedRecordingOrPlayback();
     }
 
     private void stopRecording() {
         stopAudioRecorder();
         stopRecordingAnimation();
+        recordingListener.onStoppedRecording();
     }
 
     //TODO finish adding deletion functionality.
@@ -228,45 +267,43 @@ public class RecordingToolbar extends AnimationToolbar {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
         spaceLayoutParams.width = 0;
-        int[] drawables;
-        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
-
-        //Index of the button corresponds to the drawables array
-        micButton = imageButtons[0];
-
-        if (!enablePlaybackButton && !enableDeleteButton) {
-            drawables = new int[]{R.drawable.ic_mic_white};
-        } else if (!enablePlaybackButton) {
-            drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_delete_forever_white_48dp};
-            deleteButton = imageButtons[1];
-        } else if (!enableDeleteButton) {
-            drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp};
-            playButton = imageButtons[1];
-        } else {
-            drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp};
-            playButton = imageButtons[1];
-            deleteButton = imageButtons[2];
-        }
+        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_record_voice_over_white_48dp};
+        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
+        boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton};
 
         Space buttonSpacing = new Space(appContext);
         buttonSpacing.setLayoutParams(spaceLayoutParams);
         toolbar.addView(buttonSpacing); //Add a space to the left of the first button.
         for (int i = 0; i < drawables.length; i++) {
-            imageButtons[i].setBackgroundResource(drawables[i]);
-            imageButtons[i].setVisibility(View.VISIBLE);
-            imageButtons[i].setLayoutParams(layoutParams);
-            toolbar.addView(imageButtons[i]);
+            if (buttonToDisplay[i]) {
+                imageButtons[i].setBackgroundResource(drawables[i]);
+                imageButtons[i].setVisibility(View.VISIBLE);
+                imageButtons[i].setLayoutParams(layoutParams);
+                toolbar.addView(imageButtons[i]);
 
-            buttonSpacing = new Space(appContext);
-            buttonSpacing.setLayoutParams(spaceLayoutParams);
-            toolbar.addView(buttonSpacing);
+                buttonSpacing = new Space(appContext);
+                buttonSpacing.setLayoutParams(spaceLayoutParams);
+                toolbar.addView(buttonSpacing);
+                if (i == 0) {
+                    micButton = imageButtons[i];
+                } else if (i == 1) {
+                    playButton = imageButtons[i];
+                } else if (i == 2) {
+                    deleteButton = imageButtons[i];
+                } else if (i == 3) {
+                    multiRecordButton = imageButtons[i];
+                }
+            }
         }
 
-        if(playButton != null){
-            playButton.setVisibility((enablePlaybackButton && new File(recordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+        if (enablePlaybackButton) {
+            playButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
         }
-        if(deleteButton != null){
-            deleteButton.setVisibility((enableDeleteButton) ? View.VISIBLE : View.INVISIBLE);
+        if(enableMultiRecordButton){
+            multiRecordButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
+        }
+        if (enableDeleteButton) {
+            deleteButton.setVisibility((new File(playbackRecordFilePath).exists()) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
@@ -313,6 +350,9 @@ public class RecordingToolbar extends AnimationToolbar {
                     if (enablePlaybackButton) {
                         playButton.setVisibility(View.VISIBLE);
                     }
+                    if(enableMultiRecordButton){
+                        multiRecordButton.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     stopPlayBackAndRecording();
                     startRecording();
@@ -322,6 +362,9 @@ public class RecordingToolbar extends AnimationToolbar {
                     }
                     if (enablePlaybackButton) {
                         playButton.setVisibility(View.INVISIBLE);
+                    }
+                    if(enableMultiRecordButton){
+                        multiRecordButton.setVisibility(View.INVISIBLE);
                     }
                 }
             }
@@ -337,11 +380,12 @@ public class RecordingToolbar extends AnimationToolbar {
                         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                     } else {
                         stopPlayBackAndRecording();
-                        if (new File(recordFilePath).exists()) {
-                            audioPlayer.setPath(recordFilePath);
+                        if (new File(playbackRecordFilePath).exists()) {
+                            audioPlayer.setPath(playbackRecordFilePath);
                             audioPlayer.playAudio();
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                            recordingListener.onStartedRecordingOrPlayback();
                             //TODO: make this logging more robust and encapsulated
                             if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT) {
                                 LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry());
@@ -364,6 +408,20 @@ public class RecordingToolbar extends AnimationToolbar {
                 }
             };
             deleteButton.setOnClickListener(deleteListener);
+        }
+        if (enableMultiRecordButton) {
+            if(multiRecordModal != null){
+                    View.OnClickListener multiRecordModalButtonListener = new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            stopPlayBackAndRecording();
+                            multiRecordModal.show();
+                        }
+                    };
+
+                    multiRecordButton.setOnClickListener(multiRecordModalButtonListener);
+            }
+
         }
     }
 

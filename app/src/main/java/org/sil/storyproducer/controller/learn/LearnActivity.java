@@ -317,6 +317,9 @@ public class LearnActivity extends PhaseBaseActivity {
         videoSeekBar.setProgress(0);
         slideNumber = 0;
         narrationPlayer.setVolume(0.0f);
+        Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+        backgroundPlayer.stopAudio();
+        volumeSwitch.setChecked(false);
         backgroundPlayer.stopAudio();
         backgroundPlayer.setVolume(0.0f);
         playBackgroundMusic();
@@ -420,7 +423,16 @@ public class LearnActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, recordFilePath);
+        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
+            @Override
+            public void onStoppedRecording() {
+                //empty because the learn phase doesn't use this
+            }
+            @Override
+            public void onStartedRecordingOrPlayback() {
+                resetVideoWithSoundOff();
+            }
+        });
         recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording

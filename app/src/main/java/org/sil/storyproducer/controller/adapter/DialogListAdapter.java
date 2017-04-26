@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller;
+package org.sil.storyproducer.controller.adapter;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;

@@ -16,6 +16,8 @@ import java.util.List;
 public class StorySharedPreferences {
 
     private static final String PHASE_KEY = "phase";
+    private static final String DRAFT_FILE_KEY = "draft-file-key";
+    private static final String DRAMA_FILE_KEY = "drama-file-key";
     private static final String EXPORTED_VIDEOS_KEY = "exported_videos";
 
     private static SharedPreferences prefs;
@@ -80,4 +82,21 @@ public class StorySharedPreferences {
         }
         return values;
     }
+
+    public static void setDraftForSlideAndStory(String draftFileName, int slide, String storyName) {
+        prefs.edit().putString(DRAFT_FILE_KEY + slide + storyName, draftFileName).commit();
+    }
+
+    public static String getDraftForSlideAndStory(int slide, String storyName) {
+        return prefs.getString(DRAFT_FILE_KEY + slide + storyName, "");
+    }
+
+    public static void setDramatizationForSlideAndStory(String draftFileName, int slide, String storyName) {
+        prefs.edit().putString(DRAMA_FILE_KEY + slide + storyName, draftFileName).commit();
+    }
+
+    public static String getDramatizationForSlideAndStory(int slide, String storyName) {
+        return prefs.getString(DRAMA_FILE_KEY + slide + storyName, "");
+    }
+
 }
