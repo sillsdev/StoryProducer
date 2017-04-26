@@ -10,9 +10,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.file.AudioFiles;
-
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -20,7 +17,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Designed to create WAV file audio recording.
@@ -34,6 +30,8 @@ public class WavAudioRecorder {
     private static final int INPUT_SOURCE = MediaRecorder.AudioSource.MIC;
     private static int minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT);
 
+    private Object recordingLock = new Object();
+    private boolean isPCMWritingDone;
     private boolean isRecording = false;
     private Runnable writePcmToFileRunnable;
     private File filePathToWriteWav;
@@ -86,6 +84,7 @@ public class WavAudioRecorder {
             } else if (audioRecord.getState() == AudioRecord.STATE_UNINITIALIZED) {
                 audioRecord = new AudioRecord(INPUT_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize);
 
+                isPCMWritingDone = false;
                 isRecording = true;
                 audioRecord.startRecording();
                 new Thread(writePcmToFileRunnable).start();
@@ -96,6 +95,18 @@ public class WavAudioRecorder {
     public void stopRecording() {
         if (isRecording && audioRecord.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             isRecording = false;
+            boolean tempIsDone = false;
+            while(!tempIsDone) {
+                synchronized (recordingLock) {
+                    tempIsDone = isPCMWritingDone;
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    tempIsDone = true;
+                    Log.e(TAG, "Waiting for PCM completion interrupted.", e);
+                }
+            }
             createWavFile();
             audioRecord.release();
         }
@@ -126,6 +137,9 @@ public class WavAudioRecorder {
             }
             dataOutputStream.close();
             audioRecord.stop();
+            synchronized (recordingLock) {
+                isPCMWritingDone = true;
+            }
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Could not create WAV file.");
         } catch (IOException e) {
