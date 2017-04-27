@@ -31,6 +31,7 @@ import org.sil.storyproducer.tools.media.AudioRecorder;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 public class RecordingToolbar extends AnimationToolbar {
     private final int RECORDING_ANIMATION_DURATION = 1500;
     private final int STOP_RECORDING_DELAY = 0;
+    private final String TAG = "AnimationToolbar";
 
     private FloatingActionButton fabPlus;
     protected LinearLayout toolbar;
@@ -57,13 +59,12 @@ public class RecordingToolbar extends AnimationToolbar {
     protected String recordFilePath;
     protected String playbackRecordFilePath;
     protected Context appContext;
-    //private Activity currentActivity;
 
     protected ImageButton micButton;
     protected ImageButton playButton;
     protected ImageButton deleteButton;
     protected ImageButton multiRecordButton;
-    private ArrayList<AuxiliaryMedia> auxiliaryMediaList;
+    private List<AuxiliaryMedia> auxiliaryMediaList;
 
 
     protected boolean isRecording;
@@ -83,7 +84,7 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * The ctor.
      *
-     * @param activity              The currentActivity from the calling class.
+     * @param activity              The activity from the calling class.
      * @param rootViewToolbarLayout The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
      *                              must be of type LinearLayout so that buttons can be
      *                              evenly spaced.
@@ -97,8 +98,8 @@ public class RecordingToolbar extends AnimationToolbar {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
-        this.currentActivity = activity;
-        this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because currentActivity.getContext() cannot be accessed publicly.
+        this.activity = activity;
+        this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
         this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
         this.rootViewToEmbedToolbarIn = rootViewLayout;
         fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
@@ -542,7 +543,7 @@ public class RecordingToolbar extends AnimationToolbar {
             voiceRecorder.start();
             Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show();
         } catch (IllegalStateException | IOException e) {
-            Log.e(currentActivity.toString(), e.getMessage());
+            Log.e(TAG, "Could not record voice.", e);
         }
     }
 
@@ -559,7 +560,7 @@ public class RecordingToolbar extends AnimationToolbar {
         } catch (RuntimeException stopException) {
             Toast.makeText(appContext, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show();
         } catch (InterruptedException e) {
-            Log.e(appContext.toString(), e.getMessage());
+            Log.e(TAG, "Voice recorder interrupted!", e);
         }
         voiceRecorder.release();
         voiceRecorder = null;
@@ -571,7 +572,7 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param fileName The file to output the voice recordings.
      */
     protected void setVoiceRecorder(String fileName) {
-        voiceRecorder = new AudioRecorder(fileName, currentActivity);
+        voiceRecorder = new AudioRecorder(fileName, activity);
     }
 
     //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev

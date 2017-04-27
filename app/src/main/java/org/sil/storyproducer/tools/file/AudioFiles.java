@@ -16,8 +16,8 @@ public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
     private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
-    private static final String LWC_EXTENSION = ".wav";
-    private static final String WAV_EXTENSION = LWC_EXTENSION;
+    private static final String WAV_EXTENSION = ".wav";
+    private static final String LWC_EXTENSION = WAV_EXTENSION;
 
     private static final String PREFER_EXTENSION = ".m4a";
 
@@ -121,10 +121,6 @@ public class AudioFiles {
         return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
-    public static File getDraftTemp(String story) {
-        return new File(FileSystem.getHiddenTempDirectory(story), DRAFT_TEMP);
-    }
-
     //*** Community Check ***
 
     public static File getComment(String story, int slide, String commentTitle) {
@@ -179,7 +175,7 @@ public class AudioFiles {
     }
 
     public static File getDramatizationTemp(String story){
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T"  + WAV_EXTENSION);
+        return new File(FileSystem.getHiddenTempDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T"  + WAV_EXTENSION);
     }
 
     public static String getDramatizationTitle(File file) {

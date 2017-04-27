@@ -34,8 +34,8 @@ public class WavAudioRecorder {
     private boolean isPCMWritingDone;
     private boolean isRecording = false;
     private Runnable writePcmToFileRunnable;
-    private File filePathToWriteWav;
-    private File filePathToWritePcm;
+    private File wavFile;
+    private File pcmFile;
 
     private AudioRecord audioRecord;
 
@@ -53,8 +53,8 @@ public class WavAudioRecorder {
                     new String[]{Manifest.permission.RECORD_AUDIO}, 1);
         }
 
-        this.filePathToWriteWav = filePathToRecordTo;
-        this.filePathToWritePcm = new File(filePathToRecordTo.getPath() + PCM_EXTENSION);
+        this.wavFile = filePathToRecordTo;
+        this.pcmFile = new File(filePathToRecordTo.getPath() + PCM_EXTENSION);
 
         writePcmToFileRunnable = new Runnable() {
             @Override
@@ -71,13 +71,14 @@ public class WavAudioRecorder {
      *
      * @param newWavFile The file where the new audio will be saved to.
      */
-    public void recordToPath(File newWavFile) {
-        filePathToWriteWav = newWavFile;
+    public void setNewPath(File newWavFile) {
+        wavFile = newWavFile;
     }
 
     public void startRecording() {
         if (!isRecording) {
             if (audioRecord.getState() == AudioRecord.STATE_INITIALIZED) {
+                isPCMWritingDone = false;
                 isRecording = true;
                 audioRecord.startRecording();
                 new Thread(writePcmToFileRunnable).start();
@@ -127,7 +128,7 @@ public class WavAudioRecorder {
     private void createPcmFile() {
         DataOutputStream dataOutputStream = null;
         try {
-            dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePathToWritePcm)));
+            dataOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(pcmFile)));
             while (isRecording) {
                 short[] audioData = new short[minBufferSize];
                 int amountRead = audioRecord.read(audioData, 0, minBufferSize);
@@ -141,9 +142,9 @@ public class WavAudioRecorder {
                 isPCMWritingDone = true;
             }
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Could not create WAV file.");
+            Log.e(TAG, "Could not create WAV file.", e);
         } catch (IOException e) {
-            Log.e(TAG, "Could not write to WAV file.");
+            Log.e(TAG, "Could not write to WAV file.", e);
         }
     }
 
@@ -165,28 +166,29 @@ public class WavAudioRecorder {
      * </ol>
      */
     private void createWavFile() {
-        if (filePathToWritePcm.exists()) {
+        if (pcmFile.exists()) {
             try {
-                byte[] bytes = new byte[(int) filePathToWritePcm.length()];
+                //TODO handle large file size over 2^32
+                byte[] bytes = new byte[(int) pcmFile.length()];
 
                 //read raw audio file from phone
-                FileInputStream fil = new FileInputStream(filePathToWritePcm);
+                FileInputStream fil = new FileInputStream(pcmFile);
                 fil.read(bytes);
 
                 byte[] wavBytes = WavFileCreator.createWavFileInBytes(bytes, new WavFileCreator.AudioAttributes(AUDIO_FORMAT, CHANNEL_CONFIG, SAMPLE_RATE));
 
                 //write the WAV file to phone
-                FileOutputStream fos = new FileOutputStream(filePathToWriteWav);
+                FileOutputStream fos = new FileOutputStream(wavFile);
                 fos.write(wavBytes);
                 fos.close();
                 fil.close();
 
                 //delete the raw audio data file (pcm file)
-                filePathToWritePcm.delete();
+                pcmFile.delete();
             } catch (FileNotFoundException e) {
-                Log.e(TAG, "Could not find PCM file");
+                Log.e(TAG, "Could not find PCM file", e);
             } catch (IOException e) {
-                Log.e(TAG, "Could not read/write to/from file!");
+                Log.e(TAG, "Could not read/write to/from file!", e);
             }
         }
     }

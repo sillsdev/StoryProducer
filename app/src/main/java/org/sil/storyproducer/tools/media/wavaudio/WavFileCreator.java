@@ -22,7 +22,7 @@ public class WavFileCreator {
     private static AudioAttributes audioAttributes;
 
     public static byte[] createWavFileInBytes(short[] audData, AudioAttributes audioAttrib) {
-        //convert using ByteBuffer
+        //convert short to byte using ByteBuffer
         ByteBuffer byteBuffer = ByteBuffer.allocate(audData.length * 2);
         for (short s : audData) {
             byteBuffer.putShort(s);
@@ -44,7 +44,7 @@ public class WavFileCreator {
         audioAttributes = audioAttrib;
         makeHeaders();
         byte[] totalFile = new byte[HEADER_SIZE_BYTES + audioData.length];
-        byte[][] headersAndAudio = new byte[][]{fileHeader, fmtHeader, audioDataHeader, convertToLittleAudData(audioData)};
+        byte[][] headersAndAudio = new byte[][]{fileHeader, fmtHeader, audioDataHeader, convertToLittleEndianAudData(audioData)};
         int i = 0;
         for (byte[] bArr : headersAndAudio) {
             for (byte bite : bArr) {
@@ -202,7 +202,7 @@ public class WavFileCreator {
      * @param byteArray The array that will have the endianness changed.
      * @return The little endian version of the byteArray.
      */
-    private static byte[] convertToLittleAudData(byte[] byteArray) {
+    private static byte[] convertToLittleEndianAudData(byte[] byteArray) {
         if (audioAttributes.outputFormat == AudioFormat.ENCODING_PCM_16BIT) {
             short[] shorts = new short[byteArray.length / 2];
             ByteBuffer.wrap(byteArray).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(shorts);
@@ -214,9 +214,9 @@ public class WavFileCreator {
             return bytes.array();
         } else if (audioAttributes.outputFormat == AudioFormat.ENCODING_PCM_8BIT) {
             //TODO implement your own conversion. Be observant of bit sample size.
-            return null;
+            return new byte[0];
         }
-        return null;
+        return new byte[0];
     }
 
 }

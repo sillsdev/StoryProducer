@@ -19,49 +19,52 @@ public class WavFileConcatenator {
     private static final String TAG = "WavFileConcatentor";
 
     private static final int HEADER_SIZE_BYTES = 44;
-    private static byte[] firstAudioFileByte;
-    private static byte[] secondAudioFileByte;
+
+    private static final int FILE_SIZE_INDEX = 4;
+    private static final int AUD_SIZE_INDEX = 40;
+    private static byte[] destAudioFileByte;
+    private static byte[] srcAudioFileByte;
     private static byte[] totalFile;
     private static File firstFile;
 
     /**
      * The function that will concatenate two audio files together and place the new concatenated
      * audio file in the location of the firstAudioFile location.
-     * @param firstAudioFile The first audio file where the concatenation will be written to.
-     * @param secondAudioFile The second audio file to be read. This will be appended to the
-     *                        firstAudioFile
+     * @param destAudioFile
+     * @param srcAudioFile
+     *
      * @throws FileNotFoundException
      */
-    public static void ConcatenateAudioFiles(File firstAudioFile, File secondAudioFile) throws FileNotFoundException {
-        if (firstAudioFile == null || secondAudioFile == null) {
+    public static void ConcatenateAudioFiles(File destAudioFile, File srcAudioFile) throws FileNotFoundException {
+        if (destAudioFile == null || srcAudioFile == null) {
             throw new FileNotFoundException("Could not find file! Class: WavFileConcatenator");
         }
-        firstFile = firstAudioFile;
+        firstFile = destAudioFile;
 
-        readInFiles(firstAudioFile, secondAudioFile);
-        concatenateAudioFiles((int) firstAudioFile.length(), ((int) secondAudioFile.length()));
+        readInFiles(destAudioFile, srcAudioFile);
+        concatenateAudioFiles((int) destAudioFile.length(), ((int) srcAudioFile.length()));
         writeFinalFile();
     }
 
     /**
      * Reads in the audio files and places the audio files into byte array.
-     * @param firstAudioFile
-     * @param secondAudioFile
+     * @param destAudioFile
+     * @param srcAudioFile
      */
-    private static void readInFiles(File firstAudioFile, File secondAudioFile) {
-        firstAudioFileByte = new byte[(int) firstAudioFile.length()];
-        secondAudioFileByte = new byte[(int) secondAudioFile.length()];
+    private static void readInFiles(File destAudioFile, File srcAudioFile) {
+        destAudioFileByte = new byte[(int) destAudioFile.length()];
+        srcAudioFileByte = new byte[(int) srcAudioFile.length()];
         try {
-            FileInputStream fil = new FileInputStream(firstAudioFile);
-            fil.read(firstAudioFileByte);
+            FileInputStream fil = new FileInputStream(destAudioFile);
+            fil.read(destAudioFileByte);
             fil.close();
-            fil = new FileInputStream(secondAudioFile);
-            fil.read(secondAudioFileByte);
+            fil = new FileInputStream(srcAudioFile);
+            fil.read(srcAudioFileByte);
             fil.close();
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Could not find WAV file");
+            Log.e(TAG, "Could not find WAV file", e);
         } catch (IOException e) {
-            Log.e(TAG, "Could not open WAV file");
+            Log.e(TAG, "Could not open WAV file", e);
         }
     }
 
@@ -73,45 +76,45 @@ public class WavFileConcatenator {
      * After the headers have been changed in the firstAudioFile, append the audio data from
      * secondAudioFile to the first WAV file. Write both first full file and second WAV file audio section
      * into the totalFile array.
-     * @param firstAudioFileLength
-     * @param secondAudioFileLength
+     * @param destAudioFileLength
+     * @param srcAudioFileLength
      */
-    private static void concatenateAudioFiles(int firstAudioFileLength, int secondAudioFileLength) {
-        totalFile = new byte[firstAudioFileLength + (secondAudioFileLength - HEADER_SIZE_BYTES)];
+    private static void concatenateAudioFiles(int destAudioFileLength, int srcAudioFileLength) {
+        totalFile = new byte[destAudioFileLength + (srcAudioFileLength - HEADER_SIZE_BYTES)];
         byte[] bytes;
 
         //read in the total file size in as big endian.
-        int firstFileSizeBigEndian = (   ((firstAudioFileByte[7] << 24) & 0xFF000000)
-                                        |((firstAudioFileByte[6] << 16) & 0x00FF0000)
-                                        |((firstAudioFileByte[5] << 8) & 0x0000FF00)
-                                        | firstAudioFileByte[4] & 0xFF);
+        int firstFileSizeBigEndian = (   ((destAudioFileByte[7] << 24) & 0xFF000000)
+                                        |((destAudioFileByte[6] << 16) & 0x00FF0000)
+                                        |((destAudioFileByte[5] << 8) & 0x0000FF00)
+                                        | destAudioFileByte[4] & 0xFF);
         //Change the raw audio file header to be first audio file size plus second audio file size minus the header size of the second file
-        firstFileSizeBigEndian += (secondAudioFileLength - HEADER_SIZE_BYTES);
+        firstFileSizeBigEndian += (srcAudioFileLength - HEADER_SIZE_BYTES);
         bytes = swapEndian(firstFileSizeBigEndian);
-        firstAudioFileByte[4] = bytes[0];
-        firstAudioFileByte[5] = bytes[1];
-        firstAudioFileByte[6] = bytes[2];
-        firstAudioFileByte[7] = bytes[3];
+        destAudioFileByte[FILE_SIZE_INDEX] = bytes[0];
+        destAudioFileByte[FILE_SIZE_INDEX + 1] = bytes[1];
+        destAudioFileByte[FILE_SIZE_INDEX + 2] = bytes[2];
+        destAudioFileByte[FILE_SIZE_INDEX + 3] = bytes[3];
 
         //read in the audio section header size in as big endian.
-        int firstFileAudioSectionSizeBigEndian = (  ((firstAudioFileByte[43] << 24) & 0xFF000000)
-                                                    |((firstAudioFileByte[42] << 16) & 0x00FF0000)
-                                                    |((firstAudioFileByte[41] << 8) & 0x0000FF00)
-                                                    | firstAudioFileByte[40] & 0xFF);
+        int firstFileAudioSectionSizeBigEndian = (  ((destAudioFileByte[43] << 24) & 0xFF000000)
+                                                    |((destAudioFileByte[42] << 16) & 0x00FF0000)
+                                                    |((destAudioFileByte[41] << 8) & 0x0000FF00)
+                                                    | destAudioFileByte[40] & 0xFF);
         //Change the raw audio header size for the first file to accommodate the second raw audio file
-        firstFileAudioSectionSizeBigEndian += (secondAudioFileLength - HEADER_SIZE_BYTES);
+        firstFileAudioSectionSizeBigEndian += (srcAudioFileLength - HEADER_SIZE_BYTES);
         bytes = swapEndian(firstFileAudioSectionSizeBigEndian);
-        firstAudioFileByte[40] = bytes[0];
-        firstAudioFileByte[41] = bytes[1];
-        firstAudioFileByte[42] = bytes[2];
-        firstAudioFileByte[43] = bytes[3];
+        destAudioFileByte[AUD_SIZE_INDEX] = bytes[0];
+        destAudioFileByte[AUD_SIZE_INDEX + 1] = bytes[1];
+        destAudioFileByte[AUD_SIZE_INDEX + 2] = bytes[2];
+        destAudioFileByte[AUD_SIZE_INDEX + 3] = bytes[3];
 
         int totalFileIndex = 0;
-        for (byte s : firstAudioFileByte) {
+        for (byte s : destAudioFileByte) {
             totalFile[totalFileIndex++] = s;
         }
-        for (int i = HEADER_SIZE_BYTES; i < secondAudioFileLength - HEADER_SIZE_BYTES; i++) {
-            totalFile[totalFileIndex++] = secondAudioFileByte[i];
+        for (int i = HEADER_SIZE_BYTES; i < srcAudioFileLength - HEADER_SIZE_BYTES; i++) {
+            totalFile[totalFileIndex++] = srcAudioFileByte[i];
         }
     }
 
@@ -124,9 +127,9 @@ public class WavFileConcatenator {
             fos.write(totalFile);
             fos.close();
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Could not open Wav file for writing!");
+            Log.e(TAG, "Could not open Wav file for writing!", e);
         } catch (IOException e) {
-            Log.e(TAG, "Could not write to WAV file");
+            Log.e(TAG, "Could not write to WAV file", e);
         }
     }
 

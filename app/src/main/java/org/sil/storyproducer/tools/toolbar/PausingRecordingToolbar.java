@@ -35,7 +35,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
     /**
      * Ctor
      *
-     * @param activity                The currentActivity from the calling class.
+     * @param activity                The activity from the calling class.
      * @param rootViewToolbarLayout   The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
      *                                must be of type LinearLayout so that buttons can be
      *                                evenly spaced.
@@ -119,7 +119,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     public void setRecordFilePath(String path) {
         recordFilePath = path;
-        wavAudioRecorder.recordToPath(new File(recordFilePath));
+        wavAudioRecorder.setNewPath(new File(recordFilePath));
     }
 
     /**
@@ -201,10 +201,10 @@ public class PausingRecordingToolbar extends RecordingToolbar {
             try {
                 WavFileConcatenator.ConcatenateAudioFiles(new File(recordFilePath), AudioFiles.getDramatizationTemp(StoryState.getStoryName()));
             } catch (FileNotFoundException e) {
-                Log.e(TAG, "Did not concatenate audio files");
+                Log.e(TAG, "Did not concatenate audio files", e);
             }
         } else {
-            wavAudioRecorder.recordToPath(AudioFiles.getDramatizationTemp(StoryState.getStoryName()));
+            wavAudioRecorder.setNewPath(AudioFiles.getDramatizationTemp(StoryState.getStoryName()));
         }
     }
 

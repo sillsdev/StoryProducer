@@ -334,5 +334,4 @@ public class DraftFrag extends Fragment {
             recordingToolbar.stopToolbarMedia();
         }
     }
-    /* Don't remove! below code  */
 }

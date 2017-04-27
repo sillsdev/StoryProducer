@@ -294,14 +294,6 @@ public class DramatizationFrag extends Fragment {
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
-//                    String[] splitPath = dramatizationRecordingPath.split("dramatization" + "\\d+" + "_");    //get just the title from the path
-//                    String title = splitPath[1].replace(".wav", "");
-//                    StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
-//                    //update to new recording path
-//                    setRecordFilePath();
-//                    recordingToolbar.setRecordFilePath(dramatizationRecordingPath);
-//                    //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
-//                    setPlayBackPath();
                     //update to new recording path
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(dramatizationRecordingFile.getAbsolutePath());
