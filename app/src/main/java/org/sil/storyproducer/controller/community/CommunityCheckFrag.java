@@ -257,6 +257,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
                 }
             });
             Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
+            LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
         } else if (wasPlaying) {
             commentPlayer.stopAudio();
             buttonClickedNow.setImageResource(R.drawable.ic_green_play);
