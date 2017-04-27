@@ -43,8 +43,18 @@ public class StorySharedPreferences {
 
     public static void addExportedVideoForStory(String videoPath, String storyName) {
         List<String> paths = getStringArrayPref(storyName + EXPORTED_VIDEOS_KEY);
-        paths.add(videoPath);
-        setStringArrayPref(storyName + EXPORTED_VIDEOS_KEY, paths);
+        if(!paths.contains(videoPath)) {
+            paths.add(videoPath);
+            setStringArrayPref(storyName + EXPORTED_VIDEOS_KEY, paths);
+        }
+    }
+
+    public static void removeExportedVideoForStory(String videoPath, String storyName) {
+        List<String> paths = getStringArrayPref(storyName + EXPORTED_VIDEOS_KEY);
+        if(paths.contains(videoPath)) {
+            paths.remove(videoPath);
+            setStringArrayPref(storyName + EXPORTED_VIDEOS_KEY, paths);
+        }
     }
 
     public static List<String> getExportedVideosForStory(String storyName) {

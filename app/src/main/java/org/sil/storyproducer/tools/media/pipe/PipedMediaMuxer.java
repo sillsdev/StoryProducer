@@ -222,8 +222,13 @@ public class PipedMediaMuxer implements Closeable, PipedMediaByteBufferDest {
                         Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
                                 + info.size + " for time " + info.presentationTimeUs);
 
-                    //TODO: determine presentation time for end of this buffer if possible
-                    mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
+                    //Update progress if progress increased. (There may be edge cases where
+                    //presentation time is 0, and that is an undesirable progress indicator.)
+                    //In other words, never allow regression, only progression.
+                    if(info.presentationTimeUs > mProgress) {
+                        //TODO: determine presentation time for end of this buffer if possible
+                        mProgress = info.presentationTimeUs;// + (info.size * 1000000L / 8 / mBitrate);
+                    }
 
                     synchronized (mMuxer) {
                         mMuxer.writeSampleData(mTrackIndex, buffer, info);

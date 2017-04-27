@@ -64,7 +64,7 @@ public class ExportedVideosAdapter extends BaseAdapter {
         holder.fileViewButton = (ImageButton) rowView.findViewById(R.id.file_view_button);
         holder.shareButton = (ImageButton) rowView.findViewById(R.id.file_share_button);
 
-        //set the two different button listners
+        //set the two different button listeners
         holder.fileViewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
