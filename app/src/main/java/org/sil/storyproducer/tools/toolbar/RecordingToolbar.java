@@ -228,6 +228,13 @@ public class RecordingToolbar extends AnimationToolbar {
         stopToolbarMedia();
     }
 
+
+    public void closeToolbar(){
+        if(toolbar != null){
+            super.close();
+        }
+    }
+
     public void hideButtons(){
         if(enablePlaybackButton){
             playButton.setVisibility(View.INVISIBLE);
