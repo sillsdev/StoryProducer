@@ -75,6 +75,8 @@ public class DraftFrag extends Fragment {
 
         LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
 
+        LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
+
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText((TextView)rootView.findViewById(R.id.fragment_draft_scripture_text));
@@ -157,6 +159,7 @@ public class DraftFrag extends Fragment {
             recordingToolbar.onClose();
             recordingToolbar.releaseToolbarAudio();
         }
+
     }
 
     /**
@@ -331,4 +334,5 @@ public class DraftFrag extends Fragment {
             recordingToolbar.stopToolbarMedia();
         }
     }
+    /* Don't remove! below code  */
 }

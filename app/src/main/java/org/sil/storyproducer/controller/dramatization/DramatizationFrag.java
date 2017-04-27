@@ -26,6 +26,7 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -33,6 +34,8 @@ import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener;
 
 import java.io.File;
+
+
 
 
 public class DramatizationFrag extends Fragment {
@@ -48,6 +51,7 @@ public class DramatizationFrag extends Fragment {
     private boolean draftAudioExists;
     private File dramatizationRecordingFile = null;
     private ImageButton draftPlayButton;
+
 
 
     private PausingRecordingToolbar recordingToolbar;
@@ -80,6 +84,7 @@ public class DramatizationFrag extends Fragment {
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView);
         }
+
         return rootView;
     }
 
