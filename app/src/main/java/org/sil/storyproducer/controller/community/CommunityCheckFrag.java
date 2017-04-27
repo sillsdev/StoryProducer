@@ -11,6 +11,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -58,6 +61,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -76,6 +80,12 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_comcheck);
     }
 
     /**

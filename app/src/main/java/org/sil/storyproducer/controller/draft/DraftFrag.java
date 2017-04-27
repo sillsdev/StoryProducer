@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -63,6 +66,7 @@ public class DraftFrag extends Fragment {
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         slideText = TextFiles.getSlideText(storyName, slideNumber);
         setRecordFilePath();
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -86,6 +90,12 @@ public class DraftFrag extends Fragment {
         slideNumberText.setText(slideNumber + 1 + "");
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+        MenuItem item =  menu.getItem(0);
+        super.onCreateOptionsMenu(menu, inflater);
+        item.setIcon(R.drawable.ic_draft);
     }
 
     /**

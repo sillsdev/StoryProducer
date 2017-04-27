@@ -7,9 +7,11 @@ import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.view.View;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -95,12 +97,11 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
-
         boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
         setContentView(R.layout.activity_export);
         mStory = StoryState.getStoryName();
         setupViews();
-
+        invalidateOptionsMenu();
         if (phaseUnlocked) {
             findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
@@ -164,6 +165,13 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         }
         return super.dispatchTouchEvent( event );
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_export);
+        return true;
     }
 
     /**
