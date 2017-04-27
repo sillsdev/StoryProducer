@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -72,6 +73,7 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
     private TextView mNoVideosText;
+    private LinearLayout mShareContainer;
     private ListView mVideosListView;
 
     private ExportedVideosAdapter videosAdapter;
@@ -224,6 +226,7 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar.setProgress(0);
 
         //share view
+        mShareContainer = (LinearLayout)findViewById(R.id.share_container);
         videosAdapter = new ExportedVideosAdapter(this);
         mVideosListView = (ListView) findViewById(R.id.videos_list);
         mVideosListView.setAdapter(videosAdapter);
@@ -338,6 +341,7 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mLayoutConfiguration.setVisibility(visibilityPreExport);
         mButtonStart.setVisibility(visibilityPreExport);
+        mShareContainer.setVisibility(visibilityPreExport);
         mButtonCancel.setVisibility(visibilityWhileExport);
         mProgressBar.setVisibility(visibilityWhileExport);
 

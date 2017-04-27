@@ -8,6 +8,7 @@
     android:layout_width="match_parent">
 
     <ScrollView
+        android:id="@+id/scroll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="5dp">
@@ -15,7 +16,7 @@
         <LinearLayout
             android:id="@+id/main_linear_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
@@ -195,44 +196,55 @@
                     android:progress="0" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/share_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_video_sharing_header"
-                android:textSize="@dimen/header_text"
-                android:gravity="center"
-                android:background="@color/gray"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginRight="24dp"
-                android:layout_marginLeft="24dp"
-                android:padding="8dp"/>
 
-            <LinearLayout
-                android:id="@+id/share_section"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginRight="24dp"
-                android:layout_marginLeft="24dp">
-                <ListView
-                    android:id="@+id/videos_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                </ListView>
-
-                <TextView
-                    android:id="@+id/no_videos_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/no_videos"
-                    android:textSize="@dimen/large_text"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/nav_drawer_margin"/>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/share_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/scroll_container"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/share_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/export_video_sharing_header"
+            android:textSize="@dimen/header_text"
+            android:gravity="center"
+            android:background="@color/gray"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp"
+            android:padding="8dp"/>
+
+        <LinearLayout
+            android:id="@+id/share_section"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginRight="24dp"
+            android:layout_marginLeft="24dp">
+            <ListView
+                android:id="@+id/videos_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </ListView>
+
+            <TextView
+                android:id="@+id/no_videos_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/no_videos"
+                android:textSize="@dimen/large_text"
+                android:layout_gravity="center"
+                android:layout_margin="@dimen/nav_drawer_margin"/>
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/lock_overlay"
