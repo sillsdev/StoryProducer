@@ -90,8 +90,8 @@ public class ConsultantCheckFrag extends Fragment {
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
+        MenuItem item =  menu.getItem(0);
         item.setIcon(R.drawable.ic_concheck);
     }
 
