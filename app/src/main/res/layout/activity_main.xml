@@ -17,29 +17,12 @@
             android:minHeight="?attr/actionBarSize"
             android:elevation="4dp"/>
 
-        <!-- navigation drawer -->
-        <android.support.v4.widget.DrawerLayout
-            android:id="@+id/nav_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <!-- content -->
-           <RelativeLayout
-               android:id="@+id/fragment_container"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent">
-               </RelativeLayout>
-            <!-- drawer view -->
-            <ListView
-                android:id="@+id/nav_list"
-                android:layout_width="match_parent"
-                android:layout_marginEnd="@dimen/nav_drawer_margin"
-                android:layout_height="match_parent"
-                android:layout_gravity="start"
-                android:choiceMode="singleChoice"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="0dp"
-                android:background="@color/darkGray">
-            </ListView>
-        </android.support.v4.widget.DrawerLayout>
+        <!-- content -->
+       <RelativeLayout
+           android:id="@+id/fragment_container"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+           </RelativeLayout>
+
     </LinearLayout>
 </FrameLayout>

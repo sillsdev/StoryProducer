@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.CustomAdapter;
 import org.sil.storyproducer.model.ListFiles;
 import org.sil.storyproducer.model.SlideText;
 import org.sil.storyproducer.tools.file.FileSystem;

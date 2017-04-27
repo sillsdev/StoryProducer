@@ -62,11 +62,11 @@ public class AnimationToolbar {
     private final float DP_CONVERSION_FACTOR;
     private final int OPEN_TOOLBAR_DELAY = 60;
 
-    private Activity currentActivity;
+    protected Activity activity;
 
     /**
      * The constructor of the AnimationToolbar class. The initializeToolbar should be called
-     * immediately after the constructor is called.
+     * immediately after the constructor is called. {@link #initializeToolbar(View, View)} <br/> <br/>
      * (This constructor is used in cases when the toolbar isn't known yet and the child class must
      * call super(...) as the first line in the child class' constructor)
      *
@@ -77,7 +77,7 @@ public class AnimationToolbar {
         displayMetrics = currentActivity.getResources().getDisplayMetrics();
         DP_CONVERSION_FACTOR = ((displayMetrics.densityDpi / (float) DisplayMetrics.DENSITY_DEFAULT) * 1.0f);
 
-        this.currentActivity = currentActivity;
+        this.activity = currentActivity;
     }
 
     /**
@@ -96,7 +96,7 @@ public class AnimationToolbar {
 
         this.fab = (FloatingActionButton) floatingActionBut;
         this.toolBar = (LinearLayout) linLayout;
-        setToolBarHeight(currentActivity);
+        setToolBarHeight(activity);
 
         //The addonLayoutChangeListener is used to prevent accessing the linearLayout
         //before the linearLayout has been drawn.
@@ -112,8 +112,8 @@ public class AnimationToolbar {
     }
 
     /**
-     * This function can be called to close the toolbar and allow the floating action button to
-     * reappear in the activity/view.
+     * This function can be called to close the toolbar with animation
+     * and allow the floating action button to reappear in the activity/view.
      */
     @SuppressLint("NewApi")
     public void close() {
