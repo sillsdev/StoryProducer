@@ -68,7 +68,12 @@
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="cancel">Cancel</string>
     <string name="save">Save</string>
-    <string name="stories_not_found">Story list failed to load. Please make sure all story files are loaded and restart the app.</string>
+    <string name="stories_not_found_title">No stories found!</string>
+    <string name="stories_not_found_body">Make sure your story templates are saved within
+        <u>[storage device root]/Android/data/org.sil.storyproducer/files/templates/[LWC]/</u>.
+        For example, the template files for the English story \"Lost Coin\" should be stored in
+        <u>[storage device root]/Android/data/org.sil.storyproducer/files/templates/ENG/Lost Coin/</u>.
+        Afterwards, restart the app to load the story templates.</string>
 
     <string-array name="orthography_list">
         <item>None</item>

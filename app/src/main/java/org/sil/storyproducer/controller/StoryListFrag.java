@@ -25,22 +25,23 @@ public class StoryListFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        View view = inflater.inflate(R.layout.activity_list_view, container, false);
+        View view;
+
+        // Define array storyNames to show in ListView
+        final String[] storyNames = FileSystem.getStoryNames();
+
+        if (storyNames.length == 0) {
+            view = inflater.inflate(R.layout.fragment_no_stories, container, false);
+            return view;
+        }
+
+        view = inflater.inflate(R.layout.activity_list_view, container, false);
 
         // Get ListView object from xml
         listView = (ListView)getActivity().findViewById(R.id.story_list_view);
 
 
-        // Defined Array storyNames to show in ListView
-        final String[] storyNames = FileSystem.getStoryNames();
-        if (storyNames.length<1 ) {
-            AlertDialog dialog = new AlertDialog.Builder(this.getContext())
-                    .setTitle(getString(R.string.error))
-                    .setMessage(getString(R.string.stories_not_found))
-                    .setPositiveButton(getString(R.string.ok), null).create();
-            dialog.show();
-        }
-         final ListFiles[] listFiles = new ListFiles[storyNames.length];
+        final ListFiles[] listFiles = new ListFiles[storyNames.length];
 
         for(int i = 0; i < listFiles.length; i++) {
             SlideText slideText = TextFiles.getSlideText(storyNames[i], 1);
