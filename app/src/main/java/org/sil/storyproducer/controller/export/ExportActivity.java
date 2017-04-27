@@ -414,8 +414,12 @@ public class ExportActivity extends PhaseBaseActivity {
         List<String> videoPaths = StorySharedPreferences.getExportedVideosForStory(mStory);
         for(String path : videoPaths) {          //make sure the file actually exists
             File file = new File(path);
-            if(file.exists()) {
+            if(file.exists() && !actualPaths.contains(path)) {
                 actualPaths.add(path);
+            }
+            else {
+                //If the file doesn't exist or we encountered it a second time in the list, remove it.
+                StorySharedPreferences.removeExportedVideoForStory(path, mStory);
             }
         }
         return actualPaths;
