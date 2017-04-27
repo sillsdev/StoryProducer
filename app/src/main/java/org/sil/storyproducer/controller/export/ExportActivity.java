@@ -10,8 +10,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -72,8 +70,9 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
+    private TextView mShareHeader;
+    private LinearLayout mShareSection;
     private TextView mNoVideosText;
-    private LinearLayout mShareContainer;
     private ListView mVideosListView;
 
     private ExportedVideosAdapter videosAdapter;
@@ -226,7 +225,8 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar.setProgress(0);
 
         //share view
-        mShareContainer = (LinearLayout)findViewById(R.id.share_container);
+        mShareHeader = (TextView) findViewById(R.id.share_header);
+        mShareSection = (LinearLayout) findViewById(R.id.share_section);
         videosAdapter = new ExportedVideosAdapter(this);
         mVideosListView = (ListView) findViewById(R.id.videos_list);
         mVideosListView.setAdapter(videosAdapter);
@@ -330,10 +330,14 @@ public class ExportActivity extends PhaseBaseActivity {
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
     private void toggleVisibleElements() {
+        boolean isStoryMakerBusy = false;
+
         int visibilityPreExport = View.VISIBLE;
         int visibilityWhileExport = View.GONE;
         synchronized (storyMakerLock) {
             if (storyMaker != null) {
+                isStoryMakerBusy = true;
+
                 visibilityPreExport = View.GONE;
                 visibilityWhileExport = View.VISIBLE;
             }
@@ -341,7 +345,6 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mLayoutConfiguration.setVisibility(visibilityPreExport);
         mButtonStart.setVisibility(visibilityPreExport);
-        mShareContainer.setVisibility(visibilityPreExport);
         mButtonCancel.setVisibility(visibilityWhileExport);
         mProgressBar.setVisibility(visibilityWhileExport);
 
@@ -349,6 +352,11 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
                 ? View.VISIBLE : View.GONE);
+
+        mShareHeader.setVisibility(visibilityPreExport);
+        if(isStoryMakerBusy) {
+            mShareSection.setVisibility(View.GONE);
+        }
     }
 
     /**
