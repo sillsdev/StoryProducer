@@ -15,6 +15,8 @@ import java.nio.ByteBuffer;
 public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
     private static final String TAG = "PipedAudioMaverick";
 
+    private State mComponentState = State.UNINITIALIZED;
+
     private final String mPath;
     private final int mSampleRate;
     private final int mChannelCount;
@@ -86,22 +88,28 @@ public class PipedAudioDecoderMaverick implements PipedMediaByteBufferSource {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         PipedMediaExtractor extractor = new PipedMediaExtractor(mPath, MediaHelper.MediaType.AUDIO);
 
         PipedMediaDecoder decoder = new PipedMediaDecoder();
         decoder.addSource(extractor);
+        decoder.setup();
 
-        mSource = decoder;
-
-        //Only use a resampler if the sample rate is specified.
-        if(mSampleRate > 0) {
+        if(Math.abs(mVolumeModifier - 1) < 0.001) {
+            mSource = PipedAudioResampler.correctSampling(decoder, mSampleRate, mChannelCount);
+        }
+        else {
             PipedAudioResampler resampler = new PipedAudioResampler(mSampleRate, mChannelCount);
             resampler.setVolumeModifier(mVolumeModifier);
             resampler.addSource(decoder);
             mSource = resampler;
         }
-
         mSource.setup();
+
+        mComponentState = State.SETUP;
     }
 
     @Override

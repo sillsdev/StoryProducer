@@ -80,6 +80,10 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
+        if(mComponentState != State.UNINITIALIZED) {
+            return;
+        }
+
         mSource = new PipedAudioDecoderMaverick(mPath, mSampleRate, mChannelCount, mVolumeModifier);
         mSource.setup();
 
@@ -99,6 +103,8 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+
+        mComponentState = State.SETUP;
 
         start();
     }
