@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * This class is used to concatenate two Wav files together.
@@ -37,7 +36,7 @@ public class WavFileConcatenator {
      */
     public static void ConcatenateAudioFiles(File destAudioFile, File srcAudioFile) throws FileNotFoundException {
         if (destAudioFile == null || srcAudioFile == null) {
-            throw new FileNotFoundException("Could not find file! Class: WavFileConcatenator");
+            throw new FileNotFoundException("Could not find file!");
         }
         firstFile = destAudioFile;
 
@@ -90,7 +89,7 @@ public class WavFileConcatenator {
                                         | destAudioFileByte[4] & 0xFF);
         //Change the raw audio file header to be first audio file size plus second audio file size minus the header size of the second file
         firstFileSizeBigEndian += (srcAudioFileLength - HEADER_SIZE_BYTES);
-        bytes = swapEndian(firstFileSizeBigEndian);
+        bytes = WavHelper.swapEndian(firstFileSizeBigEndian);
         destAudioFileByte[FILE_SIZE_INDEX] = bytes[0];
         destAudioFileByte[FILE_SIZE_INDEX + 1] = bytes[1];
         destAudioFileByte[FILE_SIZE_INDEX + 2] = bytes[2];
@@ -103,7 +102,7 @@ public class WavFileConcatenator {
                                                     | destAudioFileByte[40] & 0xFF);
         //Change the raw audio header size for the first file to accommodate the second raw audio file
         firstFileAudioSectionSizeBigEndian += (srcAudioFileLength - HEADER_SIZE_BYTES);
-        bytes = swapEndian(firstFileAudioSectionSizeBigEndian);
+        bytes = WavHelper.swapEndian(firstFileAudioSectionSizeBigEndian);
         destAudioFileByte[AUD_SIZE_INDEX] = bytes[0];
         destAudioFileByte[AUD_SIZE_INDEX + 1] = bytes[1];
         destAudioFileByte[AUD_SIZE_INDEX + 2] = bytes[2];
@@ -133,24 +132,4 @@ public class WavFileConcatenator {
         }
     }
 
-    /**
-     * This function is used to swap the endianness of an integer. <br/>
-     * Always start from the zero index and move up to the third index if you want to have the
-     * swapped data to appear in correct order.
-     *
-     * @param i The integer that will have the endianness swapped.
-     * @return The same integer i in different endianness. Start with the zero index and increment.
-     */
-    private static byte[] swapEndian(int i) {
-        byte[] byteArray = (ByteBuffer.allocate(4).putInt(i).array());
-        //now swap positions in array to swap endianness
-        byte tempByte = byteArray[0];
-        byteArray[0] = byteArray[3];
-        byteArray[3] = tempByte;
-        tempByte = byteArray[1];
-        byteArray[1] = byteArray[2];
-        byteArray[2] = tempByte;
-
-        return byteArray;
-    }
 }

@@ -90,7 +90,7 @@ public class WavFileCreator {
         fileHeader[3] = 'F';
 
         //file size
-        byte[] fileSize = swapEndian((HEADER_SIZE_BYTES - 8) + audioData.length);
+        byte[] fileSize = WavHelper.swapEndian((HEADER_SIZE_BYTES - 8) + audioData.length);
         fileHeader[4] = fileSize[0];
         fileHeader[5] = fileSize[1];
         fileHeader[6] = fileSize[2];
@@ -112,7 +112,7 @@ public class WavFileCreator {
         fmtHeader[2] = 't';
         fmtHeader[3] = ' ';
 
-        byte[] fmtSize = swapEndian(16);
+        byte[] fmtSize = WavHelper.swapEndian(16);
         fmtHeader[4] = fmtSize[0];
         fmtHeader[5] = fmtSize[1];
         fmtHeader[6] = fmtSize[2];
@@ -127,7 +127,7 @@ public class WavFileCreator {
         fmtHeader[11] = 0x00;
 
         //Sample rate
-        byte[] sampleRt = swapEndian(audioAttributes.sampleRate);
+        byte[] sampleRt = WavHelper.swapEndian(audioAttributes.sampleRate);
         fmtHeader[12] = sampleRt[0];
         fmtHeader[13] = sampleRt[1];
         fmtHeader[14] = sampleRt[2];
@@ -138,19 +138,19 @@ public class WavFileCreator {
         int bytesPerSample = (audioAttributes.outputFormat == AudioFormat.ENCODING_PCM_16BIT ? 16 : 8) / 8;
         int byteRat = audioAttributes.sampleRate * numChannels * bytesPerSample;
 
-        byte[] byteRate = swapEndian(byteRat);
+        byte[] byteRate = WavHelper.swapEndian(byteRat);
         fmtHeader[16] = byteRate[0];
         fmtHeader[17] = byteRate[1];
         fmtHeader[18] = byteRate[2];
         fmtHeader[19] = byteRate[3];
 
         //block align
-        byte[] blockAlign = swapEndian(numChannels * bytesPerSample);
+        byte[] blockAlign = WavHelper.swapEndian(numChannels * bytesPerSample);
         fmtHeader[20] = blockAlign[0];
         fmtHeader[21] = blockAlign[1];
 
         //bits per sample
-        byte[] bitsPSample = swapEndian(bytesPerSample * 8);
+        byte[] bitsPSample = WavHelper.swapEndian(bytesPerSample * 8);
         fmtHeader[22] = bitsPSample[0];
         fmtHeader[23] = bitsPSample[1];
     }
@@ -166,32 +166,11 @@ public class WavFileCreator {
         audioDataHeader[3] = 'a';
 
         //size of the raw audio data
-        byte[] dataSize = swapEndian(audioData.length);
+        byte[] dataSize = WavHelper.swapEndian(audioData.length);
         audioDataHeader[4] = dataSize[0];
         audioDataHeader[5] = dataSize[1];
         audioDataHeader[6] = dataSize[2];
         audioDataHeader[7] = dataSize[3];
-    }
-
-    /**
-     * This function is used to swap the endianness of an integer. <br/>
-     * Always start from the zero index and move up to the third index if you want to have the
-     * swapped data to appear in correct order.
-     *
-     * @param i The integer that will have the endianness swapped.
-     * @return The same integer i in different endianness. Start with the zero index and increment.
-     */
-    private static byte[] swapEndian(int i) {
-        byte[] byteArray = (ByteBuffer.allocate(4).putInt(i).array());
-        //now swap positions in array to swap endianness
-        byte tempByte = byteArray[0];
-        byteArray[0] = byteArray[3];
-        byteArray[3] = tempByte;
-        tempByte = byteArray[1];
-        byteArray[1] = byteArray[2];
-        byteArray[2] = tempByte;
-
-        return byteArray;
     }
 
     /**
