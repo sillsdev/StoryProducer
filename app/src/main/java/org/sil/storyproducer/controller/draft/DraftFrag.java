@@ -37,6 +37,7 @@ import java.io.File;
  */
 public class DraftFrag extends Fragment {
     private View rootView;
+    private View rootViewToolbar;
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     private String storyName;
     private int slideNumber;
@@ -70,7 +71,9 @@ public class DraftFrag extends Fragment {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
-        View rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+
+        LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
 
         LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
 
@@ -79,7 +82,6 @@ public class DraftFrag extends Fragment {
         setScriptureText((TextView)rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText((TextView)rootView.findViewById(R.id.fragment_draft_reference_text));
         setLWCAudioButton(LWCPlayButton);
-        setToolbar(rootViewToolbar);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + 1 + "");
 
@@ -101,7 +103,7 @@ public class DraftFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.closeToolbar();
+                    recordingToolbar.onClose();
                 }
             }
         }
@@ -110,6 +112,9 @@ public class DraftFrag extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        setToolbar(rootViewToolbar);
+
         LWCAudioPlayer = new AudioPlayer();
         File LWCFile = AudioFiles.getLWC(storyName, slideNumber);
         if (LWCFile.exists()) {
@@ -135,7 +140,7 @@ public class DraftFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
         }
     }
 
@@ -151,10 +156,17 @@ public class DraftFrag extends Fragment {
         LWCAudioPlayer.release();
      
         if (recordingToolbar != null) {
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onClose();
             recordingToolbar.releaseToolbarAudio();
         }
 
+    }
+
+    /**
+     * Used to hide the play and multiple recordings button.
+     */
+    public void hideButtonsToolbar(){
+        recordingToolbar.hideButtons();
     }
 
     /**
@@ -163,6 +175,14 @@ public class DraftFrag extends Fragment {
     public void updatePlayBackPath() {
         String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+    }
+
+    /**
+     * Stops the toolbar from recording or playing back media.
+     * Used in {@link DraftListRecordingsModal}
+     */
+    public void stopPlayBackAndRecording() {
+        recordingToolbar.stopToolbarMedia();
     }
 
     /**
@@ -302,7 +322,7 @@ public class DraftFrag extends Fragment {
                 }
 
                 @Override
-                public void onStartedRecordingOrPlayback() {
+                public void onStartedRecordingOrPlayback(boolean isRecording) {
                     //not used here
                 }
             };
@@ -314,85 +334,4 @@ public class DraftFrag extends Fragment {
             recordingToolbar.stopToolbarMedia();
         }
     }
-
-    //used in the link DraftListRecordingsModal
-    //TODO add to the area where the other public functions in this class.
-    public void stopPlayBackAndRecording() {
-        recordingToolbar.stopToolbarMedia();
-    }
-
-
-    /* Don't remove! below code  */
-//    /**
-//     * This function adds two different audio files together to make one audio file into an
-//     * .mp3 file. More comments will be added to this function later.
-//     */
-//    private void ConcatenateAudioFiles() {
-//        Movie finalFile = new Movie();
-//        String writtenToAudioFile = String.format(recordFile.substring(0, recordFile.indexOf(".m4a")) + "final.m4a");
-//        Movie movieArray[];
-//
-//        try {
-//            if (!new File(recordFile).exists()) {
-//                movieArray = new Movie[]{MovieCreator.build(tempRecordFilePath)};
-//            } else {
-//                movieArray = new Movie[]{MovieCreator.build(recordFile),
-//                        MovieCreator.build(tempRecordFilePath)};
-//            }
-//
-//            List<Track> audioTrack = new ArrayList<>();
-//
-//            for (int i = 0; i < movieArray.length; i++)
-//                for (Track t : movieArray[i].getTracks()) {
-//                    if (t.getHandler().equals("soun")) {
-//                        audioTrack.add(t);
-//                    }
-//                }
-//
-//            if (!audioTrack.isEmpty()) {
-//                finalFile.addTrack(new AppendTrack(audioTrack.toArray(new Track[audioTrack.size()])));
-//            }
-//
-//            Container out = new DefaultMp4Builder().build(finalFile);
-//
-//            FileChannel fc = new RandomAccessFile(writtenToAudioFile, "rwd").getChannel();
-//            out.writeContainer(fc);
-//            fc.close();
-//
-//            tryDeleteFile(recordFile);
-//            boolean renamed = (new File(writtenToAudioFile).renameTo(tryCreateFile(recordFile)));
-//            if (renamed) {
-//                //delete old file
-//                tryDeleteFile(writtenToAudioFile);
-//            }
-//
-//        } catch (IOException e) {
-//            Log.e(getActivity().toString(), e.getMessage());
-//        }
-//    }
-//
-//    /**
-//     * Tries to create a new file.
-//     *
-//     * @param filePath The file path where a file should be created at.
-//     * @return The file instantiation of the file that was created at the filePath.
-//     */
-//    private File tryCreateFile(String filePath) {
-//        File toReturnFile = new File(filePath);
-//        if (!toReturnFile.exists()) {
-//            try {
-//                toReturnFile.setExecutable(true);
-//                toReturnFile.setReadable(true);
-//                toReturnFile.setWritable(true);
-//                toReturnFile.createNewFile();
-//            } catch (IOException e) {
-//                Log.w(getActivity().toString(), "Could not create file for recording!");
-//            }
-//        }
-//
-//        return toReturnFile;
-//    }
-  
-  /* Don't remove above code!! */
-
 }

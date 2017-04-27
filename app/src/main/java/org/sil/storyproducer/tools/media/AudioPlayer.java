@@ -1,10 +1,13 @@
 package org.sil.storyproducer.tools.media;
 
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import java.io.IOException;
 
 public class AudioPlayer {
+
+    private static final String TAG = "AudioPlayer";
 
     private MediaPlayer mPlayer;
     private boolean isPathSet, isPrepared;
@@ -108,15 +111,6 @@ public class AudioPlayer {
     }
 
     /**
-     * This allows the user to do initializeToolbar once the audio has completed
-     * via implementing MediaPlayer.OnCompleteListener.
-     * @param OcL handler for OnCompletionListener
-     */
-    public void onPlayBackStop(MediaPlayer.OnCompletionListener OcL){
-        mPlayer.setOnCompletionListener(OcL);
-    }
-
-    /**
      * returns the duration of the audio as an int
      * @return the duration of the audio as an int
      */
@@ -153,7 +147,7 @@ public class AudioPlayer {
      * sets the completion listener
      * @param listener handler for OnCompletionListener
      */
-    public void audioCompletionListener(MediaPlayer.OnCompletionListener listener) {
+    public void onPlayBackStop(MediaPlayer.OnCompletionListener listener) {
         mPlayer.setOnCompletionListener(listener);
     }
 
@@ -170,6 +164,12 @@ public class AudioPlayer {
      * @return true or false based on if the audio is being played
      */
     public boolean isAudioPlaying() {
-        return mPlayer.isPlaying();
+        try {
+            return mPlayer.isPlaying();
+        }
+        catch(IllegalStateException e) {
+            Log.w(TAG, "Failing silently...", e);
+            return false;
+        }
     }
 }

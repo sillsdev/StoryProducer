@@ -22,12 +22,12 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
-import org.sil.storyproducer.model.logging.ComChkEntry;
-import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.ComChkEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 

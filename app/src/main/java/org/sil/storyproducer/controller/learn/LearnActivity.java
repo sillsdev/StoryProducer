@@ -130,7 +130,7 @@ public class LearnActivity extends PhaseBaseActivity {
         super.onStart();
         //create audio players
         narrationPlayer = new AudioPlayer();
-        narrationPlayer.audioCompletionListener(new MediaPlayer.OnCompletionListener() {
+        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 slideNumber++;         //move to the next slide
@@ -184,6 +184,7 @@ public class LearnActivity extends PhaseBaseActivity {
         super.onPause();
         pauseVideo();
         if (recordingToolbar != null) {
+            recordingToolbar.onClose();
             recordingToolbar.closeToolbar();
         }
     }
@@ -199,6 +200,7 @@ public class LearnActivity extends PhaseBaseActivity {
         narrationPlayer.release();
         backgroundPlayer.release();
         if (recordingToolbar != null) {
+            recordingToolbar.onClose();
             recordingToolbar.closeToolbar();
             recordingToolbar.releaseToolbarAudio();
         }
@@ -429,7 +431,7 @@ public class LearnActivity extends PhaseBaseActivity {
                 //empty because the learn phase doesn't use this
             }
             @Override
-            public void onStartedRecordingOrPlayback() {
+            public void onStartedRecordingOrPlayback(boolean isRecording) {
                 resetVideoWithSoundOff();
             }
         });
@@ -441,6 +443,7 @@ public class LearnActivity extends PhaseBaseActivity {
             @Override
             public void onClick(View view) {
                 if (recordingToolbar != null && recordingToolbar.isOpen() && !recordingToolbar.isRecording()) {
+                    recordingToolbar.onClose();
                     recordingToolbar.closeToolbar();
                 }
             }
