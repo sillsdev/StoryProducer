@@ -586,7 +586,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:hint="@string/email_hint" />
+                    android:hint="@string/email_hint"
+                    android:text="robinrempel61@gmail.com"/>
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
         <Button
