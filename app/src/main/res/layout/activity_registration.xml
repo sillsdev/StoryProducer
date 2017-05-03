@@ -587,7 +587,8 @@
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
                     android:hint="@string/email_hint"
-                    android:text="@string/registration_robin_rempel_email"/>
+                    android:text="@string/registration_robin_rempel_email"
+                    android:enabled="false"/>
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
         <Button
