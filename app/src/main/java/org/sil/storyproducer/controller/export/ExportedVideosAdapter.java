@@ -93,7 +93,7 @@ public class ExportedVideosAdapter extends BaseAdapter {
 
     private void showViewFileChooser(String path) {
         Intent shareIntent = new Intent(android.content.Intent.ACTION_VIEW);
-        shareIntent.setDataAndType(Uri.parse("file://" + path), "resource/folder");
+        shareIntent.setDataAndType(Uri.parse("file://" + path), "video/*");
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.file_view)));
     }
 
