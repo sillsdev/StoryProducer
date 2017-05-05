@@ -61,15 +61,14 @@ public class ExportedVideosAdapter extends BaseAdapter {
         holder = new RowViewHolder();
         rowView = mInflater.inflate(R.layout.exported_video_row, null);
         holder.textView = (TextView) rowView.findViewById(R.id.video_title);
-        holder.fileViewButton = (ImageButton) rowView.findViewById(R.id.file_view_button);
+        holder.playButton = (ImageButton) rowView.findViewById(R.id.video_play_button);
         holder.shareButton = (ImageButton) rowView.findViewById(R.id.file_share_button);
 
         //set the two different button listeners
-        holder.fileViewButton.setOnClickListener(new View.OnClickListener() {
+        holder.playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String pathNotName = path.replace("/" + fileName, "");
-                showViewFileChooser(pathNotName);
+                showPlayVideoChooser(path);
             }
         });
         holder.shareButton.setOnClickListener(new View.OnClickListener() {
@@ -87,14 +86,14 @@ public class ExportedVideosAdapter extends BaseAdapter {
 
     public static class RowViewHolder {
         public TextView textView;
-        public ImageButton fileViewButton;
+        public ImageButton playButton;
         public ImageButton shareButton;
     }
 
-    private void showViewFileChooser(String path) {
-        Intent shareIntent = new Intent(android.content.Intent.ACTION_VIEW);
-        shareIntent.setDataAndType(Uri.parse("file://" + path), "resource/folder");
-        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.file_view)));
+    private void showPlayVideoChooser(String path) {
+        Intent videoIntent = new Intent(android.content.Intent.ACTION_VIEW);
+        videoIntent.setDataAndType(Uri.parse("file://" + path), "video/*");
+        context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)));
     }
 
     private void showShareFileChooser(String path, String fileName) {
