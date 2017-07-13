@@ -1,2 +1,2 @@
-# BibleStory
-The Bible Story Producer application.
+# StoryProducer
+The Story Producer app
