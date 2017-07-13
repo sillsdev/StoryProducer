@@ -29,4 +29,3 @@ Translate stories starting with a set of images and audio in a Language of Wider
     * Copy the unzipped templates folder and projects folder to your device under **Android/data/org.sil.storyproducer/files/**
         * using an sdcard to conserve space may be a good idea
     * After you disconnect and start the app, you should see the templates avalable.
-
