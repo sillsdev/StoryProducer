@@ -1,7 +1,7 @@
-# Story Producer App
+# Story Producer
 
 Translate audio books through community help and publish as vidoes  
-By Robin Rempel, Robert Jacubec, Andrew Lockridge, and the Cedarville Bible Story Team  
+By Robin Rempel, Robert Jacubec, Andrew Lockridge, SIL and the Cedarville Bible Story Team 
 Version 1.2
 
 Translate stories starting with a set of images and audio in a Language of Wider Communication (LWC) in these phases:  
