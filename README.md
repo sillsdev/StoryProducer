@@ -31,5 +31,5 @@ Translate stories starting with a set of images and audio in a Language of Wider
     * Download the [template folders](https://drive.google.com/drive/folders/0Bw7whhMtjqJTVkljWlY0akZXeDg?usp=sharing) to your computer
     * Copy the unzipped templates folder and projects folder to your device under **Android/data/org.sil.storyproducer/files/**
         * using an SD card to conserve space may be a good idea
-    * After you restart Story Producer, you should see the templates avalable. 
-        * If not, in the Template screen, you might need to tap the language icon in the top right corner to bring up a Change Language window with a drop down menu.  Tap the Language you want and SAVE.
+    * After you restart Story Producer, you should see the templates available. 
+        * If not, in the Template screen, you might need to tap the language icon in the top right corner to bring up a Change Language window with a drop down menu.  Tap the language you want and SAVE.
