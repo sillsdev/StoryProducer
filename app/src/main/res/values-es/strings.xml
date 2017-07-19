@@ -103,13 +103,13 @@
     <string name="export_include_soundtrack">Include Background Music</string>
     <string name="export_include_pictures">Include Pictures</string>
     <string name="export_include_text">Include Text</string>
-    <string name="export_include_KBFX">Include Ken Burns Effects</string>
+    <string name="export_include_KBFX">Enable Pan and Zoom Effects</string>
 
-    <string name="export_resolution_label">Resolution</string>
+    <string name="export_resolution_label">Video Quality</string>
     <string-array name="export_resolution_options">
-        <item>320x240</item>
-        <item>640x480</item>
-        <item>1280x720</item>
+        <item>Low (320x240)</item>
+        <item>Medium (640x480)</item>
+        <item>High (1280x720)</item>
     </string-array>
 
     <string name="export_format_label">File Format</string>

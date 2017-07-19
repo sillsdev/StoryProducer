@@ -46,7 +46,7 @@ public class StoryListFrag extends Fragment {
 
         for(int i = 0; i < listFiles.length; i++) {
             SlideText slideText = TextFiles.getSlideText(storyNames[i], 1);
-            listFiles[i] = new ListFiles(ImageFiles.getBitmap(storyNames[i], 1, 25), slideText.getTitle(), slideText.getSubtitle());
+            listFiles[i] = new ListFiles(ImageFiles.getBitmap(storyNames[i], 1, 25), storyNames[i], slideText.getSubtitle());
         }
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
