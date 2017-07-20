@@ -151,7 +151,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/input_orthography"
                     android:text="@string/orthography_hint"
-                    android:textSize="@dimen/large_text"/>
+                    android:textSize="@dimen/menu_text"/>
 
                 <Spinner android:id="@+id/input_orthography"
                     android:layout_width="wrap_content"
@@ -262,7 +262,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/input_translator_communication_preference"
                     android:text="@string/communication_preference_hint"
-                    android:textSize="@dimen/large_text"/>
+                    android:textSize="@dimen/menu_text"/>
 
                 <Spinner android:id="@+id/input_translator_communication_preference"
                     android:layout_width="wrap_content"
@@ -371,7 +371,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/input_consultant_communication_preference"
                     android:text="@string/communication_preference_hint"
-                    android:textSize="@dimen/large_text"/>
+                    android:textSize="@dimen/menu_text"/>
 
                 <Spinner android:id="@+id/input_consultant_communication_preference"
                     android:layout_width="wrap_content"
@@ -405,7 +405,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/input_consultant_location_type"
                     android:text="@string/location_type_hint"
-                    android:textSize="@dimen/large_text"/>
+                    android:textSize="@dimen/menu_text"/>
 
                 <Spinner android:id="@+id/input_consultant_location_type"
                     android:layout_width="wrap_content"
@@ -501,7 +501,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/input_trainer_communication_preference"
                     android:text="@string/communication_preference_hint"
-                    android:textSize="@dimen/large_text"/>
+                    android:textSize="@dimen/menu_text"/>
 
                 <Spinner android:id="@+id/input_trainer_communication_preference"
                     android:layout_width="wrap_content"

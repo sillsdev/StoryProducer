@@ -232,7 +232,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/nav_drawer_margin"
                 android:text="@string/no_videos"
-                android:textSize="@dimen/large_text" />
+                android:textSize="@dimen/menu_text" />
         </LinearLayout>
     </LinearLayout>
 
