@@ -87,7 +87,7 @@ public class DraftFrag extends Fragment {
         setReferenceText((TextView)rootView.findViewById(R.id.fragment_draft_reference_text));
         setLWCAudioButton(LWCPlayButton);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        slideNumberText.setText(slideNumber + 1 + "");
+        slideNumberText.setText(slideNumber + "");
 
         return rootView;
     }

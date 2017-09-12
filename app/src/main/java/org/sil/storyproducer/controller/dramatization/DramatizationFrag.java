@@ -77,7 +77,7 @@ public class DramatizationFrag extends Fragment {
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        slideNumberText.setText(slideNumber + 1 + "");
+        slideNumberText.setText(slideNumber + "");
         slideText = (EditText)rootView.findViewById(R.id.fragment_dramatization_edit_text);
         slideText.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), slideNumber), TextView.BufferType.EDITABLE);
 

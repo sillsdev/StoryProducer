@@ -77,7 +77,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         setDraftPlaybackButton(draftPlaybackButton);
         setRecordCommentButton(commentRecordButton);
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        slideNumberText.setText(slideNumber + 1 + "");
+        slideNumberText.setText(slideNumber + "");
 
         return rootView;
     }

@@ -89,7 +89,7 @@ public class ConsultantCheckFrag extends Fragment {
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.concheck_checkmark_button));
         setLogsButton((ImageButton)rootView.findViewById(R.id.concheck_logs_button));
         slideTextView = (TextView)rootView.findViewById(R.id.slide_number_text);
-        slideTextView.setText(slidePosition + 1 + "");
+        slideTextView.setText(slidePosition + "");
 
         return rootView;
     }
