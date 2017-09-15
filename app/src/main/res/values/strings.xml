@@ -152,7 +152,7 @@
     <string name="export_include_soundtrack">Include Background Music</string>
     <string name="export_include_pictures">Include Pictures</string>
     <string name="export_include_text">Include Text</string>
-    <string name="export_include_KBFX">Enable Pan and Zoom Effects</string>
+    <string name="export_include_KBFX">Enable Picture Movement</string>
 
     <string name="export_resolution_label">Video Quality</string>
     <string-array name="export_resolution_options">
