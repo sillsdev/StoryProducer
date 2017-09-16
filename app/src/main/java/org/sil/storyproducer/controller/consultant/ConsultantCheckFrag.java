@@ -193,7 +193,7 @@ public class ConsultantCheckFrag extends Fragment {
         //Get the height of the phone.
         DisplayMetrics phoneProperties = getContext().getResources().getDisplayMetrics();
         int height = phoneProperties.heightPixels;
-        double scalingFactor = 0.4;
+        double scalingFactor = 0.25;
         height = (int)(height * scalingFactor);
 
         //scale bitmap
