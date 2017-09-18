@@ -200,7 +200,7 @@
     <string name="draftTitle">Draft</string>
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
-    <string name="dramatization_title">Dramatization</string>
+    <string name="dramatization_title">Dramatize</string>
     <string name="export_title">Export</string>
     <string name="title_activity_test_drawer">testDrawer</string>
     <string name="Parent_Dir_Label">Parent Directory</string>
