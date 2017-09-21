@@ -66,6 +66,8 @@ public class ExportActivity extends PhaseBaseActivity {
     private CheckBox mCheckboxKBFX;
     private View mLayoutResolution;
     private Spinner mSpinnerResolution;
+    private ArrayAdapter<CharSequence> mResolutionAdapterAll;
+    private ArrayAdapter<CharSequence> mResolutionAdapterHigh;
     private Spinner mSpinnerFormat;
     private EditText mEditTextLocation;
     private Button mButtonBrowse;
@@ -210,10 +212,17 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
-        ArrayAdapter<CharSequence> resolutionAdapter = ArrayAdapter.createFromResource(this,
+
+        mResolutionAdapterHigh = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
-        resolutionAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        mSpinnerResolution.setAdapter(resolutionAdapter);
+        mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+        mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+        mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
+                R.array.export_resolution_options, android.R.layout.simple_spinner_item);
+        mResolutionAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+        mSpinnerResolution.setAdapter(mResolutionAdapterAll);
 
         mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
         ArrayAdapter<CharSequence> formatAdapter = ArrayAdapter.createFromResource(this,
