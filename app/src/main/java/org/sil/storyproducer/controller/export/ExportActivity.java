@@ -379,6 +379,12 @@ public class ExportActivity extends PhaseBaseActivity {
         if(isStoryMakerBusy) {
             mShareSection.setVisibility(View.GONE);
         }
+
+        if (mCheckboxText.isChecked()) {
+            mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+        } else {
+            mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+        }
     }
 
     /**
