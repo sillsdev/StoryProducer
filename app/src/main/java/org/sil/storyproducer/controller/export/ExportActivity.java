@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.export;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -381,10 +383,31 @@ public class ExportActivity extends PhaseBaseActivity {
         }
 
         if (mCheckboxText.isChecked()) {
-            mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+            showHighResolutionAlertDialog();
         } else {
             mSpinnerResolution.setAdapter(mResolutionAdapterAll);
         }
+    }
+    /**
+     * Creates an alert dialog asking if the user wants to skip registration
+     * If they respond yes, finish activity or send them back to MainActivity
+     */
+    private void showHighResolutionAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(ExportActivity.this)
+                .setTitle(getString(R.string.export_include_text_title))
+                .setMessage(getString(R.string.export_include_text_message))
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mCheckboxText.setChecked(false);
+                    }
+                })
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                    }
+                }).create();
+
+        dialog.show();
     }
 
     /**
