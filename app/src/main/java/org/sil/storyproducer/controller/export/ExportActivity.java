@@ -34,6 +34,7 @@ import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -210,11 +211,15 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
 
+        String[] resolutionArray = getResources().getStringArray(R.array.export_resolution_options);
+        List<String> immutableList = Arrays.asList(resolutionArray);
+        ArrayList<String> resolutionList = new ArrayList<>(immutableList);
+
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
 
-        mResolutionAdapterHigh = ArrayAdapter.createFromResource(this,
-                R.array.export_resolution_options, android.R.layout.simple_spinner_item);
+        mResolutionAdapterHigh = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, resolutionList);
         mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
