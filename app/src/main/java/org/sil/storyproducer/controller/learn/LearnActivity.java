@@ -58,7 +58,6 @@ public class LearnActivity extends PhaseBaseActivity {
     private RecordingToolbar recordingToolbar;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
-
     private int startPos = -1;
     private long startTime = -1;
 
@@ -365,6 +364,7 @@ public class LearnActivity extends PhaseBaseActivity {
         }
         isWatchedOnce = true;
     }
+
 
     /**
      * Makes the volume switch visible so it can be used

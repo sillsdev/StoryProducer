@@ -196,6 +196,8 @@
     <string name="title_activity_registration">Registration</string>
     /* SnackBar Messages */
     <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
+    <string name="overwrite">Overwrite</string>
     <string name="ok">Ok</string>
 
     /* Phases */
