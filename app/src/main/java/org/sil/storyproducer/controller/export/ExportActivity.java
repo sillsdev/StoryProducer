@@ -87,6 +87,8 @@ public class ExportActivity extends PhaseBaseActivity {
 
     private String mOutputPath;
 
+    private boolean mTextConfirmationChecked;
+
     //accordion variables
     private final int [] sectionIds = {R.id.export_section, R.id.share_section};
     private final int [] headerIds = {R.id.export_header, R.id.share_header};
@@ -383,9 +385,14 @@ public class ExportActivity extends PhaseBaseActivity {
         }
 
         if (mCheckboxText.isChecked()) {
-            showHighResolutionAlertDialog();
+            if (mTextConfirmationChecked) {
+                showHighResolutionAlertDialog();
+            } else {
+                mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+            }
         } else {
             mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+            mTextConfirmationChecked = true;
         }
     }
     /**
@@ -399,11 +406,13 @@ public class ExportActivity extends PhaseBaseActivity {
                 .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mCheckboxText.setChecked(false);
+                        mTextConfirmationChecked = true;
                     }
                 })
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                        mTextConfirmationChecked = false;
                     }
                 }).create();
 
@@ -512,6 +521,8 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mEditTextTitle.setText(prefs.getString(mStory + PREF_KEY_TITLE, mStory));
         setLocation(prefs.getString(mStory + PREF_KEY_FILE, null));
+
+        //mTextConfirmationChecked = true;
     }
 
     /**
