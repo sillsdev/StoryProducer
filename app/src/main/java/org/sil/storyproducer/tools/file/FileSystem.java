@@ -45,7 +45,6 @@ public class FileSystem {
     private static Map<String, String> moviesPaths;
 
     private static File cacheDir;
-    private static long myDonwloadReference;
 
     static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
