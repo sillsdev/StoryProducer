@@ -165,6 +165,10 @@
 
     <string name="export_format_label">File Format</string>
     <string-array name="export_format_options">
+        <item>Smartphone</item>
+        <item>Dumb Phone</item>
+    </string-array>
+    <string-array name="export_format_extensions">
         <item>.mp4</item>
         <item>.3gp</item>
     </string-array>

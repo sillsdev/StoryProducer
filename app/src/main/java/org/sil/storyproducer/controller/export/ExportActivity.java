@@ -548,7 +548,8 @@ public class ExportActivity extends PhaseBaseActivity {
             return;
         }
 
-        String ext = mSpinnerFormat.getSelectedItem().toString();
+
+        String ext = getFormatExtension();
         final File output = new File(mOutputPath + ext);
 
         if(output.exists()) {
@@ -657,7 +658,7 @@ public class ExportActivity extends PhaseBaseActivity {
                 @Override
                 public void run() {
                     //save the file only when the video file is actually created
-                    String ext = mSpinnerFormat.getSelectedItem().toString();
+                    String ext = getFormatExtension();
                     File output = new File(mOutputPath + ext);
                     StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
                     stopExport();
@@ -668,6 +669,21 @@ public class ExportActivity extends PhaseBaseActivity {
             });
         }
     };
+
+    private String getFormatExtension() {
+        String ext = ".mp4";
+        String[] formats = getResources().getStringArray(R.array.export_format_options);
+        String selectedFormat = mSpinnerFormat.getSelectedItem().toString();
+
+        for (int i = 0; i < formats.length; ++i) {
+            if (selectedFormat.equals(formats[i])) {
+                ext = getResources().getStringArray(R.array.export_format_extensions)[i];
+                break;
+            }
+        }
+
+        return ext;
+    }
 
     /**
      * Lock the start/cancel buttons temporarily to give the StoryMaker some time to get started/stopped.
