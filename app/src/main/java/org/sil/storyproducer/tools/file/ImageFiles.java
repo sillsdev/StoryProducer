@@ -11,15 +11,15 @@ import java.io.File;
 public class ImageFiles {
     private static final String TAG = "ImageFiles";
 
-    private static final String FILE_EXTENSION = ".jpg";
+    private static final String IMAGE_EXTENSION = ".jpg";
 
     public static final int TITLE_BACKGROUND = -1;
     public static final int TITLE_TEMP = -2;
     public static final int COPYRIGHT = -3;
 
-    private static final String TITLE_BACK_IMAGE_NAME = "title" + FILE_EXTENSION;
-    private static final String TITLE_TEMP_IMAGE_NAME = "titleTemp" + FILE_EXTENSION;
-    private static final String COPYRIGHT_IMAGE_NAME = "end" + FILE_EXTENSION;
+    private static final String TITLE_BACK_IMAGE_NAME = "title" + IMAGE_EXTENSION;
+    private static final String TITLE_TEMP_IMAGE_NAME = "titleTemp" + IMAGE_EXTENSION;
+    private static final String COPYRIGHT_IMAGE_NAME = "end" + IMAGE_EXTENSION;
 
     /**
      * Get an image file from the story template.
@@ -36,7 +36,7 @@ public class ImageFiles {
             case COPYRIGHT:
                 return getCopyrightImageFile(story);
             default:
-                return new File(FileSystem.getTemplatePath(story), number + FILE_EXTENSION);
+                return new File(FileSystem.getTemplatePath(story), number + IMAGE_EXTENSION);
         }
     }
 
@@ -65,7 +65,7 @@ public class ImageFiles {
         if(templateDirPath == null) {
             return 0;
         }
-        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, FILE_EXTENSION);
+        return FileSystem.getNumberedFilesAmount(new File(templateDirPath), null, IMAGE_EXTENSION);
     }
 
     private static File getCopyrightImageFile(String story) {

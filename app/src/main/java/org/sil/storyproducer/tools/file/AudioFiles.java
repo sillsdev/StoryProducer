@@ -14,16 +14,12 @@ import java.util.List;
  */
 public class AudioFiles {
     private static final String SOUNDTRACK_PREFIX = "SoundTrack";
-    private static final String SOUNDTRACK_EXTENSION = ".mp3";
 
-    private static final String WAV_EXTENSION = ".wav";
-    private static final String LWC_EXTENSION = WAV_EXTENSION;
-
-    private static final String PREFER_EXTENSION = ".m4a";
+    private static final String SOUND_EXTENSION = ".m4a";
 
     private static final String LEARN_PRACTICE_PREFIX = "learnPractice";
     private static final String LWC_AUDIO_PREFIX = "narration";
-    private static final String DRAFT_TEMP = "draftTemp" + PREFER_EXTENSION;
+    private static final String DRAFT_TEMP = "draftTemp" + SOUND_EXTENSION;
     private static final String DRAFT_AUDIO_PREFIX = "translation";
     private static final String COMMENT_PREFIX = "comment";
     private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
@@ -41,7 +37,7 @@ public class AudioFiles {
     }
 
     public static File getSoundtrack(String story){
-        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + 0 + SOUNDTRACK_EXTENSION);
+        return new File(FileSystem.getTemplatePath(story), SOUNDTRACK_PREFIX + 0 + SOUND_EXTENSION);
     }
 
     public static File getSoundtrack(String story, int i){
@@ -57,7 +53,7 @@ public class AudioFiles {
     //*** LWC ***
 
     public static File getLWC(String story, int i){
-        return new File(FileSystem.getTemplatePath(story), LWC_AUDIO_PREFIX + i + LWC_EXTENSION);
+        return new File(FileSystem.getTemplatePath(story), LWC_AUDIO_PREFIX + i + SOUND_EXTENSION);
     }
 
     //*** Learn ***
@@ -68,7 +64,7 @@ public class AudioFiles {
      * @return
      */
     public static File getLearnPractice(String story){
-        return new File(FileSystem.getProjectDirectory(story), LEARN_PRACTICE_PREFIX + PREFER_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), LEARN_PRACTICE_PREFIX + SOUND_EXTENSION);
     }
 
     //*** Draft ***
@@ -78,12 +74,12 @@ public class AudioFiles {
     }
 
     public static File getDraft(String story, int slide, String draftTitle) {
-        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + PREFER_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + SOUND_EXTENSION);
     }
 
     public static String getDraftTitle(File file) {
         String filename = file.getName();
-        return getTitleFromPath(filename, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
+        return getTitleFromPath(filename, DRAFT_AUDIO_PREFIX, SOUND_EXTENSION);
     }
 
     /**
@@ -108,7 +104,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDraft(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, PREFER_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, SOUND_EXTENSION);
     }
 
     /**
@@ -118,13 +114,13 @@ public class AudioFiles {
      * @return the array of draft titles
      */
     public static String[] getDraftTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, SOUND_EXTENSION);
     }
 
     //*** Community Check ***
 
     public static File getComment(String story, int slide, String commentTitle) {
-        return new File(FileSystem.getProjectDirectory(story), COMMENT_PREFIX+slide + "_" + commentTitle + PREFER_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), COMMENT_PREFIX+slide + "_" + commentTitle + SOUND_EXTENSION);
     }
 
     /**
@@ -149,7 +145,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameComment(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.COMMUNITY, PREFER_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.COMMUNITY, SOUND_EXTENSION);
     }
 
     /**
@@ -159,7 +155,7 @@ public class AudioFiles {
      * @return the array of comment titles
      */
     public static String[] getCommentTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, COMMENT_PREFIX, PREFER_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, COMMENT_PREFIX, SOUND_EXTENSION);
     }
 
     //*** Consultant Check ***
@@ -171,16 +167,16 @@ public class AudioFiles {
     }
 
     public static File getDramatization(String story, int slide, String dramaTitle) {
-        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + WAV_EXTENSION);
+        return new File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + SOUND_EXTENSION);
     }
 
     public static File getDramatizationTemp(String story){
-        return new File(FileSystem.getHiddenTempDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T"  + WAV_EXTENSION);
+        return new File(FileSystem.getHiddenTempDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T"  + SOUND_EXTENSION);
     }
 
     public static String getDramatizationTitle(File file) {
         String filename = file.getName();
-        return getTitleFromPath(filename, DRAMATIZATION_AUDIO_PREFIX, WAV_EXTENSION);
+        return getTitleFromPath(filename, DRAMATIZATION_AUDIO_PREFIX, SOUND_EXTENSION);
     }
 
     /**
@@ -205,7 +201,7 @@ public class AudioFiles {
      * @return returns success or error code of renaming
      */
     public static RenameCode renameDramatization(String story, int slide, String oldTitle, String newTitle) {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, PREFER_EXTENSION);
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, SOUND_EXTENSION);
     }
 
     /**
@@ -215,7 +211,7 @@ public class AudioFiles {
      * @return the array of dramatization titles
      */
     public static String[] getDramatizationTitles(String story, int slide) {
-        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, WAV_EXTENSION);
+        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, SOUND_EXTENSION);
     }
 
     //**** Helpers ***//

@@ -1,7 +1,12 @@
 package org.sil.storyproducer.tools.file;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -10,6 +15,8 @@ import org.sil.storyproducer.controller.MainActivity;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * FileSystem serves as a base for the file package. The purpose of the package is to provide an
@@ -25,6 +32,7 @@ public class FileSystem {
 
     private static String language;
 
+    private static final String APP_DIR = "StoryProducer";
     private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
     private static final String PROJECT_DIR = "projects";
@@ -37,6 +45,7 @@ public class FileSystem {
     private static Map<String, String> moviesPaths;
 
     private static File cacheDir;
+    private static long myDonwloadReference;
 
     static final FilenameFilter directoryFilter = new FilenameFilter() {
         @Override
@@ -58,55 +67,106 @@ public class FileSystem {
         SharedPreferences prefs = con.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE);
         language = prefs.getString(LWC_LANGUAGE, "ENG");
 
-        //Iterate external files directories.
-        File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
-        File[] moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES);
-        for (int i = 0; i < storeDirs.length; i++) {
-            File currentStoreDir = storeDirs[i];
-            File currentMoviesDir = moviesDirs[i];
-            if (currentStoreDir != null) {
-                //Get templates directory of current external storage directory.
-                File templateDir = new File(currentStoreDir, TEMPLATES_DIR);
+//        File storage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+//        File storage = new File(Environment.getExternalStorageDirectory().toString());
+        File storages[] = ContextCompat.getExternalFilesDirs(con, null);
+        File storage = storages.length == 2 ? storages[1] : storages[0];
 
-                //If there is no template directory (i.e. there are no templates on this storage
-                // device), move on from this storage device.
-                if (!templateDir.exists() || !templateDir.isDirectory()) {
-                    continue;
+        File appDir = new File(storage, APP_DIR);
+        if (!appDir.isDirectory()) {
+            appDir.mkdir();
+        }
+
+        File templateDir = new File(appDir, TEMPLATES_DIR);
+        if (!templateDir.isDirectory()) {
+            templateDir.mkdir();
+        }
+
+        File projectDir = new File(appDir, PROJECT_DIR);
+        if (!projectDir.isDirectory()) {
+            projectDir.mkdir();
+        }
+
+        File moviesDir = new File(appDir, Environment.DIRECTORY_MOVIES);
+        if (!moviesDir.isDirectory()) {
+            moviesDir.mkdir();
+        }
+
+        File[] langDirs = templateDir.listFiles(directoryFilter);
+        for (File currentLangDir : langDirs) {
+            String lang = currentLangDir.getName();
+
+            if (!templatePaths.containsKey(lang)) {
+                templatePaths.put(lang, new HashMap<String, String>());
+            }
+            Map<String, String> storyTemplateMap = templatePaths.get(lang);
+
+            File[] storyDirs = currentLangDir.listFiles(directoryFilter);
+            for (File currentStoryDir : storyDirs) {
+                String storyName = currentStoryDir.getName();
+                String storyTemplatePath = currentStoryDir.getAbsolutePath();
+                storyTemplateMap.put(storyName, storyTemplatePath);
+
+                //Make sure the corresponding projects directory exists.
+                File storyWriteDir = new File(projectDir, storyName);
+                if (!storyWriteDir.isDirectory()) {
+                    storyWriteDir.mkdir();
                 }
-
-                File projectDir = new File(currentStoreDir, PROJECT_DIR);
-                //Make the project directory if it does not exist.
-                //The template creator shouldn't have to remember this step.
-                if (!projectDir.isDirectory()) {
-                    projectDir.mkdir();
-                }
-
-                File[] langDirs = templateDir.listFiles(directoryFilter);
-                for (File currentLangDir : langDirs) {
-                    String lang = currentLangDir.getName();
-
-                    if (!templatePaths.containsKey(lang)) {
-                        templatePaths.put(lang, new HashMap<String, String>());
-                    }
-                    Map<String, String> storyTemplateMap = templatePaths.get(lang);
-
-                    File[] storyDirs = currentLangDir.listFiles(directoryFilter);
-                    for (File currentStoryDir : storyDirs) {
-                        String storyName = currentStoryDir.getName();
-                        String storyTemplatePath = currentStoryDir.getAbsolutePath();
-                        storyTemplateMap.put(storyName, storyTemplatePath);
-
-                        //Make sure the corresponding projects directory exists.
-                        File storyWriteDir = new File(new File(currentStoreDir, PROJECT_DIR), storyName);
-                        if (!storyWriteDir.isDirectory()) {
-                            storyWriteDir.mkdir();
-                        }
-                        projectPaths.put(storyName, storyWriteDir.getAbsolutePath());
-                        moviesPaths.put(storyName, currentMoviesDir.getAbsolutePath());
-                    }
-                }
+                projectPaths.put(storyName, storyWriteDir.getAbsolutePath());
+                moviesPaths.put(storyName, moviesDir.getAbsolutePath());
             }
         }
+
+
+//        //Iterate external files directories.
+//        File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
+//        File[] moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES);
+//        for (int i = 0; i < storeDirs.length; i++) {
+//            File currentStoreDir = storeDirs[i];
+//            File currentMoviesDir = moviesDirs[i];
+//            if (currentStoreDir != null) {
+//                //Get templates directory of current external storage directory.
+//                File templateDir = new File(currentStoreDir, TEMPLATES_DIR);
+//
+//                //If there is no template directory (i.e. there are no templates on this storage
+//                // device), move on from this storage device.
+//                if (!templateDir.exists() || !templateDir.isDirectory()) {
+//                    continue;
+//                }
+//
+//                File projectDir = new File(currentStoreDir, PROJECT_DIR);
+//                //Make the project directory if it does not exist.
+//                //The template creator shouldn't have to remember this step.
+//                if (!projectDir.isDirectory()) {
+//                    projectDir.mkdir();
+//                }
+//
+//                File[] langDirs = templateDir.listFiles(directoryFilter);
+//                for (File currentLangDir : langDirs) {
+//                    String lang = currentLangDir.getName();
+//
+//                    if (!templatePaths.containsKey(lang)) {
+//                        templatePaths.put(lang, new HashMap<String, String>());
+//                    }
+//                    Map<String, String> storyTemplateMap = templatePaths.get(lang);
+//
+//                    File[] storyDirs = currentLangDir.listFiles(directoryFilter);
+//                    for (File currentStoryDir : storyDirs) {
+//                        String storyName = currentStoryDir.getName();
+//                        String storyTemplatePath = currentStoryDir.getAbsolutePath();
+//                        storyTemplateMap.put(storyName, storyTemplatePath);
+//
+//                        //Make sure the corresponding projects directory exists.
+//                        File storyWriteDir = new File(new File(currentStoreDir, PROJECT_DIR), storyName);
+//                        if (!storyWriteDir.isDirectory()) {
+//                            storyWriteDir.mkdir();
+//                        }
+//                        projectPaths.put(storyName, storyWriteDir.getAbsolutePath());
+//                        moviesPaths.put(storyName, currentMoviesDir.getAbsolutePath());
+//                    }
+//                }
+//            }
+//        }
 
         LogFiles.init(con);
     }
