@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.export;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -207,6 +206,12 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
         mCheckboxKBFX = (CheckBox) findViewById(R.id.checkbox_export_KBFX);
+        mCheckboxKBFX.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
+                toggleVisibleElements();
+            }
+        });
         mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
         mCheckboxText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -376,6 +381,7 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mCheckboxKBFX.setVisibility(mCheckboxPictures.isChecked() ? View.VISIBLE : View.GONE);
 
+
         mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
                 ? View.VISIBLE : View.GONE);
 
@@ -389,12 +395,29 @@ public class ExportActivity extends PhaseBaseActivity {
                 showHighResolutionAlertDialog();
             } else {
                 mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                textOrKBFX(false);
             }
         } else {
             mSpinnerResolution.setAdapter(mResolutionAdapterAll);
             mTextConfirmationChecked = true;
         }
+
     }
+    /*
+    * Function that makes KBFX and Enabling Text mutually exclusive options
+    * Takes a boolean that says whether or not text was just turned on
+     */
+    private void textOrKBFX(boolean textJustEnabled){
+        if(textJustEnabled && !mTextConfirmationChecked && mCheckboxKBFX.isChecked()){
+               mCheckboxKBFX.setChecked(false);
+        }
+        else{
+            if(mCheckboxKBFX.isChecked() && mCheckboxText.isChecked()){
+                mCheckboxText.setChecked(false);
+            }
+        }
+    }
+
     /**
      * Creates an alert dialog asking if the user wants to skip registration
      * If they respond yes, finish activity or send them back to MainActivity
@@ -413,6 +436,8 @@ public class ExportActivity extends PhaseBaseActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
                         mTextConfirmationChecked = false;
+                        textOrKBFX(true);
+
                     }
                 }).create();
 
