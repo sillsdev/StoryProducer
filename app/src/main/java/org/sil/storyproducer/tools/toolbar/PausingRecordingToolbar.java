@@ -253,7 +253,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     if (!isAppendingOn) {
                         recordingListener.onStartedRecordingOrPlayback(true);
                     }
-                    micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
+                    checkButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     if (enableDeleteButton) {
                         deleteButton.setVisibility(View.INVISIBLE);
                     }
@@ -263,9 +264,9 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     if (enableMultiRecordButton) {
                         multiRecordButton.setVisibility(View.INVISIBLE);
                     }
-                    if (enableCheckButton) {
-                        checkButton.setVisibility(View.INVISIBLE);
-                    }
+                    //if (enableCheckButton) {
+                      //  checkButton.setVisibility(View.INVISIBLE);
+                    //}
                 }
             }
         };
