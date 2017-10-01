@@ -30,6 +30,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
+import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -116,6 +117,9 @@ public class ExportActivity extends PhaseBaseActivity {
         }
         setVideoOrShareSectionOpen();
         loadPreferences();
+        if (mEditTextTitle.getText().toString().equals(mStory)) {
+            mEditTextTitle.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), 0));
+        }
     }
 
     @Override
