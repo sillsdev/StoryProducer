@@ -117,8 +117,11 @@ public class ExportActivity extends PhaseBaseActivity {
         }
         setVideoOrShareSectionOpen();
         loadPreferences();
-        if (mEditTextTitle.getText().toString().equals(mStory)) {
-            mEditTextTitle.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), 0));
+
+        String titleSlideText = TextFiles.getDramatizationText(StoryState.getStoryName(), 0);
+        String titleText = mEditTextTitle.getText().toString();
+        if (titleText.equals(mStory) && !titleSlideText.isEmpty()) {
+            mEditTextTitle.setText(titleSlideText);
         }
     }
 
