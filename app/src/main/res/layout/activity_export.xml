@@ -124,40 +124,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:orientation="vertical" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/editText_export_location"
-                        android:text="@string/export_location_header"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <EditText
-                            android:id="@+id/editText_export_location"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toStartOf="@+id/button_export_browse"
-                            android:focusable="false"
-                            android:hint="@string/export_location_placeholder"
-                            android:inputType="none" />
-
-                        <Button
-                            android:id="@+id/button_export_browse"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="@string/export_location_browse" />
-
-                    </RelativeLayout>
-
                 </LinearLayout>
 
                 <Space

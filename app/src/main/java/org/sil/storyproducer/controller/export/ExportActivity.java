@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -251,9 +252,6 @@ public class ExportActivity extends PhaseBaseActivity {
         formatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mSpinnerFormat.setAdapter(formatAdapter);
 
-        mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
-
-        mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
         setOnClickListeners();
@@ -277,19 +275,19 @@ public class ExportActivity extends PhaseBaseActivity {
      * Setup listeners for start/cancel.
      */
     private void setOnClickListeners() {
-        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
+        /*mEditTextLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileExplorerToExport();
             }
-        });
+        });*/
 
-        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
+        /*mButtonBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileExplorerToExport();
             }
-        });
+        });*/
 
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -482,7 +480,7 @@ public class ExportActivity extends PhaseBaseActivity {
         if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
             display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
         }
-        mEditTextLocation.setText(display);
+        //mEditTextLocation.setText(display);
     }
 
 
@@ -575,11 +573,7 @@ public class ExportActivity extends PhaseBaseActivity {
     }
 
     private void tryStartExport() {
-        if(mOutputPath == null || mOutputPath.isEmpty()) {
-            Toast.makeText(this, R.string.export_location_missing_message, Toast.LENGTH_LONG).show();
-            return;
-        }
-
+        //setLocation(getOutputPath());
 
         String ext = getFormatExtension();
         final File output = new File(mOutputPath + ext);
@@ -598,6 +592,7 @@ public class ExportActivity extends PhaseBaseActivity {
             dialog.show();
         }
         else {
+            //mStory = mOutputPath.split("/")[mOutputPath.split("/").length - 1];
             startExport(output);
         }
     }
