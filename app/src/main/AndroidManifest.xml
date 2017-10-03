@@ -47,7 +47,7 @@
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
         <!-- Export -->
-        <activity android:name=".controller.export.ExportActivity"
+        <activity android:name=".controller.export.CreateActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
         <!-- File Explorer (part of Export) -->

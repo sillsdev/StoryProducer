@@ -3,8 +3,8 @@ package org.sil.storyproducer.model;
 import android.content.Context;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.export.CreateActivity;
 import org.sil.storyproducer.controller.export.ShareActivity;
-import org.sil.storyproducer.controller.export.ExportActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -23,7 +23,7 @@ public final class StoryState {
     private static int currentPhaseIndex = 0;
     private static int currentStorySlide = 0;
 
-    //TODO: add saving state in prefrences for each story
+    //TODO: add saving state in preferences for each story
 
     /**
      * initializes the StoryState variables
@@ -38,7 +38,7 @@ public final class StoryState {
                             new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
                             new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class, Phase.Type.CONSULTANT_CHECK),
                             new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
-                            new Phase(phaseMenuArray[5], R.color.export_phase, ExportActivity.class, Phase.Type.CREATE),
+                            new Phase(phaseMenuArray[5], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
                             new Phase(phaseMenuArray[6], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)};
     }
 

@@ -6,7 +6,7 @@
         <item>@string/community_check_title</item>
         <item>@string/consultant_check_title</item>
         <item>@string/dramatization_title</item>
-        <item>@string/export_title</item>
+        <item>@string/create_title</item>
         <item>@string/share_title</item>
     </string-array>
 </resources>

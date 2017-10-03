@@ -41,8 +41,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ExportActivity extends PhaseBaseActivity {
-    private static final String TAG = "ExportActivity";
+public class CreateActivity extends PhaseBaseActivity {
+    private static final String TAG = "CreateActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
     private static final int LOCATION_MAX_CHAR_DISPLAY = 25;
@@ -105,7 +105,7 @@ public class ExportActivity extends PhaseBaseActivity {
         super.onCreate(savedInstanceState);
         mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
         boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
-        setContentView(R.layout.activity_export);
+        setContentView(R.layout.activity_create);
         mStory = StoryState.getStoryName();
         setupViews();
         invalidateOptionsMenu();
@@ -427,7 +427,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private void showHighResolutionAlertDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(ExportActivity.this)
+        AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)
                 .setTitle(getString(R.string.export_include_text_title))
                 .setMessage(getString(R.string.export_include_text_message))
                 .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
