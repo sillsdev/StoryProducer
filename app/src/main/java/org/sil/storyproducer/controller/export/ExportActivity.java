@@ -602,46 +602,6 @@ public class ExportActivity extends PhaseBaseActivity {
         }
     }
 
-    private String getOutputPath() {
-        String directory = VideoFiles.getDefaultLocation(mStory).getPath();
-        String filename = "HEY";
-
-        ArrayList<String> sections = new ArrayList<>();
-        String title = mEditTextTitle.getText().toString().replaceAll(" ", "")
-                .replaceAll("[^a-zA-Z0-9\\-_ ]", "");
-        sections.add(title);
-
-        String country = RegistrationActivity.getCountry();
-        if (country != null && !country.isEmpty()) {
-            sections.add(country);
-        }
-
-        String languageCode = RegistrationActivity.getLanguageCode();
-        if (languageCode != null && !languageCode.isEmpty()) {
-            sections.add(languageCode);
-        }
-
-        filename = stringJoin(sections, "_");
-        return directory + "/" + filename;
-    }
-
-    private String stringJoin(List<String> list, String delimeter) {
-        StringBuilder result = new StringBuilder();
-
-        boolean isFirst = true;
-        for (String str : list) {
-            if (isFirst) {
-                isFirst = false;
-            } else {
-                result.append(delimeter);
-            }
-
-            result.append(str);
-        }
-
-        return result.toString();
-    }
-
     private void startExport(File output) {
         synchronized (storyMakerLock) {
             storyMaker = new AutoStoryMaker(mStory);
