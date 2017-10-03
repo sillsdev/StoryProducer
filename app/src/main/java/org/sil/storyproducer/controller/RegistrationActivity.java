@@ -77,6 +77,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final boolean CLOSE_KEYBOARD = false;
     private static final boolean PARSE_ALL_FIELDS = true;
 
+    private static String country;
+    private static String languageCode;
+
     private List<View> inputFields;
 
 
@@ -339,6 +342,12 @@ public class RegistrationActivity extends AppCompatActivity {
                 textFieldName = textFieldName.replace("input_", "");
                 String textFieldText = textField.getText().toString();
                 editor.putString(textFieldName, textFieldText);
+
+                if (textFieldName.equals("country")) {
+                    country = textFieldText;
+                } else if (textFieldName.equals("ethnologue")) {
+                    languageCode = textFieldText;
+                }
             } else if (field instanceof Spinner) {
                 Spinner spinner = (Spinner) field;
                 String spinnerName = getResources().getResourceEntryName(spinner.getId());
@@ -594,5 +603,13 @@ public class RegistrationActivity extends AppCompatActivity {
             }
         }
         return message.toString();
+    }
+
+    public static String getCountry() {
+        return country;
+    }
+
+    public static String getLanguageCode() {
+        return languageCode;
     }
 }
