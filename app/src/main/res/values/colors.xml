@@ -19,5 +19,6 @@
     <color name="consultant_check_phase">#F1A94E</color>
     <color name="dramatization_phase">#009688</color>
     <color name="export_phase">#44B3C2</color>
+    <color name="share_phase">#7CFC00</color>
     <color name="black_overlay">#66000000</color>
 </resources>
