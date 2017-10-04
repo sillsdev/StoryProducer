@@ -46,7 +46,7 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
-        <!-- Export -->
+        <!-- Create -->
         <activity android:name=".controller.export.CreateActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
@@ -54,6 +54,10 @@
         <activity
             android:name=".controller.export.FileChooserActivity"
             android:label="FileChooser"
+            android:screenOrientation="portrait" />
+        <!-- Share -->
+        <activity android:name=".controller.export.ShareActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
     </application>
 
