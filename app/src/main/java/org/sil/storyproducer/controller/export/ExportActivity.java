@@ -573,7 +573,7 @@ public class ExportActivity extends PhaseBaseActivity {
     }
 
     private void tryStartExport() {
-        //setLocation(getOutputPath());
+        setLocation(getOutputPath());
 
         String ext = getFormatExtension();
         final File output = new File(mOutputPath + ext);
