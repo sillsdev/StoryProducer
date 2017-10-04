@@ -604,6 +604,10 @@ public class ExportActivity extends PhaseBaseActivity {
         ArrayList<String> sections = new ArrayList<>();
         String title = mEditTextTitle.getText().toString().replaceAll(" ", "")
                 .replaceAll("[^a-zA-Z0-9\\-_ ]", "");
+        if (title == null || title.isEmpty()) {
+            title = mStory.replaceAll(" ", "")
+                    .replaceAll("[^a-zA-Z0-9\\-_ ]", "");;
+        }
         sections.add(title);
 
         String country = RegistrationActivity.getCountry();
@@ -642,7 +646,11 @@ public class ExportActivity extends PhaseBaseActivity {
             storyMaker = new AutoStoryMaker(mStory);
             storyMaker.setContext(this);
 
-            storyMaker.setTitle(mEditTextTitle.getText().toString());
+            String title = mEditTextTitle.getText().toString();
+            if (title == null || title.isEmpty()) {
+                title = mStory;
+            }
+            storyMaker.setTitle(title);
 
             storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
             storyMaker.togglePictures(mCheckboxPictures.isChecked());
