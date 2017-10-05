@@ -1,5 +1,6 @@
 package org.sil.storyproducer.tools.file;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -49,7 +50,7 @@ public class FileSystem {
     };
 
     //Populate templatePaths from files in system
-    public static void init(Context con) {
+    public static void init(Context con, MainActivity mainA) {
         cacheDir = con.getCacheDir();
 
         //Reset templatePaths
@@ -114,11 +115,8 @@ public class FileSystem {
             }
         }
 
-        if( !templates_found ) {
-            Uri startUri = Uri.fromFile(new File(Environment.DIRECTORY_DOWNLOADS));
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            intent.putExtra("android.content.EXTRA_INITIAL_URI", startUri);
-            con.startActivity(Intent.createChooser(intent, "Open folder"));
+        if (!templates_found) {
+            mainA.launchChooseTemplatesDialog(con, TEMPLATES_DIR);
         }
 
         LogFiles.init(con);
