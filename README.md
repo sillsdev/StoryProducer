@@ -1,8 +1,11 @@
 # Story Producer (SP app)
 
 Purpose: to enable end users to translate still-picture audio-video stories with community help, then dramatize, publish and share new local language videos. 
+
 End users and target audience: speakers of (minority) languages, some of whom are bilingual in a major language
+
 End recipients: members of local language communities
+
 Developers:  
    Vision and design by Robin Rempel, SIL
    Logo and Prototype: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
