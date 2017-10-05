@@ -2,9 +2,12 @@ package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.content.Intent;
+import android.net.Uri;
 
 import org.sil.storyproducer.controller.MainActivity;
 
@@ -61,6 +64,7 @@ public class FileSystem {
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
         File[] moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES);
+        boolean templates_found = false;
         for (int i = 0; i < storeDirs.length; i++) {
             File currentStoreDir = storeDirs[i];
             File currentMoviesDir = moviesDirs[i];
@@ -72,6 +76,8 @@ public class FileSystem {
                 // device), move on from this storage device.
                 if (!templateDir.exists() || !templateDir.isDirectory()) {
                     continue;
+                } else {
+                    templates_found = true;
                 }
 
                 File projectDir = new File(currentStoreDir, PROJECT_DIR);
@@ -106,6 +112,13 @@ public class FileSystem {
                     }
                 }
             }
+        }
+
+        if( !templates_found ) {
+            Uri startUri = Uri.fromFile(new File(Environment.DIRECTORY_DOWNLOADS));
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.putExtra("android.content.EXTRA_INITIAL_URI", startUri);
+            con.startActivity(Intent.createChooser(intent, "Open folder"));
         }
 
         LogFiles.init(con);
