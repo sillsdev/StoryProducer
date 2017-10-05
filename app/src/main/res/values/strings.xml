@@ -210,7 +210,8 @@
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatize</string>
-    <string name="export_title">Export</string>
+    <string name="create_title">Create</string>
+    <string name="share_title">Share</string>
     <string name="title_activity_test_drawer">testDrawer</string>
     <string name="Parent_Dir_Label">Parent Directory</string>
     <string name="byte_unit_singular">" byte"</string>
