@@ -7,11 +7,11 @@ End users and target audience: speakers of (minority) languages, some of whom ar
 End recipients: members of local language communities
 
 Developers:  
-Vision and design by Robin Rempel, SIL
-Logo and Prototype: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
-Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
-Software engineers for v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
-Software engineers for v1.5 - v1.9: John Lambert and Grant Dennison
+   *Vision and design by Robin Rempel, SIL
+   *Logo and Prototype: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
+   *Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
+   *Software engineers for v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
+   *Software engineers for v1.5 - v1.9: John Lambert and Grant Dennison
 
 Translation and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
@@ -24,7 +24,7 @@ Translation and produce stories (starting with templates in a major language mad
 * SHARE the videos
 
 ## Installing the application
-> Note: Installing a new APK will delete all the templates from the previous app. You must manually load the templates back onto the phone after the new APK is installed.
+> Note: When you wish to install a newer APK, first delete the older APK. Installing a new APK will delete all the templates from the previous app. You must manually load the templates back onto the phone after the new APK is installed.  
 * Minimum Requirements:  
     * Android 4.4.x (API 19) and 1GB storage available
     * Android file browser: [ASTRO File Manager](https://play.google.com/store/apps/details?id=com.metago.astro&hl=en) or [File Manager](https://play.google.com/store/apps/details?id=com.asus.filemanager&hl=en) by ZenUI  
