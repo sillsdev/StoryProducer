@@ -19,11 +19,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
@@ -77,12 +74,6 @@ public class CreateActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
-    private TextView mShareHeader;
-    private LinearLayout mShareSection;
-    private TextView mNoVideosText;
-    private ListView mVideosListView;
-
-    private ExportedVideosAdapter videosAdapter;
     private String mStory;
 
     private String mOutputPath;
@@ -90,8 +81,8 @@ public class CreateActivity extends PhaseBaseActivity {
     private boolean mTextConfirmationChecked;
 
     //accordion variables
-    private final int [] sectionIds = {R.id.export_section, R.id.share_section};
-    private final int [] headerIds = {R.id.export_header, R.id.share_header};
+    private final int [] sectionIds = {R.id.export_section};
+    private final int [] headerIds = {R.id.export_header};
     private View[] sectionViews = new View[sectionIds.length];
     private View[] headerViews = new View[headerIds.length];
 
@@ -115,7 +106,6 @@ public class CreateActivity extends PhaseBaseActivity {
             View mainLayout = findViewById(R.id.main_linear_layout);
             PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
-        setVideoOrShareSectionOpen();
         loadPreferences();
         if (mEditTextTitle.getText().toString().equals(mStory)) {
             mEditTextTitle.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), 0));
@@ -180,7 +170,7 @@ public class CreateActivity extends PhaseBaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item =  menu.getItem(0);
-        item.setIcon(R.drawable.ic_export);
+        item.setIcon(R.drawable.ic_create);
         return true;
     }
 
@@ -259,14 +249,6 @@ public class CreateActivity extends PhaseBaseActivity {
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
 
-        //share view
-        mShareHeader = (TextView) findViewById(R.id.share_header);
-        mShareSection = (LinearLayout) findViewById(R.id.share_section);
-        videosAdapter = new ExportedVideosAdapter(this);
-        mVideosListView = (ListView) findViewById(R.id.videos_list);
-        mVideosListView.setAdapter(videosAdapter);
-        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
-        setVideoAdapterPaths();
 
     }
 
@@ -308,18 +290,6 @@ public class CreateActivity extends PhaseBaseActivity {
             }
         });
 
-    }
-
-    /**
-     * sets which one of the accordians starts open on the activity start
-     */
-    private void setVideoOrShareSectionOpen() {
-        List<String> actualPaths = getExportedVideosForStory();
-        if(actualPaths.size() > 0) {        //open the share view
-            setSectionsClosedExceptView(findViewById(R.id.share_section));
-        } else {                            //open the video creation view
-            setSectionsClosedExceptView(findViewById(R.id.export_section));
-        }
     }
 
     /**
@@ -388,11 +358,6 @@ public class CreateActivity extends PhaseBaseActivity {
 
         mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
                 ? View.VISIBLE : View.GONE);
-
-        mShareHeader.setVisibility(visibilityPreExport);
-        if(isStoryMakerBusy) {
-            mShareSection.setVisibility(View.GONE);
-        }
 
         if (mCheckboxText.isChecked()) {
             if (mTextConfirmationChecked) {
@@ -480,18 +445,6 @@ public class CreateActivity extends PhaseBaseActivity {
             display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
         }
         mEditTextLocation.setText(display);
-    }
-
-
-    /**
-     * sets the videos for the list adapter
-     */
-    private void setVideoAdapterPaths() {
-        List<String> actualPaths = getExportedVideosForStory();
-        if(actualPaths.size() > 0) {
-            mNoVideosText.setVisibility(View.GONE);
-        }
-        videosAdapter.setVideoPaths(actualPaths);
     }
 
     /**
@@ -639,7 +592,6 @@ public class CreateActivity extends PhaseBaseActivity {
             }
         }
         //update the list view
-        setVideoAdapterPaths();
         toggleVisibleElements();
     }
 
