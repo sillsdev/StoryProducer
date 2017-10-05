@@ -46,14 +46,18 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
-        <!-- Export -->
-        <activity android:name=".controller.export.ExportActivity"
+        <!-- Create -->
+        <activity android:name=".controller.export.CreateActivity"
             android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
         <!-- File Explorer (part of Export) -->
         <activity
             android:name=".controller.export.FileChooserActivity"
             android:label="FileChooser"
+            android:screenOrientation="portrait" />
+        <!-- Share -->
+        <activity android:name=".controller.export.ShareActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" />
     </application>
 

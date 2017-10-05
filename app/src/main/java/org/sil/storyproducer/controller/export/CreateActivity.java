@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ExportActivity extends PhaseBaseActivity {
-    private static final String TAG = "ExportActivity";
+public class CreateActivity extends PhaseBaseActivity {
+    private static final String TAG = "CreateActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
     private static final int LOCATION_MAX_CHAR_DISPLAY = 25;
@@ -78,12 +78,6 @@ public class ExportActivity extends PhaseBaseActivity {
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
-    private TextView mShareHeader;
-    private LinearLayout mShareSection;
-    private TextView mNoVideosText;
-    private ListView mVideosListView;
-
-    private ExportedVideosAdapter videosAdapter;
     private String mStory;
 
     private String mOutputPath;
@@ -91,8 +85,8 @@ public class ExportActivity extends PhaseBaseActivity {
     private boolean mTextConfirmationChecked;
 
     //accordion variables
-    private final int [] sectionIds = {R.id.export_section, R.id.share_section};
-    private final int [] headerIds = {R.id.export_header, R.id.share_header};
+    private final int [] sectionIds = {R.id.export_section};
+    private final int [] headerIds = {R.id.export_header};
     private View[] sectionViews = new View[sectionIds.length];
     private View[] headerViews = new View[headerIds.length];
 
@@ -106,7 +100,7 @@ public class ExportActivity extends PhaseBaseActivity {
         super.onCreate(savedInstanceState);
         mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
         boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
-        setContentView(R.layout.activity_export);
+        setContentView(R.layout.activity_create);
         mStory = StoryState.getStoryName();
         setupViews();
         invalidateOptionsMenu();
@@ -116,7 +110,6 @@ public class ExportActivity extends PhaseBaseActivity {
             View mainLayout = findViewById(R.id.main_linear_layout);
             PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
-        setVideoOrShareSectionOpen();
         loadPreferences();
 
         String titleSlideText = TextFiles.getDramatizationText(StoryState.getStoryName(), 0);
@@ -184,7 +177,7 @@ public class ExportActivity extends PhaseBaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item =  menu.getItem(0);
-        item.setIcon(R.drawable.ic_export);
+        item.setIcon(R.drawable.ic_create);
         return true;
     }
 
@@ -259,15 +252,6 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
-
-        //share view
-        mShareHeader = (TextView) findViewById(R.id.share_header);
-        mShareSection = (LinearLayout) findViewById(R.id.share_section);
-        videosAdapter = new ExportedVideosAdapter(this);
-        mVideosListView = (ListView) findViewById(R.id.videos_list);
-        mVideosListView.setAdapter(videosAdapter);
-        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
-        setVideoAdapterPaths();
 
     }
 
@@ -390,10 +374,6 @@ public class ExportActivity extends PhaseBaseActivity {
         mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
                 ? View.VISIBLE : View.GONE);
 
-        mShareHeader.setVisibility(visibilityPreExport);
-        if(isStoryMakerBusy) {
-            mShareSection.setVisibility(View.GONE);
-        }
 
         if (mCheckboxText.isChecked()) {
             if (mTextConfirmationChecked) {
@@ -428,7 +408,7 @@ public class ExportActivity extends PhaseBaseActivity {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private void showHighResolutionAlertDialog() {
-        AlertDialog dialog = new AlertDialog.Builder(ExportActivity.this)
+        AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)
                 .setTitle(getString(R.string.export_include_text_title))
                 .setMessage(getString(R.string.export_include_text_message))
                 .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
@@ -481,18 +461,6 @@ public class ExportActivity extends PhaseBaseActivity {
             display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
         }
         //mEditTextLocation.setText(display);
-    }
-
-
-    /**
-     * sets the videos for the list adapter
-     */
-    private void setVideoAdapterPaths() {
-        List<String> actualPaths = getExportedVideosForStory();
-        if(actualPaths.size() > 0) {
-            mNoVideosText.setVisibility(View.GONE);
-        }
-        videosAdapter.setVideoPaths(actualPaths);
     }
 
     /**
@@ -637,7 +605,6 @@ public class ExportActivity extends PhaseBaseActivity {
 
             result.append(str);
         }
-
         return result.toString();
     }
 
@@ -685,7 +652,6 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         }
         //update the list view
-        setVideoAdapterPaths();
         toggleVisibleElements();
     }
 
