@@ -81,14 +81,14 @@ public class ShareActivity extends PhaseBaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item =  menu.getItem(0);
-        item.setIcon(R.drawable.ic_create); //TODO: new share icon
+        item.setIcon(R.drawable.ic_share);
         return true;
     }
 
     /**
      * Get handles to all necessary views and add some listeners.
      */
-    //TODO: make this function work with new activity_share layout
+    //TODO: cleanup
     private void setupViews() {
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
