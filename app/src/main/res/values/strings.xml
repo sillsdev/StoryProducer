@@ -3,7 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="menu_info">Registration Info</string>
     <string name="menu_search">Search</string>
-    <string name="menu">Menu</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
@@ -152,7 +151,10 @@
     <string name="export_include_soundtrack">Include Background Music</string>
     <string name="export_include_pictures">Include Pictures</string>
     <string name="export_include_text">Include Text</string>
-    <string name="export_include_KBFX">Enable Pan and Zoom Effects</string>
+    <string name="export_include_KBFX">Enable Picture Movement</string>
+
+    <string name="export_include_text_title">Do you want to enable text?</string>
+    <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
     <string name="export_resolution_label">Video Quality</string>
     <string-array name="export_resolution_options">
@@ -163,6 +165,10 @@
 
     <string name="export_format_label">File Format</string>
     <string-array name="export_format_options">
+        <item>Smartphone</item>
+        <item>Dumb Phone</item>
+    </string-array>
+    <string-array name="export_format_extensions">
         <item>.mp4</item>
         <item>.3gp</item>
     </string-array>
@@ -194,6 +200,8 @@
     <string name="title_activity_registration">Registration</string>
     /* SnackBar Messages */
     <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
+    <string name="overwrite">Overwrite</string>
     <string name="ok">Ok</string>
 
     /* Phases */
@@ -201,8 +209,9 @@
     <string name="draftTitle">Draft</string>
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
-    <string name="dramatization_title">Dramatization</string>
-    <string name="export_title">Export</string>
+    <string name="dramatization_title">Dramatize</string>
+    <string name="create_title">Create</string>
+    <string name="share_title">Share</string>
     <string name="title_activity_test_drawer">testDrawer</string>
     <string name="Parent_Dir_Label">Parent Directory</string>
     <string name="byte_unit_singular">" byte"</string>
