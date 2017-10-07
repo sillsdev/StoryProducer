@@ -73,6 +73,8 @@ public class CreateActivity extends PhaseBaseActivity {
     private ArrayAdapter<CharSequence> mResolutionAdapterAll;
     private ArrayAdapter<CharSequence> mResolutionAdapterHigh;
     private Spinner mSpinnerFormat;
+    private ArrayAdapter<CharSequence> mFormatAdapterSmartphone;
+    private ArrayAdapter<CharSequence> mFormatAdapterAll;
     private EditText mEditTextLocation;
     private Button mButtonBrowse;
     private Button mButtonStart;
@@ -233,17 +235,30 @@ public class CreateActivity extends PhaseBaseActivity {
         mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+
         mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
         mResolutionAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
         mSpinnerResolution.setAdapter(mResolutionAdapterAll);
 
-        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
-        ArrayAdapter<CharSequence> formatAdapter = ArrayAdapter.createFromResource(this,
+
+        String[] formatArray = getResources().getStringArray(R.array.export_format_options);
+        List<String> immutableListFormat = Arrays.asList(formatArray);
+        ArrayList<String> formatList = new ArrayList<>(immutableListFormat);
+
+        mFormatAdapterSmartphone = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, formatList);
+        mFormatAdapterSmartphone.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mFormatAdapterSmartphone.remove(mFormatAdapterSmartphone.getItem(1));
+
+        mFormatAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_format_options, android.R.layout.simple_spinner_item);
-        formatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        mSpinnerFormat.setAdapter(formatAdapter);
+        mFormatAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+
+        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
+        mSpinnerFormat.setAdapter(mFormatAdapterAll);
 
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
@@ -380,13 +395,14 @@ public class CreateActivity extends PhaseBaseActivity {
                 showHighResolutionAlertDialog();
             } else {
                 mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                mSpinnerFormat.setAdapter(mFormatAdapterSmartphone);
                 textOrKBFX(false);
             }
         } else {
             mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+            mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true;
         }
-
     }
     /*
     * Function that makes KBFX and Enabling Text mutually exclusive options
