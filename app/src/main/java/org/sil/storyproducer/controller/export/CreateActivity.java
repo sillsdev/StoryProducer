@@ -73,6 +73,7 @@ public class CreateActivity extends PhaseBaseActivity {
     private Spinner mSpinnerResolution;
     private ArrayAdapter<CharSequence> mResolutionAdapterAll;
     private ArrayAdapter<CharSequence> mResolutionAdapterHigh;
+    private ArrayAdapter<CharSequence> mResolutionAdapterLow;
     private Spinner mSpinnerFormat;
     private ArrayAdapter<CharSequence> mFormatAdapterSmartphone;
     private ArrayAdapter<CharSequence> mFormatAdapterAll;
@@ -227,6 +228,7 @@ public class CreateActivity extends PhaseBaseActivity {
         String[] resolutionArray = getResources().getStringArray(R.array.export_resolution_options);
         List<String> immutableList = Arrays.asList(resolutionArray);
         ArrayList<String> resolutionList = new ArrayList<>(immutableList);
+        ArrayList<String> resolutionListLow = new ArrayList<>(immutableList);
 
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
@@ -236,6 +238,12 @@ public class CreateActivity extends PhaseBaseActivity {
         mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+
+        mResolutionAdapterLow = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, resolutionListLow);
+        mResolutionAdapterLow.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mResolutionAdapterLow.remove(mResolutionAdapterLow.getItem(1));
+        mResolutionAdapterLow.remove(mResolutionAdapterLow.getItem(1));
 
         mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
@@ -313,7 +321,10 @@ public class CreateActivity extends PhaseBaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
+                    mSpinnerResolution.setAdapter(mResolutionAdapterAll);
                     mSpinnerResolution.setSelection(1, true);
+                } else {
+                    mSpinnerResolution.setAdapter(mResolutionAdapterLow);
                 }
             }
 
