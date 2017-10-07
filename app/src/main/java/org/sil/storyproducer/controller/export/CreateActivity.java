@@ -115,12 +115,6 @@ public class CreateActivity extends PhaseBaseActivity {
             PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
         loadPreferences();
-
-        String titleSlideText = TextFiles.getDramatizationText(StoryState.getStoryName(), 0);
-        String titleText = mEditTextTitle.getText().toString();
-        if (titleText.equals(mStory) && !titleSlideText.isEmpty()) {
-            mEditTextTitle.setText(titleSlideText);
-        }
     }
 
     @Override

@@ -47,14 +47,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/editText_export_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/export_custom_title"
-                        android:inputType="textCapWords" />
-
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -123,6 +115,14 @@
                         android:id="@+id/spinner_export_format"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+
+                    <EditText
+                        android:id="@+id/editText_export_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/export_custom_title"
+                        android:inputType="textCapWords" />
 
                 </LinearLayout>
 

@@ -144,7 +144,7 @@
     <string name="rename_failed">Rename failed</string>
 
     <!-- Export -->
-    <string name="export_custom_title">Title</string>
+    <string name="export_custom_title">Short Story Name</string>
 
     <string name="export_options_header">Options</string>
 
