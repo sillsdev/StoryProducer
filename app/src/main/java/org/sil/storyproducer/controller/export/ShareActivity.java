@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.export;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +27,6 @@ public class ShareActivity extends PhaseBaseActivity {
 
     private static final String PREF_FILE = "Share_Config";
 
-    private TextView mShareHeader;
     private LinearLayout mShareSection;
     private TextView mNoVideosText;
     private ListView mVideosListView;
@@ -39,9 +37,7 @@ public class ShareActivity extends PhaseBaseActivity {
 
     //accordion variables
     private final int [] sectionIds = {R.id.share_section};
-    private final int [] headerIds = {R.id.share_header};
     private View[] sectionViews = new View[sectionIds.length];
-    private View[] headerViews = new View[headerIds.length];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,58 +91,16 @@ public class ShareActivity extends PhaseBaseActivity {
         //Add the listeners to the LinearLayouts's header section.
         for (int i = 0; i < sectionIds.length; i++) {
             sectionViews[i] = findViewById(sectionIds[i]);
-            headerViews[i] = findViewById(headerIds[i]);
-            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
         }
 
 
         //share view
-        mShareHeader = (TextView) findViewById(R.id.share_header);
         mShareSection = (LinearLayout) findViewById(R.id.share_section);
         videosAdapter = new ExportedVideosAdapter(this);
         mVideosListView = (ListView) findViewById(R.id.videos_list);
         mVideosListView.setAdapter(videosAdapter);
         mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
         setVideoAdapterPaths();
-
-    }
-
-    /**
-     * This function sets the click listeners to implement the accordion functionality
-     * for each section of the registration page
-     *
-     * @param headerView  a variable of type View denoting the field the user will click to open up
-     *                    a section of the registration
-     * @param sectionView a variable of type View denoting the section that will open up
-     */
-    private void setAccordionListener(final View headerView, final View sectionView) {
-        headerView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sectionView.getVisibility() == View.GONE) {
-                    setSectionsClosedExceptView(sectionView);
-                } else {
-                    sectionView.setVisibility(View.GONE);
-                    headerView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
-                }
-            }
-        });
-    }
-
-    /**
-     * sets all the accordion sections closed except for the one passed
-     * @param sectionView that is wanted to be made open
-     */
-    private void setSectionsClosedExceptView(View sectionView) {
-        for(int k = 0; k < sectionViews.length; k++) {
-            if(sectionViews[k] == sectionView) {
-                sectionViews[k].setVisibility(View.VISIBLE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
-            } else {
-                sectionViews[k].setVisibility(View.GONE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
-            }
-        }
 
     }
 

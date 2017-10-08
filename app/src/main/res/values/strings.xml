@@ -181,7 +181,6 @@
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
     <string name="export_video_creation_header">Video Creation</string>
-    <string name="export_video_sharing_header">Video Sharing</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
