@@ -90,9 +90,7 @@ public class CreateActivity extends PhaseBaseActivity {
 
     //accordion variables
     private final int [] sectionIds = {R.id.export_section};
-    private final int [] headerIds = {R.id.export_header};
     private View[] sectionViews = new View[sectionIds.length];
-    private View[] headerViews = new View[headerIds.length];
 
     private static volatile boolean buttonLocked = false;
     private Thread mProgressUpdater;
@@ -186,11 +184,6 @@ public class CreateActivity extends PhaseBaseActivity {
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
-        for (int i = 0; i < sectionIds.length; i++) {
-            sectionViews[i] = findViewById(sectionIds[i]);
-            headerViews[i] = findViewById(headerIds[i]);
-            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
-        }
 
         mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
 
@@ -372,10 +365,8 @@ public class CreateActivity extends PhaseBaseActivity {
         for(int k = 0; k < sectionViews.length; k++) {
             if(sectionViews[k] == sectionView) {
                 sectionViews[k].setVisibility(View.VISIBLE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
             } else {
                 sectionViews[k].setVisibility(View.GONE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
             }
         }
 
