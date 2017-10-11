@@ -88,6 +88,11 @@
                             android:id="@+id/spinner_export_resolution"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:orientation="vertical" />
                     </LinearLayout>
 
                     <TextView
@@ -97,10 +102,28 @@
                         android:text="@string/export_format_label"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-                    <Spinner
-                        android:id="@+id/spinner_export_format"
+                    <RadioGroup
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <RadioButton android:id="@+id/radio_dumbphone"
+                            android:drawableRight="@drawable/ic_dumbphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dumbphone"
+                            android:onClick="onRadioButtonClicked"/>
+                        <RadioButton android:id="@+id/radio_smartphone"
+                            android:drawableRight="@drawable/ic_smartphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/smartphone"
+                            android:onClick="onRadioButtonClicked"/>
+                    </RadioGroup>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:orientation="vertical" />
 
                     <EditText
                         android:id="@+id/editText_export_title"

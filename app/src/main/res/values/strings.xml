@@ -162,7 +162,8 @@
         <item>Medium (640x480)</item>
         <item>High (1280x720)</item>
     </string-array>
-
+    <string name ="dumbphone">Dumb Phone (3GP)</string>
+    <string name = "smartphone">Smartphone (MP4)</string>
     <string name="export_format_label">File Format</string>
     <string-array name="export_format_options">
         <item>Smartphone</item>
