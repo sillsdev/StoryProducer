@@ -273,7 +273,7 @@ public class DramatizationFrag extends Fragment {
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                 } else {
                     recordingToolbar.stopToolbarMedia();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
                     draftPlayer.playAudio();
 
                     if(draftPlayer != null){ //if there is a draft available to play

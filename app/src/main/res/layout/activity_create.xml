@@ -13,20 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/export_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginTop="12dp"
-            android:background="@color/gray"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/export_video_creation_header"
-            android:textSize="@dimen/header_text" />
-
         <ScrollView
             android:id="@+id/export_section"
             android:layout_width="match_parent"
@@ -46,14 +32,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
-                    <EditText
-                        android:id="@+id/editText_export_title"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ems="10"
-                        android:hint="@string/export_custom_title"
-                        android:inputType="textCapWords" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -110,6 +88,11 @@
                             android:id="@+id/spinner_export_resolution"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
+
+                        <Space
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:orientation="vertical" />
                     </LinearLayout>
 
                     <TextView
@@ -119,10 +102,36 @@
                         android:text="@string/export_format_label"
                         android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-                    <Spinner
-                        android:id="@+id/spinner_export_format"
+                    <RadioGroup
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <RadioButton android:id="@+id/radio_dumbphone"
+                            android:drawableRight="@drawable/ic_dumbphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/dumbphone"
+                            android:onClick="onRadioButtonClicked"/>
+                        <RadioButton android:id="@+id/radio_smartphone"
+                            android:drawableRight="@drawable/ic_smartphone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/smartphone"
+                            android:onClick="onRadioButtonClicked"/>
+                    </RadioGroup>
+
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:orientation="vertical" />
+
+                    <EditText
+                        android:id="@+id/editText_export_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/export_custom_title"
+                        android:inputType="textCapWords" />
 
                 </LinearLayout>
 

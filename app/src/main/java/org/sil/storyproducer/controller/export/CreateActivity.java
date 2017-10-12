@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -22,6 +23,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -60,6 +62,8 @@ public class CreateActivity extends PhaseBaseActivity {
     private static final String PREF_KEY_INCLUDE_KBFX = "include_kbfx";
     private static final String PREF_KEY_RESOLUTION = "resolution";
     private static final String PREF_KEY_FORMAT = "format";
+    private static final String PREF_RB_SMARTPHONE = "smartphone";
+    private static final String PREF_RB_DUMBPHONE = "dumbphone";
     private static final String PREF_KEY_FILE = "file";
 
     private EditText mEditTextTitle;
@@ -72,7 +76,12 @@ public class CreateActivity extends PhaseBaseActivity {
     private Spinner mSpinnerResolution;
     private ArrayAdapter<CharSequence> mResolutionAdapterAll;
     private ArrayAdapter<CharSequence> mResolutionAdapterHigh;
+    private ArrayAdapter<CharSequence> mResolutionAdapterLow;
+    private RadioButton mRadioButtonSmartPhone;
+    private RadioButton mRadioButtonDumbPhone;
     private Spinner mSpinnerFormat;
+    private ArrayAdapter<CharSequence> mFormatAdapterSmartphone;
+    private ArrayAdapter<CharSequence> mFormatAdapterAll;
     private EditText mEditTextLocation;
     private Button mButtonBrowse;
     private Button mButtonStart;
@@ -86,9 +95,7 @@ public class CreateActivity extends PhaseBaseActivity {
 
     //accordion variables
     private final int [] sectionIds = {R.id.export_section};
-    private final int [] headerIds = {R.id.export_header};
     private View[] sectionViews = new View[sectionIds.length];
-    private View[] headerViews = new View[headerIds.length];
 
     private static volatile boolean buttonLocked = false;
     private Thread mProgressUpdater;
@@ -111,12 +118,6 @@ public class CreateActivity extends PhaseBaseActivity {
             PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
         loadPreferences();
-
-        String titleSlideText = TextFiles.getDramatizationText(StoryState.getStoryName(), 0);
-        String titleText = mEditTextTitle.getText().toString();
-        if (titleText.equals(mStory) && !titleSlideText.isEmpty()) {
-            mEditTextTitle.setText(titleSlideText);
-        }
     }
 
     @Override
@@ -188,11 +189,6 @@ public class CreateActivity extends PhaseBaseActivity {
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
-        for (int i = 0; i < sectionIds.length; i++) {
-            sectionViews[i] = findViewById(sectionIds[i]);
-            headerViews[i] = findViewById(headerIds[i]);
-            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
-        }
 
         mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
 
@@ -224,6 +220,7 @@ public class CreateActivity extends PhaseBaseActivity {
         String[] resolutionArray = getResources().getStringArray(R.array.export_resolution_options);
         List<String> immutableList = Arrays.asList(resolutionArray);
         ArrayList<String> resolutionList = new ArrayList<>(immutableList);
+        ArrayList<String> resolutionListLow = new ArrayList<>(immutableList);
 
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
@@ -233,17 +230,39 @@ public class CreateActivity extends PhaseBaseActivity {
         mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
         mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+
+        mResolutionAdapterLow = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, resolutionListLow);
+        mResolutionAdapterLow.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mResolutionAdapterLow.remove(mResolutionAdapterLow.getItem(1));
+        mResolutionAdapterLow.remove(mResolutionAdapterLow.getItem(1));
+
         mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
         mResolutionAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
         mSpinnerResolution.setAdapter(mResolutionAdapterAll);
 
-        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
-        ArrayAdapter<CharSequence> formatAdapter = ArrayAdapter.createFromResource(this,
+        mRadioButtonSmartPhone = (RadioButton)findViewById(R.id.radio_smartphone);
+        mRadioButtonDumbPhone = (RadioButton) findViewById(R.id.radio_dumbphone);
+
+
+        /*String[] formatArray = getResources().getStringArray(R.array.export_format_options);
+        List<String> immutableListFormat = Arrays.asList(formatArray);
+        ArrayList<String> formatList = new ArrayList<>(immutableListFormat);
+
+        mFormatAdapterSmartphone = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, formatList);
+        mFormatAdapterSmartphone.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mFormatAdapterSmartphone.remove(mFormatAdapterSmartphone.getItem(1));
+
+        mFormatAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_format_options, android.R.layout.simple_spinner_item);
-        formatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        mSpinnerFormat.setAdapter(formatAdapter);
+        mFormatAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+
+        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
+        mSpinnerFormat.setAdapter(mFormatAdapterAll);*/
 
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
@@ -293,6 +312,23 @@ public class CreateActivity extends PhaseBaseActivity {
             }
         });
 
+        /*mSpinnerFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+                    mSpinnerResolution.setSelection(1, true);
+                } else {
+                    mSpinnerResolution.setAdapter(mResolutionAdapterLow);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });*/
+
     }
 
     /**
@@ -337,10 +373,8 @@ public class CreateActivity extends PhaseBaseActivity {
         for(int k = 0; k < sectionViews.length; k++) {
             if(sectionViews[k] == sectionView) {
                 sectionViews[k].setVisibility(View.VISIBLE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.primary, null));
             } else {
                 sectionViews[k].setVisibility(View.GONE);
-                headerViews[k].setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.gray, null));
             }
         }
 
@@ -380,13 +414,14 @@ public class CreateActivity extends PhaseBaseActivity {
                 showHighResolutionAlertDialog();
             } else {
                 mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                //mSpinnerFormat.setAdapter(mFormatAdapterSmartphone);
                 textOrKBFX(false);
             }
         } else {
             mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+           //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true;
         }
-
     }
     /*
     * Function that makes KBFX and Enabling Text mutually exclusive options
@@ -422,11 +457,38 @@ public class CreateActivity extends PhaseBaseActivity {
                         mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
                         mTextConfirmationChecked = false;
                         textOrKBFX(true);
+                        mRadioButtonDumbPhone.setChecked(false);
+                        mRadioButtonSmartPhone.setChecked(true);
 
                     }
                 }).create();
 
         dialog.show();
+    }
+
+    /*
+    **Method for handling the click event for the radio buttons
+     */
+    public void onRadioButtonClicked(View view) {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.radio_dumbphone:
+                if (checked)
+                    //Only low resolution on dumbphone and uncheck include text
+                    mSpinnerResolution.setAdapter(mResolutionAdapterLow);
+                    mCheckboxText.setChecked(false);
+
+                    break;
+            case R.id.radio_smartphone:
+                if (checked)
+                    //Default to medium resolution on smartphone
+                    mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+                    mSpinnerResolution.setSelection(1, true);
+                    break;
+        }
     }
 
     /**
@@ -495,7 +557,9 @@ public class CreateActivity extends PhaseBaseActivity {
         editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked());
 
         editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution.getSelectedItem().toString());
-        editor.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+       //editor.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
+        editor.putBoolean(PREF_RB_DUMBPHONE, mRadioButtonDumbPhone.isChecked());
+        editor.putBoolean(PREF_RB_SMARTPHONE, mRadioButtonSmartPhone.isChecked());
 
         editor.putString(mStory + PREF_KEY_TITLE, mEditTextTitle.getText().toString());
         editor.putString(mStory + PREF_KEY_FILE, mOutputPath);
@@ -515,8 +579,9 @@ public class CreateActivity extends PhaseBaseActivity {
         mCheckboxKBFX.setChecked(prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true));
 
         setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null));
-        setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
-
+        //setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
+        mRadioButtonDumbPhone.setChecked(prefs.getBoolean(PREF_RB_DUMBPHONE, true));
+        mRadioButtonSmartPhone.setChecked(prefs.getBoolean(PREF_RB_SMARTPHONE, false));
         mEditTextTitle.setText(prefs.getString(mStory + PREF_KEY_TITLE, mStory));
         setLocation(prefs.getString(mStory + PREF_KEY_FILE, null));
 

@@ -87,6 +87,7 @@ public class LearnActivity extends PhaseBaseActivity {
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
         invalidateOptionsMenu();
+        recordingToolbar.hideFloatingActionButton();
     }
 
     @Override
@@ -155,6 +156,7 @@ public class LearnActivity extends PhaseBaseActivity {
                 }
             }
         });
+        recordingToolbar.hideFloatingActionButton();
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
@@ -201,6 +203,7 @@ public class LearnActivity extends PhaseBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+        recordingToolbar.hideFloatingActionButton();
     }
 
     @Override
@@ -277,6 +280,7 @@ public class LearnActivity extends PhaseBaseActivity {
             if(backgroundAudioExists) {
                 backgroundPlayer.resumeAudio();
             }
+            recordingToolbar.hideFloatingActionButton();
         }
     }
 
@@ -358,6 +362,8 @@ public class LearnActivity extends PhaseBaseActivity {
                     //reset the story with the volume off
                     resetVideoWithSoundOff();
                     setVolumeSwitchAndFloatingButtonVisible();
+                    recordingToolbar.keepToolbarVisible();
+                    recordingToolbar.hideFloatingActionButton();
                 }
             });
             snackbar.show();
@@ -453,8 +459,8 @@ public class LearnActivity extends PhaseBaseActivity {
             @Override
             public void onClick(View view) {
                 if (recordingToolbar != null && recordingToolbar.isOpen() && !recordingToolbar.isRecording()) {
-                    recordingToolbar.onClose();
-                    recordingToolbar.closeToolbar();
+                    recordingToolbar.keepToolbarVisible();
+                    recordingToolbar.hideFloatingActionButton();
                 }
             }
         });
