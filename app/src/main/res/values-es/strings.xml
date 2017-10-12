@@ -151,7 +151,7 @@
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatization</string>
-    <string name="create_title">Export</string>
+    <string name="create_title">Finalize</string>
     <string name="title_activity_test_drawer">testDrawer</string>
     <string name="Parent_Dir_Label">Parent Directory</string>
     <string name="byte_unit_singular">" byte"</string>

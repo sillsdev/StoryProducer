@@ -144,7 +144,7 @@
     <string name="rename_failed">Rename failed</string>
 
     <!-- Export -->
-    <string name="export_custom_title">Title</string>
+    <string name="export_custom_title">Short Story Name</string>
 
     <string name="export_options_header">Options</string>
 
@@ -162,7 +162,8 @@
         <item>Medium (640x480)</item>
         <item>High (1280x720)</item>
     </string-array>
-
+    <string name ="dumbphone">Dumb Phone (3GP)</string>
+    <string name = "smartphone">Smartphone (MP4)</string>
     <string name="export_format_label">File Format</string>
     <string-array name="export_format_options">
         <item>Smartphone</item>
@@ -181,7 +182,6 @@
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 
     <string name="export_video_creation_header">Video Creation</string>
-    <string name="export_video_sharing_header">Video Sharing</string>
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
@@ -199,7 +199,7 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_registration">Registration</string>
     /* SnackBar Messages */
-    <string name="learn_phase_practice">Practice saying the story!</string>
+    <string name="learn_phase_practice">Retell the whole story in your language!</string>
     <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
     <string name="overwrite">Overwrite</string>
     <string name="ok">Ok</string>
@@ -210,7 +210,7 @@
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatize</string>
-    <string name="create_title">Create</string>
+    <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
     <string name="title_activity_test_drawer">testDrawer</string>
     <string name="Parent_Dir_Label">Parent Directory</string>

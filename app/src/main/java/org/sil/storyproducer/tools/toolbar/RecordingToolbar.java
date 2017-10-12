@@ -399,6 +399,9 @@ public class RecordingToolbar extends AnimationToolbar {
                             dialog.show();
 
                         }
+                        else{
+                            recordAudio();
+                        }
                     }
                     else{
                       recordAudio();

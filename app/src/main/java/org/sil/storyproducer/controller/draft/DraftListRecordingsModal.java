@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.draft;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.media.MediaPlayer;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
@@ -14,8 +15,11 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.Log;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
@@ -48,12 +52,25 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
 
         createRecordingList();
 
+
+        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar2);
+        //Note that user-facing slide number is 1-based while it is 0-based in code.
+        tb.setTitle(R.string.draft_recordings_title);
+        ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(R.string.draft_recordings_title)
-                .setNegativeButton(R.string.cancel, null)
-                .setView(rootView);
-        dialog = builder.create();
-        dialog.show();
+
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setView(rootView);
+        final AlertDialog t = alertDialog.create();
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                t.dismiss();
+            }
+        });
+        t.show();
+
     }
 
     /**
