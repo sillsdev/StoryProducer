@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.export;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,9 +8,11 @@ import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v4.content.res.ResourcesCompat;
-import android.view.View;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -24,20 +27,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
+import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ExportActivity extends PhaseBaseActivity {
-    private static final String TAG = "ExportActivity";
+public class CreateActivity extends PhaseBaseActivity {
+    private static final String TAG = "CreateActivity";
 
     private static final int FILE_CHOOSER_CODE = 1;
     private static final int LOCATION_MAX_CHAR_DISPLAY = 25;
@@ -64,25 +70,23 @@ public class ExportActivity extends PhaseBaseActivity {
     private CheckBox mCheckboxKBFX;
     private View mLayoutResolution;
     private Spinner mSpinnerResolution;
+    private ArrayAdapter<CharSequence> mResolutionAdapterAll;
+    private ArrayAdapter<CharSequence> mResolutionAdapterHigh;
     private Spinner mSpinnerFormat;
     private EditText mEditTextLocation;
     private Button mButtonBrowse;
     private Button mButtonStart;
     private Button mButtonCancel;
     private ProgressBar mProgressBar;
-    private TextView mShareHeader;
-    private LinearLayout mShareSection;
-    private TextView mNoVideosText;
-    private ListView mVideosListView;
-
-    private ExportedVideosAdapter videosAdapter;
     private String mStory;
 
     private String mOutputPath;
 
+    private boolean mTextConfirmationChecked;
+
     //accordion variables
-    private final int [] sectionIds = {R.id.export_section, R.id.share_section};
-    private final int [] headerIds = {R.id.export_header, R.id.share_header};
+    private final int [] sectionIds = {R.id.export_section};
+    private final int [] headerIds = {R.id.export_header};
     private View[] sectionViews = new View[sectionIds.length];
     private View[] headerViews = new View[headerIds.length];
 
@@ -95,20 +99,24 @@ public class ExportActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mStory = StoryState.getStoryName();     //needs to be set first because some of the views use it
-
         boolean phaseUnlocked = StorySharedPreferences.isApproved(mStory, this);
-        setContentView(R.layout.activity_export);
+        setContentView(R.layout.activity_create);
         mStory = StoryState.getStoryName();
         setupViews();
-
+        invalidateOptionsMenu();
         if (phaseUnlocked) {
             findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
             View mainLayout = findViewById(R.id.main_linear_layout);
             PhaseBaseActivity.disableViewAndChildren(mainLayout);
         }
-        setVideoOrShareSectionOpen();
         loadPreferences();
+
+        String titleSlideText = TextFiles.getDramatizationText(StoryState.getStoryName(), 0);
+        String titleText = mEditTextTitle.getText().toString();
+        if (titleText.equals(mStory) && !titleSlideText.isEmpty()) {
+            mEditTextTitle.setText(titleSlideText);
+        }
     }
 
     @Override
@@ -166,6 +174,13 @@ public class ExportActivity extends PhaseBaseActivity {
         return super.dispatchTouchEvent( event );
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_create);
+        return true;
+    }
+
     /**
      * Get handles to all necessary views and add some listeners.
      */
@@ -192,6 +207,12 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
         mCheckboxKBFX = (CheckBox) findViewById(R.id.checkbox_export_KBFX);
+        mCheckboxKBFX.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
+                toggleVisibleElements();
+            }
+        });
         mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
         mCheckboxText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -200,12 +221,23 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         });
 
+        String[] resolutionArray = getResources().getStringArray(R.array.export_resolution_options);
+        List<String> immutableList = Arrays.asList(resolutionArray);
+        ArrayList<String> resolutionList = new ArrayList<>(immutableList);
+
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
         mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
-        ArrayAdapter<CharSequence> resolutionAdapter = ArrayAdapter.createFromResource(this,
+
+        mResolutionAdapterHigh = new ArrayAdapter(this,
+                R.layout.simple_spinner_dropdown_item, resolutionList);
+        mResolutionAdapterHigh.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+        mResolutionAdapterHigh.remove(mResolutionAdapterHigh.getItem(0));
+        mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item);
-        resolutionAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        mSpinnerResolution.setAdapter(resolutionAdapter);
+        mResolutionAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+        mSpinnerResolution.setAdapter(mResolutionAdapterAll);
 
         mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
         ArrayAdapter<CharSequence> formatAdapter = ArrayAdapter.createFromResource(this,
@@ -213,9 +245,6 @@ public class ExportActivity extends PhaseBaseActivity {
         formatAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         mSpinnerFormat.setAdapter(formatAdapter);
 
-        mEditTextLocation = (EditText) findViewById(R.id.editText_export_location);
-
-        mButtonBrowse = (Button) findViewById(R.id.button_export_browse);
         mButtonStart = (Button) findViewById(R.id.button_export_start);
         mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
         setOnClickListeners();
@@ -224,34 +253,25 @@ public class ExportActivity extends PhaseBaseActivity {
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
 
-        //share view
-        mShareHeader = (TextView) findViewById(R.id.share_header);
-        mShareSection = (LinearLayout) findViewById(R.id.share_section);
-        videosAdapter = new ExportedVideosAdapter(this);
-        mVideosListView = (ListView) findViewById(R.id.videos_list);
-        mVideosListView.setAdapter(videosAdapter);
-        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
-        setVideoAdapterPaths();
-
     }
 
     /**
      * Setup listeners for start/cancel.
      */
     private void setOnClickListeners() {
-        mEditTextLocation.setOnClickListener(new View.OnClickListener() {
+        /*mEditTextLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileExplorerToExport();
             }
-        });
+        });*/
 
-        mButtonBrowse.setOnClickListener(new View.OnClickListener() {
+        /*mButtonBrowse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openFileExplorerToExport();
             }
-        });
+        });*/
 
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -350,13 +370,63 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mCheckboxKBFX.setVisibility(mCheckboxPictures.isChecked() ? View.VISIBLE : View.GONE);
 
+
         mLayoutResolution.setVisibility(mCheckboxPictures.isChecked() || mCheckboxText.isChecked()
                 ? View.VISIBLE : View.GONE);
 
-        mShareHeader.setVisibility(visibilityPreExport);
-        if(isStoryMakerBusy) {
-            mShareSection.setVisibility(View.GONE);
+
+        if (mCheckboxText.isChecked()) {
+            if (mTextConfirmationChecked) {
+                showHighResolutionAlertDialog();
+            } else {
+                mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                textOrKBFX(false);
+            }
+        } else {
+            mSpinnerResolution.setAdapter(mResolutionAdapterAll);
+            mTextConfirmationChecked = true;
         }
+
+    }
+    /*
+    * Function that makes KBFX and Enabling Text mutually exclusive options
+    * Takes a boolean that says whether or not text was just turned on
+     */
+    private void textOrKBFX(boolean textJustEnabled){
+        if(textJustEnabled && !mTextConfirmationChecked && mCheckboxKBFX.isChecked()){
+               mCheckboxKBFX.setChecked(false);
+        }
+        else{
+            if(mCheckboxKBFX.isChecked() && mCheckboxText.isChecked()){
+                mCheckboxText.setChecked(false);
+            }
+        }
+    }
+
+    /**
+     * Creates an alert dialog asking if the user wants to skip registration
+     * If they respond yes, finish activity or send them back to MainActivity
+     */
+    private void showHighResolutionAlertDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(CreateActivity.this)
+                .setTitle(getString(R.string.export_include_text_title))
+                .setMessage(getString(R.string.export_include_text_message))
+                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mCheckboxText.setChecked(false);
+                        mTextConfirmationChecked = true;
+                    }
+                })
+                .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mSpinnerResolution.setAdapter(mResolutionAdapterHigh);
+                        mTextConfirmationChecked = false;
+                        textOrKBFX(true);
+
+                    }
+                }).create();
+
+        dialog.show();
     }
 
     /**
@@ -390,19 +460,7 @@ public class ExportActivity extends PhaseBaseActivity {
         if(path.length() > LOCATION_MAX_CHAR_DISPLAY) {
             display = "..." + path.substring(path.length() - LOCATION_MAX_CHAR_DISPLAY + 3);
         }
-        mEditTextLocation.setText(display);
-    }
-
-
-    /**
-     * sets the videos for the list adapter
-     */
-    private void setVideoAdapterPaths() {
-        List<String> actualPaths = getExportedVideosForStory();
-        if(actualPaths.size() > 0) {
-            mNoVideosText.setVisibility(View.GONE);
-        }
-        videosAdapter.setVideoPaths(actualPaths);
+        //mEditTextLocation.setText(display);
     }
 
     /**
@@ -461,6 +519,8 @@ public class ExportActivity extends PhaseBaseActivity {
 
         mEditTextTitle.setText(prefs.getString(mStory + PREF_KEY_TITLE, mStory));
         setLocation(prefs.getString(mStory + PREF_KEY_FILE, null));
+
+        //mTextConfirmationChecked = true;
     }
 
     /**
@@ -481,12 +541,9 @@ public class ExportActivity extends PhaseBaseActivity {
     }
 
     private void tryStartExport() {
-        if(mOutputPath == null || mOutputPath.isEmpty()) {
-            Toast.makeText(this, R.string.export_location_missing_message, Toast.LENGTH_LONG).show();
-            return;
-        }
+        setLocation(getOutputPath());
 
-        String ext = mSpinnerFormat.getSelectedItem().toString();
+        String ext = getFormatExtension();
         final File output = new File(mOutputPath + ext);
 
         if(output.exists()) {
@@ -503,8 +560,52 @@ public class ExportActivity extends PhaseBaseActivity {
             dialog.show();
         }
         else {
+            //mStory = mOutputPath.split("/")[mOutputPath.split("/").length - 1];
             startExport(output);
         }
+    }
+
+    private String getOutputPath() {
+        String directory = VideoFiles.getDefaultLocation(mStory).getPath();
+        String filename = "HEY";
+
+        ArrayList<String> sections = new ArrayList<>();
+        String title = mEditTextTitle.getText().toString().replaceAll(" ", "")
+                .replaceAll("[^a-zA-Z0-9\\-_ ]", "");
+        if (title == null || title.isEmpty()) {
+            title = mStory.replaceAll(" ", "")
+                    .replaceAll("[^a-zA-Z0-9\\-_ ]", "");;
+        }
+        sections.add(title);
+
+        String country = RegistrationActivity.getCountry();
+        if (country != null && !country.isEmpty()) {
+            sections.add(country);
+        }
+
+        String languageCode = RegistrationActivity.getLanguageCode();
+        if (languageCode != null && !languageCode.isEmpty()) {
+            sections.add(languageCode);
+        }
+
+        filename = stringJoin(sections, "_");
+        return directory + "/" + filename;
+    }
+
+    private String stringJoin(List<String> list, String delimeter) {
+        StringBuilder result = new StringBuilder();
+
+        boolean isFirst = true;
+        for (String str : list) {
+            if (isFirst) {
+                isFirst = false;
+            } else {
+                result.append(delimeter);
+            }
+
+            result.append(str);
+        }
+        return result.toString();
     }
 
     private void startExport(File output) {
@@ -512,7 +613,11 @@ public class ExportActivity extends PhaseBaseActivity {
             storyMaker = new AutoStoryMaker(mStory);
             storyMaker.setContext(this);
 
-            storyMaker.setTitle(mEditTextTitle.getText().toString());
+            String title = mEditTextTitle.getText().toString();
+            if (title == null || title.isEmpty()) {
+                title = mStory;
+            }
+            storyMaker.setTitle(title);
 
             storyMaker.toggleBackgroundMusic(mCheckboxSoundtrack.isChecked());
             storyMaker.togglePictures(mCheckboxPictures.isChecked());
@@ -547,7 +652,6 @@ public class ExportActivity extends PhaseBaseActivity {
             }
         }
         //update the list view
-        setVideoAdapterPaths();
         toggleVisibleElements();
     }
 
@@ -595,7 +699,7 @@ public class ExportActivity extends PhaseBaseActivity {
                 @Override
                 public void run() {
                     //save the file only when the video file is actually created
-                    String ext = mSpinnerFormat.getSelectedItem().toString();
+                    String ext = getFormatExtension();
                     File output = new File(mOutputPath + ext);
                     StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
                     stopExport();
@@ -606,6 +710,21 @@ public class ExportActivity extends PhaseBaseActivity {
             });
         }
     };
+
+    private String getFormatExtension() {
+        String ext = ".mp4";
+        String[] formats = getResources().getStringArray(R.array.export_format_options);
+        String selectedFormat = mSpinnerFormat.getSelectedItem().toString();
+
+        for (int i = 0; i < formats.length; ++i) {
+            if (selectedFormat.equals(formats[i])) {
+                ext = getResources().getStringArray(R.array.export_format_extensions)[i];
+                break;
+            }
+        }
+
+        return ext;
+    }
 
     /**
      * Lock the start/cancel buttons temporarily to give the StoryMaker some time to get started/stopped.

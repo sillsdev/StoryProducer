@@ -5,7 +5,7 @@
     android:id="@+id/activity_export"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.sil.storyproducer.controller.export.ExportActivity">
+    tools:context="org.sil.storyproducer.controller.export.CreateActivity">
 
     <LinearLayout
         android:id="@+id/main_linear_layout"
@@ -124,40 +124,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
 
-                    <Space
-                        android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:orientation="vertical" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/editText_export_location"
-                        android:text="@string/export_location_header"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <EditText
-                            android:id="@+id/editText_export_location"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_toStartOf="@+id/button_export_browse"
-                            android:focusable="false"
-                            android:hint="@string/export_location_placeholder"
-                            android:inputType="none" />
-
-                        <Button
-                            android:id="@+id/button_export_browse"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="@string/export_location_browse" />
-
-                    </RelativeLayout>
-
                 </LinearLayout>
 
                 <Space
@@ -196,44 +162,6 @@
                     android:progress="0" />
             </LinearLayout>
         </ScrollView>
-
-        <TextView
-            android:id="@+id/share_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginTop="12dp"
-            android:background="@color/gray"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/export_video_sharing_header"
-            android:textSize="@dimen/header_text" />
-
-        <LinearLayout
-            android:id="@+id/share_section"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <ListView
-                android:id="@+id/videos_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/no_videos_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="@dimen/nav_drawer_margin"
-                android:text="@string/no_videos"
-                android:textSize="@dimen/large_text" />
-        </LinearLayout>
     </LinearLayout>
 
     <RelativeLayout

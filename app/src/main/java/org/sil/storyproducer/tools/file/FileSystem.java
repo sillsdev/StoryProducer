@@ -1,10 +1,14 @@
 package org.sil.storyproducer.tools.file;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.content.Intent;
+import android.net.Uri;
 
 import org.sil.storyproducer.controller.MainActivity;
 
@@ -46,7 +50,7 @@ public class FileSystem {
     };
 
     //Populate templatePaths from files in system
-    public static void init(Context con) {
+    public static void init(Context con, MainActivity mainA) {
         cacheDir = con.getCacheDir();
 
         //Reset templatePaths
@@ -61,6 +65,7 @@ public class FileSystem {
         //Iterate external files directories.
         File[] storeDirs = ContextCompat.getExternalFilesDirs(con, null);
         File[] moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES);
+        boolean templates_found = false;
         for (int i = 0; i < storeDirs.length; i++) {
             File currentStoreDir = storeDirs[i];
             File currentMoviesDir = moviesDirs[i];
@@ -72,6 +77,8 @@ public class FileSystem {
                 // device), move on from this storage device.
                 if (!templateDir.exists() || !templateDir.isDirectory()) {
                     continue;
+                } else {
+                    templates_found = true;
                 }
 
                 File projectDir = new File(currentStoreDir, PROJECT_DIR);
@@ -106,6 +113,10 @@ public class FileSystem {
                     }
                 }
             }
+        }
+
+        if (!templates_found) {
+            mainA.launchChooseTemplatesDialog(con, TEMPLATES_DIR);
         }
 
         LogFiles.init(con);

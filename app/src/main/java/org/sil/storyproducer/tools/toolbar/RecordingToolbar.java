@@ -2,7 +2,9 @@ package org.sil.storyproducer.tools.toolbar;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -80,6 +82,7 @@ public class RecordingToolbar extends AnimationToolbar {
     protected AudioPlayer audioPlayer;
 
     protected RecordingListener recordingListener;
+    private boolean canOverwrite = false;
 
     /**
      * The ctor.
@@ -202,7 +205,6 @@ public class RecordingToolbar extends AnimationToolbar {
     public boolean isRecording() {
         return isRecording;
     }
-
     /**
      * set the recording file path
      *
@@ -253,9 +255,10 @@ public class RecordingToolbar extends AnimationToolbar {
         if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT){
             LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry());
         }
-        startAudioRecorder();
-        startRecordingAnimation(false, 0);
-        recordingListener.onStartedRecordingOrPlayback(true);
+            startAudioRecorder();
+            startRecordingAnimation(false, 0);
+            recordingListener.onStartedRecordingOrPlayback(true);
+
     }
 
     protected void stopRecording() {
@@ -325,7 +328,6 @@ public class RecordingToolbar extends AnimationToolbar {
         if (enableDeleteButton) {
             deleteButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
-
         setOnClickListeners();
     }
 
@@ -370,21 +372,36 @@ public class RecordingToolbar extends AnimationToolbar {
                     if (enablePlaybackButton) {
                         playButton.setVisibility(View.VISIBLE);
                     }
-                    if(enableMultiRecordButton){
+                    if (enableMultiRecordButton) {
                         multiRecordButton.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    stopPlayBackAndRecording();
-                    startRecording();
-                    micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    if (enableDeleteButton) {
-                        deleteButton.setVisibility(View.INVISIBLE);
+                }
+                else {
+                    //learn phase overwrite dialog
+                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN){
+                        boolean recordingExists = new File(recordFilePath).exists();
+                        if(recordingExists) {
+                            AlertDialog dialog = new AlertDialog.Builder(activity)
+                                    .setTitle(activity.getString(R.string.overwrite))
+                                    .setMessage(activity.getString(R.string.learn_phase_overwrite))
+                                    .setNegativeButton(activity.getString(R.string.no), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            //do nothing
+                                        }
+                                    })
+                                    .setPositiveButton(activity.getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            //overwrite audio
+                                           recordAudio();
+                                        }
+                                    }).create();
+
+                            dialog.show();
+
+                        }
                     }
-                    if (enablePlaybackButton) {
-                        playButton.setVisibility(View.INVISIBLE);
-                    }
-                    if(enableMultiRecordButton){
-                        multiRecordButton.setVisibility(View.INVISIBLE);
+                    else{
+                      recordAudio();
                     }
                 }
             }
@@ -442,6 +459,24 @@ public class RecordingToolbar extends AnimationToolbar {
                     multiRecordButton.setOnClickListener(multiRecordModalButtonListener);
             }
 
+        }
+    }
+
+    /*
+    * Start recording audio and hide buttons
+     */
+    private void recordAudio(){
+        stopPlayBackAndRecording();
+        startRecording();
+        micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+        if (enableDeleteButton) {
+            deleteButton.setVisibility(View.INVISIBLE);
+        }
+        if (enablePlaybackButton) {
+            playButton.setVisibility(View.INVISIBLE);
+        }
+        if (enableMultiRecordButton) {
+            multiRecordButton.setVisibility(View.INVISIBLE);
         }
     }
 

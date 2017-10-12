@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.util.DisplayMetrics;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -56,7 +58,6 @@ public class LearnActivity extends PhaseBaseActivity {
     private RecordingToolbar recordingToolbar;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
-
     private int startPos = -1;
     private long startTime = -1;
 
@@ -85,8 +86,16 @@ public class LearnActivity extends PhaseBaseActivity {
         recordFilePath = AudioFiles.getLearnPractice(StoryState.getStoryName()).getPath();
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
-
+        invalidateOptionsMenu();
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_learn);
+        return true;
+    }
+
 
     /**
      * sets that the learn phase has already been gone through once
@@ -355,6 +364,7 @@ public class LearnActivity extends PhaseBaseActivity {
         }
         isWatchedOnce = true;
     }
+
 
     /**
      * Makes the volume switch visible so it can be used

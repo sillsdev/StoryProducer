@@ -40,7 +40,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
 
     private long mFadeOutUs = 0;
 
-    private PipedMediaByteBufferSource mFirstSource;
     private PipedMediaByteBufferSource mSource; //current source
     private long mSourceExpectedDuration; //current source expected duration (us)
 
@@ -59,14 +58,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
     private final MediaCodec.BufferInfo mInfo = new MediaCodec.BufferInfo();
 
     private MediaFormat mOutputFormat;
-
-    /**
-     * Create concatenator with specified transition time, using the first audio source's format.
-     * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
-     */
-    public PipedAudioConcatenator(long transitionUs) {
-        this(transitionUs, 0, 0);
-    }
 
     /**
      * Create concatenator with specified transition time, resampling the audio stream.
@@ -96,8 +87,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
      *
-     * <p>First source added must not be null.</p>
-     *
      * @param source source audio path.
      */
     @Override
@@ -111,8 +100,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      * <p>In other words, if a duration is specified for all sources, the output audio stream is
      * guaranteed to be within a couple of samples of the sum of all specified durations and n delays.</p>
      *
-     * <p>First source added must not be null.</p>
-     *
      * @param source source audio path.
      * @param duration expected duration of the source audio stream.
      */
@@ -123,8 +110,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
 
     /**
      * <p>Add a source without an expected duration. The audio stream will be used in its entirety.</p>
-     *
-     * <p>First source added must not be null.</p>
      *
      * @param sourcePath source audio path.
      */
@@ -141,8 +126,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      * <p>This function differs from {@link #addLoopingSourcePath(String, long)} by padding the source audio
      * with silence until the duration has elapsed. If duration is shorter than the source audio length, both
      * functions will behave the same.</p>
-     *
-     * <p>First source added must not be null.</p>
      *
      * @param sourcePath source audio path.
      * @param duration expected duration of the source audio stream.
@@ -195,20 +178,6 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
             throw new SourceUnacceptableException("No sources provided!");
         }
 
-        mFirstSource = mSources.remove();
-        mFirstSource.setup();
-
-        mFirstSource = PipedAudioResampler.correctSampling(mFirstSource, mSampleRate, mChannelCount);
-        mFirstSource.setup();
-
-        MediaFormat format = mFirstSource.getOutputFormat();
-
-        //In any event, the first source's sample rate and channel count become the standard.
-        mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-        mChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
-
-        validateSource(this.mFirstSource);
-
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
         mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
         mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
@@ -238,7 +207,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
         if(mCurrentState == ConcatState.TRANSITION) {
             long transitionUs = mTransitionUs;
             //For pre-first-source and last source, make the transition half as long.
-            if (mFirstSource != null || mSources.isEmpty()) {
+            if (time <= mTransitionUs / 2 || mSources.isEmpty()) {
                 transitionUs /= 2;
             }
 
@@ -263,7 +232,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
                 //Get a (valid) source or get to DONE state.
                 while (mSource == null && !isDone) {
                     //If sources are all gone, this component is done.
-                    if (mFirstSource == null && mSources.isEmpty()) {
+                    if (mSources.isEmpty()) {
                         isDone = true;
                         mCurrentState = ConcatState.DONE;
                     } else {
@@ -350,15 +319,8 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
 
         PipedMediaByteBufferSource nextSource = null;
 
-        //Since the first source was already setup in setup(), it is held in a special place.
-        if(mFirstSource != null) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource first source");
-
-            nextSource = mFirstSource;
-            mFirstSource = null;
-        }
-        else if(!mSources.isEmpty()) {
-            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource normal source");
+        if(!mSources.isEmpty()) {
+            if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource source found");
 
             nextSource = mSources.remove();
             if(nextSource == null) {

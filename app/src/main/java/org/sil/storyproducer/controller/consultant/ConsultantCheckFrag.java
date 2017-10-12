@@ -15,6 +15,9 @@ import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -67,6 +70,7 @@ public class ConsultantCheckFrag extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle passedArgs = this.getArguments();
         slidePosition = passedArgs.getInt(SLIDE_NUM);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -85,9 +89,15 @@ public class ConsultantCheckFrag extends Fragment {
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.concheck_checkmark_button));
         setLogsButton((ImageButton)rootView.findViewById(R.id.concheck_logs_button));
         slideTextView = (TextView)rootView.findViewById(R.id.slide_number_text);
-        slideTextView.setText(slidePosition + 1 + "");
+        slideTextView.setText(slidePosition + "");
 
         return rootView;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        MenuItem item =  menu.getItem(0);
+        item.setIcon(R.drawable.ic_concheck);
     }
     /**
      * This function serves to handle page changes and stops the audio streams from

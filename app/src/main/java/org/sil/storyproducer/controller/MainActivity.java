@@ -2,10 +2,14 @@ package org.sil.storyproducer.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.NavItemAdapter;
 import org.sil.storyproducer.model.Phase;
@@ -23,16 +28,27 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_CHOOSE_TEMPLATES = 1;
+    private static String TEMPLATES_DIR;
+    private Context con;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FileSystem.init(getApplicationContext());
+        FileSystem.init(getApplicationContext(), this);
         StoryState.init(getApplicationContext());
         StorySharedPreferences.init(getApplicationContext());
 
@@ -44,6 +60,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECORD_AUDIO},
                     PERMISSIONS_REQUEST_RECORD_AUDIO);
+        }
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
     }
 
@@ -110,6 +131,49 @@ public class MainActivity extends AppCompatActivity implements Serializable {
                     }
                 }).create();
         dialog.show();
+    }
+
+    public void launchChooseTemplatesDialog(Context context, String templates_dir) {
+        TEMPLATES_DIR = templates_dir;
+        con = context;
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setDataAndType(Uri.parse(getExternalFilesDir(null).toString()), "*/*");
+        startActivityForResult(Intent.createChooser(intent, "Open folder"), REQUEST_CHOOSE_TEMPLATES);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_CHOOSE_TEMPLATES) {
+            File[] folders = ContextCompat.getExternalFilesDirs(con, null);
+            File dest = new File(folders[0].getPath() + '/' + TEMPLATES_DIR);
+            copyFile(data.getData(), dest);
+        }
+    }
+
+    protected void copyFile(Uri srcUri, File dest) {
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+
+        try {
+            bis = new BufferedInputStream(con.getContentResolver().openInputStream(srcUri));
+            bos = new BufferedOutputStream(new FileOutputStream(dest));
+            byte[] buf = new byte[5024];
+            bis.read(buf);
+            do {
+                bos.write(buf);
+            } while (bis.read(buf) != -1);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bis != null) bis.close();
+                if (bos != null) bos.close();
+            } catch (IOException e) {
+                Toast.makeText(MainActivity.this, "Error: could not copy template folder", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
 
