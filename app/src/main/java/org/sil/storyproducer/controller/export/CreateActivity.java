@@ -14,18 +14,14 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
@@ -33,7 +29,6 @@ import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
-import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.file.VideoFiles;
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker;
 
@@ -769,7 +764,7 @@ public class CreateActivity extends PhaseBaseActivity {
                     StorySharedPreferences.addExportedVideoForStory(output.getAbsolutePath(), mStory);
                     stopExport();
                     Toast.makeText(getBaseContext(), "Video created!", Toast.LENGTH_LONG).show();
-                    setSectionsClosedExceptView(findViewById(R.id.share_section));
+                    //setSectionsClosedExceptView(findViewById(R.id.share_section));
 
                 }
             });
@@ -778,16 +773,12 @@ public class CreateActivity extends PhaseBaseActivity {
 
     private String getFormatExtension() {
         String ext = ".mp4";
-        String[] formats = getResources().getStringArray(R.array.export_format_options);
-        String selectedFormat = mSpinnerFormat.getSelectedItem().toString();
-
-        for (int i = 0; i < formats.length; ++i) {
-            if (selectedFormat.equals(formats[i])) {
-                ext = getResources().getStringArray(R.array.export_format_extensions)[i];
-                break;
-            }
+        if(mRadioButtonSmartPhone.isChecked()){
+          ext = getResources().getStringArray(R.array.export_format_extensions)[0];
         }
-
+        else{
+            ext = getResources().getStringArray(R.array.export_format_extensions)[1];
+        }
         return ext;
     }
 

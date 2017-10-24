@@ -110,13 +110,13 @@
                             android:drawableRight="@drawable/ic_dumbphone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/dumbphone"
+                            android:text="@string/dumbphone_and_extension"
                             android:onClick="onRadioButtonClicked"/>
                         <RadioButton android:id="@+id/radio_smartphone"
                             android:drawableRight="@drawable/ic_smartphone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/smartphone"
+                            android:text="@string/smartphone_and_extension"
                             android:onClick="onRadioButtonClicked"/>
                     </RadioGroup>
 
