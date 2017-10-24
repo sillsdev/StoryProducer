@@ -8,5 +8,6 @@
         <item>@string/dramatization_title</item>
         <item>@string/create_title</item>
         <item>@string/share_title</item>
+        <item>@string/backTranslation_title</item>
     </string-array>
 </resources>

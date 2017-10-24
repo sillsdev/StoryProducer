@@ -39,7 +39,9 @@ public final class StoryState {
                             new Phase(phaseMenuArray[3], R.color.consultant_check_phase, PagerBaseActivity.class, Phase.Type.CONSULTANT_CHECK),
                             new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
                             new Phase(phaseMenuArray[5], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
-                            new Phase(phaseMenuArray[6], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)};
+                            new Phase(phaseMenuArray[6], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE),
+                            new Phase(phaseMenuArray[7], R.color.backT_phase, PagerBaseActivity.class, Phase.Type.BACKT)
+                            };
     }
 
     /**

@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
+import org.sil.storyproducer.controller.remote.BackTranslationFrag;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -48,6 +49,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case DRAMATIZATION:
                 fragment = new DramatizationFrag();
                 passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i);
+                break;
+            case BACKT:
+                fragment = new BackTranslationFrag();
+                passedArgs.putInt(BackTranslationFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();

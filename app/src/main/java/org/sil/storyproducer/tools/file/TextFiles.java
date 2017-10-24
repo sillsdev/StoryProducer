@@ -123,4 +123,6 @@ public class TextFiles {
             Log.e(TAG, "Could not write to dramatization text file");
         }
     }
+
+
 }

@@ -28,8 +28,10 @@ public class AudioFiles {
     private static final String COMMENT_PREFIX = "comment";
     private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
 
+    private static final String BACKTRANSLATION_AUDIO_PREFIX = "backtranslation";
+
     private enum ModalType {
-        DRAFT, COMMUNITY, DRAMATIZATION
+        DRAFT, COMMUNITY, DRAMATIZATION, BACKTRANSLATION
     }
 
     public enum RenameCode {
@@ -164,6 +166,61 @@ public class AudioFiles {
 
     //*** Consultant Check ***
 
+    //*** Back Translation ***
+
+    public static File getBackTranslation(String story, int slide){
+        return getBackTranslation(story, slide, StorySharedPreferences.getBackTranslationForSlideAndStory(slide,story));
+    }
+
+    public static File getBackTranslation(String story, int slide, String backTitle ){
+        return new File(FileSystem.getProjectDirectory(story), BACKTRANSLATION_AUDIO_PREFIX + slide + "_" + backTitle + WAV_EXTENSION);
+    }
+
+    public static File getBackTranslationTemp(String story){
+        return new File(FileSystem.getHiddenTempDirectory(story), BACKTRANSLATION_AUDIO_PREFIX + "_" + "T"  + WAV_EXTENSION);
+    }
+
+    public static String getBackTranslationTitle(File file){
+        String filename= file.getName();
+        return getTitleFromPath(filename, BACKTRANSLATION_AUDIO_PREFIX, WAV_EXTENSION);
+    }
+
+
+    /**
+     * deletes the designated audio dramatization
+     * @param story the story the dramatization comes from
+     * @param slide the slide the dramatization comes from
+     * @param draftTitle the name of the dramatization in question
+     */
+    public static void deleteBackTranslation(String story, int slide, String draftTitle) {
+        File file = getBackTranslation(story, slide, draftTitle);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    /**
+     * renames the designated audio dramatization if the new name is valid and the file exists
+     * @param story the story the dramatization comes from
+     * @param slide the slide of the story the dramatization comes from
+     * @param oldTitle the old title of the dramatization
+     * @param newTitle the proposed new title for the dramatization
+     * @return returns success or error code of renaming
+     */
+    public static RenameCode renameBackTranslation(String story, int slide, String oldTitle, String newTitle) {
+        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.BACKTRANSLATION, PREFER_EXTENSION);
+    }
+
+    /**
+     * Returns a list of dramatization titles for the story and slide in question
+     * @param story the story where the dramatization come from
+     * @param slide the slide where the dramatization come from
+     * @return the array of dramatization titles
+     */
+    public static String[] getBackTranslationTitles(String story, int slide) {
+        return getRecordingTitlesHelper(story, slide, BACKTRANSLATION_AUDIO_PREFIX, WAV_EXTENSION);
+    }
+
     //*** Dramatization ***
 
     public static File getDramatization(String story, int slide){
@@ -239,6 +296,9 @@ public class AudioFiles {
                 break;
             case DRAMATIZATION:
                 file = getDramatization(story, slide, oldTitle);
+                break;
+            case BACKTRANSLATION:
+                file = getBackTranslation(story, slide, oldTitle);
                 break;
         }
 

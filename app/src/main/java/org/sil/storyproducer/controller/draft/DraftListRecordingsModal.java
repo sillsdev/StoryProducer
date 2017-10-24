@@ -58,18 +58,17 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
         tb.setTitle(R.string.draft_recordings_title);
         ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+       AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setView(rootView);
-        final AlertDialog t = alertDialog.create();
+       dialog = alertDialog.create();
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                t.dismiss();
+                dialog.dismiss();
             }
         });
-        t.show();
+        dialog.show();
 
     }
 
