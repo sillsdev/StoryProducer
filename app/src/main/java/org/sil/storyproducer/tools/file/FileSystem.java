@@ -1,7 +1,12 @@
 package org.sil.storyproducer.tools.file;
 
+import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -10,6 +15,8 @@ import org.sil.storyproducer.controller.MainActivity;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * FileSystem serves as a base for the file package. The purpose of the package is to provide an
@@ -25,6 +32,7 @@ public class FileSystem {
 
     private static String language;
 
+    private static final String APP_DIR = "StoryProducer";
     private static final String HIDDEN_TEMP_DIR = ".temp";
     private static final String TEMPLATES_DIR = "templates";
     private static final String PROJECT_DIR = "projects";
