@@ -22,6 +22,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
@@ -78,9 +79,17 @@ public class PhaseBaseActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter;
+        //local
+        if(RegistrationActivity.haveRemoteConsultant() == false) {
+             adapter = ArrayAdapter.createFromResource(this,
+                    R.array.local_phases_menu_array, android.R.layout.simple_spinner_item);
+        }
+        //remote
+        else{
+            adapter = ArrayAdapter.createFromResource(this,
+                    R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item);
+        }
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);
