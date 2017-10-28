@@ -57,7 +57,7 @@ public class BackTranslationFrag extends Fragment {
     private File backTranslationRecordingFile = null;
     private ImageButton draftPlayButton;
 
-    private RecordingToolbar recordingToolbar;
+    private PausingRecordingToolbar recordingToolbar;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -302,24 +302,25 @@ public class BackTranslationFrag extends Fragment {
             RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
-                    String title = AudioFiles.getBackTranslationTitle(backTranslationRecordingFile);
-                    StorySharedPreferences.setBackTranslationForSlideAndStory(title, slideNumber, StoryState.getStoryName());     //save the draft  title for the recording
+                    //update to new recording path
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(backTranslationRecordingFile.getAbsolutePath());
-                    updatePlayBackPath();
                 }
-
                 @Override
                 public void onStartedRecordingOrPlayback(boolean isRecording) {
-                    //not used here
+                    if(isRecording) {
+                        String title = AudioFiles.getBackTranslationTitle(backTranslationRecordingFile);
+                        StorySharedPreferences.setBackTranslationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                        //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
+                        setPlayBackPath();
+                    }
                 }
             };
             BackTranslationListRecordingsModal modal = new BackTranslationListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
-                    true, false, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal , recordingListener);
+            recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
+                    true, false, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
-            recordingToolbar.stopToolbarMedia();
         }
     }
 
