@@ -77,6 +77,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final boolean CLOSE_KEYBOARD = false;
     private static final boolean PARSE_ALL_FIELDS = true;
 
+    private static boolean isRemoteConsultant = false;
     private static String country;
     private static String languageCode;
 
@@ -354,6 +355,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
                 editor.putString(spinnerName, spinnerText);
+                if(spinnerName.equals("Remote")){
+                    isRemoteConsultant = true;
+                }
             }
 
         }
@@ -604,6 +608,8 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return message.toString();
     }
+
+    public static boolean haveRemoteConsultant(){ return isRemoteConsultant;}
 
     public static String getCountry() {
         return country;
