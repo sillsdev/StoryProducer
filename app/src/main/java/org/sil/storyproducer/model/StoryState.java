@@ -33,9 +33,10 @@ public final class StoryState {
     public static void init(Context con) {
         context = con;
         currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
-        String[] phaseMenuArray = con.getResources().getStringArray(R.array.phases_menu_array);
+        String[] phaseMenuArray;
         //Local
         if(RegistrationActivity.haveRemoteConsultant() == false) {
+            phaseMenuArray = con.getResources().getStringArray(R.array.local_phases_menu_array);
             phases = new Phase[]{new Phase(phaseMenuArray[0], R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN),
                     new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
                     new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
@@ -48,6 +49,7 @@ public final class StoryState {
         }
         //Remote
         else{
+            phaseMenuArray = con.getResources().getStringArray(R.array.remote_phases_menu_array);
             phases = new Phase[]{new Phase(phaseMenuArray[0], R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN),
                     new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
                     new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
