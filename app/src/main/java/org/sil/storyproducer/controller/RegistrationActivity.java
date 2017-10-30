@@ -355,7 +355,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
                 editor.putString(spinnerName, spinnerText);
-                if(spinnerName.equals("Remote")){
+                if(spinnerText.equals("Remote")){
                     isRemoteConsultant = true;
                 }
             }

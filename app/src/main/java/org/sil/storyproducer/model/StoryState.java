@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.RegistrationActivity;
@@ -35,7 +36,16 @@ public final class StoryState {
         currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
         String[] phaseMenuArray;
         //Local
-        if(RegistrationActivity.haveRemoteConsultant() == false) {
+
+        SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE);
+        SharedPreferences.Editor preferenceEditor = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE).edit();
+        String remote = prefs.getString("consultant_location_type", null);
+        boolean isRemote = false;
+        if(remote.equals("Remote")) {
+             isRemote = true;
+        }
+
+        if(!isRemote) {
             phaseMenuArray = con.getResources().getStringArray(R.array.local_phases_menu_array);
             phases = new Phase[]{new Phase(phaseMenuArray[0], R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN),
                     new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),

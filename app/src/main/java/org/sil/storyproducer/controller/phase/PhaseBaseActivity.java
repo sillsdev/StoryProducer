@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.phase;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -81,7 +82,14 @@ public class PhaseBaseActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
         ArrayAdapter<CharSequence> adapter;
         //local
-        if(RegistrationActivity.haveRemoteConsultant() == false) {
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
+        String remote = prefs.getString("consultant_location_type", null);
+        boolean isRemote = false;
+        if(remote.equals("Remote")) {
+            isRemote = true;
+        }
+        if(!isRemote) {
              adapter = ArrayAdapter.createFromResource(this,
                     R.array.local_phases_menu_array, android.R.layout.simple_spinner_item);
         }
