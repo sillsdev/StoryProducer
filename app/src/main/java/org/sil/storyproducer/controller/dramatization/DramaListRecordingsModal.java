@@ -56,7 +56,6 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
         tb.setTitle(R.string.dramatization_recordings_title);
         ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
 
-
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setView(rootView);
         dialog = alertDialog.create();
