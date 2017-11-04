@@ -135,6 +135,10 @@
     <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
 
+    <!--Submission Remote Consultant -->
+    <string name= "finish_recordings">You must make a recording for each slide before submitting.</string>
+    <string name= "submit_bts">Submit Backtranslations</string>
+
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
     <string name="recording_toolbar_no_recording">No recording available!</string>
