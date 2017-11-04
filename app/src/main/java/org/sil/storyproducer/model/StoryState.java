@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.export.CreateActivity;;
 import org.sil.storyproducer.controller.export.ShareActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
+import org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 
 /**
@@ -64,9 +65,10 @@ public final class StoryState {
                     new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
                     new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
                     new Phase(phaseMenuArray[3], R.color.backT_phase, PagerBaseActivity.class, Phase.Type.BACKT),
-                    new Phase(phaseMenuArray[4], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
-                    new Phase(phaseMenuArray[5], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
-                    new Phase(phaseMenuArray[6], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)
+                    new Phase(phaseMenuArray[4],R.color.submission_phase, SubmissionRemoteConsultantActivity.class,Phase.Type.SUBMIT),
+                    new Phase(phaseMenuArray[5], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
+                    new Phase(phaseMenuArray[6], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
+                    new Phase(phaseMenuArray[7], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)
             };
         }
     }

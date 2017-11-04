@@ -5,7 +5,7 @@
     android:id="@+id/activity_submission"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.sil.storyproducer.controller.remote.SubmissionRemoteConsultant">
+    tools:context="org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity">
 
     <LinearLayout
         android:id="@+id/text_section"
@@ -44,21 +44,6 @@
 
                 </LinearLayout>
     </LinearLayout>
-
-
-    <RelativeLayout
-        android:id="@+id/lock_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black_semi_transparent">
-
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_lock_blue" />
-    </RelativeLayout>
 
 </RelativeLayout>
 

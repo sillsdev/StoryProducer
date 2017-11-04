@@ -22,4 +22,5 @@
     <color name="share_phase">#00A86B</color>
     <color name="black_overlay">#66000000</color>
     <color name="backT_phase">#a41e8c</color>
+    <color name="submission_phase">#e41e9c</color>
 </resources>

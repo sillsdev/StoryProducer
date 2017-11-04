@@ -46,6 +46,10 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
+        <!--Submission Remote Consultant -->
+        <activity
+            android:name=".controller.remote.SubmissionRemoteConsultantActivity"
+            android:screenOrientation="portrait" />
         <!-- Create -->
         <activity android:name=".controller.export.CreateActivity"
             android:windowSoftInputMode="stateHidden"
