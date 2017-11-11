@@ -87,6 +87,7 @@ public class BackTranslationFrag extends Fragment {
         return rootView;
     }
 
+    //TODO: new icon for sbs backtranslation
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
