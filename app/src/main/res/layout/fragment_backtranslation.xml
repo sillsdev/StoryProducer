@@ -29,6 +29,8 @@
             android:layout_centerVertical="true"
             android:background="@drawable/ic_play_arrow_white_48dp"
             android:src="@drawable/ic_red_ex_48dp" />
+
+
         <TextView
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
@@ -45,18 +47,26 @@
             android:paddingRight="7dp"
             android:text="1"
             android:textSize="@dimen/text_body" />
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_margin="400dp"/>
+
         </RelativeLayout>
 
-    </RelativeLayout>
-
+        <RelativeLayout
+        android:id="@+id/screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+            <View
+                android:id="@+id/video_area"
+                android:layout_width="fill_parent"
+                android:layout_height="450dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop" />
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/video_area"
+                android:layout_centerHorizontal="true"
+                />
+        </RelativeLayout>
 
 </RelativeLayout>
