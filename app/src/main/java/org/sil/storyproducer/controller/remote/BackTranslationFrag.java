@@ -1,11 +1,15 @@
 package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -26,10 +30,12 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
+import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -45,6 +51,9 @@ import java.io.File;
 public class BackTranslationFrag extends Fragment {
 
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
+    public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
+    public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
+    private static final String IS_CHECKED = "isChecked";
 
     private View rootView;
     private View rootViewToolbar;
@@ -77,6 +86,7 @@ public class BackTranslationFrag extends Fragment {
         draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button);
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_backtranslation_image_view), slideNumber);
+        setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
@@ -357,6 +367,57 @@ public class BackTranslationFrag extends Fragment {
             imm.hideSoftInputFromWindow(viewToFocus.getWindowToken(), 0);
             viewToFocus.requestFocus();
         }
+    }
+
+    //TODO: save remote consultant approval
+    private void saveConsultantApproval(){
+        SharedPreferences.Editor prefsEditor = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE).edit();
+        prefsEditor.putBoolean(storyName + IS_R_CONSULTANT_APPROVED, true);
+        prefsEditor.apply();
+    }
+
+
+    //TODO: initializes the checkmark button
+    private void setCheckmarkButton(final ImageButton button){
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
+        boolean isChecked = prefs.getBoolean(prefsKeyString, false);
+        if(isChecked) {
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
+        } else {
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
+        }
+    }
+
+    //TODO: update pref file is checked entries when data is receieved from RC
+
+    //TODO: check to see if all slides have been approved.
+    private boolean checkAllMarked(){
+        boolean marked;
+        SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        int numStorySlides = FileSystem.getContentSlideAmount(storyName);
+        for (int i = 0; i < numStorySlides; i ++) {
+            marked = prefs.getBoolean(storyName + i + IS_CHECKED, false);
+            if (!marked) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    //TODO: unlock and start dramatize phase after all slides are approved
+    private void launchDramatizationPhase(){
+        Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
+        int dramatizationPhaseIndex = 5;
+        Phase[] phases = StoryState.getPhases();
+        StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
+        Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
+        intent.putExtra(SLIDE_NUM, 0);
+        getActivity().startActivity(intent);
     }
 
 }

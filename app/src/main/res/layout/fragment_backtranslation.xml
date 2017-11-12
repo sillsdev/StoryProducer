@@ -45,6 +45,16 @@
             android:paddingRight="7dp"
             android:text="1"
             android:textSize="@dimen/text_body" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="400dp"/>
+        </RelativeLayout>
 
     </RelativeLayout>
 
