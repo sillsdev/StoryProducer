@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
@@ -22,13 +23,33 @@ import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.file.AudioFiles;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
+import android.provider.Settings.Secure;
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -65,6 +86,7 @@ import java.util.Stack;
  */
 public class RegistrationActivity extends AppCompatActivity {
 
+
     public static final String FIRST_ACTIVITY_KEY = "first";
     public static final String EMAIL_SENT = "registration_email_sent";
 
@@ -80,6 +102,9 @@ public class RegistrationActivity extends AppCompatActivity {
     private static boolean isRemoteConsultant = false;
     private static String country;
     private static String languageCode;
+    public String resp = null;
+    public String testErr = "";
+    public  Map<String,String> js;
 
     private List<View> inputFields;
 
@@ -125,6 +150,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sets the on click listener for the submit button.
      */
     private void addSubmitButtonSave() {
+        final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
         final Button submitButton = (Button) findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -325,6 +351,75 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 
+    private void postRegistrationInfo(){
+        final Context myContext = this.getApplicationContext();
+
+        final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
+        String url = "http://storyproducer.azurewebsites.net/API/RegisterPhone.php";
+
+      /*  JSONObject js = new JSONObject();
+        JSONArray js1 = new JSONArray();
+        try{
+            js1 = js.getJSONArray("RegisterPhone");
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        try{
+        */
+            js = new HashMap<String,String>();
+            //  JSONObject jobject = new JSONObject();
+         String android_id = Secure.getString(myContext.getContentResolver(),
+                Secure.ANDROID_ID);
+
+        js.put("PhoneId", android_id);
+            js.put("TranslatorEmail", prefs.getString("translator_email", " "));
+            js.put("TranslatorPhone", prefs.getString("translator_phone", " "));
+            js.put("TranslatorLanguage", prefs.getString("translator_languages", " "));
+            js.put("ProjectEthnoCode",  prefs.getString("ethnologue", " "));
+            js.put("ProjectLanguage",  prefs.getString("language", " "));
+            js.put("ProjectCountry",  prefs.getString("country", " "));
+            js.put("ProjectMajorityLanguage",  prefs.getString("lwc", " "));
+            js.put("ConsultantEmail",  prefs.getString("consultant_email", " "));
+            js.put("TrainerEmail",  prefs.getString("trainer_email", " "));
+
+
+       // }
+      //  catch(JSONException e){
+       //     e.printStackTrace();
+       // }
+
+        Log.i("LOG_VOLLEY", js.toString());
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLEY", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return js;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
+        test.add(req);
+
+    }
+
     /**
      * This function stores the registration information to the saved preference file. The
      * preference file is located in getString(R.string.Registration_File_Name).
@@ -515,6 +610,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         storeRegistrationInfo();
+                        postRegistrationInfo();
                         Toast saveToast = Toast.makeText(RegistrationActivity.this, R.string.registration_saved_successfully, Toast.LENGTH_LONG);
                         saveToast.show();
                         sendEmail();
