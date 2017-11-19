@@ -74,7 +74,6 @@ public class BackTranslationFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
-        //phaseUnlocked = StorySharedPreferences.isApproved(storyName, getContext());
         setRecordFilePath();
         setHasOptionsMenu(true);
     }
@@ -369,7 +368,7 @@ public class BackTranslationFrag extends Fragment {
         }
     }
 
-    //TODO: save remote consultant approval
+    //save remote consultant approval
     private void saveConsultantApproval(){
         SharedPreferences.Editor prefsEditor = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE).edit();
         prefsEditor.putBoolean(storyName + IS_R_CONSULTANT_APPROVED, true);
@@ -377,7 +376,7 @@ public class BackTranslationFrag extends Fragment {
     }
 
 
-    //TODO: initializes the checkmark button
+    //initializes the checkmark button
     private void setCheckmarkButton(final ImageButton button){
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -392,10 +391,11 @@ public class BackTranslationFrag extends Fragment {
         }
     }
 
-    //TODO: update pref file is checked entries when data is receieved from RC
+    //TODO: update pref file IS_CHECKED entries when data is received from RC
+    //then if checkAllMarked == true -> unlockDramatizationPhase
 
     //TODO: check to see if all slides have been approved.
-    private boolean checkAllMarked(){
+    public boolean checkAllMarked(){
         boolean marked;
         SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         int numStorySlides = FileSystem.getContentSlideAmount(storyName);
@@ -409,9 +409,10 @@ public class BackTranslationFrag extends Fragment {
     }
 
 
-    //TODO: unlock and start dramatize phase after all slides are approved
-    private void launchDramatizationPhase(){
+    //TODO: unlock dramatize phase after all slides are approved
+    private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
+        saveConsultantApproval();
         int dramatizationPhaseIndex = 5;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
