@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,11 +9,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +30,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
@@ -35,6 +48,7 @@ import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.BackTranslationUpload;
+import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -46,6 +60,8 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by alexamhepner on 10/23/17.
@@ -68,6 +84,11 @@ public class BackTranslationFrag extends Fragment {
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
     private ImageButton draftPlayButton;
+    private boolean isSlidesChecked = false;
+
+    private JSONObject obj;
+    private String resp;
+    private Map<String, String> js;
 
     private PausingRecordingToolbar recordingToolbar;
 
@@ -129,7 +150,9 @@ public class BackTranslationFrag extends Fragment {
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button));
 
-        
+        getSlidesStatus();
+
+
     }
 
     /**
@@ -425,6 +448,93 @@ public class BackTranslationFrag extends Fragment {
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
         intent.putExtra(SLIDE_NUM, 0);
         getActivity().startActivity(intent);
+    }
+
+    public void getSlidesStatus() {
+
+
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
+        boolean isChecked = prefs.getBoolean(prefsKeyString, false);
+
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+
+        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
+        String url = "http://storyproducer.azurewebsites.net/API/GetSlideStatuses.php";
+
+        js = new HashMap<String,String>();
+
+
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle" , StoryState.getStoryName());
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+
+
+            @Override
+            public void onResponse(String response) {
+                try {
+                     obj = new JSONObject(response);
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+
+
+                Log.i("LOG_VOLEY", response.toString());
+
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                //testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+
+                return js;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
+
+        test.add(req);
+        JSONArray arr = null;
+        try {
+
+            arr = obj.getJSONArray("Status");
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+
+        int[] response = {1,1,1,1,1,1};
+        for(int i = 0; i<arr.length(); i++){
+            //-1 not approved, 0 pending, 1 approved
+            //TODO: make the checker check for an int instead of a boolean
+
+            try {
+                prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
+            }
+            catch(JSONException e){
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
 }

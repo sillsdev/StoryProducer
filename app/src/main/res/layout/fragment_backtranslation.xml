@@ -57,7 +57,7 @@
             <View
                 android:id="@+id/video_area"
                 android:layout_width="fill_parent"
-                android:layout_height="450dp"
+                android:layout_height="375dp"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop" />
             <com.getbase.floatingactionbutton.FloatingActionButton

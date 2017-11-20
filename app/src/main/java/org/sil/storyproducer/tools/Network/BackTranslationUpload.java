@@ -49,7 +49,7 @@ public class BackTranslationUpload {
             String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
             String url = "http://storyproducer.azurewebsites.net/API/UploadSlideBacktranslation.php";
 
-             js = new HashMap<String,String>();
+            js = new HashMap<String,String>();
              js.put("Key", api_token);
              js.put("PhoneId", phone_id);
              js.put("TemplateTitle", templateTitle);
@@ -88,10 +88,6 @@ public class BackTranslationUpload {
 
 
             RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-          //  req.setRetryPolicy(new DefaultRetryPolicy(
-           //         50000,
-            //        DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-            //        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
             test.add(req);
 
