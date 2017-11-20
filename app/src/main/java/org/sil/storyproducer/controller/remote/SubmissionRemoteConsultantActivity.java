@@ -39,7 +39,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
 
     private void setSubmissionStatusText(){
         //can submit
-        //cond: not all slides have a recording
+        //cond: all slides have a recording
         submissionText.setText(R.string.recordings_ready);
         submitButton.setVisibility(View.VISIBLE);
 
@@ -49,13 +49,30 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         submitButton.setVisibility(View.GONE);
 
         //not all accepted please re-record appropriate slides and resubmit
-        // cond:any slide has red status
+        //cond:any slide has red status
         submissionText.setText(R.string.recordings_disapproved);
-        submitButton.setVisibility(View.GONE);
+        submitButton.setVisibility(View.VISIBLE);
 
         //all accepted
         //cond: all slides green status
         submissionText.setText(R.string.recordings_approved);
         submitButton.setVisibility(View.GONE);
+
+        submitButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                postBackTranslations();
+            }
+        });
     }
+
+    //TODO: send the audio files to the server on button click
+    private void postBackTranslations(){
+        //Request Remote Review
+
+        //Loop through UploadSlideBacktranslation until out of slides
+
+
+    }
+
+
 }
