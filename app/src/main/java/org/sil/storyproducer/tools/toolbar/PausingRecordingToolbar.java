@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.toolbar;
 
 import android.app.Activity;
+import android.app.Application;
 import android.support.v4.widget.Space;
 import android.util.Log;
 import android.view.View;
@@ -11,12 +12,14 @@ import android.widget.RelativeLayout;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.Network.BackTranslationUpload;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder;
 import org.sil.storyproducer.tools.media.wavaudio.WavFileConcatenator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 /**
@@ -287,6 +290,16 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     isAppendingOn = false;
                     checkButton.setVisibility(View.INVISIBLE);
                     micButton.setBackgroundResource(R.drawable.ic_mic_white);
+                    if(StoryState.getCurrentPhase().getTitle().equals("Back Translation" )){
+                       File playback = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide());
+                      //  String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide()).getName();
+                        try {
+                            BackTranslationUpload.Upload(playback, appContext.getApplicationContext());
+                        }
+                        catch(IOException e){
+                            e.printStackTrace();
+                        }
+                    }
                 }
             };
 

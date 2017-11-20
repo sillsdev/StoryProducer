@@ -27,12 +27,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.Network.BackTranslationUpload;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -43,6 +45,7 @@ import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by alexamhepner on 10/23/17.
@@ -77,6 +80,7 @@ public class BackTranslationFrag extends Fragment {
         //phaseUnlocked = StorySharedPreferences.isApproved(storyName, getContext());
         setRecordFilePath();
         setHasOptionsMenu(true);
+
     }
 
     @Override
@@ -125,6 +129,8 @@ public class BackTranslationFrag extends Fragment {
         });
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button));
+
+        
     }
 
     /**
@@ -145,7 +151,7 @@ public class BackTranslationFrag extends Fragment {
      * put on stop.
      */
     @Override
-    public void onStop() {
+    public void onStop()  {
         super.onStop();
         draftPlayer.release();
         if(recordingToolbar != null){

@@ -370,10 +370,10 @@ public class RegistrationActivity extends AppCompatActivity {
         */
             js = new HashMap<String,String>();
             //  JSONObject jobject = new JSONObject();
-         String android_id = Secure.getString(myContext.getContentResolver(),
+         String PhoneId = Secure.getString(myContext.getContentResolver(),
                 Secure.ANDROID_ID);
 
-        js.put("PhoneId", android_id);
+        js.put("PhoneId", PhoneId);
             js.put("TranslatorEmail", prefs.getString("translator_email", " "));
             js.put("TranslatorPhone", prefs.getString("translator_phone", " "));
             js.put("TranslatorLanguage", prefs.getString("translator_languages", " "));
