@@ -42,6 +42,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.Phase;
@@ -79,7 +80,7 @@ public class BackTranslationFrag extends Fragment {
     private int slideNumber;
     private EditText slideText;
     private String storyName;
-    private boolean phaseUnlocked;
+    private boolean phaseUnlocked = false;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
@@ -150,8 +151,15 @@ public class BackTranslationFrag extends Fragment {
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button));
 
-        getSlidesStatus();
-
+        //dramatize phase not unlocked yet
+        if(!phaseUnlocked) {
+            //getSlidesStatus();
+            setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
+            phaseUnlocked = checkAllMarked();
+            if (phaseUnlocked) {
+                unlockDramatizationPhase();
+            }
+        }
 
     }
 
@@ -410,27 +418,26 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-        boolean isChecked = prefs.getBoolean(prefsKeyString, false);
-        if(isChecked) {
+        int isChecked = prefs.getInt(prefsKeyString, 0);
+        if(isChecked == 1) {
             //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
-        } else {
+        } else if (isChecked == -1) {
             //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
+        } else{
+            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
         }
     }
 
-    //TODO: update pref file IS_CHECKED entries when data is received from RC
-    //then if checkAllMarked == true -> unlockDramatizationPhase
-
     //TODO: check to see if all slides have been approved.
     public boolean checkAllMarked(){
-        boolean marked;
+        int marked;
         SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         int numStorySlides = FileSystem.getContentSlideAmount(storyName);
         for (int i = 0; i < numStorySlides; i ++) {
-            marked = prefs.getBoolean(storyName + i + IS_CHECKED, false);
-            if (!marked) {
+            marked = prefs.getInt(storyName + i + IS_CHECKED, 0);
+            if (marked != 1) {
                 return false;
             }
         }
@@ -524,10 +531,10 @@ public class BackTranslationFrag extends Fragment {
         int[] response = {1,1,1,1,1,1};
         for(int i = 0; i<arr.length(); i++){
             //-1 not approved, 0 pending, 1 approved
-            //TODO: make the checker check for an int instead of a boolean
 
             try {
                 prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
+                prefsEditor.apply();
             }
             catch(JSONException e){
                 e.printStackTrace();
