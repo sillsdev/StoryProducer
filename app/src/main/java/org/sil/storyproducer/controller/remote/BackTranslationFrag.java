@@ -153,7 +153,7 @@ public class BackTranslationFrag extends Fragment {
 
         //dramatize phase not unlocked yet
         if(!phaseUnlocked) {
-            //getSlidesStatus();
+            getSlidesStatus();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
             phaseUnlocked = checkAllMarked();
             if (phaseUnlocked) {
@@ -463,7 +463,7 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-        boolean isChecked = prefs.getBoolean(prefsKeyString, false);
+        //boolean isChecked = prefs.getBoolean(prefsKeyString, false);
 
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
 
@@ -492,7 +492,28 @@ public class BackTranslationFrag extends Fragment {
                     e.printStackTrace();
                 }
 
+                JSONArray arr = null;
+                try {
 
+                    arr = obj.getJSONArray("Status");
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+                //int[] arr = {-1,1,0,1,1,1};
+                for(int i = 0; i<arr.length(); i++){
+                    //-1 not approved, 0 pending, 1 approved
+
+                    try {
+                        prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
+                        prefsEditor.apply();
+                    }
+                    catch(JSONException e){
+                        e.printStackTrace();
+                    }
+
+                }
 
                 Log.i("LOG_VOLEY", response.toString());
 
@@ -519,28 +540,7 @@ public class BackTranslationFrag extends Fragment {
         RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
 
         test.add(req);
-        JSONArray arr = null;
-        try {
 
-            arr = obj.getJSONArray("Status");
-        }
-        catch(JSONException e){
-            e.printStackTrace();
-        }
-
-        int[] response = {1,1,1,1,1,1};
-        for(int i = 0; i<arr.length(); i++){
-            //-1 not approved, 0 pending, 1 approved
-
-            try {
-                prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
-                prefsEditor.apply();
-            }
-            catch(JSONException e){
-                e.printStackTrace();
-            }
-
-        }
 
     }
 
