@@ -32,7 +32,7 @@ public class BackTranslationUpload {
         public static String testErr;
         public static Map<String,String> js;
 
-        public static void Upload ( final File fileName, Context con) throws IOException {
+        public static void Upload ( final File fileName, Context con, int slide) throws IOException {
 
             final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
             final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
@@ -42,7 +42,7 @@ public class BackTranslationUpload {
             String templateTitle = StoryState.getStoryName();
           //  File testFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide(), fileName);
           //  File testFile = file;
-            String currentSlide = Integer.toString(StoryState.getCurrentStorySlide());
+            String currentSlide = Integer.toString(slide);
             InputStream input = new FileInputStream(fileName);
             byte[] audioBytes = IOUtils.toByteArray(input);
 

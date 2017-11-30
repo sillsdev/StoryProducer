@@ -373,7 +373,9 @@ public class RegistrationActivity extends AppCompatActivity {
          String PhoneId = Secure.getString(myContext.getContentResolver(),
                 Secure.ANDROID_ID);
 
-        js.put("PhoneId", PhoneId);
+
+            js.put("Key", "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd");
+            js.put("PhoneId", PhoneId);
             js.put("TranslatorEmail", prefs.getString("translator_email", " "));
             js.put("TranslatorPhone", prefs.getString("translator_phone", " "));
             js.put("TranslatorLanguage", prefs.getString("translator_languages", " "));

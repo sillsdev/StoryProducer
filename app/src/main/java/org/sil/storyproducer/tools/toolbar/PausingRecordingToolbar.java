@@ -290,7 +290,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     isAppendingOn = false;
                     checkButton.setVisibility(View.INVISIBLE);
                     micButton.setBackgroundResource(R.drawable.ic_mic_white);
-                    if(StoryState.getCurrentPhase().getTitle().equals("Back Translation" )){
+                    //TODO: remove the commented stuff. left just incase
+                  /*  if(StoryState.getCurrentPhase().getTitle().equals("Back Translation" )){
                        File playback = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide());
                       //  String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide()).getName();
                         try {
@@ -299,7 +300,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                         catch(IOException e){
                             e.printStackTrace();
                         }
-                    }
+                    }*/
                 }
             };
 

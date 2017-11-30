@@ -73,7 +73,7 @@ public class BackTranslationFrag extends Fragment {
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
-    private static final String IS_CHECKED = "isChecked";
+    private static final String IS_CHECKED = "isCheckedi";
 
     private View rootView;
     private View rootViewToolbar;
