@@ -69,7 +69,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
     private void setSubmissionStatusText(){
         SharedPreferences prefs = getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         boolean isApproved  = prefs.getBoolean(StoryState.getStoryName() + IS_R_CONSULTANT_APPROVED,false);
-        isApproved = false;
+        //isApproved = false;
         //can submit
         //cond: all slides have a recording
         submissionText.setText(R.string.recordings_ready);
@@ -77,16 +77,17 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
 
         //sent & awaiting response
         //cond: all slides have yellow status
-        if(resp == null & uploadBackTranslations == true){
+        /*if(resp == null & uploadBackTranslations == true){
             submissionText.setText(R.string.recordings_sent);
             submitButton.setVisibility(View.GONE);
-        }
+        }*/
 
         //not all accepted please re-record appropriate slides and resubmit
         //cond:any slide has red status
-        if(uploadBackTranslations== true && !isApproved)
+        /*if(uploadBackTranslations== true && !isApproved)
         submissionText.setText(R.string.recordings_disapproved);
         submitButton.setVisibility(View.VISIBLE);
+        */
 
         //all accepted
         //cond: all slides green status

@@ -152,7 +152,10 @@ public class BackTranslationFrag extends Fragment {
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button));
 
         //dramatize phase not unlocked yet
-        if(!phaseUnlocked) {
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
+        if(!prefs.getBoolean(prefsKeyString, false)) {
             getSlidesStatus();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
             phaseUnlocked = checkAllMarked();
