@@ -5,6 +5,7 @@
     android:id="@+id/activity_submission"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/darkGray"
     tools:context="org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity">
 
     <LinearLayout
