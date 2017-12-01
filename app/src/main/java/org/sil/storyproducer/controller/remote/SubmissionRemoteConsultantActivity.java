@@ -115,7 +115,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         int numSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName()); // need ot get the number of slides in story or that have been changed
 
         //Request Remote Review
-       // requestRemoteReview(con, numSlides);
+        requestRemoteReview(con, numSlides);
 
         //Loop through UploadSlideBacktranslation until out of slides
         for(int i =0; i< numSlides; i++){
