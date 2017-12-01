@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,16 +18,20 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.Network.BackTranslationUpload;
+import org.sil.storyproducer.tools.Network.BetterStringRequest;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,14 +114,14 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         int numSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName()); // need ot get the number of slides in story or that have been changed
 
         //Request Remote Review
-        requestRemoteReview(con, numSlides);
+       // requestRemoteReview(con, numSlides);
 
         //Loop through UploadSlideBacktranslation until out of slides
         for(int i =0; i< numSlides; i++){
             File slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), i);
 
             try {
-                BackTranslationUpload.Upload(slide, con, i);
+                Upload(slide, con, i);
              }
              catch(IOException e){
                 e.printStackTrace();
@@ -172,6 +177,63 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         test.add(req);
 
     }
+
+
+        public void Upload ( final File fileName, Context con, int slide) throws IOException {
+
+
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        Context myContext = con;
+        String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String templateTitle = StoryState.getStoryName();
+
+        String currentSlide = Integer.toString(slide);
+        InputStream input = new FileInputStream(fileName);
+        byte[] audioBytes = IOUtils.toByteArray(input);
+
+        String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
+        String url = "http://storyproducer.azurewebsites.net/API/UploadSlideBacktranslation.php";
+
+            js = new HashMap<String,String>();
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", templateTitle);
+        js.put("SlideNumber", currentSlide);
+        js.put("Data", byteString);
+
+
+            BetterStringRequest req = new BetterStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("LOG_VOLEY", response.toString());
+                    resp  = response;
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("LOG_VOLLEY", error.toString());
+                    Log.e("LOG_VOLLEY", "HIT ERROR");
+                    testErr = error.toString();
+
+                }
+
+            }) {
+                @Override
+                protected Map<String, String> getParams()
+                {
+                    return this.mParams;
+                }
+            };
+
+
+        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
+
+        test.add(req);
+
+    }
+
 
 
 

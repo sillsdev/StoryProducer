@@ -420,6 +420,7 @@ public class RegistrationActivity extends AppCompatActivity {
         RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
         test.add(req);
 
+
     }
 
     /**
