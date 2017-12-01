@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -104,6 +105,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 postBackTranslations();
+                Toast.makeText(getApplicationContext(), R.string.recordings_sent, Toast.LENGTH_SHORT).show();
             }
         });
     }
