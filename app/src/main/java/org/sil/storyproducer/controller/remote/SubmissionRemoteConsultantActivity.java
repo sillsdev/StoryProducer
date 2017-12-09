@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.Network.BetterStringRequest;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -206,7 +206,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         js.put("Data", byteString);
 
 
-            BetterStringRequest req = new BetterStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+            paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.i("LOG_VOLEY", response.toString());
