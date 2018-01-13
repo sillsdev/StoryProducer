@@ -31,7 +31,7 @@ public class LogView {
         listView.setAdapter(lla);
         Toolbar tb = (Toolbar) dialogLayout.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.
-        tb.setTitle(c.getString(R.string.logging_slide_log_view_title, slide + 1));
+        tb.setTitle(c.getString(R.string.logging_slide_log_view_title, slide));
         ImageButton exit = (ImageButton) dialogLayout.findViewById(R.id.exitButton);
         final CheckBox learnCB = (CheckBox) dialogLayout.findViewById(R.id.LearnCheckBox);
         final CheckBox draftCB = (CheckBox) dialogLayout.findViewById(R.id.DraftCheckBox);
