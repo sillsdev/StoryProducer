@@ -4,6 +4,7 @@
         <item>@string/learnTitle</item>
         <item>@string/draftTitle</item>
         <item>@string/community_check_title</item>
+        <item>@string/whole_story_title</item>
         <item>@string/backTranslation_title</item>
         <item>@string/submission_title</item>
         <item>@string/dramatization_title</item>

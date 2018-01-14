@@ -48,6 +48,9 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.remote.WholeStoryBackTranslationActivity"
+            android:screenOrientation="portrait" />
         <!--Submission Remote Consultant -->
         <activity
             android:name=".controller.remote.SubmissionRemoteConsultantActivity"

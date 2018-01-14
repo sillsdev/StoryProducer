@@ -125,6 +125,8 @@
     <string name="dramatization_no_drama_found">No Dramatization Found...</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
 
+    <!-- WSBT phase -->
+
 
     <!-- Back translation phase -->
     <string name="backTranslation_draft_no_picture">Could Not Find Picture...</string>
@@ -236,6 +238,7 @@
     <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
 
+    <string name="whole_story_title">Whole Story </string>
     <string name="backTranslation_title"> Back Translation </string>
     <string name="submission_title">Submission to Remote Consultant</string>
 

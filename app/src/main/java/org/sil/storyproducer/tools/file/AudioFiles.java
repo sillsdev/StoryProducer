@@ -29,9 +29,10 @@ public class AudioFiles {
     private static final String DRAMATIZATION_AUDIO_PREFIX = "dramatization";
 
     private static final String BACKTRANSLATION_AUDIO_PREFIX = "backtranslation";
+    private static final String WHOLESTORY_AUDIO_PREFIX = "wholeStory";
 
     private enum ModalType {
-        DRAFT, COMMUNITY, DRAMATIZATION, BACKTRANSLATION
+        DRAFT, COMMUNITY, DRAMATIZATION, BACKTRANSLATION, WHOLESTORY
     }
 
     public enum RenameCode {
@@ -71,6 +72,11 @@ public class AudioFiles {
      */
     public static File getLearnPractice(String story){
         return new File(FileSystem.getProjectDirectory(story), LEARN_PRACTICE_PREFIX + PREFER_EXTENSION);
+    }
+
+    //*** WSBT ***
+    public static File getWholeStory(String story){
+        return new File(FileSystem.getProjectDirectory(story), WHOLESTORY_AUDIO_PREFIX + PREFER_EXTENSION);
     }
 
     //*** Draft ***
