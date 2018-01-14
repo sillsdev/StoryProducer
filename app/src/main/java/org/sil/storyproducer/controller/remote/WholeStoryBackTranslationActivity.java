@@ -18,7 +18,6 @@ import android.widget.Switch;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.model.logging.DraftEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -60,6 +59,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     private String recordFilePath;
     private RecordingToolbar recordingToolbar;
 
+    private boolean isFirst = true;         //used to know if it is the first time the activity is started up for playing the vid
     private int startPos = -1;
     private long startTime = -1;
 
@@ -93,7 +93,6 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         setVolumeSwitchAndFloatingButtonVisible();
     }
 
-    // TODO: iconization for this phase (open book ?)
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item =  menu.getItem(0);
@@ -189,8 +188,8 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
     @Override
     public void onResume() {
-        super.onResume();
-        recordingToolbar.hideFloatingActionButton();
+            super.onResume();
+            recordingToolbar.hideFloatingActionButton();
     }
 
     @Override
@@ -211,7 +210,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      */
     void playVideo() {
         setPic(wStoryImageView);                                                             //set the next image
-        File audioFile = AudioFiles.getLWC(storyName, slideNumber);
+        File audioFile = AudioFiles.getDraft(storyName, slideNumber);
         //set the next audio
         if (audioFile.exists()) {
             narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
@@ -398,7 +397,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
             public void onStoppedRecording() {
-                //empty because the learn phase doesn't use this
+
             }
             @Override
             public void onStartedRecordingOrPlayback(boolean isRecording) {
@@ -408,7 +407,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
-        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
+        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_wholestorybacktranslation);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
