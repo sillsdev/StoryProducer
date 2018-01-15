@@ -27,6 +27,7 @@ import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
+import org.sil.storyproducer.tools.file.LogFiles;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -140,7 +141,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
 
         Context myContext = con;
 
-        final String url = "http://storyproducer.azurewebsites.net/API/RequestRemoteReview.php";
+        final String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -184,27 +185,34 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         public void Upload ( final File fileName, Context con, int slide) throws IOException {
 
 
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-        final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-        Context myContext = con;
-        String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+            final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+            Context myContext = con;
+            String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        String templateTitle = StoryState.getStoryName();
+            String templateTitle = StoryState.getStoryName();
 
-        String currentSlide = Integer.toString(slide);
-        InputStream input = new FileInputStream(fileName);
-        byte[] audioBytes = IOUtils.toByteArray(input);
+            String currentSlide = Integer.toString(slide);
+            InputStream input = new FileInputStream(fileName);
+            byte[] audioBytes = IOUtils.toByteArray(input);
 
-        String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
-        String url = "http://storyproducer.azurewebsites.net/API/UploadSlideBacktranslation.php";
+            String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
+            String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
+
+            org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+            String logString ="";
+            for(int i = 0; i<log.size();i++){
+                logString += log.toArray()[i].toString() + "\n";
+            }
+
+
 
             js = new HashMap<String,String>();
-        js.put("Key", api_token);
-        js.put("PhoneId", phone_id);
-        js.put("TemplateTitle", templateTitle);
-        js.put("SlideNumber", currentSlide);
-        js.put("Data", byteString);
-
+            js.put("Key", api_token);
+            js.put("PhoneId", phone_id);
+            js.put("TemplateTitle", templateTitle);
+            js.put("SlideNumber", currentSlide);
+            js.put("Data", byteString);
+            js.put("Log", logString);
 
             paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
                 @Override

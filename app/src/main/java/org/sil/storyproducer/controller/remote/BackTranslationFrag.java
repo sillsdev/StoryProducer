@@ -473,7 +473,7 @@ public class BackTranslationFrag extends Fragment {
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        String url = "http://storyproducer.azurewebsites.net/API/GetSlideStatuses.php";
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php";
 
         js = new HashMap<String,String>();
 
