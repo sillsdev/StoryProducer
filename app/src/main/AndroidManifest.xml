@@ -5,6 +5,8 @@
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
 
 
@@ -45,6 +47,10 @@
         <!-- Learn -->
         <activity
             android:name=".controller.learn.LearnActivity"
+            android:screenOrientation="portrait" />
+        <!--Submission Remote Consultant -->
+        <activity
+            android:name=".controller.remote.SubmissionRemoteConsultantActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity android:name=".controller.export.CreateActivity"
