@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.phase;
 
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
@@ -78,9 +80,24 @@ public class PhaseBaseActivity extends AppCompatActivity {
         MenuItem item = menu.findItem(R.id.spinner);
         Spinner spinner = (Spinner) MenuItemCompat.getActionView(item);
         spinner.setOnItemSelectedListener(new PhaseMenuItemListener(this));
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.phases_menu_array, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter;
+        //local
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
+        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
+        String remote = prefs.getString("consultant_location_type", null);
+        boolean isRemote = false;
+        if(remote.equals("Remote")) {
+            isRemote = true;
+        }
+        if(!isRemote) {
+             adapter = ArrayAdapter.createFromResource(this,
+                    R.array.local_phases_menu_array, android.R.layout.simple_spinner_item);
+        }
+        //remote
+        else{
+            adapter = ArrayAdapter.createFromResource(this,
+                    R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item);
+        }
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter);

@@ -19,6 +19,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
+import org.sil.storyproducer.controller.remote.BackTranslationListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -63,7 +64,8 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         titleView.setText(values[position]);
 
         //things specifically for the modals
-        if(listeners instanceof DramaListRecordingsModal || listeners instanceof  DraftListRecordingsModal) {
+        if(listeners instanceof DramaListRecordingsModal || listeners instanceof  DraftListRecordingsModal
+                || listeners instanceof BackTranslationListRecordingsModal) {
             rowView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -83,6 +85,10 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
             if(listeners instanceof DramaListRecordingsModal &&
                     StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])) {
                 setUiForSelectedView(rowView, deleteButton, playButton);
+            }
+            if(listeners instanceof BackTranslationListRecordingsModal &&
+                    StorySharedPreferences.getBackTranslationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(values[position])){
+                setUiForSelectedView(rowView,deleteButton,playButton);
             }
         }
 

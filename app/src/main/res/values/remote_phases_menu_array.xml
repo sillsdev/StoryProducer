@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="phases_menu_array">
+    <string-array name="remote_phases_menu_array">
         <item>@string/learnTitle</item>
         <item>@string/draftTitle</item>
         <item>@string/community_check_title</item>
-        <item>@string/consultant_check_title</item>
+        <item>@string/backTranslation_title</item>
+        <item>@string/submission_title</item>
         <item>@string/dramatization_title</item>
         <item>@string/create_title</item>
         <item>@string/share_title</item>
