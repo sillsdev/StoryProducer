@@ -35,7 +35,7 @@ import java.util.List;
  */
 
 public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
-//TODO: unlock only after each slide has a draft and only play video if all drafts present
+//TODO: only play video if all drafts present
 //TODO: queue / send audio after recorded
 //TODO: send button in bar?
 
@@ -59,7 +59,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     private String recordFilePath;
     private RecordingToolbar recordingToolbar;
 
-    private boolean isFirst = true;         //used to know if it is the first time the activity is started up for playing the vid
+    private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
     private int startPos = -1;
     private long startTime = -1;
 
@@ -258,11 +258,15 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * helper function for resuming the video
      */
     private void resumeVideo() {
+        if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
+            playVideo();
+            isFirstTime = false;
+        } else {
             narrationPlayer.resumeAudio();
-            if(backgroundAudioExists) {
+            if (backgroundAudioExists) {
                 backgroundPlayer.resumeAudio();
             }
-            recordingToolbar.hideFloatingActionButton();
+        }
     }
 
     /**
@@ -407,7 +411,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
-        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_wholestorybacktranslation);
+        /*RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_wholestorybacktranslation);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -416,7 +420,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                     recordingToolbar.hideFloatingActionButton();
                 }
             }
-        });
+        });*/
     }
 
 

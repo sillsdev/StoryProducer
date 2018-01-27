@@ -6,13 +6,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -21,9 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.adapter.NavItemAdapter;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -68,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         if(!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
-
     }
 
     @Override
@@ -82,6 +75,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         int id = item.getItemId();
         if (id == R.id.menu_lang) {
             launchChangeLWCDialog();
+        }
+        else if(id == R.id.menu_registration){
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }
