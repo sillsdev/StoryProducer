@@ -378,7 +378,8 @@ public class RecordingToolbar extends AnimationToolbar {
                 }
                 else {
                     //learn phase overwrite dialog
-                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN){
+                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN
+                            || StoryState.getCurrentPhase().getType() == Phase.Type.WHOLE_STORY){
                         boolean recordingExists = new File(recordFilePath).exists();
                         if(recordingExists) {
                             AlertDialog dialog = new AlertDialog.Builder(activity)
