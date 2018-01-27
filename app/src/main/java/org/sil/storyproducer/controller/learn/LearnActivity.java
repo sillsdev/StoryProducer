@@ -87,7 +87,7 @@ public class LearnActivity extends PhaseBaseActivity {
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
         invalidateOptionsMenu();
-        recordingToolbar.hideFloatingActionButton();
+        recordingToolbar.keepToolbarVisible();
     }
 
     @Override

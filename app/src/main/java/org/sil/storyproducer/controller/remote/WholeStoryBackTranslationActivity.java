@@ -89,8 +89,8 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
         invalidateOptionsMenu();
-        recordingToolbar.hideFloatingActionButton();
         setVolumeSwitchAndFloatingButtonVisible();
+        recordingToolbar.keepToolbarVisible();
     }
 
     @Override
