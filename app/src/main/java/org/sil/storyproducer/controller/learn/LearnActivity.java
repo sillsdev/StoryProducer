@@ -441,7 +441,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
+        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
             public void onStoppedRecording() {
                 //empty because the learn phase doesn't use this

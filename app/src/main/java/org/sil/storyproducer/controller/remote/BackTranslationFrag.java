@@ -369,7 +369,7 @@ public class BackTranslationFrag extends Fragment {
             BackTranslationListRecordingsModal modal = new BackTranslationListRecordingsModal(getContext(), slideNumber, this);
 
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
+                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
     }
@@ -452,7 +452,7 @@ public class BackTranslationFrag extends Fragment {
     private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
-        int dramatizationPhaseIndex = 5;
+        int dramatizationPhaseIndex = 6;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());

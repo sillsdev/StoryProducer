@@ -321,7 +321,7 @@ public class DramatizationFrag extends Fragment {
             DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
 
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener);
+                    true, false, true, false, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
     }

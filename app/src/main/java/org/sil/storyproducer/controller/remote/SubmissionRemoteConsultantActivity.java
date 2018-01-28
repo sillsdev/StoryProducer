@@ -116,8 +116,9 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         int numSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName()); // need ot get the number of slides in story or that have been changed
 
         //Request Remote Review
-        requestRemoteReview(con, numSlides);
-
+        if(!submitForReview){
+            requestRemoteReview(con, numSlides);
+        }
         //Loop through UploadSlideBacktranslation until out of slides
         for(int i =0; i< numSlides; i++){
             File slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), i);
@@ -129,14 +130,28 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
                 e.printStackTrace();
             }
         }
-        uploadBackTranslations =true;
-
-
-
-
+        uploadBackTranslations = true;
     }
 
-    private void requestRemoteReview(Context con, int numSlides){
+    //Pass the slide number in the param; for whole story back translation it is numSlides+1
+    public void postABackTranslation(int slideNum){
+        Context con = getApplication();
+
+        int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+
+        requestRemoteReview(con, totalSlides);
+
+        File slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
+
+        try {
+            Upload(slide, con, slideNum);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void requestRemoteReview(Context con, int numSlides){
 
         Context myContext = con;
 
@@ -155,6 +170,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
             public void onResponse(String response) {
                 Log.i("LOG_VOLEY", response.toString());
                 resp  = response;
+                submitForReview = true;
             }
         }, new Response.ErrorListener() {
             @Override

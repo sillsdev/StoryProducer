@@ -398,7 +398,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
-        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
+        recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, true, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
             public void onStoppedRecording() {
 

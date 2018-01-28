@@ -339,7 +339,7 @@ public class DraftFrag extends Fragment {
             DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, this);
 
             recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
-                    true, false, true, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
+                    true, false, true, false, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }
