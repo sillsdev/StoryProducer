@@ -23,6 +23,10 @@ import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.ComChkEntry;
+import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.model.logging.LearnEntry;
+import org.sil.storyproducer.model.logging.LogEntry;
 import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.file.AudioFiles;
@@ -200,8 +204,44 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
 
             org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
             String logString ="";
-            for(int i = 0; i<log.size();i++){
-                logString += log.toArray()[i].toString() + "\n";
+
+            Object[] logs = log.toArray();
+
+
+            String[] slideLogs = new String[logs.length];
+
+            for(int i = 0; i<logs.length;i++){
+                if(logs[i] instanceof ComChkEntry){
+                    ComChkEntry tempLog = (ComChkEntry)logs[i];
+                    if(tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
+                }
+                else if(logs[i] instanceof LearnEntry){
+                    LearnEntry tempLog = (LearnEntry) logs[i];
+                    if(tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                }
+                else if(logs[i] instanceof DraftEntry){
+                    DraftEntry tempLog = (DraftEntry)logs[i];
+                    if(tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                }
+                else {
+                    LogEntry tempLog = (LogEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
+                }
+
             }
 
 
