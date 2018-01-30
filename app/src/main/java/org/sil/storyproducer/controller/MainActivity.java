@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         if(!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
+
+       // this.reloadStories();
+
     }
 
     @Override
@@ -88,7 +91,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * The actual language change is done within the FileSystem class
      */
     private void reloadStories() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryListFrag()).commit();
+        getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container)).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
+
     }
 
     /**

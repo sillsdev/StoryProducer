@@ -47,7 +47,7 @@ public class BackTranslationUpload {
             byte[] audioBytes = IOUtils.toByteArray(input);
 
             String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
-            String url = "http://storyproducer.azurewebsites.net/API/UploadSlideBacktranslation.php";
+            String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
             js = new HashMap<String,String>();
              js.put("Key", api_token);
