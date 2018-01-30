@@ -528,22 +528,26 @@ public class RecordingToolbar extends AnimationToolbar {
             }
             //Whole story bt audio will be uploaded as one slide past the final slide for the story
             else{
-                slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName())+1;
+                slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName());
             }
-            postABackTranslation(slideNum);
+            postABackTranslation(slideNum, phase);
             Toast.makeText(appContext, "Audio File Sent", Toast.LENGTH_SHORT);
         }
 
         //TODO: LEAVE THIS HERE
         //Posts a single BT or WSBT
-        public void postABackTranslation(int slideNum){
+        public void postABackTranslation(int slideNum, Phase phase){
 
             int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
 
             requestRemoteReview(appContext, totalSlides);
-
-            File slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
-
+            File slide;
+            if (phase.getType() == Phase.Type.BACKT) {
+                slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
+            }
+            else{
+                slide = AudioFiles.getWholeStory(StoryState.getStoryName());
+            }
             try {
                 Upload(slide, appContext, slideNum);
             }
@@ -557,7 +561,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
         Context myContext = con;
 
-        final String url = "http://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
+        final String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -613,7 +617,7 @@ public class RecordingToolbar extends AnimationToolbar {
         byte[] audioBytes = IOUtils.toByteArray(input);
 
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
-        String url = "http://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
         js = new HashMap<String,String>();
         js.put("Key", api_token);

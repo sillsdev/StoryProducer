@@ -355,7 +355,7 @@ public class RegistrationActivity extends AppCompatActivity {
         final Context myContext = this.getApplicationContext();
 
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-        String url = "http://storyproducer.azurewebsites.net/API/RegisterPhone.php";
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php";
 
       /*  JSONObject js = new JSONObject();
         JSONArray js1 = new JSONArray();
