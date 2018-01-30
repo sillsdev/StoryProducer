@@ -134,8 +134,9 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
     }
 
     //Pass the slide number in the param; for whole story back translation it is numSlides+1
+    //TODO: could use this as the function to call on send button click
     public void postABackTranslation(int slideNum){
-        Context con = getApplication();
+        Context con = getApplicationContext();
 
         int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
 

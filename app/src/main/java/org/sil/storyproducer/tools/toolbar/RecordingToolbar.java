@@ -12,8 +12,10 @@ import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.Space;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -21,19 +23,35 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
+import org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -85,6 +103,10 @@ public class RecordingToolbar extends AnimationToolbar {
 
     protected RecordingListener recordingListener;
     private boolean canOverwrite = false;
+
+    private Map<String,String> js;
+    private String resp;
+    private String testErr;
 
     /**
      * The ctor.
@@ -494,11 +516,143 @@ public class RecordingToolbar extends AnimationToolbar {
         }
 
         /*
-        *Send audio to remote consultant
+        *Send single audio file to remote consultant
          */
         private void sendAudio(){
-            //TODO: SEND AUDIO
+            //TODO: SEND AUDIO (either wsbt or current slide bt)
+            Toast.makeText(appContext, "Sending Audio", Toast.LENGTH_SHORT).show();
+            Phase phase = StoryState.getCurrentPhase();
+            int slideNum;
+            if(phase.getType() == Phase.Type.BACKT) {
+                slideNum = StoryState.getCurrentStorySlide();
+            }
+            //Whole story bt audio will be uploaded as one slide past the final slide for the story
+            else{
+                slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName())+1;
+            }
+            postABackTranslation(slideNum);
+            Toast.makeText(appContext, "Audio File Sent", Toast.LENGTH_SHORT);
         }
+
+        //TODO: LEAVE THIS HERE
+        //Posts a single BT or WSBT
+        public void postABackTranslation(int slideNum){
+
+            int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+
+            requestRemoteReview(appContext, totalSlides);
+
+            File slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
+
+            try {
+                Upload(slide, appContext, slideNum);
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    //First time request for review
+    public void requestRemoteReview(Context con, int numSlides){
+
+        Context myContext = con;
+
+        final String url = "http://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        js = new HashMap<String,String>();
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", StoryState.getStoryName());
+        js.put("NumberOfSlides", Integer.toString(numSlides));
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLEY", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return js;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
+
+        test.add(req);
+
+    }
+
+    //Subroutine to upload a single audio file
+    public void Upload ( final File fileName, Context con, int slide) throws IOException {
+
+
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        Context myContext = con;
+        String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String templateTitle = StoryState.getStoryName();
+
+        String currentSlide = Integer.toString(slide);
+        InputStream input = new FileInputStream(fileName);
+        byte[] audioBytes = IOUtils.toByteArray(input);
+
+        String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
+        String url = "http://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
+
+        js = new HashMap<String,String>();
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", templateTitle);
+        js.put("SlideNumber", currentSlide);
+        js.put("Data", byteString);
+
+
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLEY", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return this.mParams;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
+
+        test.add(req);
+
+    }
+    //TODO: LEAVE THIS HERE
 
     /*
     * Start recording audio and hide buttons

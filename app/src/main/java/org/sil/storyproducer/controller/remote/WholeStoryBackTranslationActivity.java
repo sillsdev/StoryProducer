@@ -334,7 +334,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      */
     private void setVolumeSwitchAndFloatingButtonVisible() {
         //make the floating button visible
-        recordingToolbar.showFloatingActionButton();
+        //recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
         ImageView soundOff = (ImageView) findViewById(R.id.soundOff);
         ImageView soundOn = (ImageView) findViewById(R.id.soundOn);
