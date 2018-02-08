@@ -126,7 +126,7 @@ public class BackTranslationFrag extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
-        item.setIcon(R.drawable.ic_dramatize);
+        item.setIcon(R.drawable.ic_backtranslation);
     }
 
     public void onStart() {
