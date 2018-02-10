@@ -145,7 +145,7 @@ public class BackTranslationFrag extends Fragment {
         draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                draftPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                draftPlayButton.setBackgroundResource(R.drawable.ic_play_gray);
             }
         });
 
@@ -318,14 +318,14 @@ public class BackTranslationFrag extends Fragment {
                 }
                 else if (draftPlayer.isAudioPlaying()) {
                     draftPlayer.stopAudio();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                 } else {
                     recordingToolbar.stopToolbarMedia();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_gray);
                     draftPlayer.playAudio();
 
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
                     }
                     Toast.makeText(getContext(), R.string.backTranslation_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }
