@@ -296,6 +296,9 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     isAppendingOn = false;
                     checkButton.setVisibility(View.INVISIBLE);
                     micButton.setBackgroundResource(R.drawable.ic_mic_white);
+                    if(enableSendAudioButton){
+                        sendAudioButton.setVisibility(View.INVISIBLE);
+                    }
                     //TODO: show send button & have on click listener for it here to send WSBT OR BT
                     //TODO: remove the commented stuff. left just incase
                   /*  if(StoryState.getCurrentPhase().getTitle().equals("Back Translation" )){

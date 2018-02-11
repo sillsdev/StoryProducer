@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.remote;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -228,6 +230,19 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     public void onClickPlayPauseButton(View view) {
         if(narrationPlayer.isAudioPlaying()) {
             pauseVideo();
+
+        }
+        //if no draft audio exists
+        else if(!AudioFiles.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(this.getString(R.string.wsbt_alert_title))
+                    .setMessage(this.getString(R.string.wsbt_alert_text))
+                    .setPositiveButton(this.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    }).create();
+            dialog.show();
         } else {
             //markLogStart();
 
@@ -325,8 +340,9 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         isVolumeOn = false;
 
        //markLogStart();
-
-        playVideo();
+        if(AudioFiles.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
+            playVideo();
+        }
     }
 
     /**

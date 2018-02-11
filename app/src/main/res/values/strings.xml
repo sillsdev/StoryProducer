@@ -128,7 +128,8 @@
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
 
     <!-- WSBT phase -->
-
+    <string name="wsbt_alert_title">Finish Draft Phase</string>
+    <string name="wsbt_alert_text">Please record a translation for each slide.</string>
 
     <!-- Back translation phase -->
     <string name="backTranslation_draft_no_picture">Could Not Find Picture...</string>

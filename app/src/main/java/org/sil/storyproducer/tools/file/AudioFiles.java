@@ -94,6 +94,16 @@ public class AudioFiles {
         return getTitleFromPath(filename, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION);
     }
 
+    public static boolean allDraftsComplete(String story, int slideCount){
+        for(int i = 0; i < slideCount; i++){
+            File draftAudio = getDraft(story,i);
+            if(!draftAudio.exists()){
+               return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * deletes the designated audio draft
      * @param story the story the draft comes from
