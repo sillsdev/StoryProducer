@@ -31,7 +31,6 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
-
     public static boolean hasPermissions(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
@@ -82,6 +81,18 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         else if(id == R.id.menu_registration){
             Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
             startActivity(intent);
+        }
+        else if(id == R.id.menu_license){
+            //TODO: LICENSING POP UP... MAY NEED SCROLLABLE OR SOMETHING BIGGER (FILL SCREEN)
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(this.getString(R.string.license_title))
+                    .setMessage(this.getString(R.string.license_body))
+                    .setPositiveButton(this.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    }).create();
+            dialog.show();
         }
         return super.onOptionsItemSelected(item);
     }
