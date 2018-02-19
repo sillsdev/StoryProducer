@@ -9,8 +9,25 @@
     <string name="title_fragment_community">Community Check</string>
     <string name="title_fragment_consultant">Consultant Check</string>
     <string name="update_registration">Update Registration</string>
-    <string name="license_title">Licensing Info</string>
-    <string name="license_body">PLACEHOLDER TEXT PLACEHOLDER TEXT PLACEHOLDER TEXT PLACEHOLDER TEXT </string>
+    <string name="license_title">License</string>
+    <string name="license_body">This software is jointly copyrighted © 2018, SIL International and
+                                Cedarville University. It is released under the following license:
+                                Permission is hereby granted, free of charge, to any person lawfully
+                                obtaining a copy of this software and associated documentation files
+                                (the “Software”), to use and redistribute the software, to build and
+                                distribute videos from text and audio-visual data, provided that
+                                they are the owner of the data or have permission to distribute it.
+                                The Software is protected by international copyright treaty
+                                provisions. No person may remove any copyright or other proprietary
+                                notice from the software nor reverse engineer, decompile, or
+                                disassemble the software. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
+                                WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+                                TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+                                PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+                                COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+                                ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+                                OR OTHER DEALINGS IN THE SOFTWARE.</string>
     <string name="view_trans_logs">View Translation Logs</string>
 
     <!--String names for Info Page-->
