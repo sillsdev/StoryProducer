@@ -46,6 +46,7 @@ import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
@@ -166,9 +167,6 @@ public class RemoteCheckFrag extends Fragment {
             }
         });
 
-
-
-
         //dramatize phase not unlocked yet
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -176,8 +174,7 @@ public class RemoteCheckFrag extends Fragment {
 
         //if story not approved yet, receieve updates
         if(!prefs.getBoolean(prefsKeyString, false)) {
-            //getSlidesStatus();
-            getMessage();
+            getSlidesStatus();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
 
             //set receive text
@@ -185,9 +182,7 @@ public class RemoteCheckFrag extends Fragment {
                 messageReceieved.setText(prefs.getString(storyName+slideNumber+RECEIVED_MESSAGE,""));
             }
             //set send text
-            if(!prefs.getBoolean(storyName+slideNumber+WAS_SENT,true)){
-                messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
-            }
+            messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
 
             phaseUnlocked = checkAllMarked();
             if (phaseUnlocked) {
@@ -491,22 +486,65 @@ public class RemoteCheckFrag extends Fragment {
         getActivity().startActivity(intent);
     }
 
-    //function to get remote consultant messages for all slides
-    private void getMessage(){
-
-    }
-    //function to send messages to remote consultant for all slides
+    //function to send messages to remote consultant the given slide
     private void sendMessage(){
-        
-    }
-    //function to get the slide status for all slides
-    public void getSlidesStatus() {
 
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadTranslatorMsg.php";
+
+        js = new HashMap<String,String>();
+
+
+        //Get msg for current slide
+        String message = prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+        //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
+        js.put("Message",message);
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle" , StoryState.getStoryName());
+        js.put("SlideNumber", Integer.toString(slideNumber));
+
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLEY", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return this.mParams;
+            }
+        };
+
+
+
+        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
+
+        test.add(req);
+
+
+    }
+
+    //function to get the slide status for all slides & any messages sent to the phone
+    public void getSlidesStatus() {
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-        //boolean isChecked = prefs.getBoolean(prefsKeyString, false);
 
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
 
@@ -524,8 +562,6 @@ public class RemoteCheckFrag extends Fragment {
 
         StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
 
-
-
             @Override
             public void onResponse(String response) {
                 try {
@@ -536,9 +572,12 @@ public class RemoteCheckFrag extends Fragment {
                 }
 
                 JSONArray arr = null;
+                JSONArray msgs = null;
                 try {
 
                     arr = obj.getJSONArray("Status");
+                    msgs = obj.getJSONArray("MSGS");
+
                 }
                 catch(JSONException e){
                     e.printStackTrace();
@@ -556,6 +595,22 @@ public class RemoteCheckFrag extends Fragment {
                         e.printStackTrace();
                     }
 
+                }
+
+                //get all msgs and store into shared preferences
+                for(int j=0; j<msgs.length();j++){
+
+                    try{
+                        prefsEditor.putString(storyName + j + RECEIVED_MESSAGE, msgs.getString(j));
+                        prefsEditor.apply();
+                        if(msgs.getString(j) != ""){
+                            prefsEditor.putBoolean(storyName + j + WAS_RECEIVED, true);
+                            prefsEditor.apply();
+                        }
+                    }
+                    catch(JSONException e){
+                        e.printStackTrace();
+                    }
                 }
 
                 Log.i("LOG_VOLEY", response.toString());
