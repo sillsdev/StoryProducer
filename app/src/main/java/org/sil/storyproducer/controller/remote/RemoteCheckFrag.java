@@ -93,7 +93,7 @@ public class RemoteCheckFrag extends Fragment {
         //setRecordFilePath();
         setHasOptionsMenu(true);
 
-        //TODO: ADD TWO BOXES TO VIEW
+        //TODO: MAKE TEXT SCROLLABLE
         //TODO: SEND THE SEND DATA ON DONE EDITING
         //TODO: RECEIVE MSG ON SWIPE OR ON BUTTON CLICK
 
@@ -314,12 +314,12 @@ public class RemoteCheckFrag extends Fragment {
                     draftPlayer.stopAudio();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                 } else {
-                    recordingToolbar.stopToolbarMedia();
+                    //recordingToolbar.stopToolbarMedia();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_gray);
                     draftPlayer.playAudio();
 
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
+                        //recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
                     }
                     Toast.makeText(getContext(), R.string.backTranslation_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }

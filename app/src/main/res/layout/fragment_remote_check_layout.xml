@@ -54,13 +54,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:paddingBottom="5dp">
 
-        <EditText
+        <TextView
             android:id="@+id/receiveMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/empty_message"/>
+            android:text="@string/empty_message"
+            android:textSize="@dimen/large_text"
+            android:inputType="none">
+        </TextView>
 
         <EditText
             android:id="@+id/sendMessage"
