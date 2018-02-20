@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -65,6 +66,10 @@ public class RemoteCheckFrag extends Fragment {
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isCheckedi";
+    private static final String RECEIVED_MESSAGE = "REC_MSG";
+    private static final String WAS_RECEIVED = "WAS_RECVD";
+    private static final String TO_SEND_MESSAGE = "SND_MSG";
+    private static final String WAS_SENT = "WAS_SENT";
 
     private View rootView;
     private View rootViewToolbar;
@@ -76,6 +81,9 @@ public class RemoteCheckFrag extends Fragment {
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
     private ImageButton draftPlayButton;
+    private Button sendMessageButton;
+    private TextView messageReceieved;
+    private EditText messageSent;
     private boolean isSlidesChecked = false;
 
     private JSONObject obj;
@@ -95,7 +103,8 @@ public class RemoteCheckFrag extends Fragment {
 
         //TODO: MAKE TEXT SCROLLABLE
         //TODO: SEND THE SEND DATA ON DONE EDITING
-        //TODO: RECEIVE MSG ON SWIPE OR ON BUTTON CLICK
+        //TODO: RECEIVE MSG ON SWIPE
+        //TODO: ADD BUTTONS AND LISTENERS TO MAKE SENDING / RECEIEVING MORE INTUITIVE
 
     }
 
@@ -104,6 +113,11 @@ public class RemoteCheckFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
         draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
+        sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
+
+        messageReceieved = (TextView)rootView.findViewById(R.id.receiveMessage);
+        messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
+
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
@@ -145,13 +159,36 @@ public class RemoteCheckFrag extends Fragment {
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button));
 
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage();
+            }
+        });
+
+
+
+
         //dramatize phase not unlocked yet
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
+
+        //if story not approved yet, receieve updates
         if(!prefs.getBoolean(prefsKeyString, false)) {
             //getSlidesStatus();
+            getMessage();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
+
+            //set receive text
+            if(prefs.getBoolean(storyName+slideNumber+WAS_RECEIVED, false)) {
+                messageReceieved.setText(prefs.getString(storyName+slideNumber+RECEIVED_MESSAGE,""));
+            }
+            //set send text
+            if(!prefs.getBoolean(storyName+slideNumber+WAS_SENT,true)){
+                messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
+            }
+
             phaseUnlocked = checkAllMarked();
             if (phaseUnlocked) {
                 unlockDramatizationPhase();
@@ -446,7 +483,7 @@ public class RemoteCheckFrag extends Fragment {
     private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
-        int dramatizationPhaseIndex = 6;
+        int dramatizationPhaseIndex = 7;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
@@ -454,6 +491,15 @@ public class RemoteCheckFrag extends Fragment {
         getActivity().startActivity(intent);
     }
 
+    //function to get remote consultant messages for all slides
+    private void getMessage(){
+
+    }
+    //function to send messages to remote consultant for all slides
+    private void sendMessage(){
+        
+    }
+    //function to get the slide status for all slides
     public void getSlidesStatus() {
 
 

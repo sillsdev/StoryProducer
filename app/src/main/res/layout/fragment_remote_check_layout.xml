@@ -60,18 +60,35 @@
         <TextView
             android:id="@+id/receiveMessage"
             android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="58dp"
             android:layout_height="wrap_content"
             android:text="@string/empty_message"
             android:textSize="@dimen/large_text"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:inputType="none">
         </TextView>
 
         <EditText
             android:id="@+id/sendMessage"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/receiveMessage"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/button_send_msg"
             android:inputType="text"/>
+
+        <Button
+            android:id="@+id/button_send_msg"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_below="@id/receiveMessage"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/send_message"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fragment_remote_check_r_concheck_checkmark_button"
