@@ -24,4 +24,5 @@
     <color name="whole_story_phase">#811000</color>
     <color name="backT_phase">#a41e8c</color>
     <color name="submission_phase">#e41e9c</color>
+    <color name="remote_check_phase">#551a8b</color>
 </resources>

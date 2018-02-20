@@ -45,23 +45,21 @@ import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by alexamhepner on 10/23/17.
+ * Created by annmcostantino on 2/19/2018.
  */
 
-public class BackTranslationFrag extends Fragment {
+public class RemoteCheckFrag extends Fragment {
 
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
@@ -92,40 +90,43 @@ public class BackTranslationFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
-        setRecordFilePath();
+        //setRecordFilePath();
         setHasOptionsMenu(true);
+
+        //TODO: ADD TWO BOXES TO VIEW
+        //TODO: SEND THE SEND DATA ON DONE EDITING
+        //TODO: RECEIVE MSG ON SWIPE OR ON BUTTON CLICK
 
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false);
+        rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
-        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button);
+        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
         setUiColors();
-        setPic((ImageView)rootView.findViewById(R.id.fragment_backtranslation_image_view), slideNumber);
-        setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
+        setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
+        setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
         TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
-        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
+        //rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
 
 
         return rootView;
     }
 
-    //TODO: new icon for sbs backtranslation
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
-        item.setIcon(R.drawable.ic_backtranslation);
+        item.setIcon(R.drawable.ic_message);
     }
 
     public void onStart() {
         super.onStart();
 
-        setToolbar(rootViewToolbar);
+        //setToolbar(rootViewToolbar);
 
         draftPlayer = new AudioPlayer();
         File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
@@ -149,8 +150,8 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
         if(!prefs.getBoolean(prefsKeyString, false)) {
-            getSlidesStatus();
-            setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
+            //getSlidesStatus();
+            setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
             phaseUnlocked = checkAllMarked();
             if (phaseUnlocked) {
                 unlockDramatizationPhase();
@@ -236,9 +237,9 @@ public class BackTranslationFrag extends Fragment {
     /**
      * Stop the toolbar from continuing the appending session.
      */
-  //  public void stopAppendingRecordingFile(){
-   //     recordingToolbar.stopAppendingSession();
-   // }
+    //  public void stopAppendingRecordingFile(){
+    //     recordingToolbar.stopAppendingSession();
+    // }
 
     /**
      * This function sets the first slide of each story to the blue color in order to prevent
@@ -246,7 +247,7 @@ public class BackTranslationFrag extends Fragment {
      */
     private void setUiColors() {
         if (slideNumber == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_backtranslation_root_layout);
+            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_remote_check_root_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
@@ -284,10 +285,10 @@ public class BackTranslationFrag extends Fragment {
     /**
      * sets the playback path
      */
-    public void setPlayBackPath() {
+    /*public void setPlayBackPath() {
         String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
         recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
-    }
+    }*/
 
     /**
      * This function serves to set the play and stop button for the draft playback button.
@@ -326,7 +327,7 @@ public class BackTranslationFrag extends Fragment {
         });
     }
 
-    private void setRecordFilePath() {
+    /*private void setRecordFilePath() {
         int nextDraftIndex = AudioFiles.getBackTranslationTitles(StoryState.getStoryName(), slideNumber).length + 1;
         File recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber,getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         while (recordFile.exists()) {
@@ -334,12 +335,12 @@ public class BackTranslationFrag extends Fragment {
             recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber, getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         }
         backTranslationRecordingFile = recordFile;
-    }
+    }*/
 
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private void setToolbar(View toolbar) {
+   /* private void setToolbar(View toolbar) {
         if (rootView instanceof RelativeLayout) {
             String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
             RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
@@ -365,7 +366,7 @@ public class BackTranslationFrag extends Fragment {
                     true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
-    }
+    } */
 
     /**
      * This function will set a listener to the passed in view so that when the passed in view
@@ -482,7 +483,7 @@ public class BackTranslationFrag extends Fragment {
             @Override
             public void onResponse(String response) {
                 try {
-                     obj = new JSONObject(response);
+                    obj = new JSONObject(response);
                 }
                 catch(JSONException e){
                     e.printStackTrace();
@@ -541,6 +542,3 @@ public class BackTranslationFrag extends Fragment {
     }
 
 }
-    
-    
-

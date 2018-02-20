@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import org.sil.storyproducer.controller.remote.RemoteCheckFrag;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
@@ -53,6 +54,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case BACKT:
                 fragment = new BackTranslationFrag();
                 passedArgs.putInt(BackTranslationFrag.SLIDE_NUM, i);
+                break;
+            case REMOTE_CHECK:
+                fragment = new RemoteCheckFrag();
+                passedArgs.putInt(RemoteCheckFrag.SLIDE_NUM, i);
                 break;
             default:
                 fragment = new DraftFrag();

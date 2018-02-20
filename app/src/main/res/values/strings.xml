@@ -157,6 +157,9 @@
     <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
 
+    <!-- Remote check phase -->
+    <string name="remote_check_title">Remote Check</string>
+
     <!--Submission Remote Consultant -->
     <string name= "finish_recordings">You must make a recording for each slide before submitting.</string>
     <string name= "recordings_ready">The recordings are ready to be sent.</string>
