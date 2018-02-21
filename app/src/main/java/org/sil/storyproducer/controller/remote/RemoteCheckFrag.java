@@ -164,6 +164,7 @@ public class RemoteCheckFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 sendMessage();
+                Toast.makeText(getContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -500,9 +501,10 @@ public class RemoteCheckFrag extends Fragment {
 
 
         //Get msg for current slide
-        String message = prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+        //String message = prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+        String  message = messageSent.getText().toString();
         //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
-        js.put("Message",message);
+        js.put("TranslatorMsg",message);
         js.put("Key", api_token);
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle" , StoryState.getStoryName());
@@ -576,7 +578,7 @@ public class RemoteCheckFrag extends Fragment {
                 try {
 
                     arr = obj.getJSONArray("Status");
-                    msgs = obj.getJSONArray("MSGS");
+                    msgs = obj.getJSONArray("Msgs");
 
                 }
                 catch(JSONException e){
