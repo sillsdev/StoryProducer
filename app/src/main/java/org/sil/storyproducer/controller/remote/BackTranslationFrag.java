@@ -142,7 +142,7 @@ public class BackTranslationFrag extends Fragment {
             }
         });
 
-        setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button));
+        setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button));
 
         //dramatize phase not unlocked yet
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
