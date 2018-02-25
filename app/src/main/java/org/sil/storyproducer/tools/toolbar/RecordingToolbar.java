@@ -32,7 +32,6 @@ import com.android.volley.toolbox.StringRequest;
 import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
-import org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.DraftEntry;
@@ -534,7 +533,6 @@ public class RecordingToolbar extends AnimationToolbar {
             Toast.makeText(appContext, "Audio File Sent", Toast.LENGTH_SHORT);
         }
 
-        //TODO: LEAVE THIS HERE
         //Posts a single BT or WSBT
         public void postABackTranslation(int slideNum, Phase phase){
 
@@ -656,7 +654,6 @@ public class RecordingToolbar extends AnimationToolbar {
         test.add(req);
 
     }
-    //TODO: LEAVE THIS HERE
 
     /*
     * Start recording audio and hide buttons

@@ -6,7 +6,7 @@ package org.sil.storyproducer.model;
 public class Phase {
 
     public enum Type {
-        LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, SUBMIT, WHOLE_STORY, REMOTE_CHECK
+        LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
     }
 
     private String phaseTitle;
