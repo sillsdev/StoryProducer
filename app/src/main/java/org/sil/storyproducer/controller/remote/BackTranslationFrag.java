@@ -149,6 +149,9 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
         if(!prefs.getBoolean(prefsKeyString, false)) {
+            //TODO: remove call to create story here and make global var that stores whether story has been created in DB
+            //TODO: put all the volley functions into a separate class? (have redundancy between some classes)
+            requestRemoteReview(getContext(),FileSystem.getContentSlideAmount(storyName));
             getSlidesStatus();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
             phaseUnlocked = checkAllMarked();
@@ -537,6 +540,50 @@ public class BackTranslationFrag extends Fragment {
 
         test.add(req);
 
+
+    }
+
+    public void requestRemoteReview(Context con, int numSlides){
+
+        Context myContext = con;
+
+        final String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        js = new HashMap<String,String>();
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", StoryState.getStoryName());
+        js.put("NumberOfSlides", Integer.toString(numSlides));
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLEY", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                //testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return js;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
+
+        test.add(req);
 
     }
 
