@@ -530,7 +530,6 @@ public class RecordingToolbar extends AnimationToolbar {
                 slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName());
             }
             postABackTranslation(slideNum, phase);
-            Toast.makeText(appContext, "Audio File Sent", Toast.LENGTH_SHORT);
         }
 
         //Posts a single BT or WSBT
@@ -630,6 +629,7 @@ public class RecordingToolbar extends AnimationToolbar {
             public void onResponse(String response) {
                 Log.i("LOG_VOLEY", response.toString());
                 resp  = response;
+                Toast.makeText(appContext, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -637,6 +637,7 @@ public class RecordingToolbar extends AnimationToolbar {
                 Log.e("LOG_VOLLEY", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
+                Toast.makeText(appContext, "Error occurred, please try sending the audio file again", Toast.LENGTH_SHORT).show();
 
             }
 
