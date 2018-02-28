@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -45,6 +46,7 @@ import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -67,6 +69,7 @@ public class BackTranslationFrag extends Fragment {
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isCheckedi";
+    private static final String TRANSCRIPTION_TEXT = "TranscriptionText";
 
     private View rootView;
     private View rootViewToolbar;
@@ -79,6 +82,8 @@ public class BackTranslationFrag extends Fragment {
     private File backTranslationRecordingFile = null;
     private ImageButton draftPlayButton;
     private boolean isSlidesChecked = false;
+
+    private EditText transcriptionText;
 
     private JSONObject obj;
     private String resp;
@@ -110,8 +115,16 @@ public class BackTranslationFrag extends Fragment {
 
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
+        transcriptionText = (EditText)rootView.findViewById(R.id.transcription);
+        transcriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus) {
+                    addTranscription();
+                }
 
+            }
+        });
         return rootView;
     }
 
@@ -159,7 +172,6 @@ public class BackTranslationFrag extends Fragment {
                 unlockDramatizationPhase();
             }
         }
-
     }
 
     /**
@@ -584,6 +596,17 @@ public class BackTranslationFrag extends Fragment {
         RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
 
         test.add(req);
+
+    }
+
+    private void addTranscription() {
+
+        int j = slideNumber;
+        String transcript = transcriptionText.getText().toString();
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putString(storyName + j + TRANSCRIPTION_TEXT, transcript);
+        prefsEditor.apply();
 
     }
 

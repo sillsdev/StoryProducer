@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -32,6 +33,7 @@ import com.android.volley.toolbox.StringRequest;
 import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
+import org.sil.storyproducer.controller.remote.BackTranslationFrag;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.DraftEntry;
@@ -68,6 +70,8 @@ public class RecordingToolbar extends AnimationToolbar {
     private final int RECORDING_ANIMATION_DURATION = 1500;
     private final int STOP_RECORDING_DELAY = 0;
     private final String TAG = "AnimationToolbar";
+    public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
+    private static final String TRANSCRIPTION_TEXT = "TranscriptionText";
 
     private FloatingActionButton fabPlus;
     protected LinearLayout toolbar;
@@ -613,6 +617,12 @@ public class RecordingToolbar extends AnimationToolbar {
         InputStream input = new FileInputStream(fileName);
         byte[] audioBytes = IOUtils.toByteArray(input);
 
+        //get transcription text if its there
+        SharedPreferences prefs = con.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+
+            String transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT,"");
+
+
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
         String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
@@ -622,7 +632,7 @@ public class RecordingToolbar extends AnimationToolbar {
         js.put("TemplateTitle", templateTitle);
         js.put("SlideNumber", currentSlide);
         js.put("Data", byteString);
-
+        js.put("BacktranslationText", transcription);
 
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
             @Override
