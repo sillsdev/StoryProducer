@@ -39,45 +39,9 @@ public class StoryListFrag extends Fragment {
         View view;
 
         // Define array storyNames to show in ListView
-        String[] storyNamesTemp = FileSystem.getStoryNames();
-
-        SharedPreferences prefs = getContext().getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-        String remote = prefs.getString("consultant_location_type", null);
-        boolean isRemote;
-
-        if(remote.equals("Remote")){
-            isRemote = true;
-        }
-        else{
-            isRemote = false;
-        }
-        StoryState stateTest;
+        final String[] storyNames = FileSystem.getStoryNames();
 
 
-        ArrayList<Integer> remove = new ArrayList<>();
-        for(int i =0; i< storyNamesTemp.length;i++) {
-            StoryState.setStoryName(storyNamesTemp[i]);
-            Phase[] phases = StoryState.getPhases();
-            for(int j = 0; j<phases.length; j++) {
-
-                if (phases[j].getType() == Phase.Type.BACKT && !isRemote) {
-                    remove.add(i);
-                    break;
-                } else if (phases[j].getType() == Phase.Type.CONSULTANT_CHECK && isRemote) {
-                    remove.add(i);
-                    break;
-                }
-
-            }
-        }
-
-        List<String> newStories = Arrays.asList(storyNamesTemp);
-
-        for(int i =0; i<remove.size();i++){
-            newStories.remove(i);
-        }
-        storyNamesTemp = (String[])newStories.toArray();
-        final String[] storyNames = storyNamesTemp;
         if (storyNames.length == 0) {
             view = inflater.inflate(R.layout.fragment_no_stories, container, false);
             return view;
