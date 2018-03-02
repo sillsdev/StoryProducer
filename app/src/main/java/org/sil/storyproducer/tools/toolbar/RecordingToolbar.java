@@ -575,13 +575,13 @@ public class RecordingToolbar extends AnimationToolbar {
         StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_RESP", response.toString());
+                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
                 resp  = response;
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY_ERR", error.toString());
+                Log.e("LOG_VOLLEY_ERR_RR", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
 
@@ -637,14 +637,14 @@ public class RecordingToolbar extends AnimationToolbar {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_RESP", response.toString());
+                Log.i("LOG_VOLLEY_RESP_UPL", response.toString());
                 resp  = response;
                 Toast.makeText(appContext, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY_ERR", error.toString());
+                Log.e("LOG_VOLLEY_ERR_UPL", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
                 Toast.makeText(appContext, "Error occurred, please try sending the audio file again", Toast.LENGTH_SHORT).show();

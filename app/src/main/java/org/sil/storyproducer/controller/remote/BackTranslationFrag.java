@@ -533,7 +533,7 @@ public class BackTranslationFrag extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_ERR_STATUS", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 //testErr = error.toString();
 
@@ -572,13 +572,13 @@ public class BackTranslationFrag extends Fragment {
         StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
                 resp  = response;
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_ERR_RR", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 //testErr = error.toString();
 

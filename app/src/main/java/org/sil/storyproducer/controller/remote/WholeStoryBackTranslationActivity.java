@@ -145,7 +145,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 }
             }
         });
-        recordingToolbar.hideFloatingActionButton();
+        //recordingToolbar.hideFloatingActionButton();
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
@@ -327,7 +327,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * helper function that resets the video to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
-        playButton.setImageResource(R.drawable.ic_pause_gray);
+
         videoSeekBar.setProgress(0);
         slideNumber = 0;
         narrationPlayer.setVolume(0.0f);
@@ -341,6 +341,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
        //markLogStart();
         if(AudioFiles.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
+            playButton.setImageResource(R.drawable.ic_pause_gray);
             playVideo();
         }
     }
@@ -424,7 +425,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 resetVideoWithSoundOff();
             }
         });
-        recordingToolbar.hideFloatingActionButton();
+        //recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
         /*RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_wholestorybacktranslation);
