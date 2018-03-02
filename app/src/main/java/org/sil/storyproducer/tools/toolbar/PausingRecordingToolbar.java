@@ -150,7 +150,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
         spaceLayoutParams.width = 0;
-        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_done_all_black_48dp, R.drawable.ic_send_audio_48dp};
+        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp};
         ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
         boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableMultiRecordButton, (enableCheckButton = true), enableSendAudioButton};
 
@@ -263,7 +263,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                         recordingListener.onStartedRecordingOrPlayback(true);
                     }
                     micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
-                    checkButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
+                    //checkButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                     if (enableDeleteButton) {
                         deleteButton.setVisibility(View.INVISIBLE);
                     }
@@ -272,6 +272,9 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     }
                     if (enableMultiRecordButton) {
                         multiRecordButton.setVisibility(View.INVISIBLE);
+                    }
+                    if(enableSendAudioButton){
+                        sendAudioButton.setVisibility(View.INVISIBLE);
                     }
                     //if (enableCheckButton) {
                       //  checkButton.setVisibility(View.INVISIBLE);
@@ -297,20 +300,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     checkButton.setVisibility(View.INVISIBLE);
                     micButton.setBackgroundResource(R.drawable.ic_mic_white);
                     if(enableSendAudioButton){
-                        sendAudioButton.setVisibility(View.INVISIBLE);
+                        sendAudioButton.setVisibility(View.VISIBLE);
                     }
-                    //TODO: show send button & have on click listener for it here to send WSBT OR BT
-                    //TODO: remove the commented stuff. left just incase
-                  /*  if(StoryState.getCurrentPhase().getTitle().equals("Back Translation" )){
-                       File playback = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide());
-                      //  String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide()).getName();
-                        try {
-                            BackTranslationUpload.Upload(playback, appContext.getApplicationContext());
-                        }
-                        catch(IOException e){
-                            e.printStackTrace();
-                        }
-                    }*/
                 }
             };
 

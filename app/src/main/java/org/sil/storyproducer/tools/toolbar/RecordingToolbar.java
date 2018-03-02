@@ -511,6 +511,7 @@ public class RecordingToolbar extends AnimationToolbar {
             View.OnClickListener sendAudioListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    stopPlayBackAndRecording();
                     sendAudio();
                 }
             };
@@ -522,7 +523,6 @@ public class RecordingToolbar extends AnimationToolbar {
         *Send single audio file to remote consultant
          */
         private void sendAudio(){
-            //TODO: SEND AUDIO (either wsbt or current slide bt)
             Toast.makeText(appContext, "Sending Audio", Toast.LENGTH_SHORT).show();
             Phase phase = StoryState.getCurrentPhase();
             int slideNum;
@@ -575,13 +575,13 @@ public class RecordingToolbar extends AnimationToolbar {
         StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLLEY_RESP", response.toString());
                 resp  = response;
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_ERR", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
 
@@ -637,14 +637,14 @@ public class RecordingToolbar extends AnimationToolbar {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLLEY_RESP", response.toString());
                 resp  = response;
                 Toast.makeText(appContext, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_ERR", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
                 Toast.makeText(appContext, "Error occurred, please try sending the audio file again", Toast.LENGTH_SHORT).show();
