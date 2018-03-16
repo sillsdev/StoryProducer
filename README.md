@@ -8,19 +8,20 @@ End recipients: members of local language communities
 
 Developers:  
    * Vision and design by Robin Rempel, SIL
-   * Logo and Prototype: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
+   * Logo by Jordan Skomer and Mackenzie Sanders
+   * Prototype app: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
    * Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
-   * Software engineers for v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
+   * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
    * Software engineers for v1.5 - v1.9: John Lambert and Grant Dennison
 
-Translation and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
+Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
 * LEARN or internalize the story
-* DRAFT an audio translation
+* TRANSLATE/DRAFT an audio translation
 * COMMUNITY CHECK the draft for naturalness and clarity
 * CONSULTANT CHECK for accuracy and approval
 * DRAMATIZE the final audio
-* PUBLISH/EXPORT new videos
+* FINALIZE/CREATE new videos
 * SHARE the videos
 
 ## Installing the application
