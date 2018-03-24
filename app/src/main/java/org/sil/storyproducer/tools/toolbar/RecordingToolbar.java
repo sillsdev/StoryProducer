@@ -628,57 +628,59 @@ public class RecordingToolbar extends AnimationToolbar {
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
         String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
-        //Submits logs too
-        org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-        String logString ="";
+        js = new HashMap<String,String>();
 
-        Object[] logs = log.toArray();
+        //Submits all logs with first slide
+        if(slide == 1) {
+            org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+            String logString = "";
+
+            Object[] logs = log.toArray();
 
 
-        String[] slideLogs = new String[logs.length];
+            String[] slideLogs = new String[logs.length];
 
-        for(int i = 0; i<logs.length;i++){
-            if(logs[i] instanceof ComChkEntry){
-                ComChkEntry tempLog = (ComChkEntry)logs[i];
-                if(tempLog.appliesToSlideNum(slide)) {
-                    logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                            + " " + tempLog.getDateTime() + "\n";
+            for (int i = 0; i < logs.length; i++) {
+                if (logs[i] instanceof ComChkEntry) {
+                    ComChkEntry tempLog = (ComChkEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
+                } else if (logs[i] instanceof LearnEntry) {
+                    LearnEntry tempLog = (LearnEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                } else if (logs[i] instanceof DraftEntry) {
+                    DraftEntry tempLog = (DraftEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                } else {
+                    LogEntry tempLog = (LogEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
                 }
 
             }
-            else if(logs[i] instanceof LearnEntry){
-                LearnEntry tempLog = (LearnEntry) logs[i];
-                if(tempLog.appliesToSlideNum(slide)) {
-                    logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                            + " " + tempLog.getDateTime() + "\n";
-                }
-            }
-            else if(logs[i] instanceof DraftEntry){
-                DraftEntry tempLog = (DraftEntry)logs[i];
-                if(tempLog.appliesToSlideNum(slide)) {
-                    logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                            + " " + tempLog.getDateTime() + "\n";
-                }
-            }
-            else {
-                LogEntry tempLog = (LogEntry) logs[i];
-                if (tempLog.appliesToSlideNum(slide)) {
-                    logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                            + " " + tempLog.getDateTime() + "\n";
-                }
-
-            }
-
+            js.put("Log", logString);
         }
 
-        js = new HashMap<String,String>();
+
         js.put("Key", api_token);
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle", templateTitle);
         js.put("SlideNumber", currentSlide);
         js.put("Data", byteString);
         js.put("BacktranslationText", transcription);
-        js.put("Log", logString);
+
 
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
             @Override
