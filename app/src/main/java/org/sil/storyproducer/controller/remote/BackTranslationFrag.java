@@ -513,17 +513,18 @@ public class BackTranslationFrag extends Fragment {
                 }
 
                 //int[] arr = {-1,1,0,1,1,1};
-                for(int i = 0; i<arr.length(); i++){
-                    //-1 not approved, 0 pending, 1 approved
+                if(arr != null) {
+                    for (int i = 0; i < arr.length(); i++) {
+                        //-1 not approved, 0 pending, 1 approved
 
-                    try {
-                        prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
-                        prefsEditor.apply();
-                    }
-                    catch(JSONException e){
-                        e.printStackTrace();
-                    }
+                        try {
+                            prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
+                            prefsEditor.apply();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
+                    }
                 }
 
                 Log.i("LOG_VOLEY", response.toString());

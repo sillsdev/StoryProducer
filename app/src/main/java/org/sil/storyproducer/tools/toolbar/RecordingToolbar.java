@@ -529,29 +529,24 @@ public class RecordingToolbar extends AnimationToolbar {
             Toast.makeText(appContext, "Sending Audio", Toast.LENGTH_SHORT).show();
             Phase phase = StoryState.getCurrentPhase();
             int slideNum;
+            File slide;
+            int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
             if(phase.getType() == Phase.Type.BACKT) {
                 slideNum = StoryState.getCurrentStorySlide();
+                slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
             }
             //Whole story bt audio will be uploaded as one slide past the final slide for the story
             else{
                 slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+                slide = AudioFiles.getWholeStory(StoryState.getStoryName());
             }
-            postABackTranslation(slideNum, phase);
+
+            requestRemoteReview(appContext, totalSlides);
+            postABackTranslation(slideNum, slide);
         }
 
         //Posts a single BT or WSBT
-        public void postABackTranslation(int slideNum, Phase phase){
-
-            int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
-
-            requestRemoteReview(appContext, totalSlides);
-            File slide;
-            if (phase.getType() == Phase.Type.BACKT) {
-                slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
-            }
-            else{
-                slide = AudioFiles.getWholeStory(StoryState.getStoryName());
-            }
+        public void postABackTranslation(int slideNum, File slide){
             try {
                 Upload(slide, appContext, slideNum);
             }
@@ -630,8 +625,8 @@ public class RecordingToolbar extends AnimationToolbar {
 
         js = new HashMap<String,String>();
 
-        //Submits all logs with first slide
-        if(slide == 1) {
+        //Submits all logs with first slide (title slide)
+        if(slide == 0) {
             org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
             String logString = "";
 
