@@ -156,7 +156,7 @@ public class LearnActivity extends PhaseBaseActivity {
                 }
             }
         });
-        recordingToolbar.hideFloatingActionButton();
+        //recordingToolbar.hideFloatingActionButton();
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
@@ -203,7 +203,7 @@ public class LearnActivity extends PhaseBaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        recordingToolbar.hideFloatingActionButton();
+        //recordingToolbar.hideFloatingActionButton();
     }
 
     @Override
@@ -280,7 +280,7 @@ public class LearnActivity extends PhaseBaseActivity {
             if(backgroundAudioExists) {
                 backgroundPlayer.resumeAudio();
             }
-            recordingToolbar.hideFloatingActionButton();
+            //recordingToolbar.hideFloatingActionButton();
         }
     }
 
@@ -363,7 +363,7 @@ public class LearnActivity extends PhaseBaseActivity {
                     resetVideoWithSoundOff();
                     setVolumeSwitchAndFloatingButtonVisible();
                     recordingToolbar.keepToolbarVisible();
-                    recordingToolbar.hideFloatingActionButton();
+                    //recordingToolbar.hideFloatingActionButton();
                 }
             });
             snackbar.show();
@@ -377,7 +377,7 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     private void setVolumeSwitchAndFloatingButtonVisible() {
         //make the floating button visible
-        recordingToolbar.showFloatingActionButton();
+        //recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
         ImageView soundOff = (ImageView) findViewById(R.id.soundOff);
         ImageView soundOn = (ImageView) findViewById(R.id.soundOn);
@@ -451,7 +451,7 @@ public class LearnActivity extends PhaseBaseActivity {
                 resetVideoWithSoundOff();
             }
         });
-        recordingToolbar.hideFloatingActionButton();
+        //recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
         RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
@@ -460,7 +460,7 @@ public class LearnActivity extends PhaseBaseActivity {
             public void onClick(View view) {
                 if (recordingToolbar != null && recordingToolbar.isOpen() && !recordingToolbar.isRecording()) {
                     recordingToolbar.keepToolbarVisible();
-                    recordingToolbar.hideFloatingActionButton();
+                    //recordingToolbar.hideFloatingActionButton();
                 }
             }
         });

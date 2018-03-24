@@ -76,7 +76,7 @@ public class RecordingToolbar extends AnimationToolbar {
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     private static final String TRANSCRIPTION_TEXT = "TranscriptionText";
 
-    private FloatingActionButton fabPlus;
+    //private FloatingActionButton fabPlus;
     protected LinearLayout toolbar;
     private Modal multiRecordModal;
 
@@ -136,7 +136,7 @@ public class RecordingToolbar extends AnimationToolbar {
         this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
         this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
         this.rootViewToEmbedToolbarIn = rootViewLayout;
-        fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
+        //fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
         this.toolbar = (LinearLayout) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
         this.enablePlaybackButton = enablePlaybackButton;
         this.enableDeleteButton = enableDeleteButton;
@@ -166,23 +166,23 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * This function is used to show the floating button
      */
-    public void showFloatingActionButton() {
+    /*public void showFloatingActionButton() {
         fabPlus.show();
-    }
+    }*/
 
     /**
      * This function is used to hide the floating button
      */
-    public void hideFloatingActionButton() {
+   /* public void hideFloatingActionButton() {
         fabPlus.hide();
-    }
+    }*/
 
     /**
      * This function can be called so that the toolbar is automatically opened, without animation,
      * when the fragment is drawn.
      */
     public void keepToolbarVisible() {
-        hideFloatingActionButton();
+        //hideFloatingActionButton();
         toolbar.setVisibility(View.VISIBLE);
     }
 
@@ -380,10 +380,10 @@ public class RecordingToolbar extends AnimationToolbar {
      */
     protected void setupToolbar() {
         RelativeLayout.LayoutParams[] myParams =
-                new RelativeLayout.LayoutParams[]{new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),
+                new RelativeLayout.LayoutParams[]{/*new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),*/
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)};
         int[] myRules = new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_END, RelativeLayout.ALIGN_PARENT_RIGHT};
-        View[] myView = new View[]{fabPlus, toolbar};
+        View[] myView = new View[]{ /*fabPlus,*/toolbar};
 
         //Must remove all children of the layout, before appending them to the new rootView
         rootViewToolbarLayout.removeAllViews();
@@ -395,8 +395,8 @@ public class RecordingToolbar extends AnimationToolbar {
             ((RelativeLayout) rootViewToEmbedToolbarIn).addView(myView[i]);
         }
         //Index corresponds to the myView array
-        fabPlus = (FloatingActionButton) myView[0];
-        toolbar = (LinearLayout) myView[1];
+        //fabPlus = (FloatingActionButton) myView[0];
+        toolbar = (LinearLayout) myView[0];
     }
 
     /**
