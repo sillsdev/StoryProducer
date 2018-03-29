@@ -31,9 +31,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
@@ -104,7 +108,6 @@ public class RemoteCheckFrag extends Fragment {
 
         //TODO: MAKE TEXT SCROLLABLE
         //TODO: SEND THE SEND DATA ON DONE EDITING
-        //TODO: RECEIVE MSG ON SWIPE
         //TODO: ADD BUTTONS AND LISTENERS TO MAKE SENDING / RECEIEVING MORE INTUITIVE
 
     }
@@ -164,7 +167,6 @@ public class RemoteCheckFrag extends Fragment {
             @Override
             public void onClick(View v) {
                 sendMessage();
-                Toast.makeText(getContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -204,6 +206,11 @@ public class RemoteCheckFrag extends Fragment {
             recordingToolbar.onClose();
         }
         closeKeyboard(rootView);
+
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
+        prefsEditor.apply();
     }
 
     /**
@@ -501,7 +508,6 @@ public class RemoteCheckFrag extends Fragment {
 
 
         //Get msg for current slide
-        //String message = prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, "");
         String  message = messageSent.getText().toString();
         //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
         js.put("TranslatorMsg",message);
@@ -513,15 +519,31 @@ public class RemoteCheckFrag extends Fragment {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
+                prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+                prefsEditor.apply();
+                messageSent.setText("");
+                //TODO: create new message bubble, save to data struct and add bubble to new view
+                Toast.makeText(getContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_MSG_ERR", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
+                //Save the message to send next time
+                prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
+                prefsEditor.apply();
 
+                if(error instanceof TimeoutError || error instanceof NoConnectionError || error
+                        instanceof NetworkError || error instanceof ServerError ||
+                        error instanceof AuthFailureError){
+                    Toast.makeText(getContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), R.string.remote_check_msg_failed, Toast.LENGTH_SHORT).show();
+                }
             }
 
         }) {

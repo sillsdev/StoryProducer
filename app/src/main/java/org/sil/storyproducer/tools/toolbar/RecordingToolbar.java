@@ -420,6 +420,7 @@ public class RecordingToolbar extends AnimationToolbar {
                     }
                     if(enableSendAudioButton){
                         sendAudioButton.setVisibility(View.VISIBLE);
+
                     }
                 }
                 else {
