@@ -107,8 +107,6 @@ public class RemoteCheckFrag extends Fragment {
         setHasOptionsMenu(true);
 
         //TODO: MAKE TEXT SCROLLABLE
-        //TODO: SEND THE SEND DATA ON DONE EDITING
-        //TODO: ADD BUTTONS AND LISTENERS TO MAKE SENDING / RECEIEVING MORE INTUITIVE
 
     }
 
@@ -622,6 +620,7 @@ public class RemoteCheckFrag extends Fragment {
                 }
 
                 //get all msgs and store into shared preferences
+                //TODO: save the receieved msgs to data struct and create bubbles to add to new view
                 for(int j=0; j<msgs.length();j++){
 
                     try{
