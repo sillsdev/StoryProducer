@@ -117,7 +117,7 @@ public class RemoteCheckFrag extends Fragment {
         draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
 
-        messageReceieved = (TextView)rootView.findViewById(R.id.receiveMessage);
+        messageReceieved = (TextView)rootView.findViewById(R.id.message_history);
         messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
 
         setUiColors();

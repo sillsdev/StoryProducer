@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_remote_check_root_layout"
@@ -7,97 +7,44 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.remote.RemoteCheckFrag">
 
-    <RelativeLayout
-        android:id="@+id/fragment_backtranslation_picture_envelope"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <android.support.v7.widget.RecyclerView
+            android:id="@+id/message_history"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+        </android.support.v7.widget.RecyclerView>
 
-        <ImageView
-            android:id="@+id/fragment_remote_check_image_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop" />
-
-
-        <ImageButton
-            android:id="@+id/fragment_remote_check_play_draft_button"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/msgbox"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_play_gray"
-            android:src="@drawable/ic_red_ex_48dp" />
+            android:orientation="horizontal"
+            android:minHeight="48dp"
+            android:background="#ffffff"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
 
-
-        <TextView
-            android:layout_width="@dimen/triangle_width"
-            android:layout_height="@dimen/triangle_height"
-            android:layout_alignBottom="@id/fragment_remote_check_image_view"
-            android:layout_alignRight="@id/fragment_remote_check_image_view"
-            android:background="@drawable/triangle_background" />
-
-        <TextView
-            android:id="@+id/slide_number_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/fragment_remote_check_image_view"
-            android:layout_alignRight="@id/fragment_remote_check_image_view"
-            android:paddingRight="7dp"
-            android:text="1"
-            android:textSize="@dimen/text_body" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/slide_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerVertical="true"
-        android:paddingBottom="5dp">
-
-        <TextView
-            android:id="@+id/receiveMessage"
-            android:layout_width="match_parent"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="58dp"
-            android:layout_height="wrap_content"
-            android:text="@string/empty_message"
-            android:textSize="@dimen/large_text"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:inputType="none">
-        </TextView>
-
-        <EditText
+            <EditText
             android:id="@+id/sendMessage"
+            android:hint="Enter message"
+            android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_height="wrap_content"
-            android:layout_below="@id/receiveMessage"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/button_send_msg"
             android:inputType="text"/>
 
         <Button
             android:id="@+id/button_send_msg"
             android:layout_width="36dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:layout_below="@id/receiveMessage"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/send_message"/>
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_remote_check_r_concheck_checkmark_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/sendMessage"
-            />
-    </RelativeLayout>
+            android:background="@drawable/send_message"
+            android:gravity="center"
+            android:layout_gravity="bottom" />
+        </LinearLayout>
 
 
-</RelativeLayout>
+</ConstraintLayout>
