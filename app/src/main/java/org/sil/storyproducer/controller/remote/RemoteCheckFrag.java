@@ -26,6 +26,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,9 +47,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.controller.adapter.MessageAdapter;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.messaging.Message;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.Network.paramStringRequest;
@@ -85,7 +89,7 @@ public class RemoteCheckFrag extends Fragment {
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
-    private ImageButton draftPlayButton;
+    //private ImageButton draftPlayButton;
     private Button sendMessageButton;
     private TextView messageReceieved;
     private EditText messageSent;
@@ -95,6 +99,8 @@ public class RemoteCheckFrag extends Fragment {
     private String resp;
     private Map<String, String> js;
 
+    private MessageAdapter msgAdapter;
+    private ListView messagesView;
     private PausingRecordingToolbar recordingToolbar;
 
     @Override
@@ -105,8 +111,8 @@ public class RemoteCheckFrag extends Fragment {
         storyName = StoryState.getStoryName();
         //setRecordFilePath();
         setHasOptionsMenu(true);
+        msgAdapter = new MessageAdapter(getContext());
 
-        //TODO: MAKE TEXT SCROLLABLE
 
     }
 
@@ -114,17 +120,20 @@ public class RemoteCheckFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
-        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
+        //draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
+
+        messagesView = (ListView) rootView.findViewById(R.id.message_history);
+        messagesView.setAdapter(msgAdapter);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
 
-        messageReceieved = (TextView)rootView.findViewById(R.id.message_history);
+        //messageReceieved = (TextView)rootView.findViewById(R.id.message_history);
         messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
 
         setUiColors();
-        setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
-        setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        slideNumberText.setText(slideNumber + "");
+        //setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
+        //setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
+        //TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        //slideNumberText.setText(slideNumber + "");
 
         //rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
@@ -144,7 +153,7 @@ public class RemoteCheckFrag extends Fragment {
 
         //setToolbar(rootViewToolbar);
 
-        draftPlayer = new AudioPlayer();
+        /*draftPlayer = new AudioPlayer();
         File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
@@ -159,8 +168,9 @@ public class RemoteCheckFrag extends Fragment {
             }
         });
 
-        setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button));
+        setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button)); */
 
+        getMessages();
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -169,7 +179,7 @@ public class RemoteCheckFrag extends Fragment {
         });
 
         //dramatize phase not unlocked yet
-        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        /*final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
 
@@ -189,7 +199,7 @@ public class RemoteCheckFrag extends Fragment {
             if (phaseUnlocked) {
                 unlockDramatizationPhase();
             }
-        }
+        }*/
 
     }
 
@@ -209,6 +219,8 @@ public class RemoteCheckFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
         prefsEditor.apply();
+
+        //TODO:save message adapter?
     }
 
     /**
@@ -285,7 +297,7 @@ public class RemoteCheckFrag extends Fragment {
      */
     private void setUiColors() {
         if (slideNumber == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_remote_check_root_layout);
+            LinearLayout rl = (LinearLayout) rootView.findViewById(R.id.fragment_remote_check_root_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
@@ -500,7 +512,7 @@ public class RemoteCheckFrag extends Fragment {
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadTranslatorMsg.php";
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php";
 
         js = new HashMap<String,String>();
 
@@ -508,10 +520,10 @@ public class RemoteCheckFrag extends Fragment {
         //Get msg for current slide
         String  message = messageSent.getText().toString();
         //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
-        js.put("TranslatorMsg",message);
+        js.put("Message",message);
         js.put("Key", api_token);
         js.put("PhoneId", phone_id);
-        js.put("TemplateTitle" , StoryState.getStoryName());
+        js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
 
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
@@ -519,10 +531,16 @@ public class RemoteCheckFrag extends Fragment {
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
+                //TODO: create new message bubble, save to data struct and add bubble to new view
+                Message m = new Message(false, messageSent.getText().toString());
+                msgAdapter.add(m);
+                messagesView.setSelection(messagesView.getCount() - 1);
+
+                //set text back to blank
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
                 prefsEditor.apply();
                 messageSent.setText("");
-                //TODO: create new message bubble, save to data struct and add bubble to new view
+
                 Toast.makeText(getContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
@@ -559,6 +577,24 @@ public class RemoteCheckFrag extends Fragment {
         test.add(req);
 
 
+    }
+    
+    private void getMessages(){
+        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
+        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php";
+
+        js = new HashMap<String,String>();
+
+        js.put("Key", api_token);
+        js.put("PhoneId", phone_id);
+        js.put("StoryTitle" , StoryState.getStoryName());
+        js.put("SlideNumber", Integer.toString(slideNumber));
+        js.put("LastId", Integer.toString(0));
+
+        //returns messages array IsTranslator: boolean + Message: String
+        //returns LastId: Integer
     }
 
     //function to get the slide status for all slides & any messages sent to the phone

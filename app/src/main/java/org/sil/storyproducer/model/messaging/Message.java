@@ -8,16 +8,16 @@ public class Message {
     private boolean fromTranslator;
     private String message;
 
-    Message(boolean b, String m){
+    public Message(boolean b, String m){
         fromTranslator = b;
         message = m;
     }
 
-    protected boolean isFromTranslator(){
+    public boolean isFromTranslator(){
         return fromTranslator;
     }
 
-    protected String getMessage(){
+    public String getMessage(){
         return message;
     }
 }

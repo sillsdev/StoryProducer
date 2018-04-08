@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             startActivity(intent);
         }
         else if(id == R.id.menu_license){
-            //TODO: LICENSING POP UP... MAY NEED SCROLLABLE OR SOMETHING BIGGER (FILL SCREEN)
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(this.getString(R.string.license_title))
                     .setMessage(this.getString(R.string.license_body))
