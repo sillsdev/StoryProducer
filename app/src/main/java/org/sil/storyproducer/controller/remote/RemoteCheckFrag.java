@@ -169,8 +169,11 @@ public class RemoteCheckFrag extends Fragment {
         });
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button)); */
-
-        getMessages();
+        //set text
+        messageSent.setHint(R.string.message_hint);
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
+        //getMessages();
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -230,7 +233,7 @@ public class RemoteCheckFrag extends Fragment {
     @Override
     public void onStop()  {
         super.onStop();
-        draftPlayer.release();
+        //draftPlayer.release();
         if(recordingToolbar != null){
             recordingToolbar.onClose();
             recordingToolbar.releaseToolbarAudio();

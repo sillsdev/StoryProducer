@@ -159,7 +159,7 @@
 
     <!-- Remote check phase -->
     <string name="remote_check_title">Remote Check</string>
-    <string name="placeholder_txt">Enter Message...</string>
+    <string name="message_hint">Enter Message</string>
     <string name="empty_message">RC messages will appear here...</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
