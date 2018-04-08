@@ -578,7 +578,7 @@ public class RemoteCheckFrag extends Fragment {
 
 
     }
-    
+
     private void getMessages(){
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
@@ -591,10 +591,80 @@ public class RemoteCheckFrag extends Fragment {
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
-        js.put("LastId", Integer.toString(0));
+        int lastId = msgAdapter.getCount()-1;
+        if(lastId >= 0) {
+            js.put("LastId", Integer.toString(lastId));
+        }
+        else{
+            js.put("LastId",Integer.toString(0));
+        }
 
-        //returns messages array IsTranslator: boolean + Message: String
-        //returns LastId: Integer
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                //returns messages array IsTranslator: boolean + Message: String
+                //returns LastId: Integer
+                try {
+                    obj = new JSONObject(response);
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+                JSONArray msgs = null;
+
+                try {
+                    msgs = obj.getJSONArray("Messages");
+                    //int id = obj.getInt("LastId");
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+
+
+                //get all msgs and store into shared preferences
+                //TODO: save the receieved msgs to data struct and create bubbles to add to new view
+                for(int j=0; j<msgs.length();j++){
+
+                    try{
+                        boolean isFromTranslator = msgs.getBoolean(j);
+                        String msg = msgs.getString(j);
+                        Message m = new Message(isFromTranslator, msg);
+                        msgAdapter.add(m);
+                    }
+                    catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.i("LOG_VOLEY", response.toString());
+
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIEVE MSG");
+                //testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+
+                return js;
+            }
+        };
+
+
+        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
+
+        test.add(req);
+
+
     }
 
     //function to get the slide status for all slides & any messages sent to the phone
