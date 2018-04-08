@@ -173,7 +173,7 @@ public class RemoteCheckFrag extends Fragment {
         messageSent.setHint(R.string.message_hint);
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
-        //getMessages();
+        getMessages();
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -537,6 +537,7 @@ public class RemoteCheckFrag extends Fragment {
                 //TODO: create new message bubble, save to data struct and add bubble to new view
                 Message m = new Message(false, messageSent.getText().toString());
                 msgAdapter.add(m);
+                msgAdapter.notifyDataSetChanged();
                 messagesView.setSelection(messagesView.getCount() - 1);
 
                 //set text back to blank
@@ -635,6 +636,7 @@ public class RemoteCheckFrag extends Fragment {
                         String msg = msgs.getString(j);
                         Message m = new Message(isFromTranslator, msg);
                         msgAdapter.add(m);
+                        msgAdapter.notifyDataSetChanged();
                     }
                     catch(JSONException e){
                         e.printStackTrace();
