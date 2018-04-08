@@ -55,7 +55,7 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(i);
 
         // from phone; on right
-        if (message.isFromTranslator()) {
+        if (message.isFromPhone()) {
             convertView = messageInflater.inflate(R.layout.phone_message_layout, null);
         }
         // from rocc; on left

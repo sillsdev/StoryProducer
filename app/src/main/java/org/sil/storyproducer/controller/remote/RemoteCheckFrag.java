@@ -129,7 +129,7 @@ public class RemoteCheckFrag extends Fragment {
         //messageReceieved = (TextView)rootView.findViewById(R.id.message_history);
         messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
 
-        setUiColors();
+        //setUiColors();
         //setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
         //setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
         //TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
@@ -298,12 +298,12 @@ public class RemoteCheckFrag extends Fragment {
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
-    private void setUiColors() {
+    /*private void setUiColors() {
         if (slideNumber == 0) {
             LinearLayout rl = (LinearLayout) rootView.findViewById(R.id.fragment_remote_check_root_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
-    }
+    }*/
 
     /**
      * This function is used to the set the picture per slide.
@@ -535,7 +535,7 @@ public class RemoteCheckFrag extends Fragment {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
                 //TODO: create new message bubble, save to data struct and add bubble to new view
-                Message m = new Message(false, messageSent.getText().toString());
+                Message m = new Message(true, messageSent.getText().toString());
                 msgAdapter.add(m);
                 msgAdapter.notifyDataSetChanged();
                 messagesView.setSelection(messagesView.getCount() - 1);

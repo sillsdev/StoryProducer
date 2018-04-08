@@ -5,16 +5,16 @@ package org.sil.storyproducer.model.messaging;
  */
 
 public class Message {
-    private boolean fromTranslator;
+    private boolean fromPhone;
     private String message;
 
     public Message(boolean b, String m){
-        fromTranslator = b;
+        fromPhone = b;
         message = m;
     }
 
-    public boolean isFromTranslator(){
-        return fromTranslator;
+    public boolean isFromPhone(){
+        return fromPhone;
     }
 
     public String getMessage(){
