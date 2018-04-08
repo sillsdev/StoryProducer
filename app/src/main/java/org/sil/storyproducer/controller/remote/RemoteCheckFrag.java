@@ -595,13 +595,8 @@ public class RemoteCheckFrag extends Fragment {
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
-        int lastId = msgAdapter.getCount()-1;
-        if(lastId >= 0) {
-            js.put("LastId", Integer.toString(lastId));
-        }
-        else{
-            js.put("LastId",Integer.toString(0));
-        }
+        js.put("LastId", Integer.toString(msgAdapter.getCount()-1));
+
 
         StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
 
