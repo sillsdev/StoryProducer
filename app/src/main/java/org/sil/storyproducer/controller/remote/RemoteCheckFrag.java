@@ -627,8 +627,16 @@ public class RemoteCheckFrag extends Fragment {
                 for(int j=0; j<msgs.length();j++){
 
                     try{
-                        boolean isFromTranslator = msgs.getBoolean(j);
-                        String msg = msgs.getString(j);
+                        JSONObject currMsg = msgs.getJSONObject(j);
+                        int num = currMsg.getInt("IsTranslator");
+                        boolean isFromTranslator;
+                        if(num == 1){
+                            isFromTranslator = true;
+                        }
+                        else{
+                            isFromTranslator = false;
+                        }
+                        String msg = currMsg.getString("Message");
                         Message m = new Message(isFromTranslator, msg);
                         msgAdapter.add(m);
                         msgAdapter.notifyDataSetChanged();
