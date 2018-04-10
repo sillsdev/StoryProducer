@@ -553,11 +553,7 @@ public class RemoteCheckFrag extends Fragment {
         };
 
 
-
-        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
-
-        test.add(req);
-
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
 
     }
 
@@ -658,9 +654,7 @@ public class RemoteCheckFrag extends Fragment {
         };
 
 
-        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
-
-        test.add(req);
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
 
 
     }

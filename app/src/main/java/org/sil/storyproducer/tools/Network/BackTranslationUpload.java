@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by alexamhepner on 11/16/17.
+ * Created by brendon burns on 11/16/17.
  */
 
 public class BackTranslationUpload {
@@ -88,11 +88,7 @@ public class BackTranslationUpload {
             };
 
 
-            RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-            test.add(req);
-
-           // VolleySingleton.getInstance(myContext).addToRequestQueue(req);
+            VolleySingleton.getInstance(myContext).addToRequestQueue(req);
 
         }
 

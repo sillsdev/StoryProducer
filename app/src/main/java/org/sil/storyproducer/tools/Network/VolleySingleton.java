@@ -14,14 +14,12 @@ import android.net.NetworkInfo;
 public class VolleySingleton {
         private static VolleySingleton mInstance;
         private RequestQueue mRequestQueue;
-        private RequestQueue offlineQueue;
 
         private static Context mCtx;
 
         private VolleySingleton(Context context) {
             mCtx = context;
             mRequestQueue = getRequestQueue();
-            offlineQueue = Volley.newRequestQueue(context);
         }
 
         public static synchronized VolleySingleton getInstance(Context context) {
@@ -36,30 +34,21 @@ public class VolleySingleton {
                 // getApplicationContext() is key, it keeps you from leaking the
                 // Activity or BroadcastReceiver if someone passes one in.
                 mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+                boolean isConnected = ConnectivityStatus.isConnected(mCtx);
+                if(!isConnected){
+                    stopQueue();
+                }
             }
             return mRequestQueue;
         }
 
         public <T> void addToRequestQueue(Request<T> req) {
-            ConnectivityManager cm = (ConnectivityManager)mCtx.getSystemService(mCtx.CONNECTIVITY_SERVICE);
 
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            boolean isConnected = activeNetwork !=null && activeNetwork.isConnectedOrConnecting();
+            getRequestQueue().add(req);
 
-            if(isConnected){
-                getRequestQueue().add(req);
-            }
-            else{
-
-                offlineQueue.add(req);
-            }
         }
-        public void startOffline(){
-            offlineQueue.start();
-        }
-        public void stopOffline(){
-            offlineQueue.stop();
-        }
+        public void startQueue(){ getRequestQueue().start(); }
+        public void stopQueue(){ getRequestQueue().stop(); }
 
     }
 

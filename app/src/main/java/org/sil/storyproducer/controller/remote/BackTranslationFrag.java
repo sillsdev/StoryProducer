@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -548,12 +549,7 @@ public class BackTranslationFrag extends Fragment {
             }
         };
 
-
-        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
-
-        test.add(req);
-
-
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
     }
 
     public void requestRemoteReview(Context con, int numSlides){
@@ -594,10 +590,7 @@ public class BackTranslationFrag extends Fragment {
         };
 
 
-        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-        test.add(req);
-
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
     }
 
     private void addTranscription() {

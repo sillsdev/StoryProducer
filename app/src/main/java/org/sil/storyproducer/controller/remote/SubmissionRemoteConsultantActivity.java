@@ -196,9 +196,7 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
         };
 
 
-        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-        test.add(req);
+        VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(req);
 
     }
 
@@ -294,14 +292,9 @@ public class SubmissionRemoteConsultantActivity extends PhaseBaseActivity {
                 }
             };
 
-
-        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-        test.add(req);
+            VolleySingleton.getInstance(getApplicationContext()).addToRequestQueue(req);
 
     }
-
-
 
 
 }
