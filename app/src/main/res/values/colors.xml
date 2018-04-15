@@ -10,6 +10,7 @@
     <color name="navBar">#d1d2d4</color>
     <color name="darkGray">#404041</color>
     <color name="gray">#757575</color>
+    <color name="black">#111111</color>
     <color name="black_semi_transparent">#B2000000</color>
     <color name="green">#32CD32</color>
     <color name="yellow">#ffeb3b</color>

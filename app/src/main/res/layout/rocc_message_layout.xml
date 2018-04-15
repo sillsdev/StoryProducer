@@ -12,10 +12,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/message_body"
         android:background="@drawable/rocc_message"
-        android:textColor="#111111"
+        android:textColor="@color/black"
         android:padding="10dp"
         android:textSize="18sp"
         android:text="Placeholder"
+        android:maxWidth="240dp"
         />
 
 </RelativeLayout>

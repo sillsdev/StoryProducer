@@ -159,6 +159,7 @@
 
     <!-- Remote check phase -->
     <string name="remote_check_title">Remote Check</string>
+    <string name="messaging_bar_title">Messages for Slide</string>
     <string name="message_hint">Enter Message</string>
     <string name="empty_message">RC messages will appear here...</string>
     <string name="remote_check_msg_sent">Message Sent!</string>

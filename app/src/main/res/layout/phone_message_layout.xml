@@ -12,11 +12,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/message_body"
         android:background="@drawable/phone_message"
-        android:textColor="#111111"
+        android:textColor="@color/white"
         android:padding="10dp"
-
         android:textSize="18sp"
         android:layout_alignParentRight="true"
         android:text="Placeholder"
+        android:maxWidth="240dp"
         />
 </RelativeLayout>

@@ -90,6 +90,7 @@ public class RemoteCheckFrag extends Fragment {
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
     //private ImageButton draftPlayButton;
+    private TextView messageTitle;
     private Button sendMessageButton;
     private TextView messageReceieved;
     private EditText messageSent;
@@ -121,7 +122,7 @@ public class RemoteCheckFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
         //draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
-
+        messageTitle = (TextView)rootView.findViewById(R.id.messaging_title);
         messagesView = (ListView) rootView.findViewById(R.id.message_history);
         messagesView.setAdapter(msgAdapter);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
@@ -169,7 +170,9 @@ public class RemoteCheckFrag extends Fragment {
         });
 
         setPlayStopDraftButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button)); */
-        //set text
+        //set texts for this view
+        final String titleString = " " + slideNumber;
+        messageTitle.append(titleString);
         messageSent.setHint(R.string.message_hint);
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
@@ -623,7 +626,7 @@ public class RemoteCheckFrag extends Fragment {
 
 
                 //get all msgs and store into shared preferences
-                //TODO: save the receieved msgs to data struct and create bubbles to add to new view
+                //TODO: save the receieved msgs to data struct
                 for(int j=0; j<msgs.length();j++){
 
                     try{
