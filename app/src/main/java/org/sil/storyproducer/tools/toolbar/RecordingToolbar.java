@@ -595,9 +595,7 @@ public class RecordingToolbar extends AnimationToolbar {
         };
 
 
-        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-        test.add(req);
+        VolleySingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
 
     }
 
@@ -704,9 +702,7 @@ public class RecordingToolbar extends AnimationToolbar {
         };
 
 
-        RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-        test.add(req);
+        VolleySingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
 
     }
 
