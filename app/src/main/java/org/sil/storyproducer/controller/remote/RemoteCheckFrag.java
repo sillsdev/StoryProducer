@@ -537,7 +537,6 @@ public class RemoteCheckFrag extends Fragment {
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
-                //TODO: create new message bubble, save to data struct and add bubble to new view
                 Message m = new Message(true, messageSent.getText().toString());
                 msgAdapter.add(m);
                 msgAdapter.notifyDataSetChanged();
@@ -623,6 +622,7 @@ public class RemoteCheckFrag extends Fragment {
 
                 //get all msgs and store into shared preferences
                 //TODO: save the receieved msgs to data struct
+                //TODO: change volley calls in this phase to the new paradigm
                 for(int j=0; j<msgs.length();j++){
 
                     try{
