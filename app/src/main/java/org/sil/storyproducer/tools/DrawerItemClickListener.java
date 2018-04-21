@@ -41,7 +41,6 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
                 context.startActivity(intent);
                 break;
             case 2:
-                //TODO: LICENSING POP UP... MAY NEED SCROLLABLE OR SOMETHING BIGGER (FILL SCREEN)
                 AlertDialog dialog = new AlertDialog.Builder(context)
                         .setTitle(context.getString(R.string.license_title))
                         .setMessage(context.getString(R.string.license_body))

@@ -14,6 +14,8 @@ import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -117,7 +119,29 @@ public class BackTranslationFrag extends Fragment {
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
         transcriptionText = (EditText)rootView.findViewById(R.id.transcription);
-        transcriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final String prefsKeyString = storyName + slideNumber + TRANSCRIPTION_TEXT;
+        String savedTranscriptionText = prefs.getString(prefsKeyString, "");
+        transcriptionText.setText(savedTranscriptionText);
+        transcriptionText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){
+
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int aft )
+            {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                addTranscription();
+            }
+        });
+        /*transcriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             public void onFocusChange(View view, boolean hasFocus) {
                 if (!hasFocus) {
@@ -125,7 +149,7 @@ public class BackTranslationFrag extends Fragment {
                 }
 
             }
-        });
+        });*/
         return rootView;
     }
 
@@ -456,8 +480,6 @@ public class BackTranslationFrag extends Fragment {
         return true;
     }
 
-
-    //TODO: unlock dramatize phase after all slides are approved
     private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
@@ -593,12 +615,10 @@ public class BackTranslationFrag extends Fragment {
     }
 
     private void addTranscription() {
-
-        int j = slideNumber;
         String transcript = transcriptionText.getText().toString();
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        prefsEditor.putString(storyName + j + TRANSCRIPTION_TEXT, transcript);
+        prefsEditor.putString(storyName + slideNumber + TRANSCRIPTION_TEXT, transcript);
         prefsEditor.apply();
 
     }

@@ -2,17 +2,13 @@ package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,9 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +30,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
@@ -49,14 +42,12 @@ import org.json.JSONObject;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
-import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.messaging.Message;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
@@ -73,28 +64,17 @@ public class RemoteCheckFrag extends Fragment {
 
     public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
-    public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
-    private static final String IS_CHECKED = "isCheckedi";
-    private static final String RECEIVED_MESSAGE = "REC_MSG";
-    private static final String WAS_RECEIVED = "WAS_RECVD";
     private static final String TO_SEND_MESSAGE = "SND_MSG";
-    private static final String WAS_SENT = "WAS_SENT";
 
     private View rootView;
-    private View rootViewToolbar;
     private int slideNumber;
-    private EditText slideText;
     private String storyName;
-    private boolean phaseUnlocked = false;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
     private File backTranslationRecordingFile = null;
-    //private ImageButton draftPlayButton;
     private TextView messageTitle;
     private Button sendMessageButton;
-    private TextView messageReceieved;
     private EditText messageSent;
-    private boolean isSlidesChecked = false;
 
     private JSONObject obj;
     private String resp;
@@ -110,7 +90,6 @@ public class RemoteCheckFrag extends Fragment {
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
-        //setRecordFilePath();
         setHasOptionsMenu(true);
         msgAdapter = new MessageAdapter(getContext());
 
@@ -475,7 +454,6 @@ public class RemoteCheckFrag extends Fragment {
 
                 //get all msgs and store into shared preferences
                 //TODO: save the receieved msgs to data struct
-                //TODO: change volley calls in this phase to the new paradigm
                 for(int j=0; j<msgs.length();j++){
 
                     try{
