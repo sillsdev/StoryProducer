@@ -126,17 +126,8 @@ public class RemoteCheckFrag extends Fragment {
         messagesView = (ListView) rootView.findViewById(R.id.message_history);
         messagesView.setAdapter(msgAdapter);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
-
-        //messageReceieved = (TextView)rootView.findViewById(R.id.message_history);
         messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
 
-        //setUiColors();
-        //setPic((ImageView)rootView.findViewById(R.id.fragment_remote_check_image_view), slideNumber);
-        //setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
-        //TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
-        //slideNumberText.setText(slideNumber + "");
-
-        //rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
 
 
@@ -183,30 +174,6 @@ public class RemoteCheckFrag extends Fragment {
                 sendMessage();
             }
         });
-
-        //dramatize phase not unlocked yet
-        /*final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor prefsEditor = prefs.edit();
-        final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
-
-        //if story not approved yet, receieve updates
-        if(!prefs.getBoolean(prefsKeyString, false)) {
-            getSlidesStatus();
-            setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_remote_check_r_concheck_checkmark_button));
-
-            //set receive text
-            if(prefs.getBoolean(storyName+slideNumber+WAS_RECEIVED, false)) {
-                messageReceieved.setText(prefs.getString(storyName+slideNumber+RECEIVED_MESSAGE,""));
-            }
-            //set send text
-            messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
-
-            phaseUnlocked = checkAllMarked();
-            if (phaseUnlocked) {
-                unlockDramatizationPhase();
-            }
-        }*/
-
     }
 
     /**
@@ -216,9 +183,6 @@ public class RemoteCheckFrag extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (recordingToolbar != null) {
-            recordingToolbar.onClose();
-        }
         closeKeyboard(rootView);
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
@@ -291,24 +255,6 @@ public class RemoteCheckFrag extends Fragment {
     }
 
     /**
-     * Stop the toolbar from continuing the appending session.
-     */
-    //  public void stopAppendingRecordingFile(){
-    //     recordingToolbar.stopAppendingSession();
-    // }
-
-    /**
-     * This function sets the first slide of each story to the blue color in order to prevent
-     * clashing of the grey starting picture.
-     */
-    /*private void setUiColors() {
-        if (slideNumber == 0) {
-            LinearLayout rl = (LinearLayout) rootView.findViewById(R.id.fragment_remote_check_root_layout);
-            rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-        }
-    }*/
-
-    /**
      * This function is used to the set the picture per slide.
      *
      * @param slideImage    The view that will have the picture rendered on it.
@@ -342,7 +288,7 @@ public class RemoteCheckFrag extends Fragment {
      * sets the playback path
      */
     /*public void setPlayBackPath() {
-        String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
+        String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
         recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }*/
 
@@ -382,47 +328,6 @@ public class RemoteCheckFrag extends Fragment {
             }
         });
     }
-
-    /*private void setRecordFilePath() {
-        int nextDraftIndex = AudioFiles.getBackTranslationTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber,getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
-        while (recordFile.exists()) {
-            nextDraftIndex++;
-            recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber, getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
-        }
-        backTranslationRecordingFile = recordFile;
-    }*/
-
-    /**
-     * Initializes the toolbar and toolbar buttons.
-     */
-   /* private void setToolbar(View toolbar) {
-        if (rootView instanceof RelativeLayout) {
-            String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
-            RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
-                @Override
-                public void onStoppedRecording() {
-                    //update to new recording path
-                    setRecordFilePath();
-                    recordingToolbar.setRecordFilePath(backTranslationRecordingFile.getAbsolutePath());
-                }
-                @Override
-                public void onStartedRecordingOrPlayback(boolean isRecording) {
-                    if(isRecording) {
-                        String title = AudioFiles.getBackTranslationTitle(backTranslationRecordingFile);
-                        StorySharedPreferences.setBackTranslationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
-                        //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
-                        setPlayBackPath();
-                    }
-                }
-            };
-            BackTranslationListRecordingsModal modal = new BackTranslationListRecordingsModal(getContext(), slideNumber, this);
-
-            recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
-            recordingToolbar.keepToolbarVisible();
-        }
-    } */
 
     /**
      * This function will set a listener to the passed in view so that when the passed in view
@@ -592,6 +497,8 @@ public class RemoteCheckFrag extends Fragment {
                         e.printStackTrace();
                     }
                 }
+
+                messagesView.setSelection(msgAdapter.getCount());
 
                 Log.i("LOG_VOLEY", response.toString());
 
