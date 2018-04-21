@@ -624,14 +624,13 @@ public class RecordingToolbar extends AnimationToolbar {
 
         js = new HashMap<String,String>();
 
-        //Submits all logs with first slide (title slide)
-        if(slide == 0) {
-            org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-            String logString = "";
 
-            Object[] logs = log.toArray();
+        org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+        String logString = "";
 
+        Object[] logs = log.toArray();
 
+            //Grabs all applicable logs for this slide num
             String[] slideLogs = new String[logs.length];
 
             for (int i = 0; i < logs.length; i++) {
@@ -665,15 +664,12 @@ public class RecordingToolbar extends AnimationToolbar {
 
             }
             js.put("Log", logString);
-        }
-
-
-        js.put("Key", api_token);
-        js.put("PhoneId", phone_id);
-        js.put("TemplateTitle", templateTitle);
-        js.put("SlideNumber", currentSlide);
-        js.put("Data", byteString);
-        js.put("BacktranslationText", transcription);
+            js.put("Key", api_token);
+            js.put("PhoneId", phone_id);
+            js.put("TemplateTitle", templateTitle);
+            js.put("SlideNumber", currentSlide);
+            js.put("Data", byteString);
+            js.put("BacktranslationText", transcription);
 
 
         paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {

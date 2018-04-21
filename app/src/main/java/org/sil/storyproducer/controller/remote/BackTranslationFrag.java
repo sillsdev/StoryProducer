@@ -475,7 +475,6 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-        //boolean isChecked = prefs.getBoolean(prefsKeyString, false);
 
         final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
 
