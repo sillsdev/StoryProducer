@@ -372,7 +372,7 @@ public class RemoteCheckFrag extends Fragment {
                 Message m = new Message(true, messageSent.getText().toString());
                 msgAdapter.add(m);
                 msgAdapter.notifyDataSetChanged();
-                messagesView.setSelection(messagesView.getCount() - 1);
+                messagesView.setSelection(messagesView.getCount());
 
                 //set text back to blank
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");

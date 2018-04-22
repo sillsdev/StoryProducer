@@ -52,7 +52,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="text" />
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLength="10000"
+                />
 
         <Button
             android:id="@+id/button_send_msg"
