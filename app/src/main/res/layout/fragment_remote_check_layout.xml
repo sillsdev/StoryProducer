@@ -4,7 +4,7 @@
     android:id="@+id/fragment_remote_check_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darkGray"
+    android:background="@color/messagingBkrd"
     android:clipToPadding="false"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
@@ -14,7 +14,7 @@
         android:id="@+id/messaging_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#111111"
+        android:background="@color/messagingSecondary"
         android:orientation="horizontal"
         >
 
@@ -25,6 +25,7 @@
             android:layout_weight="1"
             android:text="@string/messaging_bar_title"
             android:textSize="18sp"
+            android:textColor="@color/black"
             android:layout_margin="10dp"
             android:gravity="center"/>
 
@@ -35,6 +36,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:background="@color/messagingBkrd"
             android:divider="#ffffff">
        </ListView>
 
@@ -42,7 +44,7 @@
             android:id="@+id/msgbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#111111"
+            android:background="@color/messagingSecondary"
             android:orientation="horizontal"
             >
 
@@ -54,6 +56,7 @@
             android:ems="10"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLength="10000"
+            android:textColor="@color/black"
                 />
 
         <Button
@@ -61,6 +64,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@drawable/send_message"
+            android:backgroundTint="@color/black"
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:scaleType="fitCenter"/>
