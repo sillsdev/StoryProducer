@@ -15,7 +15,7 @@
         android:textColor="@color/black"
         android:padding="10dp"
         android:textSize="18sp"
-        android:text="Placeholder"
+        android:text="@string/app_name"
         android:maxWidth="240dp"
         />
 

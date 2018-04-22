@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -144,6 +145,7 @@ public class RemoteCheckFrag extends Fragment {
         final String titleString = " " + slideNumber;
         messageTitle.append(titleString);
         messageSent.setHint(R.string.message_hint);
+        messageSent.setHintTextColor(ContextCompat.getColor(getContext(),R.color.black));
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
         getMessages();
