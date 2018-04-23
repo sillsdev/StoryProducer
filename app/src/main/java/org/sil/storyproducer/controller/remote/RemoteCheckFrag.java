@@ -85,6 +85,10 @@ public class RemoteCheckFrag extends Fragment {
     private ListView messagesView;
     private PausingRecordingToolbar recordingToolbar;
 
+    private Toast successToast;
+    private Toast noConnection;
+    private Toast unknownError;
+
     @Override
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
@@ -93,6 +97,9 @@ public class RemoteCheckFrag extends Fragment {
         storyName = StoryState.getStoryName();
         setHasOptionsMenu(true);
         msgAdapter = new MessageAdapter(getContext());
+        successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
+        noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
+        unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
 
 
     }
@@ -380,7 +387,7 @@ public class RemoteCheckFrag extends Fragment {
                 prefsEditor.apply();
                 messageSent.setText("");
 
-                Toast.makeText(getContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show();
+                successToast.show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -394,10 +401,10 @@ public class RemoteCheckFrag extends Fragment {
                 if(error instanceof TimeoutError || error instanceof NoConnectionError || error
                         instanceof NetworkError || error instanceof ServerError ||
                         error instanceof AuthFailureError){
-                    Toast.makeText(getContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT).show();
+                    noConnection.show();
                 }
                 else {
-                    Toast.makeText(getContext(), R.string.remote_check_msg_failed, Toast.LENGTH_SHORT).show();
+                    unknownError.show();
                 }
             }
 
