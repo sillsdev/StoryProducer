@@ -165,13 +165,6 @@
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
     <string name="remote_check_msg_failed">An unexpected error occurred and the message failed to send. Please try again.</string>
-    <!--Submission Remote Consultant -->
-    <string name= "finish_recordings">You must make a recording for each slide before submitting.</string>
-    <string name= "recordings_ready">The recordings are ready to be sent.</string>
-    <string name= "recordings_sent">The recordings have been sent and are awaiting approval.</string>
-    <string name= "recordings_approved">All of your recordings have been approved!</string>
-    <string name= "recordings_disapproved">Not all of your recordings were approved. Go back and re-record the slides that were rejected and resubmit.</string>
-    <string name= "submit_bts">Submit Backtranslations</string>
 
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
