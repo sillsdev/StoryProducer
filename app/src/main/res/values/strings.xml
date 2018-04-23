@@ -158,6 +158,10 @@
     <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
 
+    <!-- Uploading Audio -->
+    <string name="audio_Sent">Audio File Sent Successfully</string>
+    <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
+
     <!-- Remote check phase -->
     <string name="remote_check_title">Remote Check</string>
     <string name="messaging_bar_title">Messages for Slide</string>

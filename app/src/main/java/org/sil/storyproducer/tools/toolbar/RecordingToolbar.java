@@ -677,7 +677,7 @@ public class RecordingToolbar extends AnimationToolbar {
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_UPL", response.toString());
                 resp  = response;
-                Toast.makeText(appContext, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(appContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -685,7 +685,7 @@ public class RecordingToolbar extends AnimationToolbar {
                 Log.e("LOG_VOLLEY_ERR_UPL", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 testErr = error.toString();
-                Toast.makeText(appContext, "Error occurred, please try sending the audio file again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(appContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show();
 
             }
 
