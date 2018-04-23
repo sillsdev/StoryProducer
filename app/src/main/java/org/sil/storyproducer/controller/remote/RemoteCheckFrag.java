@@ -356,11 +356,8 @@ public class RemoteCheckFrag extends Fragment {
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php";
-
         js = new HashMap<String,String>();
 
 
@@ -368,12 +365,12 @@ public class RemoteCheckFrag extends Fragment {
         String  message = messageSent.getText().toString();
         //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
         js.put("Message",message);
-        js.put("Key", api_token);
+        js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
 
-        paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
@@ -422,21 +419,19 @@ public class RemoteCheckFrag extends Fragment {
     }
 
     private void getMessages(){
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php";
 
         js = new HashMap<String,String>();
 
-        js.put("Key", api_token);
+        js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
         js.put("LastId", Integer.toString(msgAdapter.getCount()-1));
 
 
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_messages), new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -485,7 +480,7 @@ public class RemoteCheckFrag extends Fragment {
 
                 messagesView.setSelection(msgAdapter.getCount());
 
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLLEY", response.toString());
 
                 resp  = response;
             }

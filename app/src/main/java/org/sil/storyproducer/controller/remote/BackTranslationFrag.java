@@ -496,23 +496,16 @@ public class BackTranslationFrag extends Fragment {
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-
-        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php";
-
         js = new HashMap<String,String>();
 
 
-        js.put("Key", api_token);
+        js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle" , StoryState.getStoryName());
 
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), new Response.Listener<String>() {
 
 
 
@@ -576,18 +569,15 @@ public class BackTranslationFrag extends Fragment {
     public void requestRemoteReview(Context con, int numSlides){
 
         Context myContext = con;
-
-        final String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         js = new HashMap<String,String>();
-        js.put("Key", api_token);
+        js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle", StoryState.getStoryName());
         js.put("NumberOfSlides", Integer.toString(numSlides));
 
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_request_review), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_RR", response.toString());

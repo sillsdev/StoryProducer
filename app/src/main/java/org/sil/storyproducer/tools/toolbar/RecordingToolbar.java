@@ -560,18 +560,15 @@ public class RecordingToolbar extends AnimationToolbar {
     public void requestRemoteReview(Context con, int numSlides){
 
         Context myContext = con;
-
-        final String url = "https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php";
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         js = new HashMap<String,String>();
-        js.put("Key", api_token);
+        js.put("Key", myContext.getResources().getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle", StoryState.getStoryName());
         js.put("NumberOfSlides", Integer.toString(numSlides));
 
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, myContext.getString(R.string.url_request_review), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_RR", response.toString());
@@ -602,9 +599,6 @@ public class RecordingToolbar extends AnimationToolbar {
     //Subroutine to upload a single audio file
     public void Upload ( final File fileName, Context con, int slide) throws IOException {
 
-
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-        final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
         Context myContext = con;
         String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -617,10 +611,7 @@ public class RecordingToolbar extends AnimationToolbar {
         //get transcription text if its there
         SharedPreferences prefs = con.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         String transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT,"");
-
-
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
-        String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
         js = new HashMap<String,String>();
 
@@ -664,7 +655,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
             }
             js.put("Log", logString);
-            js.put("Key", api_token);
+            js.put("Key", myContext.getResources().getString(R.string.api_token));
             js.put("PhoneId", phone_id);
             js.put("TemplateTitle", templateTitle);
             js.put("SlideNumber", currentSlide);
@@ -672,7 +663,7 @@ public class RecordingToolbar extends AnimationToolbar {
             js.put("BacktranslationText", transcription);
 
 
-        paramStringRequest req = new paramStringRequest(Request.Method.POST, url, js, new Response.Listener<String>() {
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, myContext.getResources().getString(R.string.url_upload_audio), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_UPL", response.toString());

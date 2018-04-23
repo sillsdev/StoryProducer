@@ -51,15 +51,15 @@ public class VolleySingleton {
             getRequestQueue().add(req);
             if(isStopped){
                 //notify currently no connection
-                if(req.getUrl() == mCtx.getString(R.string.upload_audio)){
+                if(req.getUrl() == mCtx.getString(R.string.url_upload_audio)){
                     Toast.makeText(mCtx, R.string.queue_status_upload, Toast.LENGTH_SHORT).show();
-                }else if(req.getUrl() == mCtx.getString(R.string.register_phone)){
+                }else if(req.getUrl() == mCtx.getString(R.string.url_register_phone)){
                     Toast.makeText(mCtx, R.string.queue_status_register, Toast.LENGTH_SHORT).show();
-                }else if(req.getUrl() == mCtx.getString(R.string.send_message)){
+                }else if(req.getUrl() == mCtx.getString(R.string.url_send_message)){
                     Toast.makeText(mCtx, R.string.queue_status_message_send, Toast.LENGTH_SHORT).show();
-                }else if(req.getUrl() == mCtx.getString(R.string.get_messages)){
+                }else if(req.getUrl() == mCtx.getString(R.string.url_get_messages)){
                     Toast.makeText(mCtx, R.string.queue_status_message_get, Toast.LENGTH_SHORT).show();
-                }else if(req.getUrl() == mCtx.getString(R.string.get_slide_status)){
+                }else if(req.getUrl() == mCtx.getString(R.string.url_get_slide_status)){
                     Toast.makeText(mCtx, R.string.queue_status_approved, Toast.LENGTH_SHORT).show();
                 }
 
