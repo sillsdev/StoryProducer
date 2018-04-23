@@ -20,7 +20,7 @@ import java.util.List;
 
 public class MessageAdapter extends BaseAdapter {
 
-    List<Message> messages = new ArrayList<Message>();
+    List<Message> messages = new ArrayList<>();
     Context con;
 
     public MessageAdapter(Context context){
@@ -67,6 +67,7 @@ public class MessageAdapter extends BaseAdapter {
         holder.messageBody.setText(message.getMessage());
         return convertView;
     }
+
 
 }
 

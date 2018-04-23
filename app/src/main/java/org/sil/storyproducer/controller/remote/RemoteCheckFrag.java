@@ -373,7 +373,6 @@ public class RemoteCheckFrag extends Fragment {
                 resp  = response;
                 Message m = new Message(true, messageSent.getText().toString());
                 msgAdapter.add(m);
-                msgAdapter.notifyDataSetChanged();
                 messagesView.setSelection(messagesView.getCount());
 
                 //set text back to blank
@@ -471,7 +470,6 @@ public class RemoteCheckFrag extends Fragment {
                         String msg = currMsg.getString("Message");
                         Message m = new Message(isFromTranslator, msg);
                         msgAdapter.add(m);
-                        msgAdapter.notifyDataSetChanged();
                     }
                     catch(JSONException e){
                         e.printStackTrace();
