@@ -49,7 +49,7 @@ public class VolleySingleton {
             getRequestQueue().add(req);
             if(isStopped){
                 //notify currently no connection
-                Toast.makeText(mCtx, "Queue is paused", Toast.LENGTH_SHORT);
+                Toast.makeText(mCtx, "Queue is paused", Toast.LENGTH_SHORT).show();
             }
             
         }
