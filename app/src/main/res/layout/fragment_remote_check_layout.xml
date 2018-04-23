@@ -57,6 +57,8 @@
             android:inputType="textCapSentences|textMultiLine"
             android:maxLength="10000"
             android:textColor="@color/black"
+            android:backgroundTint="@color/primaryDark"
+
                 />
 
         <Button

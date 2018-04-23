@@ -37,9 +37,6 @@ import java.util.List;
  */
 
 public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
-//TODO: only play video if all drafts present
-//TODO: queue / send audio after recorded
-//TODO: send button in bar?
 
     private final static float BACKGROUND_VOLUME = 0.0f;        //makes for no background music but still keeps the functionality in there if we decide to change it later
 
