@@ -8,6 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.widget.Toast;
 
+import org.sil.storyproducer.R;
+
 /**
  * Created by Brendon on 11/13/17.
  */
@@ -49,7 +51,18 @@ public class VolleySingleton {
             getRequestQueue().add(req);
             if(isStopped){
                 //notify currently no connection
-                Toast.makeText(mCtx, "Queue is paused", Toast.LENGTH_SHORT).show();
+                if(req.getUrl() == mCtx.getString(R.string.upload_audio)){
+                    Toast.makeText(mCtx, R.string.queue_status_upload, Toast.LENGTH_SHORT).show();
+                }else if(req.getUrl() == mCtx.getString(R.string.register_phone)){
+                    Toast.makeText(mCtx, R.string.queue_status_register, Toast.LENGTH_SHORT).show();
+                }else if(req.getUrl() == mCtx.getString(R.string.send_message)){
+                    Toast.makeText(mCtx, R.string.queue_status_message_send, Toast.LENGTH_SHORT).show();
+                }else if(req.getUrl() == mCtx.getString(R.string.get_messages)){
+                    Toast.makeText(mCtx, R.string.queue_status_message_get, Toast.LENGTH_SHORT).show();
+                }else if(req.getUrl() == mCtx.getString(R.string.get_slide_status)){
+                    Toast.makeText(mCtx, R.string.queue_status_approved, Toast.LENGTH_SHORT).show();
+                }
+
             }
 
         }
