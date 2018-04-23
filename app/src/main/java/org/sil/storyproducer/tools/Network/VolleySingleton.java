@@ -6,6 +6,7 @@ import com.android.volley.Request;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
 /**
  * Created by Brendon on 11/13/17.
@@ -14,7 +15,7 @@ import android.net.NetworkInfo;
 public class VolleySingleton {
         private static VolleySingleton mInstance;
         private RequestQueue mRequestQueue;
-
+        private boolean isStopped;
         private static Context mCtx;
 
         private VolleySingleton(Context context) {
@@ -37,6 +38,7 @@ public class VolleySingleton {
                 boolean isConnected = ConnectivityStatus.isConnected(mCtx);
                 if(!isConnected){
                     stopQueue();
+                    isStopped = true;
                 }
             }
             return mRequestQueue;
@@ -45,10 +47,20 @@ public class VolleySingleton {
         public <T> void addToRequestQueue(Request<T> req) {
 
             getRequestQueue().add(req);
-
+            if(isStopped){
+                //notify currently no connection
+                Toast.makeText(mCtx, "Queue is paused", Toast.LENGTH_SHORT);
+            }
+            
         }
-        public void startQueue(){ getRequestQueue().start(); }
-        public void stopQueue(){ getRequestQueue().stop(); }
+        public void startQueue(){
+            getRequestQueue().start();
+            isStopped = false;
+        }
+        public void stopQueue(){
+            getRequestQueue().stop();
+            isStopped = true;
+        }
 
     }
 
