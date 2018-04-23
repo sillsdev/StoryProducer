@@ -51,7 +51,7 @@ public class VolleySingleton {
                 //notify currently no connection
                 Toast.makeText(mCtx, "Queue is paused", Toast.LENGTH_SHORT).show();
             }
-            
+
         }
         public void startQueue(){
             getRequestQueue().start();

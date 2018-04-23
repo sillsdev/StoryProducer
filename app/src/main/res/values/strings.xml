@@ -121,7 +121,8 @@
     <string name="nav_open">Options</string>
     <string name="nav_close">Close</string>
 
-
+    <!-- Network -->
+    <string name="queue_status"></string>
     <!-- Draft -->
     <string name="draft_bible_story">Bible Story!</string>
     <string name="draft_playback_no_lwc_audio">Could Not Find Narration Audio...</string>
