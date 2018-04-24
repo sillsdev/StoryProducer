@@ -423,7 +423,6 @@ public class RemoteCheckFrag extends Fragment {
                 Settings.Secure.ANDROID_ID);
 
         js = new HashMap<String,String>();
-
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
