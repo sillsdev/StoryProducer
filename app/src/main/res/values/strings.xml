@@ -124,7 +124,7 @@
     <!-- Network -->
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
     <string name="queue_status_message_send">No Connection: Message Queued for Delivery</string>
-    <string name="queue_status_message_get">No Connection: Cannot Retreive Messages</string>
+    <string name="queue_status_message_get">No Connection: Cannot Retrieve Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
     <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
@@ -133,7 +133,7 @@
     <string name="url_get_slide_status">https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php</string>
     <string name="url_upload_audio"> https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php</string>
     <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
-    <string name="api_token"> XUKYjBHCsD6OVla8dYAt298D9zkaKSqd </string>
+    <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
     <!-- Draft -->
     <string name="draft_bible_story">Bible Story!</string>

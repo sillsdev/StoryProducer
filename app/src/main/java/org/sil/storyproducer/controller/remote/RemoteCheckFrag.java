@@ -488,7 +488,7 @@ public class RemoteCheckFrag extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("LOG_VOLLEY", error.toString());
-                Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIEVE MSG");
+                Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIVE MSG");
                 //testErr = error.toString();
 
             }
