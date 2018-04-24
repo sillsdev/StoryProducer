@@ -122,6 +122,9 @@
     <string name="nav_close">Close</string>
 
     <!-- Network -->
+    <string name="audio_pre_send">Sending Audio...</string>
+    <string name="audio_Sent">Audio File Sent Successfully</string>
+    <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
     <string name="queue_status_message_send">No Connection: Message Queued for Delivery</string>
     <string name="queue_status_message_get">No Connection: Cannot Retrieve Messages</string>
@@ -169,10 +172,6 @@
     <string name="backTranslation_playing_backT">Playing Back Translation...</string>
     <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
-
-    <!-- Uploading Audio -->
-    <string name="audio_Sent">Audio File Sent Successfully</string>
-    <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
 
     <!-- Remote check phase -->
     <string name="remote_check_title">Remote Check</string>

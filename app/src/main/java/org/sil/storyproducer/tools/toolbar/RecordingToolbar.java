@@ -527,7 +527,7 @@ public class RecordingToolbar extends AnimationToolbar {
         *Send single audio file to remote consultant
          */
         private void sendAudio(){
-            Toast.makeText(appContext, "Sending Audio", Toast.LENGTH_SHORT).show();
+            Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show();
             Phase phase = StoryState.getCurrentPhase();
             int slideNum;
             File slide;
@@ -608,7 +608,7 @@ public class RecordingToolbar extends AnimationToolbar {
         InputStream input = new FileInputStream(fileName);
         byte[] audioBytes = IOUtils.toByteArray(input);
 
-        //get transcription text if its there
+        //get transcription text if it's there
         SharedPreferences prefs = con.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         String transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT,"");
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
