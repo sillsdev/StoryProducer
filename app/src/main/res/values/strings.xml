@@ -9,6 +9,25 @@
     <string name="title_fragment_community">Community Check</string>
     <string name="title_fragment_consultant">Consultant Check</string>
     <string name="update_registration">Update Registration</string>
+    <string name="license_title">License</string>
+    <string name="license_body">This software is jointly copyrighted © 2018, SIL International and
+                                Cedarville University. It is released under the following license:
+                                Permission is hereby granted, free of charge, to any person lawfully
+                                obtaining a copy of this software and associated documentation files
+                                (the “Software”), to use and redistribute the software, to build and
+                                distribute videos from text and audio-visual data, provided that
+                                they are the owner of the data or have permission to distribute it.
+                                The Software is protected by international copyright treaty
+                                provisions. No person may remove any copyright or other proprietary
+                                notice from the software nor reverse engineer, decompile, or
+                                disassemble the software. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
+                                WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+                                TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+                                PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+                                COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+                                ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+                                OR OTHER DEALINGS IN THE SOFTWARE.</string>
     <string name="view_trans_logs">View Translation Logs</string>
 
     <!--String names for Info Page-->
@@ -102,6 +121,22 @@
     <string name="nav_open">Options</string>
     <string name="nav_close">Close</string>
 
+    <!-- Network -->
+    <string name="audio_pre_send">Sending Audio...</string>
+    <string name="audio_Sent">Audio File Sent Successfully</string>
+    <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
+    <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
+    <string name="queue_status_message_send">No Connection: Message Queued for Delivery</string>
+    <string name="queue_status_message_get">No Connection: Cannot Retrieve Messages</string>
+    <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
+    <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
+    <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
+    <string name="url_send_message">https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php</string>
+    <string name="url_request_review">https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php</string>
+    <string name="url_get_slide_status">https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php</string>
+    <string name="url_upload_audio"> https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php</string>
+    <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
+    <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
     <!-- Draft -->
     <string name="draft_bible_story">Bible Story!</string>
@@ -125,6 +160,9 @@
     <string name="dramatization_no_drama_found">No Dramatization Found...</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
 
+    <!-- WSBT phase -->
+    <string name="wsbt_alert_title">Finish Draft Phase</string>
+    <string name="wsbt_alert_text">Please record a translation for each slide.</string>
 
     <!-- Back translation phase -->
     <string name="backTranslation_draft_no_picture">Could Not Find Picture...</string>
@@ -135,13 +173,14 @@
     <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
 
-    <!--Submission Remote Consultant -->
-    <string name= "finish_recordings">You must make a recording for each slide before submitting.</string>
-    <string name= "recordings_ready">The recordings are ready to be sent.</string>
-    <string name= "recordings_sent">The recordings have been sent and are awaiting approval.</string>
-    <string name= "recordings_approved">All of your recordings have been approved!</string>
-    <string name= "recordings_disapproved">Not all of your recordings were approved. Go back and re-record the slides that were rejected and resubmit.</string>
-    <string name= "submit_bts">Submit Backtranslations</string>
+    <!-- Remote check phase -->
+    <string name="remote_check_title">Remote Check</string>
+    <string name="messaging_bar_title">Messages for Slide</string>
+    <string name="message_hint">Enter Message</string>
+    <string name="empty_message">RC messages will appear here...</string>
+    <string name="remote_check_msg_sent">Message Sent!</string>
+    <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
+    <string name="remote_check_msg_failed">An unexpected error occurred and the message failed to send. Please try again.</string>
 
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
@@ -236,6 +275,7 @@
     <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
 
+    <string name="whole_story_title">Story Back Translation </string>
     <string name="backTranslation_title"> Back Translation </string>
     <string name="submission_title">Submission to Remote Consultant</string>
 

@@ -14,6 +14,8 @@ import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,30 +40,25 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
-import org.sil.storyproducer.tools.Network.BackTranslationUpload;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
-import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,6 +72,7 @@ public class BackTranslationFrag extends Fragment {
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     public static final String IS_R_CONSULTANT_APPROVED = "isApproved";
     private static final String IS_CHECKED = "isCheckedi";
+    private static final String TRANSCRIPTION_TEXT = "TranscriptionText";
 
     private View rootView;
     private View rootViewToolbar;
@@ -86,6 +85,8 @@ public class BackTranslationFrag extends Fragment {
     private File backTranslationRecordingFile = null;
     private ImageButton draftPlayButton;
     private boolean isSlidesChecked = false;
+
+    private EditText transcriptionText;
 
     private JSONObject obj;
     private String resp;
@@ -117,8 +118,38 @@ public class BackTranslationFrag extends Fragment {
 
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
+        transcriptionText = (EditText)rootView.findViewById(R.id.transcription);
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final String prefsKeyString = storyName + slideNumber + TRANSCRIPTION_TEXT;
+        String savedTranscriptionText = prefs.getString(prefsKeyString, "");
+        transcriptionText.setText(savedTranscriptionText);
+        transcriptionText.addTextChangedListener(new TextWatcher()
+        {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count){
 
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int aft )
+            {
 
+            }
+
+            @Override
+            public void afterTextChanged(Editable s)
+            {
+                addTranscription();
+            }
+        });
+        /*transcriptionText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (!hasFocus) {
+                    addTranscription();
+                }
+
+            }
+        });*/
         return rootView;
     }
 
@@ -126,7 +157,7 @@ public class BackTranslationFrag extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
-        item.setIcon(R.drawable.ic_dramatize);
+        item.setIcon(R.drawable.ic_backtranslation);
     }
 
     public void onStart() {
@@ -145,7 +176,7 @@ public class BackTranslationFrag extends Fragment {
         draftPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                draftPlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                draftPlayButton.setBackgroundResource(R.drawable.ic_play_gray);
             }
         });
 
@@ -156,6 +187,9 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
         if(!prefs.getBoolean(prefsKeyString, false)) {
+            //TODO: remove call to create story here and make global var that stores whether story has been created in DB
+            //TODO: put all the volley functions into a separate class? (have redundancy between some classes)
+            requestRemoteReview(getContext(),FileSystem.getContentSlideAmount(storyName));
             getSlidesStatus();
             setCheckmarkButton((ImageButton) rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
             phaseUnlocked = checkAllMarked();
@@ -163,7 +197,6 @@ public class BackTranslationFrag extends Fragment {
                 unlockDramatizationPhase();
             }
         }
-
     }
 
     /**
@@ -318,14 +351,14 @@ public class BackTranslationFrag extends Fragment {
                 }
                 else if (draftPlayer.isAudioPlaying()) {
                     draftPlayer.stopAudio();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                 } else {
                     recordingToolbar.stopToolbarMedia();
-                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
+                    playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_gray);
                     draftPlayer.playAudio();
 
                     if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_arrow_white_48dp, draftPlayer);
+                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_gray, draftPlayer);
                     }
                     Toast.makeText(getContext(), R.string.backTranslation_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }
@@ -369,7 +402,7 @@ public class BackTranslationFrag extends Fragment {
             BackTranslationListRecordingsModal modal = new BackTranslationListRecordingsModal(getContext(), slideNumber, this);
 
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
+                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
             recordingToolbar.keepToolbarVisible();
         }
     }
@@ -447,12 +480,10 @@ public class BackTranslationFrag extends Fragment {
         return true;
     }
 
-
-    //TODO: unlock dramatize phase after all slides are approved
     private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
-        int dramatizationPhaseIndex = 5;
+        int dramatizationPhaseIndex = 6;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
@@ -465,24 +496,16 @@ public class BackTranslationFrag extends Fragment {
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
-        //boolean isChecked = prefs.getBoolean(prefsKeyString, false);
-
-        final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-
-        String url = "http://storyproducer.azurewebsites.net/API/GetSlideStatuses.php";
-
         js = new HashMap<String,String>();
 
 
-        js.put("Key", api_token);
+        js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle" , StoryState.getStoryName());
 
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), new Response.Listener<String>() {
 
 
 
@@ -505,17 +528,18 @@ public class BackTranslationFrag extends Fragment {
                 }
 
                 //int[] arr = {-1,1,0,1,1,1};
-                for(int i = 0; i<arr.length(); i++){
-                    //-1 not approved, 0 pending, 1 approved
+                if(arr != null) {
+                    for (int i = 0; i < arr.length(); i++) {
+                        //-1 not approved, 0 pending, 1 approved
 
-                    try {
-                        prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
-                        prefsEditor.apply();
-                    }
-                    catch(JSONException e){
-                        e.printStackTrace();
-                    }
+                        try {
+                            prefsEditor.putInt(storyName + i + IS_CHECKED, arr.getInt(i));
+                            prefsEditor.apply();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
+                    }
                 }
 
                 Log.i("LOG_VOLEY", response.toString());
@@ -525,7 +549,7 @@ public class BackTranslationFrag extends Fragment {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
+                Log.e("LOG_VOLLEY_ERR_STATUS", error.toString());
                 Log.e("LOG_VOLLEY", "HIT ERROR");
                 //testErr = error.toString();
 
@@ -539,11 +563,53 @@ public class BackTranslationFrag extends Fragment {
             }
         };
 
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
+    }
 
-        RequestQueue test = VolleySingleton.getInstance(getContext()).getRequestQueue();
+    public void requestRemoteReview(Context con, int numSlides){
 
-        test.add(req);
+        Context myContext = con;
+        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        js = new HashMap<String,String>();
+        js.put("Key", getString(R.string.api_token));
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", StoryState.getStoryName());
+        js.put("NumberOfSlides", Integer.toString(numSlides));
 
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_request_review), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY_ERR_RR", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                //testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return js;
+            }
+        };
+
+
+        VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
+    }
+
+    private void addTranscription() {
+        String transcript = transcriptionText.getText().toString();
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        prefsEditor.putString(storyName + slideNumber + TRANSCRIPTION_TEXT, transcript);
+        prefsEditor.apply();
 
     }
 

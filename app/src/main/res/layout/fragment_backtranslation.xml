@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/ic_play_arrow_white_48dp"
+            android:background="@drawable/ic_play_gray"
             android:src="@drawable/ic_red_ex_48dp" />
 
 
@@ -56,11 +56,28 @@
         android:layout_alignParentBottom="true"
         android:paddingBottom="50dp">
 
+
+        <EditText
+            android:id="@+id/transcription"
+            android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/large_text"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:inputType="none"
+            android:layout_alignParentEnd="true">
+
+
+        </EditText>
+
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_below="@id/transcription"
             />
     </RelativeLayout>
 

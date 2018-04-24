@@ -355,26 +355,12 @@ public class RegistrationActivity extends AppCompatActivity {
         final Context myContext = this.getApplicationContext();
 
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-        String url = "http://storyproducer.azurewebsites.net/API/RegisterPhone.php";
 
-      /*  JSONObject js = new JSONObject();
-        JSONArray js1 = new JSONArray();
-        try{
-            js1 = js.getJSONArray("RegisterPhone");
-        }
-        catch(JSONException e){
-            e.printStackTrace();
-        }
-
-        try{
-        */
-            js = new HashMap<String,String>();
-            //  JSONObject jobject = new JSONObject();
+        js = new HashMap<String,String>();
          String PhoneId = Secure.getString(myContext.getContentResolver(),
                 Secure.ANDROID_ID);
 
-
-            js.put("Key", "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd");
+            js.put("Key", getString(R.string.api_token));
             js.put("PhoneId", PhoneId);
             js.put("TranslatorEmail", prefs.getString("translator_email", " "));
             js.put("TranslatorPhone", prefs.getString("translator_phone", " "));
@@ -386,14 +372,8 @@ public class RegistrationActivity extends AppCompatActivity {
             js.put("ConsultantEmail",  prefs.getString("consultant_email", " "));
             js.put("TrainerEmail",  prefs.getString("trainer_email", " "));
 
-
-       // }
-      //  catch(JSONException e){
-       //     e.printStackTrace();
-       // }
-
         Log.i("LOG_VOLLEY", js.toString());
-        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLEY", response.toString());

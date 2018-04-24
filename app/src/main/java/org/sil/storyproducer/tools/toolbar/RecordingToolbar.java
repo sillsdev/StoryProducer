@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,8 +13,10 @@ import android.graphics.drawable.TransitionDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.Space;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -21,19 +24,38 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
+import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
+import org.sil.storyproducer.controller.remote.BackTranslationFrag;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.logging.ComChkEntry;
 import org.sil.storyproducer.model.logging.DraftEntry;
+import org.sil.storyproducer.model.logging.LearnEntry;
+import org.sil.storyproducer.model.logging.LogEntry;
+import org.sil.storyproducer.tools.Network.VolleySingleton;
+import org.sil.storyproducer.tools.Network.paramStringRequest;
+import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.AudioRecorder;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -51,8 +73,10 @@ public class RecordingToolbar extends AnimationToolbar {
     private final int RECORDING_ANIMATION_DURATION = 1500;
     private final int STOP_RECORDING_DELAY = 0;
     private final String TAG = "AnimationToolbar";
+    public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
+    private static final String TRANSCRIPTION_TEXT = "TranscriptionText";
 
-    private FloatingActionButton fabPlus;
+    //private FloatingActionButton fabPlus;
     protected LinearLayout toolbar;
     private Modal multiRecordModal;
 
@@ -66,6 +90,7 @@ public class RecordingToolbar extends AnimationToolbar {
     protected ImageButton playButton;
     protected ImageButton deleteButton;
     protected ImageButton multiRecordButton;
+    protected ImageButton sendAudioButton;
     private List<AuxiliaryMedia> auxiliaryMediaList;
 
 
@@ -73,6 +98,7 @@ public class RecordingToolbar extends AnimationToolbar {
     protected boolean enablePlaybackButton;
     protected boolean enableDeleteButton;
     protected boolean enableMultiRecordButton;
+    protected boolean enableSendAudioButton;
 
     private TransitionDrawable transitionDrawable;
     private Handler colorHandler;
@@ -84,6 +110,10 @@ public class RecordingToolbar extends AnimationToolbar {
     protected RecordingListener recordingListener;
     private boolean canOverwrite = false;
 
+    private Map<String,String> js;
+    private String resp;
+    private String testErr;
+
     /**
      * The ctor.
      *
@@ -94,10 +124,11 @@ public class RecordingToolbar extends AnimationToolbar {
      * @param rootViewLayout        The rootViewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
      * @param enablePlaybackButton  Enable playback of recording.
      * @param enableDeleteButton    Enable the delete button, does not work as of now.
+     * @param enableSendAudioButton Enable the sending of audio to the server
      * @param recordFilePath        The filepath that the recording will be saved under.
      */
     public RecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
-                            boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton, String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
+                            boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton, boolean enableSendAudioButton, String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
         super(activity);
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar));
 
@@ -105,10 +136,11 @@ public class RecordingToolbar extends AnimationToolbar {
         this.appContext = activity.getApplicationContext(); //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
         this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
         this.rootViewToEmbedToolbarIn = rootViewLayout;
-        fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
+        //fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
         this.toolbar = (LinearLayout) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
         this.enablePlaybackButton = enablePlaybackButton;
         this.enableDeleteButton = enableDeleteButton;
+        this.enableSendAudioButton = enableSendAudioButton;
         this.enableMultiRecordButton = enableMultiRecordButton;
         this.playbackRecordFilePath = playbackRecordFilePath;
         this.recordFilePath = recordFilePath;
@@ -134,23 +166,23 @@ public class RecordingToolbar extends AnimationToolbar {
     /**
      * This function is used to show the floating button
      */
-    public void showFloatingActionButton() {
+    /*public void showFloatingActionButton() {
         fabPlus.show();
-    }
+    }*/
 
     /**
      * This function is used to hide the floating button
      */
-    public void hideFloatingActionButton() {
+   /* public void hideFloatingActionButton() {
         fabPlus.hide();
-    }
+    }*/
 
     /**
      * This function can be called so that the toolbar is automatically opened, without animation,
      * when the fragment is drawn.
      */
     public void keepToolbarVisible() {
-        hideFloatingActionButton();
+        //hideFloatingActionButton();
         toolbar.setVisibility(View.VISIBLE);
     }
 
@@ -172,6 +204,9 @@ public class RecordingToolbar extends AnimationToolbar {
             }
             if(enableMultiRecordButton){
                 multiRecordButton.setVisibility(View.VISIBLE);
+            }
+            if(enableSendAudioButton){
+                sendAudioButton.setVisibility(View.VISIBLE);
             }
         }
         if (audioPlayer.isAudioPlaying()) {
@@ -248,6 +283,9 @@ public class RecordingToolbar extends AnimationToolbar {
         if(enableDeleteButton){
             deleteButton.setVisibility(View.INVISIBLE);
         }
+        if(enableSendAudioButton){
+            sendAudioButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     protected void startRecording() {
@@ -289,9 +327,9 @@ public class RecordingToolbar extends AnimationToolbar {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
         spaceLayoutParams.width = 0;
-        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp};
-        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
-        boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton};
+        int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_send_audio_48dp};
+        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
+        boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton};
 
         Space buttonSpacing = new Space(appContext);
         buttonSpacing.setLayoutParams(spaceLayoutParams);
@@ -314,6 +352,8 @@ public class RecordingToolbar extends AnimationToolbar {
                     deleteButton = imageButtons[i];
                 } else if (i == 3) {
                     multiRecordButton = imageButtons[i];
+                } else if (i == 4) {
+                    sendAudioButton = imageButtons[i];
                 }
             }
         }
@@ -328,6 +368,9 @@ public class RecordingToolbar extends AnimationToolbar {
         if (enableDeleteButton) {
             deleteButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
+        if(enableSendAudioButton){
+            sendAudioButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        }
         setOnClickListeners();
     }
 
@@ -337,10 +380,10 @@ public class RecordingToolbar extends AnimationToolbar {
      */
     protected void setupToolbar() {
         RelativeLayout.LayoutParams[] myParams =
-                new RelativeLayout.LayoutParams[]{new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),
+                new RelativeLayout.LayoutParams[]{/*new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),*/
                         new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)};
         int[] myRules = new int[]{RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_END, RelativeLayout.ALIGN_PARENT_RIGHT};
-        View[] myView = new View[]{fabPlus, toolbar};
+        View[] myView = new View[]{ /*fabPlus,*/toolbar};
 
         //Must remove all children of the layout, before appending them to the new rootView
         rootViewToolbarLayout.removeAllViews();
@@ -352,8 +395,8 @@ public class RecordingToolbar extends AnimationToolbar {
             ((RelativeLayout) rootViewToEmbedToolbarIn).addView(myView[i]);
         }
         //Index corresponds to the myView array
-        fabPlus = (FloatingActionButton) myView[0];
-        toolbar = (LinearLayout) myView[1];
+        //fabPlus = (FloatingActionButton) myView[0];
+        toolbar = (LinearLayout) myView[0];
     }
 
     /**
@@ -375,10 +418,15 @@ public class RecordingToolbar extends AnimationToolbar {
                     if (enableMultiRecordButton) {
                         multiRecordButton.setVisibility(View.VISIBLE);
                     }
+                    if(enableSendAudioButton){
+                        sendAudioButton.setVisibility(View.VISIBLE);
+
+                    }
                 }
                 else {
                     //learn phase overwrite dialog
-                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN){
+                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN
+                            || StoryState.getCurrentPhase().getType() == Phase.Type.WHOLE_STORY){
                         boolean recordingExists = new File(recordFilePath).exists();
                         if(recordingExists) {
                             AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -463,6 +511,186 @@ public class RecordingToolbar extends AnimationToolbar {
             }
 
         }
+        if(enableSendAudioButton){
+            View.OnClickListener sendAudioListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    stopPlayBackAndRecording();
+                    sendAudio();
+                }
+            };
+                sendAudioButton.setOnClickListener(sendAudioListener);
+            }
+        }
+
+        /*
+        *Send single audio file to remote consultant
+         */
+        private void sendAudio(){
+            Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show();
+            Phase phase = StoryState.getCurrentPhase();
+            int slideNum;
+            File slide;
+            int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+            if(phase.getType() == Phase.Type.BACKT) {
+                slideNum = StoryState.getCurrentStorySlide();
+                slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
+            }
+            //Whole story bt audio will be uploaded as one slide past the final slide for the story
+            else{
+                slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+                slide = AudioFiles.getWholeStory(StoryState.getStoryName());
+            }
+
+            requestRemoteReview(appContext, totalSlides);
+            postABackTranslation(slideNum, slide);
+        }
+
+        //Posts a single BT or WSBT
+        public void postABackTranslation(int slideNum, File slide){
+            try {
+                Upload(slide, appContext, slideNum);
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    //First time request for review
+    public void requestRemoteReview(Context con, int numSlides){
+
+        Context myContext = con;
+        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        js = new HashMap<String,String>();
+        js.put("Key", myContext.getResources().getString(R.string.api_token));
+        js.put("PhoneId", phone_id);
+        js.put("TemplateTitle", StoryState.getStoryName());
+        js.put("NumberOfSlides", Integer.toString(numSlides));
+
+        StringRequest req = new StringRequest(Request.Method.POST, myContext.getString(R.string.url_request_review), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
+                resp  = response;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY_ERR_RR", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                testErr = error.toString();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return js;
+            }
+        };
+
+
+        VolleySingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+
+    }
+
+    //Subroutine to upload a single audio file
+    public void Upload ( final File fileName, Context con, int slide) throws IOException {
+
+        Context myContext = con;
+        String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        String templateTitle = StoryState.getStoryName();
+
+        String currentSlide = Integer.toString(slide);
+        InputStream input = new FileInputStream(fileName);
+        byte[] audioBytes = IOUtils.toByteArray(input);
+
+        //get transcription text if it's there
+        SharedPreferences prefs = con.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        String transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT,"");
+        String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
+
+        js = new HashMap<String,String>();
+
+
+        org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
+        String logString = "";
+
+        Object[] logs = log.toArray();
+
+            //Grabs all applicable logs for this slide num
+            String[] slideLogs = new String[logs.length];
+
+            for (int i = 0; i < logs.length; i++) {
+                if (logs[i] instanceof ComChkEntry) {
+                    ComChkEntry tempLog = (ComChkEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
+                } else if (logs[i] instanceof LearnEntry) {
+                    LearnEntry tempLog = (LearnEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                } else if (logs[i] instanceof DraftEntry) {
+                    DraftEntry tempLog = (DraftEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+                } else {
+                    LogEntry tempLog = (LogEntry) logs[i];
+                    if (tempLog.appliesToSlideNum(slide)) {
+                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
+                                + " " + tempLog.getDateTime() + "\n";
+                    }
+
+                }
+
+            }
+            js.put("Log", logString);
+            js.put("Key", myContext.getResources().getString(R.string.api_token));
+            js.put("PhoneId", phone_id);
+            js.put("TemplateTitle", templateTitle);
+            js.put("SlideNumber", currentSlide);
+            js.put("Data", byteString);
+            js.put("BacktranslationText", transcription);
+
+
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, myContext.getResources().getString(R.string.url_upload_audio), js, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.i("LOG_VOLLEY_RESP_UPL", response.toString());
+                resp  = response;
+                Toast.makeText(appContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("LOG_VOLLEY_ERR_UPL", error.toString());
+                Log.e("LOG_VOLLEY", "HIT ERROR");
+                testErr = error.toString();
+                Toast.makeText(appContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show();
+
+            }
+
+        }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                return this.mParams;
+            }
+        };
+
+
+        VolleySingleton.getInstance(activity.getApplicationContext()).addToRequestQueue(req);
+
     }
 
     /*
@@ -480,6 +708,9 @@ public class RecordingToolbar extends AnimationToolbar {
         }
         if (enableMultiRecordButton) {
             multiRecordButton.setVisibility(View.INVISIBLE);
+        }
+        if(enableSendAudioButton){
+            sendAudioButton.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -9,7 +9,7 @@ import org.sil.storyproducer.controller.export.CreateActivity;;
 import org.sil.storyproducer.controller.export.ShareActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
-import org.sil.storyproducer.controller.remote.SubmissionRemoteConsultantActivity;
+import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 
 /**
@@ -64,11 +64,12 @@ public final class StoryState {
             phases = new Phase[]{new Phase(phaseMenuArray[0], R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN),
                     new Phase(phaseMenuArray[1], R.color.draft_phase, PagerBaseActivity.class, Phase.Type.DRAFT),
                     new Phase(phaseMenuArray[2], R.color.comunity_check_phase, PagerBaseActivity.class, Phase.Type.COMMUNITY_CHECK),
-                    new Phase(phaseMenuArray[3], R.color.backT_phase, PagerBaseActivity.class, Phase.Type.BACKT),
-                    new Phase(phaseMenuArray[4],R.color.submission_phase, SubmissionRemoteConsultantActivity.class,Phase.Type.SUBMIT),
-                    new Phase(phaseMenuArray[5], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
-                    new Phase(phaseMenuArray[6], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
-                    new Phase(phaseMenuArray[7], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)
+                    new Phase(phaseMenuArray[3], R.color.whole_story_phase, WholeStoryBackTranslationActivity.class, Phase.Type.WHOLE_STORY),
+                    new Phase(phaseMenuArray[4], R.color.backT_phase, PagerBaseActivity.class, Phase.Type.BACKT),
+                    new Phase(phaseMenuArray[5], R.color.remote_check_phase, PagerBaseActivity.class, Phase.Type.REMOTE_CHECK),
+                    new Phase(phaseMenuArray[6], R.color.dramatization_phase, PagerBaseActivity.class, Phase.Type.DRAMATIZATION),
+                    new Phase(phaseMenuArray[7], R.color.create_phase, CreateActivity.class, Phase.Type.CREATE),
+                    new Phase(phaseMenuArray[8], R.color.share_phase, ShareActivity.class, Phase.Type.SHARE)
             };
         }
     }
@@ -80,6 +81,7 @@ public final class StoryState {
     public static String getStoryName() {
         return storyName;
     }
+
 
     /**
      * Sets the storyName

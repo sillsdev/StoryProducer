@@ -11,6 +11,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.model.StoryState;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by alexamhepner on 11/16/17.
+ * Created by brendon burns on 11/16/17.
  */
 
 public class BackTranslationUpload {
@@ -47,7 +48,7 @@ public class BackTranslationUpload {
             byte[] audioBytes = IOUtils.toByteArray(input);
 
             String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
-            String url = "http://storyproducer.azurewebsites.net/API/UploadSlideBacktranslation.php";
+            String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
             js = new HashMap<String,String>();
              js.put("Key", api_token);
@@ -87,9 +88,7 @@ public class BackTranslationUpload {
             };
 
 
-            RequestQueue test = VolleySingleton.getInstance(myContext).getRequestQueue();
-
-            test.add(req);
+            VolleySingleton.getInstance(myContext).addToRequestQueue(req);
 
         }
 

@@ -3,9 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".controller.MainActivity">
     <item
+        android:id="@+id/menu_license"
+        android:title="@string/license_title"
+        android:icon="@drawable/ic_license"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/menu_registration"
+        android:icon="@drawable/ic_register_white"
+        android:title="@string/update_registration"
+        app:showAsAction="always"
+        />
+
+    <item
         android:id="@+id/menu_lang"
         android:title="@string/menu_search"
         android:icon="@drawable/ic_menu_translate"
         app:showAsAction="always"
-       />
+        />
 </menu>

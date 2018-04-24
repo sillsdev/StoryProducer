@@ -53,13 +53,18 @@ public class PhaseGestureListener extends SimpleOnGestureListener {
         }
         if (e1.getY() - e2.getY() > SWIPE_MIN_DISTANCE      //swipe up
                 && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-
-            startNextActivity();
+            if(StoryState.getCurrentPhase().getType() != Phase.Type.REMOTE_CHECK) { //no swipe in RC
+                startNextActivity();
+                return true;
+            }
         } else if (e2.getY() - e1.getY() > SWIPE_MIN_DISTANCE       //swipe down
                 && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
-            startPrevActivity();
+            if(StoryState.getCurrentPhase().getType() != Phase.Type.REMOTE_CHECK) { //no swipe in RC
+                startPrevActivity();
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     /**

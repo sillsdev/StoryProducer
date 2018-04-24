@@ -10,6 +10,7 @@
     <color name="navBar">#d1d2d4</color>
     <color name="darkGray">#404041</color>
     <color name="gray">#757575</color>
+    <color name="black">#111111</color>
     <color name="black_semi_transparent">#B2000000</color>
     <color name="green">#32CD32</color>
     <color name="yellow">#ffeb3b</color>
@@ -21,6 +22,9 @@
     <color name="create_phase">#44B3C2</color>
     <color name="share_phase">#00A86B</color>
     <color name="black_overlay">#66000000</color>
+    <color name="whole_story_phase">#811000</color>
     <color name="backT_phase">#a41e8c</color>
-    <color name="submission_phase">#e41e9c</color>
+    <color name="remote_check_phase">#551a8b</color>
+    <color name="messagingBkrd">#8e8e93</color>
+    <color name="messagingSecondary">#ceced2</color>
 </resources>

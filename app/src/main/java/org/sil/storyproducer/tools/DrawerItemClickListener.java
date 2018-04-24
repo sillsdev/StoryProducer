@@ -1,11 +1,14 @@
 package org.sil.storyproducer.tools;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.MainActivity;
 import org.sil.storyproducer.controller.RegistrationActivity;
 
@@ -37,6 +40,16 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener {
                 intent = new Intent(context, RegistrationActivity.class);
                 context.startActivity(intent);
                 break;
+            case 2:
+                AlertDialog dialog = new AlertDialog.Builder(context)
+                        .setTitle(context.getString(R.string.license_title))
+                        .setMessage(context.getString(R.string.license_body))
+                        .setPositiveButton(context.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }).create();
+                dialog.show();
             default:
         }
     }

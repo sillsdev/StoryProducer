@@ -2,30 +2,32 @@ package org.sil.storyproducer.controller;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.commons.io.FileUtils;
+import com.android.volley.toolbox.Volley;
+
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.adapter.NavItemAdapter;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.tools.Network.ConnectivityStatus;
+import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 
@@ -37,7 +39,6 @@ import java.io.Serializable;
 
 public class MainActivity extends AppCompatActivity implements Serializable {
 
-
     public static boolean hasPermissions(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
             for (String permission : permissions) {
@@ -48,6 +49,21 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         }
         return true;
     }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(!ConnectivityStatus.isConnected(context)){
+                Log.i("Connection Change", "no connection");
+
+                VolleySingleton.getInstance(context).stopQueue();
+            }else {
+                Log.i("Connection Change", "Connected");
+
+                VolleySingleton.getInstance(context).startQueue();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +85,11 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
+
+        this.getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+       // this.reloadStories();
+
     }
 
     @Override
@@ -83,6 +104,21 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         if (id == R.id.menu_lang) {
             launchChangeLWCDialog();
         }
+        else if(id == R.id.menu_registration){
+            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+            startActivity(intent);
+        }
+        else if(id == R.id.menu_license){
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle(this.getString(R.string.license_title))
+                    .setMessage(this.getString(R.string.license_body))
+                    .setPositiveButton(this.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    }).create();
+            dialog.show();
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -91,7 +127,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
      * The actual language change is done within the FileSystem class
      */
     private void reloadStories() {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new StoryListFrag()).commit();
+        getSupportFragmentManager().beginTransaction().remove(getSupportFragmentManager().findFragmentById(R.id.fragment_container)).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
+
     }
 
     /**
