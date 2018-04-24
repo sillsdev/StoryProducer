@@ -483,7 +483,7 @@ public class BackTranslationFrag extends Fragment {
     private void unlockDramatizationPhase(){
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
-        int dramatizationPhaseIndex = 7;
+        int dramatizationPhaseIndex = 6;
         Phase[] phases = StoryState.getPhases();
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex]);
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
