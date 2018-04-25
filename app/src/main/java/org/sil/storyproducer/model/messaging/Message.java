@@ -8,7 +8,7 @@ public class Message {
     private boolean fromPhone;
     private String message;
 
-    public Message(boolean b, String m, int id){
+    public Message(boolean b, String m){
         fromPhone = b;
         message = m;
     }
