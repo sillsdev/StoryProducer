@@ -375,16 +375,17 @@ public class RemoteCheckFrag extends Fragment {
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
-                Message m = new Message(true, messageSent.getText().toString());
-                msgAdapter.add(m);
-                messagesView.setSelection(messagesView.getCount());
+                //Message m = new Message(true, messageSent.getText().toString());
+                //msgAdapter.add(m);
+                //messagesView.setSelection(messagesView.getCount());
 
                 //set text back to blank
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
                 prefsEditor.apply();
                 messageSent.setText("");
-
                 successToast.show();
+                //pull new messages from the server
+                getMessages();
             }
         }, new Response.ErrorListener() {
             @Override
