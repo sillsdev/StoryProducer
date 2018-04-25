@@ -335,8 +335,7 @@ public class RemoteCheckFrag extends Fragment {
 
                 try {
                     msgs = obj.getJSONArray("Messages");
-                    int id = -1;
-                    id = obj.getInt("LastId");
+                    int id = obj.getInt("LastId");
                     if(id!= -1) {
                         msgAdapter.setLastID(id);
                     }
