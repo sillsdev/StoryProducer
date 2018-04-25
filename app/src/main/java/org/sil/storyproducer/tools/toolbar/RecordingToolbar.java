@@ -618,8 +618,8 @@ public class RecordingToolbar extends AnimationToolbar {
 
         org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         String logString = "";
-
-        Object[] logs = log.toArray();
+        if(log != null) {
+            Object[] logs = log.toArray();
 
             //Grabs all applicable logs for this slide num
             String[] slideLogs = new String[logs.length];
@@ -652,8 +652,8 @@ public class RecordingToolbar extends AnimationToolbar {
                     }
 
                 }
-
             }
+        }
             js.put("Log", logString);
             js.put("Key", myContext.getResources().getString(R.string.api_token));
             js.put("PhoneId", phone_id);
