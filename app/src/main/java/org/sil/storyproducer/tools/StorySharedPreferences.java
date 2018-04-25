@@ -119,6 +119,4 @@ public class StorySharedPreferences {
     public static String getBackTranslationForSlideAndStory(int slide, String storyName) {
         return prefs.getString(BACKT_FILE_KEY + slide + storyName, "");
     }
-
-
 }

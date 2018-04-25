@@ -32,6 +32,14 @@ public class MessageAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void setMessageHistory(List<Message> m){
+        messages = m;
+    }
+
+    public List<Message> getMessageHistory(){
+        return this.messages;
+    }
+
     @Override
     public int getCount(){
         return messages.size();

@@ -127,7 +127,7 @@
     <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
     <string name="queue_status_message_send">No Connection: Message Queued for Delivery</string>
-    <string name="queue_status_message_get">No Connection: Cannot Retrieve Messages</string>
+    <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
     <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
