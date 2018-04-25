@@ -3,14 +3,10 @@ package org.sil.storyproducer.controller.remote;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,8 +17,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,16 +39,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
-import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.messaging.Message;
-import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.Network.paramStringRequest;
-import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -72,6 +61,7 @@ public class RemoteCheckFrag extends Fragment {
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     private static final String TO_SEND_MESSAGE = "SND_MSG";
     private static final String R_MESSAGE_HISTORY = "Message History";
+    private static final String R_LAST_ID = "Last Int";
 
     private View rootView;
     private int slideNumber;
@@ -225,14 +215,16 @@ public class RemoteCheckFrag extends Fragment {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         String json = prefs.getString(R_MESSAGE_HISTORY+storyName+slideNumber,"");
+        int lastID = prefs.getInt(R_LAST_ID +storyName+slideNumber, -1);
         if(!json.isEmpty()){
             Type type = new TypeToken<List<Message>>(){
 
             }.getType();
             msgs = gson.fromJson(json, type);
             msgAdapter.setMessageHistory(msgs);
-        }
+            msgAdapter.setLastID(lastID);
 
+        }
         return msgAdapter;
     }
 
@@ -243,7 +235,9 @@ public class RemoteCheckFrag extends Fragment {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         String json = gson.toJson(msgAdapter.getMessageHistory());
+        int lastID = msgAdapter.getLastID();
         prefsEditor.putString(R_MESSAGE_HISTORY+storyName+slideNumber, json).apply();
+        prefsEditor.putInt(R_LAST_ID+storyName+slideNumber, lastID).apply();
     }
 
     //function to send messages to remote consultant the given slide
@@ -321,7 +315,7 @@ public class RemoteCheckFrag extends Fragment {
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
-        js.put("LastId", Integer.toString(msgAdapter.getCount()-1));
+        js.put("LastId", Integer.toString(msgAdapter.getLastID()));
 
 
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_messages), new Response.Listener<String>() {
@@ -341,7 +335,10 @@ public class RemoteCheckFrag extends Fragment {
 
                 try {
                     msgs = obj.getJSONArray("Messages");
-                    //int id = obj.getInt("LastId");
+                    int id = -1;
+                    id = obj.getInt("LastId");
+                    msgAdapter.setLastID(id);
+
                 }
                 catch(JSONException e){
                     e.printStackTrace();
