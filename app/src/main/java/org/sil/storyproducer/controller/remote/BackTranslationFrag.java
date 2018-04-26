@@ -350,7 +350,7 @@ public class BackTranslationFrag extends Fragment {
                     Toast.makeText(getContext(), R.string.backTranslation_no_draft_recording_available, Toast.LENGTH_SHORT).show();
                 }
                 else if (draftPlayer.isAudioPlaying()) {
-                    draftPlayer.stopAudio();
+                    draftPlayer.pauseAudio();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_gray);
                 } else {
                     recordingToolbar.stopToolbarMedia();

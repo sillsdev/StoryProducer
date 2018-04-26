@@ -269,7 +269,7 @@ public class DramatizationFrag extends Fragment {
                     Toast.makeText(getContext(), R.string.dramatization_no_draft_recording_available, Toast.LENGTH_SHORT).show();
                 }
                 else if (draftPlayer.isAudioPlaying()) {
-                    draftPlayer.stopAudio();
+                    draftPlayer.pauseAudio();
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
                 } else {
                     recordingToolbar.stopToolbarMedia();
