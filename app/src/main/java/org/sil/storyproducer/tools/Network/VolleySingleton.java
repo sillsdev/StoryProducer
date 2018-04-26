@@ -59,7 +59,7 @@ public class VolleySingleton {
                     //TODO: allow for this as it causes major issues
                     //TODO: may eventually just want to use WebSockets for send/get msgs instead
                 }else if(req.getUrl() == mCtx.getString(R.string.url_send_message)){
-                    Toast.makeText(mCtx, R.string.queue_status_message_send, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mCtx, R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT).show();
                     return;
                 }else if(req.getUrl() == mCtx.getString(R.string.url_get_messages)){
                     Toast.makeText(mCtx, R.string.queue_status_message_get, Toast.LENGTH_SHORT).show();
