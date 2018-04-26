@@ -94,8 +94,6 @@ public class RemoteCheckFrag extends Fragment {
         successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
         noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
         unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
-        //grab old adapter or make a new one
-        msgAdapter = loadSharedPreferenceMessageHistory();
 
 
     }
@@ -106,6 +104,8 @@ public class RemoteCheckFrag extends Fragment {
 
         messageTitle = (TextView)rootView.findViewById(R.id.messaging_title);
         messagesView = (ListView) rootView.findViewById(R.id.message_history);
+        //grab old adapter or make a new one
+        msgAdapter = loadSharedPreferenceMessageHistory();
 
         messagesView.setAdapter(msgAdapter);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
@@ -367,7 +367,11 @@ public class RemoteCheckFrag extends Fragment {
                         e.printStackTrace();
                     }
                 }
-                messagesView.setSelection(msgAdapter.getCount());
+                if(messagesView != null) {
+                    if(msgAdapter.getCount() > 0) {
+                        messagesView.setSelection(msgAdapter.getCount());
+                    }
+                }
 
                 Log.i("LOG_VOLLEY", response.toString());
 
