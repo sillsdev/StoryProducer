@@ -121,6 +121,9 @@
     <string name="nav_open">Options</string>
     <string name="nav_close">Close</string>
 
+    <!-- PHONE -->
+    <string name="PhoneId">PhoneId</string>
+
     <!-- Network -->
     <string name="audio_pre_send">Sending Audio...</string>
     <string name="audio_Sent">Audio File Sent Successfully</string>

@@ -95,6 +95,13 @@ public class RemoteCheckFrag extends Fragment {
         noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
         unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
 
+        //these lines should be put somewhere else (one time only)
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
+        final SharedPreferences.Editor prefsEditor = prefs.edit();
+        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        prefsEditor.putString("PhoneId", phone_id).apply();
+
 
     }
 
@@ -134,7 +141,7 @@ public class RemoteCheckFrag extends Fragment {
         //load saved message draft and load saved message adapter
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
-        getMessages();
+        getMessages(prefs);
         if(msgAdapter.getCount() > 0) {
             messagesView.setSelection(msgAdapter.getCount());
         }
@@ -242,11 +249,9 @@ public class RemoteCheckFrag extends Fragment {
 
     //function to send messages to remote consultant the given slide
     private void sendMessage(){
-
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
-        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+        String phone_id = prefs.getString(getString(R.string.PhoneId), "");
         js = new HashMap<String,String>();
 
 
@@ -263,7 +268,7 @@ public class RemoteCheckFrag extends Fragment {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
-                resp  = response;
+                resp = response;
 
                 //set text back to blank
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
@@ -272,7 +277,7 @@ public class RemoteCheckFrag extends Fragment {
                 successToast.show();
 
                 //pull new messages from the server
-                getMessages();
+                getMessages(prefs);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -306,9 +311,8 @@ public class RemoteCheckFrag extends Fragment {
 
     }
 
-    private void getMessages(){
-        String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+    private void getMessages(SharedPreferences prefs){
+        String phone_id = prefs.getString(getString(R.string.PhoneId), "");
 
         js = new HashMap<String,String>();
         js.put("Key", getString(R.string.api_token));
@@ -347,29 +351,30 @@ public class RemoteCheckFrag extends Fragment {
 
 
                 //get all msgs and store into shared preferences
-                for(int j=0; j<msgs.length();j++){
+                if(msgs != null) {
+                    for (int j = 0; j < msgs.length(); j++) {
 
-                    try{
-                        JSONObject currMsg = msgs.getJSONObject(j);
-                        int num = currMsg.getInt("IsTranslator");
-                        boolean isFromTranslator;
-                        if(num == 1){
-                            isFromTranslator = true;
+                        try {
+                            JSONObject currMsg = msgs.getJSONObject(j);
+                            int num = currMsg.getInt("IsTranslator");
+                            boolean isFromTranslator;
+                            if (num == 1) {
+                                isFromTranslator = true;
+                            } else {
+                                isFromTranslator = false;
+                            }
+                            String msg = currMsg.getString("Message");
+                            Message m = new Message(isFromTranslator, msg);
+                            msgAdapter.add(m);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                        else{
-                            isFromTranslator = false;
+                    }
+
+                    if (messagesView != null) {
+                        if (msgAdapter.getCount() > 0) {
+                            messagesView.setSelection(msgAdapter.getCount());
                         }
-                        String msg = currMsg.getString("Message");
-                        Message m = new Message(isFromTranslator, msg);
-                        msgAdapter.add(m);
-                    }
-                    catch(JSONException e){
-                        e.printStackTrace();
-                    }
-                }
-                if(messagesView != null) {
-                    if(msgAdapter.getCount() > 0) {
-                        messagesView.setSelection(msgAdapter.getCount());
                     }
                 }
 
