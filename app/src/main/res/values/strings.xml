@@ -122,6 +122,7 @@
     <string name="nav_close">Close</string>
 
     <!-- Network -->
+    <string name="send_message_down">Message sending are unavailable at this time. Please try again later.</string>
     <string name="audio_pre_send">Sending Audio...</string>
     <string name="audio_Sent">Audio File Sent Successfully</string>
     <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>

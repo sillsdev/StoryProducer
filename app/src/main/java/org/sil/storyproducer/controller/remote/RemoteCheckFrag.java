@@ -87,6 +87,7 @@ public class RemoteCheckFrag extends Fragment {
 
     private Toast successToast;
     private Toast noConnection;
+    private Toast messagingDown;
     private Toast unknownError;
 
     @Override
@@ -99,6 +100,7 @@ public class RemoteCheckFrag extends Fragment {
         msgAdapter = new MessageAdapter(getContext());
         successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
         noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
+        messagingDown = Toast.makeText(getActivity().getApplicationContext(),R.string.send_message_down, Toast.LENGTH_SHORT);
         unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
 
 
@@ -375,16 +377,34 @@ public class RemoteCheckFrag extends Fragment {
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp  = response;
-                Message m = new Message(true, messageSent.getText().toString());
-                msgAdapter.add(m);
-                messagesView.setSelection(messagesView.getCount());
+                String wasSuccess = "false";
+                try {
+                    obj = new JSONObject(resp);
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+                try{
+                  wasSuccess = obj.getString("Success");
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+                if(wasSuccess == "true") {
+                    Message m = new Message(true, messageSent.getText().toString());
+                    msgAdapter.add(m);
+                    messagesView.setSelection(messagesView.getCount());
 
-                //set text back to blank
-                prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
-                prefsEditor.apply();
-                messageSent.setText("");
+                    //set text back to blank
+                    prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+                    prefsEditor.apply();
+                    messageSent.setText("");
 
-                successToast.show();
+                    successToast.show();
+                }
+                else{
+                    messagingDown.show();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
