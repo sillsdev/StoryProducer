@@ -141,7 +141,7 @@ public class RemoteCheckFrag extends Fragment {
         //load saved message draft and load saved message adapter
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         messageSent.setText(prefs.getString(storyName+slideNumber+TO_SEND_MESSAGE, ""));
-        getMessages(prefs);
+        getMessages();
         if(msgAdapter.getCount() > 0) {
             messagesView.setSelection(msgAdapter.getCount());
         }
@@ -270,14 +270,35 @@ public class RemoteCheckFrag extends Fragment {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
                 resp = response;
 
-                //set text back to blank
-                prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
-                prefsEditor.apply();
-                messageSent.setText("");
-                successToast.show();
+                try {
+                    obj = new JSONObject(response);
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
 
-                //pull new messages from the server
-                getMessages(prefs);
+                try {
+                    resp = obj.getString("Success");
+
+                }
+                catch(JSONException e){
+                    e.printStackTrace();
+                }
+                if(resp != null){
+                    if(resp == "true"){
+                        //set text back to blank
+                        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+                        prefsEditor.apply();
+                        messageSent.setText("");
+                        successToast.show();
+
+                        //pull new messages from the server
+                        getMessages();
+                    }
+                    else{
+                        unknownError.show();
+                    }
+                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -311,7 +332,8 @@ public class RemoteCheckFrag extends Fragment {
 
     }
 
-    private void getMessages(SharedPreferences prefs){
+    private void getMessages(){
+        final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         String phone_id = prefs.getString(getString(R.string.PhoneId), "");
 
         js = new HashMap<String,String>();
