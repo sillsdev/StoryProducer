@@ -111,10 +111,7 @@ public class RemoteCheckFrag extends Fragment {
 
         messageTitle = (TextView)rootView.findViewById(R.id.messaging_title);
         messagesView = (ListView) rootView.findViewById(R.id.message_history);
-        //grab old adapter or make a new one
-        msgAdapter = loadSharedPreferenceMessageHistory();
 
-        messagesView.setAdapter(msgAdapter);
         sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
         messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
 
@@ -132,6 +129,10 @@ public class RemoteCheckFrag extends Fragment {
 
     public void onStart() {
         super.onStart();
+
+        //grab old adapter or make a new one
+        msgAdapter = loadSharedPreferenceMessageHistory();
+        messagesView.setAdapter(msgAdapter);
 
         //set texts for this view
         final String titleString = " " + slideNumber;
