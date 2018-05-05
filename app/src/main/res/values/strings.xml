@@ -182,7 +182,7 @@
     <string name="empty_message">RC messages will appear here...</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
-    <string name="remote_check_msg_failed">An unexpected error occurred and the message failed to send. Please try again.</string>
+    <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>

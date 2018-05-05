@@ -310,9 +310,8 @@ public class RemoteCheckFrag extends Fragment {
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
                 prefsEditor.apply();
 
-                if(error instanceof TimeoutError || error instanceof NoConnectionError || error
-                        instanceof NetworkError || error instanceof ServerError ||
-                        error instanceof AuthFailureError){
+                if(error instanceof NoConnectionError || error instanceof NetworkError
+                        || error instanceof AuthFailureError){
                     noConnection.show();
                 }
                 else {
