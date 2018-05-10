@@ -25,10 +25,7 @@ public class ConnectivityStatus extends ContextWrapper {
     public static boolean isConnected(Context context){
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo connection = manager.getActiveNetworkInfo();
-        if(connection!=null && connection.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return connection != null && connection.isConnectedOrConnecting();
     }
 
 }

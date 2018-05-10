@@ -545,11 +545,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private boolean isFirstActivity() {
         // Check to see if registration is first activity
         Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean(RegistrationActivity.FIRST_ACTIVITY_KEY)) {
-            return true;
-        } else {
-            return false;
-        }
+        return extras != null && extras.getBoolean(RegistrationActivity.FIRST_ACTIVITY_KEY);
     }
 
     /**

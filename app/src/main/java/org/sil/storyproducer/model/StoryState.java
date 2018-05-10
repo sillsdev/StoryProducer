@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.RegistrationActivity;
-import org.sil.storyproducer.controller.export.CreateActivity;;
+import org.sil.storyproducer.controller.export.CreateActivity;
 import org.sil.storyproducer.controller.export.ShareActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
@@ -38,8 +38,8 @@ public final class StoryState {
         String[] phaseMenuArray;
         //Local
 
-        SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE).edit();
+        SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), Context.MODE_PRIVATE);
+        SharedPreferences.Editor preferenceEditor = con.getSharedPreferences(con.getString(R.string.registration_filename), Context.MODE_PRIVATE).edit();
         String remote = prefs.getString("consultant_location_type", null);
         boolean isRemote = false;
         if(remote.equals("Remote")) {

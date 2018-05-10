@@ -634,7 +634,7 @@ public class CreateActivity extends PhaseBaseActivity {
                 .replaceAll("[^a-zA-Z0-9\\-_ ]", "");
         if (title == null || title.isEmpty()) {
             title = mStory.replaceAll(" ", "")
-                    .replaceAll("[^a-zA-Z0-9\\-_ ]", "");;
+                    .replaceAll("[^a-zA-Z0-9\\-_ ]", "");
         }
         sections.add(title);
 

@@ -22,7 +22,7 @@ public class DialogListAdapter extends BaseAdapter  {
         this.slides = slides;
         this.currentSlide = currentSlide;
         this.context = mainActivity;
-        this.inflater = (LayoutInflater)mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater)mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
