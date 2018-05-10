@@ -38,6 +38,7 @@
                 android:ems="10"
                 android:id="@+id/fileName"
                 android:layout_weight="1"
+                android:hint="@string/file_explorer_hint"
                 android:contentDescription="file name" />
 
             <Button

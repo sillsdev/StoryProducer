@@ -69,6 +69,7 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:inputType="none"
+            android:hint="@string/backTranslation_hint"
             android:layout_alignParentEnd="true">
 
 
