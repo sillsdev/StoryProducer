@@ -23,7 +23,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:contentDescription="story picture" />
 
             <TextView
                 android:layout_width="@dimen/triangle_width"
@@ -83,7 +84,8 @@
                 android:layout_above="@+id/fragment_draft_scripture_text"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/fragment_draft_reference_text"
-                android:background="@drawable/ic_menu_play" />
+                android:background="@drawable/ic_menu_play"
+                android:contentDescription="play original" />
         </RelativeLayout>
     </RelativeLayout>
 

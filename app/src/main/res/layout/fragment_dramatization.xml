@@ -17,7 +17,8 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_gravity="center"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="story picture" />
 
 
         <ImageButton
@@ -27,7 +28,8 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/ic_play_arrow_white_48dp"
-            android:src="@drawable/ic_red_ex_48dp" />
+            android:src="@drawable/ic_red_ex_48dp"
+            android:contentDescription="play" />
         <TextView
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
@@ -76,7 +78,8 @@
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_lock_blue" />
+            app:srcCompat="@drawable/ic_lock_blue"
+            android:contentDescription="stage locked" />
     </RelativeLayout>
 
 </RelativeLayout>

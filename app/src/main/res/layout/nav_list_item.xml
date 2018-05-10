@@ -11,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:contentDescription=""
+        android:contentDescription="community"
         android:src="@drawable/ic_community"
         android:layout_centerVertical="true" />
 
