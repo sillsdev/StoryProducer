@@ -30,7 +30,7 @@ import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
-public class PhaseBaseActivity extends AppCompatActivity {
+public abstract class PhaseBaseActivity extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -83,7 +83,6 @@ public class PhaseBaseActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter;
         //local
         SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
         String remote = prefs.getString("consultant_location_type", null);
         boolean isRemote = false;
         if(remote.equals("Remote")) {

@@ -85,10 +85,7 @@ public class RemoteCheckFrag extends Fragment {
     private ListView messagesView;
     private PausingRecordingToolbar recordingToolbar;
 
-    private Toast successToast;
-    private Toast noConnection;
-    private Toast messagingDown;
-    private Toast unknownError;
+    private Toast messageToast;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -98,12 +95,9 @@ public class RemoteCheckFrag extends Fragment {
         storyName = StoryState.getStoryName();
         setHasOptionsMenu(true);
         msgAdapter = new MessageAdapter(getContext());
-        successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
-        noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
-        messagingDown = Toast.makeText(getActivity().getApplicationContext(),R.string.send_message_down, Toast.LENGTH_SHORT);
-        unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
-
-
+        //Setup network messages
+        messageToast = new Toast(getActivity().getApplicationContext());
+        messageToast.setDuration(Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -400,11 +394,12 @@ public class RemoteCheckFrag extends Fragment {
                     prefsEditor.apply();
                     messageSent.setText("");
 
-                    successToast.show();
+                    messageToast.setText(R.string.remote_check_msg_sent);
                 }
                 else{
-                    messagingDown.show();
+                    messageToast.setText(R.string.send_message_down);
                 }
+                messageToast.show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -418,11 +413,12 @@ public class RemoteCheckFrag extends Fragment {
                 if(error instanceof TimeoutError || error instanceof NoConnectionError || error
                         instanceof NetworkError || error instanceof ServerError ||
                         error instanceof AuthFailureError){
-                    noConnection.show();
+                    messageToast.setText(R.string.remote_check_msg_no_connection);
                 }
                 else {
-                    unknownError.show();
+                    messageToast.setText(R.string.remote_check_msg_failed);
                 }
+                messageToast.show();
             }
 
         }) {

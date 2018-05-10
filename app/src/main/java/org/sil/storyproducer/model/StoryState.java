@@ -39,7 +39,6 @@ public final class StoryState {
         //Local
 
         SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), Context.MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = con.getSharedPreferences(con.getString(R.string.registration_filename), Context.MODE_PRIVATE).edit();
         String remote = prefs.getString("consultant_location_type", null);
         boolean isRemote = false;
         if(remote.equals("Remote")) {

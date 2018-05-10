@@ -223,7 +223,7 @@ public class FileChooserActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
         alertDialog.setTitle(R.string.file_explorer_newFolder);
-        alertDialog.setMessage(R.string.file_explorer_foldeNamePrompt);
+        alertDialog.setMessage(R.string.file_explorer_folderNamePrompt);
         alertDialog.setView(input);
         alertDialog.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
             @Override

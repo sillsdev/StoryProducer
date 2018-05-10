@@ -15,6 +15,7 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" >
 
+        <!-- TODO replace with back arrow or triangle -->
         <ImageButton
             android:id="@+id/exitButton"
             android:background="@drawable/ic_red_ex_48dp"

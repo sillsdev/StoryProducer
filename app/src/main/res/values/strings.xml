@@ -5,7 +5,7 @@
     <string name="no">No</string>
     <string name="yes">Yes</string>
     <string name="OK">OK</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="error">Error</string>
     <string name="info">Info</string>
     <string name="submit">Submit</string>
@@ -266,7 +266,7 @@
     <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
     <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
     <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
-    <string name="file_explorer_foldeNamePrompt">Please specify a name for your new folder:</string>
+    <string name="file_explorer_folderNamePrompt">Please specify a name for your new folder:</string>
     <string name="file_explorer_newFolder">New Folder</string>
     <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
     <string name="file_explorer_fileAlreadyExists_1">File \"</string>

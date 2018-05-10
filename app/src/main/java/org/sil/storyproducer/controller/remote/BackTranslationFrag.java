@@ -184,7 +184,6 @@ public class BackTranslationFrag extends Fragment {
 
         //dramatize phase not unlocked yet
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + IS_R_CONSULTANT_APPROVED;
         if(!prefs.getBoolean(prefsKeyString, false)) {
             //TODO: remove call to create story here and make global var that stores whether story has been created in DB
@@ -452,7 +451,6 @@ public class BackTranslationFrag extends Fragment {
     //initializes the checkmark button
     private void setCheckmarkButton(final ImageButton button){
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor prefsEditor = prefs.edit();
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
         int isChecked = prefs.getInt(prefsKeyString, 0);
         if(isChecked == 1) {
