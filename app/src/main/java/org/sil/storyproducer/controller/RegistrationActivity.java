@@ -460,7 +460,7 @@ public class RegistrationActivity extends AppCompatActivity {
         editor.putString("model", model);
         editor.putString("android_version", androidVersion);
 
-        editor.commit();
+        editor.apply();
     }
 
     /**

@@ -30,7 +30,7 @@ public class StorySharedPreferences {
     public static void setPhaseForStory(final String phase, final String storyName) {
         prefs.edit()
                 .putString(storyName + PHASE_KEY, phase)
-                .commit();
+                .apply();
     }
 
     public static String getPhaseForStory(String storyName) {
@@ -74,7 +74,7 @@ public class StorySharedPreferences {
         } else {
             editor.putString(key, null);
         }
-        editor.commit();
+        editor.apply();
     }
 
     private static List<String> getStringArrayPref(String key) {
@@ -95,7 +95,7 @@ public class StorySharedPreferences {
     }
 
     public static void setDraftForSlideAndStory(String draftFileName, int slide, String storyName) {
-        prefs.edit().putString(DRAFT_FILE_KEY + slide + storyName, draftFileName).commit();
+        prefs.edit().putString(DRAFT_FILE_KEY + slide + storyName, draftFileName).apply();
     }
 
     public static String getDraftForSlideAndStory(int slide, String storyName) {
@@ -103,7 +103,7 @@ public class StorySharedPreferences {
     }
 
     public static void setDramatizationForSlideAndStory(String draftFileName, int slide, String storyName) {
-        prefs.edit().putString(DRAMA_FILE_KEY + slide + storyName, draftFileName).commit();
+        prefs.edit().putString(DRAMA_FILE_KEY + slide + storyName, draftFileName).apply();
     }
 
     public static String getDramatizationForSlideAndStory(int slide, String storyName) {
@@ -113,7 +113,7 @@ public class StorySharedPreferences {
     //new for backtranslations
 
     public static void setBackTranslationForSlideAndStory(String draftFileName, int slide, String storyName){
-        prefs.edit().putString(BACKT_FILE_KEY + slide + storyName, draftFileName).commit();
+        prefs.edit().putString(BACKT_FILE_KEY + slide + storyName, draftFileName).apply();
     }
 
     public static String getBackTranslationForSlideAndStory(int slide, String storyName) {

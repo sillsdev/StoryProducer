@@ -102,6 +102,7 @@ public class ExportedVideosAdapter extends BaseAdapter {
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName);
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName);
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
+        //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)));
     }
