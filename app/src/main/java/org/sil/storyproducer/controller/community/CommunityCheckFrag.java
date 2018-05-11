@@ -183,7 +183,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -221,13 +221,13 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
                     draftPlayer.playAudio();
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_stop_red, null));
-                    Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Playing Draft Audio", Toast.LENGTH_SHORT).show();
                     LogFiles.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
                 } else if (wasPlaying) {
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
-                    Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No Draft Audio Found", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -266,13 +266,13 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
                     buttonClickedNow.setImageResource(R.drawable.ic_green_play);
                 }
             });
-            Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Playing Comment", Toast.LENGTH_SHORT).show();
             LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
         } else if (wasPlaying) {
             commentPlayer.stopAudio();
             buttonClickedNow.setImageResource(R.drawable.ic_green_play);
         } else {
-            Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No Comment Found", Toast.LENGTH_SHORT).show();
         }
     }
 

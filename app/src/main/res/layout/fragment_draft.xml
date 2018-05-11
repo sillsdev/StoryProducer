@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_draft_root_relayout_layout"
     android:layout_width="match_parent"
@@ -24,7 +23,7 @@
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop"
-                android:contentDescription="story picture" />
+                android:contentDescription="@string/story_picture" />
 
             <TextView
                 android:layout_width="@dimen/triangle_width"
@@ -40,7 +39,7 @@
                 android:layout_alignBottom="@id/fragment_draft_image_view"
                 android:layout_alignRight="@id/fragment_draft_image_view"
                 android:paddingRight="7dp"
-                android:text="1"
+                android:text=""
                 android:textSize="@dimen/text_body" />
         </RelativeLayout>
 
@@ -62,9 +61,10 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:background="@color/gray"
-                android:text="TextView"
+                android:text="fill with text title"
                 android:textSize="@dimen/text_title"
-                android:textStyle="bold|italic" />
+                android:textStyle="bold|italic"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/fragment_draft_scripture_text"
@@ -75,7 +75,8 @@
                 android:layout_below="@+id/fragment_draft_reference_text"
                 android:background="@color/gray"
                 android:textSize="@dimen/text_body"
-                android:text="You should be seeing this!" />
+                android:text="fill with scripture"
+                tools:ignore="HardcodedText" />
 
             <ImageButton
                 android:id="@+id/fragment_draft_lwc_audio_button"
@@ -85,7 +86,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/fragment_draft_reference_text"
                 android:background="@drawable/ic_menu_play"
-                android:contentDescription="play original" />
+                android:contentDescription="@string/draft_play_narration_audio" />
         </RelativeLayout>
     </RelativeLayout>
 

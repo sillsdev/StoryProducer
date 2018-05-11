@@ -14,7 +14,7 @@
         />
     <item
         android:id="@+id/spinner"
-        android:title="ActionBar Spinner"
+        android:title=""
         app:actionViewClass="android.widget.Spinner"
         app:showAsAction="always"
         android:checkable="false" />

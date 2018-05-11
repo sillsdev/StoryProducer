@@ -6,7 +6,7 @@
         android:id="@+id/fd_Icon1"
         android:layout_width="50dip"
         android:layout_height="50dip"
-        android:contentDescription="story picture">
+        android:contentDescription="@string/story_picture">
     </ImageView>
 
     <TextView android:text="@+id/TextViewName"

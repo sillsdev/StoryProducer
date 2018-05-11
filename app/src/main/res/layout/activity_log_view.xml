@@ -23,7 +23,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="right"
-            android:contentDescription="exit" />
+            android:contentDescription="@string/cancel" />
 
         </android.support.v7.widget.Toolbar>
 

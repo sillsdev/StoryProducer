@@ -22,7 +22,7 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/logo_new_splash"
         android:layout_alignBottom="@+id/splash_center"
-        android:contentDescription="app icon" />
+        android:contentDescription="@string/app_name" />
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

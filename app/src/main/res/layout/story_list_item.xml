@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,17 +13,18 @@
         android:src="@drawable/ic_community"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:contentDescription="story picture" />
+        android:contentDescription="@string/story_picture" />
 
     <TextView
         android:id="@+id/story_list_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/text_title"
-        android:text="Title"
+        android:text="Replace with Title"
         android:layout_marginStart="72dp"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/story_list_subtitle"
@@ -30,10 +32,11 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="@dimen/text_title_sub"
-        android:text="Sub Title"
+        android:text="Replace with subtitle"
         android:layout_marginStart="72dp"
         android:layout_marginBottom="@dimen/activity_horizontal_margin"
-        android:layout_below="@+id/story_list_title"/>
+        android:layout_below="@+id/story_list_title"
+        tools:ignore="HardcodedText" />
     <ImageView
         android:id="@+id/story_list_play"
         android:layout_width="20dp"
@@ -42,6 +45,6 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:src="@drawable/ic_play_gray"
-        android:contentDescription="play" />
+        android:contentDescription="@string/play" />
 
 </RelativeLayout>

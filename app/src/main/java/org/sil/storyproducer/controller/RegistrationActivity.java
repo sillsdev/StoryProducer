@@ -635,7 +635,7 @@ public class RegistrationActivity extends AppCompatActivity {
         emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 
         try {
-            this.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            this.startActivity(Intent.createChooser(emailIntent, "Send mail"));
             this.finish();
             preferenceEditor.putBoolean(EMAIL_SENT, true);
             preferenceEditor.apply();

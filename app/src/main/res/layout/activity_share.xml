@@ -50,6 +50,6 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             app:srcCompat="@drawable/ic_lock_blue"
-            android:contentDescription="stage locked" />
+            android:contentDescription="@string/stage_locked" />
     </RelativeLayout>
 </RelativeLayout>

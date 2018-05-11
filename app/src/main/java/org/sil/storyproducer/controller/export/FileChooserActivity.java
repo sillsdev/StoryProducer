@@ -225,7 +225,7 @@ public class FileChooserActivity extends AppCompatActivity {
         alertDialog.setTitle(R.string.file_explorer_newFolder);
         alertDialog.setMessage(R.string.file_explorer_folderNamePrompt);
         alertDialog.setView(input);
-        alertDialog.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 hideKeyboard(input);
@@ -275,7 +275,7 @@ public class FileChooserActivity extends AppCompatActivity {
         final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooserActivity.this);
         errorDialog.setTitle(R.string.error);
         errorDialog.setMessage(text);
-        errorDialog.setPositiveButton(R.string.OK, null);
+        errorDialog.setPositiveButton(R.string.ok, null);
         AlertDialog ret = errorDialog.create();
         ret.show();
         return ret;

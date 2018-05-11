@@ -270,7 +270,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
                     || time <= sourceEnd;
 
             if(!mHasMoreBuffers || !isWithinExpectedTime) {
-                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition...");
+                if(MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition");
 
                 mCurrentState = ConcatState.TRANSITION;
 
@@ -315,7 +315,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
     }
 
     private PipedMediaByteBufferSource getNextSource() {
-        if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting...");
+        if(MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting");
 
         PipedMediaByteBufferSource nextSource = null;
 
@@ -336,7 +336,7 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
                 validateSource(nextSource);
             } catch (IOException | SourceUnacceptableException e) {
                 //If we encounter an error, just let this source be passed over.
-                Log.e(TAG, "Silencing failed source setup....", e);
+                Log.e(TAG, "Silencing failed source setup.", e);
                 nextSource = null;
             }
         }

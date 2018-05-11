@@ -31,7 +31,7 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
             throw new RuntimeException("No source specified for encoder!");
         }
 
-        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting...");
+        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting");
 
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
             int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);

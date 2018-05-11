@@ -418,7 +418,7 @@ public class LearnActivity extends PhaseBaseActivity {
         }
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.

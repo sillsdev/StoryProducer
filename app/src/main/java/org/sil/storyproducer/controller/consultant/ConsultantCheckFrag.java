@@ -187,7 +187,7 @@ public class ConsultantCheckFrag extends Fragment {
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -256,14 +256,14 @@ public class ConsultantCheckFrag extends Fragment {
                     }
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_pause_blue, null));
-                    Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Playing Draft Audio", Toast.LENGTH_SHORT).show();
                 } else if (wasPlaying) {
                     draftPlayer.pauseAudio();
                     draftAudioPaused = true;
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
-                    Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No Draft Audio Found", Toast.LENGTH_SHORT).show();
                 }
             }
         });

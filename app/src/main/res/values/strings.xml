@@ -4,17 +4,27 @@
     <!-- General -->
     <string name="no">No</string>
     <string name="yes">Yes</string>
-    <string name="OK">OK</string>
     <string name="ok">OK</string>
-    <string name="error">Error</string>
-    <string name="info">Info</string>
-    <string name="submit">Submit</string>
     <string name="cancel">Cancel</string>
+    <string name="error">Error</string>
+
+    <string name="submit">Submit</string>
     <string name="save">Save</string>
+    <string name="delete">Delete</string>
+
+    <string name="play">Play</string>
+    <string name="share">Share</string>
+    <string name="sound_off">Sound off</string>
+    <string name="sound_on">Sound on</string>
+
     <string name="question_mark">What is this?</string>
 
     <string name="SECONDS_ABBREVIATION">sec</string>
     <string name="MINUTES_ABBREVIATION">min</string>
+
+    <string name="story_picture">story picture</string>
+    <string name="stage_locked">stage locked</string>
+
 
     <!-- Phases -->
     <string name="learnTitle">Learn</string>
@@ -120,7 +130,7 @@
 
     <!-- Network -->
     <string name="send_message_down">Message sending are unavailable at this time. Please try again later.</string>
-    <string name="audio_pre_send">Sending Audio...</string>
+    <string name="audio_pre_send">Sending Audio</string>
     <string name="audio_Sent">Audio File Sent Successfully</string>
     <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
@@ -142,20 +152,21 @@
 
     <!-- Draft Phase -->
     <string name="draft_bible_story">Bible Story!</string>
-    <string name="draft_playback_no_lwc_audio">Could Not Find Narration Audio...</string>
-    <string name="draft_playback_lwc_audio">Playing Narration Audio...</string>
+    <string name="draft_playback_no_lwc_audio">Could not find narration audio</string>
+    <string name="draft_playback_lwc_audio">Playing narration audio</string>
     <string name="draft_record_file_draft_name">Draft %1$d</string>
-    <string name="draft_playing_draft">Playing Draft...</string>
-    <string name="draft_no_draft_found">No Draft Found...</string>
+    <string name="draft_playing_draft">Playing draft</string>
+    <string name="draft_no_draft_found">No draft found</string>
+    <string name="draft_play_narration_audio">Play narration audio</string>
 
 
     <!-- Dramatization phase -->
-    <string name="dramatization_draft_no_picture">Could Not Find Picture...</string>
+    <string name="dramatization_draft_no_picture">Could not find picture</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
     <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
-    <string name="dramatization_edit_text_hint">Story Text</string>
-    <string name="dramatization_playing_dramatize">Playing Dramatization...</string>
-    <string name="dramatization_no_drama_found">No Dramatization Found...</string>
+    <string name="dramatization_edit_text_hint">Story text</string>
+    <string name="dramatization_playing_dramatize">Playing dramatization</string>
+    <string name="dramatization_no_drama_found">No dramatization found</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
 
     <!-- Whole Story Back Translation phase -->
@@ -163,20 +174,20 @@
     <string name="wsbt_alert_text">Please record a translation for each slide.</string>
 
     <!-- Back Translation Phase -->
-    <string name="backTranslation_draft_no_picture">Could Not Find Picture...</string>
+    <string name="backTranslation_draft_no_picture">Could Not Find Picture</string>
     <string name="backTranslation_no_draft_recording_available">Draft recording not available!</string>
     <string name="backTranslation_playback_draft_recording">Playing back draft recording!</string>
     <string name="backTranslation_edit_text_hint">Story Text</string>
-    <string name="backTranslation_playing_backT">Playing Back Translation...</string>
-    <string name="backTranslation_no_backT_found">No Back Translation Found...</string>
+    <string name="backTranslation_playing_backT">Playing Back Translation</string>
+    <string name="backTranslation_no_backT_found">No Back Translation Found</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
-    <string name="backTranslation_hint">Message for consultant...</string>
+    <string name="backTranslation_hint">Message for consultant&#8230;</string>
 
     <!-- Remote Check Phase -->
     <string name="remote_check_title">Remote Check</string>
     <string name="messaging_bar_title">Messages for Slide</string>
     <string name="message_hint">Enter Message</string>
-    <string name="empty_message">RC messages will appear here...</string>
+    <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
     <string name="remote_check_msg_failed">An unexpected error occurred and the message failed to send. Please try again.</string>
@@ -273,7 +284,7 @@
     <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
     <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
     <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
-    <string name="file_explorer_hint">Enter filename...</string>
+    <string name="file_explorer_hint">Enter filename&#8230;</string>
     <plurals name="file_explorer_numItems">
         <item quantity="one">%d item</item>
         <item quantity="other">%d items</item>

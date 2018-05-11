@@ -90,7 +90,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
                 fetchSourceBuffer(i);
             } catch (SourceClosedException e) {
                 //This case should not happen.
-                throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+                throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e);
             }
         }
 
