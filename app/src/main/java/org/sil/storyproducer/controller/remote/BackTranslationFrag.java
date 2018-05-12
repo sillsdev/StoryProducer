@@ -109,16 +109,16 @@ public class BackTranslationFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false);
 
-        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_backtranslation_play_draft_button);
+        draftPlayButton = rootView.findViewById(R.id.fragment_backtranslation_play_draft_button);
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_backtranslation_image_view), slideNumber);
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button));
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
         closeKeyboardOnTouch(rootView);
-        transcriptionText = (EditText)rootView.findViewById(R.id.transcription);
+        transcriptionText = rootView.findViewById(R.id.transcription);
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final String prefsKeyString = storyName + slideNumber + TRANSCRIPTION_TEXT;
         String savedTranscriptionText = prefs.getString(prefsKeyString, "");
@@ -285,7 +285,7 @@ public class BackTranslationFrag extends Fragment {
      */
     private void setUiColors() {
         if (slideNumber == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_backtranslation_root_layout);
+            RelativeLayout rl = rootView.findViewById(R.id.fragment_backtranslation_root_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
@@ -540,7 +540,7 @@ public class BackTranslationFrag extends Fragment {
                     }
                 }
 
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLEY", response);
 
                 resp  = response;
             }
@@ -578,7 +578,7 @@ public class BackTranslationFrag extends Fragment {
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_request_review), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
+                Log.i("LOG_VOLLEY_RESP_RR", response);
                 resp  = response;
             }
         }, new Response.ErrorListener() {

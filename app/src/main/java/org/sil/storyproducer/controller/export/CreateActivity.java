@@ -185,26 +185,26 @@ public class CreateActivity extends PhaseBaseActivity {
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
-        mEditTextTitle = (EditText) findViewById(R.id.editText_export_title);
+        mEditTextTitle = findViewById(R.id.editText_export_title);
 
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration);
 
-        mCheckboxSoundtrack = (CheckBox) findViewById(R.id.checkbox_export_soundtrack);
-        mCheckboxPictures = (CheckBox) findViewById(R.id.checkbox_export_pictures);
+        mCheckboxSoundtrack = findViewById(R.id.checkbox_export_soundtrack);
+        mCheckboxPictures = findViewById(R.id.checkbox_export_pictures);
         mCheckboxPictures.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
                 toggleVisibleElements();
             }
         });
-        mCheckboxKBFX = (CheckBox) findViewById(R.id.checkbox_export_KBFX);
+        mCheckboxKBFX = findViewById(R.id.checkbox_export_KBFX);
         mCheckboxKBFX.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
                 toggleVisibleElements();
             }
         });
-        mCheckboxText = (CheckBox) findViewById(R.id.checkbox_export_text);
+        mCheckboxText = findViewById(R.id.checkbox_export_text);
         mCheckboxText.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean newState) {
@@ -218,7 +218,7 @@ public class CreateActivity extends PhaseBaseActivity {
         ArrayList<String> resolutionListLow = new ArrayList<>(immutableList);
 
         mLayoutResolution = findViewById(R.id.layout_export_resolution);
-        mSpinnerResolution = (Spinner) findViewById(R.id.spinner_export_resolution);
+        mSpinnerResolution = findViewById(R.id.spinner_export_resolution);
 
         mResolutionAdapterHigh = new ArrayAdapter(this,
                 R.layout.simple_spinner_dropdown_item, resolutionList);
@@ -238,8 +238,8 @@ public class CreateActivity extends PhaseBaseActivity {
 
         mSpinnerResolution.setAdapter(mResolutionAdapterAll);
 
-        mRadioButtonSmartPhone = (RadioButton)findViewById(R.id.radio_smartphone);
-        mRadioButtonDumbPhone = (RadioButton) findViewById(R.id.radio_dumbphone);
+        mRadioButtonSmartPhone = findViewById(R.id.radio_smartphone);
+        mRadioButtonDumbPhone = findViewById(R.id.radio_dumbphone);
 
 
         /*String[] formatArray = getResources().getStringArray(R.array.export_format_options);
@@ -259,11 +259,11 @@ public class CreateActivity extends PhaseBaseActivity {
         mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
         mSpinnerFormat.setAdapter(mFormatAdapterAll);*/
 
-        mButtonStart = (Button) findViewById(R.id.button_export_start);
-        mButtonCancel = (Button) findViewById(R.id.button_export_cancel);
+        mButtonStart = findViewById(R.id.button_export_start);
+        mButtonCancel = findViewById(R.id.button_export_cancel);
         setOnClickListeners();
 
-        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar_export);
+        mProgressBar = findViewById(R.id.progress_bar_export);
         mProgressBar.setMax(PROGRESS_MAX);
         mProgressBar.setProgress(0);
 

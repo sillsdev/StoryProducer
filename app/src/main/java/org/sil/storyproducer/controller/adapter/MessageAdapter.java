@@ -62,7 +62,7 @@ public class MessageAdapter extends BaseAdapter {
         else {
             convertView = messageInflater.inflate(R.layout.rocc_message_layout, null);
         }
-        holder.messageBody = (TextView) convertView.findViewById(R.id.message_body);
+        holder.messageBody = convertView.findViewById(R.id.message_body);
         convertView.setTag(holder);
         holder.messageBody.setText(message.getMessage());
         return convertView;

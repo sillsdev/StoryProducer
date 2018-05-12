@@ -39,10 +39,10 @@ public class CustomAdapter extends ArrayAdapter<ListFiles> {
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new FileHolder();
-            holder.imgIcon = (ImageView)row.findViewById(R.id.story_list_image);
-            holder.txtTitle = (TextView)row.findViewById(R.id.story_list_title);
-            holder.txtSubTitle = (TextView)row.findViewById(R.id.story_list_subtitle);
-            ImageView playButton = (ImageView)row.findViewById(R.id.story_list_play);
+            holder.imgIcon = row.findViewById(R.id.story_list_image);
+            holder.txtTitle = row.findViewById(R.id.story_list_title);
+            holder.txtSubTitle = row.findViewById(R.id.story_list_subtitle);
+            ImageView playButton = row.findViewById(R.id.story_list_play);
             playButton.setVisibility(View.INVISIBLE);
             row.setTag(holder);
         } else {

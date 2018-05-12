@@ -57,9 +57,9 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.audio_comment_list_item, parent, false);
-        TextView titleView = (TextView) rowView.findViewById(R.id.audio_comment_title);
-        final ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
-        ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
+        TextView titleView = rowView.findViewById(R.id.audio_comment_title);
+        final ImageButton playButton = rowView.findViewById(R.id.audio_comment_play_button);
+        ImageButton deleteButton = rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
 

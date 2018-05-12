@@ -137,7 +137,7 @@ public class RecordingToolbar extends AnimationToolbar {
         this.rootViewToolbarLayout = (LinearLayout) rootViewToolbarLayout;
         this.rootViewToEmbedToolbarIn = rootViewLayout;
         //fabPlus = (FloatingActionButton) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab);
-        this.toolbar = (LinearLayout) this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
+        this.toolbar = this.rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar);
         this.enablePlaybackButton = enablePlaybackButton;
         this.enableDeleteButton = enableDeleteButton;
         this.enableSendAudioButton = enableSendAudioButton;
@@ -571,7 +571,7 @@ public class RecordingToolbar extends AnimationToolbar {
         StringRequest req = new StringRequest(Request.Method.POST, myContext.getString(R.string.url_request_review), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_RESP_RR", response.toString());
+                Log.i("LOG_VOLLEY_RESP_RR", response);
                 resp  = response;
             }
         }, new Response.ErrorListener() {
@@ -617,7 +617,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
 
         org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-        String logString = "";
+        StringBuilder logString = new StringBuilder();
         if(log != null) {
             Object[] logs = log.toArray();
 
@@ -628,33 +628,29 @@ public class RecordingToolbar extends AnimationToolbar {
                 if (logs[i] instanceof ComChkEntry) {
                     ComChkEntry tempLog = (ComChkEntry) logs[i];
                     if (tempLog.appliesToSlideNum(slide)) {
-                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                                + " " + tempLog.getDateTime() + "\n";
+                        logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
 
                 } else if (logs[i] instanceof LearnEntry) {
                     LearnEntry tempLog = (LearnEntry) logs[i];
                     if (tempLog.appliesToSlideNum(slide)) {
-                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                                + " " + tempLog.getDateTime() + "\n";
+                        logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
                 } else if (logs[i] instanceof DraftEntry) {
                     DraftEntry tempLog = (DraftEntry) logs[i];
                     if (tempLog.appliesToSlideNum(slide)) {
-                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                                + " " + tempLog.getDateTime() + "\n";
+                        logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
                 } else {
                     LogEntry tempLog = (LogEntry) logs[i];
                     if (tempLog.appliesToSlideNum(slide)) {
-                        logString += tempLog.getPhase() + " " + tempLog.getDescription()
-                                + " " + tempLog.getDateTime() + "\n";
+                        logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
 
                 }
             }
         }
-            js.put("Log", logString);
+            js.put("Log", logString.toString());
             js.put("Key", myContext.getResources().getString(R.string.api_token));
             js.put("PhoneId", phone_id);
             js.put("TemplateTitle", templateTitle);
@@ -666,7 +662,7 @@ public class RecordingToolbar extends AnimationToolbar {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, myContext.getResources().getString(R.string.url_upload_audio), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_RESP_UPL", response.toString());
+                Log.i("LOG_VOLLEY_RESP_UPL", response);
                 resp  = response;
                 Toast.makeText(appContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show();
             }

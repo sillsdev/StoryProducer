@@ -67,7 +67,7 @@ public class BackTranslationUpload {
             StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    Log.i("LOG_VOLEY", response.toString());
+                    Log.i("LOG_VOLEY", response);
                     resp  = response;
                 }
             }, new Response.ErrorListener() {

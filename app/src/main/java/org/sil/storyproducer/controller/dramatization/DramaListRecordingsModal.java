@@ -51,10 +51,10 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
 
         createRecordingList();
 
-        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar2);
+        Toolbar tb = rootView.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.
         tb.setTitle(R.string.dramatization_recordings_title);
-        ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
+        ImageButton exit = rootView.findViewById(R.id.exitButton);
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setView(rootView);
@@ -73,7 +73,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
      * Updates the list of backtranslation recordings at beginning of fragment creation and after any list change
      */
     private void createRecordingList() {
-        ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
+        ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         dramaTitles = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, dramaTitles, slidePosition, this);

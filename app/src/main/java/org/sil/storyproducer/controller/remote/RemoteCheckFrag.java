@@ -105,11 +105,11 @@ public class RemoteCheckFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
         //draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
-        messageTitle = (TextView)rootView.findViewById(R.id.messaging_title);
-        messagesView = (ListView) rootView.findViewById(R.id.message_history);
+        messageTitle = rootView.findViewById(R.id.messaging_title);
+        messagesView = rootView.findViewById(R.id.message_history);
         messagesView.setAdapter(msgAdapter);
-        sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
-        messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
+        sendMessageButton = rootView.findViewById(R.id.button_send_msg);
+        messageSent = rootView.findViewById(R.id.sendMessage);
 
         closeKeyboardOnTouch(rootView);
 
@@ -369,7 +369,7 @@ public class RemoteCheckFrag extends Fragment {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_MSG", response.toString());
+                Log.i("LOG_VOLLEY_MSG", response);
                 resp  = response;
                 String wasSuccess = "false";
                 try {
@@ -495,7 +495,7 @@ public class RemoteCheckFrag extends Fragment {
 
                 messagesView.setSelection(msgAdapter.getCount());
 
-                Log.i("LOG_VOLLEY", response.toString());
+                Log.i("LOG_VOLLEY", response);
 
                 resp  = response;
             }

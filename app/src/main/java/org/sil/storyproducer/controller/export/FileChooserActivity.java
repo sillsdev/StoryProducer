@@ -54,7 +54,7 @@ public class FileChooserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_file_explorer);
 
         //Set up toolbar
-        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolBar = findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -70,7 +70,7 @@ public class FileChooserActivity extends AppCompatActivity {
         }
 
         //bind onClickListener to save button
-        Button saveButton = (Button) findViewById(R.id.saveButton);
+        Button saveButton = findViewById(R.id.saveButton);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +141,7 @@ public class FileChooserActivity extends AppCompatActivity {
 
         adapter = new FileArrayAdapter(FileChooserActivity.this, R.layout.file_view,displayList);
 
-        ListView listView = (ListView)findViewById(android.R.id.list);
+        ListView listView = findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -192,7 +192,7 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     public void saveFile(View view){
-        EditText textBox = (EditText) findViewById(R.id.fileName);
+        EditText textBox = findViewById(R.id.fileName);
         String fileName = textBox.getText().toString();
 
         if( ILLEGAL_CHARS.matcher(fileName).find() ){

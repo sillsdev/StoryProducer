@@ -25,17 +25,17 @@ public class LogView {
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = linf.inflate(R.layout.activity_log_view, null);
 
-        ListView listView = (ListView) dialogLayout.findViewById(R.id.log_list_view);
+        ListView listView = dialogLayout.findViewById(R.id.log_list_view);
         Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
         final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
         listView.setAdapter(lla);
-        Toolbar tb = (Toolbar) dialogLayout.findViewById(R.id.toolbar2);
+        Toolbar tb = dialogLayout.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.
         tb.setTitle(c.getString(R.string.logging_slide_log_view_title, slide));
-        ImageButton exit = (ImageButton) dialogLayout.findViewById(R.id.exitButton);
-        final CheckBox learnCB = (CheckBox) dialogLayout.findViewById(R.id.LearnCheckBox);
-        final CheckBox draftCB = (CheckBox) dialogLayout.findViewById(R.id.DraftCheckBox);
-        final CheckBox comChkCB = (CheckBox) dialogLayout.findViewById(R.id.CommunityCheckCheckBox);
+        ImageButton exit = dialogLayout.findViewById(R.id.exitButton);
+        final CheckBox learnCB = dialogLayout.findViewById(R.id.LearnCheckBox);
+        final CheckBox draftCB = dialogLayout.findViewById(R.id.DraftCheckBox);
+        final CheckBox comChkCB = dialogLayout.findViewById(R.id.CommunityCheckCheckBox);
         learnCB.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {

@@ -50,7 +50,7 @@ public class StoryListFrag extends Fragment {
         view = inflater.inflate(R.layout.activity_list_view, container, false);
 
         // Get ListView object from xml
-        listView = (ListView)getActivity().findViewById(R.id.story_list_view);
+        listView = getActivity().findViewById(R.id.story_list_view);
 
 
         final ListFiles[] listFiles = new ListFiles[storyNames.length];
@@ -62,7 +62,7 @@ public class StoryListFrag extends Fragment {
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
 
-        listView = (ListView)view.findViewById(R.id.story_list_view);
+        listView = view.findViewById(R.id.story_list_view);
         // Assign adapter to ListView
         listView.setAdapter(adapter);
 

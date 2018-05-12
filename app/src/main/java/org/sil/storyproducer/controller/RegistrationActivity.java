@@ -151,12 +151,12 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void addSubmitButtonSave() {
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-        final Button submitButton = (Button) findViewById(R.id.submit_button);
+        final Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                final EditText databaseEmailField1 = (EditText)findViewById(R.id.input_database_email_1);
-                final EditText databaseEmailField2 = (EditText)findViewById(R.id.input_database_email_2);
-                final EditText databaseEmailField3 = (EditText)findViewById(R.id.input_database_email_3);
+                final EditText databaseEmailField1 = findViewById(R.id.input_database_email_1);
+                final EditText databaseEmailField2 = findViewById(R.id.input_database_email_2);
+                final EditText databaseEmailField3 = findViewById(R.id.input_database_email_3);
                 String databaseEmail1 = databaseEmailField1.getText().toString();
                 String databaseEmail2 = databaseEmailField2.getText().toString();
                 String databaseEmail3 = databaseEmailField3.getText().toString();
@@ -185,7 +185,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sets the on click listener for the registration bypass button
      */
     private void addRegistrationSkip() {
-        final Button skipButton = (Button) findViewById(R.id.bypass_button);
+        final Button skipButton = findViewById(R.id.bypass_button);
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,7 +199,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * ethnologue.com to browse language names and their corresponding codes
      */
     private void addEthnologueQuestion() {
-        final Button questionButton = (Button)findViewById(R.id.ethnologue_question_button);
+        final Button questionButton = findViewById(R.id.ethnologue_question_button);
         questionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -376,7 +376,7 @@ public class RegistrationActivity extends AppCompatActivity {
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLEY", response);
                 resp  = response;
             }
         }, new Response.ErrorListener() {

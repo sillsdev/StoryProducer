@@ -95,11 +95,11 @@ public class ShareActivity extends PhaseBaseActivity {
 
 
         //share view
-        mShareSection = (LinearLayout) findViewById(R.id.share_section);
+        mShareSection = findViewById(R.id.share_section);
         videosAdapter = new ExportedVideosAdapter(this);
-        mVideosListView = (ListView) findViewById(R.id.videos_list);
+        mVideosListView = findViewById(R.id.videos_list);
         mVideosListView.setAdapter(videosAdapter);
-        mNoVideosText = (TextView)findViewById(R.id.no_videos_text);
+        mNoVideosText = findViewById(R.id.no_videos_text);
         setVideoAdapterPaths();
 
     }

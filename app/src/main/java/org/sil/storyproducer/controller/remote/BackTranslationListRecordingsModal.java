@@ -55,10 +55,10 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
 
         createRecordingList();
 
-        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar2);
+        Toolbar tb = rootView.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.
         tb.setTitle(R.string.backTranslation_recordings_title);
-        ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
+        ImageButton exit = rootView.findViewById(R.id.exitButton);
 
 
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
@@ -77,7 +77,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
      * Updates the list of backtranslation recordings at beginning of fragment creation and after any list change
      */
     private void createRecordingList() {
-        ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
+        ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         backT_Titles = AudioFiles.getBackTranslationTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, backT_Titles, slidePosition, this);

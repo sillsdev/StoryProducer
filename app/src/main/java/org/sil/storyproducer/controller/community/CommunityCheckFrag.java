@@ -68,15 +68,15 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false);
-        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button);
-        commentRecordButton = (ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button);
+        draftPlaybackButton = rootView.findViewById(R.id.fragment_draft_playback_button);
+        commentRecordButton = rootView.findViewById(R.id.fragment_commcheck_add_comment_button);
 
         updateCommentList();
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton(draftPlaybackButton);
         setRecordCommentButton(commentRecordButton);
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
         return rootView;
@@ -153,7 +153,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      * Updates the list of comments at beginning of fragment creation and after any list change
      */
     public void updateCommentList() {
-        ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
+        ListView listView = rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
         comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
         RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
@@ -168,7 +168,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      */
     private void setUiColors(){
         if(slideNumber == 0){
-            RelativeLayout rl =  (RelativeLayout)rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
+            RelativeLayout rl = rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
