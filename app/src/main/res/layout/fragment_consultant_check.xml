@@ -22,15 +22,15 @@
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
             android:layout_alignBottom="@id/fragment_concheck_image_view"
-            android:layout_alignRight="@id/fragment_concheck_image_view"
+            android:layout_alignEnd="@id/fragment_concheck_image_view"
             android:background="@drawable/triangle_background"/>
         <TextView
             android:id="@+id/slide_number_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/fragment_concheck_image_view"
-            android:layout_alignRight="@id/fragment_concheck_image_view"
-            android:paddingRight="7dp"
+            android:layout_alignEnd="@id/fragment_concheck_image_view"
+            android:paddingEnd="7dp"
             android:text=""
             android:textSize="@dimen/text_body"/>
     </RelativeLayout>
@@ -40,8 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingStart="@dimen/activity_horizontal_margin"
+        android:paddingEnd="@dimen/activity_horizontal_margin"
         android:paddingTop="10dp"
         android:layout_below="@id/image_container"
         android:layout_above="@+id/concheck_button_layout">
@@ -82,7 +82,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
             android:layout_margin="10dp"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -90,7 +89,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_margin="10dp"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton

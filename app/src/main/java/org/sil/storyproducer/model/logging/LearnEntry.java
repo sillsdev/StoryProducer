@@ -27,7 +27,7 @@ public class LearnEntry extends LogEntry {
 
     @Override
     public String getPhase(){
-        return mResources.getString(R.string.learnTitle);
+        return mResources.getString(R.string.learn_title);
     }
 
     @Override

@@ -40,7 +40,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:paddingBottom="@dimen/nav_drawer_margin"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="false"
             android:max="100" />
@@ -55,7 +54,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_menu_play"
                 android:contentDescription="@string/sound_off" />
@@ -65,7 +63,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/soundOn"
-                android:layout_toLeftOf="@+id/soundOff"
                 android:layout_toStartOf="@+id/soundOff"
                 android:visibility="gone" />
 
@@ -73,7 +70,6 @@
                 android:id="@+id/soundOn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@+id/volumeSwitch"
                 android:layout_toStartOf="@+id/volumeSwitch"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_no_audio"

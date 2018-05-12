@@ -27,15 +27,15 @@
 
 
     <!-- Phases -->
-    <string name="learnTitle">Learn</string>
-    <string name="draftTitle">Draft</string>
+    <string name="learn_title">Learn</string>
+    <string name="draft_title">Draft</string>
     <string name="community_check_title">Community Check</string>
     <string name="consultant_check_title">Consultant Check</string>
     <string name="dramatization_title">Dramatize</string>
     <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
-    <string name="whole_story_title">Story Back Translation </string>
-    <string name="backTranslation_title"> Back Translation </string>
+    <string name="whole_story_title">Whole story back translation </string>
+    <string name="back_translation_title">Back Translation </string>
     <string name="submission_title">Submission to Remote Consultant</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
@@ -179,6 +179,7 @@
     <string name="backTranslation_playback_draft_recording">Playing back draft recording!</string>
     <string name="backTranslation_edit_text_hint">Story Text</string>
     <string name="backTranslation_playing_backT">Playing Back Translation</string>
+    <string name="backTranslation_play_draft">Play translated draft</string>
     <string name="backTranslation_no_backT_found">No Back Translation Found</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
     <string name="backTranslation_hint">Message for consultant&#8230;</string>

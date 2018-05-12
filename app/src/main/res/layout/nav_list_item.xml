@@ -8,10 +8,10 @@
         android:id="@+id/icon"
         android:layout_width="25dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:contentDescription="community"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:contentDescription="@string/community_check_title"
         android:src="@drawable/ic_community"
         android:layout_centerVertical="true" />
 
@@ -19,12 +19,12 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_toRightOf="@id/icon"
+        android:layout_toEndOf="@id/icon"
         android:minHeight="?android:attr/listPreferredItemHeightSmall"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
         android:textColor="@color/white"
         android:gravity="center_vertical"
-        android:paddingRight="72dp"/>
+        android:paddingEnd="72dp"/>
 
 
 </RelativeLayout>

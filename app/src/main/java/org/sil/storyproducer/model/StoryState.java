@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.controller.export.CreateActivity;
 import org.sil.storyproducer.controller.export.ShareActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
@@ -34,7 +33,7 @@ public final class StoryState {
      */
     public static void init(Context con) {
         context = con;
-        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
+        currentPhase = new Phase(context.getResources().getString(R.string.learn_title), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
         String[] phaseMenuArray;
         //Local
 

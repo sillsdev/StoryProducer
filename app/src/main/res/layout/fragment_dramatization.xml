@@ -34,7 +34,7 @@
             android:layout_width="@dimen/triangle_width"
             android:layout_height="@dimen/triangle_height"
             android:layout_alignBottom="@id/fragment_dramatization_image_view"
-            android:layout_alignRight="@id/fragment_dramatization_image_view"
+            android:layout_alignEnd="@id/fragment_dramatization_image_view"
             android:background="@drawable/triangle_background" />
 
         <TextView
@@ -42,8 +42,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/fragment_dramatization_image_view"
-            android:layout_alignRight="@id/fragment_dramatization_image_view"
-            android:paddingRight="7dp"
+            android:layout_alignEnd="@id/fragment_dramatization_image_view"
+            android:paddingEnd="7dp"
             android:text=""
             android:textSize="@dimen/text_body" />
 

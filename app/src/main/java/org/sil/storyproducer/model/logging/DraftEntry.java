@@ -12,7 +12,7 @@ public class DraftEntry extends LogEntry {
     private static String mPhase;
 
     public static void init(Context context){
-        mPhase = context.getString(R.string.draftTitle);
+        mPhase = context.getString(R.string.draft_title);
         Type.init(context);
     }
 
