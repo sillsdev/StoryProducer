@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/fragment_backtranslation_image_view"
             android:layout_alignEnd="@id/fragment_backtranslation_image_view"
+            android:paddingStart="7dp"
             android:paddingEnd="7dp"
             android:text=""
             android:textSize="@dimen/text_body" />

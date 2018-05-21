@@ -114,9 +114,9 @@ public final class StoryState {
     public static Phase getSavedPhase() {
         String phaseTitle = StorySharedPreferences.getPhaseForStory(storyName);
         Phase phase = null;
-        for(int k = 0; k < phases.length; k++) {
-            if(phaseTitle.equals(phases[k].getTitle())) {
-                phase = phases[k];
+        for (Phase phase1 : phases) {
+            if (phaseTitle.equals(phase1.getTitle())) {
+                phase = phase1;
             }
         }
         currentPhase = phase;

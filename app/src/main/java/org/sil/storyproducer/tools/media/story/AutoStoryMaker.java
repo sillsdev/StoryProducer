@@ -150,12 +150,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     }
 
     public boolean isDone() {
-        if(mStoryMaker == null) {
-            return false;
-        }
-        else {
-            return mStoryMaker.isDone();
-        }
+        return mStoryMaker != null && mStoryMaker.isDone();
     }
 
     @Override

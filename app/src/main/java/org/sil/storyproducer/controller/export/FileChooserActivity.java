@@ -107,7 +107,7 @@ public class FileChooserActivity extends AppCompatActivity {
                 } else { //subdirOrFile is a file and not a directory
                     long size = subdirOrFile.length();
 
-                    /**
+                    /*
                      * We have to use this 'sizePlurality' int because 'size' is a long and can't be
                      * passed into the getQuantityString method, which takes only an int.
                      */

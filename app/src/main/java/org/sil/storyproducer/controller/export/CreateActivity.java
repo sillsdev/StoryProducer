@@ -365,11 +365,11 @@ public class CreateActivity extends PhaseBaseActivity {
      * @param sectionView that is wanted to be made open
      */
     private void setSectionsClosedExceptView(View sectionView) {
-        for(int k = 0; k < sectionViews.length; k++) {
-            if(sectionViews[k] == sectionView) {
-                sectionViews[k].setVisibility(View.VISIBLE);
+        for (View sectionView1 : sectionViews) {
+            if (sectionView1 == sectionView) {
+                sectionView1.setVisibility(View.VISIBLE);
             } else {
-                sectionViews[k].setVisibility(View.GONE);
+                sectionView1.setVisibility(View.GONE);
             }
         }
 

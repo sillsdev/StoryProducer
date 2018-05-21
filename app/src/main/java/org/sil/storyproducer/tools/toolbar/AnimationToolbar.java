@@ -140,9 +140,8 @@ public class AnimationToolbar {
         display.getSize(size);
         //An arbitrary size of 10% of the screen size was found
         //to be an appropriate height for the size of the toolbar.
-        int height = (int) (size.y * .1);
 
-        toolBar.getLayoutParams().height = height;
+        toolBar.getLayoutParams().height = (int) (size.y * .1);
     }
 
     private void setAnimators() {

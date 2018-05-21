@@ -1,6 +1,5 @@
 package org.sil.storyproducer.tools.media.graphics;
 
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 public class KenBurnsEffectHelper {

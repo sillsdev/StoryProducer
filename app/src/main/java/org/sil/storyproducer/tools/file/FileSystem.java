@@ -6,8 +6,6 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import org.sil.storyproducer.controller.MainActivity;
-
 import java.io.*;
 import java.util.*;
 

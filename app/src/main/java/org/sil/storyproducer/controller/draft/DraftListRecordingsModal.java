@@ -15,11 +15,8 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.model.logging.Log;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
-import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;

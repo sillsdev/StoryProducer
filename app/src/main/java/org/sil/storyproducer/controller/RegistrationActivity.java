@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
@@ -27,27 +26,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.file.AudioFiles;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import android.provider.Settings.Secure;
 
@@ -166,9 +155,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (databaseEmail1.isEmpty() && databaseEmail2.isEmpty() && databaseEmail3.isEmpty()) {
                     createErrorDialog(databaseEmailField1);
                     databaseEmailField1.requestFocus();
-                    for (int i = 0; i < sectionViews.length; i++) {
-                        if (sectionViews[i].findFocus() != null) {
-                            sectionViews[i].setVisibility(View.VISIBLE);
+                    for (View sectionView : sectionViews) {
+                        if (sectionView.findFocus() != null) {
+                            sectionView.setVisibility(View.VISIBLE);
                             toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1);
                         }
                     }
@@ -356,7 +345,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
          String PhoneId = Secure.getString(myContext.getContentResolver(),
                 Secure.ANDROID_ID);
 
@@ -667,17 +656,17 @@ public class RegistrationActivity extends AppCompatActivity {
         StringBuilder message = new StringBuilder();
         String formattedKey;
 
-        for (int i = 0; i < keyListOrder.length; i++) {
+        for (String aKeyListOrder : keyListOrder) {
             // Section separation appends newline
-            if (keyListOrder[i].isEmpty()) {
+            if (aKeyListOrder.isEmpty()) {
                 message.append("\n");
                 // Find key and value and print in clean format
             } else {
-                formattedKey = keyListOrder[i].replace("_", " ");
+                formattedKey = aKeyListOrder.replace("_", " ");
                 formattedKey = formattedKey.toUpperCase();
                 message.append(formattedKey);
                 message.append(": ");
-                message.append(prefs.getString(keyListOrder[i], "NA"));
+                message.append(prefs.getString(aKeyListOrder, "NA"));
                 message.append("\n");
             }
         }

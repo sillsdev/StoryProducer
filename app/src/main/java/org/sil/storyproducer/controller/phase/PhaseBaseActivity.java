@@ -23,7 +23,6 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.DrawerItemClickListener;

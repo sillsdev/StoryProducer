@@ -5,9 +5,7 @@ import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -15,7 +13,6 @@ import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.file.AudioFiles;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,8 +34,7 @@ public class BackTranslationUpload {
 
             final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
             final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-            Context myContext = con;
-            String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+            String phone_id = Settings.Secure.getString(con.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
             String templateTitle = StoryState.getStoryName();
           //  File testFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide(), fileName);
@@ -50,7 +46,7 @@ public class BackTranslationUpload {
             String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
             String url = "https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php";
 
-            js = new HashMap<String,String>();
+            js = new HashMap<>();
              js.put("Key", api_token);
              js.put("PhoneId", phone_id);
              js.put("TemplateTitle", templateTitle);
@@ -88,7 +84,7 @@ public class BackTranslationUpload {
             };
 
 
-            VolleySingleton.getInstance(myContext).addToRequestQueue(req);
+            VolleySingleton.getInstance(con).addToRequestQueue(req);
 
         }
 

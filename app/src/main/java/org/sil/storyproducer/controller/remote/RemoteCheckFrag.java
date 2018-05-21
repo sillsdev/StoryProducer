@@ -268,7 +268,7 @@ public class RemoteCheckFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
-    /**
+    /*
      * sets the playback path
      */
     /*public void setPlayBackPath() {
@@ -354,7 +354,7 @@ public class RemoteCheckFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
 
 
         //Get msg for current slide
@@ -410,7 +410,7 @@ public class RemoteCheckFrag extends Fragment {
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
                 prefsEditor.apply();
 
-                if(error instanceof TimeoutError || error instanceof NoConnectionError || error
+                if(error instanceof TimeoutError || error instanceof    NoConnectionError || error
                         instanceof NetworkError || error instanceof ServerError ||
                         error instanceof AuthFailureError){
                     messageToast.setText(R.string.remote_check_msg_no_connection);
@@ -438,7 +438,7 @@ public class RemoteCheckFrag extends Fragment {
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
@@ -478,12 +478,7 @@ public class RemoteCheckFrag extends Fragment {
                         JSONObject currMsg = msgs.getJSONObject(j);
                         int num = currMsg.getInt("IsTranslator");
                         boolean isFromTranslator;
-                        if(num == 1){
-                            isFromTranslator = true;
-                        }
-                        else{
-                            isFromTranslator = false;
-                        }
+                        isFromTranslator = num == 1;
                         String msg = currMsg.getString("Message");
                         Message m = new Message(isFromTranslator, msg);
                         msgAdapter.add(m);

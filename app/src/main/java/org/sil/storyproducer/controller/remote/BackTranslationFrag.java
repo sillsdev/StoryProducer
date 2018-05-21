@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,7 +24,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -35,11 +33,9 @@ import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +45,6 @@ import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.Network.paramStringRequest;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.FileSystem;
@@ -272,8 +267,8 @@ public class BackTranslationFrag extends Fragment {
         recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
-    /**
-     * Stop the toolbar from continuing the appending session.
+    /*
+      Stop the toolbar from continuing the appending session.
      */
   //  public void stopAppendingRecordingFile(){
    //     recordingToolbar.stopAppendingSession();
@@ -453,14 +448,18 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final String prefsKeyString = storyName + slideNumber + IS_CHECKED;
         int isChecked = prefs.getInt(prefsKeyString, 0);
-        if(isChecked == 1) {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
-        } else if (isChecked == -1) {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
-        } else{
-            button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
+        switch (isChecked) {
+            case 1:
+                //TODO: use non-deprecated method; currently used to support older devices
+                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
+                break;
+            case -1:
+                //TODO: use non-deprecated method; currently used to support older devices
+                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
+                break;
+            default:
+                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
+                break;
         }
     }
 
@@ -496,7 +495,7 @@ public class BackTranslationFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
 
 
         js.put("Key", getString(R.string.api_token));
@@ -566,10 +565,9 @@ public class BackTranslationFrag extends Fragment {
 
     public void requestRemoteReview(Context con, int numSlides){
 
-        Context myContext = con;
-        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+        final String phone_id = Settings.Secure.getString(con.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle", StoryState.getStoryName());

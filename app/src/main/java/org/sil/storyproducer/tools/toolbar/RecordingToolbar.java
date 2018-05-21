@@ -14,7 +14,6 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.provider.Settings;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.Space;
 import android.util.Base64;
 import android.util.Log;
@@ -29,11 +28,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-
 import org.apache.commons.io.IOUtils;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
-import org.sil.storyproducer.controller.remote.BackTranslationFrag;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.ComChkEntry;
@@ -163,14 +160,14 @@ public class RecordingToolbar extends AnimationToolbar {
         void onStartedRecordingOrPlayback(boolean isRecording);
     }
 
-    /**
+    /*
      * This function is used to show the floating button
      */
     /*public void showFloatingActionButton() {
         fabPlus.show();
     }*/
 
-    /**
+    /*
      * This function is used to hide the floating button
      */
    /* public void hideFloatingActionButton() {
@@ -344,16 +341,22 @@ public class RecordingToolbar extends AnimationToolbar {
                 buttonSpacing = new Space(appContext);
                 buttonSpacing.setLayoutParams(spaceLayoutParams);
                 toolbar.addView(buttonSpacing);
-                if (i == 0) {
-                    micButton = imageButtons[i];
-                } else if (i == 1) {
-                    playButton = imageButtons[i];
-                } else if (i == 2) {
-                    deleteButton = imageButtons[i];
-                } else if (i == 3) {
-                    multiRecordButton = imageButtons[i];
-                } else if (i == 4) {
-                    sendAudioButton = imageButtons[i];
+                switch (i) {
+                    case 0:
+                        micButton = imageButtons[i];
+                        break;
+                    case 1:
+                        playButton = imageButtons[i];
+                        break;
+                    case 2:
+                        deleteButton = imageButtons[i];
+                        break;
+                    case 3:
+                        multiRecordButton = imageButtons[i];
+                        break;
+                    case 4:
+                        sendAudioButton = imageButtons[i];
+                        break;
                 }
             }
         }
@@ -388,8 +391,8 @@ public class RecordingToolbar extends AnimationToolbar {
         //Must remove all children of the layout, before appending them to the new rootView
         rootViewToolbarLayout.removeAllViews();
         for (int i = 0; i < myParams.length; i++) {
-            for (int j = 0; j < myRules.length; j++) {
-                myParams[i].addRule(myRules[j], rootViewToEmbedToolbarIn.getId());
+            for (int myRule : myRules) {
+                myParams[i].addRule(myRule, rootViewToEmbedToolbarIn.getId());
             }
             myView[i].setLayoutParams(myParams[i]);
             ((RelativeLayout) rootViewToEmbedToolbarIn).addView(myView[i]);
@@ -559,16 +562,16 @@ public class RecordingToolbar extends AnimationToolbar {
     //First time request for review
     public void requestRemoteReview(Context con, int numSlides){
 
-        Context myContext = con;
-        final String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+        // TODO replace with InstanceID getID for all phone ID locations
+        final String phone_id = Settings.Secure.getString(con.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        js = new HashMap<String,String>();
-        js.put("Key", myContext.getResources().getString(R.string.api_token));
+        js = new HashMap<>();
+        js.put("Key", con.getResources().getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("TemplateTitle", StoryState.getStoryName());
         js.put("NumberOfSlides", Integer.toString(numSlides));
 
-        StringRequest req = new StringRequest(Request.Method.POST, myContext.getString(R.string.url_request_review), new Response.Listener<String>() {
+        StringRequest req = new StringRequest(Request.Method.POST, con.getString(R.string.url_request_review), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_RR", response);
@@ -599,8 +602,7 @@ public class RecordingToolbar extends AnimationToolbar {
     //Subroutine to upload a single audio file
     public void Upload ( final File fileName, Context con, int slide) throws IOException {
 
-        Context myContext = con;
-        String phone_id = Settings.Secure.getString(myContext.getContentResolver(),
+        String phone_id = Settings.Secure.getString(con.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         String templateTitle = StoryState.getStoryName();
 
@@ -613,7 +615,7 @@ public class RecordingToolbar extends AnimationToolbar {
         String transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT,"");
         String byteString = Base64.encodeToString( audioBytes ,Base64.DEFAULT);
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
 
 
         org.sil.storyproducer.model.logging.Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
@@ -624,25 +626,25 @@ public class RecordingToolbar extends AnimationToolbar {
             //Grabs all applicable logs for this slide num
             String[] slideLogs = new String[logs.length];
 
-            for (int i = 0; i < logs.length; i++) {
-                if (logs[i] instanceof ComChkEntry) {
-                    ComChkEntry tempLog = (ComChkEntry) logs[i];
+            for (Object log1 : logs) {
+                if (log1 instanceof ComChkEntry) {
+                    ComChkEntry tempLog = (ComChkEntry) log1;
                     if (tempLog.appliesToSlideNum(slide)) {
                         logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
 
-                } else if (logs[i] instanceof LearnEntry) {
-                    LearnEntry tempLog = (LearnEntry) logs[i];
+                } else if (log1 instanceof LearnEntry) {
+                    LearnEntry tempLog = (LearnEntry) log1;
                     if (tempLog.appliesToSlideNum(slide)) {
                         logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
-                } else if (logs[i] instanceof DraftEntry) {
-                    DraftEntry tempLog = (DraftEntry) logs[i];
+                } else if (log1 instanceof DraftEntry) {
+                    DraftEntry tempLog = (DraftEntry) log1;
                     if (tempLog.appliesToSlideNum(slide)) {
                         logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
                 } else {
-                    LogEntry tempLog = (LogEntry) logs[i];
+                    LogEntry tempLog = (LogEntry) log1;
                     if (tempLog.appliesToSlideNum(slide)) {
                         logString.append(tempLog.getPhase()).append(" ").append(tempLog.getDescription()).append(" ").append(tempLog.getDateTime()).append("\n");
                     }
@@ -651,7 +653,7 @@ public class RecordingToolbar extends AnimationToolbar {
             }
         }
             js.put("Log", logString.toString());
-            js.put("Key", myContext.getResources().getString(R.string.api_token));
+            js.put("Key", con.getResources().getString(R.string.api_token));
             js.put("PhoneId", phone_id);
             js.put("TemplateTitle", templateTitle);
             js.put("SlideNumber", currentSlide);
@@ -659,7 +661,7 @@ public class RecordingToolbar extends AnimationToolbar {
             js.put("BacktranslationText", transcription);
 
 
-        paramStringRequest req = new paramStringRequest(Request.Method.POST, myContext.getResources().getString(R.string.url_upload_audio), js, new Response.Listener<String>() {
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, con.getResources().getString(R.string.url_upload_audio), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_RESP_UPL", response);
