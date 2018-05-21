@@ -65,16 +65,16 @@ public class LearnActivity extends PhaseBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_learn);
-        rootView = (RelativeLayout) findViewById(R.id.phase_frame);
+        rootView = findViewById(R.id.phase_frame);
 
         //get the story name
         storyName = StoryState.getStoryName();
         CONTENT_SLIDE_COUNT = FileSystem.getContentSlideAmount(storyName);
 
         //get the ui
-        learnImageView = (ImageView) findViewById(R.id.learnImageView);
-        playButton = (ImageButton) findViewById(R.id.playButton);
-        videoSeekBar = (SeekBar) findViewById(R.id.videoSeekBar);
+        learnImageView = findViewById(R.id.learnImageView);
+        playButton = findViewById(R.id.playButton);
+        videoSeekBar = findViewById(R.id.videoSeekBar);
 
         setBackgroundAudioJumps();
 
@@ -106,7 +106,7 @@ public class LearnActivity extends PhaseBaseActivity {
         File recordFile = new File(recordFilePath);
         if(recordFile.exists()) {
             setVolumeSwitchAndFloatingButtonVisible();
-            Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+            Switch volumeSwitch = findViewById(R.id.volumeSwitch);
             volumeSwitch.setChecked(true);
             isWatchedOnce = true;
         }
@@ -332,7 +332,7 @@ public class LearnActivity extends PhaseBaseActivity {
         videoSeekBar.setProgress(0);
         slideNumber = 0;
         narrationPlayer.setVolume(0.0f);
-        Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+        Switch volumeSwitch = findViewById(R.id.volumeSwitch);
         backgroundPlayer.stopAudio();
         volumeSwitch.setChecked(false);
         backgroundPlayer.stopAudio();
@@ -354,7 +354,7 @@ public class LearnActivity extends PhaseBaseActivity {
                     R.string.learn_phase_practice, Snackbar.LENGTH_INDEFINITE);
             View snackBarView = snackbar.getView();
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.lightWhite, null));
-            TextView textView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+            TextView textView = snackBarView.findViewById(android.support.design.R.id.snackbar_text);
             textView.setTextColor(ResourcesCompat.getColor(getResources(), R.color.darkGray, null));
             snackbar.setAction(R.string.ok, new View.OnClickListener() {
                 @Override
@@ -379,9 +379,9 @@ public class LearnActivity extends PhaseBaseActivity {
         //make the floating button visible
         //recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
-        ImageView soundOff = (ImageView) findViewById(R.id.soundOff);
-        ImageView soundOn = (ImageView) findViewById(R.id.soundOn);
-        Switch volumeSwitch = (Switch) findViewById(R.id.volumeSwitch);
+        ImageView soundOff = findViewById(R.id.soundOff);
+        ImageView soundOn = findViewById(R.id.soundOn);
+        Switch volumeSwitch = findViewById(R.id.volumeSwitch);
         soundOff.setVisibility(View.VISIBLE);
         soundOn.setVisibility(View.VISIBLE);
         volumeSwitch.setVisibility(View.VISIBLE);
@@ -418,7 +418,7 @@ public class LearnActivity extends PhaseBaseActivity {
         }
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -454,7 +454,7 @@ public class LearnActivity extends PhaseBaseActivity {
         //recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
-        RelativeLayout dummyView = (RelativeLayout) rootView.findViewById(R.id.activity_learn);
+        RelativeLayout dummyView = rootView.findViewById(R.id.activity_learn);
         dummyView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

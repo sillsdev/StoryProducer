@@ -29,7 +29,6 @@ import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -73,12 +72,12 @@ public class DramatizationFrag extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false);
-        draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
+        draftPlayButton = rootView.findViewById(R.id.fragment_dramatization_play_draft_button);
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_dramatization_image_view), slideNumber);
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
-        slideText = (EditText)rootView.findViewById(R.id.fragment_dramatization_edit_text);
+        slideText = rootView.findViewById(R.id.fragment_dramatization_edit_text);
         slideText.setText(TextFiles.getDramatizationText(StoryState.getStoryName(), slideNumber), TextView.BufferType.EDITABLE);
 
         if (phaseUnlocked) {
@@ -205,7 +204,7 @@ public class DramatizationFrag extends Fragment {
      */
     private void setUiColors() {
         if (slideNumber == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_dramatization_root_layout);
+            RelativeLayout rl = rootView.findViewById(R.id.fragment_dramatization_root_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }

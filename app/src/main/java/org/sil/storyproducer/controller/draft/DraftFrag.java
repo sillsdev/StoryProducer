@@ -77,16 +77,16 @@ public class DraftFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_draft, container, false);
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false);
 
-        LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
+        LWCPlayButton = rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
 
-        LWCPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
+        LWCPlayButton = rootView.findViewById(R.id.fragment_draft_lwc_audio_button);
 
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_draft_image_view), slideNumber);
         setScriptureText((TextView)rootView.findViewById(R.id.fragment_draft_scripture_text));
         setReferenceText((TextView)rootView.findViewById(R.id.fragment_draft_reference_text));
         setLWCAudioButton(LWCPlayButton);
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
         return rootView;
@@ -201,17 +201,17 @@ public class DraftFrag extends Fragment {
      */
     private void setUiColors() {
         if (slideNumber == 0) {
-            RelativeLayout rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
+            RelativeLayout rl = rootView.findViewById(R.id.fragment_draft_root_relayout_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_envelope);
+            rl = rootView.findViewById(R.id.fragment_draft_envelope);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            rl = (RelativeLayout) rootView.findViewById(R.id.fragment_draft_text_envelope);
+            rl = rootView.findViewById(R.id.fragment_draft_text_envelope);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
 
 
-            TextView tv = (TextView) rootView.findViewById(R.id.fragment_draft_scripture_text);
+            TextView tv = rootView.findViewById(R.id.fragment_draft_scripture_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            tv = (TextView) rootView.findViewById(R.id.fragment_draft_reference_text);
+            tv = rootView.findViewById(R.id.fragment_draft_reference_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }

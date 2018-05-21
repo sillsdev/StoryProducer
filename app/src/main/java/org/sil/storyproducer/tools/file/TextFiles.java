@@ -91,7 +91,7 @@ public class TextFiles {
                 scanner = new Scanner(dramFile);
                 dramTextBuilder = new StringBuilder();
                 while(scanner.hasNextLine()){
-                    dramTextBuilder.append(scanner.nextLine() + "\n");
+                    dramTextBuilder.append(scanner.nextLine()).append("\n");
                 }
                 scanner.close();
             }catch(IOException ex){

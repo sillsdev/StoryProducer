@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.res.ResourcesCompat;
@@ -27,27 +26,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.file.AudioFiles;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 import android.provider.Settings.Secure;
 
@@ -151,12 +140,12 @@ public class RegistrationActivity extends AppCompatActivity {
      */
     private void addSubmitButtonSave() {
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-        final Button submitButton = (Button) findViewById(R.id.submit_button);
+        final Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                final EditText databaseEmailField1 = (EditText)findViewById(R.id.input_database_email_1);
-                final EditText databaseEmailField2 = (EditText)findViewById(R.id.input_database_email_2);
-                final EditText databaseEmailField3 = (EditText)findViewById(R.id.input_database_email_3);
+                final EditText databaseEmailField1 = findViewById(R.id.input_database_email_1);
+                final EditText databaseEmailField2 = findViewById(R.id.input_database_email_2);
+                final EditText databaseEmailField3 = findViewById(R.id.input_database_email_3);
                 String databaseEmail1 = databaseEmailField1.getText().toString();
                 String databaseEmail2 = databaseEmailField2.getText().toString();
                 String databaseEmail3 = databaseEmailField3.getText().toString();
@@ -166,9 +155,9 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (databaseEmail1.isEmpty() && databaseEmail2.isEmpty() && databaseEmail3.isEmpty()) {
                     createErrorDialog(databaseEmailField1);
                     databaseEmailField1.requestFocus();
-                    for (int i = 0; i < sectionViews.length; i++) {
-                        if (sectionViews[i].findFocus() != null) {
-                            sectionViews[i].setVisibility(View.VISIBLE);
+                    for (View sectionView : sectionViews) {
+                        if (sectionView.findFocus() != null) {
+                            sectionView.setVisibility(View.VISIBLE);
                             toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1);
                         }
                     }
@@ -185,7 +174,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sets the on click listener for the registration bypass button
      */
     private void addRegistrationSkip() {
-        final Button skipButton = (Button) findViewById(R.id.bypass_button);
+        final Button skipButton = findViewById(R.id.bypass_button);
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,7 +188,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * ethnologue.com to browse language names and their corresponding codes
      */
     private void addEthnologueQuestion() {
-        final Button questionButton = (Button)findViewById(R.id.ethnologue_question_button);
+        final Button questionButton = findViewById(R.id.ethnologue_question_button);
         questionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -356,7 +345,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
          String PhoneId = Secure.getString(myContext.getContentResolver(),
                 Secure.ANDROID_ID);
 
@@ -376,7 +365,7 @@ public class RegistrationActivity extends AppCompatActivity {
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLEY", response.toString());
+                Log.i("LOG_VOLEY", response);
                 resp  = response;
             }
         }, new Response.ErrorListener() {
@@ -460,7 +449,7 @@ public class RegistrationActivity extends AppCompatActivity {
         editor.putString("model", model);
         editor.putString("android_version", androidVersion);
 
-        editor.commit();
+        editor.apply();
     }
 
     /**
@@ -545,11 +534,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private boolean isFirstActivity() {
         // Check to see if registration is first activity
         Bundle extras = getIntent().getExtras();
-        if (extras != null && extras.getBoolean(RegistrationActivity.FIRST_ACTIVITY_KEY)) {
-            return true;
-        } else {
-            return false;
-        }
+        return extras != null && extras.getBoolean(RegistrationActivity.FIRST_ACTIVITY_KEY);
     }
 
     /**
@@ -639,7 +624,7 @@ public class RegistrationActivity extends AppCompatActivity {
         emailIntent.putExtra(Intent.EXTRA_TEXT, message);
 
         try {
-            this.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+            this.startActivity(Intent.createChooser(emailIntent, "Send mail"));
             this.finish();
             preferenceEditor.putBoolean(EMAIL_SENT, true);
             preferenceEditor.apply();
@@ -671,17 +656,17 @@ public class RegistrationActivity extends AppCompatActivity {
         StringBuilder message = new StringBuilder();
         String formattedKey;
 
-        for (int i = 0; i < keyListOrder.length; i++) {
+        for (String aKeyListOrder : keyListOrder) {
             // Section separation appends newline
-            if (keyListOrder[i].isEmpty()) {
+            if (aKeyListOrder.isEmpty()) {
                 message.append("\n");
                 // Find key and value and print in clean format
             } else {
-                formattedKey = keyListOrder[i].replace("_", " ");
+                formattedKey = aKeyListOrder.replace("_", " ");
                 formattedKey = formattedKey.toUpperCase();
                 message.append(formattedKey);
                 message.append(": ");
-                message.append(prefs.getString(keyListOrder[i], "NA"));
+                message.append(prefs.getString(aKeyListOrder, "NA"));
                 message.append("\n");
             }
         }

@@ -167,16 +167,22 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                 buttonSpacing = new Space(appContext);
                 buttonSpacing.setLayoutParams(spaceLayoutParams);
                 toolbar.addView(buttonSpacing);
-                if (i == 0) {
-                    micButton = imageButtons[i];
-                } else if (i == 1) {
-                    playButton = imageButtons[i];
-                } else if (i == 2) {
-                    multiRecordButton = imageButtons[i];
-                } else if (i == 3) {
-                    checkButton = imageButtons[i];
-                } else if (i == 4) {
-                    sendAudioButton = imageButtons[i];
+                switch (i) {
+                    case 0:
+                        micButton = imageButtons[i];
+                        break;
+                    case 1:
+                        playButton = imageButtons[i];
+                        break;
+                    case 2:
+                        multiRecordButton = imageButtons[i];
+                        break;
+                    case 3:
+                        checkButton = imageButtons[i];
+                        break;
+                    case 4:
+                        sendAudioButton = imageButtons[i];
+                        break;
                 }
             }
         }

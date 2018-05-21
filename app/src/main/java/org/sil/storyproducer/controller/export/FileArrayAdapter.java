@@ -48,11 +48,11 @@ public class FileArrayAdapter extends ArrayAdapter<Item>{
 
         final Item item = items.get(position);
         if (item != null) {
-            TextView nameField = (TextView) view.findViewById(R.id.TextViewName);
-            TextView dataField = (TextView) view.findViewById(R.id.TextViewData);
-            TextView dateField = (TextView) view.findViewById(R.id.TextViewDate);
+            TextView nameField = view.findViewById(R.id.TextViewName);
+            TextView dataField = view.findViewById(R.id.TextViewData);
+            TextView dateField = view.findViewById(R.id.TextViewDate);
 
-            ImageView imageView = (ImageView) view.findViewById(R.id.fd_Icon1);
+            ImageView imageView = view.findViewById(R.id.fd_Icon1);
 
 
             int imageID=R.drawable.ic_vec_file;

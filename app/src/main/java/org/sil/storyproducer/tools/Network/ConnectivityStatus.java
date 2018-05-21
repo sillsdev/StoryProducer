@@ -1,15 +1,9 @@
 package org.sil.storyproducer.tools.Network;
 
-import android.content.BroadcastReceiver;
-
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-import static android.content.Context.CONNECTIVITY_SERVICE;
 
 
 /**
@@ -25,10 +19,7 @@ public class ConnectivityStatus extends ContextWrapper {
     public static boolean isConnected(Context context){
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo connection = manager.getActiveNetworkInfo();
-        if(connection!=null && connection.isConnectedOrConnecting()){
-            return true;
-        }
-        return false;
+        return connection != null && connection.isConnectedOrConnecting();
     }
 
 }

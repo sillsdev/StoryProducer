@@ -54,7 +54,7 @@ public class FileChooserActivity extends AppCompatActivity {
         setContentView(R.layout.activity_file_explorer);
 
         //Set up toolbar
-        Toolbar toolBar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolBar = findViewById(R.id.toolbar);
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -70,7 +70,7 @@ public class FileChooserActivity extends AppCompatActivity {
         }
 
         //bind onClickListener to save button
-        Button saveButton = (Button) findViewById(R.id.saveButton);
+        Button saveButton = findViewById(R.id.saveButton);
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,7 +107,7 @@ public class FileChooserActivity extends AppCompatActivity {
                 } else { //subdirOrFile is a file and not a directory
                     long size = subdirOrFile.length();
 
-                    /**
+                    /*
                      * We have to use this 'sizePlurality' int because 'size' is a long and can't be
                      * passed into the getQuantityString method, which takes only an int.
                      */
@@ -141,7 +141,7 @@ public class FileChooserActivity extends AppCompatActivity {
 
         adapter = new FileArrayAdapter(FileChooserActivity.this, R.layout.file_view,displayList);
 
-        ListView listView = (ListView)findViewById(android.R.id.list);
+        ListView listView = findViewById(android.R.id.list);
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -192,7 +192,7 @@ public class FileChooserActivity extends AppCompatActivity {
     }
 
     public void saveFile(View view){
-        EditText textBox = (EditText) findViewById(R.id.fileName);
+        EditText textBox = findViewById(R.id.fileName);
         String fileName = textBox.getText().toString();
 
         if( ILLEGAL_CHARS.matcher(fileName).find() ){
@@ -223,9 +223,9 @@ public class FileChooserActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.MATCH_PARENT);
         input.setLayoutParams(lp);
         alertDialog.setTitle(R.string.file_explorer_newFolder);
-        alertDialog.setMessage(R.string.file_explorer_foldeNamePrompt);
+        alertDialog.setMessage(R.string.file_explorer_folderNamePrompt);
         alertDialog.setView(input);
-        alertDialog.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 hideKeyboard(input);
@@ -275,7 +275,7 @@ public class FileChooserActivity extends AppCompatActivity {
         final AlertDialog.Builder errorDialog = new AlertDialog.Builder(FileChooserActivity.this);
         errorDialog.setTitle(R.string.error);
         errorDialog.setMessage(text);
-        errorDialog.setPositiveButton(R.string.OK, null);
+        errorDialog.setPositiveButton(R.string.ok, null);
         AlertDialog ret = errorDialog.create();
         ret.show();
         return ret;

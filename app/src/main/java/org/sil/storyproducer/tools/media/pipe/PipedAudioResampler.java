@@ -154,7 +154,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             fetchSourceBuffer();
         } catch (SourceClosedException e) {
             //This case should not happen.
-            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e);
         }
 
         mComponentState = State.SETUP;

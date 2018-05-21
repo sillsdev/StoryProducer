@@ -85,10 +85,7 @@ public class RemoteCheckFrag extends Fragment {
     private ListView messagesView;
     private PausingRecordingToolbar recordingToolbar;
 
-    private Toast successToast;
-    private Toast noConnection;
-    private Toast messagingDown;
-    private Toast unknownError;
+    private Toast messageToast;
 
     @Override
     public void onCreate(Bundle savedState) {
@@ -98,12 +95,9 @@ public class RemoteCheckFrag extends Fragment {
         storyName = StoryState.getStoryName();
         setHasOptionsMenu(true);
         msgAdapter = new MessageAdapter(getContext());
-        successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
-        noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
-        messagingDown = Toast.makeText(getActivity().getApplicationContext(),R.string.send_message_down, Toast.LENGTH_SHORT);
-        unknownError = Toast.makeText(getActivity().getApplicationContext(),R.string.remote_check_msg_failed, Toast.LENGTH_SHORT);
-
-
+        //Setup network messages
+        messageToast = new Toast(getActivity().getApplicationContext());
+        messageToast.setDuration(Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -111,11 +105,11 @@ public class RemoteCheckFrag extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false);
 
         //draftPlayButton = (ImageButton)rootView.findViewById(R.id.fragment_remote_check_play_draft_button);
-        messageTitle = (TextView)rootView.findViewById(R.id.messaging_title);
-        messagesView = (ListView) rootView.findViewById(R.id.message_history);
+        messageTitle = rootView.findViewById(R.id.messaging_title);
+        messagesView = rootView.findViewById(R.id.message_history);
         messagesView.setAdapter(msgAdapter);
-        sendMessageButton = (Button)rootView.findViewById(R.id.button_send_msg);
-        messageSent = (EditText)rootView.findViewById(R.id.sendMessage);
+        sendMessageButton = rootView.findViewById(R.id.button_send_msg);
+        messageSent = rootView.findViewById(R.id.sendMessage);
 
         closeKeyboardOnTouch(rootView);
 
@@ -274,7 +268,7 @@ public class RemoteCheckFrag extends Fragment {
         slideImage.setImageBitmap(slidePicture);
     }
 
-    /**
+    /*
      * sets the playback path
      */
     /*public void setPlayBackPath() {
@@ -360,7 +354,7 @@ public class RemoteCheckFrag extends Fragment {
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
 
 
         //Get msg for current slide
@@ -375,7 +369,7 @@ public class RemoteCheckFrag extends Fragment {
         paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_MSG", response.toString());
+                Log.i("LOG_VOLLEY_MSG", response);
                 resp  = response;
                 String wasSuccess = "false";
                 try {
@@ -400,11 +394,12 @@ public class RemoteCheckFrag extends Fragment {
                     prefsEditor.apply();
                     messageSent.setText("");
 
-                    successToast.show();
+                    messageToast.setText(R.string.remote_check_msg_sent);
                 }
                 else{
-                    messagingDown.show();
+                    messageToast.setText(R.string.send_message_down);
                 }
+                messageToast.show();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -415,14 +410,15 @@ public class RemoteCheckFrag extends Fragment {
                 prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
                 prefsEditor.apply();
 
-                if(error instanceof TimeoutError || error instanceof NoConnectionError || error
+                if(error instanceof TimeoutError || error instanceof    NoConnectionError || error
                         instanceof NetworkError || error instanceof ServerError ||
                         error instanceof AuthFailureError){
-                    noConnection.show();
+                    messageToast.setText(R.string.remote_check_msg_no_connection);
                 }
                 else {
-                    unknownError.show();
+                    messageToast.setText(R.string.remote_check_msg_failed);
                 }
+                messageToast.show();
             }
 
         }) {
@@ -442,7 +438,7 @@ public class RemoteCheckFrag extends Fragment {
         String phone_id = Settings.Secure.getString(getContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         js.put("StoryTitle" , StoryState.getStoryName());
@@ -482,12 +478,7 @@ public class RemoteCheckFrag extends Fragment {
                         JSONObject currMsg = msgs.getJSONObject(j);
                         int num = currMsg.getInt("IsTranslator");
                         boolean isFromTranslator;
-                        if(num == 1){
-                            isFromTranslator = true;
-                        }
-                        else{
-                            isFromTranslator = false;
-                        }
+                        isFromTranslator = num == 1;
                         String msg = currMsg.getString("Message");
                         Message m = new Message(isFromTranslator, msg);
                         msgAdapter.add(m);
@@ -499,7 +490,7 @@ public class RemoteCheckFrag extends Fragment {
 
                 messagesView.setSelection(msgAdapter.getCount());
 
-                Log.i("LOG_VOLLEY", response.toString());
+                Log.i("LOG_VOLLEY", response);
 
                 resp  = response;
             }

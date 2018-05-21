@@ -168,7 +168,7 @@ public class AudioPlayer {
             return mPlayer.isPlaying();
         }
         catch(IllegalStateException e) {
-            Log.w(TAG, "Failing silently...", e);
+            Log.w(TAG, "Failing silently", e);
             return false;
         }
     }

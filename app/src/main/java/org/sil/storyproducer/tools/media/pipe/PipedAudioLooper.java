@@ -93,7 +93,7 @@ public class PipedAudioLooper extends PipedAudioShortManipulator {
             fetchSourceBuffer();
         } catch (SourceClosedException e) {
             //This case should not happen.
-            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange...", e);
+            throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e);
         }
 
         MediaFormat sourceOutputFormat = mSource.getOutputFormat();

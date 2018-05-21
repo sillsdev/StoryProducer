@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         app:srcCompat="@drawable/ic_green_play"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:contentDescription="@string/play" />
 
     <TextView
         android:id="@+id/audio_comment_title"
@@ -20,9 +22,10 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black_semi_transparent"
         android:textSize="@dimen/text_title"
-        android:text="Audio Comment"
+        android:text="Fill with Audio Comment"
         android:layout_margin="8dp"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        tools:ignore="HardcodedText" />
 
     <ImageButton
         android:id="@+id/audio_comment_delete_button"
@@ -31,7 +34,7 @@
         android:layout_margin="8dp"
         app:srcCompat="@drawable/ic_delete_red"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:background="@color/white"/>
+        android:background="@color/white"
+        android:contentDescription="@string/delete" />
 
 </RelativeLayout>

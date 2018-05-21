@@ -68,15 +68,15 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false);
-        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.fragment_draft_playback_button);
-        commentRecordButton = (ImageButton)rootView.findViewById(R.id.fragment_commcheck_add_comment_button);
+        draftPlaybackButton = rootView.findViewById(R.id.fragment_draft_playback_button);
+        commentRecordButton = rootView.findViewById(R.id.fragment_commcheck_add_comment_button);
 
         updateCommentList();
         setUiColors();
         setPic((ImageView)rootView.findViewById(R.id.fragment_commcheck_image_view), slideNumber);
         setDraftPlaybackButton(draftPlaybackButton);
         setRecordCommentButton(commentRecordButton);
-        TextView slideNumberText = (TextView) rootView.findViewById(R.id.slide_number_text);
+        TextView slideNumberText = rootView.findViewById(R.id.slide_number_text);
         slideNumberText.setText(slideNumber + "");
 
         return rootView;
@@ -153,7 +153,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      * Updates the list of comments at beginning of fragment creation and after any list change
      */
     public void updateCommentList() {
-        ListView listView = (ListView)rootView.findViewById(R.id.audio_comment_list_view);
+        ListView listView = rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
         comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
         RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
@@ -168,7 +168,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      */
     private void setUiColors(){
         if(slideNumber == 0){
-            RelativeLayout rl =  (RelativeLayout)rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
+            RelativeLayout rl = rootView.findViewById(R.id.fragment_commcheck_Relative_Layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
@@ -183,7 +183,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -221,13 +221,13 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
                     draftPlayer.playAudio();
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_stop_red, null));
-                    Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Playing Draft Audio", Toast.LENGTH_SHORT).show();
                     LogFiles.saveLogEntry(ComChkEntry.Type.DRAFT_PLAYBACK.makeEntry());
                 } else if (wasPlaying) {
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
-                    Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No Draft Audio Found", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -266,13 +266,13 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
                     buttonClickedNow.setImageResource(R.drawable.ic_green_play);
                 }
             });
-            Toast.makeText(getContext(), "Playing Comment...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Playing Comment", Toast.LENGTH_SHORT).show();
             LogFiles.saveLogEntry(ComChkEntry.Type.COMMENT_PLAYBACK.makeEntry());
         } else if (wasPlaying) {
             commentPlayer.stopAudio();
             buttonClickedNow.setImageResource(R.drawable.ic_green_play);
         } else {
-            Toast.makeText(getContext(), "No Comment Found...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "No Comment Found", Toast.LENGTH_SHORT).show();
         }
     }
 

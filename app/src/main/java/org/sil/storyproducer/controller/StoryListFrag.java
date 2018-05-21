@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller;
 
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,24 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.app.AlertDialog;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.CustomAdapter;
 import org.sil.storyproducer.model.ListFiles;
-import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.SlideText;
-import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.file.TextFiles;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class StoryListFrag extends Fragment {
 
@@ -50,7 +38,7 @@ public class StoryListFrag extends Fragment {
         view = inflater.inflate(R.layout.activity_list_view, container, false);
 
         // Get ListView object from xml
-        listView = (ListView)getActivity().findViewById(R.id.story_list_view);
+        listView = getActivity().findViewById(R.id.story_list_view);
 
 
         final ListFiles[] listFiles = new ListFiles[storyNames.length];
@@ -62,7 +50,7 @@ public class StoryListFrag extends Fragment {
 
         CustomAdapter adapter = new CustomAdapter(getContext(), R.layout.story_list_item, listFiles);
 
-        listView = (ListView)view.findViewById(R.id.story_list_view);
+        listView = view.findViewById(R.id.story_list_view);
         // Assign adapter to ListView
         listView.setAdapter(adapter);
 

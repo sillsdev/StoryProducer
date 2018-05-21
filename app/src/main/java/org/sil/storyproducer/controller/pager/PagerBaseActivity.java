@@ -23,7 +23,7 @@ public class PagerBaseActivity extends PhaseBaseActivity {
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler
         mViewPager.setCurrentItem(StoryState.getCurrentStorySlide());           //sets view pager to the current slide from the story state

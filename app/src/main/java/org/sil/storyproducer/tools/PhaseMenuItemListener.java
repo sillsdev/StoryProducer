@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
-import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 

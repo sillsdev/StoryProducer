@@ -16,11 +16,11 @@ public class Log extends TreeSet<LogEntry> {
 
         //TODO: consider using some other mechanism of handling nulls
         if(lang == null) {
-            android.util.Log.e(TAG, "Missing language parameter. Using language-agnostic log...");
+            android.util.Log.e(TAG, "Missing language parameter. Using language-agnostic log");
             this.lang = "NO_LANG";
         }
         if(story == null) {
-            android.util.Log.e(TAG, "Missing story parameter. Using story-agnostic log...");
+            android.util.Log.e(TAG, "Missing story parameter. Using story-agnostic log");
             this.story = "NO_STORY";
         }
     }

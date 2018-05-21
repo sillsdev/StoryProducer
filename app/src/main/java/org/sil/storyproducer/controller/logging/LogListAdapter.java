@@ -94,8 +94,8 @@ class LogListAdapter extends BaseAdapter {
                     .inflate(R.layout.log_list_item, parent, false);
         }
 
-        TextView date = (TextView) convertView.findViewById(R.id.textView_logging_date);
-        TextView info = (TextView) convertView.findViewById(R.id.textView_logging_type);
+        TextView date = convertView.findViewById(R.id.textView_logging_date);
+        TextView info = convertView.findViewById(R.id.textView_logging_type);
 
         LogEntry entry = getItem(position);
         date.setText(entry.getDateTime());

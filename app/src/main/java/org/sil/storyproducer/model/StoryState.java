@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.RegistrationActivity;
-import org.sil.storyproducer.controller.export.CreateActivity;;
+import org.sil.storyproducer.controller.export.CreateActivity;
 import org.sil.storyproducer.controller.export.ShareActivity;
 import org.sil.storyproducer.controller.learn.LearnActivity;
 import org.sil.storyproducer.controller.pager.PagerBaseActivity;
@@ -34,12 +33,11 @@ public final class StoryState {
      */
     public static void init(Context con) {
         context = con;
-        currentPhase = new Phase(context.getResources().getString(R.string.learnTitle), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
+        currentPhase = new Phase(context.getResources().getString(R.string.learn_title), R.color.learn_phase, LearnActivity.class, Phase.Type.LEARN);
         String[] phaseMenuArray;
         //Local
 
-        SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = con.getSharedPreferences(con.getString(R.string.registration_filename), con.MODE_PRIVATE).edit();
+        SharedPreferences prefs = con.getSharedPreferences(con.getString(R.string.registration_filename), Context.MODE_PRIVATE);
         String remote = prefs.getString("consultant_location_type", null);
         boolean isRemote = false;
         if(remote.equals("Remote")) {
@@ -116,9 +114,9 @@ public final class StoryState {
     public static Phase getSavedPhase() {
         String phaseTitle = StorySharedPreferences.getPhaseForStory(storyName);
         Phase phase = null;
-        for(int k = 0; k < phases.length; k++) {
-            if(phaseTitle.equals(phases[k].getTitle())) {
-                phase = phases[k];
+        for (Phase phase1 : phases) {
+            if (phaseTitle.equals(phase1.getTitle())) {
+                phase = phase1;
             }
         }
         currentPhase = phase;

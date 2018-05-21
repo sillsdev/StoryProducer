@@ -21,8 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.Volley;
-
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
@@ -74,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         StorySharedPreferences.init(getApplicationContext());
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
 
@@ -101,23 +99,25 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.menu_lang) {
-            launchChangeLWCDialog();
-        }
-        else if(id == R.id.menu_registration){
-            Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
-            startActivity(intent);
-        }
-        else if(id == R.id.menu_license){
-            AlertDialog dialog = new AlertDialog.Builder(this)
-                    .setTitle(this.getString(R.string.license_title))
-                    .setMessage(this.getString(R.string.license_body))
-                    .setPositiveButton(this.getString(R.string.ok), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+        switch (id) {
+            case R.id.menu_lang:
+                launchChangeLWCDialog();
+                break;
+            case R.id.menu_registration:
+                Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.menu_license:
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(this.getString(R.string.license_title))
+                        .setMessage(this.getString(R.string.license_body))
+                        .setPositiveButton(this.getString(R.string.ok), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
 
-                        }
-                    }).create();
-            dialog.show();
+                            }
+                        }).create();
+                dialog.show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     private void launchChangeLWCDialog() {
         final Spinner languageSpinner = new Spinner(this);
         String[] languages = FileSystem.getLanguages();
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_dropdown_item, languages);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.simple_spinner_dropdown_item, languages);
         languageSpinner.setAdapter(adapter);
 
         AlertDialog dialog = new AlertDialog.Builder(this)

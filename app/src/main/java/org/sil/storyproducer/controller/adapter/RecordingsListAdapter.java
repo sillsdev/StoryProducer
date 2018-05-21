@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.adapter;
 
 import android.app.AlertDialog;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.community.CommunityCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftListRecordingsModal;
 import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.controller.remote.BackTranslationListRecordingsModal;
@@ -57,9 +55,9 @@ public class RecordingsListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.audio_comment_list_item, parent, false);
-        TextView titleView = (TextView) rowView.findViewById(R.id.audio_comment_title);
-        final ImageButton playButton = (ImageButton) rowView.findViewById(R.id.audio_comment_play_button);
-        ImageButton deleteButton = (ImageButton) rowView.findViewById(R.id.audio_comment_delete_button);
+        TextView titleView = rowView.findViewById(R.id.audio_comment_title);
+        final ImageButton playButton = rowView.findViewById(R.id.audio_comment_play_button);
+        ImageButton deleteButton = rowView.findViewById(R.id.audio_comment_delete_button);
 
         titleView.setText(values[position]);
 

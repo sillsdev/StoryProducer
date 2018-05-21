@@ -23,14 +23,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.RegistrationActivity;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.DrawerItemClickListener;
 import org.sil.storyproducer.tools.PhaseGestureListener;
 import org.sil.storyproducer.tools.PhaseMenuItemListener;
 
-public class PhaseBaseActivity extends AppCompatActivity {
+public abstract class PhaseBaseActivity extends AppCompatActivity {
     private GestureDetectorCompat mDetector;
     private ListView mDrawerList;
     private ArrayAdapter<String> mAdapter;
@@ -48,7 +47,7 @@ public class PhaseBaseActivity extends AppCompatActivity {
         //keeps the screen from going to sleep
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Toolbar mActionBarToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mActionBarToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mActionBarToolbar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(ResourcesCompat.getColor(getResources(),
@@ -83,7 +82,6 @@ public class PhaseBaseActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapter;
         //local
         SharedPreferences prefs = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
         String remote = prefs.getString("consultant_location_type", null);
         boolean isRemote = false;
         if(remote.equals("Remote")) {
@@ -139,9 +137,9 @@ public class PhaseBaseActivity extends AppCompatActivity {
     private void setupDrawer() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        mDrawerList = (ListView)findViewById(R.id.navList);
+        mDrawerList = findViewById(R.id.navList);
         mDrawerList.bringToFront();
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         addDrawerItems();
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,

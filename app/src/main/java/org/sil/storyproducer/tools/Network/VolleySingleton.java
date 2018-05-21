@@ -4,8 +4,6 @@ import com.android.volley.toolbox.Volley;
 import com.android.volley.RequestQueue;
 import com.android.volley.Request;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;

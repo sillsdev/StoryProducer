@@ -11,14 +11,15 @@
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme" >
 
+        <!-- TODO replace with back arrow or triangle -->
         <ImageButton
             android:id="@+id/exitButton"
             android:background="@drawable/ic_red_ex_48dp"
             android:backgroundTint="@color/white"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_gravity="right"
-            />
+            android:layout_gravity="end"
+            android:contentDescription="@string/cancel" />
 
     </android.support.v7.widget.Toolbar>
 

@@ -6,8 +6,6 @@ import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import org.sil.storyproducer.controller.MainActivity;
-
 import java.io.*;
 import java.util.*;
 
@@ -289,7 +287,7 @@ public class FileSystem {
                 if(previousNum + 1 != num) {
                     for(int missingNum = previousNum + 1; missingNum < num; missingNum++) {
                         unaccountedNumbers.append(delim);
-                        unaccountedNumbers.append(sanPrefix + missingNum + sanExtension);
+                        unaccountedNumbers.append(sanPrefix).append(missingNum).append(sanExtension);
                         //After first time, comma is used as delimiter.
                         delim = ", ";
                     }

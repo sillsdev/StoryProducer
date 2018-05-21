@@ -60,9 +60,9 @@ public class ExportedVideosAdapter extends BaseAdapter {
         //recreate the holder every time because the views are changing around
         holder = new RowViewHolder();
         rowView = mInflater.inflate(R.layout.exported_video_row, null);
-        holder.textView = (TextView) rowView.findViewById(R.id.video_title);
-        holder.playButton = (ImageButton) rowView.findViewById(R.id.video_play_button);
-        holder.shareButton = (ImageButton) rowView.findViewById(R.id.file_share_button);
+        holder.textView = rowView.findViewById(R.id.video_title);
+        holder.playButton = rowView.findViewById(R.id.video_play_button);
+        holder.shareButton = rowView.findViewById(R.id.file_share_button);
 
         //set the two different button listeners
         holder.playButton.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +102,7 @@ public class ExportedVideosAdapter extends BaseAdapter {
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName);
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName);
         shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + path));
+        //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)));
     }

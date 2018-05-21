@@ -23,8 +23,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -107,13 +107,13 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <RadioButton android:id="@+id/radio_dumbphone"
-                            android:drawableRight="@drawable/ic_dumbphone"
+                            android:drawableEnd="@drawable/ic_dumbphone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/dumbphone_and_extension"
                             android:onClick="onRadioButtonClicked"/>
                         <RadioButton android:id="@+id/radio_smartphone"
-                            android:drawableRight="@drawable/ic_smartphone"
+                            android:drawableEnd="@drawable/ic_smartphone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/smartphone_and_extension"
@@ -184,6 +184,7 @@
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            app:srcCompat="@drawable/ic_lock_blue" />
+            app:srcCompat="@drawable/ic_lock_blue"
+            android:contentDescription="@string/stage_locked" />
     </RelativeLayout>
 </RelativeLayout>

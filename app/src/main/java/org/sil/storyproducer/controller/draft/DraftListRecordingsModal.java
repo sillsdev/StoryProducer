@@ -15,11 +15,8 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.model.logging.Log;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
-import org.sil.storyproducer.tools.file.LogFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
@@ -53,10 +50,10 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
         createRecordingList();
 
 
-        Toolbar tb = (Toolbar) rootView.findViewById(R.id.toolbar2);
+        Toolbar tb = rootView.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.
         tb.setTitle(R.string.draft_recordings_title);
-        ImageButton exit = (ImageButton) rootView.findViewById(R.id.exitButton);
+        ImageButton exit = rootView.findViewById(R.id.exitButton);
 
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
         alertDialog.setView(rootView);
@@ -75,7 +72,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
      * Updates the list of draft recordings at beginning of fragment creation and after any list change
      */
     private void createRecordingList() {
-        ListView listView = (ListView) rootView.findViewById(R.id.recordings_list);
+        ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         draftTitles = AudioFiles.getDraftTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, draftTitles, slidePosition, this);

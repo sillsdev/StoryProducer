@@ -102,7 +102,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
     }
 
     private void spinInput() throws SourceClosedException {
-        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting...");
+        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting");
 
         mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);
 

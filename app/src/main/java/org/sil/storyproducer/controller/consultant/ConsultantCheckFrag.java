@@ -77,7 +77,7 @@ public class ConsultantCheckFrag extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false);
-        draftPlaybackButton = (ImageButton)rootView.findViewById(R.id.concheck_draft_playback_button);
+        draftPlaybackButton = rootView.findViewById(R.id.concheck_draft_playback_button);
         storyName = StoryState.getStoryName();
         slideText = TextFiles.getSlideText(storyName, slidePosition);
 
@@ -88,7 +88,7 @@ public class ConsultantCheckFrag extends Fragment {
         setDraftPlaybackButton((ImageButton)rootView.findViewById(R.id.concheck_draft_playback_button));
         setCheckmarkButton((ImageButton)rootView.findViewById(R.id.concheck_checkmark_button));
         setLogsButton((ImageButton)rootView.findViewById(R.id.concheck_logs_button));
-        slideTextView = (TextView)rootView.findViewById(R.id.slide_number_text);
+        slideTextView = rootView.findViewById(R.id.slide_number_text);
         slideTextView.setText(slidePosition + "");
 
         return rootView;
@@ -166,13 +166,13 @@ public class ConsultantCheckFrag extends Fragment {
      */
     private void setUiColors(){
         if(slidePosition == 0){
-            RelativeLayout rl =  (RelativeLayout)rootView.findViewById(R.id.concheck_relative_layout);
+            RelativeLayout rl = rootView.findViewById(R.id.concheck_relative_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            rl = (RelativeLayout)rootView.findViewById(R.id.concheck_button_layout);
+            rl = rootView.findViewById(R.id.concheck_button_layout);
             rl.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            TextView tv = (TextView) rootView.findViewById(R.id.fragment_concheck_scripture_text);
+            TextView tv = rootView.findViewById(R.id.fragment_concheck_scripture_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
-            tv = (TextView) rootView.findViewById(R.id.fragment_concheck_reference_text);
+            tv = rootView.findViewById(R.id.fragment_concheck_reference_text);
             tv.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.primaryDark));
         }
     }
@@ -187,7 +187,7 @@ public class ConsultantCheckFrag extends Fragment {
         Bitmap slidePicture = ImageFiles.getBitmap(StoryState.getStoryName(), slideNum);
 
         if(slidePicture == null){
-            Snackbar.make(rootView, "Could Not Find Picture...", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(rootView, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show();
         }
 
         //Get the height of the phone.
@@ -256,14 +256,14 @@ public class ConsultantCheckFrag extends Fragment {
                     }
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_pause_blue, null));
-                    Toast.makeText(getContext(), "Playing Draft Audio...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Playing Draft Audio", Toast.LENGTH_SHORT).show();
                 } else if (wasPlaying) {
                     draftPlayer.pauseAudio();
                     draftAudioPaused = true;
                     //TODO: use non-deprecated method; currently used to support older devices
                     button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_play_blue, null));
                 } else {
-                    Toast.makeText(getContext(), "No Draft Audio Found...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No Draft Audio Found", Toast.LENGTH_SHORT).show();
                 }
             }
         });

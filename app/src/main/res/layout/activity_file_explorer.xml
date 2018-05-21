@@ -9,15 +9,13 @@
         android:orientation="vertical"
         android:animateLayoutChanges="true">
 
-        <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/primary"
             android:minHeight="?attr/actionBarSize"
-            android:elevation="4dp"/>
+            android:elevation="4dp" />
 
         <ListView
             android:id="@android:id/list"
@@ -38,10 +36,10 @@
                 android:ems="10"
                 android:id="@+id/fileName"
                 android:layout_weight="1"
-                android:contentDescription="file name" />
+                android:hint="@string/file_explorer_hint" />
 
             <Button
-                android:text="Save"
+                android:text="@string/save"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:id="@+id/saveButton"

@@ -150,12 +150,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     }
 
     public boolean isDone() {
-        if(mStoryMaker == null) {
-            return false;
-        }
-        else {
-            return mStoryMaker.isDone();
-        }
+        return mStoryMaker != null && mStoryMaker.isDone();
     }
 
     @Override
@@ -183,7 +178,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
     public void run() {
         long duration = -System.currentTimeMillis();
 
-        Log.i(TAG, "Starting video creation...");
+        Log.i(TAG, "Starting video creation");
         boolean success = mStoryMaker.churn();
 
         if(success) {
@@ -191,7 +186,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             mTempFile.renameTo(mOutputFile);
         }
         else {
-            Log.w(TAG, "Deleting incomplete temporary video...");
+            Log.w(TAG, "Deleting incomplete temporary video");
             mTempFile.delete();
         }
 
