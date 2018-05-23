@@ -2,7 +2,7 @@ package org.sil.storyproducer.tools.file;
 
 import android.graphics.Rect;
 
-import org.sil.storyproducer.model.Template;
+import org.sil.storyproducer.model.TemplateKt;
 import org.sil.storyproducer.model.TemplateSlide;
 import org.sil.storyproducer.tools.media.graphics.BitmapHelper;
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect;
@@ -12,7 +12,7 @@ import java.io.File;
 
 public class KenBurnsSpec {
     public static KenBurnsEffect getKenBurnsEffect(String story, int index) {
-        TemplateSlide slide = Template.getSlide(story, index);
+        TemplateSlide slide = TemplateKt.TemplateSlides(story, index);
         if(slide != null) {
             return slide.getKenBurnsEffect();
         }
