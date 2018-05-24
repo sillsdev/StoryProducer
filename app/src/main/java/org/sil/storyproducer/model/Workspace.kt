@@ -2,16 +2,9 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Environment
-import android.support.v4.content.ContextCompat
-import android.util.Log
+import android.app.Activity
 
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.tools.file.LogFiles
-import org.sil.storyproducer.tools.file.ProjectXML
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-import org.sil.storyproducer.tools.media.graphics.RectHelper
-
+import com.codekidlabs.storagechooser.StorageChooser
 
 
 import java.io.File
@@ -29,7 +22,7 @@ object Workspace {
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(context: Context) {
+    fun initializeWorskpace(context: Context, activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         val prefs: SharedPreferences = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         var ws_temp = prefs!!.getString("workspacePath", "")
@@ -40,10 +33,19 @@ object Workspace {
             val res = checkCallingOrSelfPermission(context, permission)
             if (res == PackageManager.PERMISSION_GRANTED) {
                 //use the storage-chooser app to get the
-
-
-            } else {
-                //if not, set the workspace root to the apps' managed directory.
+                var sc = StorageChooser.Builder().withActivity(activity)
+                .withFragmentManager(activity.fragmentManager)
+                .withMemoryBar(true)
+                .build()
+                sc.show()
+                sc.setOnSelectListener {
+                    workspacePath = File(it)
+                }
+                //if the given workspace path is not an actual directory, set it to the apps space.
+                if(!(workspacePath!!.isDirectory))
+                    workspacePath = context.cacheDir
+            } else{
+                //We have no permissions - set to app space
                 workspacePath = context.cacheDir
             }
             //commit the path chosen
@@ -53,8 +55,6 @@ object Workspace {
             //There is a worskpace path stored.  Set it.
             workspacePath = File(ws_temp)
         }
-
-
         isInitialized = true
     }
 
