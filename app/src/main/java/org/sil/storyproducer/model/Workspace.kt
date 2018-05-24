@@ -22,8 +22,9 @@ object Workspace {
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(context: Context, activity: Activity) {
+    fun initializeWorskpace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
+        val context = activity.applicationContext
         val prefs: SharedPreferences = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         var ws_temp = prefs!!.getString("workspacePath", "")
         if (ws_temp == "") {

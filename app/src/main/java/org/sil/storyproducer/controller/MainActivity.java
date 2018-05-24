@@ -29,6 +29,8 @@ import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.FileSystem;
 
+import org.sil.storyproducer.model.Workspace;
+
 
 import java.io.Serializable;
 
@@ -88,8 +90,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         this.getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-       // this.reloadStories();
-
+        // this.reloadStories();
+        //Now, let's find the workspace.
+        Workspace.INSTANCE.initializeWorskpace(MainActivity.this);
     }
 
     @Override
