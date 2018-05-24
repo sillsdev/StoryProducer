@@ -77,7 +77,9 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new StoryListFrag()).commit();
 
         int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
 
         if(!hasPermissions(this, PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);

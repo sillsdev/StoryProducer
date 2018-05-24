@@ -1,6 +1,6 @@
 package org.sil.storyproducer.tools.file;
 
-import org.sil.storyproducer.model.TemplateKt;
+import org.sil.storyproducer.model.StoryKt;
 import org.sil.storyproducer.model.TemplateSlide;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 
@@ -48,7 +48,7 @@ public class AudioFiles {
     }
 
     public static File getSoundtrack(String story, int i){
-        TemplateSlide slide = TemplateKt.TemplateSlides(story, i);
+        TemplateSlide slide = StoryKt.TemplateSlides(story, i);
         if(slide != null) {
             return slide.getSoundtrack();
         }
