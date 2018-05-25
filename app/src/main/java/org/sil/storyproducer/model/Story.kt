@@ -1,101 +1,159 @@
 package org.sil.storyproducer.model
-import android.content.Context
+
 import android.graphics.Rect
-import android.os.Environment
-import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.util.Xml
+
+import org.xmlpull.v1.XmlPullParser
 
 import org.sil.storyproducer.tools.file.FileSystem
-import org.sil.storyproducer.tools.file.LogFiles
 import org.sil.storyproducer.tools.file.ProjectXML
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.RectHelper
+import org.xmlpull.v1.XmlPullParserException
 
 import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
 import java.util.*
 
-class Story {
-    val path: String = ""
-    val projectPath: String
-        get() = path + "/project"
-
+class Story(val path: File, val slides: List<Slide>){
+    val projectPath = File(path,"/project")
 }
 
-
-fun isPathToStory(path: String) {
+fun parseStoryIfPresent(path: File): Story? {
     //Check if path is path
+    if(!path.isDirectory) return null
     //See if there is an xml photostory file there
-    //If not, See if there is an html bloom file there
+    val psProjectPath = File(path,"project.xml")
+    if(!psProjectPath.exists()) return null
+    //TODO If not, See if there is an html bloom file there
     //if either, yes, it is a project.
+    return parsePhotoStory(psProjectPath)
 }
 
-/*
-//Populate templatePaths from files in system
-fun populateStories(con: Context) {
-    cacheDirectory = con.cacheDir
-
-    //Reset templatePaths
-    templatePaths = HashMap()
-    projectPaths = HashMap()
-    moviesPaths = HashMap()
-
-    // Get the LWC language from preferences (defaults to ENG if none set)
-    val prefs = con.getSharedPreferences(LANGUAGE_PREFS, Context.MODE_PRIVATE)
-    language = prefs.getString(LWC_LANGUAGE, "ENG")
-
-    //Iterate external files directories.
-    val storeDirs = ContextCompat.getExternalFilesDirs(con, null)
-    val moviesDirs = ContextCompat.getExternalFilesDirs(con, Environment.DIRECTORY_MOVIES)
-    for (i in storeDirs.indices) {
-        val currentStoreDir = storeDirs[i]
-        val currentMoviesDir = moviesDirs[i]
-        if (currentStoreDir != null) {
-            //Get templates directory of current external storage directory.
-            val templateDir = File(currentStoreDir, TEMPLATES_DIR)
-
-            //If there is no template directory (i.e. there are no templates on this storage
-            // device), move on from this storage device.
-            if (!templateDir.exists() || !templateDir.isDirectory) {
-                continue
-            }
-
-            val projectDir = File(currentStoreDir, PROJECT_DIR)
-            //Make the project directory if it does not exist.
-            //The template creator shouldn't have to remember this step.
-            if (!projectDir.isDirectory) {
-                projectDir.mkdir()
-            }
-
-            val langDirs = templateDir.listFiles(directoryFilter)
-            for (currentLangDir in langDirs) {
-                val lang = currentLangDir.name
-
-                if (!templatePaths!!.containsKey(lang)) {
-                    templatePaths!![lang] = HashMap()
-                }
-                val storyTemplateMap = templatePaths!![lang]
-
-                val storyDirs = currentLangDir.listFiles(directoryFilter)
-                for (currentStoryDir in storyDirs) {
-                    val storyName = currentStoryDir.name
-                    val storyTemplatePath = currentStoryDir.absolutePath
-                    storyTemplateMap.put(storyName, storyTemplatePath)
-
-                    //Make sure the corresponding projects directory exists.
-                    val storyWriteDir = File(File(currentStoreDir, PROJECT_DIR), storyName)
-                    if (!storyWriteDir.isDirectory) {
-                        storyWriteDir.mkdir()
+private fun parsePhotoStory(psProjectPath: File): Story? {
+    //start building slides
+    val slides: MutableList<Slide> = ArrayList()
+    val parser = Xml.newPullParser()
+    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
+    parser.setInput(FileInputStream(psProjectPath),null)
+    parser.nextTag()
+    parser.require(XmlPullParser.START_TAG, null, "MSPhotoStoryProject")
+    while (parser.next() != XmlPullParser.END_TAG) {
+        if (parser.eventType != XmlPullParser.START_TAG) {
+            continue
+        }
+        val tag = parser.name
+        when (tag) {
+            "VisualUnit" -> slides.add(parseSlideXML(parser))
+            else -> {
+                //skip the tag
+                var depth: Int = 1
+                while (depth != 0) {
+                    when (parser.next()) {
+                        XmlPullParser.END_TAG -> depth--
+                        XmlPullParser.START_TAG -> depth++
                     }
-                    projectPaths!![storyName] = storyWriteDir.absolutePath
-                    moviesPaths!![storyName] = currentMoviesDir.absolutePath
                 }
             }
         }
     }
-
-    LogFiles.init(con)
+    return Story(psProjectPath,slides)
 }
-*/
+
+@Throws(XmlPullParserException::class, IOException::class)
+private fun parseSlideXML(parser: XmlPullParser): Slide {
+    val slide = Slide()
+
+    parser.require(XmlPullParser.START_TAG, null, "VisualUnit")
+    while (parser.next() != XmlPullParser.END_TAG) {
+        if (parser.eventType != XmlPullParser.START_TAG) {
+            continue
+        }
+        val tag = parser.name
+        when (tag) {
+            "Narration" -> {
+                parser.require(XmlPullParser.START_TAG, null, "Narration")
+                slide.narrationPath = File(parser.getAttributeValue(null, "path"))
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "Narration")
+            }
+            "Image" -> {
+                parser.require(XmlPullParser.START_TAG, null, "Image")
+
+                slide.imagePath = File(parser.getAttributeValue(null, "path"))
+                slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
+                slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+            }
+            "RotateAndCrop" -> {
+                parser.nextTag()
+                slide.crop = parseRect(parser, "Rectangle")
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
+            }
+            "MusicTrack" -> {
+                parser.require(XmlPullParser.START_TAG, null, "MusicTrack")
+
+                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
+
+                parser.nextTag()
+                parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
+
+                slide.musicPath = File(parser.getAttributeValue(null, "path"))
+
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
+
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
+            }
+            "Motion" -> {
+                parser.require(XmlPullParser.START_TAG, null, "Motion")
+
+                val rectTag = "Rect"
+                parser.nextTag()
+                slide.startMotion = parseRect(parser, rectTag)
+                parser.nextTag()
+                slide.endMotion = parseRect(parser, rectTag)
+
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "Motion")
+            }
+        //ignore
+            else -> {
+                //skip the tag
+                var depth: Int = 1
+                while (depth != 0) {
+                    when (parser.next()) {
+                        XmlPullParser.END_TAG -> depth--
+                        XmlPullParser.START_TAG -> depth++
+                    }
+                }
+            }
+        }
+    }
+    return slide
+}
+
+@Throws(IOException::class, XmlPullParserException::class)
+private fun parseRect(parser: XmlPullParser, rectangleTag: String): Rect {
+    parser.require(XmlPullParser.START_TAG, null, rectangleTag)
+
+    val left = Integer.parseInt(parser.getAttributeValue(null, "upperLeftX"))
+    val top = Integer.parseInt(parser.getAttributeValue(null, "upperLeftY"))
+    val width = Integer.parseInt(parser.getAttributeValue(null, "width"))
+    val height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+
+    val right = left + width
+    val bottom = top + height
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, rectangleTag)
+
+    return Rect(left, top, right, bottom)
+}
+
 
 /**
  * Get the slide from the story template at the specified index.

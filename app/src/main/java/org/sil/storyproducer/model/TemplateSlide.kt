@@ -9,5 +9,10 @@ import java.io.File
 /**
  * This class contains metadata pertinent to a given slide from a story template.
  */
-data class TemplateSlide(val narrationAudio: File?, val image: File?, val imageDimensions: Rect, val kenBurnsEffect: KenBurnsEffect,
-                    val soundtrack: File?, val soundtrackVolume: Int)
+data class TemplateSlide(
+        val narrationAudio: File?,
+        val image: File?,
+        val imageDimensions: Rect,
+        val kenBurnsEffect: KenBurnsEffect,
+        val soundtrack: File?,
+        val soundtrackVolume: Int)
