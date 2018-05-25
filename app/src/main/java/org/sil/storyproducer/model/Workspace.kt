@@ -3,7 +3,6 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.app.Activity
-
 import com.codekidlabs.storagechooser.StorageChooser
 
 
@@ -16,6 +15,15 @@ import android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission
 
 object Workspace {
     var workspacePath: File? = null
+        set(value){
+            if(value != null){
+                if (value.exists()){
+                    field = value
+                    if(prefs != null)
+                        prefs!!.edit().putString("workspacePath", field.toString()).apply()
+                }
+            }
+        }
     val Stories: MutableList<Story> = ArrayList()
     var isInitialized = false
     var prefs: SharedPreferences? = null
@@ -24,34 +32,32 @@ object Workspace {
 
     fun initializeWorskpace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
-        val context = activity.applicationContext
-        val prefs: SharedPreferences = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        var ws_temp = prefs!!.getString("workspacePath", "")
+        prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
+        var ws_temp = ""
+        if(prefs != null)
+            ws_temp = prefs!!.getString("workspacePath", "")
         if (ws_temp == "") {
             //There is no worskpace path stored
             //check if there is external permission granted
             val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-            val res = checkCallingOrSelfPermission(context, permission)
+            val res = checkCallingOrSelfPermission(activity, permission)
             if (res == PackageManager.PERMISSION_GRANTED) {
                 //use the storage-chooser app to get the
                 var sc = StorageChooser.Builder().withActivity(activity)
-                .withFragmentManager(activity.fragmentManager)
-                .withMemoryBar(true)
-                .build()
+                    .withFragmentManager(activity.fragmentManager)
+                    .withMemoryBar(true)
+                    .allowCustomPath(true)
+                    .setType(StorageChooser.DIRECTORY_CHOOSER)
+                    .build()
                 sc.show()
-                sc.setOnSelectListener {
+                sc.setOnSelectListener(StorageChooser.OnSelectListener {
                     workspacePath = File(it)
-                }
-                //if the given workspace path is not an actual directory, set it to the apps space.
-                if(!(workspacePath!!.isDirectory))
-                    workspacePath = context.cacheDir
+                })
             } else{
                 //We have no permissions - set to app space
-                workspacePath = context.cacheDir
+                workspacePath = activity.cacheDir
             }
             //commit the path chosen
-            var pe = prefs!!.edit()
-            pe.putString("workspacePath", workspacePath.toString())
         } else {
             //There is a worskpace path stored.  Set it.
             workspacePath = File(ws_temp)

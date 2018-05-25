@@ -87,12 +87,12 @@ public class MainActivity extends AppCompatActivity implements Serializable {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
+        //Now, let's find the workspace.
+        Workspace.INSTANCE.initializeWorskpace(this);
 
         this.getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         // this.reloadStories();
-        //Now, let's find the workspace.
-        Workspace.INSTANCE.initializeWorskpace(MainActivity.this);
     }
 
     @Override
