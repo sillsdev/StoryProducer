@@ -14,9 +14,8 @@ buildscript {
         // in the individual module build.gradle files
     }
 }
-apply plugin: "kotlin"
 
-compileJava.dependsOn compileKotlin
+apply plugin: "kotlin"
 
 allprojects {
     repositories {
@@ -30,7 +29,7 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 compileKotlin {
