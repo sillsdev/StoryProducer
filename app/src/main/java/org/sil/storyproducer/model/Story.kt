@@ -25,23 +25,26 @@ fun parseStoryIfPresent(path: File): Story? {
     //Check if path is path
     if(!path.isDirectory) return null
     //See if there is an xml photostory file there
-    val psProjectPath = File(path,"project.xml")
-    if(!psProjectPath.exists()) return null
+    return parsePhotoStory(path)
     //TODO If not, See if there is an html bloom file there
     //if either, yes, it is a project.
-    return parsePhotoStory(psProjectPath)
 }
 
-private fun parsePhotoStory(psProjectPath: File): Story? {
+private fun parsePhotoStory(path: File): Story? {
     //start building slides
+    val psProjectPath = File(path,"project.xml")
+    if(!psProjectPath.exists()) return null
+    //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
     parser.setInput(FileInputStream(psProjectPath),null)
     parser.nextTag()
     parser.require(XmlPullParser.START_TAG, null, "MSPhotoStoryProject")
-    while (parser.next() != XmlPullParser.END_TAG) {
+    parser.next()
+    while ((parser.eventType != XmlPullParser.END_TAG) || (parser.name != "MSPhotoStoryProject")) {
         if (parser.eventType != XmlPullParser.START_TAG) {
+            parser.next()
             continue
         }
         val tag = parser.name
@@ -58,8 +61,9 @@ private fun parsePhotoStory(psProjectPath: File): Story? {
                 }
             }
         }
+        parser.next()
     }
-    return Story(psProjectPath,slides)
+    return Story(path,slides)
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
@@ -67,21 +71,20 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
     val slide = Slide()
 
     parser.require(XmlPullParser.START_TAG, null, "VisualUnit")
-    while (parser.next() != XmlPullParser.END_TAG) {
+    parser.next()
+    while ((parser.eventType != XmlPullParser.END_TAG) || (parser.name != "VisualUnit")) {
         if (parser.eventType != XmlPullParser.START_TAG) {
+            parser.next()
             continue
         }
         val tag = parser.name
         when (tag) {
             "Narration" -> {
-                parser.require(XmlPullParser.START_TAG, null, "Narration")
                 slide.narrationPath = File(parser.getAttributeValue(null, "path"))
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "Narration")
             }
             "Image" -> {
-                parser.require(XmlPullParser.START_TAG, null, "Image")
-
                 slide.imagePath = File(parser.getAttributeValue(null, "path"))
                 slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
                 slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
@@ -93,8 +96,6 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
             }
             "MusicTrack" -> {
-                parser.require(XmlPullParser.START_TAG, null, "MusicTrack")
-
                 slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
 
                 parser.nextTag()
@@ -109,8 +110,6 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
             }
             "Motion" -> {
-                parser.require(XmlPullParser.START_TAG, null, "Motion")
-
                 val rectTag = "Rect"
                 parser.nextTag()
                 slide.startMotion = parseRect(parser, rectTag)
@@ -132,6 +131,7 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 }
             }
         }
+        parser.next()
     }
     return slide
 }

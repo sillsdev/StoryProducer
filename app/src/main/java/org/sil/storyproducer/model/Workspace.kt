@@ -33,6 +33,7 @@ object Workspace {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         chooseWorkspacePath(activity)
+        findStories(activity)
         isInitialized = true
     }
 
@@ -72,7 +73,7 @@ object Workspace {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         for (path in workspacePath.list()) {
-            val story: Story? = parseStoryIfPresent(File(path))
+            val story: Story? = parseStoryIfPresent(File(workspacePath,path))
             if (story != null) Stories.add(story)
         }
     }
