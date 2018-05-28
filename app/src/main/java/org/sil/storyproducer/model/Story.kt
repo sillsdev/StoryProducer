@@ -3,6 +3,8 @@ package org.sil.storyproducer.model
 import android.graphics.Rect
 import android.util.Log
 import android.util.Xml
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
 
 import org.xmlpull.v1.XmlPullParser
 
@@ -17,17 +19,34 @@ import java.io.FileInputStream
 import java.io.IOException
 import java.util.*
 
-class Story(val path: File, val slides: List<Slide>){
-    val projectPath = File(path,"/project")
+
+private val PROJECT_DIR = "project"
+private val PROJECT_FILE = "story.json"
+
+@JsonClass(generateAdapter = true)
+class Story(
+        val path: File,
+        val slides: List<Slide>){
+    val projectPath = File(path,PROJECT_DIR)
+
 }
 
 fun parseStoryIfPresent(path: File): Story? {
     //Check if path is path
     if(!path.isDirectory) return null
+    val projectPath = File(path,PROJECT_DIR)
+    //make a project directory if there is none.
+    if (projectPath.isDirectory) {
+        //parse the project file, if there is one.
+        if (File(projectPath,PROJECT_FILE).isFile){
+            //TODO do the moshi json parsing
+            return null
+        }
+    }
+    projectPath.mkdir()
     //See if there is an xml photostory file there
     return parsePhotoStory(path)
     //TODO If not, See if there is an html bloom file there
-    //if either, yes, it is a project.
 }
 
 private fun parsePhotoStory(path: File): Story? {
