@@ -24,29 +24,52 @@ private val PROJECT_DIR = "project"
 private val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
-class Story(
+data class Story(
         val path: File,
         val slides: List<Slide>){
     val projectPath = File(path,PROJECT_DIR)
+    val projectFile = File(projectPath,PROJECT_FILE)
+
+    fun toJson(){
+        val moshi = Moshi.Builder().build()
+        val storyAdapter = moshi.adapter(Story::class.java)
+        projectFile.writeText(storyAdapter.toJson(this))
+    }
+
+    companion object {
+        fun fromJson(projectFile: File?): Story? {
+            if(projectFile != null){
+                if(projectFile.isFile) {
+                    val moshi = Moshi.Builder().build()
+                    val storyAdapter = moshi.adapter(Story::class.java)
+                    return storyAdapter.fromJson(projectFile.readText())
+                }
+            }
+            return null
+        }
+    }
 
 }
 
 fun parseStoryIfPresent(path: File): Story? {
+    var story: Story?
     //Check if path is path
     if(!path.isDirectory) return null
     val projectPath = File(path,PROJECT_DIR)
     //make a project directory if there is none.
     if (projectPath.isDirectory) {
         //parse the project file, if there is one.
-        if (File(projectPath,PROJECT_FILE).isFile){
-            //TODO do the moshi json parsing
-            return null
-        }
+        story = Story.fromJson(File(projectPath,PROJECT_FILE))
+        //if there is a story from the file, do not try to read any templates, just return.
+        if(story != null) return story
     }
     projectPath.mkdir()
     //See if there is an xml photostory file there
-    return parsePhotoStory(path)
+    story = parsePhotoStory(path)
     //TODO If not, See if there is an html bloom file there
+    //write the story (if it is not null) to json.
+    if(story != null) story.toJson()
+    return story
 }
 
 private fun parsePhotoStory(path: File): Story? {
