@@ -27,6 +27,7 @@ allprojects {
 }
 repositories {
     mavenCentral()
+    jcenter()
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"

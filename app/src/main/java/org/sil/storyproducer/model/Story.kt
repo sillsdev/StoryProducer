@@ -3,8 +3,8 @@ package org.sil.storyproducer.model
 import android.graphics.Rect
 import android.util.Log
 import android.util.Xml
-import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.JsonClass
 
 import org.xmlpull.v1.XmlPullParser
 
@@ -13,6 +13,7 @@ import org.sil.storyproducer.tools.file.ProjectXML
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.RectHelper
 import org.xmlpull.v1.XmlPullParserException
+import org.sil.storyproducer.model.StoryJsonAdapter
 
 import java.io.File
 import java.io.FileInputStream
@@ -29,26 +30,6 @@ data class Story(
         val slides: List<Slide>){
     val projectPath = File(path,PROJECT_DIR)
     val projectFile = File(projectPath,PROJECT_FILE)
-
-    fun toJson(){
-        val moshi = Moshi.Builder().build()
-        val storyAdapter = moshi.adapter(Story::class.java)
-        projectFile.writeText(storyAdapter.toJson(this))
-    }
-
-    companion object {
-        fun fromJson(projectFile: File?): Story? {
-            if(projectFile != null){
-                if(projectFile.isFile) {
-                    val moshi = Moshi.Builder().build()
-                    val storyAdapter = moshi.adapter(Story::class.java)
-                    return storyAdapter.fromJson(projectFile.readText())
-                }
-            }
-            return null
-        }
-    }
-
 }
 
 fun parseStoryIfPresent(path: File): Story? {
@@ -59,16 +40,20 @@ fun parseStoryIfPresent(path: File): Story? {
     //make a project directory if there is none.
     if (projectPath.isDirectory) {
         //parse the project file, if there is one.
-        story = Story.fromJson(File(projectPath,PROJECT_FILE))
+//        story = Story.fromJson(File(projectPath,PROJECT_FILE))
         //if there is a story from the file, do not try to read any templates, just return.
-        if(story != null) return story
+//        if(story != null) return story
     }
     projectPath.mkdir()
     //See if there is an xml photostory file there
     story = parsePhotoStory(path)
     //TODO If not, See if there is an html bloom file there
     //write the story (if it is not null) to json.
-    if(story != null) story.toJson()
+    if(story != null) {
+        val SJA = StoryJsonAdapter(Moshi.Builder().build())
+        val jsonString = SJA.toJson(story)
+        story.projectFile.writeText(jsonString)
+    }
     return story
 }
 

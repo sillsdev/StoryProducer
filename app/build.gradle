@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
 
 android {
     compileSdkVersion 26
@@ -24,13 +26,15 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        main.java.srcDirs += 'build/generated/source/kaptKotlin'
     }
 }
 
 repositories {
-    maven {
-        url "https://jitpack.io"
-    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+    google()
+    jcenter()
 }
 
 dependencies {
@@ -47,4 +51,5 @@ dependencies {
     implementation 'com.android.volley:volley:1.0.0'
     implementation 'com.github.codekidX:storage-chooser:2.0.3'
     implementation 'com.squareup.moshi:moshi:1.6.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
 }
