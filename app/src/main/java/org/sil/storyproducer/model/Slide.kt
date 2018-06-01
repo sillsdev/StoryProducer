@@ -1,5 +1,7 @@
 package org.sil.storyproducer.model
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import com.squareup.moshi.*
 
@@ -16,6 +18,21 @@ import com.squareup.moshi.FromJson
 class Slide{
     // template information
     var narrationPath: File = File("")
+    set(value){
+        field = value
+        if(value.isFile) {
+            val narration = value.readText()
+            val narrations = narration.split("~")
+            if (narrations.size > 0) this.title = narrations[0]
+            if (narrations.size > 1) this.subtitle= narrations[1]
+            if (narrations.size > 2) this.reference = narrations[2]
+            if (narrations.size > 3) this.content = narrations[3]
+        }
+    }
+    var title = ""
+    var subtitle = ""
+    var reference = ""
+    var content = ""
 
     var imagePath: File = File("")
     //TODO initialize to no crop and no motion from picture size
@@ -32,6 +49,15 @@ class Slide{
     var draftAudioFiles: MutableList<File> = ArrayList()
     var chosenDraftFile: File = File("")
     var draftText: String = ""
+
+    fun getImage(sampleSize: Int = 1): Bitmap? {
+        if(imagePath.exists()){
+            val options = BitmapFactory.Options()
+            options.inSampleSize = sampleSize
+            return BitmapFactory.decodeFile(imagePath.toString(), options)
+        }
+        return null
+    }
 
     //
     companion object

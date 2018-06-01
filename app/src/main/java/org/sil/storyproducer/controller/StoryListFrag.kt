@@ -1,21 +1,16 @@
 package org.sil.storyproducer.controller
 
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ListView
+import android.widget.*
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.adapter.CustomAdapter
-import org.sil.storyproducer.model.ListFiles
-import org.sil.storyproducer.model.SlideText
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.FileSystem
-import org.sil.storyproducer.tools.file.ImageFiles
-import org.sil.storyproducer.tools.file.TextFiles
+import org.sil.storyproducer.model.*
 
 class StoryListFrag : Fragment() {
 
@@ -24,39 +19,66 @@ class StoryListFrag : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
-        val view: View
+        if (Workspace.Stories.isEmpty()) return inflater!!.inflate(R.layout.fragment_no_stories, container, false)
 
-        // Define array storyNames to show in ListView
-        val storyNames = FileSystem.getStoryNames()
-
-
-        if (storyNames.size == 0) {
-            view = inflater!!.inflate(R.layout.fragment_no_stories, container, false)
-            return view
-        }
-
-        view = inflater!!.inflate(R.layout.activity_list_view, container, false)
+        val lfview = inflater!!.inflate(R.layout.activity_list_view, container, false)
 
         // Get ListView object from xml
         listView = activity.findViewById(R.id.story_list_view)
 
+        val adapter = ListAdapter(context, R.layout.story_list_item, Workspace.Stories)
 
-        val listFiles = arrayOfNulls<ListFiles>(storyNames.size)
-
-        for (i in listFiles.indices) {
-            val slideText = TextFiles.getSlideText(storyNames[i], 1)
-            listFiles[i] = ListFiles(ImageFiles.getBitmap(storyNames[i], 1, 25), storyNames[i], slideText.subtitle)
-        }
-
-        val adapter = CustomAdapter(context, R.layout.story_list_item, listFiles)
-
-        listView = view.findViewById(R.id.story_list_view)
+        listView = lfview.findViewById(R.id.story_list_view)
         // Assign adapter to ListView
         listView!!.adapter = adapter
 
-        listView!!.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id -> (activity as MainActivity).switchToStory(storyNames[position]) }
+        //TODO remove "switchtostory" call.  That is still from the old template way.
+        listView!!.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position].title) }
 
-        return view
+        return lfview
+    }
+
+}
+
+class ListAdapter(context: Context,
+                  val resourceId: Int,
+                  val stories: MutableList<Story>) : ArrayAdapter<Story>(context, resourceId, stories) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        var row = convertView
+        val holder: FileHolder
+
+        if (row == null) {
+            val inflater = (context as Activity).layoutInflater
+            row = inflater.inflate(resourceId, parent, false)
+
+            holder = FileHolder(row!!)
+            row.tag = holder
+        } else {
+            holder = row.tag as FileHolder
+        }
+
+        if(position <= stories.size){
+            val story = stories[position]
+            val slide = story.slides[0]
+            holder.txtTitle.text = slide.title
+            //TODO put th number 25 in some configuration.  What if the images are different sizes?
+            holder.imgIcon.setImageBitmap(slide.getImage(25))
+            holder.txtSubTitle.text = slide.subtitle
+        }
+
+        return row
+    }
+
+    internal class FileHolder{
+        var imgIcon: ImageView
+        var txtTitle: TextView
+        var txtSubTitle: TextView
+        constructor(view : View){
+            imgIcon = view.findViewById(R.id.story_list_image)
+            txtTitle = view.findViewById(R.id.story_list_title)
+            txtSubTitle = view.findViewById(R.id.story_list_subtitle)
+        }
     }
 
 }
