@@ -105,6 +105,20 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //first get permissions
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if(!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+
+        //Now, let's find the workspace path.
+        Workspace.INSTANCE.initializeWorskpace(this);
+
         setContentView(R.layout.activity_registration);
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
@@ -135,18 +149,6 @@ public class RegistrationActivity extends AppCompatActivity {
         addSubmitButtonSave();
         addRegistrationSkip();
         addEthnologueQuestion();
-
-        int PERMISSION_ALL = 1;
-        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE};
-
-        if(!hasPermissions(this, PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        }
-
-        //Now, let's find the workspace.
-        Workspace.INSTANCE.initializeWorskpace(this);
     }
 
     /**

@@ -31,6 +31,7 @@ data class Story(
 {
     val projectPath = File(path,PROJECT_DIR)
     val projectFile = File(projectPath,PROJECT_FILE)
+    val title = path.name
 
     fun writeToJson(){
         val moshi = Moshi
