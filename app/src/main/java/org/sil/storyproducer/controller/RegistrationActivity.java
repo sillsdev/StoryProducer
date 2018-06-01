@@ -1,14 +1,17 @@
 package org.sil.storyproducer.controller;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +33,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 
 import java.util.ArrayList;
@@ -110,8 +114,19 @@ public class RegistrationActivity extends AppCompatActivity {
             headerViews[i] = findViewById(headerIds[i]);
             setAccordionListener(findViewById(headerIds[i]), sectionViews[i]);
         }
-
     }
+
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -120,6 +135,18 @@ public class RegistrationActivity extends AppCompatActivity {
         addSubmitButtonSave();
         addRegistrationSkip();
         addEthnologueQuestion();
+
+        int PERMISSION_ALL = 1;
+        String[] PERMISSIONS = {Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE};
+
+        if(!hasPermissions(this, PERMISSIONS)) {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+
+        //Now, let's find the workspace.
+        Workspace.INSTANCE.initializeWorskpace(this);
     }
 
     /**

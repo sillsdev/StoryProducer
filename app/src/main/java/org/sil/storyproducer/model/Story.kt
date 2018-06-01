@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.graphics.Rect
+import android.os.Environment
 import android.util.Log
 import android.util.Xml
 import com.squareup.moshi.Moshi
@@ -13,7 +14,6 @@ import org.sil.storyproducer.tools.file.ProjectXML
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.RectHelper
 import org.xmlpull.v1.XmlPullParserException
-import org.sil.storyproducer.model.StoryJsonAdapter
 
 import java.io.File
 import java.io.FileInputStream
@@ -27,9 +27,23 @@ private val PROJECT_FILE = "story.json"
 @JsonClass(generateAdapter = true)
 data class Story(
         val path: File,
-        val slides: List<Slide>){
+        val slides: List<Slide>)
+{
     val projectPath = File(path,PROJECT_DIR)
     val projectFile = File(projectPath,PROJECT_FILE)
+
+    fun writeToJson(){
+        val moshi = Moshi
+                .Builder()
+                .add(FileAdapter())
+                .add(RectAdapter())
+                .build()
+        val adapter = Story.jsonAdapter(moshi)
+        //TODO It still fails because it cannot write to SD card.  I don't know what is wrong.
+        projectFile.createNewFile()
+        projectFile.writeText(adapter.toJson(this))
+    }
+    companion object
 }
 
 fun parseStoryIfPresent(path: File): Story? {
@@ -49,11 +63,7 @@ fun parseStoryIfPresent(path: File): Story? {
     story = parsePhotoStory(path)
     //TODO If not, See if there is an html bloom file there
     //write the story (if it is not null) to json.
-    if(story != null) {
-        val SJA = StoryJsonAdapter(Moshi.Builder().build())
-        val jsonString = SJA.toJson(story)
-        story.projectFile.writeText(jsonString)
-    }
+    if(story != null) story.writeToJson()
     return story
 }
 

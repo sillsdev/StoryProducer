@@ -31,14 +31,14 @@ object Workspace {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         chooseWorkspacePath(activity)
-        findStories()
         isInitialized = true
     }
 
     private fun chooseWorkspacePath(activity: Activity) {
         var wsTemp = ""
-        if (prefs != null)
-            wsTemp = prefs!!.getString("workspacePath", "")
+        //TODO re-enable this code when you can change the workspace path.
+        //if (prefs != null)
+        //    wsTemp = prefs!!.getString("workspacePath", "")
         if (wsTemp == "") {
             //There is no worskpace path stored
             //check if there is external permission granted
@@ -67,7 +67,7 @@ object Workspace {
         }
     }
 
-    private fun findStories() {
+    fun findStories() {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         for (path in workspacePath.list()) {
