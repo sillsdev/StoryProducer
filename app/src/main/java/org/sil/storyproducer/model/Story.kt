@@ -104,7 +104,7 @@ private fun parsePhotoStory(path: File): Story? {
         }
         val tag = parser.name
         when (tag) {
-            "VisualUnit" -> slides.add(parseSlideXML(parser))
+            "VisualUnit" -> slides.add(parseSlideXML(parser, path))
             else -> {
                 //skip the tag
                 var depth: Int = 1
@@ -122,7 +122,7 @@ private fun parsePhotoStory(path: File): Story? {
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
-private fun parseSlideXML(parser: XmlPullParser): Slide {
+private fun parseSlideXML(parser: XmlPullParser, path: File): Slide {
     val slide = Slide()
 
     parser.require(XmlPullParser.START_TAG, null, "VisualUnit")
@@ -135,12 +135,15 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
         val tag = parser.name
         when (tag) {
             "Narration" -> {
-                slide.narrationPath = File(parser.getAttributeValue(null, "path"))
+                slide.narrationPath = File(path, parser.getAttributeValue(null, "path"))
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "Narration")
             }
             "Image" -> {
-                slide.imagePath = File(parser.getAttributeValue(null, "path"))
+                slide.imagePath = File(path, parser.getAttributeValue(null, "path"))
+                val noExtRange = 0..(slide.imagePath.toString().length-
+                        slide.imagePath.extension.length-2)
+                slide.textPath = File(slide.imagePath.toString().slice(noExtRange) + ".txt")
                 slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
                 slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
             }
@@ -156,7 +159,7 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parser.nextTag()
                 parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
 
-                slide.musicPath = File(parser.getAttributeValue(null, "path"))
+                slide.musicPath = File(path, parser.getAttributeValue(null, "path"))
 
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "SoundTrack")

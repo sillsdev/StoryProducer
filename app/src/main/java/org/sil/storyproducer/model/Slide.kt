@@ -18,6 +18,13 @@ import com.squareup.moshi.FromJson
 class Slide{
     // template information
     var narrationPath: File = File("")
+    var title = ""
+    var subtitle = ""
+    var reference = ""
+    var content = ""
+
+    var imagePath : File = File("")
+    var textPath : File = File("")
     set(value){
         field = value
         if(value.isFile) {
@@ -29,12 +36,7 @@ class Slide{
             if (narrations.size > 3) this.content = narrations[3]
         }
     }
-    var title = ""
-    var subtitle = ""
-    var reference = ""
-    var content = ""
 
-    var imagePath: File = File("")
     //TODO initialize to no crop and no motion from picture size
     var width: Int = 0
     var height: Int = 0
