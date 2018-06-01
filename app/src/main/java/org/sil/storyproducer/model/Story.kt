@@ -43,7 +43,24 @@ data class Story(
         projectFile.createNewFile()
         projectFile.writeText(adapter.toJson(this))
     }
-    companion object
+
+    companion object {
+        fun readFromJson(templatePath: File): Story?{
+            val moshi = Moshi
+                    .Builder()
+                    .add(FileAdapter())
+                    .add(RectAdapter())
+                    .build()
+            val adapter = Story.jsonAdapter(moshi)
+            //TODO It still fails because it cannot write to SD card.  I don't know what is wrong.
+            val projectFile = File(File(templatePath, PROJECT_DIR),PROJECT_FILE)
+            if(projectFile.exists())
+                return adapter.fromJson(projectFile.readText())
+            else
+                return null
+        }
+
+    }
 }
 
 fun parseStoryIfPresent(path: File): Story? {
@@ -54,9 +71,9 @@ fun parseStoryIfPresent(path: File): Story? {
     //make a project directory if there is none.
     if (projectPath.isDirectory) {
         //parse the project file, if there is one.
-//        story = Story.fromJson(File(projectPath,PROJECT_FILE))
+        story = Story.readFromJson(path)
         //if there is a story from the file, do not try to read any templates, just return.
-//        if(story != null) return story
+        if(story != null) return story
     }
     projectPath.mkdir()
     //See if there is an xml photostory file there
