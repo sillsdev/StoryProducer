@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model
 
 import android.graphics.Rect
-import android.os.Environment
 import android.util.Log
 import android.util.Xml
 import com.squareup.moshi.Moshi
@@ -25,12 +24,11 @@ private val PROJECT_DIR = "project"
 private val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
-data class Story(
-        val path: File,
-        val slides: List<Slide>)
-{
-    val projectPath = File(path,PROJECT_DIR)
-    val projectFile = File(projectPath,PROJECT_FILE)
+class Story(path: File, val slides: List<Slide>){
+
+    var path : File = path
+    val projectPath get() = File(path,PROJECT_DIR)
+    val projectFile get() = File(projectPath,PROJECT_FILE)
     val title = path.name
 
     fun writeToJson(){
@@ -55,9 +53,11 @@ data class Story(
             val adapter = Story.jsonAdapter(moshi)
             //TODO It still fails because it cannot write to SD card.  I don't know what is wrong.
             val projectFile = File(File(templatePath, PROJECT_DIR),PROJECT_FILE)
-            if(projectFile.exists())
-                return adapter.fromJson(projectFile.readText())
-            else
+            if(projectFile.exists()) {
+                var story = adapter.fromJson(projectFile.readText())
+                if(story != null) story.path = templatePath
+                return story
+            } else
                 return null
         }
 
@@ -135,15 +135,15 @@ private fun parseSlideXML(parser: XmlPullParser, path: File): Slide {
         val tag = parser.name
         when (tag) {
             "Narration" -> {
-                slide.narrationPath = File(path, parser.getAttributeValue(null, "path"))
+                slide.narrationFile = parser.getAttributeValue(null, "path")
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "Narration")
             }
             "Image" -> {
-                slide.imagePath = File(path, parser.getAttributeValue(null, "path"))
-                val noExtRange = 0..(slide.imagePath.toString().length-
-                        slide.imagePath.extension.length-2)
-                slide.textPath = File(slide.imagePath.toString().slice(noExtRange) + ".txt")
+                slide.imageFile = parser.getAttributeValue(null, "path")
+                val noExtRange = 0..(slide.imageFile.length
+                        -File(slide.imageFile).extension.length-2)
+                slide.textFile = slide.imageFile.toString().slice(noExtRange) + ".txt"
                 slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
                 slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
             }
@@ -159,7 +159,7 @@ private fun parseSlideXML(parser: XmlPullParser, path: File): Slide {
                 parser.nextTag()
                 parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
 
-                slide.musicPath = File(path, parser.getAttributeValue(null, "path"))
+                slide.musicFile = parser.getAttributeValue(null, "path")
 
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "SoundTrack")

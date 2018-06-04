@@ -16,24 +16,27 @@ import com.squareup.moshi.FromJson
  */
 @JsonClass(generateAdapter = true)
 class Slide{
+    internal var path = File("")
+
     // template information
-    var narrationPath: File = File("")
+    var narrationFile = ""
     var title = ""
     var subtitle = ""
     var reference = ""
     var content = ""
 
-    var imagePath : File = File("")
-    var textPath : File = File("")
+    var imageFile = ""
+    var textFile = ""
     set(value){
         field = value
-        if(value.isFile) {
-            val narration = value.readText()
-            val narrations = narration.split("~")
-            if (narrations.size > 0) this.title = narrations[0]
-            if (narrations.size > 1) this.subtitle= narrations[1]
-            if (narrations.size > 2) this.reference = narrations[2]
-            if (narrations.size > 3) this.content = narrations[3]
+        val textPath = File(path,value)
+        if(textPath.isFile) {
+            val text = textPath.readText()
+            val textList = text.split("~")
+            if (textList.size > 0) this.title = textList[0]
+            if (textList.size > 1) this.subtitle= textList[1]
+            if (textList.size > 2) this.reference = textList[2]
+            if (textList.size > 3) this.content = textList[3]
         }
     }
 
@@ -44,23 +47,26 @@ class Slide{
     var startMotion: Rect? = null
     var endMotion: Rect? = null
 
-    var musicPath: File = File("")
+    var musicFile = ""
     var volume = 0
 
     //draft
-    var draftAudioFiles: MutableList<File> = ArrayList()
-    var chosenDraftFile: File = File("")
+    var draftAudioFiles: MutableList<String> = ArrayList()
+    var chosenDraftFile = ""
     var draftText: String = ""
 
     fun getImage(sampleSize: Int = 1): Bitmap? {
-        if(imagePath.exists()){
+        if(File(path,imageFile).exists()){
             val options = BitmapFactory.Options()
             options.inSampleSize = sampleSize
-            return BitmapFactory.decodeFile(imagePath.toString(), options)
+            return BitmapFactory.decodeFile(File(path,imageFile).toString(), options)
         }
         return null
     }
 
+    fun configurePath(path: File) {
+        this.path = path
+    }
     //
     companion object
 }

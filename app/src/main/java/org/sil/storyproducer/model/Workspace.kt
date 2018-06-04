@@ -3,12 +3,12 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.app.Activity
-import com.codekidlabs.storagechooser.StorageChooser
-
+import android.content.Intent
 
 import java.io.File
 import java.util.*
 import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat.startActivityForResult
 import android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission
 
 object Workspace {
@@ -45,17 +45,8 @@ object Workspace {
             val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             val res = checkCallingOrSelfPermission(activity, permission)
             if (res == PackageManager.PERMISSION_GRANTED) {
-                //use the storage-chooser app to get the
-                var sc = StorageChooser.Builder().withActivity(activity)
-                        .withFragmentManager(activity.fragmentManager)
-                        .withMemoryBar(true)
-                        .allowCustomPath(true)
-                        .setType(StorageChooser.DIRECTORY_CHOOSER)
-                        .build()
-                sc.show()
-                sc.setOnSelectListener(StorageChooser.OnSelectListener {
-                    workspacePath = File(it)
-                })
+                //use the storage access framework
+
             } else {
                 //We have no permissions - set to app space
                 workspacePath = activity.cacheDir
@@ -76,3 +67,4 @@ object Workspace {
         }
     }
 }
+
