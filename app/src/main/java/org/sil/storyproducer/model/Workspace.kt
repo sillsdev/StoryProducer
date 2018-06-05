@@ -3,18 +3,15 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.app.Activity
-import android.content.Intent
 
 import java.io.File
 import java.util.*
-import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat.startActivityForResult
-import android.support.v4.content.PermissionChecker.checkCallingOrSelfPermission
+import android.net.Uri
 
 object Workspace {
-    var workspacePath: File = File("")
+    var workspacePath: Uri = Uri.EMPTY
         set(value) {
-            if (value.isDirectory) {
+            if (!Uri.EMPTY.equals(value)) {
                 field = value
                 if (prefs != null)
                     prefs!!.edit().putString("workspacePath", field.toString()).apply()
@@ -30,32 +27,7 @@ object Workspace {
     fun initializeWorskpace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        chooseWorkspacePath(activity)
         isInitialized = true
-    }
-
-    private fun chooseWorkspacePath(activity: Activity) {
-        var wsTemp = ""
-        //TODO re-enable this code when you can change the workspace path.
-        //if (prefs != null)
-        //    wsTemp = prefs!!.getString("workspacePath", "")
-        if (wsTemp == "") {
-            //There is no worskpace path stored
-            //check if there is external permission granted
-            val permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-            val res = checkCallingOrSelfPermission(activity, permission)
-            if (res == PackageManager.PERMISSION_GRANTED) {
-                //use the storage access framework
-
-            } else {
-                //We have no permissions - set to app space
-                workspacePath = activity.cacheDir
-            }
-            //commit the path chosen
-        } else {
-            //There is a worskpace path stored.  Set it.
-            workspacePath = File(wsTemp)
-        }
     }
 
     fun findStories() {

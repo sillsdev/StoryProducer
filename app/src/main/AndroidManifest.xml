@@ -42,7 +42,6 @@
             android:screenOrientation="portrait" />
         <!-- Registration -->
         <activity android:name=".controller.RegistrationActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity

@@ -13,6 +13,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.provider.DocumentFile;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -84,6 +85,8 @@ public class RegistrationActivity extends AppCompatActivity {
     public static final String EMAIL_SENT = "registration_email_sent";
 
     private static final String ID_PREFIX = "org.sil.storyproducer:id/input_";
+    private static final int RQS_OPEN_DOCUMENT_TREE = 52;
+
     private final int [] sectionIds = {R.id.language_section, R.id.translator_section,R.id.consultant_section,R.id.trainer_section,R.id.archive_section};
     private final int [] headerIds = {R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header};
     private View[] sectionViews = new View[sectionIds.length];
@@ -116,10 +119,14 @@ public class RegistrationActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
         }
 
+        setContentView(R.layout.activity_registration);
+
         //Now, let's find the workspace path.
         Workspace.INSTANCE.initializeWorskpace(this);
-
-        setContentView(R.layout.activity_registration);
+        if(!Workspace.INSTANCE.getWorkspacePath().isDirectory()){
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE);
+        }
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
@@ -141,6 +148,13 @@ public class RegistrationActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE){
+            Uri uriTree = data.getData();
+            DocumentFile documentFile = DocumentFile.fromTreeUri(this, uriTree);
+        }
+    }
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
