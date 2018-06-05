@@ -69,8 +69,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
 
         this.getApplicationContext().registerReceiver(receiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        // this.reloadStories();
-        Workspace.INSTANCE.findStories();
+        Workspace.INSTANCE.updateWorkspace(this);
     }
 
     @Override

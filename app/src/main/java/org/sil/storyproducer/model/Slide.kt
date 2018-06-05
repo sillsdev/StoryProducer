@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.*
 
 import java.io.File
@@ -16,8 +17,6 @@ import com.squareup.moshi.FromJson
  */
 @JsonClass(generateAdapter = true)
 class Slide{
-    internal var path = File("")
-
     // template information
     var narrationFile = ""
     var title = ""
@@ -27,18 +26,6 @@ class Slide{
 
     var imageFile = ""
     var textFile = ""
-    set(value){
-        field = value
-        val textPath = File(path,value)
-        if(textPath.isFile) {
-            val text = textPath.readText()
-            val textList = text.split("~")
-            if (textList.size > 0) this.title = textList[0]
-            if (textList.size > 1) this.subtitle= textList[1]
-            if (textList.size > 2) this.reference = textList[2]
-            if (textList.size > 3) this.content = textList[3]
-        }
-    }
 
     //TODO initialize to no crop and no motion from picture size
     var width: Int = 0
@@ -55,19 +42,6 @@ class Slide{
     var chosenDraftFile = ""
     var draftText: String = ""
 
-    fun getImage(sampleSize: Int = 1): Bitmap? {
-        if(File(path,imageFile).exists()){
-            val options = BitmapFactory.Options()
-            options.inSampleSize = sampleSize
-            return BitmapFactory.decodeFile(File(path,imageFile).toString(), options)
-        }
-        return null
-    }
-
-    fun configurePath(path: File) {
-        this.path = path
-    }
-    //
     companion object
 }
 
@@ -87,7 +61,12 @@ class RectAdapter {
     }
 }
 
-class FileAdapter {
-    @FromJson fun fromJson(path: String): File? {return File(path)}
-    @ToJson fun toJson(path: File): String {return path.toString()}
+class DocumentFileAdapter {
+    @FromJson fun fromJson(dfJson: String): DocumentFile {
+        return DocumentFile.fromFile(File(dfJson))
+    }
+
+    @ToJson fun toJson(df: DocumentFile): String {
+        return df.uri.path
+    }
 }

@@ -31,7 +31,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Workspace;
@@ -42,6 +41,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import android.provider.Settings.Secure;
 
@@ -123,7 +123,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         //Now, let's find the workspace path.
         Workspace.INSTANCE.initializeWorskpace(this);
-        if(!Workspace.INSTANCE.getWorkspacePath().isDirectory()){
+        if(!Workspace.INSTANCE.getWorkspace().exists()){
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE);
         }
@@ -151,8 +151,8 @@ public class RegistrationActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE){
-            Uri uriTree = data.getData();
-            DocumentFile documentFile = DocumentFile.fromTreeUri(this, uriTree);
+            Workspace.INSTANCE.setWorkspace(DocumentFile.fromTreeUri(this, data.getData()));
+
         }
     }
 

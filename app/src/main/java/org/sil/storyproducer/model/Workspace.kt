@@ -2,19 +2,19 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.app.Activity
 
 import java.io.File
 import java.util.*
-import android.net.Uri
+import android.support.v4.provider.DocumentFile
+
 
 object Workspace {
-    var workspacePath: Uri = Uri.EMPTY
+    var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {
-            if (!Uri.EMPTY.equals(value)) {
+            if (value.isDirectory) {
                 field = value
                 if (prefs != null)
-                    prefs!!.edit().putString("workspacePath", field.toString()).apply()
+                    prefs!!.edit().putString("workspace", field.toString()).apply()
             }
         }
     val Stories: MutableList<Story> = ArrayList()
@@ -24,18 +24,23 @@ object Workspace {
     val SPPROJECT_DIR = "spproject"
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(activity: Activity) {
+    fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
-        prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
+        prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
+        updateWorkspace(context)
         isInitialized = true
     }
 
-    fun findStories() {
+    fun updateWorkspace(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
-        for (path in workspacePath.list()) {
-            val story: Story? = parseStoryIfPresent(File(workspacePath,path))
-            if (story != null) Stories.add(story)
+        if(workspace.isDirectory){
+            for (storyPath in workspace.listFiles()) {
+                if (storyPath.isDirectory) {
+                    val story = parseStoryIfPresent(context,storyPath)
+                    if (story != null) Stories.add(story)
+                }
+            }
         }
     }
 }

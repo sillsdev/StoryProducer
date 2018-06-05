@@ -1,217 +1,24 @@
 package org.sil.storyproducer.model
 
 import android.graphics.Rect
+import android.support.v4.provider.DocumentFile
 import android.util.Log
-import android.util.Xml
-import com.squareup.moshi.Moshi
 import com.squareup.moshi.JsonClass
-
-import org.xmlpull.v1.XmlPullParser
 
 import org.sil.storyproducer.tools.file.FileSystem
 import org.sil.storyproducer.tools.file.ProjectXML
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.RectHelper
-import org.xmlpull.v1.XmlPullParserException
+import java.io.*
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
 import java.util.*
 
 
-private val PROJECT_DIR = "project"
-private val PROJECT_FILE = "story.json"
-
 @JsonClass(generateAdapter = true)
-class Story(path: File, val slides: List<Slide>){
-
-    var path : File = path
-    val projectPath get() = File(path,PROJECT_DIR)
-    val projectFile get() = File(projectPath,PROJECT_FILE)
-    val title = path.name
-
-    fun writeToJson(){
-        val moshi = Moshi
-                .Builder()
-                .add(FileAdapter())
-                .add(RectAdapter())
-                .build()
-        val adapter = Story.jsonAdapter(moshi)
-        //TODO It still fails because it cannot write to SD card.  I don't know what is wrong.
-        projectFile.createNewFile()
-        projectFile.writeText(adapter.toJson(this))
-    }
-
-    companion object {
-        fun readFromJson(templatePath: File): Story?{
-            val moshi = Moshi
-                    .Builder()
-                    .add(FileAdapter())
-                    .add(RectAdapter())
-                    .build()
-            val adapter = Story.jsonAdapter(moshi)
-            //TODO It still fails because it cannot write to SD card.  I don't know what is wrong.
-            val projectFile = File(File(templatePath, PROJECT_DIR),PROJECT_FILE)
-            if(projectFile.exists()) {
-                var story = adapter.fromJson(projectFile.readText())
-                if(story != null) story.path = templatePath
-                return story
-            } else
-                return null
-        }
-
-    }
+class Story(var storyPath: DocumentFile, val slides: List<Slide>){
+    val title = storyPath.name
+    companion object
 }
-
-fun parseStoryIfPresent(path: File): Story? {
-    var story: Story?
-    //Check if path is path
-    if(!path.isDirectory) return null
-    val projectPath = File(path,PROJECT_DIR)
-    //make a project directory if there is none.
-    if (projectPath.isDirectory) {
-        //parse the project file, if there is one.
-        story = Story.readFromJson(path)
-        //if there is a story from the file, do not try to read any templates, just return.
-        if(story != null) return story
-    }
-    projectPath.mkdir()
-    //See if there is an xml photostory file there
-    story = parsePhotoStory(path)
-    //TODO If not, See if there is an html bloom file there
-    //write the story (if it is not null) to json.
-    if(story != null) story.writeToJson()
-    return story
-}
-
-private fun parsePhotoStory(path: File): Story? {
-    //start building slides
-    val psProjectPath = File(path,"project.xml")
-    if(!psProjectPath.exists()) return null
-    //The file "project.xml" is there, it is a photostory project.  Parse it.
-    val slides: MutableList<Slide> = ArrayList()
-    val parser = Xml.newPullParser()
-    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-    parser.setInput(FileInputStream(psProjectPath),null)
-    parser.nextTag()
-    parser.require(XmlPullParser.START_TAG, null, "MSPhotoStoryProject")
-    parser.next()
-    while ((parser.eventType != XmlPullParser.END_TAG) || (parser.name != "MSPhotoStoryProject")) {
-        if (parser.eventType != XmlPullParser.START_TAG) {
-            parser.next()
-            continue
-        }
-        val tag = parser.name
-        when (tag) {
-            "VisualUnit" -> slides.add(parseSlideXML(parser, path))
-            else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
-            }
-        }
-        parser.next()
-    }
-    return Story(path,slides)
-}
-
-@Throws(XmlPullParserException::class, IOException::class)
-private fun parseSlideXML(parser: XmlPullParser, path: File): Slide {
-    val slide = Slide()
-
-    parser.require(XmlPullParser.START_TAG, null, "VisualUnit")
-    parser.next()
-    while ((parser.eventType != XmlPullParser.END_TAG) || (parser.name != "VisualUnit")) {
-        if (parser.eventType != XmlPullParser.START_TAG) {
-            parser.next()
-            continue
-        }
-        val tag = parser.name
-        when (tag) {
-            "Narration" -> {
-                slide.narrationFile = parser.getAttributeValue(null, "path")
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Narration")
-            }
-            "Image" -> {
-                slide.imageFile = parser.getAttributeValue(null, "path")
-                val noExtRange = 0..(slide.imageFile.length
-                        -File(slide.imageFile).extension.length-2)
-                slide.textFile = slide.imageFile.toString().slice(noExtRange) + ".txt"
-                slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
-                slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
-            }
-            "RotateAndCrop" -> {
-                parser.nextTag()
-                slide.crop = parseRect(parser, "Rectangle")
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
-            }
-            "MusicTrack" -> {
-                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
-
-                parser.nextTag()
-                parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
-
-                slide.musicFile = parser.getAttributeValue(null, "path")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
-            }
-            "Motion" -> {
-                val rectTag = "Rect"
-                parser.nextTag()
-                slide.startMotion = parseRect(parser, rectTag)
-                parser.nextTag()
-                slide.endMotion = parseRect(parser, rectTag)
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Motion")
-            }
-        //ignore
-            else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
-            }
-        }
-        parser.next()
-    }
-    return slide
-}
-
-@Throws(IOException::class, XmlPullParserException::class)
-private fun parseRect(parser: XmlPullParser, rectangleTag: String): Rect {
-    parser.require(XmlPullParser.START_TAG, null, rectangleTag)
-
-    val left = Integer.parseInt(parser.getAttributeValue(null, "upperLeftX"))
-    val top = Integer.parseInt(parser.getAttributeValue(null, "upperLeftY"))
-    val width = Integer.parseInt(parser.getAttributeValue(null, "width"))
-    val height = Integer.parseInt(parser.getAttributeValue(null, "height"))
-
-    val right = left + width
-    val bottom = top + height
-
-    parser.nextTag()
-    parser.require(XmlPullParser.END_TAG, null, rectangleTag)
-
-    return Rect(left, top, right, bottom)
-}
-
 
 /**
  * Get the slide from the story template at the specified index.
