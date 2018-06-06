@@ -61,8 +61,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         }
         parser.next()
     }
-    val story = Story(storyPath.uri,slides)
-    story.setContext(context)
+    val story = Story(storyPath.uri,slides,context)
     return story
 }
 

@@ -38,7 +38,10 @@ object Workspace {
             for (storyPath in workspace.listFiles()) {
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context,storyPath)
-                    if (story != null) Stories.add(story)
+                    if (story != null) {
+                        story.toJson()
+                        Stories.add(story)
+                    }
                 }
             }
         }

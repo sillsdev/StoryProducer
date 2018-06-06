@@ -24,8 +24,15 @@ class Story(var storyUri: Uri, val slides: List<Slide>){
     val title = storyUri.lastPathSegment
     @Transient
     var cpc: ContentProviderClient? = null
+    @Transient
+    var context: Context? = null
 
-    fun setContext(context: Context){
+    constructor(storyUri: Uri, slides: List<Slide>, context: Context) : this(storyUri,slides){
+        initializeContext(context)
+    }
+
+    fun initializeContext(context: Context){
+        this.context = context
         cpc = context.contentResolver.acquireContentProviderClient(storyUri)
     }
 
