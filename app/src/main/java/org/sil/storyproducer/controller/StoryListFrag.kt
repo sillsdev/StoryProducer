@@ -63,7 +63,7 @@ class ListAdapter(context: Context,
             holder.txtTitle.text = story.slides[0].title
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(StoryIO(story).getImage(context,1,25))
+            holder.imgIcon.setImageBitmap(story.getImage(1,25))
             holder.txtSubTitle.text = story.slides[0].subtitle
         }
 

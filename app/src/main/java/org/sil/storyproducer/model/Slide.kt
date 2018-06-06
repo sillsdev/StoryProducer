@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.net.Uri
 import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.*
 
@@ -61,12 +62,12 @@ class RectAdapter {
     }
 }
 
-class DocumentFileAdapter {
-    @FromJson fun fromJson(dfJson: String): DocumentFile {
-        return DocumentFile.fromFile(File(dfJson))
+class UriAdapter {
+    @FromJson fun fromJson(uriString: String): Uri {
+        return Uri.parse(uriString)
     }
 
-    @ToJson fun toJson(df: DocumentFile): String {
-        return df.uri.path
+    @ToJson fun toJson(uri: Uri): String {
+        return uri.toString()
     }
 }

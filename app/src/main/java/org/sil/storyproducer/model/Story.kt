@@ -1,7 +1,9 @@
 package org.sil.storyproducer.model
 
+import android.content.ContentProviderClient
+import android.content.Context
 import android.graphics.Rect
-import android.support.v4.provider.DocumentFile
+import android.net.Uri
 import android.util.Log
 import com.squareup.moshi.JsonClass
 
@@ -13,11 +15,22 @@ import java.io.*
 
 import java.util.*
 
+internal val PROJECT_DIR = "project"
+internal val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
-class Story(var storyPath: DocumentFile, val slides: List<Slide>){
-    val title = storyPath.name
+class Story(var storyUri: Uri, val slides: List<Slide>){
+    @Transient
+    val title = storyUri.lastPathSegment
+    @Transient
+    var cpc: ContentProviderClient? = null
+
+    fun setContext(context: Context){
+        cpc = context.contentResolver.acquireContentProviderClient(storyUri)
+    }
+
     companion object
+
 }
 
 /**

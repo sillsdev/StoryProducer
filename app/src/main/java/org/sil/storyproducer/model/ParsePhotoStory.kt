@@ -61,7 +61,9 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         }
         parser.next()
     }
-    return Story(storyPath,slides)
+    val story = Story(storyPath.uri,slides)
+    story.setContext(context)
+    return story
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
