@@ -16,7 +16,7 @@ import java.util.ArrayList
 fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
     val psxml = storyPath.findFile("project.xml")
-    if(!psxml.exists()) return null
+    if(psxml == null) return null
     val xmlContents = context.contentResolver.openInputStream(psxml.uri)
     //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
