@@ -15,9 +15,7 @@ import java.util.ArrayList
 
 fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
-    val psxml = storyPath.findFile("project.xml")
-    if(psxml == null) return null
-    val xmlContents = context.contentResolver.openInputStream(psxml.uri)
+    val xmlContents = Workspace.getChildInputStream(context,"project.xml",storyPath.name) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
@@ -36,11 +34,9 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
             "VisualUnit" -> {
                 var slide = parseSlideXML(parser)
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
-                val textFile = storyPath.findFile(slide.textFile)
+                val textFile = Workspace.getText(context,slide.textFile,storyPath.name)
                 if(textFile != null){
-                    val iStream = context.contentResolver.openInputStream(textFile.uri)
-                    val fileContents = iStream.reader().use { it.readText() }
-                    val textList = fileContents.split("~")
+                    val textList = textFile.split("~")
                     if (textList.size > 0) slide.title = textList[0]
                     if (textList.size > 1) slide.subtitle= textList[1]
                     if (textList.size > 2) slide.reference = textList[2]

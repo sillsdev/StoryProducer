@@ -6,10 +6,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import android.provider.DocumentsContract
 
 import java.io.File
 import java.util.*
 import android.support.v4.provider.DocumentFile
+import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -56,7 +58,7 @@ object Workspace{
     fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story? = activeStory): Bitmap? {
         if(story == null) return null
         val imName = story.slides[slideNum].imageFile
-        val iStream = getChildInputStream(context,imName,story)
+        val iStream = getChildInputStream(context,imName,story.title)
         if(iStream != null){
             val options = BitmapFactory.Options()
             options.inSampleSize = sampleSize
@@ -65,22 +67,24 @@ object Workspace{
         return null
     }
 
-    fun getText(context: Context, relPath: String, story: Story? = activeStory) : String? {
-        if(story == null) return null
-        val iStream = getChildInputStream(context, relPath, story)
-        if (iStream != null) {
-            return iStream.reader().use { it.readText() }
-        }
+    fun getText(context: Context, relPath: String, storyTitle: String = "") : String? {
+        val iStream = getChildInputStream(context, relPath, storyTitle)
+        if (iStream != null)
+            return iStream.reader().use {
+                        it.readText() }
         return null
     }
 
-
-    fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "", story: Story? = activeStory) : OutputStream? {
-        if (story == null) return null
+    fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = "") : OutputStream? {
+        var iTitle = storyTitle
+        if (iTitle== ""){
+            if(activeStory == null) return null
+            iTitle = activeStory.title
+        }
         if (!workspace.isDirectory) return null
         //build the document tree if it is needed
         val segments = relPath.split("/")
-        var df = workspace.findFile(story.title)
+        var df = workspace.findFile(iTitle)
         var df_new : DocumentFile?
         for (i in 0 .. segments.size-2){
             df_new = df.findFile(segments[i])
@@ -113,12 +117,18 @@ object Workspace{
         return ParcelFileDescriptor.AutoCloseOutputStream(pfd)
     }
 
-    fun getChildInputStream(context: Context, relPath: String, story: Story? = activeStory) : InputStream? {
-        if (story == null) return null
-        val childUri = Uri.withAppendedPath(workspace.uri,story.title+ "/" + relPath)
-        if(File(childUri.path).exists()) {
-            val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(childUri, "r")
-            if (pfd == null) return null
+    fun getChildInputStream(context: Context, relPath: String, storyTitle: String? = "") : InputStream? {
+        var iTitle = storyTitle
+        if (iTitle== ""){
+            if(activeStory == null) return null
+            iTitle = activeStory.title
+        }
+        val childUri = Uri.parse(workspace.uri.toString() +
+                Uri.encode("/$iTitle/$relPath"))
+        //check if the file exists by checking for permissions
+        if(DocumentsContract.isDocumentUri(context,childUri)) {
+            val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
+                    childUri, "r") ?: return null
             return ParcelFileDescriptor.AutoCloseInputStream(pfd)
         }
         return null

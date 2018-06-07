@@ -13,28 +13,23 @@ fun Story.toJson(context: Context){
             .add(UriAdapter())
             .build()
     val adapter = Story.jsonAdapter(moshi)
-    val oStream = Workspace.getChildOutputStream(context,PROJECT_DIR + "/" + PROJECT_FILE,"",this)
+    val oStream = Workspace.getChildOutputStream(context,
+            PROJECT_DIR + "/" + PROJECT_FILE,"",this.title)
     if(oStream != null) {
         oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
         oStream.close()
     }
 }
 
-fun storyFromJson(context: Context, storyUri: Uri): Story?{
+fun storyFromJson(context: Context, storyTitle: String): Story?{
     val moshi = Moshi
             .Builder()
             .add(RectAdapter())
             .add(UriAdapter())
             .build()
     val adapter = Story.jsonAdapter(moshi)
-    val projectUri = Uri.withAppendedPath(storyUri,PROJECT_DIR + "/" + PROJECT_FILE)
-    if (File(projectUri.path).exists()) {
-        val iStream = context.contentResolver.openInputStream(projectUri)
-        val fileContents = iStream.reader().use { it.readText() }
-        var story = adapter.fromJson(fileContents)
-        if(story != null) return story
-    }
-    return null
+    val fileContents = Workspace.getText(context,"$PROJECT_DIR/$PROJECT_FILE",storyTitle) ?: return null
+    return adapter.fromJson(fileContents)
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
@@ -44,7 +39,7 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     //make a project directory if there is none.
     if (storyPath.findFile(PROJECT_DIR) != null) {
         //parse the project file, if there is one.
-        story = storyFromJson(context,storyPath.uri)
+        story = storyFromJson(context,storyPath.name)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
