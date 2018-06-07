@@ -19,22 +19,7 @@ internal val PROJECT_DIR = "project"
 internal val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
-class Story(var storyUri: Uri, val slides: List<Slide>){
-    @Transient
-    val title = storyUri.lastPathSegment
-    @Transient
-    var cpc: ContentProviderClient? = null
-    @Transient
-    var context: Context? = null
-
-    constructor(storyUri: Uri, slides: List<Slide>, context: Context) : this(storyUri,slides){
-        initializeContext(context)
-    }
-
-    fun initializeContext(context: Context){
-        this.context = context
-        cpc = context.contentResolver.acquireContentProviderClient(storyUri)
-    }
+class Story(var title: String, val slides: List<Slide>){
 
     companion object
 
