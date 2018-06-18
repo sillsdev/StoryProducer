@@ -359,7 +359,9 @@ public class RegistrationActivity extends AppCompatActivity {
             js.put("ProjectCountry",  prefs.getString("country", " "));
             js.put("ProjectMajorityLanguage",  prefs.getString("lwc", " "));
             js.put("ConsultantEmail",  prefs.getString("consultant_email", " "));
+            js.put("ConsultantPhone",  prefs.getString("consultant_phone", " "));
             js.put("TrainerEmail",  prefs.getString("trainer_email", " "));
+            js.put("TrainerPhone",  prefs.getString("trainer_phone", " "));
 
         Log.i("LOG_VOLLEY", js.toString());
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
