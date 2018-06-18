@@ -128,14 +128,16 @@
     <string name="nav_open">Options</string>
     <string name="nav_close">Close</string>
 
+    <!-- PHONE -->
+    <string name="PhoneId">PhoneId</string>
+
     <!-- Network -->
     <string name="send_message_down">Message sending is unavailable at this time. Please try again later.</string>
     <string name="audio_pre_send">Sending Audio</string>
     <string name="audio_Sent">Audio File Sent Successfully</string>
     <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
     <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
-    <string name="queue_status_message_send">No Connection: Message Queued for Delivery</string>
-    <string name="queue_status_message_get">No Connection: Cannot Retrieve Messages</string>
+    <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
     <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
@@ -191,7 +193,7 @@
     <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
-    <string name="remote_check_msg_failed">An unexpected error occurred and the message failed to send. Please try again.</string>
+    <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
