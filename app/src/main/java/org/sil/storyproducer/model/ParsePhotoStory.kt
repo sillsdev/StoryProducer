@@ -4,9 +4,6 @@ import android.content.Context
 import android.graphics.Rect
 import android.support.v4.provider.DocumentFile
 import android.util.Xml
-import org.apache.commons.io.IOUtils
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.Story
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.File
@@ -15,7 +12,7 @@ import java.util.ArrayList
 
 fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
-    val xmlContents = Workspace.getChildInputStream(context,"project.xml",storyPath.name) ?: return null
+    val xmlContents = Workspace.getStoryChildInputStream(context,"project.xml",storyPath.name) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
@@ -34,7 +31,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
             "VisualUnit" -> {
                 var slide = parseSlideXML(parser)
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
-                val textFile = Workspace.getText(context,slide.textFile,storyPath.name)
+                val textFile = Workspace.getStoryText(context,slide.textFile,storyPath.name)
                 if(textFile != null){
                     val textList = textFile.split("~")
                     if (textList.size > 0) slide.title = textList[0]

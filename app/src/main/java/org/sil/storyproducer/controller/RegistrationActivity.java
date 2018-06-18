@@ -41,7 +41,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Stack;
 import android.provider.Settings.Secure;
 
@@ -152,7 +151,7 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE){
             Workspace.INSTANCE.setWorkspace(DocumentFile.fromTreeUri(this, data.getData()));
-
+            Workspace.INSTANCE.updateStories(this);
         }
     }
 

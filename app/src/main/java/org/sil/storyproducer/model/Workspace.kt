@@ -6,15 +6,16 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
-import android.provider.DocumentsContract
 
 import java.io.File
 import java.util.*
 import android.support.v4.provider.DocumentFile
-import java.io.FileNotFoundException
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.InputStream
 import java.io.OutputStream
 
+val REGISTRATION_FILENAME = "registration.json"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -26,6 +27,7 @@ object Workspace{
             }
         }
     val Stories: MutableList<Story> = ArrayList()
+    var registration: JSONObject = JSONObject()
     val activeStory: Story? = null
     var isInitialized = false
     var prefs: SharedPreferences? = null
@@ -36,14 +38,37 @@ object Workspace{
     fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        updateWorkspace(context)
+        //get registration from the json file, if there is any.
+        initRegistration(context)
+        updateStories(context)
         isInitialized = true
     }
 
-    fun updateWorkspace(context: Context) {
+    fun initRegistration(context: Context) {
+        if(workspace.isDirectory) {
+            val regString: String? = getText(context,REGISTRATION_FILENAME)
+            if(regString != null) {
+                try {
+                    registration = JSONObject()
+                } catch (e: JSONException) {}
+            }
+        }
+    }
+    fun saveRegistration(context: Context){
+        val oStream = Workspace.getChildOutputStream(context,
+                REGISTRATION_FILENAME,"")
+        if(oStream != null) {
+            oStream.write(registration.toString(1).toByteArray(Charsets.UTF_8))
+            oStream.close()
+        }
+    }
+
+    fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         if(workspace.isDirectory){
+            //find all stories
+            Stories.removeAll(Stories)
             for (storyPath in workspace.listFiles()) {
                 //TODO - check storyPath.name against titles.
                 if (storyPath.isDirectory) {
@@ -59,7 +84,7 @@ object Workspace{
     fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story? = activeStory): Bitmap? {
         if(story == null) return null
         val imName = story.slides[slideNum].imageFile
-        val iStream = getChildInputStream(context,imName,story.title)
+        val iStream = getStoryChildInputStream(context,imName,story.title)
         if(iStream != null){
             val options = BitmapFactory.Options()
             options.inSampleSize = sampleSize
@@ -68,24 +93,45 @@ object Workspace{
         return null
     }
 
-    fun getText(context: Context, relPath: String, storyTitle: String = "") : String? {
-        val iStream = getChildInputStream(context, relPath, storyTitle)
-        if (iStream != null)
-            return iStream.reader().use {
-                        it.readText() }
-        return null
-    }
-
-    fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = "") : OutputStream? {
+    fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = "") : OutputStream? {
         var iTitle = storyTitle
         if (iTitle== ""){
             if(activeStory == null) return null
             iTitle = activeStory.title
         }
+        return getChildOutputStream(context, iTitle + "/" + relPath, mimeType)
+    }
+
+    fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : String? {
+        val iStream = getStoryChildInputStream(context, relPath, storyTitle)
+        if (iStream != null)
+            return iStream.reader().use {
+                it.readText() }
+        return null
+    }
+
+    fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String? = "") : InputStream? {
+        var iTitle = storyTitle
+        if (iTitle== ""){
+            if(activeStory == null) return null
+            iTitle = activeStory.title
+        }
+        return getChildInputStream(context,iTitle + "/" + relPath)
+    }
+
+    fun getText(context: Context, relPath: String) : String? {
+        val iStream = getStoryChildInputStream(context, relPath)
+        if (iStream != null)
+            return iStream.reader().use {
+                it.readText() }
+        return null
+    }
+
+    fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
         if (!workspace.isDirectory) return null
         //build the document tree if it is needed
         val segments = relPath.split("/")
-        var df = workspace.findFile(iTitle)
+        var df = workspace
         var df_new : DocumentFile?
         for (i in 0 .. segments.size-2){
             df_new = df.findFile(segments[i])
@@ -119,13 +165,8 @@ object Workspace{
     }
 
     fun getChildInputStream(context: Context, relPath: String, storyTitle: String? = "") : InputStream? {
-        var iTitle = storyTitle
-        if (iTitle== ""){
-            if(activeStory == null) return null
-            iTitle = activeStory.title
-        }
         val childUri = Uri.parse(workspace.uri.toString() +
-                Uri.encode("/$iTitle/$relPath"))
+                Uri.encode("/$relPath"))
         //check if the file exists by checking for permissions
         try {
             //TODO Why is DocumentsContract.isDocument not working right?
@@ -136,7 +177,6 @@ object Workspace{
             //The file does not exist.
             return null
         }
-        return null
     }
 }
 

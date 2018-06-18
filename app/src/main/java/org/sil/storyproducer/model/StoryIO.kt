@@ -1,10 +1,8 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.net.Uri
 import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.Moshi
-import java.io.*
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -13,7 +11,7 @@ fun Story.toJson(context: Context){
             .add(UriAdapter())
             .build()
     val adapter = Story.jsonAdapter(moshi)
-    val oStream = Workspace.getChildOutputStream(context,
+    val oStream = Workspace.getStoryChildOutputStream(context,
             PROJECT_DIR + "/" + PROJECT_FILE,"",this.title)
     if(oStream != null) {
         oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
@@ -28,7 +26,7 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
             .add(UriAdapter())
             .build()
     val adapter = Story.jsonAdapter(moshi)
-    val fileContents = Workspace.getText(context,"$PROJECT_DIR/$PROJECT_FILE",storyTitle) ?: return null
+    val fileContents = Workspace.getStoryText(context,"$PROJECT_DIR/$PROJECT_FILE",storyTitle) ?: return null
     return adapter.fromJson(fileContents)
 }
 
