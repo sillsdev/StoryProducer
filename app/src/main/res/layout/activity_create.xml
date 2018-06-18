@@ -131,7 +131,8 @@
                         android:layout_height="wrap_content"
                         android:ems="10"
                         android:hint="@string/export_custom_title"
-                        android:inputType="textCapWords" />
+                        android:inputType="textMultiLine|textCapWords"
+                        android:maxLines="4"/>
 
                 </LinearLayout>
 
