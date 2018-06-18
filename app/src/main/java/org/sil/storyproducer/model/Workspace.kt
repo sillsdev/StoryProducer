@@ -45,6 +45,7 @@ object Workspace{
         //for all files in the workspace, see if they are folders that have templates.
         if(workspace.isDirectory){
             for (storyPath in workspace.listFiles()) {
+                //TODO - check storyPath.name against titles.
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context,storyPath)
                     if (story != null) {
@@ -126,10 +127,14 @@ object Workspace{
         val childUri = Uri.parse(workspace.uri.toString() +
                 Uri.encode("/$iTitle/$relPath"))
         //check if the file exists by checking for permissions
-        if(DocumentsContract.isDocumentUri(context,childUri)) {
+        try {
+            //TODO Why is DocumentsContract.isDocument not working right?
             val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
                     childUri, "r") ?: return null
             return ParcelFileDescriptor.AutoCloseInputStream(pfd)
+        } catch (e: Exception) {
+            //The file does not exist.
+            return null
         }
         return null
     }
