@@ -19,5 +19,7 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="triangle_width">50dp</dimen>
     <dimen name="triangle_height">100dp</dimen>
+    <dimen name="circle_diameter">120dp</dimen>
+    <dimen name="draft_lwc_button">50dp</dimen>
 
 </resources>
