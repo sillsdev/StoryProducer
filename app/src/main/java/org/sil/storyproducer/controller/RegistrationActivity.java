@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -74,7 +73,6 @@ import android.provider.Settings.Secure;
  * <ul>
  * <li>{@link android.widget.Spinner} for input from a selection menu.</li>
  * <li>{@link android.support.design.widget.TextInputEditText} for inputting text for registration fields.</li>
- * <li>{@link android.content.SharedPreferences} for saving registration information.</li>
  * </ul>
  */
 public class RegistrationActivity extends AppCompatActivity {
@@ -92,7 +90,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private View[] headerViews = new View[headerIds.length];
     private static final boolean SHOW_KEYBOARD = true;
     private static final boolean CLOSE_KEYBOARD = false;
-    private static final boolean PARSE_ALL_FIELDS = true;
 
     //private static boolean isRemoteConsultant = false;
     private static String country;
@@ -181,7 +178,6 @@ public class RegistrationActivity extends AppCompatActivity {
      * Sets the on click listener for the submit button.
      */
     private void addSubmitButtonSave() {
-        final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
         final Button submitButton = findViewById(R.id.submit_button);
         submitButton.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
@@ -312,15 +308,14 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * Takes a field and searches the preference file for a value corresponding to it
+     * Takes a field and searches the registration data for a value corresponding to it
      * @param view the view to be queried
      * @return the value if found or an empty string if no value found
      */
     private String getStoredValueForView(View view) {
-        SharedPreferences preferences = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
         String viewName = getResources().getResourceName(view.getId());
         viewName = viewName.replace(ID_PREFIX, "");
-        return preferences.getString(viewName, "");
+        return Workspace.INSTANCE.getRegString(viewName, "");
     }
 
     /**
@@ -385,7 +380,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private void postRegistrationInfo(){
         final Context myContext = this.getApplicationContext();
 
-        final SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
+        Workspace wrks = Workspace.INSTANCE;
 
         js = new HashMap<>();
          String PhoneId = Secure.getString(myContext.getContentResolver(),
@@ -393,17 +388,17 @@ public class RegistrationActivity extends AppCompatActivity {
 
             js.put("Key", getString(R.string.api_token));
             js.put("PhoneId", PhoneId);
-            js.put("TranslatorEmail", prefs.getString("translator_email", " "));
-            js.put("TranslatorPhone", prefs.getString("translator_phone", " "));
-            js.put("TranslatorLanguage", prefs.getString("translator_languages", " "));
-            js.put("ProjectEthnoCode",  prefs.getString("ethnologue", " "));
-            js.put("ProjectLanguage",  prefs.getString("language", " "));
-            js.put("ProjectCountry",  prefs.getString("country", " "));
-            js.put("ProjectMajorityLanguage",  prefs.getString("lwc", " "));
-            js.put("ConsultantEmail",  prefs.getString("consultant_email", " "));
-            js.put("ConsultantPhone",  prefs.getString("consultant_phone", " "));
-            js.put("TrainerEmail",  prefs.getString("trainer_email", " "));
-            js.put("TrainerPhone",  prefs.getString("trainer_phone", " "));
+            js.put("TranslatorEmail", wrks.getRegString("translator_email", " "));
+            js.put("TranslatorPhone", wrks.getRegString("translator_phone", " "));
+            js.put("TranslatorLanguage", wrks.getRegString("translator_languages", " "));
+            js.put("ProjectEthnoCode",  wrks.getRegString("ethnologue", " "));
+            js.put("ProjectLanguage",  wrks.getRegString("language", " "));
+            js.put("ProjectCountry",  wrks.getRegString("country", " "));
+            js.put("ProjectMajorityLanguage",  wrks.getRegString("lwc", " "));
+            js.put("ConsultantEmail",  wrks.getRegString("consultant_email", " "));
+            js.put("ConsultantPhone",  wrks.getRegString("consultant_phone", " "));
+            js.put("TrainerEmail",  wrks.getRegString("trainer_email", " "));
+            js.put("TrainerPhone",  wrks.getRegString("trainer_phone", " "));
 
         Log.i("LOG_VOLLEY", js.toString());
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
@@ -437,11 +432,11 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * This function stores the registration information to the saved preference file. The
+     * This function stores the registration information to the saved registration file. The
      * preference file is located in getString(R.string.Registration_File_Name).
      */
     private void storeRegistrationInfo() {
-        SharedPreferences.Editor editor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
+        Workspace wrks = Workspace.INSTANCE;
         Calendar calendar;
         String date, androidVersion, manufacturer, model;
         String day, month, year, hour, min;
@@ -453,7 +448,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String textFieldName = getResources().getResourceEntryName(textField.getId());
                 textFieldName = textFieldName.replace("input_", "");
                 String textFieldText = textField.getText().toString();
-                editor.putString(textFieldName, textFieldText);
+                wrks.putRegString(textFieldName, textFieldText);
 
                 if (textFieldName.equals("country")) {
                     country = textFieldText;
@@ -465,7 +460,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String spinnerName = getResources().getResourceEntryName(spinner.getId());
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
-                editor.putString(spinnerName, spinnerText);
+                wrks.putRegString(spinnerName, spinnerText);
                 //if(spinnerText.equals("Remote")){
                     //isRemoteConsultant = true;
                 //}
@@ -483,17 +478,17 @@ public class RegistrationActivity extends AppCompatActivity {
             min = "0" + min;
         }
         date = month + "/" + day + "/" + year + " " + hour + ":" + min;
-        editor.putString("date", date);
+        wrks.putRegString("date", date);
 
         // Retrieve phone information
         manufacturer = Build.MANUFACTURER;
         model = Build.MODEL;
         androidVersion = Build.VERSION.RELEASE;
-        editor.putString("manufacturer", manufacturer);
-        editor.putString("model", model);
-        editor.putString("android_version", androidVersion);
+        wrks.putRegString("manufacturer", manufacturer);
+        wrks.putRegString("model", model);
+        wrks.putRegString("android_version", androidVersion);
 
-        editor.apply();
+        wrks.saveRegistration(this);
     }
 
     /**
@@ -649,15 +644,13 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void sendEmail() {
 
-        SharedPreferences prefs = this.getSharedPreferences(this.getString(R.string.registration_filename), MODE_PRIVATE);
-        SharedPreferences.Editor preferenceEditor = getSharedPreferences(getString(R.string.registration_filename), MODE_PRIVATE).edit();
-        Map<String, ?> preferences = prefs.getAll();
+        Workspace wrks = Workspace.INSTANCE;
 
-        String message = formatEmailFromPreferences(prefs);
+        String message = formatRegistrationEmail();
 
-        String[] TO =  { (String)preferences.get("database_email_1"), (String)preferences.get("database_email_2"),
-                (String)preferences.get("database_email_3"), (String)preferences.get("translator_email"),
-                (String)preferences.get("consultant_email"), (String)preferences.get("trainer_email") };
+        String[] TO =  { wrks.getRegString("database_email_1",""), wrks.getRegString("database_email_2",""),
+                wrks.getRegString("database_email_3",""), wrks.getRegString("translator_email",""),
+                wrks.getRegString("consultant_email",""), wrks.getRegString("trainer_email","") };
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
@@ -670,8 +663,8 @@ public class RegistrationActivity extends AppCompatActivity {
         try {
             this.startActivity(Intent.createChooser(emailIntent, "Send mail"));
             this.finish();
-            preferenceEditor.putBoolean(EMAIL_SENT, true);
-            preferenceEditor.apply();
+            wrks.putRegBoolean(EMAIL_SENT, true);
+            wrks.saveRegistration(this);
             Log.i("Finished sending email", "");
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this,
@@ -680,12 +673,11 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     /**
-     * Takes the preferences file and returns a string of formatted fields in readable format
+     * Returns a string of formatted fields in readable format based on the registration data
      *
-     * @param prefs the SharedPreferences object for registration
      * @return a well formatted string of registration information
      */
-    private static String formatEmailFromPreferences(SharedPreferences prefs) {
+    private static String formatRegistrationEmail() {
         // Gives the order for retrieval and printing
         // Empty strings ("") are used to separate sections in the printing phase
         String[] keyListOrder = {"date", "", "language", "ethnologue", "country", "location",
@@ -710,7 +702,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 formattedKey = formattedKey.toUpperCase();
                 message.append(formattedKey);
                 message.append(": ");
-                message.append(prefs.getString(aKeyListOrder, "NA"));
+                message.append(Workspace.INSTANCE.getRegString(aKeyListOrder, "NA"));
                 message.append("\n");
             }
         }

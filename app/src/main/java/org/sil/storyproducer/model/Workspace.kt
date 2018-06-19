@@ -27,7 +27,7 @@ object Workspace{
             }
         }
     val Stories: MutableList<Story> = ArrayList()
-    var registration: JSONObject = JSONObject()
+    private var registration: JSONObject = JSONObject()
     val activeStory: Story? = null
     var isInitialized = false
     var prefs: SharedPreferences? = null
@@ -49,14 +49,36 @@ object Workspace{
             val regString: String? = getText(context,REGISTRATION_FILENAME)
             if(regString != null) {
                 try {
+                    registration = JSONObject(regString)
+                } catch (e: JSONException) {
                     registration = JSONObject()
-                } catch (e: JSONException) {}
+                }
             }
         }
     }
+
+    fun putRegString(name: String, value: String){registration.put(name,value)}
+    fun putRegBoolean(name: String, value: Boolean){registration.put(name, value)}
+
+    fun getRegString(name: String, default: String = "") : String {
+        var regString = default
+        try {
+            regString = registration.getString(name)
+        } catch (e: JSONException) { }
+        return regString
+    }
+
+
+    fun getRegBoolean(name: String, default: Boolean = false) : Boolean {
+        var regVal = default
+        try {
+            regVal = registration.getBoolean(name)
+        } catch (e: JSONException) { }
+        return regVal
+    }
+
     fun saveRegistration(context: Context){
-        val oStream = Workspace.getChildOutputStream(context,
-                REGISTRATION_FILENAME,"")
+        val oStream = Workspace.getChildOutputStream(context,REGISTRATION_FILENAME,"")
         if(oStream != null) {
             oStream.write(registration.toString(1).toByteArray(Charsets.UTF_8))
             oStream.close()
