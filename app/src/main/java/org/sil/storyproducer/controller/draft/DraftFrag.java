@@ -126,10 +126,10 @@ public class DraftFrag extends Fragment {
         setToolbar(rootViewToolbar);
 
         LWCAudioPlayer = new AudioPlayer();
-        File LWCFile = AudioFiles.getLWC(storyName, slideNumber);
+        File LWCFile = AudioFiles.INSTANCE.getNarration(storyName, slideNumber);
         if (LWCFile.exists()) {
             LWCAudioExists = true;
-            LWCAudioPlayer.setPath(LWCFile.getPath());
+            LWCAudioPlayer.setSource(LWCFile.getPath());
         } else {
             LWCAudioExists = false;
         }
@@ -306,11 +306,11 @@ public class DraftFrag extends Fragment {
     }
 
     private void setRecordFilePath() {
-        int nextDraftIndex = AudioFiles.getDraftTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
+        int nextDraftIndex = AudioFiles.INSTANCE.getDraftTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
+            recordFile = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex));
         }
         this.recordFile = recordFile;
     }
@@ -324,7 +324,7 @@ public class DraftFrag extends Fragment {
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
-                    String title = AudioFiles.getDraftTitle(recordFile);
+                    String title = AudioFiles.INSTANCE.getDraftTitle(recordFile);
                     StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());     //save the draft  title for the recording
                     setRecordFilePath();
                     recordingToolbar.setRecordFilePath(recordFile.getAbsolutePath());

@@ -277,7 +277,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
             }
             //fallback to LWC audio
             if(!audio.exists()) {
-                audio = AudioFiles.getLWC(mStory, iSlide);
+                audio = AudioFiles.INSTANCE.getNarration(mStory, iSlide);
             }
             //error
             if(!audio.exists()) {
@@ -287,7 +287,7 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
             File soundtrack = null;
             if(mIncludeBackgroundMusic) {
-                soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
+                soundtrack = AudioFiles.INSTANCE.getSoundtrack(mStory, iSlide);
                 if(soundtrack == null) {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack;

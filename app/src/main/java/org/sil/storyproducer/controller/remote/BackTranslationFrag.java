@@ -164,7 +164,7 @@ public class BackTranslationFrag extends Fragment {
         File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setPath(draftAudioFile.getPath());
+            draftPlayer.setSource(draftAudioFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -361,11 +361,11 @@ public class BackTranslationFrag extends Fragment {
     }
 
     private void setRecordFilePath() {
-        int nextDraftIndex = AudioFiles.getBackTranslationTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber,getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
+        int nextDraftIndex = AudioFiles.INSTANCE.getBackTranslationTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber,getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber, getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
+            recordFile = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber, getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         }
         backTranslationRecordingFile = recordFile;
     }
@@ -386,7 +386,7 @@ public class BackTranslationFrag extends Fragment {
                 @Override
                 public void onStartedRecordingOrPlayback(boolean isRecording) {
                     if(isRecording) {
-                        String title = AudioFiles.getBackTranslationTitle(backTranslationRecordingFile);
+                        String title = AudioFiles.INSTANCE.getBackTranslationTitle(backTranslationRecordingFile);
                         StorySharedPreferences.setBackTranslationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                         //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                         setPlayBackPath();

@@ -114,7 +114,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
         if (draftFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setPath(draftFile.getPath());
+            draftPlayer.setSource(draftFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -155,7 +155,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
     public void updateCommentList() {
         ListView listView = rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
-        comments = AudioFiles.getCommentTitles(StoryState.getStoryName(), slideNumber);
+        comments = AudioFiles.INSTANCE.getCommentTitles(StoryState.getStoryName(), slideNumber);
         RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
         adapter.setDeleteTitle(getResources().getString(R.string.delete_comment_title));
         adapter.setDeleteMessage(getResources().getString(R.string.delete_comment_message));
@@ -244,7 +244,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      */
     @Override
     public void onPlayClick(String commentTitle, final ImageButton buttonClickedNow) {
-        final File commentFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
+        final File commentFile = AudioFiles.INSTANCE.getComment(StoryState.getStoryName(), slideNumber, commentTitle);
 
         boolean wasPlaying = commentPlayer.isAudioPlaying();
 
@@ -257,7 +257,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         stopAllMedia();
         commentButtonClicked = buttonClickedNow;
         if (commentFile.exists() && !wasPlaying) {
-            commentPlayer.setPath(commentFile.getPath());
+            commentPlayer.setSource(commentFile.getPath());
             commentPlayer.playAudio();
             buttonClickedNow.setImageResource(R.drawable.ic_stop_red);
             commentPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
@@ -278,13 +278,13 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
 
     @Override
     public void onDeleteClick(String commentTitle) {
-        AudioFiles.deleteComment(StoryState.getStoryName(), slideNumber, commentTitle);
+        AudioFiles.INSTANCE.deleteComment(StoryState.getStoryName(), slideNumber, commentTitle);
         updateCommentList();
     }
 
     @Override
     public AudioFiles.RenameCode onRenameClick(String name, String newName) {
-        return AudioFiles.renameComment(StoryState.getStoryName(), slideNumber, name, newName);
+        return AudioFiles.INSTANCE.renameComment(StoryState.getStoryName(), slideNumber, name, newName);
     }
 
     @Override
@@ -303,11 +303,11 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
             public void onClick(View v) {
                 // Comment index for user starts at 1 so we increment 1 from the 0 based index
                 int nextCommentIndex = comments.length + 1;
-                File recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
+                File recordFile = AudioFiles.INSTANCE.getComment(StoryState.getStoryName(), slideNumber,
                         "Comment " + nextCommentIndex);
                 while (recordFile.exists()) {
                     nextCommentIndex++;
-                    recordFile = AudioFiles.getComment(StoryState.getStoryName(), slideNumber,
+                    recordFile = AudioFiles.INSTANCE.getComment(StoryState.getStoryName(), slideNumber,
                             "Comment " + nextCommentIndex);
                 }
 

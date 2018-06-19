@@ -108,7 +108,7 @@ public class DramatizationFrag extends Fragment {
         File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setPath(draftAudioFile.getPath());
+            draftPlayer.setSource(draftAudioFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -285,11 +285,11 @@ public class DramatizationFrag extends Fragment {
     }
 
     private void setRecordFilePath() {
-        int nextDraftIndex = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
-        File recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
+        int nextDraftIndex = AudioFiles.INSTANCE.getDramatizationTitles(StoryState.getStoryName(), slideNumber).length + 1;
+        File recordFile = AudioFiles.INSTANCE.getDramatization(StoryState.getStoryName(), slideNumber,getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
         while (recordFile.exists()) {
             nextDraftIndex++;
-            recordFile = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
+            recordFile = AudioFiles.INSTANCE.getDramatization(StoryState.getStoryName(), slideNumber, getString(R.string.dramatization_record_file_drama_name, nextDraftIndex));
         }
         dramatizationRecordingFile = recordFile;
     }
@@ -310,7 +310,7 @@ public class DramatizationFrag extends Fragment {
                 @Override
                 public void onStartedRecordingOrPlayback(boolean isRecording) {
                     if(isRecording) {
-                        String title = AudioFiles.getDramatizationTitle(dramatizationRecordingFile);
+                        String title = AudioFiles.INSTANCE.getDramatizationTitle(dramatizationRecordingFile);
                         StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                         //update to old recording or whatever was set by StorySharedPreferences.setDramatizationForSlideAndStory(title, slideNumber, StoryState.getStoryName());
                         setPlayBackPath();

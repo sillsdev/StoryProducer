@@ -1,13 +1,10 @@
 package org.sil.storyproducer.model
 
-import android.content.ContentProviderClient
-import android.content.Context
 import android.graphics.Rect
-import android.net.Uri
 import android.util.Log
 import com.squareup.moshi.JsonClass
-
 import org.sil.storyproducer.tools.file.FileSystem
+
 import org.sil.storyproducer.tools.file.ProjectXML
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.RectHelper
@@ -17,10 +14,17 @@ import java.util.*
 
 internal val PROJECT_DIR = "project"
 internal val PROJECT_FILE = "story.json"
+internal val AUDIO_EXT = ".md4"
+internal val DRAFT_PREFIX = "draft"
+internal val BACKTRANSLATE_PREFIX = "backtranslate"
+internal val LEARN_PRACTICE_FILE = "learnPractice$AUDIO_EXT"
+internal val WHOLE_STORY_BACKT_FILE = "wholeStoryBackT$AUDIO_EXT"
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
 
+    val learnPracticeFile = "$PROJECT_DIR/$LEARN_PRACTICE_FILE"
+    val wholeStoryBackTFile = "$PROJECT_DIR/$WHOLE_STORY_BACKT_FILE"
     companion object
 
 }

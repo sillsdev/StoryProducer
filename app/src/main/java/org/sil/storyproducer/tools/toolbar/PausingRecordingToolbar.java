@@ -214,12 +214,12 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         wavAudioRecorder.stopRecording();
         if (isAppendingOn) {
             try {
-                WavFileConcatenator.ConcatenateAudioFiles(new File(recordFilePath), AudioFiles.getDramatizationTemp(StoryState.getStoryName()));
+                WavFileConcatenator.ConcatenateAudioFiles(new File(recordFilePath), AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Did not concatenate audio files", e);
             }
         } else {
-            wavAudioRecorder.setNewPath(AudioFiles.getDramatizationTemp(StoryState.getStoryName()));
+            wavAudioRecorder.setNewPath(AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
         }
     }
 
@@ -296,7 +296,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                 public void onClick(View v) {
                     //Delete the temp file wav file
                     stopPlayBackAndRecording();
-                    File tempFile = AudioFiles.getDramatizationTemp(StoryState.getStoryName());
+                    File tempFile = AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName());
                     if (tempFile != null && tempFile.exists()) {
                         tempFile.delete();
                     }

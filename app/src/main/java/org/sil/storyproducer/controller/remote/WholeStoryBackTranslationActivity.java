@@ -84,7 +84,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         setPic(wStoryImageView);     //set the first image to show
 
         //set the recording toolbar stuffs
-        recordFilePath = AudioFiles.getWholeStory(StoryState.getStoryName()).getPath();
+        recordFilePath = AudioFiles.INSTANCE.getWholeStory(StoryState.getStoryName()).getPath();
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
         invalidateOptionsMenu();
@@ -116,7 +116,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         backgroundAudioJumps = new ArrayList<>();
         backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 0; k < CONTENT_SLIDE_COUNT; k++) {
-            String lwcPath = AudioFiles.getLWC(storyName, k).getPath();
+            String lwcPath = AudioFiles.INSTANCE.getNarration(storyName, k).getPath();
             audioStartValue += MediaHelper.getAudioDuration(lwcPath) / 1000;
             backgroundAudioJumps.add(k, audioStartValue);
         }
@@ -146,10 +146,10 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
-        File backgroundAudioFile = AudioFiles.getSoundtrack(StoryState.getStoryName());
+        File backgroundAudioFile = AudioFiles.INSTANCE.getSoundtrack(StoryState.getStoryName());
         if (backgroundAudioFile.exists()) {
             backgroundAudioExists = true;
-            backgroundPlayer.setPath(backgroundAudioFile.getPath());
+            backgroundPlayer.setSource(backgroundAudioFile.getPath());
         } else {
             backgroundAudioExists = false;
         }
@@ -213,7 +213,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         //set the next audio
         if (audioFile.exists()) {
             narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
-            narrationPlayer.setPath(audioFile.getPath());
+            narrationPlayer.setSource(audioFile.getPath());
             narrationPlayer.playAudio();
         }
 
@@ -230,7 +230,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
         }
         //if no draft audio exists
-        else if(!AudioFiles.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
+        else if(!AudioFiles.INSTANCE.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
             AlertDialog dialog = new AlertDialog.Builder(this)
                     .setTitle(this.getString(R.string.wsbt_alert_title))
                     .setMessage(this.getString(R.string.wsbt_alert_text))
@@ -337,7 +337,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         isVolumeOn = false;
 
        //markLogStart();
-        if(AudioFiles.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
+        if(AudioFiles.INSTANCE.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
             playButton.setImageResource(R.drawable.ic_pause_gray);
             playVideo();
         }

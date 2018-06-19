@@ -1,3 +1,4 @@
+@file:JvmName("FileIO")
 package org.sil.storyproducer.tools.file
 
 import android.content.Context
@@ -32,6 +33,21 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
     }
     if (iTitle == null) return null
     return getChildOutputStream(context, iTitle + "/" + relPath, mimeType)
+}
+
+fun storyRelPathExists(context: Context, relPath: String, storyTitle: String? = "") : Boolean{
+    if(getChildInputStream(context, relPath, storyTitle) == null)
+        return false
+    return true
+}
+
+fun getStoryUri(relPath: String, storyTitle: String = "") : Uri {
+    var iTitle: String? = storyTitle
+    if (iTitle== ""){
+        iTitle = Workspace.activeStory?.title
+    }
+    return Uri.parse(Workspace.workspace.uri.toString() +
+            Uri.encode("/$iTitle/$relPath"))
 }
 
 fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : String? {

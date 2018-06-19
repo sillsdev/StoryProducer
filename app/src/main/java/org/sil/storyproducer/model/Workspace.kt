@@ -34,10 +34,16 @@ object Workspace{
     set(value){
         field = value
         activePhase = Phase(PhaseType.LEARN)
-        activeSlide = 0
+        activeSlideNum = 0
     }
     var activePhase: Phase = Phase(PhaseType.LEARN)
-    var activeSlide: Int = 0
+    var activeSlideNum: Int = 0
+    val activeSlide: Slide?
+    get(){
+        val temp = activeStory
+        if(temp != null) return temp.slides[activeSlideNum]
+        return null
+    }
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 

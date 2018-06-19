@@ -2,6 +2,7 @@ package org.sil.storyproducer.controller.learn;
 
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
@@ -20,9 +21,11 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
+import org.sil.storyproducer.model.Story;
 import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
+import org.sil.storyproducer.tools.file.FileIO;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -47,6 +50,7 @@ public class LearnActivity extends PhaseBaseActivity {
 
     private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
+    private Story activeStory;
     private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
@@ -67,8 +71,8 @@ public class LearnActivity extends PhaseBaseActivity {
         rootView = findViewById(R.id.phase_frame);
 
         //get the story name
-        storyName = Workspace.INSTANCE.getActiveStory().getTitle();
-        CONTENT_SLIDE_COUNT = Workspace.INSTANCE.getActiveStory().getSlides().size();
+        activeStory = Workspace.INSTANCE.getActiveStory();
+        CONTENT_SLIDE_COUNT = activeStory.getSlides().size();
 
         //get the ui
         learnImageView = findViewById(R.id.learnImageView);
@@ -82,7 +86,6 @@ public class LearnActivity extends PhaseBaseActivity {
         setPic(learnImageView);     //set the first image to show
 
         //set the recording toolbar stuffs
-        recordFilePath = AudioFiles.getLearnPractice(StoryState.getStoryName()).getPath();
         View rootViewToolbar = getLayoutInflater().inflate(R.layout.toolbar_for_recording, rootView, false);
         setToolbar(rootViewToolbar);
         invalidateOptionsMenu();
@@ -102,6 +105,7 @@ public class LearnActivity extends PhaseBaseActivity {
      * and the recording button can be shown from the beginning
      */
     private void setIfLearnHasBeenWatched() {
+        storyRelPathExists
         File recordFile = new File(recordFilePath);
         if(recordFile.exists()) {
             setVolumeSwitchAndFloatingButtonVisible();
@@ -128,7 +132,7 @@ public class LearnActivity extends PhaseBaseActivity {
         backgroundAudioJumps = new ArrayList<>();
         backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 0; k < CONTENT_SLIDE_COUNT; k++) {
-            String lwcPath = AudioFiles.getLWC(storyName, k).getPath();
+            String lwcPath = AudioFiles.INSTANCE.getNarration(storyName, k).getPath();
             audioStartValue += MediaHelper.getAudioDuration(lwcPath) / 1000;
             backgroundAudioJumps.add(k, audioStartValue);
         }
@@ -159,13 +163,9 @@ public class LearnActivity extends PhaseBaseActivity {
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
-        File backgroundAudioFile = AudioFiles.getSoundtrack(StoryState.getStoryName());
-        if (backgroundAudioFile.exists()) {
-            backgroundAudioExists = true;
-            backgroundPlayer.setPath(backgroundAudioFile.getPath());
-        } else {
-            backgroundAudioExists = false;
-        }
+        backgroundAudioExists = backgroundPlayer.setStorySource(this,
+                Workspace.INSTANCE.getActiveSlide().getMusicFile(),
+                activeStory.getTitle());
         setIfLearnHasBeenWatched();
     }
 
@@ -223,11 +223,11 @@ public class LearnActivity extends PhaseBaseActivity {
      */
     void playVideo() {
         setPic(learnImageView);                                                             //set the next image
-        File audioFile = AudioFiles.getLWC(storyName, slideNumber);
+        File audioFile = AudioFiles.INSTANCE.getNarration(storyName, slideNumber);
         //set the next audio
         if (audioFile.exists()) {
             narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
-            narrationPlayer.setPath(audioFile.getPath());
+            narrationPlayer.setSource(audioFile.getPath());
             narrationPlayer.playAudio();
         }
 

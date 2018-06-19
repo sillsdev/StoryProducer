@@ -125,7 +125,7 @@ public class ConsultantCheckFrag extends Fragment {
         final File draftFile = AudioFiles.getDraft(storyName, slidePosition);
         if (draftFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setPath(draftFile.getPath());
+            draftPlayer.setSource(draftFile.getPath());
         } else {
             draftAudioExists = false;
         }

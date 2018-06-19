@@ -74,7 +74,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
     private void createRecordingList() {
         ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
-        dramaTitles = AudioFiles.getDramatizationTitles(StoryState.getStoryName(), slidePosition);
+        dramaTitles = AudioFiles.INSTANCE.getDramatizationTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, dramaTitles, slidePosition, this);
         adapter.setDeleteTitle(context.getResources().getString(R.string.delete_dramatize_title));
         adapter.setDeleteMessage(context.getResources().getString(R.string.delete_dramatize_message));
@@ -112,9 +112,9 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
                     currentPlayingButton.setImageResource(R.drawable.ic_green_play);
                 }
             });
-            final File dramaFile = AudioFiles.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
+            final File dramaFile = AudioFiles.INSTANCE.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (dramaFile.exists()) {
-                audioPlayer.setPath(dramaFile.getPath());
+                audioPlayer.setSource(dramaFile.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.dramatization_playing_dramatize), Toast.LENGTH_SHORT).show();
             } else {
@@ -126,7 +126,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
 
     @Override
     public void onDeleteClick(String recordingTitle) {
-        AudioFiles.deleteDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
+        AudioFiles.INSTANCE.deleteDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if (StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
             if (dramaTitles.length > 0) {
@@ -144,7 +144,7 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
     public AudioFiles.RenameCode onRenameClick(String name, String newName) {
         lastOldName = name;
         lastNewName = newName;
-        return AudioFiles.renameDramatization(StoryState.getStoryName(), slidePosition, name, newName);
+        return AudioFiles.INSTANCE.renameDramatization(StoryState.getStoryName(), slidePosition, name, newName);
     }
 
     @Override

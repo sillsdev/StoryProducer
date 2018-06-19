@@ -79,7 +79,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
     private void createRecordingList() {
         ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
-        backT_Titles = AudioFiles.getBackTranslationTitles(StoryState.getStoryName(), slidePosition);
+        backT_Titles = AudioFiles.INSTANCE.getBackTranslationTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, backT_Titles, slidePosition, this);
         adapter.setDeleteTitle(context.getResources().getString(R.string.delete_backT_message));
         adapter.setDeleteMessage(context.getResources().getString(R.string.delete_backT_message));
@@ -115,9 +115,9 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
                     currentPlayingButton.setImageResource(R.drawable.ic_green_play);
                 }
             });
-            final File backT_file = AudioFiles.getBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
+            final File backT_file = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (backT_file.exists()) {
-                audioPlayer.setPath(backT_file.getPath());
+                audioPlayer.setSource(backT_file.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.backTranslation_playing_backT), Toast.LENGTH_SHORT).show();
             } else {
@@ -129,7 +129,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
 
     @Override
     public void onDeleteClick(String recordingTitle) {
-        AudioFiles.deleteBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
+        AudioFiles.INSTANCE.deleteBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if (StorySharedPreferences.getBackTranslationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
             if (backT_Titles.length > 0) {
@@ -148,7 +148,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
     public AudioFiles.RenameCode onRenameClick(String name, String newName) {
         lastOldName = name;
         lastNewName = newName;
-        return AudioFiles.renameBackTranslation(StoryState.getStoryName(), slidePosition, name, newName);
+        return AudioFiles.INSTANCE.renameBackTranslation(StoryState.getStoryName(), slidePosition, name, newName);
     }
 
     @Override

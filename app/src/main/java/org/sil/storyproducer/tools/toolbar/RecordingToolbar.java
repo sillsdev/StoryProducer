@@ -471,7 +471,7 @@ public class RecordingToolbar extends AnimationToolbar {
                     } else {
                         stopPlayBackAndRecording();
                         if (new File(playbackRecordFilePath).exists()) {
-                            audioPlayer.setPath(playbackRecordFilePath);
+                            audioPlayer.setSource(playbackRecordFilePath);
                             audioPlayer.playAudio();
                             Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show();
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
@@ -541,7 +541,7 @@ public class RecordingToolbar extends AnimationToolbar {
             //Whole story bt audio will be uploaded as one slide past the final slide for the story
             else{
                 slideNum = FileSystem.getContentSlideAmount(StoryState.getStoryName());
-                slide = AudioFiles.getWholeStory(StoryState.getStoryName());
+                slide = AudioFiles.INSTANCE.getWholeStory(StoryState.getStoryName());
             }
 
             requestRemoteReview(appContext, totalSlides);

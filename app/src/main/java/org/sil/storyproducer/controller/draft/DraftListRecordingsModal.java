@@ -74,7 +74,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
     private void createRecordingList() {
         ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
-        draftTitles = AudioFiles.getDraftTitles(StoryState.getStoryName(), slidePosition);
+        draftTitles = AudioFiles.INSTANCE.getDraftTitles(StoryState.getStoryName(), slidePosition);
         RecordingsListAdapter adapter = new RecordingsListAdapter(context, draftTitles, slidePosition, this);
         adapter.setDeleteTitle(context.getResources().getString(R.string.delete_draft_title));
         adapter.setDeleteMessage(context.getResources().getString(R.string.delete_draft_message));
@@ -107,9 +107,9 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
                     currentPlayingButton.setImageResource(R.drawable.ic_green_play);
                 }
             });
-            final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
+            final File draftFile = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (draftFile.exists()) {
-                audioPlayer.setPath(draftFile.getPath());
+                audioPlayer.setSource(draftFile.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.draft_playing_draft), Toast.LENGTH_SHORT).show();
             } else {
@@ -121,7 +121,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
 
     @Override
     public void onDeleteClick(String recordingTitle) {
-        AudioFiles.deleteDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
+        AudioFiles.INSTANCE.deleteDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if (StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
             if (draftTitles.length > 0) {
@@ -139,7 +139,7 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
     public AudioFiles.RenameCode onRenameClick(String name, String newName) {
         lastOldName = name;
         lastNewName = newName;
-        return AudioFiles.renameDraft(StoryState.getStoryName(), slidePosition, name, newName);
+        return AudioFiles.INSTANCE.renameDraft(StoryState.getStoryName(), slidePosition, name, newName);
     }
 
     @Override
