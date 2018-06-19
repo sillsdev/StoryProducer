@@ -22,6 +22,7 @@ public class MessageAdapter extends BaseAdapter {
 
     List<Message> messages = new ArrayList<>();
     Context con;
+    int lastID = -1;
 
     public MessageAdapter(Context context){
         this.con = context;
@@ -30,6 +31,22 @@ public class MessageAdapter extends BaseAdapter {
     public void add(Message m){
         this.messages.add(m);
         notifyDataSetChanged();
+    }
+
+    public void setMessageHistory(List<Message> m){
+        messages = m;
+    }
+
+    public List<Message> getMessageHistory(){
+        return this.messages;
+    }
+
+    public void setLastID(int n){
+        lastID = n;
+    }
+
+    public int getLastID(){
+        return lastID;
     }
 
     @Override

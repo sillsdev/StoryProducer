@@ -46,22 +46,29 @@ public class VolleySingleton {
 
         public <T> void addToRequestQueue(Request<T> req) {
 
-            getRequestQueue().add(req);
+
             if(isStopped){
                 //notify currently no connection
                 if(req.getUrl() == mCtx.getString(R.string.url_upload_audio)){
                     Toast.makeText(mCtx, R.string.queue_status_upload, Toast.LENGTH_SHORT).show();
                 }else if(req.getUrl() == mCtx.getString(R.string.url_register_phone)){
                     Toast.makeText(mCtx, R.string.queue_status_register, Toast.LENGTH_SHORT).show();
+                    //TODO: allow for the queueing of sending & receiving msgs right now it does
+                    //TODO: allow for this as it causes major issues
+                    //TODO: may eventually just want to use WebSockets for send/get msgs instead
                 }else if(req.getUrl() == mCtx.getString(R.string.url_send_message)){
-                    Toast.makeText(mCtx, R.string.queue_status_message_send, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mCtx, R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT).show();
+                    return;
                 }else if(req.getUrl() == mCtx.getString(R.string.url_get_messages)){
                     Toast.makeText(mCtx, R.string.queue_status_message_get, Toast.LENGTH_SHORT).show();
+                    return;
                 }else if(req.getUrl() == mCtx.getString(R.string.url_get_slide_status)){
                     Toast.makeText(mCtx, R.string.queue_status_approved, Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
             }
+            getRequestQueue().add(req);
 
         }
         public void startQueue(){
