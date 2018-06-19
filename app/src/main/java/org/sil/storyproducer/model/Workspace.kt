@@ -142,7 +142,7 @@ object Workspace{
     }
 
     fun getText(context: Context, relPath: String) : String? {
-        val iStream = getStoryChildInputStream(context, relPath)
+        val iStream = getChildInputStream(context, relPath)
         if (iStream != null)
             return iStream.reader().use {
                 it.readText() }
