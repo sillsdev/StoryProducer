@@ -20,11 +20,10 @@ import android.widget.TextView;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
 import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.media.MediaHelper;
@@ -68,8 +67,8 @@ public class LearnActivity extends PhaseBaseActivity {
         rootView = findViewById(R.id.phase_frame);
 
         //get the story name
-        storyName = StoryState.getStoryName();
-        CONTENT_SLIDE_COUNT = FileSystem.getContentSlideAmount(storyName);
+        storyName = Workspace.INSTANCE.getActiveStory().getTitle();
+        CONTENT_SLIDE_COUNT = Workspace.INSTANCE.getActiveStory().getSlides().size();
 
         //get the ui
         learnImageView = findViewById(R.id.learnImageView);

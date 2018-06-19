@@ -1,19 +1,13 @@
 package org.sil.storyproducer.controller;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,12 +18,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.Phase;
-import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.Story;
 import org.sil.storyproducer.tools.Network.ConnectivityStatus;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.StorySharedPreferences;
-import org.sil.storyproducer.tools.file.FileSystem;
 
 import org.sil.storyproducer.model.Workspace;
 
@@ -61,8 +53,6 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FileSystem.init(getApplicationContext());
-        StoryState.init(getApplicationContext());
         StorySharedPreferences.init(getApplicationContext());
 
         setContentView(R.layout.activity_main);
@@ -86,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements Serializable {
         int id = item.getItemId();
         switch (id) {
             case R.id.menu_lang:
-                launchChangeLWCDialog();
+                //TODO remove this option.
                 break;
             case R.id.menu_registration:
                 Intent intent = new Intent(MainActivity.this, RegistrationActivity.class);
@@ -120,40 +110,10 @@ public class MainActivity extends AppCompatActivity implements Serializable {
     /**
      * move to the chosen story
      */
-    public void switchToStory(String storyName) {
-        StoryState.setStoryName(storyName);
-        Phase currPhase = StoryState.getSavedPhase();
-        StoryState.setCurrentPhase(currPhase);
-        StoryState.setCurrentStorySlide(0);
-        Intent intent = new Intent(this.getApplicationContext(), currPhase.getTheClass());
+    public void switchToStory(Story story) {
+        Workspace.INSTANCE.setActiveStory(story);
+        Intent intent = new Intent(this.getApplicationContext(), Workspace.INSTANCE.getActivePhase().getTheClass());
         startActivity(intent);
-    }
-
-    /**
-     * Launch a dialog to change the LWC used for templates
-     */
-    private void launchChangeLWCDialog() {
-        final Spinner languageSpinner = new Spinner(this);
-        String[] languages = FileSystem.getLanguages();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.simple_spinner_dropdown_item, languages);
-        languageSpinner.setAdapter(adapter);
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.change_language_title))
-                .setView(languageSpinner)
-                .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.save), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        String selectedLanguage = languageSpinner.getSelectedItem().toString();
-                        boolean languageChanged = FileSystem.changeLanguage(selectedLanguage, getApplicationContext());
-                        if (!languageChanged) {
-                            Toast.makeText(MainActivity.this, "Error: could not change language", Toast.LENGTH_SHORT).show();
-                        } else {
-                            MainActivity.this.reloadStories();
-                        }
-                    }
-                }).create();
-        dialog.show();
     }
 }
 

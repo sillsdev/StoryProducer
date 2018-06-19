@@ -33,7 +33,7 @@ class StoryListFrag : Fragment() {
         listView!!.adapter = adapter
 
         //TODO remove "switchtostory" call.  That is still from the old template way.
-        listView!!.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position].title) }
+        listView!!.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
 
         return lfview
     }

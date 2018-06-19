@@ -33,7 +33,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment;
         Bundle passedArgs = new Bundle();
-        switch (StoryState.getCurrentPhase().getType()) {
+        switch (StoryState.getCurrentPhase().getPhaseType()) {
             case DRAFT:
                 fragment = new DraftFrag();
                 passedArgs.putInt(DraftFrag.SLIDE_NUM, i);

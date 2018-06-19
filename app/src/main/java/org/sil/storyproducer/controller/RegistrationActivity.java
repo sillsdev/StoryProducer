@@ -32,6 +32,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.Registration;
 import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 
@@ -149,7 +150,7 @@ public class RegistrationActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE){
             Workspace.INSTANCE.setWorkspace(DocumentFile.fromTreeUri(this, data.getData()));
             Workspace.INSTANCE.updateStories(this);
-            Workspace.INSTANCE.initRegistration(this);
+            Workspace.INSTANCE.getRegistration().load(this);
             setupInputFields();
         }
     }
@@ -317,7 +318,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private String getStoredValueForView(View view) {
         String viewName = getResources().getResourceName(view.getId());
         viewName = viewName.replace(ID_PREFIX, "");
-        return Workspace.INSTANCE.getRegString(viewName, "");
+        return Workspace.INSTANCE.getRegistration().getString(viewName, "");
     }
 
     /**
@@ -382,7 +383,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private void postRegistrationInfo(){
         final Context myContext = this.getApplicationContext();
 
-        Workspace wrks = Workspace.INSTANCE;
+        Registration reg = Workspace.INSTANCE.getRegistration();
 
         js = new HashMap<>();
          String PhoneId = Secure.getString(myContext.getContentResolver(),
@@ -390,17 +391,17 @@ public class RegistrationActivity extends AppCompatActivity {
 
             js.put("Key", getString(R.string.api_token));
             js.put("PhoneId", PhoneId);
-            js.put("TranslatorEmail", wrks.getRegString("translator_email", " "));
-            js.put("TranslatorPhone", wrks.getRegString("translator_phone", " "));
-            js.put("TranslatorLanguage", wrks.getRegString("translator_languages", " "));
-            js.put("ProjectEthnoCode",  wrks.getRegString("ethnologue", " "));
-            js.put("ProjectLanguage",  wrks.getRegString("language", " "));
-            js.put("ProjectCountry",  wrks.getRegString("country", " "));
-            js.put("ProjectMajorityLanguage",  wrks.getRegString("lwc", " "));
-            js.put("ConsultantEmail",  wrks.getRegString("consultant_email", " "));
-            js.put("ConsultantPhone",  wrks.getRegString("consultant_phone", " "));
-            js.put("TrainerEmail",  wrks.getRegString("trainer_email", " "));
-            js.put("TrainerPhone",  wrks.getRegString("trainer_phone", " "));
+            js.put("TranslatorEmail", reg.getString("translator_email", " "));
+            js.put("TranslatorPhone", reg.getString("translator_phone", " "));
+            js.put("TranslatorLanguage", reg.getString("translator_languages", " "));
+            js.put("ProjectEthnoCode",  reg.getString("ethnologue", " "));
+            js.put("ProjectLanguage",  reg.getString("language", " "));
+            js.put("ProjectCountry",  reg.getString("country", " "));
+            js.put("ProjectMajorityLanguage",  reg.getString("lwc", " "));
+            js.put("ConsultantEmail",  reg.getString("consultant_email", " "));
+            js.put("ConsultantPhone",  reg.getString("consultant_phone", " "));
+            js.put("TrainerEmail",  reg.getString("trainer_email", " "));
+            js.put("TrainerPhone",  reg.getString("trainer_phone", " "));
 
         Log.i("LOG_VOLLEY", js.toString());
         StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_register_phone), new Response.Listener<String>() {
@@ -438,7 +439,7 @@ public class RegistrationActivity extends AppCompatActivity {
      * preference file is located in getString(R.string.Registration_File_Name).
      */
     private void storeRegistrationInfo() {
-        Workspace wrks = Workspace.INSTANCE;
+        Registration reg = Workspace.INSTANCE.getRegistration();
         Calendar calendar;
         String date, androidVersion, manufacturer, model;
         String day, month, year, hour, min;
@@ -450,7 +451,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String textFieldName = getResources().getResourceEntryName(textField.getId());
                 textFieldName = textFieldName.replace("input_", "");
                 String textFieldText = textField.getText().toString();
-                wrks.putRegString(textFieldName, textFieldText);
+                reg.putString(textFieldName, textFieldText);
 
                 if (textFieldName.equals("country")) {
                     country = textFieldText;
@@ -462,7 +463,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 String spinnerName = getResources().getResourceEntryName(spinner.getId());
                 spinnerName = spinnerName.replace("input_", "");
                 String spinnerText = spinner.getSelectedItem().toString();
-                wrks.putRegString(spinnerName, spinnerText);
+                reg.putString(spinnerName, spinnerText);
                 //if(spinnerText.equals("Remote")){
                     //isRemoteConsultant = true;
                 //}
@@ -480,17 +481,17 @@ public class RegistrationActivity extends AppCompatActivity {
             min = "0" + min;
         }
         date = month + "/" + day + "/" + year + " " + hour + ":" + min;
-        wrks.putRegString("date", date);
+        reg.putString("date", date);
 
         // Retrieve phone information
         manufacturer = Build.MANUFACTURER;
         model = Build.MODEL;
         androidVersion = Build.VERSION.RELEASE;
-        wrks.putRegString("manufacturer", manufacturer);
-        wrks.putRegString("model", model);
-        wrks.putRegString("android_version", androidVersion);
+        reg.putString("manufacturer", manufacturer);
+        reg.putString("model", model);
+        reg.putString("android_version", androidVersion);
 
-        wrks.saveRegistration(this);
+        reg.save(this);
     }
 
     /**
@@ -646,13 +647,13 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private void sendEmail() {
 
-        Workspace wrks = Workspace.INSTANCE;
+        Registration reg = Workspace.INSTANCE.getRegistration();
 
         String message = formatRegistrationEmail();
 
-        String[] TO =  { wrks.getRegString("database_email_1",""), wrks.getRegString("database_email_2",""),
-                wrks.getRegString("database_email_3",""), wrks.getRegString("translator_email",""),
-                wrks.getRegString("consultant_email",""), wrks.getRegString("trainer_email","") };
+        String[] TO =  { reg.getString("database_email_1",""), reg.getString("database_email_2",""),
+                reg.getString("database_email_3",""), reg.getString("translator_email",""),
+                reg.getString("consultant_email",""), reg.getString("trainer_email","") };
 
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         emailIntent.setData(Uri.parse("mailto:"));
@@ -665,8 +666,8 @@ public class RegistrationActivity extends AppCompatActivity {
         try {
             this.startActivity(Intent.createChooser(emailIntent, "Send mail"));
             this.finish();
-            wrks.putRegBoolean(EMAIL_SENT, true);
-            wrks.saveRegistration(this);
+            reg.putBoolean(EMAIL_SENT, true);
+            reg.save(this);
             Log.i("Finished sending email", "");
         } catch (android.content.ActivityNotFoundException ex) {
             Toast.makeText(this,
@@ -704,7 +705,7 @@ public class RegistrationActivity extends AppCompatActivity {
                 formattedKey = formattedKey.toUpperCase();
                 message.append(formattedKey);
                 message.append(": ");
-                message.append(Workspace.INSTANCE.getRegString(aKeyListOrder, "NA"));
+                message.append(Workspace.INSTANCE.getRegistration().getString(aKeyListOrder, "NA"));
                 message.append("\n");
             }
         }

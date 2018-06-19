@@ -24,7 +24,6 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -287,7 +286,7 @@ public class RecordingToolbar extends AnimationToolbar {
 
     protected void startRecording() {
         //TODO: make this logging more robust and encapsulated
-        if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT){
+        if(StoryState.getCurrentPhase().getPhaseType() == Phase.PhaseType.DRAFT){
             LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry());
         }
             startAudioRecorder();
@@ -428,8 +427,8 @@ public class RecordingToolbar extends AnimationToolbar {
                 }
                 else {
                     //learn phase overwrite dialog
-                    if(StoryState.getCurrentPhase().getType() == Phase.Type.LEARN
-                            || StoryState.getCurrentPhase().getType() == Phase.Type.WHOLE_STORY){
+                    if(StoryState.getCurrentPhase().getPhaseType() == Phase.PhaseType.LEARN
+                            || StoryState.getCurrentPhase().getPhaseType() == Phase.PhaseType.WHOLE_STORY){
                         boolean recordingExists = new File(recordFilePath).exists();
                         if(recordingExists) {
                             AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -478,7 +477,7 @@ public class RecordingToolbar extends AnimationToolbar {
                             playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
                             recordingListener.onStartedRecordingOrPlayback(false);
                             //TODO: make this logging more robust and encapsulated
-                            if(StoryState.getCurrentPhase().getType() == Phase.Type.DRAFT) {
+                            if(StoryState.getCurrentPhase().getPhaseType() == Phase.PhaseType.DRAFT) {
                                 LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry());
                             }
                         } else {
@@ -535,7 +534,7 @@ public class RecordingToolbar extends AnimationToolbar {
             int slideNum;
             File slide;
             int totalSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
-            if(phase.getType() == Phase.Type.BACKT) {
+            if(phase.getPhaseType() == Phase.PhaseType.BACKT) {
                 slideNum = StoryState.getCurrentStorySlide();
                 slide = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNum);
             }
