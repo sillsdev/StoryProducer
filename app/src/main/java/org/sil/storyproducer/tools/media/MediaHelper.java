@@ -1,8 +1,10 @@
 package org.sil.storyproducer.tools.media;
 
+import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -27,12 +29,13 @@ final public class MediaHelper {
 
     /**
      * Get the duration of an audio file in microseconds.
-     * @param path
+     * @param context
+     * @param uri
      * @return microsecond duration of the audio file
      */
-    public static long getAudioDuration(String path) {
+    public static long getAudioDuration(Context context, Uri uri) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(path);
+        mmr.setDataSource(context, uri);
         String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         return Integer.parseInt(durationStr) * 1000;
     }

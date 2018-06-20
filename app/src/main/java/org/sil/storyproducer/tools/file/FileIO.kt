@@ -11,6 +11,7 @@ import java.io.File
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.*
+import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -27,11 +28,9 @@ fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story?
 }
 
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = "") : OutputStream? {
-    var iTitle: String? = storyTitle
-    if (iTitle== ""){
-        iTitle = Workspace.activeStory?.title
-    }
-    if (iTitle == null) return null
+    var iTitle = storyTitle
+    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
+
     return getChildOutputStream(context, iTitle + "/" + relPath, mimeType)
 }
 
@@ -50,6 +49,14 @@ fun getStoryUri(relPath: String, storyTitle: String = "") : Uri {
             Uri.encode("/$iTitle/$relPath"))
 }
 
+fun getStoryFileDescriptor(context: Context, relPath: String, storyTitle: String = "") : FileDescriptor? {
+    var iTitle = storyTitle
+    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
+
+    val pfd = getChildOuputPFD(context, iTitle + "/" + relPath) ?: return null
+    return pfd.fileDescriptor
+}
+
 fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : String? {
     val iStream = getStoryChildInputStream(context, relPath, storyTitle)
     if (iStream != null)
@@ -59,11 +66,9 @@ fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : S
 }
 
 fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = "") : InputStream? {
-    var iTitle: String? = storyTitle
-    if (iTitle== ""){
-        iTitle = Workspace.activeStory?.title
-    }
-    if (iTitle == null) return null
+    var iTitle = storyTitle
+    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
+
     return getChildInputStream(context, iTitle + "/" + relPath)
 }
 
@@ -76,6 +81,11 @@ fun getText(context: Context, relPath: String) : String? {
 }
 
 fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
+    val pfd = getChildOuputPFD(context, relPath, mimeType)
+    return ParcelFileDescriptor.AutoCloseOutputStream(pfd)
+}
+
+fun getChildOuputPFD(context: Context, relPath: String, mimeType: String = "") : ParcelFileDescriptor? {
     if (!Workspace.workspace.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
@@ -107,9 +117,7 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
         }
         false -> df = df_new
     }
-    val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(df.uri,"w")
-    if (pfd == null) return null
-    return ParcelFileDescriptor.AutoCloseOutputStream(pfd)
+    return context.contentResolver.openFileDescriptor(df.uri,"w")
 }
 
 fun getChildInputStream(context: Context, relPath: String, storyTitle: String? = "") : InputStream? {

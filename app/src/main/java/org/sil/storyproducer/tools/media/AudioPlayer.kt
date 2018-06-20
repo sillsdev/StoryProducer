@@ -11,7 +11,7 @@ import java.io.IOException
 class AudioPlayer {
 
     private val mPlayer: MediaPlayer
-    private var isPathSet: Boolean = false
+    private var fileExists: Boolean = false
     private var isPrepared: Boolean = false
 
     /**
@@ -48,7 +48,7 @@ class AudioPlayer {
      */
     init {
         mPlayer = MediaPlayer()
-        isPathSet = false
+        fileExists = false
         isPrepared = false
     }
 
@@ -58,12 +58,12 @@ class AudioPlayer {
      */
     fun setSource(context: Context, uri: Uri) {
         try {
-            if (isPathSet) {
+            if (fileExists) {
                 mPlayer.reset()
                 isPrepared = false
             }
             mPlayer.setDataSource(context, uri)
-            isPathSet = true
+            fileExists = true
         } catch (e: IOException) {
             //TODO maybe do something with this exception
             e.printStackTrace()
@@ -92,6 +92,7 @@ class AudioPlayer {
      */
 
     fun playAudio() {
+        if(!fileExists) return
         try {
             if (!isPrepared) {
                 mPlayer.prepare()
@@ -200,4 +201,6 @@ class AudioPlayer {
 
         private val TAG = "AudioPlayer"
     }
+
+    fun fileExists(): Boolean {return fileExists}
 }
