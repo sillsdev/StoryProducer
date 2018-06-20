@@ -491,6 +491,12 @@ public class RegistrationActivity extends AppCompatActivity {
         reg.putString("model", model);
         reg.putString("android_version", androidVersion);
 
+        //Store whether remote or not
+        Boolean isRemote = false;
+        if(reg.getString("consultant_location_type","").equals("Remote"))
+            isRemote = true;
+        reg.putBoolean("isRemote",isRemote);
+
         reg.save(this);
     }
 

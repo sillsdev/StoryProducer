@@ -85,7 +85,7 @@ public class DramatizationFrag extends Fragment {
             closeKeyboardOnTouch(rootView);
             rootView.findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
-            PhaseBaseActivity.disableViewAndChildren(rootView);
+            PhaseBaseActivity.Companion.disableViewAndChildren(rootView);
         }
 
         return rootView;

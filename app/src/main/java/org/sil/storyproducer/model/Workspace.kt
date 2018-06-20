@@ -27,6 +27,7 @@ object Workspace{
     val Stories: MutableList<Story> = ArrayList()
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
+    private var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
@@ -65,6 +66,7 @@ object Workspace{
             "remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
+        activePhaseIndex = 0
     }
 
     fun updateStories(context: Context) {
@@ -84,6 +86,32 @@ object Workspace{
             }
         }
     }
+
+    fun goToNextPhase() : Boolean {
+        if(activePhaseIndex == -1) return false //phases not initizialized
+        if(activePhaseIndex >= phases.size - 1) {
+            activePhaseIndex = phases.size - 1
+            return false
+        }
+        activePhaseIndex++
+        activePhase = phases[activePhaseIndex]
+        //there was a successful phase change!
+        return true
+    }
+
+    fun goToPreviousPhase() : Boolean {
+        if(activePhaseIndex == -1) return false //phases not initizialized
+        if(activePhaseIndex <= 0) {
+            activePhaseIndex = 0
+            return false
+        }
+        activePhaseIndex--
+        activePhase = phases[activePhaseIndex]
+        //there was a successful phase change!
+        return true
+    }
+
+    fun getPhaseIndex() : Int {return activePhaseIndex}
 }
 
 

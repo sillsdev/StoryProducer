@@ -110,7 +110,7 @@ public class CreateActivity extends PhaseBaseActivity {
             findViewById(R.id.lock_overlay).setVisibility(View.INVISIBLE);
         } else {
             View mainLayout = findViewById(R.id.main_linear_layout);
-            PhaseBaseActivity.disableViewAndChildren(mainLayout);
+            PhaseBaseActivity.Companion.disableViewAndChildren(mainLayout);
         }
         loadPreferences();
     }

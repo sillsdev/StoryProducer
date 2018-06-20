@@ -50,8 +50,6 @@ public class LearnActivity extends PhaseBaseActivity {
 
     private int slideNumber = 0;
     private int CONTENT_SLIDE_COUNT = 0;
-    private Story activeStory;
-    private String storyName;
     private boolean isVolumeOn = true;
     private boolean isWatchedOnce = false;
     private List<Integer> backgroundAudioJumps;
@@ -71,8 +69,7 @@ public class LearnActivity extends PhaseBaseActivity {
         rootView = findViewById(R.id.phase_frame);
 
         //get the story name
-        activeStory = Workspace.INSTANCE.getActiveStory();
-        CONTENT_SLIDE_COUNT = activeStory.getSlides().size();
+        CONTENT_SLIDE_COUNT = getStory().getSlides().size();
 
         //get the ui
         learnImageView = findViewById(R.id.learnImageView);
@@ -98,7 +95,6 @@ public class LearnActivity extends PhaseBaseActivity {
         item.setIcon(R.drawable.ic_learn);
         return true;
     }
-
 
     /**
      * sets that the learn phase has already been gone through once

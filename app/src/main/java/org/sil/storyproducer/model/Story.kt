@@ -29,6 +29,8 @@ class Story(var title: String, val slides: List<Slide>){
 
 }
 
+fun emptyStory() : Story {return Story("",ArrayList())}
+
 /**
  * Get the slide from the story template at the specified index.
  * @param story
