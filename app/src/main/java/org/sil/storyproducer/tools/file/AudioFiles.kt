@@ -1,19 +1,52 @@
 package org.sil.storyproducer.tools.file
 
-import android.content.Context
 import org.sil.storyproducer.model.*
-import org.sil.storyproducer.model.TemplateSlide
 import org.sil.storyproducer.tools.StorySharedPreferences
 
 
 import java.io.File
-import java.io.InputStream
 import java.nio.file.FileSystem
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
  */
+
+internal val AUDIO_EXT = ".md4"
+internal val AUDIO_APPEND_EXT = ".wav"
+internal val DRAFT_PREFIX = "draft"
+internal val BACKTRANSLATE_PREFIX = "backtranslate"
+internal val LEARN_PRACTICE_FILE = "learnPractice$AUDIO_EXT"
+internal val WHOLE_STORY_BACKT_FILE = "wholeStoryBackT$AUDIO_EXT"
+
+internal val dtf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT)
+
+fun assignNewAudioRelPath() : String? {
+    if(Workspace.activeStory.title == "") return null
+    val phase = Workspace.activePhase
+    val phaseName = phase.getCamelName()
+    var relPath = "$PROJECT_DIR/$phaseName" + "_" + Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
+
+
+    when(phase.phaseType){
+        PhaseType.LEARN -> {
+            Workspace.activeStory.learnAudioFile = relPath
+        }
+        PhaseType.DRAFT ->{
+            Workspace.activeSlide!!.draftAudioFiles.add(relPath)
+            Workspace.activeSlide!!.chosenDraftFile = relPath
+        }
+
+        PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK,
+        PhaseType.DRAMATIZATION ->
+        PhaseType.WHOLE_STORY ->
+        }
+        else -> return null
+    }
+
+}
+
 object AudioFiles {
     private val PREFER_EXTENSION = ".m4a"
 

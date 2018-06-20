@@ -14,17 +14,12 @@ import java.util.*
 
 internal val PROJECT_DIR = "project"
 internal val PROJECT_FILE = "story.json"
-internal val AUDIO_EXT = ".md4"
-internal val DRAFT_PREFIX = "draft"
-internal val BACKTRANSLATE_PREFIX = "backtranslate"
-internal val LEARN_PRACTICE_FILE = "learnPractice$AUDIO_EXT"
-internal val WHOLE_STORY_BACKT_FILE = "wholeStoryBackT$AUDIO_EXT"
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
 
-    val learnPracticeFile = "$PROJECT_DIR/$LEARN_PRACTICE_FILE"
-    val wholeStoryBackTFile = "$PROJECT_DIR/$WHOLE_STORY_BACKT_FILE"
+    var learnAudioFile = ""
+    var wholeStoryBackTAudioFile = ""
     companion object
 
 }

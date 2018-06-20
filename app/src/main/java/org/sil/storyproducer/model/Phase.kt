@@ -23,20 +23,17 @@ class Phase(val phaseType: PhaseType) {
      * get the title for the phase
      * @return return the title
      */
-    fun getTitle(context: Context) : String {
-        val titleInt = when(phaseType){
-            PhaseType.LEARN -> R.string.learn_title
-            PhaseType.DRAFT -> R.string.draft_title
-            PhaseType.COMMUNITY_CHECK -> R.string.community_check_title
-            PhaseType.CONSULTANT_CHECK -> R.string.consultant_check_title
-            PhaseType.DRAMATIZATION -> R.string.dramatization_title
-            PhaseType.CREATE -> R.string.create_title
-            PhaseType.SHARE -> R.string.share_title
-            PhaseType.BACKT -> R.string.back_translation_title
-            PhaseType.WHOLE_STORY -> R.string.whole_story_title
-            PhaseType.REMOTE_CHECK -> R.string.remote_check_title
+    fun getName() : String {return phaseType.toString().toLowerCase()}
+
+    fun getCamelName() : String {
+        return when (phaseType) {
+            PhaseType.COMMUNITY_CHECK -> "communityCheck"
+            PhaseType.CONSULTANT_CHECK -> "consultantCheck"
+            PhaseType.WHOLE_STORY -> "wholeStory"
+            PhaseType.REMOTE_CHECK -> "remoteCheck"
+            PhaseType.BACKT -> "backT"
+            else -> phaseType.toString().toLowerCase()
         }
-        return context.getString(titleInt)
     }
     /**
      * get the color for the phase

@@ -51,7 +51,6 @@ class LearnActivity : PhaseBaseActivity() {
     private val backgroundAudioJumps: MutableList<Int> = ArrayList()
 
     //recording toolbar vars
-    private val recordFilePath: String? = null
     private var recordingToolbar: RecordingToolbar = RecordingToolbar(this,
             layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
             rootView, true, false, false, false,

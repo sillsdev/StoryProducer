@@ -82,7 +82,6 @@ open class RecordingToolbar
 constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
             protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
             protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
-            protected var playbackRecordFilePath: String, protected var recordFilePath: String,
             private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener) : AnimationToolbar(activity) {
 
     private val RECORDING_ANIMATION_DURATION = 1500
@@ -118,6 +117,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var js: MutableMap<String, String>? = null
     private var resp: String? = null
     private var testErr: String? = null
+
+    protected var playbackRecordRelPath: String
+    protected var recordRelPath: String = Workspace.activePhase.getName()
+
 
     init {
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar))
