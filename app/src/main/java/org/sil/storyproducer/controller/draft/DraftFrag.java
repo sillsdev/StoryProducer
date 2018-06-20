@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
-import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.DraftEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.StorySharedPreferences;

@@ -3,7 +3,7 @@ package org.sil.storyproducer.model.logging;
 import android.content.Context;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.Workspace;
 
 public class DraftEntry extends LogEntry {
 
@@ -50,7 +50,7 @@ public class DraftEntry extends LogEntry {
 
         public DraftEntry makeEntry(){
             return new DraftEntry(System.currentTimeMillis(), this,
-                    StoryState.getCurrentStorySlide());
+                    Workspace.INSTANCE.getActiveSlideNum());
         }
 
         private void setDisplayName(String str){

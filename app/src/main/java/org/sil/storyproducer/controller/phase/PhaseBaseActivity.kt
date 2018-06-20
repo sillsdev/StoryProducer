@@ -41,7 +41,7 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
     private var mDrawerLayout: DrawerLayout? = null
 
     protected var phase: Phase = Workspace.activePhase
-    protected var story: Story = Workspace.activeStory ?: emptyStory()
+    protected var story: Story = Workspace.activeStory
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -165,7 +165,7 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
         if(newPhase == phase) return
         Workspace.activePhase = newPhase
         val intent = Intent(this.applicationContext, newPhase.getTheClass())
-        intent.putExtra("storyname", Workspace.activeStory?.title ?: "no active story?")
+        intent.putExtra("storyname", Workspace.activeStory.title)
         startActivity(intent)
         finish()
     }

@@ -31,7 +31,7 @@ object Workspace{
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
-    var activeStory: Story? = null
+    var activeStory: Story = emptyStory()
     set(value){
         field = value
         activePhase = Phase(PhaseType.LEARN)
@@ -42,8 +42,8 @@ object Workspace{
     val activeSlide: Slide?
     get(){
         val temp = activeStory
-        if(temp != null) return temp.slides[activeSlideNum]
-        return null
+        if(temp.title == "") return null
+        return temp.slides[activeSlideNum]
     }
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"

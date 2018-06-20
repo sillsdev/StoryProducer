@@ -56,7 +56,7 @@ class AudioPlayer {
      * Only sets the path for the audio to
      * @param path String path for the audio
      */
-    fun setSource(context: Context, uri: Uri) {
+    fun setSource(context: Context, uri: Uri) : Boolean {
         try {
             if (fileExists) {
                 mPlayer.reset()
@@ -68,6 +68,7 @@ class AudioPlayer {
             //TODO maybe do something with this exception
             e.printStackTrace()
         }
+        return fileExists
     }
     /**
      * set the audio file from the worskspace data
@@ -125,6 +126,7 @@ class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     fun resumeAudio() {
+        if(!fileExists) return
         try {
             if (!isPrepared) {
                 mPlayer.prepare()
@@ -168,6 +170,7 @@ class AudioPlayer {
      * @param msec milliseconds for where to seek to in the audio
      */
     fun seekTo(msec: Int) {
+        if(!fileExists) return
         try {
             if (!isPrepared) {
                 mPlayer.prepare()

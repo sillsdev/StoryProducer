@@ -65,29 +65,29 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     public void stopToolbarMedia() {
-        if (isRecording) {
+        if (getIsRecording()) {
             stopRecording();
-            micButton.setBackgroundResource(R.drawable.ic_mic_black_append);
+            getMicButton().setBackgroundResource(R.drawable.ic_mic_black_append);
             //set playback button visible
-            if (enableDeleteButton) {
-                deleteButton.setVisibility(View.VISIBLE);
+            if (getEnableDeleteButton()) {
+                getDeleteButton().setVisibility(View.VISIBLE);
             }
-            if (enablePlaybackButton) {
-                playButton.setVisibility(View.VISIBLE);
+            if (getEnablePlaybackButton()) {
+                getPlayButton().setVisibility(View.VISIBLE);
             }
-            if (enableMultiRecordButton) {
-                multiRecordButton.setVisibility(View.VISIBLE);
+            if (getEnableMultiRecordButton()) {
+                getMultiRecordButton().setVisibility(View.VISIBLE);
             }
             if (enableCheckButton) {
-                multiRecordButton.setVisibility(View.VISIBLE);
+                getMultiRecordButton().setVisibility(View.VISIBLE);
             }
-            if(enableSendAudioButton) {
-                sendAudioButton.setVisibility(View.VISIBLE);
+            if(getEnableSendAudioButton()) {
+                getSendAudioButton().setVisibility(View.VISIBLE);
             }
         }
-        if (audioPlayer != null && audioPlayer.isAudioPlaying()) {
-            playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
-            audioPlayer.stopAudio();
+        if (getAudioPlayer() != null && getAudioPlayer().isAudioPlaying()) {
+            getPlayButton().setBackgroundResource(R.drawable.ic_play_arrow_white_48dp);
+            getAudioPlayer().stopAudio();
         }
     }
 
@@ -107,9 +107,9 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     public void onClose() {
-        if (isRecording) {
+        if (getIsRecording()) {
             //simulate a stop of recording.
-            micButton.callOnClick();
+            getMicButton().callOnClick();
         }
         //else stop other media from playing.
         stopToolbarMedia();
@@ -122,8 +122,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      * @param path to set the recording path to
      */
     public void setRecordFilePath(String path) {
-        recordFilePath = path;
-        wavAudioRecorder.setNewPath(new File(recordFilePath));
+        setRecordFilePath(path);
+        wavAudioRecorder.setNewPath(new File(getRecordFilePath()));
     }
 
     /**
@@ -146,59 +146,59 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     protected void setupToolbarButtons() {
-        rootViewToolbarLayout.removeAllViews();
+        getRootViewToolbarLayout().removeAllViews();
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         LinearLayout.LayoutParams spaceLayoutParams = new LinearLayout.LayoutParams(0, 0, 1f);
         spaceLayoutParams.width = 0;
         int[] drawables = new int[]{R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp};
-        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext), new ImageButton(appContext)};
-        boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, enablePlaybackButton, enableMultiRecordButton, (enableCheckButton = true), enableSendAudioButton};
+        ImageButton[] imageButtons = new ImageButton[]{new ImageButton(getAppContext()), new ImageButton(getAppContext()), new ImageButton(getAppContext()), new ImageButton(getAppContext()), new ImageButton(getAppContext())};
+        boolean[] buttonToDisplay = new boolean[]{true/*enable mic*/, getEnablePlaybackButton(), getEnableMultiRecordButton(), (enableCheckButton = true), getEnableSendAudioButton()};
 
-        Space buttonSpacing = new Space(appContext);
+        Space buttonSpacing = new Space(getAppContext());
         buttonSpacing.setLayoutParams(spaceLayoutParams);
-        toolbar.addView(buttonSpacing); //Add a space to the left of the first button.
+        getToolbar().addView(buttonSpacing); //Add a space to the left of the first button.
         for (int i = 0; i < drawables.length; i++) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i]);
                 imageButtons[i].setVisibility(View.VISIBLE);
                 imageButtons[i].setLayoutParams(layoutParams);
-                toolbar.addView(imageButtons[i]);
+                getToolbar().addView(imageButtons[i]);
 
-                buttonSpacing = new Space(appContext);
+                buttonSpacing = new Space(getAppContext());
                 buttonSpacing.setLayoutParams(spaceLayoutParams);
-                toolbar.addView(buttonSpacing);
+                getToolbar().addView(buttonSpacing);
                 switch (i) {
                     case 0:
-                        micButton = imageButtons[i];
+                        setMicButton(imageButtons[i]);
                         break;
                     case 1:
-                        playButton = imageButtons[i];
+                        setPlayButton(imageButtons[i]);
                         break;
                     case 2:
-                        multiRecordButton = imageButtons[i];
+                        setMultiRecordButton(imageButtons[i]);
                         break;
                     case 3:
                         checkButton = imageButtons[i];
                         break;
                     case 4:
-                        sendAudioButton = imageButtons[i];
+                        setSendAudioButton(imageButtons[i]);
                         break;
                 }
             }
         }
 
-        boolean playBackFileExist = new File(playbackRecordFilePath).exists();
-        if(enablePlaybackButton){
-            playButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        boolean playBackFileExist = new File(getPlaybackRecordFilePath()).exists();
+        if(getEnablePlaybackButton()){
+            getPlayButton().setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
-        if(enableMultiRecordButton){
-            multiRecordButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        if(getEnableMultiRecordButton()){
+            getMultiRecordButton().setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
         if(enableCheckButton){
             checkButton.setVisibility((playBackFileExist && isAppendingOn) ? View.VISIBLE : View.INVISIBLE);
         }
-        if(enableSendAudioButton){
-            sendAudioButton.setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
+        if(getEnableSendAudioButton()){
+            getSendAudioButton().setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
 
         setOnClickListeners();
@@ -209,12 +209,12 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     protected void stopRecording() {
-        isRecording = false;
+        setIsRecording(false);
         stopRecordingAnimation();
         wavAudioRecorder.stopRecording();
         if (isAppendingOn) {
             try {
-                WavFileConcatenator.ConcatenateAudioFiles(new File(recordFilePath), AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
+                WavFileConcatenator.ConcatenateAudioFiles(new File(getRecordFilePath()), AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Did not concatenate audio files", e);
             }
@@ -228,7 +228,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     protected void startAudioRecorder() {
-        isRecording = true;
+        setIsRecording(true);
         wavAudioRecorder.startRecording();
     }
 
@@ -243,21 +243,21 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         View.OnClickListener micListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isRecording) {
+                if (getIsRecording()) {
                     stopRecording();
                     if (!isAppendingOn) {
                         isAppendingOn = true;
                         checkButton.setVisibility(View.VISIBLE);
                     }
-                    micButton.setBackgroundResource(R.drawable.ic_mic_black_append);
-                    if (enableDeleteButton) {
-                        deleteButton.setVisibility(View.VISIBLE);
+                    getMicButton().setBackgroundResource(R.drawable.ic_mic_black_append);
+                    if (getEnableDeleteButton()) {
+                        getDeleteButton().setVisibility(View.VISIBLE);
                     }
-                    if (enablePlaybackButton) {
-                        playButton.setVisibility(View.VISIBLE);
+                    if (getEnablePlaybackButton()) {
+                        getPlayButton().setVisibility(View.VISIBLE);
                     }
-                    if (enableMultiRecordButton) {
-                        multiRecordButton.setVisibility(View.VISIBLE);
+                    if (getEnableMultiRecordButton()) {
+                        getMultiRecordButton().setVisibility(View.VISIBLE);
                     }
                     if (enableCheckButton) {
                         checkButton.setVisibility(View.VISIBLE);
@@ -266,21 +266,21 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     stopPlayBackAndRecording();
                     startRecording();
                     if (!isAppendingOn) {
-                        recordingListener.onStartedRecordingOrPlayback(true);
+                        getRecordingListener().onStartedRecordingOrPlayback(true);
                     }
-                    micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp);
+                    getMicButton().setBackgroundResource(R.drawable.ic_pause_white_48dp);
                     //checkButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
-                    if (enableDeleteButton) {
-                        deleteButton.setVisibility(View.INVISIBLE);
+                    if (getEnableDeleteButton()) {
+                        getDeleteButton().setVisibility(View.INVISIBLE);
                     }
-                    if (enablePlaybackButton) {
-                        playButton.setVisibility(View.INVISIBLE);
+                    if (getEnablePlaybackButton()) {
+                        getPlayButton().setVisibility(View.INVISIBLE);
                     }
-                    if (enableMultiRecordButton) {
-                        multiRecordButton.setVisibility(View.INVISIBLE);
+                    if (getEnableMultiRecordButton()) {
+                        getMultiRecordButton().setVisibility(View.INVISIBLE);
                     }
-                    if(enableSendAudioButton){
-                        sendAudioButton.setVisibility(View.INVISIBLE);
+                    if(getEnableSendAudioButton()){
+                        getSendAudioButton().setVisibility(View.INVISIBLE);
                     }
                     //if (enableCheckButton) {
                       //  checkButton.setVisibility(View.INVISIBLE);
@@ -288,7 +288,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                 }
             }
         };
-        micButton.setOnClickListener(micListener);
+        getMicButton().setOnClickListener(micListener);
 
         if (enableCheckButton) {
             View.OnClickListener checkListener = new View.OnClickListener() {
@@ -300,13 +300,13 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     if (tempFile != null && tempFile.exists()) {
                         tempFile.delete();
                     }
-                    recordingListener.onStoppedRecording();
+                    getRecordingListener().onStoppedRecording();
                     //make the button invisible till after the next new recording
                     isAppendingOn = false;
                     checkButton.setVisibility(View.INVISIBLE);
-                    micButton.setBackgroundResource(R.drawable.ic_mic_white);
-                    if(enableSendAudioButton){
-                        sendAudioButton.setVisibility(View.VISIBLE);
+                    getMicButton().setBackgroundResource(R.drawable.ic_mic_white);
+                    if(getEnableSendAudioButton()){
+                        getSendAudioButton().setVisibility(View.VISIBLE);
                     }
                 }
             };

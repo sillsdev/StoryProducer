@@ -2,12 +2,12 @@ package org.sil.storyproducer.tools.file;
 
 import android.content.Context;
 
+import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.model.logging.ComChkEntry;
 import org.sil.storyproducer.model.logging.DraftEntry;
 import org.sil.storyproducer.model.logging.LearnEntry;
 import org.sil.storyproducer.model.logging.Log;
 import org.sil.storyproducer.model.logging.LogEntry;
-import org.sil.storyproducer.model.StoryState;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,11 +67,11 @@ public class LogFiles {
     }
 
     public static void saveLogEntries(Collection <LogEntry> le){
-        saveLogEntries(le, FileSystem.getLanguage(), StoryState.getStoryName());
+        saveLogEntries(le, FileSystem.getLanguage(), Workspace.INSTANCE.getActiveStory().getTitle());
     }
 
     public static void saveLogEntry(LogEntry le){
-        saveLogEntry(le, FileSystem.getLanguage(), StoryState.getStoryName());
+        saveLogEntry(le, FileSystem.getLanguage(), Workspace.INSTANCE.getActiveStory().getTitle());
     }
 
     public static void saveLogEntries(Collection<LogEntry> le, String ethnoCode, String storyTitle){

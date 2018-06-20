@@ -15,8 +15,8 @@ import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
 
-fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story? = Workspace.activeStory): Bitmap? {
-    if(story == null) return null
+fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
+    if(story.title == "") return null
     val imName = story.slides[slideNum].imageFile
     val iStream = getStoryChildInputStream(context,imName,story.title)
     if(iStream != null){
@@ -27,37 +27,30 @@ fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story?
     return null
 }
 
-fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = "") : OutputStream? {
-    var iTitle = storyTitle
-    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
-
-    return getChildOutputStream(context, iTitle + "/" + relPath, mimeType)
+fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = Workspace.activeStory.title) : OutputStream? {
+    if (storyTitle == "") return null
+    return getChildOutputStream(context, "$storyTitle/$relPath", mimeType)
 }
 
-fun storyRelPathExists(context: Context, relPath: String, storyTitle: String? = "") : Boolean{
-    if(getChildInputStream(context, relPath, storyTitle) == null)
+fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
+    if(getChildInputStream(context, "$storyTitle/$relPath" ) == null)
         return false
     return true
 }
 
-fun getStoryUri(relPath: String, storyTitle: String = "") : Uri {
-    var iTitle: String? = storyTitle
-    if (iTitle== ""){
-        iTitle = Workspace.activeStory?.title
-    }
+fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
+    if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
-            Uri.encode("/$iTitle/$relPath"))
+            Uri.encode("/$storyTitle/$relPath"))
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, storyTitle: String = "") : FileDescriptor? {
-    var iTitle = storyTitle
-    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
-
-    val pfd = getChildOuputPFD(context, iTitle + "/" + relPath) ?: return null
+fun getStoryFileDescriptor(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
+    if (storyTitle == "") return null
+    val pfd = getChildOuputPFD(context, "$storyTitle/$relPath") ?: return null
     return pfd.fileDescriptor
 }
 
-fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : String? {
+fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : String? {
     val iStream = getStoryChildInputStream(context, relPath, storyTitle)
     if (iStream != null)
         return iStream.reader().use {
@@ -65,11 +58,9 @@ fun getStoryText(context: Context, relPath: String, storyTitle: String = "") : S
     return null
 }
 
-fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = "") : InputStream? {
-    var iTitle = storyTitle
-    if (iTitle== "") iTitle = Workspace.activeStory?.title ?: return null
-
-    return getChildInputStream(context, iTitle + "/" + relPath)
+fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : InputStream? {
+    if (storyTitle == "") return null
+    return getChildInputStream(context, "$storyTitle/$relPath")
 }
 
 fun getText(context: Context, relPath: String) : String? {
@@ -120,7 +111,7 @@ fun getChildOuputPFD(context: Context, relPath: String, mimeType: String = "") :
     return context.contentResolver.openFileDescriptor(df.uri,"w")
 }
 
-fun getChildInputStream(context: Context, relPath: String, storyTitle: String? = "") : InputStream? {
+fun getChildInputStream(context: Context, relPath: String) : InputStream? {
     val childUri = Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
