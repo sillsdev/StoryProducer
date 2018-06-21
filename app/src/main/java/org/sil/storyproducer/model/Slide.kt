@@ -38,10 +38,16 @@ class Slide{
     var musicFile = ""
     var volume = 0
 
-    //draft
+    //translated text
+    var draftText: String = ""
+
+    //recorded audio files
     var draftAudioFiles: MutableList<String> = ArrayList()
     var chosenDraftFile = ""
-    var draftText: String = ""
+    var communityCheckAudioFiles: MutableList<String> = ArrayList()
+    var consultantCheckAudioFiles: MutableList<String> = ArrayList()
+    var dramatizationAudioFiles: MutableList<String> = ArrayList()
+    var chosenDramatizationFile = ""
 
     companion object
 }

@@ -23,6 +23,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.Workspace.WORKSPACE_KEY
 import org.sil.storyproducer.model.Workspace.activeStory
 import org.sil.storyproducer.model.logging.LearnEntry
 import org.sil.storyproducer.tools.BitmapScaler
@@ -45,7 +46,6 @@ class LearnActivity : PhaseBaseActivity() {
     private var narrationPlayer: AudioPlayer = AudioPlayer()
     private var backgroundPlayer: AudioPlayer = AudioPlayer()
 
-    private var slideNumber = 0
     private var isVolumeOn = true
     private var isWatchedOnce = false
     private val backgroundAudioJumps: MutableList<Int> = ArrayList()
@@ -54,7 +54,7 @@ class LearnActivity : PhaseBaseActivity() {
     private var recordingToolbar: RecordingToolbar = RecordingToolbar(this,
             layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
             rootView, true, false, false, false,
-            recordFilePath, recordFilePath, null, object : RecordingToolbar.RecordingListener {
+            null, object : RecordingToolbar.RecordingListener {
         override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
         override fun onStartedRecordingOrPlayback(isRecording: Boolean) {resetVideoWithSoundOff()}
     })
@@ -99,8 +99,7 @@ class LearnActivity : PhaseBaseActivity() {
      * and the recording button can be shown from the beginning
      */
     private fun setIfLearnHasBeenWatched() {
-        val recordFile = File(recordFilePath)
-        if (recordFile.exists()) {
+        if (storyRelPathExists(this,Workspace.activeStory.learnAudioFile)) {
             setVolumeSwitchAndFloatingButtonVisible()
             val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
             volumeSwitch.isChecked = true
@@ -134,16 +133,18 @@ class LearnActivity : PhaseBaseActivity() {
         //create audio players
         narrationPlayer = AudioPlayer()
         narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            slideNumber++         //move to the next slide
-            if (slideNumber < story.slides.size) {     //not at the end of video
-                playVideo()
-            } else {                            //at the end of video so special case
+            if(Workspace.activeSlideNum == story.slides.size - 1){
+                //at the end of video so special case
                 makeLogIfNecessary(true)
 
                 videoSeekBar.progress = story.slides.size
                 playButton.setImageResource(R.drawable.ic_play_gray)
                 setPic(learnImageView)     //sets the pic to the end image
                 showStartPracticeSnackBar()
+            } else {
+                //just play the next slide!
+                Workspace.goToNextSlide()         //move to the next slide
+                playVideo()
             }
         })
         //recordingToolbar.hideFloatingActionButton();
@@ -154,7 +155,7 @@ class LearnActivity : PhaseBaseActivity() {
     }
 
     private fun markLogStart() {
-        startPos = slideNumber
+        startPos = Workspace.activeSlideNum
         startTime = System.currentTimeMillis()
     }
 
@@ -162,7 +163,7 @@ class LearnActivity : PhaseBaseActivity() {
         if (narrationPlayer.isAudioPlaying || backgroundPlayer.isAudioPlaying
                 || request) {
             if (startPos != -1) {
-                LearnEntry.saveFilteredLogEntry(startPos, slideNumber,
+                LearnEntry.saveFilteredLogEntry(startPos, Workspace.activeSlideNum,
                         System.currentTimeMillis() - startTime)
                 startPos = -1
             }
@@ -194,16 +195,13 @@ class LearnActivity : PhaseBaseActivity() {
      * Plays the video and runs every time the audio is completed
      */
     internal fun playVideo() {
-        setPic(learnImageView)                                                             //set the next image
-        val audioFile = AudioFiles.getNarration(storyName, slideNumber)
+        setPic(learnImageView) //set the next image
         //set the next audio
-        if (audioFile.exists()) {
-            narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
-            narrationPlayer.setSource(audioFile.getPath())
-            narrationPlayer.playAudio()
-        }
+        narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
+        narrationPlayer.setStorySource(this, Workspace.activeSlide!!.narrationFile, story.title)
+        narrationPlayer.playAudio()
 
-        videoSeekBar.progress = slideNumber
+        videoSeekBar.progress = Workspace.activeSlideNum
     }
 
     /**
@@ -218,9 +216,9 @@ class LearnActivity : PhaseBaseActivity() {
 
             playButton.setImageResource(R.drawable.ic_pause_gray)
 
-            if (slideNumber >= story.slides.size) {        //reset the video to the beginning because they already finished it
+            if (videoSeekBar.progress >= story.slides.size) {        //reset the video to the beginning because they already finished it
                 videoSeekBar.progress = 0
-                slideNumber = 0
+                Workspace.activeSlideNum = 0
                 playBackgroundMusic()
                 playVideo()
             } else {
@@ -265,9 +263,9 @@ class LearnActivity : PhaseBaseActivity() {
                 if (fromUser) {
                     makeLogIfNecessary()
 
-                    slideNumber = progress
+                    Workspace.activeSlideNum = progress
                     narrationPlayer.stopAudio()
-                    backgroundPlayer.seekTo(backgroundAudioJumps[slideNumber])
+                    backgroundPlayer.seekTo(backgroundAudioJumps[Workspace.activeSlideNum])
                     if (!backgroundPlayer.isAudioPlaying) {
                         backgroundPlayer.resumeAudio()
                     }

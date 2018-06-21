@@ -35,15 +35,18 @@ object Workspace{
     set(value){
         field = value
         activePhase = Phase(PhaseType.LEARN)
+        //TODO do we want to save slide number in prefernces?
         activeSlideNum = 0
     }
     var activePhase: Phase = Phase(PhaseType.LEARN)
-    var activeSlideNum: Int = 0
+    var activeSlideNum: Int = -1
+    set(value){
+        if(value >= 0 && value < activeStory.slides.size) field = value
+    }
     val activeSlide: Slide?
     get(){
-        val temp = activeStory
-        if(temp.title == "") return null
-        return temp.slides[activeSlideNum]
+        if(activeStory.title == "") return null
+        return activeStory.slides[activeSlideNum]
     }
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
@@ -112,6 +115,24 @@ object Workspace{
     }
 
     fun getPhaseIndex() : Int {return activePhaseIndex}
+
+    fun goToNextSlide() : Boolean {
+        if(activeStory.title == "") return false
+        if(activeSlide == null) return false
+        if(activeSlideNum < 0) return false
+        if(activeSlideNum >= activeStory.slides.size - 1) return false
+        activeSlideNum++
+        return true
+    }
+
+    fun goToPreviousSlide() : Boolean {
+        if(activeStory.title == "") return false
+        if(activeSlide == null) return false
+        if(activeSlideNum < 0) return false
+        if(activeSlideNum > activeStory.slides.size - 1) return false
+        activeSlideNum--
+        return true
+    }
 
 }
 
