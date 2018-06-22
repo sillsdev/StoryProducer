@@ -189,7 +189,7 @@ class LearnActivity : PhaseBaseActivity() {
         setPic(learnImageView) //set the next image
         //set the next audio
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
-        narrationPlayer.setStorySource(this, Workspace.activeSlide!!.narrationFile, story.title)
+        narrationPlayer.setStorySource(this, Workspace.activeSlide!!.narrationFile)
         narrationPlayer.playAudio()
 
         videoSeekBar.progress = Workspace.activeSlideNum

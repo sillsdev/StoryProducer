@@ -1,14 +1,10 @@
 package org.sil.storyproducer.tools.toolbar
 
-
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.media.MediaRecorder
@@ -25,12 +21,10 @@ import android.widget.Toast
 
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.ComChkEntry
@@ -46,9 +40,12 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import java.io.InputStream
 import java.util.ArrayList
 import java.util.HashMap
+
+private const val RECORDING_ANIMATION_DURATION = 1500
+private const val STOP_RECORDING_DELAY = 0
+private const val TAG = "AnimationToolbar"
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -62,6 +59,7 @@ import java.util.HashMap
  * This class also saves the recording and allows playback <br></br> from the toolbar. see: [.createToolbar]
  * <br></br><br></br>
  */
+
 open class RecordingToolbar
 /**
  * The ctor.
@@ -74,18 +72,12 @@ open class RecordingToolbar
  * @param enablePlaybackButton  Enable playback of recording.
  * @param enableDeleteButton    Enable the delete button, does not work as of now.
  * @param enableSendAudioButton Enable the sending of audio to the server
- * @param recordFilePath        The filepath that the recording will be saved under.
  */
 @Throws(ClassCastException::class)
 constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
             protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
             protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
-            protected var playbackRecordRelPath: String,
             private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener) : AnimationToolbar(activity) {
-
-    private val RECORDING_ANIMATION_DURATION = 1500
-    private val STOP_RECORDING_DELAY = 0
-    private val TAG = "AnimationToolbar"
 
     //private FloatingActionButton fabPlus;
     protected var toolbar: LinearLayout = rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar)
@@ -101,15 +93,11 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     protected var sendAudioButton: ImageButton = ImageButton(activity)
     private val auxiliaryMediaList: MutableList<AuxiliaryMedia> = ArrayList()
 
-
-    var isRecording: Boolean = false
-        protected set
-
     private var transitionDrawable: TransitionDrawable? = null
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
-    private var voiceRecorder: MediaRecorder? = null
+    private var voiceRecorder: AudioRecorder = AudioRecorder()
     protected var audioPlayer: AudioPlayer = AudioPlayer()
     private val canOverwrite = false
 
@@ -118,7 +106,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var testErr: String? = null
 
     protected var recordRelPath: String = Workspace.activePhase.getName()
-
 
     init {
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar))
@@ -150,7 +137,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      * those.
      */
     open fun stopToolbarMedia() {
-        if (isRecording) {
+        if (voiceRecorder.isRecording) {
             stopRecording()
             micButton.setBackgroundResource(R.drawable.ic_mic_white)
             //set playback button visible
@@ -223,35 +210,15 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         if (Workspace.activePhase.phaseType === PhaseType.DRAFT) {
             LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry())
         }
-        voiceRecorder = AudioRecorder(activity, recordingRelPath)
-        try {
-            isRecording = true
-            voiceRecorder!!.prepare()
-            voiceRecorder!!.start()
-            Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Could not record voice.", e)
-        } catch (e: IOException) {
-            Log.e(TAG, "Could not record voice.", e)
-        }
+        voiceRecorder.startNewRecording(activity, recordingRelPath)
         startRecordingAnimation(false, 0)
         recordingListener.onStartedRecordingOrPlayback(true)
-
     }
 
     protected open fun stopRecording() {
-        stopAudioRecorder()
+        voiceRecorder.stop(activity)
         stopRecordingAnimation()
         recordingListener.onStoppedRecording()
-    }
-
-    //TODO finish adding deletion functionality.
-    protected fun deleteRecording(): Boolean {
-        return if (enableDeleteButton) {
-            false
-        } else {
-            false
-        }
     }
 
     private fun createToolbar() {
@@ -294,7 +261,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
             }
         }
 
-        val playBackFileExist = storyRelPathExists(activity,playbackRecordRelPath)
+        val playBackFileExist = storyRelPathExists(activity,Workspace.activeStory.learnAudioFile)
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
@@ -339,7 +306,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      */
     protected open fun setOnClickListeners() {
         val micListener = View.OnClickListener {
-            if (isRecording) {
+            if (voiceRecorder.isRecording) {
                 stopRecording()
                 micButton.setBackgroundResource(R.drawable.ic_mic_white)
                 if (enableDeleteButton) {
@@ -385,7 +352,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                 } else {
                     stopPlayBackAndRecording()
-                    if (audioPlayer.setSource(this.appContext,)) {
+                    if (audioPlayer.setStorySource(this.appContext,Workspace.activeStory.learnAudioFile)) {
 
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
@@ -431,6 +398,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         *Send single audio file to remote consultant
          */
     private fun sendAudio() {
+/*
         Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show()
         val phase = Workspace.activePhase
         val slideNum: Int
@@ -446,22 +414,25 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
         requestRemoteReview(appContext, totalSlides)
         postABackTranslation(slideNum, slide)
+*/
     }
 
     //Posts a single BT or WSBT
     fun postABackTranslation(slideNum: Int, slide: File) {
+/*
         try {
             Upload(slide, appContext, slideNum)
         } catch (e: IOException) {
             e.printStackTrace()
         }
 
+*/
     }
 
     //First time request for review
     fun requestRemoteReview(con: Context, numSlides: Int) {
 
-        // TODO replace with InstanceID getID for all phone ID locations
+ /*       // TODO replace with InstanceID getID for all phone ID locations
         val phone_id = Settings.Secure.getString(con.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
@@ -486,29 +457,30 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
         VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
 
-    }
+ */   }
 
     //Subroutine to upload a single audio file
     @Throws(IOException::class)
-    fun Upload(fileName: File, con: Context, slide: Int) {
+    fun Upload(relPath: String, context: Context) {
 
-        val phone_id = Settings.Secure.getString(con.contentResolver,
+/*
+        val phone_id = Settings.Secure.getString(context.contentResolver,
                 Settings.Secure.ANDROID_ID)
-        val templateTitle = StoryState.getStoryName()
+        val templateTitle = Workspace.activeStory.title
 
-        val currentSlide = Integer.toString(slide)
-        val input = FileInputStream(fileName)
+        val currentSlide = Integer.toString(Workspace.activeSlideNum)
+        val input = getStoryChildInputStream(context,relPath)
         val audioBytes = IOUtils.toByteArray(input)
 
         //get transcription text if it's there
-        val prefs = con.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val transcription = prefs.getString(templateTitle + slide + TRANSCRIPTION_TEXT, "")
+        val prefs = context.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        val transcription = prefs.getString(templateTitle + Workspace.activeSlideNum + TRANSCRIPTION_TEXT, "")
         val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
 
         js = HashMap()
 
 
-        val log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName())
+        val log = LogFiles.getLog(FileSystem.getLanguage(), Workspace.activeStory.title)
         val logString = StringBuilder()
         if (log != null) {
             val logs = log.toTypedArray()
@@ -566,6 +538,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
         VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
 
+*/
     }
 
     /*
@@ -670,36 +643,14 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         }
     }
 
-    /**
-     * The function that aids in stopping an audio recorder.
-     */
-    protected fun stopAudioRecorder() {
-        try {
-            isRecording = false
-            //Delay stopping of voiceRecorder to capture all of the voice recorded.
-            Thread.sleep(STOP_RECORDING_DELAY.toLong())
-            voiceRecorder!!.stop()
-            Toast.makeText(appContext, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
-        } catch (stopException: RuntimeException) {
-            Toast.makeText(appContext, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
-        } catch (e: InterruptedException) {
-            Log.e(TAG, "Voice recorder interrupted!", e)
-        }
-
-        voiceRecorder!!.release()
-        voiceRecorder = null
-    }
-
     //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev
     /**
      * This function stops all playback and all auxiliary media.
      */
     protected fun stopPlayBackAndRecording() {
         stopToolbarMedia()
-        if (auxiliaryMediaList != null) {
-            for (am in auxiliaryMediaList) {
-                am.stopPlaying()
-            }
+        for (am in auxiliaryMediaList) {
+            am.stopPlaying()
         }
     }
 

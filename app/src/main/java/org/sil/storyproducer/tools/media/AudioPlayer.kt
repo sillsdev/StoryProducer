@@ -5,6 +5,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import org.sil.storyproducer.model.Workspace
 
 import java.io.IOException
 
@@ -75,7 +76,8 @@ class AudioPlayer {
      * @return true if the file exists, false if it does not.
      */
 
-    fun setStorySource(context: Context, relPath: String, storyName: String) : Boolean {
+    fun setStorySource(context: Context, relPath: String,
+                       storyName: String = Workspace.activeStory.title) : Boolean {
         val uri: Uri? = getStoryUri(relPath,storyName)
         if(uri == null) return false
         try{

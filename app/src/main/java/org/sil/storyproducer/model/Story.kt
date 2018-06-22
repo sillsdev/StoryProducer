@@ -12,8 +12,8 @@ import java.io.*
 
 import java.util.*
 
-internal val PROJECT_DIR = "project"
-internal val PROJECT_FILE = "story.json"
+internal const val PROJECT_DIR = "project"
+internal const val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
