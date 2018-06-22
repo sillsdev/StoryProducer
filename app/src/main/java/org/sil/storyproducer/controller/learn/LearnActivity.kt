@@ -2,15 +2,11 @@ package org.sil.storyproducer.controller.learn
 
 import android.graphics.Bitmap
 import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.res.ResourcesCompat
-import android.util.DisplayMetrics
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -21,20 +17,15 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.Workspace.WORKSPACE_KEY
-import org.sil.storyproducer.model.Workspace.activeStory
 import org.sil.storyproducer.model.logging.LearnEntry
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.file.AudioFiles
 import org.sil.storyproducer.tools.file.ImageFiles
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-import java.io.File
 import java.util.ArrayList
 
 class LearnActivity : PhaseBaseActivity() {
@@ -269,7 +260,7 @@ class LearnActivity : PhaseBaseActivity() {
                     if (!backgroundPlayer.isAudioPlaying) {
                         backgroundPlayer.resumeAudio()
                     }
-                    if (slideNumber == story.slides.size) {
+                    if (progress == story.slides.size) {
                         playButton.setImageResource(R.drawable.ic_play_gray)
                         setPic(learnImageView)     //sets the pic to the end image
                         showStartPracticeSnackBar()
@@ -290,7 +281,7 @@ class LearnActivity : PhaseBaseActivity() {
     private fun resetVideoWithSoundOff() {
         playButton.setImageResource(R.drawable.ic_pause_gray)
         videoSeekBar.progress = 0
-        slideNumber = 0
+        Workspace.activeSlideNum = 0
         narrationPlayer.setVolume(0.0f)
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         backgroundPlayer.stopAudio()
@@ -367,9 +358,14 @@ class LearnActivity : PhaseBaseActivity() {
         }
 
         val slideImage = aView as ImageView?
-        var slidePicture: Bitmap? = ImageFiles.getBitmap(storyName, slideNumber)
-        if (slideNumber == story.slides.size) {                //gets the end image if we are at the end of the story
-            slidePicture = ImageFiles.getBitmap(storyName, ImageFiles.COPYRIGHT)
+        var slidePicture: Bitmap? = null
+        if (videoSeekBar.progress == story.slides.size) {
+            //gets the end image if we are at the end of the story
+            //TODO what image are we actually getting?  -3.png?  this doesn't make sense.
+            //slidePicture = ImageFiles.getBitmap(story.title, ImageFiles.COPYRIGHT)
+        } else {
+            //Get a normal story image.
+            getStoryImage(this)
         }
 
         if (slidePicture == null) {

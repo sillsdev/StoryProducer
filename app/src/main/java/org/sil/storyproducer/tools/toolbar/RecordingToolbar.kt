@@ -39,9 +39,7 @@ import org.sil.storyproducer.model.logging.LearnEntry
 import org.sil.storyproducer.model.logging.LogEntry
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.FileSystem
-import org.sil.storyproducer.tools.file.LogFiles
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 
@@ -82,6 +80,7 @@ open class RecordingToolbar
 constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
             protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
             protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
+            protected var playbackRecordRelPath: String,
             private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener) : AnimationToolbar(activity) {
 
     private val RECORDING_ANIMATION_DURATION = 1500
@@ -118,7 +117,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var resp: String? = null
     private var testErr: String? = null
 
-    protected var playbackRecordRelPath: String
     protected var recordRelPath: String = Workspace.activePhase.getName()
 
 
@@ -143,7 +141,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      */
     fun keepToolbarVisible() {
         //hideFloatingActionButton();
-        toolbar!!.visibility = View.VISIBLE
+        toolbar.visibility = View.VISIBLE
     }
 
     /**
@@ -204,14 +202,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     open fun onClose() {
         stopToolbarMedia()
     }
-
-
-    fun closeToolbar() {
-        if (toolbar != null) {
-            super.close()
-        }
-    }
-
+    
     open fun hideButtons() {
         if (enablePlaybackButton) {
             playButton.visibility = View.INVISIBLE
@@ -227,12 +218,22 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         }
     }
 
-    protected fun startRecording() {
+    protected fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
         if (Workspace.activePhase.phaseType === PhaseType.DRAFT) {
             LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry())
         }
-        startAudioRecorder()
+        voiceRecorder = AudioRecorder(activity, recordingRelPath)
+        try {
+            isRecording = true
+            voiceRecorder!!.prepare()
+            voiceRecorder!!.start()
+            Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
+        } catch (e: IllegalStateException) {
+            Log.e(TAG, "Could not record voice.", e)
+        } catch (e: IOException) {
+            Log.e(TAG, "Could not record voice.", e)
+        }
         startRecordingAnimation(false, 0)
         recordingListener.onStartedRecordingOrPlayback(true)
 
@@ -272,17 +273,17 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
         var buttonSpacing = Space(appContext)
         buttonSpacing.layoutParams = spaceLayoutParams
-        toolbar!!.addView(buttonSpacing) //Add a space to the left of the first button.
+        toolbar.addView(buttonSpacing) //Add a space to the left of the first button.
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
-                toolbar!!.addView(imageButtons[i])
+                toolbar.addView(imageButtons[i])
 
                 buttonSpacing = Space(appContext)
                 buttonSpacing.layoutParams = spaceLayoutParams
-                toolbar!!.addView(buttonSpacing)
+                toolbar.addView(buttonSpacing)
                 when (i) {
                     0 -> micButton = imageButtons[i]
                     1 -> playButton = imageButtons[i]
@@ -293,7 +294,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
             }
         }
 
-        val playBackFileExist = File(playbackRecordFilePath).exists()
+        val playBackFileExist = storyRelPathExists(activity,playbackRecordRelPath)
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
@@ -355,29 +356,23 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
                 }
             } else {
-                //learn phase overwrite dialog
-                if (Workspace.activePhase.phaseType === PhaseType.LEARN ||
-                        Workspace.activePhase.phaseType === PhaseType.WHOLE_STORY) {
-                    val recordingExists = File(recordFilePath).exists()
-                    if (recordingExists) {
-                        val dialog = AlertDialog.Builder(activity)
-                                .setTitle(activity.getString(R.string.overwrite))
-                                .setMessage(activity.getString(R.string.learn_phase_overwrite))
-                                .setNegativeButton(activity.getString(R.string.no)) { dialog, id ->
-                                    //do nothing
-                                }
-                                .setPositiveButton(activity.getString(R.string.yes)) { dialog, id ->
-                                    //overwrite audio
-                                    recordAudio()
-                                }.create()
+                //Now we need to start recording!
+                val recordingRelPath = assignNewAudioRelPath()
+                if (storyRelPathExists(activity,recordingRelPath)) {
+                    val dialog = AlertDialog.Builder(activity)
+                            .setTitle(activity.getString(R.string.overwrite))
+                            .setMessage(activity.getString(R.string.learn_phase_overwrite))
+                            .setNegativeButton(activity.getString(R.string.no)) { dialog, id ->
+                                //do nothing
+                            }
+                            .setPositiveButton(activity.getString(R.string.yes)) { dialog, id ->
+                                //overwrite audio
+                                recordAudio(recordingRelPath)
+                            }.create()
 
-                        dialog.show()
-
-                    } else {
-                        recordAudio()
-                    }
+                    dialog.show()
                 } else {
-                    recordAudio()
+                    recordAudio(recordingRelPath)
                 }
             }
         }
@@ -576,9 +571,9 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     /*
     * Start recording audio and hide buttons
      */
-    private fun recordAudio() {
+    private fun recordAudio(recordingRelPath: String) {
         stopPlayBackAndRecording()
-        startRecording()
+        startRecording(recordingRelPath)
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
         if (enableDeleteButton) {
             deleteButton.visibility = View.INVISIBLE
@@ -622,12 +617,12 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         val red = Color.rgb(255, 0, 0)
         var colorOfToolbar = Color.rgb(0, 0, 255) /*Arbitrary color value of blue used initially*/
 
-        val relBackgroundColor = toolbar!!.background
+        val relBackgroundColor = toolbar.background
         if (relBackgroundColor is ColorDrawable) {
             colorOfToolbar = relBackgroundColor.color
         }
         transitionDrawable = TransitionDrawable(arrayOf(ColorDrawable(colorOfToolbar), ColorDrawable(red)))
-        toolbar!!.background = transitionDrawable
+        toolbar.background = transitionDrawable
 
         colorHandler = Handler()
         colorHandlerRunnable = Runnable {
@@ -676,24 +671,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     }
 
     /**
-     * The function that aids in starting an audio recorder.
-     */
-    protected open fun startAudioRecorder() {
-        setVoiceRecorder(recordFilePath)
-        try {
-            isRecording = true
-            voiceRecorder!!.prepare()
-            voiceRecorder!!.start()
-            Toast.makeText(appContext, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
-        } catch (e: IllegalStateException) {
-            Log.e(TAG, "Could not record voice.", e)
-        } catch (e: IOException) {
-            Log.e(TAG, "Could not record voice.", e)
-        }
-
-    }
-
-    /**
      * The function that aids in stopping an audio recorder.
      */
     protected fun stopAudioRecorder() {
@@ -711,15 +688,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
         voiceRecorder!!.release()
         voiceRecorder = null
-    }
-
-    /**
-     * This function sets the voice recorder with a new voiceRecorder.
-     *
-     * @param fileName The file to output the voice recordings.
-     */
-    protected fun setVoiceRecorder(fileName: String) {
-        voiceRecorder = AudioRecorder(fileName, activity)
     }
 
     //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev

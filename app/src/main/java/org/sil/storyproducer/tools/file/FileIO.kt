@@ -15,7 +15,8 @@ import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
 
-fun getImage(context: Context, slideNum: Int, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
+
+fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
     if(story.title == "") return null
     val imName = story.slides[slideNum].imageFile
     val iStream = getStoryChildInputStream(context,imName,story.title)

@@ -34,29 +34,45 @@ fun assignNewAudioRelPath() : String {
     val phaseName = phase.getCamelName()
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
-    var relPath = "$PROJECT_DIR/" + phase.getCamelName() + "_" + Workspace.activeSlideNum.toString() + "_" + dtf.format(Date())
+    var relPath: String = ""
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so
     //they are used for the stages that do that.
-    relPath += when(phase.phaseType){
-        PhaseType.DRAFT, PhaseType.DRAMATIZATION -> AUDIO_APPEND_EXT
-        else -> AUDIO_EXT
+    relPath = when(phase.phaseType) {
+        //just one file.  Overwrite when you re-record.
+        PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
+            "$PROJECT_DIR/$phaseName" + AUDIO_EXT
+        }
+        //Make new files every time.  Don't append.
+        PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK -> {
+            "$PROJECT_DIR/$phaseName"  + "_" +
+                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
+        }
+        //If you want, append the file
+        PhaseType.DRAFT, PhaseType.DRAMATIZATION -> {
+            "$PROJECT_DIR/$phaseName"  + "_" +
+                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
+        }
+        else -> {""}
     }
 
     //register it in the story data structure.
     when(phase.phaseType){
+        //just one file.
         PhaseType.LEARN -> {Workspace.activeStory.learnAudioFile = relPath}
+        PhaseType.WHOLE_STORY -> {Workspace.activeStory.wholeStoryBackTAudioFile = relPath}
+        //multiple files, no distinction.
+        PhaseType.COMMUNITY_CHECK -> {Workspace.activeSlide!!.communityCheckAudioFiles.add(relPath)}
+        PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(relPath)}
+        //multiple files, one chosen.
         PhaseType.DRAFT ->{
             Workspace.activeSlide!!.draftAudioFiles.add(relPath)
             Workspace.activeSlide!!.chosenDraftFile = relPath
         }
-        PhaseType.COMMUNITY_CHECK -> {Workspace.activeSlide!!.communityCheckAudioFiles.add(relPath)}
-        PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(relPath)}
         PhaseType.DRAMATIZATION -> {
             Workspace.activeSlide!!.dramatizationAudioFiles.add(relPath)
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
         }
-        PhaseType.WHOLE_STORY -> {Workspace.activeStory.wholeStoryBackTAudioFile = relPath}
         else -> relPath = ""
     }
     return relPath

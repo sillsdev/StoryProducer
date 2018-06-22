@@ -6,12 +6,14 @@ import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 
 /**
  * Thin wrapper for [MediaRecorder] which provides some default behavior for recorder.
  */
-class AudioRecorder(activity: Activity, relPath: String, storyName: String) : MediaRecorder() {
+class AudioRecorder(activity: Activity, relPath: String,
+                    storyName: String = Workspace.activeStory.title) : MediaRecorder() {
 
     init {
         if (ContextCompat.checkSelfPermission(activity,
