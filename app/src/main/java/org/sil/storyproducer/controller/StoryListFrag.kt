@@ -11,6 +11,7 @@ import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.tools.file.getStoryImage
 
 class StoryListFrag : Fragment() {
 
@@ -63,18 +64,18 @@ class ListAdapter(context: Context,
             holder.txtTitle.text = story.slides[0].title
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(Workspace.getImage(context,1,25,story))
+            holder.imgIcon.setImageBitmap(getStoryImage(context,1,25,story))
             holder.txtSubTitle.text = story.slides[0].subtitle
         }
 
         return row
     }
 
-    internal class FileHolder{
+    internal class FileHolder(view : View){
         var imgIcon: ImageView
         var txtTitle: TextView
         var txtSubTitle: TextView
-        constructor(view : View){
+        init {
             imgIcon = view.findViewById(R.id.story_list_image)
             txtTitle = view.findViewById(R.id.story_list_title)
             txtSubTitle = view.findViewById(R.id.story_list_subtitle)

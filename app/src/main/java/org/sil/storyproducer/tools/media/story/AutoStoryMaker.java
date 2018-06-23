@@ -270,14 +270,15 @@ public class AutoStoryMaker extends Thread implements Closeable {
                     image = ImageFiles.getFile(mStory, iSlide);
                 }
             }
-            File audio = AudioFiles.getDramatization(mStory, iSlide);
+            File audio = AudioFiles.INSTANCE.getDramatization(mStory, iSlide);
             //fallback to draft audio
             if(!audio.exists()) {
-                audio = AudioFiles.getDraft(mStory, iSlide);
+                audio = AudioFiles.INSTANCE.getDraft(mStory, iSlide);
             }
             //fallback to LWC audio
             if(!audio.exists()) {
-                audio = AudioFiles.INSTANCE.getNarration(mStory, iSlide);
+                //FIXME
+                //audio = AudioFiles.INSTANCE.getNarration(mStory, iSlide);
             }
             //error
             if(!audio.exists()) {
@@ -287,7 +288,8 @@ public class AutoStoryMaker extends Thread implements Closeable {
 
             File soundtrack = null;
             if(mIncludeBackgroundMusic) {
-                soundtrack = AudioFiles.INSTANCE.getSoundtrack(mStory, iSlide);
+                //FIXME
+                //soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
                 if(soundtrack == null) {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack;

@@ -105,10 +105,11 @@ public class DramatizationFrag extends Fragment {
         }
 
         draftPlayer = new AudioPlayer();
-        File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
+        File draftAudioFile = AudioFiles.INSTANCE.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setSource(draftAudioFile.getPath());
+            //FIXME
+            //draftPlayer.setSource(draftAudioFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -130,7 +131,7 @@ public class DramatizationFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
         }
         closeKeyboard(rootView);
         TextFiles.setDramatizationText(StoryState.getStoryName(), slideNumber, slideText.getText().toString());
@@ -145,7 +146,7 @@ public class DramatizationFrag extends Fragment {
         super.onStop();
         draftPlayer.release();
         if(recordingToolbar != null){
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
             recordingToolbar.releaseToolbarAudio();
         }
 
@@ -168,7 +169,7 @@ public class DramatizationFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.onClose();
+                    recordingToolbar.onPause();
                 }
                 closeKeyboard(rootView);
                 TextFiles.setDramatizationText(StoryState.getStoryName(), slideNumber, slideText.getText().toString());
@@ -243,8 +244,9 @@ public class DramatizationFrag extends Fragment {
      * sets the playback path
      */
     public void setPlayBackPath() {
-        String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
-        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+        //FIXME
+        //String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+        //recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /**
@@ -299,7 +301,7 @@ public class DramatizationFrag extends Fragment {
      */
     private void setToolbar(View toolbar) {
         if (rootView instanceof RelativeLayout) {
-            String playBackFilePath = AudioFiles.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
+            String playBackFilePath = AudioFiles.INSTANCE.getDramatization(StoryState.getStoryName(), slideNumber).getPath();
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {

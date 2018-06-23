@@ -21,7 +21,6 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.LearnEntry
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.file.ImageFiles
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -164,8 +163,8 @@ class LearnActivity : PhaseBaseActivity() {
     public override fun onPause() {
         super.onPause()
         pauseVideo()
-        recordingToolbar.onClose()
-        recordingToolbar.closeToolbar()
+        recordingToolbar.onPause()
+        recordingToolbar.close()
     }
 
     public override fun onResume() {
@@ -177,8 +176,8 @@ class LearnActivity : PhaseBaseActivity() {
         super.onStop()
         narrationPlayer.release()
         backgroundPlayer.release()
-        recordingToolbar.onClose()
-        recordingToolbar.closeToolbar()
+        recordingToolbar.onPause()
+        recordingToolbar.close()
         recordingToolbar.releaseToolbarAudio()
     }
 

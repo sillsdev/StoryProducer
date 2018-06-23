@@ -161,10 +161,11 @@ public class BackTranslationFrag extends Fragment {
         setToolbar(rootViewToolbar);
 
         draftPlayer = new AudioPlayer();
-        File draftAudioFile = AudioFiles.getDraft(storyName, slideNumber);
+        File draftAudioFile = AudioFiles.INSTANCE.getDraft(storyName, slideNumber);
         if (draftAudioFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setSource(draftAudioFile.getPath());
+            //FIXME
+            //draftPlayer.setSource(draftAudioFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -201,7 +202,7 @@ public class BackTranslationFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
         }
         closeKeyboard(rootView);
     }
@@ -215,7 +216,7 @@ public class BackTranslationFrag extends Fragment {
         super.onStop();
         draftPlayer.release();
         if(recordingToolbar != null){
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
             recordingToolbar.releaseToolbarAudio();
         }
 
@@ -237,7 +238,7 @@ public class BackTranslationFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.onClose();
+                    recordingToolbar.onPause();
                 }
                 closeKeyboard(rootView);
             }
@@ -263,8 +264,9 @@ public class BackTranslationFrag extends Fragment {
      * sets the playback path
      */
     public void updatePlayBackPath() {
-        String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
-        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+        //FIXME
+        //String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
+        //recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /*
@@ -319,8 +321,9 @@ public class BackTranslationFrag extends Fragment {
      * sets the playback path
      */
     public void setPlayBackPath() {
-        String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
-        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+        //FIXME
+        //String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
+        //recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /**
@@ -375,7 +378,7 @@ public class BackTranslationFrag extends Fragment {
      */
     private void setToolbar(View toolbar) {
         if (rootView instanceof RelativeLayout) {
-            String playBackFilePath = AudioFiles.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
+            String playBackFilePath = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
             RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
                 @Override
                 public void onStoppedRecording() {

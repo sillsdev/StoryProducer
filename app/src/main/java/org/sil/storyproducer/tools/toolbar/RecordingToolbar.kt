@@ -99,7 +99,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var isToolbarRed = false
     private var voiceRecorder: AudioRecorder = AudioRecorder()
     protected var audioPlayer: AudioPlayer = AudioPlayer()
-    private val canOverwrite = false
+    val isRecording = voiceRecorder.isRecording
 
     private var js: MutableMap<String, String>? = null
     private var resp: String? = null
@@ -179,14 +179,14 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         auxiliaryMedia.playingAudio = playingAudio
         auxiliaryMedia.setButtonToDrawableOnStop = setButtonToDrawable
         auxiliaryMedia.viewThatIsPlayingButton = viewThatIsPlayingButton
-        auxiliaryMediaList!!.add(auxiliaryMedia)
+        auxiliaryMediaList.add(auxiliaryMedia)
     }
 
     /**
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
-    open fun onClose() {
+    open fun onPause() {
         stopToolbarMedia()
     }
     

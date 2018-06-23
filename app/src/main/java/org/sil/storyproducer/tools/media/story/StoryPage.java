@@ -119,7 +119,9 @@ public class StoryPage {
      */
     public long getAudioDuration() {
         if(mNarrationAudio != null) {
-            return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
+            //FIXME
+            //return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
+            return 0;
         }
         else {
             return mDuration;

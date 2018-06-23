@@ -116,8 +116,9 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         backgroundAudioJumps = new ArrayList<>();
         backgroundAudioJumps.add(0, audioStartValue);
         for(int k = 0; k < CONTENT_SLIDE_COUNT; k++) {
-            String lwcPath = AudioFiles.INSTANCE.getNarration(storyName, k).getPath();
-            audioStartValue += MediaHelper.getAudioDuration(lwcPath) / 1000;
+            //FIXME
+            //String lwcPath = AudioFiles.getNarration(storyName, k).getPath();
+            //audioStartValue += MediaHelper.getAudioDuration(lwcPath) / 1000;
             backgroundAudioJumps.add(k, audioStartValue);
         }
         backgroundAudioJumps.add(audioStartValue);        //this last one is just added for the copyrights slide
@@ -146,6 +147,8 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
         backgroundPlayer = new AudioPlayer();
         backgroundPlayer.setVolume(BACKGROUND_VOLUME);
+        //FIXME
+/*
         File backgroundAudioFile = AudioFiles.INSTANCE.getSoundtrack(StoryState.getStoryName());
         if (backgroundAudioFile.exists()) {
             backgroundAudioExists = true;
@@ -153,6 +156,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         } else {
             backgroundAudioExists = false;
         }
+*/
     }
 
     /*private void markLogStart() {
@@ -180,8 +184,9 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         super.onPause();
         pauseVideo();
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onPause();
+            //FIXME
+            //recordingToolbar.closeToolbar();
         }
     }
 
@@ -197,8 +202,9 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         narrationPlayer.release();
         backgroundPlayer.release();
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
-            recordingToolbar.closeToolbar();
+            recordingToolbar.onPause();
+            //FIXME
+            //recordingToolbar.closeToolbar();
             recordingToolbar.releaseToolbarAudio();
         }
 
@@ -209,11 +215,12 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      */
     void playVideo() {
         setPic(wStoryImageView);                                                             //set the next image
-        File audioFile = AudioFiles.getDraft(storyName, slideNumber);
+        File audioFile = AudioFiles.INSTANCE.getDraft(storyName, slideNumber);
         //set the next audio
         if (audioFile.exists()) {
             narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
-            narrationPlayer.setSource(audioFile.getPath());
+            //FIXME
+            //narrationPlayer.setSource(audioFile.getPath());
             narrationPlayer.playAudio();
         }
 
@@ -412,6 +419,8 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar){
+        //FIXME
+/*
         recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, true, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
             public void onStoppedRecording() {
@@ -422,6 +431,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 resetVideoWithSoundOff();
             }
         });
+*/
         //recordingToolbar.hideFloatingActionButton();
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording

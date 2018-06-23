@@ -53,7 +53,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
     public PausingRecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
                                    boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton,boolean enableSendAudioButton,
                                    String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
-        super(activity, rootViewToolbarLayout, rootViewLayout, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton, playbackRecordFilePath, recordFilePath, multiRecordModal, recordingListener);
+        super(activity, rootViewToolbarLayout, rootViewLayout, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton, multiRecordModal, recordingListener);
 
         wavAudioRecorder = new WavAudioRecorder(activity, new File(recordFilePath));
     }
@@ -65,7 +65,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     public void stopToolbarMedia() {
-        if (getIsRecording()) {
+        if (isRecording()) {
             stopRecording();
             getMicButton().setBackgroundResource(R.drawable.ic_mic_black_append);
             //set playback button visible
@@ -106,8 +106,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      * so {@link #stopPlayBackAndRecording()} is not being used here.
      */
     @Override
-    public void onClose() {
-        if (getIsRecording()) {
+    public void onPause() {
+        if (isRecording()) {
             //simulate a stop of recording.
             getMicButton().callOnClick();
         }
@@ -123,7 +123,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     public void setRecordFilePath(String path) {
         setRecordFilePath(path);
-        wavAudioRecorder.setNewPath(new File(getRecordFilePath()));
+        //FIXME
+//        wavAudioRecorder.setNewPath(new File(getRecordFilePath()));
     }
 
     /**
@@ -187,7 +188,9 @@ public class PausingRecordingToolbar extends RecordingToolbar {
             }
         }
 
-        boolean playBackFileExist = new File(getPlaybackRecordFilePath()).exists();
+        //FIXME
+        //boolean playBackFileExist = new File(getPlaybackRecordFilePath()).exists();
+        boolean playBackFileExist = false;
         if(getEnablePlaybackButton()){
             getPlayButton().setVisibility((playBackFileExist) ? View.VISIBLE : View.INVISIBLE);
         }
@@ -209,15 +212,18 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     @Override
     protected void stopRecording() {
-        setIsRecording(false);
+        //setIsRecording(false);
         stopRecordingAnimation();
         wavAudioRecorder.stopRecording();
         if (isAppendingOn) {
+            //FIXME
+/*
             try {
                 WavFileConcatenator.ConcatenateAudioFiles(new File(getRecordFilePath()), AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
             } catch (FileNotFoundException e) {
                 Log.e(TAG, "Did not concatenate audio files", e);
             }
+*/
         } else {
             wavAudioRecorder.setNewPath(AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
         }
@@ -226,9 +232,11 @@ public class PausingRecordingToolbar extends RecordingToolbar {
     /**
      * Start the audio recorder.
      */
-    @Override
+    //FIXME
+    //@Override
     protected void startAudioRecorder() {
-        setIsRecording(true);
+        //FIXME
+        //setIsRecording(true);
         wavAudioRecorder.startRecording();
     }
 
@@ -243,7 +251,7 @@ public class PausingRecordingToolbar extends RecordingToolbar {
         View.OnClickListener micListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (getIsRecording()) {
+                if (isRecording()) {
                     stopRecording();
                     if (!isAppendingOn) {
                         isAppendingOn = true;
@@ -264,7 +272,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
                     }
                 } else {
                     stopPlayBackAndRecording();
-                    startRecording();
+                    //FIXME
+                    //startRecording();
                     if (!isAppendingOn) {
                         getRecordingListener().onStartedRecordingOrPlayback(true);
                     }

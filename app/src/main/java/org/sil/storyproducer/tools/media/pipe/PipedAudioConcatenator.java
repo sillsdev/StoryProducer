@@ -154,7 +154,9 @@ public class PipedAudioConcatenator extends PipedAudioShortManipulator implement
      */
     public void addLoopingSourcePath(String sourcePath, long duration) throws SourceUnacceptableException {
         if(sourcePath != null) {
-            long sourceDuration = MediaHelper.getAudioDuration(sourcePath);
+            //FIXME
+            //long sourceDuration = MediaHelper.getAudioDuration(sourcePath);
+            long sourceDuration = 0;
             if(sourceDuration < duration) {
                 //Only add a looper if necessary
                 addSource(new PipedAudioLooper(sourcePath, duration), duration);

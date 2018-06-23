@@ -117,7 +117,8 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
             });
             final File backT_file = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (backT_file.exists()) {
-                audioPlayer.setSource(backT_file.getPath());
+                //FIXME
+                //audioPlayer.setSource(backT_file.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.backTranslation_playing_backT), Toast.LENGTH_SHORT).show();
             } else {

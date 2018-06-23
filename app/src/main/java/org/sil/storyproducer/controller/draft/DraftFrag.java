@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.SlideText;
+import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.logging.DraftEntry;
 import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.StorySharedPreferences;
@@ -112,7 +113,7 @@ public class DraftFrag extends Fragment {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 if (recordingToolbar != null) {
-                    recordingToolbar.onClose();
+                    recordingToolbar.onPause();
                 }
             }
         }
@@ -125,13 +126,16 @@ public class DraftFrag extends Fragment {
         setToolbar(rootViewToolbar);
 
         LWCAudioPlayer = new AudioPlayer();
-        File LWCFile = AudioFiles.INSTANCE.getNarration(storyName, slideNumber);
+        //FIXME
+/*
+        File LWCFile = AudioFiles.getNarration(storyName, slideNumber);
         if (LWCFile.exists()) {
             LWCAudioExists = true;
             LWCAudioPlayer.setSource(LWCFile.getPath());
         } else {
             LWCAudioExists = false;
         }
+*/
 
         LWCAudioPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -149,7 +153,7 @@ public class DraftFrag extends Fragment {
     public void onPause() {
         super.onPause();
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
         }
     }
 
@@ -165,7 +169,7 @@ public class DraftFrag extends Fragment {
         LWCAudioPlayer.release();
      
         if (recordingToolbar != null) {
-            recordingToolbar.onClose();
+            recordingToolbar.onPause();
             recordingToolbar.releaseToolbarAudio();
         }
 
@@ -182,8 +186,9 @@ public class DraftFrag extends Fragment {
      * sets the playback path
      */
     public void updatePlayBackPath() {
-        String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-        recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
+        //FIXME
+        //String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+        //recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
     }
 
     /**
@@ -319,14 +324,15 @@ public class DraftFrag extends Fragment {
      */
     private void setToolbar(View toolbar) {
         if (rootView instanceof RelativeLayout) {
-            String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
+            String playBackFilePath = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slideNumber).getPath();
             RecordingListener recordingListener = new RecordingListener() {
                 @Override
                 public void onStoppedRecording() {
                     String title = AudioFiles.INSTANCE.getDraftTitle(recordFile);
                     StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName());     //save the draft  title for the recording
                     setRecordFilePath();
-                    recordingToolbar.setRecordFilePath(recordFile.getAbsolutePath());
+                    //FIXME
+                    //recordingToolbar.setRecordFilePath(recordFile.getAbsolutePath());
                     updatePlayBackPath();
                 }
 
@@ -337,8 +343,9 @@ public class DraftFrag extends Fragment {
             };
             DraftListRecordingsModal modal = new DraftListRecordingsModal(getContext(), slideNumber, this);
 
-            recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
-                    true, false, true, false, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
+            //FIXME
+            //recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
+            //        true, false, true, false, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
             recordingToolbar.keepToolbarVisible();
             recordingToolbar.stopToolbarMedia();
         }

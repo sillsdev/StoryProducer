@@ -109,7 +109,8 @@ public class DraftListRecordingsModal implements RecordingsListAdapter.ClickList
             });
             final File draftFile = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (draftFile.exists()) {
-                audioPlayer.setSource(draftFile.getPath());
+                //FIXME
+                //audioPlayer.setSource(draftFile.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.draft_playing_draft), Toast.LENGTH_SHORT).show();
             } else {

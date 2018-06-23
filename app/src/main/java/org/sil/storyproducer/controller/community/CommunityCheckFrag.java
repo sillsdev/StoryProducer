@@ -111,10 +111,11 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         super.onStart();
         commentPlayer = new AudioPlayer();
         draftPlayer = new AudioPlayer();
-        final File draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber);
+        final File draftFile = AudioFiles.INSTANCE.getDraft(StoryState.getStoryName(), slideNumber);
         if (draftFile.exists()) {
             draftAudioExists = true;
-            draftPlayer.setSource(draftFile.getPath());
+            //TODO fis this line.
+            //draftPlayer.setSource(draftFile.getPath());
         } else {
             draftAudioExists = false;
         }
@@ -257,7 +258,8 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         stopAllMedia();
         commentButtonClicked = buttonClickedNow;
         if (commentFile.exists() && !wasPlaying) {
-            commentPlayer.setSource(commentFile.getPath());
+            //TODO fix this line.
+            //commentPlayer.setSource(commentFile.getPath());
             commentPlayer.playAudio();
             buttonClickedNow.setImageResource(R.drawable.ic_stop_red);
             commentPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
@@ -381,7 +383,8 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
      * @param fileName The file to output the voice recordings.
      */
     private void setVoiceRecorder(String fileName){
-        commentRecorder = new AudioRecorder(fileName, getActivity());
+        //FIXME
+        //commentRecorder = new AudioRecorder(fileName, getActivity());
     }
 
     /**

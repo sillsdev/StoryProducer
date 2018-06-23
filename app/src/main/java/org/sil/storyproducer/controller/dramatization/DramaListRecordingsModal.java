@@ -114,7 +114,8 @@ public class DramaListRecordingsModal implements RecordingsListAdapter.ClickList
             });
             final File dramaFile = AudioFiles.INSTANCE.getDramatization(StoryState.getStoryName(), slidePosition, recordingTitle);
             if (dramaFile.exists()) {
-                audioPlayer.setSource(dramaFile.getPath());
+                //FIXME
+                //audioPlayer.setSource(dramaFile.getPath());
                 audioPlayer.playAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.dramatization_playing_dramatize), Toast.LENGTH_SHORT).show();
             } else {
