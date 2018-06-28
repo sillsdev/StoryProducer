@@ -150,6 +150,7 @@ public class RegistrationActivity extends AppCompatActivity {
         if(resultCode == RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE){
             Workspace.INSTANCE.setWorkspace(DocumentFile.fromTreeUri(this, data.getData()));
             Workspace.INSTANCE.updateStories(this);
+            Workspace.INSTANCE.completeRegistration(this);
             Workspace.INSTANCE.getRegistration().load(this);
             setupInputFields();
         }

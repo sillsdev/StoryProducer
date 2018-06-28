@@ -72,6 +72,7 @@ class Phase(val phaseType: PhaseType) {
         fun getLocalPhases() : List<Phase> {
             return listOf(
                     Phase(PhaseType.LEARN),
+                    Phase(PhaseType.DRAFT),
                     Phase(PhaseType.COMMUNITY_CHECK),
                     Phase(PhaseType.CONSULTANT_CHECK),
                     Phase(PhaseType.DRAMATIZATION),
@@ -82,6 +83,7 @@ class Phase(val phaseType: PhaseType) {
         fun getRemotePhases() : List<Phase> {
             return listOf(
                     Phase(PhaseType.LEARN),
+                    Phase(PhaseType.DRAFT),
                     Phase(PhaseType.COMMUNITY_CHECK),
                     Phase(PhaseType.WHOLE_STORY),
                     Phase(PhaseType.BACKT),
