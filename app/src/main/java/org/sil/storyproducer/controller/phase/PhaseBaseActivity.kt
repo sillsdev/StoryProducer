@@ -25,10 +25,7 @@ import android.widget.ListView
 import android.widget.Spinner
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.emptyStory
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.tools.PhaseMenuItemListener
@@ -60,6 +57,11 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
 
         setupDrawer()
+    }
+
+    override fun onPause(){
+        story.toJson(this)
+        super.onPause()
     }
 
     //Override setContentView to coerce into child view.
