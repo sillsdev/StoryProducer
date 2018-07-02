@@ -29,7 +29,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer
  * This class handles the layout inflation for an audio recording list
  */
 
-class RecordingsListAdapter(context: Context, private val values: MutableList<String>, private val listeners: ClickListeners) : ArrayAdapter<String>(context, -1, values) {
+class RecordingsListAdapter(context: Context, private val values: Array<String>, private val listeners: ClickListeners) : ArrayAdapter<String>(context, -1, values) {
     private var deleteTitle: String? = null
     private var deleteMessage: String? = null
 
@@ -55,7 +55,7 @@ class RecordingsListAdapter(context: Context, private val values: MutableList<St
         if (Workspace.activePhase.hasChosenFilename) {
             rowView.setOnClickListener { listeners.onRowClick(values[position]) }
             titleView.setOnClickListener { listeners.onRowClick(values[position]) }
-            if(values[position] == Workspace.activePhase.chosenFilename) {
+            if("$PROJECT_DIR/" + values[position] == Workspace.activePhase.chosenFilename) {
                 setUiForSelectedView(rowView, deleteButton, playButton)
             }
         }
@@ -179,15 +179,18 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     private fun createRecordingList() {
         val listView = rootView!!.findViewById<ListView>(R.id.recordings_list)
         listView.isScrollbarFadingEnabled = false
-        val strippedFilenames = filenames.toList()
-        val adapter = RecordingsListAdapter(context, filenames.replaceAll(), this)
+        val strippedFilenames = filenames.toMutableList()
+        for (i in 0 until strippedFilenames.size){
+            strippedFilenames[i] = strippedFilenames[i].split("/").last()
+        }
+        val adapter = RecordingsListAdapter(context, strippedFilenames.toTypedArray(), this)
         adapter.setDeleteTitle(context.resources.getString(R.string.delete_draft_title))
         adapter.setDeleteMessage(context.resources.getString(R.string.delete_draft_message))
         listView.adapter = adapter
     }
 
     override fun onRowClick(recordingTitle: String) {
-        Workspace.activePhase.chosenFilename = recordingTitle
+        Workspace.activePhase.chosenFilename = "$PROJECT_DIR/$recordingTitle"
         dialog!!.dismiss()
     }
 
@@ -218,9 +221,9 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     override fun onDeleteClick(recordingTitle: String) {
         filenames.remove(recordingTitle)
         deleteStoryFile(context, recordingTitle)
-        if(recordingTitle == Workspace.activePhase.chosenFilename){
+        if("$PROJECT_DIR/$recordingTitle" == Workspace.activePhase.chosenFilename){
             if(filenames.size > 0)
-                Workspace.activePhase.chosenFilename = filenames.last()
+                Workspace.activePhase.chosenFilename = "$PROJECT_DIR/" + filenames.last()
             else{
                 Workspace.activePhase.chosenFilename = ""
                 parentFragment.hideButtonsToolbar()

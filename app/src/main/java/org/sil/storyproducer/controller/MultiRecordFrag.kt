@@ -35,13 +35,13 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
 abstract class MultiRecordFrag : Fragment() {
-    private var rootView: View? = null
-    private var rootViewToolbar: View? = null
+    protected var rootView: View? = null
+    protected var rootViewToolbar: View? = null
 
-    private var referenceAudioPlayer: AudioPlayer = AudioPlayer()
-    private var referncePlayButton: ImageButton? = null
+    protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
+    protected var referncePlayButton: ImageButton? = null
 
-    private var recordingToolbar: RecordingToolbar? = null
+    protected var recordingToolbar: RecordingToolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,8 +60,6 @@ abstract class MultiRecordFrag : Fragment() {
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_mr_image_view) as ImageView)
-        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_mr_scripture_text) as TextView)
-        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_mr_reference_text) as TextView)
         setReferenceAudioButton(referncePlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
         slideNumberText.text = Workspace.activeSlideNum.toString()

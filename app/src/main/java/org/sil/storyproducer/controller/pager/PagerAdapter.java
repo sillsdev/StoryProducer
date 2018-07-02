@@ -36,7 +36,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         switch (StoryState.getCurrentPhase().getPhaseType()) {
             case DRAFT:
                 fragment = new DraftFrag();
-                passedArgs.putInt(DraftFrag.Companion.getSLIDE_NUM(), i);
                 break;
             case COMMUNITY_CHECK:
                 fragment = new CommunityCheckFrag();
@@ -60,7 +59,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 break;
             default:
                 fragment = new DraftFrag();
-                passedArgs.putInt(DraftFrag.Companion.getSLIDE_NUM(), i);
+                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i);
         }
         fragment.setArguments(passedArgs);
 
