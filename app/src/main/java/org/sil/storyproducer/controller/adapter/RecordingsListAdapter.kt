@@ -2,8 +2,8 @@ package org.sil.storyproducer.controller.adapter
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.media.MediaPlayer
+import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
@@ -13,20 +13,23 @@ import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.draft.DraftFrag
-import org.sil.storyproducer.controller.draft.DraftListRecordingsModal
-import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal
-import org.sil.storyproducer.controller.remote.BackTranslationListRecordingsModal
+import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.AudioFiles
+import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.renameStoryFile
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 /**
  * This class handles the layout inflation for an audio recording list
  */
 
-class RecordingsListAdapter(context: Context, private val values: Array<String>, private val listeners: ClickListeners) : ArrayAdapter<String>(context, -1, values) {
+class RecordingsListAdapter(context: Context, private val values: MutableList<String>, private val listeners: ClickListeners) : ArrayAdapter<String>(context, -1, values) {
     private var deleteTitle: String? = null
     private var deleteMessage: String? = null
 
@@ -49,17 +52,10 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         titleView.text = values[position]
 
         //things specifically for the modals
-        if (listeners is DramaListRecordingsModal || listeners is DraftListRecordingsModal
-                || listeners is BackTranslationListRecordingsModal) {
+        if (Workspace.activePhase.hasChosenFilename) {
             rowView.setOnClickListener { listeners.onRowClick(values[position]) }
             titleView.setOnClickListener { listeners.onRowClick(values[position]) }
-            if (listeners is DraftListRecordingsModal && StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()) == values[position]) {
-                setUiForSelectedView(rowView, deleteButton, playButton)
-            }
-            if (listeners is DramaListRecordingsModal && StorySharedPreferences.getDramatizationForSlideAndStory(slidePosition, StoryState.getStoryName()) == values[position]) {
-                setUiForSelectedView(rowView, deleteButton, playButton)
-            }
-            if (listeners is BackTranslationListRecordingsModal && StorySharedPreferences.getBackTranslationForSlideAndStory(slidePosition, StoryState.getStoryName()) == values[position]) {
+            if(values[position] == Workspace.activePhase.chosenFilename) {
                 setUiForSelectedView(rowView, deleteButton, playButton)
             }
         }
@@ -141,29 +137,25 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         dialog.show()
         // show keyboard for renaming
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm?.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
 
     }
 }
 
-class RecordingsListModal(private val context: Context, private val parentFragment: DraftFrag) : RecordingsListAdapter.ClickListeners, Modal {
+class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag) : RecordingsListAdapter.ClickListeners, Modal {
     private var rootView: LinearLayout? = null
     private var dialog: AlertDialog? = null
 
-    private var draftTitles: Array<String>? = null
+    private var filenames: MutableList<String> = Workspace.activePhase.recordedAudioFiles!!
     private var lastNewName: String? = null
     private var lastOldName: String? = null
 
-    private val audioPlayer: AudioPlayer
+    private val audioPlayer: AudioPlayer = AudioPlayer()
     private var currentPlayingButton: ImageButton? = null
-
-    init {
-        audioPlayer = AudioPlayer()
-    }
 
     override fun show() {
         val inflater = parentFragment.activity.layoutInflater
-        rootView = inflater.inflate(R.layout.recordings_list, null) as LinearLayout
+        rootView = inflater.inflate(R.layout.recordings_list, parentFragment.view as ViewGroup) as LinearLayout
 
         createRecordingList()
 
@@ -187,15 +179,15 @@ class RecordingsListModal(private val context: Context, private val parentFragme
     private fun createRecordingList() {
         val listView = rootView!!.findViewById<ListView>(R.id.recordings_list)
         listView.isScrollbarFadingEnabled = false
-        val adapter = RecordingsListAdapter(context, draftTitles, slidePosition, this)
+        val strippedFilenames = filenames.toList()
+        val adapter = RecordingsListAdapter(context, filenames.replaceAll(), this)
         adapter.setDeleteTitle(context.resources.getString(R.string.delete_draft_title))
         adapter.setDeleteMessage(context.resources.getString(R.string.delete_draft_message))
         listView.adapter = adapter
     }
 
     override fun onRowClick(recordingTitle: String) {
-        StorySharedPreferences.setDraftForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName())
-        parentFragment.updatePlayBackPath()
+        Workspace.activePhase.chosenFilename = recordingTitle
         dialog!!.dismiss()
     }
 
@@ -212,45 +204,43 @@ class RecordingsListModal(private val context: Context, private val parentFragme
             currentPlayingButton = buttonClickedNow
             currentPlayingButton!!.setImageResource(R.drawable.ic_stop_red)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { currentPlayingButton!!.setImageResource(R.drawable.ic_green_play) })
-            val draftFile = AudioFiles.getDraft(StoryState.getStoryName(), slidePosition, recordingTitle)
-            if (draftFile.exists()) {
-                //FIXME
-                //audioPlayer.setSource(draftFile.getPath());
+            if (storyRelPathExists(context,recordingTitle)) {
+                audioPlayer.setStorySource(context,recordingTitle)
                 audioPlayer.playAudio()
-                Toast.makeText(parentFragment.context, context.getString(R.string.draft_playing_draft), Toast.LENGTH_SHORT).show()
+                Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
             } else {
-                Toast.makeText(parentFragment.context, context.getString(R.string.draft_no_draft_found), Toast.LENGTH_SHORT).show()
+                Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
             }
 
         }
     }
 
     override fun onDeleteClick(recordingTitle: String) {
-        AudioFiles.deleteDraft(StoryState.getStoryName(), slidePosition, recordingTitle)
-        createRecordingList()
-        if (StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()) == recordingTitle) {        //deleted the selected file
-            if (draftTitles!!.size > 0) {
-                StorySharedPreferences.setDraftForSlideAndStory(draftTitles!![draftTitles!!.size - 1], slidePosition, StoryState.getStoryName())
-            } else {
-                StorySharedPreferences.setDraftForSlideAndStory("", slidePosition, StoryState.getStoryName())       //no stories to set it to
+        filenames.remove(recordingTitle)
+        deleteStoryFile(context, recordingTitle)
+        if(recordingTitle == Workspace.activePhase.chosenFilename){
+            if(filenames.size > 0)
+                Workspace.activePhase.chosenFilename = filenames.last()
+            else{
+                Workspace.activePhase.chosenFilename = ""
                 parentFragment.hideButtonsToolbar()
             }
-
         }
-        parentFragment.updatePlayBackPath()
     }
 
     override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
         lastOldName = name
         lastNewName = newName
-        return AudioFiles.renameDraft(StoryState.getStoryName(), slidePosition, name, newName)
+        when(renameStoryFile(context,"$PROJECT_DIR/$name",newName)){
+            true -> return AudioFiles.RenameCode.SUCCESS
+            false -> return AudioFiles.RenameCode.ERROR_UNDEFINED
+        }
     }
 
     override fun onRenameSuccess() {
+        val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
+        filenames.removeAt(index)
+        filenames.add(index,"$PROJECT_DIR/$lastNewName")
         createRecordingList()
-        if (StorySharedPreferences.getDraftForSlideAndStory(slidePosition, StoryState.getStoryName()) == lastOldName) {
-            StorySharedPreferences.setDraftForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName())
-        }
-        parentFragment.updatePlayBackPath()
     }
 }

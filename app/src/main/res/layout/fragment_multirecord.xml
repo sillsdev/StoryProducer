@@ -1,24 +1,24 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_draft_root_relayout_layout"
+    android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
-    tools:context="org.sil.storyproducer.controller.draft.DraftFrag">
+    tools:context="org.sil.storyproducer.controller.MultiRecordFrag">
 
     <RelativeLayout
-        android:id="@+id/fragment_draft_envelope"
+        android:id="@+id/fragment_mr_envelope"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/fragment_draft_image_envelope"
+            android:id="@+id/fragment_mr_image_envelope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/fragment_draft_image_view"
+                android:id="@+id/fragment_mr_image_view"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_gravity="center"
@@ -28,32 +28,32 @@
             <ImageView
                 android:layout_width="@dimen/circle_diameter"
                 android:layout_height="@dimen/circle_diameter"
-                android:layout_alignBottom="@id/fragment_draft_image_view"
-                android:layout_alignStart="@id/fragment_draft_image_view"
+                android:layout_alignBottom="@id/fragment_mr_image_view"
+                android:layout_alignStart="@id/fragment_mr_image_view"
                 android:background="@drawable/circle_bottom_left" />
 
             <ImageButton
-                android:id="@+id/fragment_draft_lwc_audio_button"
+                android:id="@+id/fragment_reference_audio_button"
                 android:layout_width="@dimen/reference_audio_button"
                 android:layout_height="@dimen/reference_audio_button"
-                android:layout_alignStart="@+id/fragment_draft_image_view"
-                android:layout_alignBottom="@+id/fragment_draft_image_view"
+                android:layout_alignStart="@+id/fragment_mr_image_view"
+                android:layout_alignBottom="@+id/fragment_mr_image_view"
                 android:background="@drawable/ic_menu_play"
                 android:contentDescription="@string/draft_play_narration_audio" />
 
             <ImageView
                 android:layout_width="@dimen/triangle_width"
                 android:layout_height="@dimen/triangle_height"
-                android:layout_alignBottom="@id/fragment_draft_image_view"
-                android:layout_alignEnd="@id/fragment_draft_image_view"
+                android:layout_alignBottom="@id/fragment_mr_image_view"
+                android:layout_alignEnd="@id/fragment_mr_image_view"
                 android:background="@drawable/triangle_background" />
 
             <TextView
                 android:id="@+id/slide_number_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/fragment_draft_image_view"
-                android:layout_alignEnd="@id/fragment_draft_image_view"
+                android:layout_alignBottom="@id/fragment_mr_image_view"
+                android:layout_alignEnd="@id/fragment_mr_image_view"
                 android:paddingStart="7dp"
                 android:paddingEnd="7dp"
                 android:text=""
@@ -61,17 +61,17 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/fragment_draft_text_envelope"
+            android:id="@+id/fragment_mr_text_envelope"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/fragment_draft_image_envelope"
+            android:layout_below="@id/fragment_mr_image_envelope"
             android:background="@color/gray"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
             android:paddingTop="10dp">
 
             <TextView
-                android:id="@+id/fragment_draft_reference_text"
+                android:id="@+id/fragment_mr_reference_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -83,12 +83,12 @@
                 tools:ignore="HardcodedText" />
 
             <TextView
-                android:id="@+id/fragment_draft_scripture_text"
+                android:id="@+id/fragment_mr_scripture_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentStart="true"
-                android:layout_below="@+id/fragment_draft_reference_text"
+                android:layout_below="@+id/fragment_mr_reference_text"
                 android:background="@color/gray"
                 android:textSize="@dimen/text_body"
                 android:text="fill with scripture"

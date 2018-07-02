@@ -20,6 +20,51 @@ class Phase(val phaseType: PhaseType) {
 
 
     /**
+     * Return chosen file.  Null if the current phase has no chosen file.
+     */
+    val hasChosenFilename: Boolean = phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)
+    var chosenFilename: String
+    get(){
+        return when(phaseType){
+            PhaseType.DRAFT -> Workspace.activeSlide!!.chosenDraftFile
+            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDramatizationFile
+            PhaseType.BACKT -> Workspace.activeSlide!!.chosenBackTranslationFile
+            else -> ""
+        }
+    }
+    set(value){
+        when(phaseType){
+            PhaseType.DRAFT -> Workspace.activeSlide!!.chosenDraftFile = value
+            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDramatizationFile = value
+            PhaseType.BACKT -> Workspace.activeSlide!!.chosenBackTranslationFile = value
+            else -> return
+        }
+        return
+    }
+
+    val recordedAudioFiles: MutableList<String>?
+    get(){
+        return when (phaseType){
+            PhaseType.DRAFT -> Workspace.activeSlide!!.draftAudioFiles
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.communityCheckAudioFiles
+            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.dramatizationAudioFiles
+            PhaseType.BACKT -> Workspace.activeSlide!!.backTranslationAudioFiles
+            else -> null
+        }
+    }
+
+    val referenceAudioFile: String
+    get(){
+        return when (phaseType){
+            PhaseType.DRAFT -> Workspace.activeSlide!!.narrationFile
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.chosenDraftFile
+            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDraftFile
+            PhaseType.BACKT -> Workspace.activeSlide!!.chosenDraftFile
+            else -> ""
+        }
+    }
+
+    /**
      * get the title for the phase
      * @return return the title
      */

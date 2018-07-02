@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.draft
+package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
 import android.media.MediaPlayer
@@ -24,8 +24,9 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.DraftEntry
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.ImageFiles
 import org.sil.storyproducer.tools.file.LogFiles
+import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
@@ -33,12 +34,12 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-class DraftFrag : MultiRecordFrag() {
+abstract class MultiRecordFrag : Fragment() {
     private var rootView: View? = null
     private var rootViewToolbar: View? = null
 
-    private var LWCAudioPlayer: AudioPlayer = AudioPlayer()
-    private var LWCPlayButton: ImageButton? = null
+    private var referenceAudioPlayer: AudioPlayer = AudioPlayer()
+    private var referncePlayButton: ImageButton? = null
 
     private var recordingToolbar: RecordingToolbar? = null
 
@@ -51,20 +52,17 @@ class DraftFrag : MultiRecordFrag() {
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        super.onCreateView(inflater, container, savedInstanceState)
-        rootView = inflater!!.inflate(R.layout.fragment_draft, container, false)
+        rootView = inflater!!.inflate(R.layout.fragment_multirecord, container, false)
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setToolbar()
 
-        LWCPlayButton = rootView!!.findViewById(R.id.fragment_draft_lwc_audio_button)
-
-        LWCPlayButton = rootView!!.findViewById(R.id.fragment_draft_lwc_audio_button)
+        referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
 
         setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_draft_image_view) as ImageView)
-        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_draft_scripture_text) as TextView)
-        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_draft_reference_text) as TextView)
-        setLWCAudioButton(LWCPlayButton!!)
+        setPic(rootView!!.findViewById<View>(R.id.fragment_mr_image_view) as ImageView)
+        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_mr_scripture_text) as TextView)
+        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_mr_reference_text) as TextView)
+        setReferenceAudioButton(referncePlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
         slideNumberText.text = Workspace.activeSlideNum.toString()
 
@@ -98,9 +96,10 @@ class DraftFrag : MultiRecordFrag() {
     override fun onResume() {
         super.onResume()
 
-        LWCAudioPlayer = AudioPlayer()
+        referenceAudioPlayer = AudioPlayer()
+        referenceAudioPlayer.setStorySource(context,Workspace.activePhase.referenceAudioFile)
 
-        LWCAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { LWCPlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
+        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
     }
 
     /**
@@ -109,12 +108,12 @@ class DraftFrag : MultiRecordFrag() {
      */
     override fun onPause() {
         super.onPause()
-        recordingToolbar?.onPause()
+        recordingToolbar!!.onPause()
 
         recordingToolbar!!.stopToolbarMedia()
-        LWCAudioPlayer.release()
+        referenceAudioPlayer.release()
 
-        recordingToolbar.releaseToolbarAudio()
+        recordingToolbar!!.releaseToolbarAudio()
     }
 
     /**
@@ -124,14 +123,6 @@ class DraftFrag : MultiRecordFrag() {
         recordingToolbar!!.hideButtons()
     }
 
-    /**
-     * sets the playback path
-     */
-    fun updatePlayBackPath() {
-        //FIXME
-        //String playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).getPath();
-        //recordingToolbar.setPlaybackRecordFilePath(playBackFilePath);
-    }
 
     /**
      * Stops the toolbar from recording or playing back media.
@@ -146,7 +137,7 @@ class DraftFrag : MultiRecordFrag() {
      * clashing of the grey starting picture.
      */
     private fun setUiColors() {
-        if (slideNumber == 0) {
+        if (Workspace.activeSlideNum == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_draft_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_draft_envelope)
@@ -168,8 +159,8 @@ class DraftFrag : MultiRecordFrag() {
      * @param slideImage    The ImageView that will contain the picture.
      * @param slideNum The slide number to grab the picture from the files.
      */
-    private fun setPic(slideImage: ImageView, slideNum: Int) {
-        var slidePicture: Bitmap? = ImageFiles.getBitmap(storyName, slideNum)
+    private fun setPic(slideImage: ImageView) {
+        var slidePicture: Bitmap? = getStoryImage(context)
 
         if (slidePicture == null) {
             Snackbar.make(rootView!!, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show()
@@ -191,68 +182,27 @@ class DraftFrag : MultiRecordFrag() {
         slideImage.setImageBitmap(slidePicture)
     }
 
-    /**
-     * Sets the main text of the layout.
-     *
-     * @param textView The text view that will be filled with the verse's text.
-     */
-    private fun setScriptureText(textView: TextView) {
-        textView.text = slideText!!.content
-    }
-
-    /**
-     * This function sets the reference text.
-     *
-     * @param textView The view that will be populated with the reference text.
-     */
-    private fun setReferenceText(textView: TextView) {
-        val titleNamePriority = arrayOf(slideText!!.reference, slideText!!.subtitle, slideText!!.title)
-
-        for (title in titleNamePriority) {
-            if (title != null && title != "") {
-                textView.text = title
-                return
-            }
-        }
-        textView.setText(R.string.draft_bible_story)
-    }
-
-    /**
-     * This function sets the LWC playback to the correct audio file. Also, the LWC narration
-     * button will have a listener added to it in order to detect playback when pressed.
-     *
-     * @param LWCPlayButton the button to set the listeners for
-     */
-    private fun setLWCAudioButton(LWCPlayButton: ImageButton) {
-        LWCPlayButton.setOnClickListener {
-            if (!LWCAudioExists) {
+    private fun setReferenceAudioButton(playButton: ImageButton) {
+        playButton.setOnClickListener {
+            if (storyRelPathExists(context,Workspace.activePhase.referenceAudioFile)) {
+                //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
-                if (LWCAudioPlayer!!.isAudioPlaying) {
-                    LWCAudioPlayer!!.stopAudio()
-                    LWCPlayButton.setBackgroundResource(R.drawable.ic_menu_play)
+                if (referenceAudioPlayer.isAudioPlaying) {
+                    referenceAudioPlayer.stopAudio()
+                    playButton.setBackgroundResource(R.drawable.ic_menu_play)
                 } else {
                     //stop other playback streams.
                     recordingToolbar!!.stopToolbarMedia()
-                    LWCAudioPlayer!!.playAudio()
-                    recordingToolbar?.onToolbarTouchStopAudio(LWCPlayButton, R.drawable.ic_menu_play, LWCAudioPlayer!!)
+                    referenceAudioPlayer.playAudio()
+                    recordingToolbar?.onToolbarTouchStopAudio(playButton, R.drawable.ic_menu_play, referenceAudioPlayer)
 
-                    LWCPlayButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    playButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     LogFiles.saveLogEntry(DraftEntry.Type.LWC_PLAYBACK.makeEntry())
                 }
             }
         }
-    }
-
-    private fun setRecordFilePath() {
-        var nextDraftIndex = AudioFiles.getDraftTitles(StoryState.getStoryName(), slideNumber).size + 1
-        var recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex))
-        while (recordFile.exists()) {
-            nextDraftIndex++
-            recordFile = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber, getString(R.string.draft_record_file_draft_name, nextDraftIndex))
-        }
-        this.recordFile = recordFile
     }
 
     /**
@@ -261,8 +211,7 @@ class DraftFrag : MultiRecordFrag() {
     private fun setToolbar() {
         val recordingListener = object : RecordingListener {
             override fun onStoppedRecording() {
-                setRecordFilePath()
-                updatePlayBackPath()
+                //updatePlayBackPath()
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
@@ -277,7 +226,4 @@ class DraftFrag : MultiRecordFrag() {
         recordingToolbar!!.stopToolbarMedia()
     }
 
-    companion object {
-        val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
-    }
 }

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import android.provider.DocumentsContract
 
 import java.io.File
 import android.support.v4.provider.DocumentFile
@@ -125,6 +126,23 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
         //The file does not exist.
         return null
     }
+}
+
+fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
+    if(storyRelPathExists(context, relPath, storyTitle)){
+        val uri = getStoryUri(relPath,storyTitle)
+        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+    }
+    return false
+}
+
+fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
+    if(storyRelPathExists(context, relPath, storyTitle)){
+        val uri = getStoryUri(relPath,storyTitle)
+        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
+        if(newUri != null) return true
+    }
+    return false
 }
 
 

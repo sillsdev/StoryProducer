@@ -48,6 +48,8 @@ class Slide{
     var consultantCheckAudioFiles: MutableList<String> = ArrayList()
     var dramatizationAudioFiles: MutableList<String> = ArrayList()
     var chosenDramatizationFile = ""
+    var backTranslationAudioFiles: MutableList<String> = ArrayList()
+    var chosenBackTranslationFile = ""
 
     companion object
 }
