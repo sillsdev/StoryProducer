@@ -176,7 +176,7 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
      * starts the previous phase and starts that activity
      */
     fun startPrevActivity() {
-        if (Workspace.goToNextPhase()) {
+        if (Workspace.goToPreviousPhase()) {
             jumpToPhase(Workspace.activePhase)
             overridePendingTransition(R.anim.enter_down, R.anim.exit_down)
         }

@@ -11,7 +11,9 @@ import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag;
 import org.sil.storyproducer.controller.draft.DraftFrag;
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag;
 import org.sil.storyproducer.controller.remote.BackTranslationFrag;
+import org.sil.storyproducer.model.PhaseType;
 import org.sil.storyproducer.model.StoryState;
+import org.sil.storyproducer.model.Workspace;
 import org.sil.storyproducer.tools.file.FileSystem;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
@@ -20,7 +22,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
-        numOfSlides = FileSystem.getContentSlideAmount(StoryState.getStoryName());
+        numOfSlides = Workspace.INSTANCE.getActiveStory().getSlides().size();
     }
 
     /**
@@ -33,7 +35,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         Fragment fragment;
         Bundle passedArgs = new Bundle();
-        switch (StoryState.getCurrentPhase().getPhaseType()) {
+        switch (Workspace.INSTANCE.getActivePhase().getPhaseType()) {
             case DRAFT:
                 fragment = new DraftFrag();
                 break;

@@ -136,17 +136,17 @@ abstract class MultiRecordFrag : Fragment() {
      */
     private fun setUiColors() {
         if (Workspace.activeSlideNum == 0) {
-            var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_draft_root_relayout_layout)
+            var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_draft_envelope)
+            rl = rootView!!.findViewById(R.id.fragment_mr_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_draft_text_envelope)
+            rl = rootView!!.findViewById(R.id.fragment_mr_text_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
 
 
-            var tv = rootView!!.findViewById<TextView>(R.id.fragment_draft_scripture_text)
+            var tv = rootView!!.findViewById<TextView>(R.id.fragment_mr_scripture_text)
             tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            tv = rootView!!.findViewById(R.id.fragment_draft_reference_text)
+            tv = rootView!!.findViewById(R.id.fragment_mr_reference_text)
             tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
         }
     }

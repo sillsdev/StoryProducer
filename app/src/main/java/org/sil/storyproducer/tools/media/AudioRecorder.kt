@@ -52,10 +52,10 @@ class AudioRecorder {
                     arrayOf(Manifest.permission.RECORD_AUDIO), 1)
         }
         mRecorder.setOutputFile(getStoryFileDescriptor(activity,relPath,storyName))
+        isRecording = true
         try{
             mRecorder.prepare()
             mRecorder.start()
-            isRecording = true
             Toast.makeText(activity, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
         }
         catch (e: IllegalStateException) {Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)}
