@@ -80,7 +80,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
         ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         backT_Titles = AudioFiles.INSTANCE.getBackTranslationTitles(StoryState.getStoryName(), slidePosition);
-        RecordingsListAdapter adapter = new RecordingsListAdapter(context, backT_Titles, slidePosition, this);
+        RecordingsListAdapter adapter = new RecordingsListAdapter(context, backT_Titles, this);
         adapter.setDeleteTitle(context.getResources().getString(R.string.delete_backT_message));
         adapter.setDeleteMessage(context.getResources().getString(R.string.delete_backT_message));
         listView.setAdapter(adapter);

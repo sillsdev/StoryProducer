@@ -157,7 +157,7 @@ public class CommunityCheckFrag extends Fragment implements RecordingsListAdapte
         ListView listView = rootView.findViewById(R.id.audio_comment_list_view);
         listView.setScrollbarFadingEnabled(false);
         comments = AudioFiles.INSTANCE.getCommentTitles(StoryState.getStoryName(), slideNumber);
-        RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, slideNumber, this);
+        RecordingsListAdapter adapter = new RecordingsListAdapter(getContext(), comments, this);
         adapter.setDeleteTitle(getResources().getString(R.string.delete_comment_title));
         adapter.setDeleteMessage(getResources().getString(R.string.delete_comment_message));
         listView.setAdapter(adapter);

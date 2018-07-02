@@ -20,8 +20,10 @@ import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.adapter.RecordingsListModal
 import org.sil.storyproducer.model.SlideText
 import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.DraftEntry
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.StorySharedPreferences
@@ -41,25 +43,14 @@ import java.io.File
 class DraftFrag : Fragment() {
     private var rootView: View? = null
     private var rootViewToolbar: View? = null
-    private var storyName: String? = null
-    private var slideNumber: Int = 0
-    private var slideText: SlideText? = null
 
-    private var LWCAudioPlayer: AudioPlayer? = null
-    private var recordFile: File? = null
-    private val LWCAudioExists: Boolean = false
+    private var LWCAudioPlayer: AudioPlayer = AudioPlayer()
     private var LWCPlayButton: ImageButton? = null
 
-
-    private val recordingToolbar: RecordingToolbar? = null
+    private var recordingToolbar: RecordingToolbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val passedArgs = this.arguments
-        storyName = StoryState.getStoryName()
-        slideNumber = passedArgs.getInt(SLIDE_NUM)
-        slideText = TextFiles.getSlideText(storyName, slideNumber)
-        setRecordFilePath()
         setHasOptionsMenu(true)
     }
 
@@ -69,18 +60,19 @@ class DraftFrag : Fragment() {
         // properly.
         rootView = inflater!!.inflate(R.layout.fragment_draft, container, false)
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+        setToolbar()
 
         LWCPlayButton = rootView!!.findViewById(R.id.fragment_draft_lwc_audio_button)
 
         LWCPlayButton = rootView!!.findViewById(R.id.fragment_draft_lwc_audio_button)
 
         setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_draft_image_view) as ImageView, slideNumber)
+        setPic(rootView!!.findViewById<View>(R.id.fragment_draft_image_view) as ImageView)
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_draft_scripture_text) as TextView)
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_draft_reference_text) as TextView)
         setLWCAudioButton(LWCPlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slideNumber.toString() + ""
+        slideNumberText.text = Workspace.activeSlideNum.toString()
 
         return rootView
     }
@@ -109,24 +101,12 @@ class DraftFrag : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        setToolbar(rootViewToolbar)
+    override fun onResume() {
+        super.onResume()
 
         LWCAudioPlayer = AudioPlayer()
-        //FIXME
-        /*
-        File LWCFile = AudioFiles.getNarration(storyName, slideNumber);
-        if (LWCFile.exists()) {
-            LWCAudioExists = true;
-            LWCAudioPlayer.setSource(LWCFile.getPath());
-        } else {
-            LWCAudioExists = false;
-        }
-*/
 
-        LWCAudioPlayer!!.onPlayBackStop(MediaPlayer.OnCompletionListener { LWCPlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
+        LWCAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { LWCPlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
     }
 
     /**
@@ -136,23 +116,11 @@ class DraftFrag : Fragment() {
     override fun onPause() {
         super.onPause()
         recordingToolbar?.onPause()
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on stop.
-     */
-    override fun onStop() {
-        super.onStop()
 
         recordingToolbar!!.stopToolbarMedia()
-        LWCAudioPlayer!!.release()
+        LWCAudioPlayer.release()
 
-        if (recordingToolbar != null) {
-            recordingToolbar.onPause()
-            recordingToolbar.releaseToolbarAudio()
-        }
-
+        recordingToolbar.releaseToolbarAudio()
     }
 
     /**
@@ -296,31 +264,23 @@ class DraftFrag : Fragment() {
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private fun setToolbar(toolbar: View?) {
-        if (rootView is RelativeLayout) {
-            val playBackFilePath = AudioFiles.getDraft(StoryState.getStoryName(), slideNumber).path
-            val recordingListener = object : RecordingListener {
-                override fun onStoppedRecording() {
-                    val title = AudioFiles.getDraftTitle(recordFile!!)
-                    StorySharedPreferences.setDraftForSlideAndStory(title, slideNumber, StoryState.getStoryName())     //save the draft  title for the recording
-                    setRecordFilePath()
-                    //FIXME
-                    //recordingToolbar.setRecordFilePath(recordFile.getAbsolutePath());
-                    updatePlayBackPath()
-                }
-
-                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                    //not used here
-                }
+    private fun setToolbar() {
+        val recordingListener = object : RecordingListener {
+            override fun onStoppedRecording() {
+                setRecordFilePath()
+                updatePlayBackPath()
             }
-            val modal = DraftListRecordingsModal(context, slideNumber, this)
 
-            //FIXME
-            //recordingToolbar = new RecordingToolbar(getActivity(), toolbar, (RelativeLayout) rootView,
-            //        true, false, true, false, playBackFilePath, recordFile.getAbsolutePath(), modal , recordingListener);
-            recordingToolbar!!.keepToolbarVisible()
-            recordingToolbar.stopToolbarMedia()
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                //not used here
+            }
         }
+        val modal = RecordingsListModal(context, this)
+
+        recordingToolbar = RecordingToolbar(this.activity, rootViewToolbar!!, rootView as RelativeLayout,
+                true, false, true, false,  modal , recordingListener);
+        recordingToolbar!!.keepToolbarVisible()
+        recordingToolbar!!.stopToolbarMedia()
     }
 
     companion object {
