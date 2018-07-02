@@ -126,16 +126,6 @@ object Workspace{
         activeSlideNum++
         return true
     }
-
-    fun goToPreviousSlide() : Boolean {
-        if(activeStory.title == "") return false
-        if(activeSlide == null) return false
-        if(activeSlideNum < 0) return false
-        if(activeSlideNum > activeStory.slides.size - 1) return false
-        activeSlideNum--
-        return true
-    }
-
 }
 
 

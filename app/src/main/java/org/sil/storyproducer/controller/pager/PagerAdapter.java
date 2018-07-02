@@ -22,7 +22,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
-        numOfSlides = Workspace.INSTANCE.getActiveStory().getSlides().size();
     }
 
     /**
@@ -75,7 +74,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
      */
     @Override
     public int getCount() {
-        return numOfSlides;
+        return Workspace.INSTANCE.getActiveStory().getSlides().size();
     }
 
     /**

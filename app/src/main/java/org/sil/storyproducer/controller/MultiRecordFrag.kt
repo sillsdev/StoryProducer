@@ -182,7 +182,7 @@ abstract class MultiRecordFrag : Fragment() {
 
     private fun setReferenceAudioButton(playButton: ImageButton) {
         playButton.setOnClickListener {
-            if (storyRelPathExists(context,Workspace.activePhase.referenceAudioFile)) {
+            if (!storyRelPathExists(context,Workspace.activePhase.referenceAudioFile)) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {

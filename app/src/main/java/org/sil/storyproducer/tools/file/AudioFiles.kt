@@ -45,12 +45,12 @@ fun assignNewAudioRelPath() : String {
             "$PROJECT_DIR/$phaseName" + AUDIO_EXT
         }
         //Make new files every time.  Don't append.
-        PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK -> {
             "$PROJECT_DIR/$phaseName"  + "_" +
                     Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
         }
         //If you want, append the file
-        PhaseType.DRAFT, PhaseType.DRAMATIZATION -> {
+        PhaseType.DRAMATIZATION -> {
             "$PROJECT_DIR/$phaseName"  + "_" +
                     Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
         }

@@ -155,7 +155,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     override fun show() {
         val inflater = parentFragment.activity.layoutInflater
-        rootView = inflater.inflate(R.layout.recordings_list, parentFragment.view as ViewGroup) as LinearLayout
+        rootView = inflater.inflate(R.layout.recordings_list, null) as LinearLayout
 
         createRecordingList()
 
@@ -220,7 +220,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     override fun onDeleteClick(recordingTitle: String) {
         filenames.remove(recordingTitle)
-        deleteStoryFile(context, recordingTitle)
+        deleteStoryFile(context, "$PROJECT_DIR/$recordingTitle")
         if("$PROJECT_DIR/$recordingTitle" == Workspace.activePhase.chosenFilename){
             if(filenames.size > 0)
                 Workspace.activePhase.chosenFilename = "$PROJECT_DIR/" + filenames.last()

@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.pager
 import android.support.v4.view.ViewPager
 
 import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.Workspace
 
 /**
  * Class that implements the ViewPager.OnPageChangeListener to give the view pager circular functionality
@@ -32,6 +33,6 @@ class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.On
     }
 
     override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-        StoryState.setCurrentStorySlide(mViewPager.currentItem)
+        Workspace.activeSlideNum = mViewPager.currentItem
     }
 }

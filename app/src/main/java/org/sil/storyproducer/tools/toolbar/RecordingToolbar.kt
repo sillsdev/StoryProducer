@@ -352,8 +352,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                 } else {
                     stopPlayBackAndRecording()
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activeStory.learnAudioFile)) {
-
+                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.chosenFilename)) {
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

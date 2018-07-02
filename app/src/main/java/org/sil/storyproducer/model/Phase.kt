@@ -26,6 +26,7 @@ class Phase(val phaseType: PhaseType) {
     var chosenFilename: String
     get(){
         return when(phaseType){
+            PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
             PhaseType.DRAFT -> Workspace.activeSlide!!.chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDramatizationFile
             PhaseType.BACKT -> Workspace.activeSlide!!.chosenBackTranslationFile

@@ -32,11 +32,13 @@ private const val AUDIO_RECORDER = "audio_recorder"
 
 class AudioRecorder {
 
-    private val mRecorder = MediaRecorder()
+    private var mRecorder = MediaRecorder()
     var isRecording = false
     private set
 
-    init {
+    private fun initRecorder(){
+        mRecorder.release()
+        mRecorder = MediaRecorder()
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         mRecorder.setOutputFormat(OUTPUT_FORMAT)
         mRecorder.setAudioEncoder(AUDIO_ENCODER)
@@ -51,6 +53,7 @@ class AudioRecorder {
             ActivityCompat.requestPermissions(activity,
                     arrayOf(Manifest.permission.RECORD_AUDIO), 1)
         }
+        initRecorder()
         mRecorder.setOutputFile(getStoryFileDescriptor(activity,relPath,storyName))
         isRecording = true
         try{
@@ -66,6 +69,7 @@ class AudioRecorder {
         try {
             mRecorder.stop()
             mRecorder.reset()
+            mRecorder.release()
             isRecording = false
             Toast.makeText(context, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
         } catch (stopException: RuntimeException) {
