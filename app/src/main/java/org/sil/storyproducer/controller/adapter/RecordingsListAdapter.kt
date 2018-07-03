@@ -55,7 +55,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         if (Workspace.activePhase.hasChosenFilename) {
             rowView.setOnClickListener { listeners.onRowClick(values[position]) }
             titleView.setOnClickListener { listeners.onRowClick(values[position]) }
-            if("$PROJECT_DIR/" + values[position] == Workspace.activePhase.chosenFilename) {
+            if("$PROJECT_DIR/" + values[position] == Workspace.activePhase.getChosenFilename()) {
                 setUiForSelectedView(rowView, deleteButton, playButton)
             }
         }
@@ -160,7 +160,6 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         filenames = Workspace.activePhase.recordedAudioFiles!!
         createRecordingList()
 
-
         val tb = rootView!!.findViewById<Toolbar>(R.id.toolbar2)
         //Note that user-facing slide number is 1-based while it is 0-based in code.
         tb.setTitle(R.string.draft_recordings_title)
@@ -188,10 +187,11 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         adapter.setDeleteTitle(context.resources.getString(R.string.delete_draft_title))
         adapter.setDeleteMessage(context.resources.getString(R.string.delete_draft_message))
         listView.adapter = adapter
+
     }
 
     override fun onRowClick(recordingTitle: String) {
-        Workspace.activePhase.chosenFilename = "$PROJECT_DIR/$recordingTitle"
+        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$recordingTitle")
         dialog!!.dismiss()
     }
 
@@ -220,16 +220,17 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     }
 
     override fun onDeleteClick(recordingTitle: String) {
-        filenames.remove(recordingTitle)
+        filenames.remove("$PROJECT_DIR/$recordingTitle")
         deleteStoryFile(context, "$PROJECT_DIR/$recordingTitle")
-        if("$PROJECT_DIR/$recordingTitle" == Workspace.activePhase.chosenFilename){
+        if("$PROJECT_DIR/$recordingTitle" == Workspace.activePhase.getChosenFilename()){
             if(filenames.size > 0)
-                Workspace.activePhase.chosenFilename = "$PROJECT_DIR/" + filenames.last()
+                Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
             else{
-                Workspace.activePhase.chosenFilename = ""
+                Workspace.activePhase.setChosenFilename("")
                 parentFragment.hideButtonsToolbar()
             }
         }
+        createRecordingList()
     }
 
     override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {

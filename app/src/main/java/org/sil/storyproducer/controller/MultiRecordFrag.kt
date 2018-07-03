@@ -224,7 +224,7 @@ abstract class MultiRecordFrag : Fragment() {
         val rList = RecordingsList(context, this)
 
         recordingToolbar = RecordingToolbar(this.activity, rootViewToolbar!!, rootView as RelativeLayout,
-                true, false, true, false,  rList , recordingListener);
+                true, false, true, false,  rList , recordingListener, slideNum);
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
     }

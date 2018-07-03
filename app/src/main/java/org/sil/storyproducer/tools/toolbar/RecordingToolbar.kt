@@ -77,7 +77,8 @@ open class RecordingToolbar
 constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
             protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
             protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
-            private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener) : AnimationToolbar(activity) {
+            private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener,
+            protected val slideNum: Int) : AnimationToolbar(activity) {
 
     //private FloatingActionButton fabPlus;
     protected var toolbar: LinearLayout = rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar)
@@ -100,12 +101,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var voiceRecorder: AudioRecorder = AudioRecorder()
     protected var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording = voiceRecorder.isRecording
-
-    private var js: MutableMap<String, String>? = null
-    private var resp: String? = null
-    private var testErr: String? = null
-
-    protected var recordRelPath: String = Workspace.activePhase.getName()
 
     init {
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar))
@@ -261,7 +256,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
             }
         }
 
-        val playBackFileExist = storyRelPathExists(activity,Workspace.activeStory.learnAudioFile)
+        val playBackFileExist = storyRelPathExists(activity,Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
@@ -352,7 +347,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                 } else {
                     stopPlayBackAndRecording()
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.chosenFilename)) {
+                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

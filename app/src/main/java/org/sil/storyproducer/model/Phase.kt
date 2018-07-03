@@ -23,21 +23,22 @@ class Phase(val phaseType: PhaseType) {
      * Return chosen file.  Null if the current phase has no chosen file.
      */
     val hasChosenFilename: Boolean = phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)
-    var chosenFilename: String
-    get(){
+
+    fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){
             PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
-            PhaseType.DRAFT -> Workspace.activeSlide!!.chosenDraftFile
-            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDramatizationFile
-            PhaseType.BACKT -> Workspace.activeSlide!!.chosenBackTranslationFile
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
             else -> ""
         }
     }
-    set(value){
+
+    fun setChosenFilename(filename: String, slideNum: Int = Workspace.activeSlideNum){
         when(phaseType){
-            PhaseType.DRAFT -> Workspace.activeSlide!!.chosenDraftFile = value
-            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDramatizationFile = value
-            PhaseType.BACKT -> Workspace.activeSlide!!.chosenBackTranslationFile = value
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = filename
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = filename
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = filename
             else -> return
         }
         return

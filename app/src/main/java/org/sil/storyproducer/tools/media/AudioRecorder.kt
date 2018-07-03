@@ -61,8 +61,14 @@ class AudioRecorder {
             mRecorder.start()
             Toast.makeText(activity, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
         }
-        catch (e: IllegalStateException) {Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)}
-        catch (e: IOException) {Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)}
+        catch (e: IllegalStateException) {
+            Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)
+            Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
+        }
+        catch (e: IOException) {
+            Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)
+            Toast.makeText(activity, "IOException!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     fun stop(context: Context) {

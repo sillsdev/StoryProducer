@@ -61,7 +61,7 @@ class LearnActivity : PhaseBaseActivity() {
                 null, object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {resetVideoWithSoundOff()}
-        })
+        }, 0)
 
         setBackgroundAudioJumps()
 
