@@ -321,8 +321,9 @@ public class DramatizationFrag extends Fragment {
             };
             DramaListRecordingsModal modal = new DramaListRecordingsModal(getContext(), slideNumber, this);
 
+            //fix with proper slide num
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, false, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener);
+                    true, false, true, false, playBackFilePath, dramatizationRecordingFile.getAbsolutePath(), modal,recordingListener, 0);
             recordingToolbar.keepToolbarVisible();
         }
     }

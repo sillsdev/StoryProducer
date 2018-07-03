@@ -398,8 +398,9 @@ public class BackTranslationFrag extends Fragment {
             };
             BackTranslationListRecordingsModal modal = new BackTranslationListRecordingsModal(getContext(), slideNumber, this);
 
+            //TODO fix with proper slide num
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener);
+                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener, 0);
             recordingToolbar.keepToolbarVisible();
         }
     }

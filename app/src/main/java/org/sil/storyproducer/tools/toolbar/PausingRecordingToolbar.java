@@ -52,8 +52,8 @@ public class PausingRecordingToolbar extends RecordingToolbar {
      */
     public PausingRecordingToolbar(Activity activity, View rootViewToolbarLayout, RelativeLayout rootViewLayout,
                                    boolean enablePlaybackButton, boolean enableDeleteButton, boolean enableMultiRecordButton,boolean enableSendAudioButton,
-                                   String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener) throws ClassCastException {
-        super(activity, rootViewToolbarLayout, rootViewLayout, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton, multiRecordModal, recordingListener);
+                                   String playbackRecordFilePath, String recordFilePath, Modal multiRecordModal, RecordingListener recordingListener, int slideNum) throws ClassCastException {
+        super(activity, rootViewToolbarLayout, rootViewLayout, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton, multiRecordModal, recordingListener, slideNum);
 
         wavAudioRecorder = new WavAudioRecorder(activity, new File(recordFilePath));
     }
