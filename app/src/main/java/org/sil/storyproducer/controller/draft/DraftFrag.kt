@@ -1,35 +1,15 @@
 package org.sil.storyproducer.controller.draft
 
-import android.graphics.Bitmap
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.adapter.RecordingsList
-import org.sil.storyproducer.model.StoryState
+
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.DraftEntry
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.ImageFiles
-import org.sil.storyproducer.tools.file.LogFiles
-import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -57,7 +37,7 @@ class DraftFrag : MultiRecordFrag() {
      * @param textView The text view that will be filled with the verse's text.
      */
     private fun setScriptureText(textView: TextView) {
-        textView.text = Workspace.activeSlide!!.draftText
+        textView.text = slide.draftText
     }
 
     /**
@@ -66,7 +46,7 @@ class DraftFrag : MultiRecordFrag() {
      * @param textView The view that will be populated with the reference text.
      */
     private fun setReferenceText(textView: TextView) {
-        val titleNamePriority = arrayOf(Workspace.activeSlide!!.reference, Workspace.activeSlide!!.subtitle, Workspace.activeSlide!!.title)
+        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
 
         for (title in titleNamePriority) {
             if (title != "") {

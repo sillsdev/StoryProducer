@@ -8,8 +8,6 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-import org.sil.storyproducer.tools.file.FileSystem
-
 /**
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
  */
@@ -21,7 +19,7 @@ internal val BACKTRANSLATE_PREFIX = "backtranslate"
 internal val LEARN_PRACTICE_FILE = "learnPractice$AUDIO_EXT"
 internal val WHOLE_STORY_BACKT_FILE = "wholeStoryBackT$AUDIO_EXT"
 
-internal val dtf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT)
+internal val dtf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ROOT)
 
 /**
  * Creates a relative path for recorded audio based upon the phase, slide number and timestamp.
@@ -32,7 +30,7 @@ internal val dtf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.ROOT)
 fun assignNewAudioRelPath() : String {
     if(Workspace.activeStory.title == "") return ""
     val phase = Workspace.activePhase
-    val phaseName = phase.getCamelName()
+    val phaseName = phase.getShortName()
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
     var relPath: String = ""
@@ -46,12 +44,12 @@ fun assignNewAudioRelPath() : String {
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK -> {
-            "$PROJECT_DIR/$phaseName"  + "_" +
+            "$PROJECT_DIR/$phaseName" +
                     Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
         }
         //If you want, append the file
         PhaseType.DRAMATIZATION -> {
-            "$PROJECT_DIR/$phaseName"  + "_" +
+            "$PROJECT_DIR/$phaseName" +
                     Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
         }
         else -> {""}

@@ -19,6 +19,7 @@ import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.DraftEntry
@@ -42,9 +43,13 @@ abstract class MultiRecordFrag : Fragment() {
     protected var referncePlayButton: ImageButton? = null
 
     protected var recordingToolbar: RecordingToolbar? = null
+    protected var slidePosition: Int = 0 //gets overwritten
+    protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        slidePosition = this.arguments.getInt(SLIDE_NUM)
+        slide = Workspace.activeStory.slides[slidePosition]
         setHasOptionsMenu(true)
     }
 
@@ -62,7 +67,7 @@ abstract class MultiRecordFrag : Fragment() {
         setPic(rootView!!.findViewById<View>(R.id.fragment_mr_image_view) as ImageView)
         setReferenceAudioButton(referncePlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = Workspace.activeSlideNum.toString()
+        slideNumberText.text = slidePosition.toString()
 
         return rootView
     }
@@ -135,7 +140,7 @@ abstract class MultiRecordFrag : Fragment() {
      * clashing of the grey starting picture.
      */
     private fun setUiColors() {
-        if (Workspace.activeSlideNum == 0) {
+        if (slidePosition == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_mr_envelope)
@@ -223,5 +228,8 @@ abstract class MultiRecordFrag : Fragment() {
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
     }
+    companion object {
+        const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
 
+    }
 }

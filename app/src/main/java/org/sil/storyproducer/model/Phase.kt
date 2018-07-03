@@ -71,13 +71,14 @@ class Phase(val phaseType: PhaseType) {
      */
     fun getName() : String {return phaseType.toString().toLowerCase()}
 
-    fun getCamelName() : String {
+    fun getShortName() : String {
         return when (phaseType) {
-            PhaseType.COMMUNITY_CHECK -> "communityCheck"
-            PhaseType.CONSULTANT_CHECK -> "consultantCheck"
-            PhaseType.WHOLE_STORY -> "wholeStory"
-            PhaseType.REMOTE_CHECK -> "remoteCheck"
+            PhaseType.COMMUNITY_CHECK -> "comChk"
+            PhaseType.CONSULTANT_CHECK -> "cnsltChk"
+            PhaseType.WHOLE_STORY -> "whlStry"
+            PhaseType.REMOTE_CHECK -> "rmotChk"
             PhaseType.BACKT -> "backT"
+            PhaseType.DRAMATIZATION -> "drama"
             else -> phaseType.toString().toLowerCase()
         }
     }

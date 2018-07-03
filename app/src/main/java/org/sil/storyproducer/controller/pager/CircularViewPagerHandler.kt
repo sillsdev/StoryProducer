@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.pager
 
 import android.support.v4.view.ViewPager
 
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
 
 /**
