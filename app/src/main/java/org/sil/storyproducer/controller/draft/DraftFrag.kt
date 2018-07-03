@@ -4,15 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.adapter.RecordingsList
-
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -29,8 +24,8 @@ class DraftFrag : MultiRecordFrag() {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         super.onCreateView(inflater, container, savedInstanceState)
-        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_mr_scripture_text) as TextView)
-        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_mr_reference_text) as TextView)
+        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
+        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
         return rootView
     }
 

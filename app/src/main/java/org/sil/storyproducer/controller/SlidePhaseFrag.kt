@@ -56,7 +56,7 @@ abstract class SlidePhaseFrag : Fragment() {
         referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
 
         setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_mr_image_view) as ImageView)
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         setReferenceAudioButton(referncePlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
         slideNumberText.text = slideNum.toString()
@@ -97,15 +97,15 @@ abstract class SlidePhaseFrag : Fragment() {
         if (slideNum == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_mr_envelope)
+            rl = rootView!!.findViewById(R.id.fragment_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_mr_text_envelope)
+            rl = rootView!!.findViewById(R.id.fragment_text_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
 
 
-            var tv = rootView!!.findViewById<TextView>(R.id.fragment_mr_scripture_text)
+            var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
             tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            tv = rootView!!.findViewById(R.id.fragment_mr_reference_text)
+            tv = rootView!!.findViewById(R.id.fragment_reference_text)
             tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
         }
     }

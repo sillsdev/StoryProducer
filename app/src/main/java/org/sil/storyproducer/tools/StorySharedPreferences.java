@@ -38,8 +38,8 @@ public class StorySharedPreferences {
     }
 
     public static boolean isApproved(String storyName, Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(ConsultantCheckFrag.CONSULTANT_PREFS, Context.MODE_PRIVATE);
-        return prefs.getBoolean(storyName + ConsultantCheckFrag.IS_CONSULTANT_APPROVED, false);
+        SharedPreferences prefs = context.getSharedPreferences(ConsultantCheckFrag.Companion.getCONSULTANT_PREFS(), Context.MODE_PRIVATE);
+        return prefs.getBoolean(storyName + ConsultantCheckFrag.Companion.getIS_CONSULTANT_APPROVED(), false);
     }
 
     public static void addExportedVideoForStory(String videoPath, String storyName) {
