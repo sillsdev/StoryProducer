@@ -29,30 +29,6 @@ class DraftFrag : MultiRecordFrag() {
         return rootView
     }
 
-    /**
-     * Sets the main text of the layout.
-     *
-     * @param textView The text view that will be filled with the verse's text.
-     */
-    private fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
-    }
 
-    /**
-     * This function sets the reference text.
-     *
-     * @param textView The view that will be populated with the reference text.
-     */
-    private fun setReferenceText(textView: TextView) {
-        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
-
-        for (title in titleNamePriority) {
-            if (title != "") {
-                textView.text = title
-                return
-            }
-        }
-        textView.setText(R.string.draft_bible_story)
-    }
 
 }

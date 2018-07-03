@@ -95,13 +95,10 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected open fun setUiColors() {
         if (slideNum == 0) {
-            var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
-            rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_envelope)
+            var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_text_envelope)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
-
 
             var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
             tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
@@ -116,7 +113,7 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideImage    The ImageView that will contain the picture.
      * @param slideNum The slide number to grab the picture from the files.
      */
-    private fun setPic(slideImage: ImageView) {
+    protected fun setPic(slideImage: ImageView) {
         var slidePicture: Bitmap? = getStoryImage(context,slideNum)
 
         if (slidePicture == null) {
@@ -137,6 +134,32 @@ abstract class SlidePhaseFrag : Fragment() {
         slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
+    }
+
+    /**
+     * Sets the main text of the layout.
+     *
+     * @param textView The text view that will be filled with the verse's text.
+     */
+    protected fun setScriptureText(textView: TextView) {
+        textView.text = slide.content
+    }
+
+    /**
+     * This function sets the reference text.
+     *
+     * @param textView The view that will be populated with the reference text.
+     */
+    protected fun setReferenceText(textView: TextView) {
+        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
+
+        for (title in titleNamePriority) {
+            if (title != "") {
+                textView.text = title
+                return
+            }
+        }
+        textView.setText(R.string.draft_bible_story)
     }
 
     protected open fun setReferenceAudioButton(playButton: ImageButton) {
