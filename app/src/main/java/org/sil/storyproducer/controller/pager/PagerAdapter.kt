@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
 
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
@@ -13,6 +14,7 @@ import org.sil.storyproducer.controller.draft.DraftFrag
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag
 import org.sil.storyproducer.controller.remote.BackTranslationFrag
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.FileSystem
@@ -33,31 +35,31 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         when (Workspace.activePhase.phaseType) {
             PhaseType.DRAFT -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(MultiRecordFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.COMMUNITY_CHECK -> {
                 fragment = CommunityCheckFrag()
-                passedArgs.putInt(MultiRecordFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.CONSULTANT_CHECK -> {
                 fragment = ConsultantCheckFrag()
-                passedArgs.putInt(ConsultantCheckFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.DRAMATIZATION -> {
                 fragment = DramatizationFrag()
-                passedArgs.putInt(DramatizationFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.BACKT -> {
                 fragment = BackTranslationFrag()
-                passedArgs.putInt(BackTranslationFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
-                passedArgs.putInt(RemoteCheckFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             else -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(MultiRecordFrag.SLIDE_NUM, i)
+                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
         }
         fragment.arguments = passedArgs

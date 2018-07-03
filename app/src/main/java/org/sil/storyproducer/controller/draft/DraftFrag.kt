@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.adapter.RecordingsList
 
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -56,4 +59,5 @@ class DraftFrag : MultiRecordFrag() {
         }
         textView.setText(R.string.draft_bible_story)
     }
+
 }

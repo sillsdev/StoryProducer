@@ -1,9 +1,5 @@
 package org.sil.storyproducer.controller.community
 
-import android.support.v4.content.ContextCompat
-import android.widget.RelativeLayout
-
-import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 
 /**
@@ -11,5 +7,5 @@ import org.sil.storyproducer.controller.MultiRecordFrag
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityCheckFrag : MultiRecordFrag() {
-    
+
 }
