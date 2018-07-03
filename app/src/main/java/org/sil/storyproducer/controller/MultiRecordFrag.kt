@@ -43,13 +43,13 @@ abstract class MultiRecordFrag : Fragment() {
     protected var referncePlayButton: ImageButton? = null
 
     protected var recordingToolbar: RecordingToolbar? = null
-    protected var slidePosition: Int = 0 //gets overwritten
+    protected var slideNum: Int = 0 //gets overwritten
     protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        slidePosition = this.arguments.getInt(SLIDE_NUM)
-        slide = Workspace.activeStory.slides[slidePosition]
+        slideNum = this.arguments.getInt(SLIDE_NUM)
+        slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
     }
 
@@ -67,7 +67,7 @@ abstract class MultiRecordFrag : Fragment() {
         setPic(rootView!!.findViewById<View>(R.id.fragment_mr_image_view) as ImageView)
         setReferenceAudioButton(referncePlayButton!!)
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slidePosition.toString()
+        slideNumberText.text = slideNum.toString()
 
         return rootView
     }
@@ -100,7 +100,7 @@ abstract class MultiRecordFrag : Fragment() {
         super.onResume()
 
         referenceAudioPlayer = AudioPlayer()
-        referenceAudioPlayer.setStorySource(context,Workspace.activePhase.referenceAudioFile)
+        referenceAudioPlayer.setStorySource(context,Workspace.activePhase.getReferenceAudioFile(slideNum))
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
     }
@@ -140,7 +140,7 @@ abstract class MultiRecordFrag : Fragment() {
      * clashing of the grey starting picture.
      */
     private fun setUiColors() {
-        if (slidePosition == 0) {
+        if (slideNum == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_mr_envelope)
@@ -163,7 +163,7 @@ abstract class MultiRecordFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     private fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap? = getStoryImage(context)
+        var slidePicture: Bitmap? = getStoryImage(context,slideNum)
 
         if (slidePicture == null) {
             Snackbar.make(rootView!!, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show()
@@ -187,7 +187,7 @@ abstract class MultiRecordFrag : Fragment() {
 
     private fun setReferenceAudioButton(playButton: ImageButton) {
         playButton.setOnClickListener {
-            if (!storyRelPathExists(context,Workspace.activePhase.referenceAudioFile)) {
+            if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {

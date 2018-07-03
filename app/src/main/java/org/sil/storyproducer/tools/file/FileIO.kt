@@ -35,6 +35,7 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 }
 
 fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
+    if(relPath == "") return false
     if(getChildInputStream(context, "$storyTitle/$relPath" ) == null)
         return false
     return true

@@ -54,17 +54,16 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    val referenceAudioFile: String
-    get(){
+    fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         return when (phaseType){
-            PhaseType.DRAFT -> Workspace.activeSlide!!.narrationFile
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.chosenDraftFile
-            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.chosenDraftFile
-            PhaseType.BACKT -> Workspace.activeSlide!!.chosenDraftFile
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             else -> ""
         }
-    }
 
+    }
     /**
      * get the title for the phase
      * @return return the title
