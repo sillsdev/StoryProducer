@@ -562,6 +562,8 @@ public class RegistrationActivity extends AppCompatActivity {
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
+                        //clicks on the splash screen
                         storeRegistrationInfo();
                         if(isFirstActivity()) {
                             Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);

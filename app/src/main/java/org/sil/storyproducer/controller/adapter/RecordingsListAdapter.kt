@@ -146,7 +146,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     private var rootView: LinearLayout? = null
     private var dialog: AlertDialog? = null
 
-    private var filenames: MutableList<String> = Workspace.activePhase.recordedAudioFiles!!
+    private var filenames: MutableList<String> = mutableListOf()
     private var lastNewName: String? = null
     private var lastOldName: String? = null
 
@@ -157,6 +157,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         val inflater = parentFragment.activity.layoutInflater
         rootView = inflater.inflate(R.layout.recordings_list, null) as LinearLayout
 
+        filenames = Workspace.activePhase.recordedAudioFiles!!
         createRecordingList()
 
 
