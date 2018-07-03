@@ -143,7 +143,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun checkAllMarked(): Boolean {
         var marked: Boolean
         val prefs = activity.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val numStorySlides = FileSystem.getContentSlideAmount(storyName)
+        val numStorySlides = Workspace.activeStory.slides.size
         for (i in 0 until numStorySlides) {
             marked = prefs.getBoolean(storyName + i + IS_CHECKED, false)
             if (!marked) {

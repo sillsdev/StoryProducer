@@ -28,7 +28,4 @@ class DraftFrag : MultiRecordFrag() {
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
         return rootView
     }
-
-
-
 }
