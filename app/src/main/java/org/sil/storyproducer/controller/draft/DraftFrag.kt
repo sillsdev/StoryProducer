@@ -37,7 +37,7 @@ class DraftFrag : MultiRecordFrag() {
      * @param textView The text view that will be filled with the verse's text.
      */
     private fun setScriptureText(textView: TextView) {
-        textView.text = slide.draftText
+        textView.text = slide.content
     }
 
     /**
