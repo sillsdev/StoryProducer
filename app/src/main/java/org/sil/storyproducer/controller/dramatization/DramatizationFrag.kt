@@ -43,7 +43,7 @@ import java.io.File
 
 class DramatizationFrag : MultiRecordFrag() {
 
-    private var phaseUnlocked: Boolean = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
+    private var phaseUnlocked: Boolean = false
     private var slideText: EditText? = null
 
 
@@ -62,6 +62,7 @@ class DramatizationFrag : MultiRecordFrag() {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
+        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
         return rootView
     }
 

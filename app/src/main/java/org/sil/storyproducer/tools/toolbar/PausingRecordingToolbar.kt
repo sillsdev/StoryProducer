@@ -12,8 +12,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.wavaudio.ConcatenateAudioFiles
 import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder
 
@@ -52,13 +51,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var enableCheckButton: Boolean = false
     private var isAppendingOn: Boolean = false
     private var checkButton: ImageButton? = null
-    private val wavAudioRecorder: WavAudioRecorder
-
-
-    init {
-        //TODO fix/replace or whatever.
-        wavAudioRecorder = WavAudioRecorder(activity, File(""))
-    }
+    private val AUDIO_TEMP_NAME = getTempAppendAudioRelPath()
 
     /**
      * This function is used to stop all the media sources on the toolbar from playing or recording.
@@ -166,36 +159,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     }
 
     /**
-     * Stop the wav audio recorder.
-     */
-    override fun stopRecording() {
-        //setIsRecording(false);
-        stopRecordingAnimation()
-        wavAudioRecorder.stopRecording()
-        if (isAppendingOn) {
-            try {
-                //TODO fixme
-                //ConcatenateAudioFiles(new File(getRecordFilePath()), AudioFiles.INSTANCE.getDramatizationTemp(StoryState.getStoryName()));
-            } catch (e: FileNotFoundException) {
-                Log.e(TAG, "Did not concatenate audio files", e);
-            }
-        } else {
-            wavAudioRecorder.setNewPath(AudioFiles.getDramatizationTemp(StoryState.getStoryName()))
-        }
-    }
-
-    /**
-     * Start the audio recorder.
-     */
-    //FIXME
-    //@Override
-    protected fun startAudioRecorder() {
-        //FIXME
-        //setIsRecording(true);
-        wavAudioRecorder.startRecording()
-    }
-
-    /**
      * Add listeners to the buttons on the toolbar. This child class does change the
      * mic button and adds the check button listeners on top of calling the parent's class
      * onClickListeners.
@@ -205,7 +168,13 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         val micListener = View.OnClickListener {
             if (isRecording) {
                 stopRecording()
-                if (!isAppendingOn) {
+                if (isAppendingOn) {
+                    try {
+                        ConcatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+                    } catch (e: FileNotFoundException) {
+                        Log.e(TAG, "Did not concatenate audio files", e);
+                    }
+                } else {
                     isAppendingOn = true
                     checkButton!!.visibility = View.VISIBLE
                 }
@@ -224,9 +193,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                 }
             } else {
                 stopPlayBackAndRecording()
-                //FIXME
-                //startRecording();
-                if (!isAppendingOn) {
+                if (isAppendingOn) {
+                    startRecording(AUDIO_TEMP_NAME)
+                }else{
+                    startRecording(assignNewAudioRelPath())
                     recordingListener.onStartedRecordingOrPlayback(true)
                 }
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
@@ -254,10 +224,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
             val checkListener = View.OnClickListener {
                 //Delete the temp file wav file
                 stopPlayBackAndRecording()
-                val tempFile = AudioFiles.getDramatizationTemp(StoryState.getStoryName())
-                if (tempFile != null && tempFile.exists()) {
-                    tempFile.delete()
-                }
+                deleteStoryFile(appContext,AUDIO_TEMP_NAME)
                 recordingListener.onStoppedRecording()
                 //make the button invisible till after the next new recording
                 isAppendingOn = false

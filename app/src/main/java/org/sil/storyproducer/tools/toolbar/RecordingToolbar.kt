@@ -200,11 +200,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         }
     }
 
-    protected fun startRecording(recordingRelPath: String) {
+    protected open fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
-        if (Workspace.activePhase.phaseType === PhaseType.DRAFT) {
-            LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_RECORDING.makeEntry())
-        }
         voiceRecorder.startNewRecording(activity, recordingRelPath)
         startRecordingAnimation(false, 0)
         recordingListener.onStartedRecordingOrPlayback(true)

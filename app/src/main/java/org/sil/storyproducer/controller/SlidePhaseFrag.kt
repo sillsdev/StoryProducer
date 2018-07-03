@@ -96,14 +96,14 @@ abstract class SlidePhaseFrag : Fragment() {
     protected open fun setUiColors() {
         if (slideNum == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_envelope)
-            rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            rl?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_text_envelope)
-            rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            rl?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
 
             var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
-            tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            tv?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
             tv = rootView!!.findViewById(R.id.fragment_reference_text)
-            tv.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            tv?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
         }
     }
 

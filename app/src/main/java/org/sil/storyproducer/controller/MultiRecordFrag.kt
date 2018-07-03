@@ -72,16 +72,16 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      */
     override fun onPause() {
         super.onPause()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.stopToolbarMedia()
-        recordingToolbar!!.releaseToolbarAudio()
+        recordingToolbar?.onPause()
+        recordingToolbar?.stopToolbarMedia()
+        recordingToolbar?.releaseToolbarAudio()
     }
 
     /**
      * Used to hide the play and multiple recordings button.
      */
     fun hideButtonsToolbar() {
-        recordingToolbar!!.hideButtons()
+        recordingToolbar?.hideButtons()
     }
 
 
@@ -90,7 +90,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      * Used in [DraftListRecordingsModal]
      */
     fun stopPlayBackAndRecording() {
-        recordingToolbar!!.stopToolbarMedia()
+        recordingToolbar?.stopToolbarMedia()
     }
 
 

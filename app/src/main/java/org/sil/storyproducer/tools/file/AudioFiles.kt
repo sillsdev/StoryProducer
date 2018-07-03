@@ -80,6 +80,8 @@ fun assignNewAudioRelPath() : String {
     return relPath
 }
 
+fun getTempAppendAudioRelPath():String {return "$PROJECT_DIR/temp$AUDIO_EXT"}
+
 //TODO delete everything below.
 internal const val WAV_EXTENSION = ".wav"
 internal const val WHOLESTORY_AUDIO_PREFIX = "wholestory"
