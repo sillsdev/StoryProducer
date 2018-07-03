@@ -37,7 +37,7 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
             }
             PhaseType.COMMUNITY_CHECK -> {
                 fragment = CommunityCheckFrag()
-                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i)
+                passedArgs.putInt(MultiRecordFrag.SLIDE_NUM, i)
             }
             PhaseType.CONSULTANT_CHECK -> {
                 fragment = ConsultantCheckFrag()
@@ -57,7 +57,7 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
             }
             else -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(CommunityCheckFrag.SLIDE_NUM, i)
+                passedArgs.putInt(MultiRecordFrag.SLIDE_NUM, i)
             }
         }
         fragment.arguments = passedArgs

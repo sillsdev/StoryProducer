@@ -45,6 +45,7 @@ class Slide{
     var draftAudioFiles: MutableList<String> = ArrayList()
     var chosenDraftFile = ""
     var communityCheckAudioFiles: MutableList<String> = ArrayList()
+    var chosenCommunityCheckFile = ""
     var consultantCheckAudioFiles: MutableList<String> = ArrayList()
     var dramatizationAudioFiles: MutableList<String> = ArrayList()
     var chosenDramatizationFile = ""

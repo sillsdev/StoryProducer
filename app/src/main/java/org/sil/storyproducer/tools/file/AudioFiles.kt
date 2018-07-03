@@ -61,7 +61,10 @@ fun assignNewAudioRelPath() : String {
         PhaseType.LEARN -> {Workspace.activeStory.learnAudioFile = relPath}
         PhaseType.WHOLE_STORY -> {Workspace.activeStory.wholeStoryBackTAudioFile = relPath}
         //multiple files, no distinction.
-        PhaseType.COMMUNITY_CHECK -> {Workspace.activeSlide!!.communityCheckAudioFiles.add(relPath)}
+        PhaseType.COMMUNITY_CHECK -> {
+            Workspace.activeSlide!!.communityCheckAudioFiles.add(relPath)
+            Workspace.activeSlide!!.chosenCommunityCheckFile = relPath
+        }
         PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(relPath)}
         //multiple files, one chosen.
         PhaseType.DRAFT ->{

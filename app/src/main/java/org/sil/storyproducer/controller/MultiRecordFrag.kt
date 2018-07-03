@@ -139,7 +139,7 @@ abstract class MultiRecordFrag : Fragment() {
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
-    private fun setUiColors() {
+    protected open fun setUiColors() {
         if (slideNum == 0) {
             var rl = rootView!!.findViewById<RelativeLayout>(R.id.fragment_mr_root_relayout_layout)
             rl.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))

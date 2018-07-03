@@ -77,7 +77,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:background="@color/gray"
-                android:text="fill with text title"
+                android:text=""
                 android:textSize="@dimen/text_title"
                 android:textStyle="bold|italic"
                 tools:ignore="HardcodedText" />
@@ -91,7 +91,7 @@
                 android:layout_below="@+id/fragment_mr_reference_text"
                 android:background="@color/gray"
                 android:textSize="@dimen/text_body"
-                android:text="fill with scripture"
+                android:text=""
                 tools:ignore="HardcodedText" />
         </RelativeLayout>
     </RelativeLayout>
