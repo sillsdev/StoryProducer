@@ -40,7 +40,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.controller.dramatization.DramaListRecordingsModal;
 import org.sil.storyproducer.model.Phase;
 import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.BitmapScaler;
@@ -247,7 +246,6 @@ public class BackTranslationFrag extends Fragment {
 
     /**
      * Used to stop playing and recording any media. The calling class should be responsible for
-     * stopping its own media. Used in {@link DramaListRecordingsModal}.
      */
     public void stopPlayBackAndRecording() {
         recordingToolbar.stopToolbarMedia();
@@ -384,7 +382,6 @@ public class BackTranslationFrag extends Fragment {
                 public void onStoppedRecording() {
                     //update to new recording path
                     setRecordFilePath();
-                    recordingToolbar.setRecordFilePath(backTranslationRecordingFile.getAbsolutePath());
                 }
                 @Override
                 public void onStartedRecordingOrPlayback(boolean isRecording) {
@@ -400,7 +397,7 @@ public class BackTranslationFrag extends Fragment {
 
             //TODO fix with proper slide num
             recordingToolbar = new PausingRecordingToolbar(getActivity(), toolbar, (RelativeLayout)rootView,
-                    true, false, true, true, playBackFilePath, backTranslationRecordingFile.getAbsolutePath(), modal,recordingListener, 0);
+                    true, false, true, true, modal,recordingListener, 0);
             recordingToolbar.keepToolbarVisible();
         }
     }

@@ -39,7 +39,7 @@ class Slide{
     var volume = 0
 
     //translated text
-    var draftText: String = ""
+    var translatedContent: String = ""
 
     //recorded audio files
     var draftAudioFiles: MutableList<String> = ArrayList()

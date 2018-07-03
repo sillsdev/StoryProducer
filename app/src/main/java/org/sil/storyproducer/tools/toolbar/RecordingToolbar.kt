@@ -98,7 +98,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
-    private var voiceRecorder: AudioRecorder = AudioRecorder()
+    protected var voiceRecorder: AudioRecorder = AudioRecorder()
     protected var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording = voiceRecorder.isRecording
 
