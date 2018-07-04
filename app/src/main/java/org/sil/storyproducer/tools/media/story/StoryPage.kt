@@ -19,8 +19,8 @@ class StoryPage
  * @param text text for overlaying page.
  * @param soundtrackAudioPath soundtrack for page
  */
-(val imRelPath: String?, val narrationAudioPath: String?, private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect?,
- val text: String?, val soundtrackAudioPath: String?) {
+(val imRelPath: String = "", val narrationAudioPath: String = "", private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect?,
+ val text: String = "", val soundtrackAudioPath: String = "") {
 
     /**
      * Get the audio duration without any transition time.
@@ -29,7 +29,7 @@ class StoryPage
     //FIXME
     //return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
     val audioDuration: Long
-        get() = if (narrationAudioPath != null) {
+        get() = if (narrationAudioPath != "") {
             0
         } else {
             mDuration
@@ -42,7 +42,7 @@ class StoryPage
      * @param kbfx Ken Burns effect for the image.
      * @param text text for overlaying page.
      */
-    @JvmOverloads constructor(image: File, narrationAudio: File, kbfx: KenBurnsEffect, text: String? = null) : this(image, narrationAudio, 0, kbfx, text) {}
+    @JvmOverloads constructor(image: String, narrationAudio: String, kbfx: KenBurnsEffect, text: String = "") : this(image, narrationAudio, 0, kbfx, text) {}
 
     /**
      * Create page.
@@ -51,7 +51,7 @@ class StoryPage
      * @param kbfx Ken Burns effect for the image.
      * @param text text for overlaying page.
      */
-    @JvmOverloads constructor(image: File, duration: Long, kbfx: KenBurnsEffect? = null, text: String? = null) : this(image, null, duration, kbfx, text) {}
+    @JvmOverloads constructor(image: String, duration: Long, kbfx: KenBurnsEffect? = null, text: String = "") : this(image, "", duration, kbfx, text) {}
 
     /**
      * Create page.
@@ -61,7 +61,7 @@ class StoryPage
      * @param kbfx Ken Burns effect for the image.
      * @param text text for overlaying page.
      */
-    private constructor(image: File, narrationAudio: File?, duration: Long, kbfx: KenBurnsEffect?, text: String?) : this(image, narrationAudio, duration, kbfx, text, null) {}
+    private constructor(image: String, narrationAudio: String, duration: Long, kbfx: KenBurnsEffect?, text: String) : this(image, narrationAudio, duration, kbfx, text, "") {}
 
     /**
      * Get the duration of a page. This duration includes audio transition time.

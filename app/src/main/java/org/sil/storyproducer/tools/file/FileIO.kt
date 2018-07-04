@@ -17,6 +17,21 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
+fun copyFiles(context: Context, sourceUri: Uri, destRelPath: String){
+//    var iStream: AutoCloseInputStream = null
+    try {
+        //TODO Why is DocumentsContract.isDocument not working right?
+        val ipfd = context.contentResolver.openFileDescriptor(
+                sourceUri, "r")
+        val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
+        val opfd = getChildOuputPFD(context, destRelPath)
+        val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
+        oStream.write(iStream.readBytes())
+        iStream.close()
+        iStream.close()
+    } catch (e: Exception) {}
+}
+
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
     if(story.title == "") return null
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,story)

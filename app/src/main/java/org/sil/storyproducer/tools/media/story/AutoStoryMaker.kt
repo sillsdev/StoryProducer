@@ -111,7 +111,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         //If pages weren't generated, exit.
 
-        mStoryMaker = StoryMaker(videoTempFile, outputFormat, videoFormat, audioFormat,
+        mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
 
         watchProgress()
@@ -127,10 +127,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
-            //TODO copy from temp to final location.
-            DocumentsContract.copyDocument(context.contentResolver,
-                    Uri.fromFile(videoTempFile),
-                    getStoryUri(videoRelPath))
+            copyFiles(context,Uri.fromFile(videoTempFile),videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()

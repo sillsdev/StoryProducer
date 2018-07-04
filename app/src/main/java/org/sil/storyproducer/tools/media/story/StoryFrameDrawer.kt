@@ -178,7 +178,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         }
 
         val page = mPages[pageIndex]
-        val bitmap = getStoryImage(context,page.imRelPath)
+        val bitmap = getStoryImage(context,page.imRelPath!!)
         if (bitmap != null) {
             val kbfx = page.kenBurnsEffect
 

@@ -141,7 +141,7 @@ class PipedAudioConcatenator
      */
     @Throws(SourceUnacceptableException::class)
     fun addSource(source: PipedMediaByteBufferSource?, duration: Long) {
-        mSources.add(source!!)
+        if(source!=null) mSources.add(source)
         mSourceExpectedDurations.add(duration)
     }
 

@@ -124,7 +124,7 @@ class StoryMaker
             audioMixer.addSource(narrationConcatenator)
 
             var soundtrackDuration: Long = 0
-            var lastSoundtrack: String? = null
+            var lastSoundtrack: String = ""
             for (page in mPages) {
                 val narration = page.narrationAudioPath
                 val audioDuration = page.audioDuration
@@ -134,8 +134,8 @@ class StoryMaker
 
                 //If we encounter a new soundtrack, stop the current one and start the new one.
                 //Otherwise, continue playing last soundtrack.
-                if (soundtrack == null || soundtrack != lastSoundtrack) {
-                    if (lastSoundtrack != null) {
+                if (soundtrack == "" || soundtrack != lastSoundtrack) {
+                    if (lastSoundtrack != "") {
                         soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration)
                     } else if (soundtrackDuration > 0) {
                         soundtrackConcatenator.addSource(null, soundtrackDuration)
@@ -151,7 +151,7 @@ class StoryMaker
             }
 
             //Add last soundtrack
-            if (lastSoundtrack != null) {
+            if (lastSoundtrack != "") {
                 soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration)
             }
 
