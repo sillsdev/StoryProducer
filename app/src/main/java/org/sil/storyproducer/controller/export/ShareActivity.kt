@@ -13,6 +13,7 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
 
 import java.io.File
@@ -61,7 +62,7 @@ class ShareActivity : PhaseBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mStory = StoryState.getStoryName()     //needs to be set first because some of the views use it
-        val phaseUnlocked = StorySharedPreferences.isApproved(mStory, this)
+        val phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_share)
         mStory = StoryState.getStoryName()
         setupViews()

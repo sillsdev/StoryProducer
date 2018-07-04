@@ -13,6 +13,7 @@ import java.io.*
 import java.util.*
 
 internal const val PROJECT_DIR = "project"
+internal const val VIDEO_DIR = "video"
 internal const val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)

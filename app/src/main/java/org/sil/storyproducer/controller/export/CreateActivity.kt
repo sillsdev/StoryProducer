@@ -3,22 +3,18 @@ package org.sil.storyproducer.controller.export
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.content.res.ResourcesCompat
 import android.util.Log
 import android.view.Menu
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.CompoundButton
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.RadioButton
@@ -29,14 +25,15 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.VideoFiles
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
-import java.io.File
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class CreateActivity : PhaseBaseActivity() {
@@ -62,9 +59,10 @@ class CreateActivity : PhaseBaseActivity() {
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
-    private var mStory: String? = null
 
-    private var mOutputPath: String? = null
+    private var phaseUnlocked = false
+
+    private var mOutputPath: String = ""
 
     private var mTextConfirmationChecked: Boolean = false
 
@@ -73,37 +71,15 @@ class CreateActivity : PhaseBaseActivity() {
     private val sectionViews = arrayOfNulls<View>(sectionIds.size)
     private var mProgressUpdater: Thread? = null
 
-    /**
-     * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
-     * @return Array list of video paths
-     */
-    private//make sure the file actually exists
-    //If the file doesn't exist or we encountered it a second time in the list, remove it.
-    val exportedVideosForStory: List<String>
+    private val videoRelPath: String
         get() {
-            val actualPaths = ArrayList<String>()
-            val videoPaths = StorySharedPreferences.getExportedVideosForStory(mStory)
-            for (path in videoPaths) {
-                val file = File(path)
-                if (file.exists() && !actualPaths.contains(path)) {
-                    actualPaths.add(path)
-                } else {
-                    StorySharedPreferences.removeExportedVideoForStory(path, mStory)
-                }
-            }
-            return actualPaths
-        }
-
-    private val outputPath: String
-        get() {
-            val directory = VideoFiles.getDefaultLocation(mStory).path
             var filename = "HEY"
 
             val sections = ArrayList<String>()
             var title: String? = mEditTextTitle!!.text.toString().replace(" ".toRegex(), "")
                     .replace("[^a-zA-Z0-9\\-_ ]".toRegex(), "")
             if (title == null || title.isEmpty()) {
-                title = mStory!!.replace(" ".toRegex(), "")
+                title = Workspace.activeStory.title.replace(" ".toRegex(), "")
                         .replace("[^a-zA-Z0-9\\-_ ]".toRegex(), "")
             }
             sections.add(title)
@@ -119,7 +95,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
 
             filename = stringJoin(sections, "_")
-            return "$directory/$filename"
+            return "$VIDEO_DIR/$filename"
         }
 
     private val PROGRESS_UPDATER = Runnable {
@@ -147,13 +123,8 @@ class CreateActivity : PhaseBaseActivity() {
         }
 
         runOnUiThread {
-            //save the file only when the video file is actually created
-            val ext = formatExtension
-            val output = File(mOutputPath!! + ext)
-            StorySharedPreferences.addExportedVideoForStory(output.absolutePath, mStory)
             stopExport()
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
-            //setSectionsClosedExceptView(findViewById(R.id.share_section));
         }
     }
 
@@ -187,10 +158,8 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mStory = StoryState.getStoryName()     //needs to be set first because some of the views use it
-        val phaseUnlocked = StorySharedPreferences.isApproved(mStory, this)
+        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_create)
-        mStory = StoryState.getStoryName()
         setupViews()
         invalidateOptionsMenu()
         if (phaseUnlocked) {
@@ -386,17 +355,6 @@ class CreateActivity : PhaseBaseActivity() {
 
     }
 
-    /**
-     * sets which one of the accordians starts open on the activity start
-     */
-    private fun setVideoOrShareSectionOpen() {
-        val actualPaths = exportedVideosForStory
-        if (actualPaths.size > 0) {        //open the share view
-            setSectionsClosedExceptView(findViewById(R.id.share_section))
-        } else {                            //open the video creation view
-            setSectionsClosedExceptView(findViewById(R.id.export_section))
-        }
-    }
 
     /**
      * This function sets the click listeners to implement the accordion functionality
@@ -540,24 +498,6 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     /**
-     * Launch the file explorer.
-     */
-    private fun openFileExplorerToExport() {
-        var initialFileExplorerLocation = VideoFiles.getDefaultLocation(mStory).path
-        val currentLocation = mOutputPath
-        val currentLocFile = File(currentLocation!!)
-        val currentParent = currentLocFile.parentFile
-        if (currentLocFile.isDirectory || currentParent != null && currentParent.exists()) {
-            initialFileExplorerLocation = currentLocation
-        }
-
-        val intent = Intent(this, FileChooserActivity::class.java)
-        intent.putExtra(FileChooserActivity.ALLOW_OVERWRITE, true)
-        intent.putExtra(FileChooserActivity.INITIAL_PATH, initialFileExplorerLocation)
-        startActivityForResult(intent, FILE_CHOOSER_CODE)
-    }
-
-    /**
      * Set the path for export location, including UI.
      * @param path new export location.
      */
@@ -590,8 +530,8 @@ class CreateActivity : PhaseBaseActivity() {
         editor.putBoolean(PREF_RB_DUMBPHONE, mRadioButtonDumbPhone!!.isChecked)
         editor.putBoolean(PREF_RB_SMARTPHONE, mRadioButtonSmartPhone!!.isChecked)
 
-        editor.putString(mStory!! + PREF_KEY_TITLE, mEditTextTitle!!.text.toString())
-        editor.putString(mStory!! + PREF_KEY_FILE, mOutputPath)
+        editor.putString(Workspace.activeStory.title + PREF_KEY_TITLE, mEditTextTitle!!.text.toString())
+        editor.putString(Workspace.activeStory.title + PREF_KEY_FILE, mOutputPath)
 
         editor.apply()
     }
@@ -611,8 +551,8 @@ class CreateActivity : PhaseBaseActivity() {
         //setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
         mRadioButtonDumbPhone!!.isChecked = prefs.getBoolean(PREF_RB_DUMBPHONE, true)
         mRadioButtonSmartPhone!!.isChecked = prefs.getBoolean(PREF_RB_SMARTPHONE, false)
-        mEditTextTitle!!.setText(prefs.getString(mStory!! + PREF_KEY_TITLE, mStory))
-        setLocation(prefs.getString(mStory!! + PREF_KEY_FILE, null))
+        mEditTextTitle!!.setText(prefs.getString(Workspace.activeStory.title + PREF_KEY_TITLE, Workspace.activeStory.title))
+        setLocation(prefs.getString(Workspace.activeStory.title + PREF_KEY_FILE, null))
 
         //mTextConfirmationChecked = true;
     }
@@ -635,22 +575,22 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun tryStartExport() {
-        setLocation(outputPath)
+        setLocation(videoRelPath)
 
         val ext = formatExtension
-        val output = File(mOutputPath!! + ext)
+        val outputRelPath = mOutputPath + ext
 
-        if (output.exists()) {
+        if (storyRelPathExists(this,outputRelPath)) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
                     .setNegativeButton(getString(R.string.no), null)
-                    .setPositiveButton(getString(R.string.yes)) { dialog, id -> startExport(output) }.create()
+                    .setPositiveButton(getString(R.string.yes)) { dialog, id -> startExport(outputRelPath) }.create()
 
             dialog.show()
         } else {
             //mStory = mOutputPath.split("/")[mOutputPath.split("/").length - 1];
-            startExport(output)
+            startExport(outputRelPath)
         }
     }
 
@@ -670,14 +610,14 @@ class CreateActivity : PhaseBaseActivity() {
         return result.toString()
     }
 
-    private fun startExport(output: File) {
+    private fun startExport(outputRelPath: String) {
         synchronized(storyMakerLock) {
-            storyMaker = AutoStoryMaker(mStory)
+            storyMaker = AutoStoryMaker()
             storyMaker!!.setContext(this)
 
             var title: String? = mEditTextTitle!!.text.toString()
             if (title == null || title.isEmpty()) {
-                title = mStory
+                title = Workspace.activeStory.title
             }
             storyMaker!!.setTitle(title)
 
@@ -698,7 +638,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
 
 
-            storyMaker!!.setOutputFile(output)
+            storyMaker!!.setOutputFile(outputRelPath)
         }
 
         storyMaker!!.start()

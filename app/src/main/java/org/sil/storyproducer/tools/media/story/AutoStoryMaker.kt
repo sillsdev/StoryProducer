@@ -4,8 +4,10 @@ import android.content.Context
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
+import android.provider.DocumentsContract
 import android.util.Log
 import android.widget.Toast
+import org.sil.storyproducer.model.VIDEO_DIR
 
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.AudioFiles
@@ -13,7 +15,6 @@ import org.sil.storyproducer.tools.file.FileSystem
 import org.sil.storyproducer.tools.file.ImageFiles
 import org.sil.storyproducer.tools.file.KenBurnsSpec
 import org.sil.storyproducer.tools.file.TextFiles
-import org.sil.storyproducer.tools.file.VideoFiles
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
@@ -22,18 +23,13 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
  * parameters for StoryMaker according to some defaults, structure of projects/templates, and
  * minimal customization.
  */
-class AutoStoryMaker : Thread(), Closeable {
-
-    private val mStory: String
-    private var mTitle: String? = null
+class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     // size of a frame, in pixels
     // first size isn't great quality, but runs faster
@@ -41,9 +37,10 @@ class AutoStoryMaker : Thread(), Closeable {
     private var mHeight = 240
 
     private var mOutputExt = ".mp4"
-    private var mOutputFile: File? = null
-    private var mTempFile: File? = null
+    private var videoRelPath: String = VIDEO_DIR + "/" +
+            Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
+    private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private var mVideoBitRate: Int = 0
 
     private var mIncludeBackgroundMusic = true
@@ -54,8 +51,6 @@ class AutoStoryMaker : Thread(), Closeable {
     private var mLogProgress = false
 
     private var mStoryMaker: StoryMaker? = null
-
-    private var mContext: Context? = null
 
     val isDone: Boolean
         get() = mStoryMaker != null && mStoryMaker!!.isDone
@@ -68,35 +63,11 @@ class AutoStoryMaker : Thread(), Closeable {
         }
 
     init {
-        mStory = Workspace.activeStory.title
-        mTitle = mStory
-
         setResolution(mWidth, mHeight)
-
-        val outputDir = VideoFiles.getDefaultLocation(mStory)
-        setOutputFile(File(outputDir, mStory.replace(' ', '_') + "_"
-                + mWidth + "x" + mHeight + mOutputExt))
     }
 
-    /**
-     * Set a context for the AutoStoryMaker if [android.widget.Toast] error messages are desired.
-     * If no context is set, console logging will be used instead.
-     *
-     * @param context
-     */
-    fun setContext(context: Context) {
-        mContext = context
-    }
-
-    fun setOutputFile(output: File) {
-        mOutputFile = output
-
-        val extPattern = Pattern.compile("\\.\\w+$")
-        val extMatcher = extPattern.matcher(mOutputFile!!.name)
-        extMatcher.find()
-        mOutputExt = extMatcher.group()
-
-        mTempFile = File(VideoFiles.getTempLocation(mStory), "partial_video$mOutputExt")
+    fun setOutputFile(relPath: String) {
+        videoRelPath = relPath
     }
 
     fun setResolution(width: Int, height: Int) {
@@ -105,10 +76,6 @@ class AutoStoryMaker : Thread(), Closeable {
 
         val pixelRate = mWidth * mHeight * VIDEO_FRAME_RATE
         mVideoBitRate = (pixelRate.toFloat() * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
-    }
-
-    fun setTitle(title: String) {
-        mTitle = title
     }
 
     fun toggleBackgroundMusic(includeBackgroundMusic: Boolean) {
@@ -144,7 +111,7 @@ class AutoStoryMaker : Thread(), Closeable {
 
         //If pages weren't generated, exit.
 
-        mStoryMaker = StoryMaker(mTempFile, outputFormat, videoFormat, audioFormat,
+        mStoryMaker = StoryMaker(videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
 
         watchProgress()
@@ -159,11 +126,13 @@ class AutoStoryMaker : Thread(), Closeable {
         val success = mStoryMaker!!.churn()
 
         if (success) {
-            Log.v(TAG, "Moving completed video to " + mOutputFile!!.absolutePath)
-            mTempFile!!.renameTo(mOutputFile)
+            Log.v(TAG, "Moving completed video to " + videoRelPath)
+            //TODO copy from temp to final location.
+            DocumentsContract.copyDocument()
+            videoTempFile.renameTo(videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
-            mTempFile!!.delete()
+            videoTempFile.delete()
         }
 
         duration += System.currentTimeMillis()
