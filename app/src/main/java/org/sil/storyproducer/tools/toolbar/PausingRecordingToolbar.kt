@@ -48,7 +48,7 @@ class PausingRecordingToolbar
 constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
             enablePlaybackButton: Boolean, enableDeleteButton: Boolean, enableMultiRecordButton: Boolean, enableSendAudioButton: Boolean,
             multiRecordModal: Modal, recordingListener: RecordingToolbar.RecordingListener, slideNum: Int) : RecordingToolbar(activity, rootViewToolbarLayout, rootViewLayout, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton, multiRecordModal, recordingListener, slideNum) {
-    private var enableCheckButton: Boolean = false
+    private var enableCheckButton: Boolean = true
     private var isAppendingOn: Boolean = false
     private var checkButton: ImageButton? = null
     private val AUDIO_TEMP_NAME = getTempAppendAudioRelPath()

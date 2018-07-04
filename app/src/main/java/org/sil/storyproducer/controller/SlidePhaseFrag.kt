@@ -53,13 +53,8 @@ abstract class SlidePhaseFrag : Fragment() {
         // properly.
         rootView = inflater!!.inflate(R.layout.fragment_slide, container, false)
 
-        referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
-
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        setReferenceAudioButton(referncePlayButton!!)
-        val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slideNum.toString()
 
         return rootView
     }
@@ -134,6 +129,13 @@ abstract class SlidePhaseFrag : Fragment() {
         slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
+
+        //Set up the reference audio and slide number overlays
+        referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
+        setReferenceAudioButton(referncePlayButton!!)
+
+        val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
+        slideNumberText.text = slideNum.toString()
     }
 
     /**

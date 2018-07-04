@@ -50,13 +50,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         // properly.
         rootView = inflater!!.inflate(R.layout.fragment_consultant_check, container, false)
 
-        referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
-
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        setReferenceAudioButton(referncePlayButton!!)
-        val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slideNum.toString()
 
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)

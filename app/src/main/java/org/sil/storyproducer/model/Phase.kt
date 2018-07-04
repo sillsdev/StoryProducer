@@ -61,6 +61,7 @@ class Phase(val phaseType: PhaseType) {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
+            PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             else -> ""

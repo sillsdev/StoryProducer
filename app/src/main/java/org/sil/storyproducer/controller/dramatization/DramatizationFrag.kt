@@ -49,29 +49,24 @@ class DramatizationFrag : MultiRecordFrag() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater!!.inflate(R.layout.fragment_dramatization, container, false)
+
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         slideText = rootView!!.findViewById(R.id.fragment_dramatization_edit_text)
         slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
+        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
+
         if (phaseUnlocked) {
             rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+            setToolbar(rootViewToolbar)
             closeKeyboardOnTouch(rootView)
             rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
         return rootView
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        if (phaseUnlocked) {
-            setToolbar(rootViewToolbar)
-        }
     }
 
     /**
