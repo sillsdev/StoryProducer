@@ -36,8 +36,6 @@ class PausingRecordingToolbar
  * @param enableDeleteButton      Enable the delete button, does not work as of now.
  * @param enableMultiRecordButton Enabled the play list button on the toolbar.
  * @param enableSendAudioButton   Enable sending audio to server
- * @param playbackRecordFilePath  The file path where the toolbar will play from.
- * @param recordFilePath          The file path that the recording will be saved under.
  * @param multiRecordModal        The modal that houses the multiple recordings.
  * @param recordingListener       The listener responsible for interactions between toolbar
  * and corresponding class. Used on stop and start of recording.

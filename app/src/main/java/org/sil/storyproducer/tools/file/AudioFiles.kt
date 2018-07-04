@@ -43,15 +43,17 @@ fun assignNewAudioRelPath() : String {
             "$PROJECT_DIR/$phaseName" + AUDIO_EXT
         }
         //Make new files every time.  Don't append.
-        PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
+        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             "$PROJECT_DIR/$phaseName" +
                     Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
         }
         //If you want, append the file
-        PhaseType.DRAMATIZATION -> {
-            "$PROJECT_DIR/$phaseName" +
-                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
-        }
+        //TODO re-enable when wav recording is fixed.
+//        PhaseType.DRAMATIZATION -> {
+//            "$PROJECT_DIR/$phaseName" +
+//                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
+//        }
         else -> {""}
     }
 

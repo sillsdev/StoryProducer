@@ -1,44 +1,24 @@
 package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.util.DisplayMetrics
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.StorySharedPreferences
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.ImageFiles
-import org.sil.storyproducer.tools.file.TextFiles
-import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-
-import java.io.File
 
 
 class DramatizationFrag : MultiRecordFrag() {
@@ -111,9 +91,9 @@ class DramatizationFrag : MultiRecordFrag() {
 
             val rList = RecordingsList(context, this)
 
-            //fix with proper slide num
-            recordingToolbar = PausingRecordingToolbar(activity, rootViewToolbar!!, rootView as RelativeLayout,
-                    true, false, true, false, rList, recordingListener, 0)
+            //TODO re-enable the pausing recording toolbar when wav saving and concatentation are working again.
+            recordingToolbar = RecordingToolbar(activity, rootViewToolbar!!, rootView as RelativeLayout,
+                    true, false, true, false, rList, recordingListener, slideNum)
             recordingToolbar!!.keepToolbarVisible()
         }
     }
