@@ -1,24 +1,24 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
+import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.Log
 import android.widget.Toast
+import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.VIDEO_DIR
 
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.FileSystem
-import org.sil.storyproducer.tools.file.ImageFiles
-import org.sil.storyproducer.tools.file.KenBurnsSpec
-import org.sil.storyproducer.tools.file.TextFiles
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper
+import org.sil.storyproducer.tools.media.graphics.overlayJPEG
 
 import java.io.Closeable
 import java.io.File
@@ -128,8 +128,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             //TODO copy from temp to final location.
-            DocumentsContract.copyDocument()
-            videoTempFile.renameTo(videoRelPath)
+            DocumentsContract.copyDocument(context.contentResolver,
+                    Uri.fromFile(videoTempFile),
+                    getStoryUri(videoRelPath))
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
@@ -166,44 +167,35 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     private fun generatePages(): Array<StoryPage>? {
-        val slideCount = FileSystem.getContentSlideAmount(mStory)
+        val slideCount = Workspace.activeStory.slides.size
         //TODO: add hymn to count
         val pages: MutableList<StoryPage> = mutableListOf()
 
         val widthToHeight = mWidth / mHeight.toDouble()
 
-        //Create title slide with overlayed text.
-        //Try to get special background (user provided).
-        var titleBack = ImageFiles.getFile(mStory, ImageFiles.TITLE_BACKGROUND)
-        if (!titleBack.exists()) {
-            //Fallback to standard title slide.
-            titleBack = ImageFiles.getFile(mStory, 0)
-        }
-
-        //Default title with no text.
-        var title = titleBack
-
-        val tempTitle = ImageFiles.getFile(mStory, ImageFiles.TITLE_TEMP)
-        val titleOverlay = TextOverlay(mTitle)
+        val tempTitle = "$PROJECT_DIR/temptitle.jpg"
+        //TODO enable better title selection.
+        val titleOverlay = TextOverlay(Workspace.activeStory.slides[0].translatedContent)
         titleOverlay.setFontSize(TITLE_FONT_SIZE)
 
+        var titleImage = getStoryImage(context,0)
+
         try {
-            TextOverlayHelper.overlayJPEG(titleBack, tempTitle, titleOverlay)
-            title = tempTitle
+            overlayJPEG(context, Workspace.activeStory.slides[0].imageFile, tempTitle, titleOverlay)
+            titleImage = getStoryImage(context,tempTitle)
         } catch (e: IOException) {
             Log.w(TAG, "Failed to create overlayed title slide!")
         }
 
         var lastSoundtrack: File? = null
-        var iSlide: Int
-        iSlide = 0
+        var iSlide = 0
         while (iSlide < slideCount) {
             var image: File? = null
             if (mIncludePictures) {
                 if (iSlide == 0) {
-                    image = title
+                    image = titleImage
                 } else {
-                    image = ImageFiles.getFile(mStory, iSlide)
+                    image = getStoryImage(context, iSlide)
                 }
             }
             var audio = AudioFiles.getDramatization(mStory, iSlide)
@@ -213,7 +205,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
             //fallback to LWC audio
             if (!audio.exists()) {
-                //FIXME
                 //audio = AudioFiles.INSTANCE.getNarration(mStory, iSlide);
             }
             //error

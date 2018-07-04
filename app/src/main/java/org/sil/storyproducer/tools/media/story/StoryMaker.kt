@@ -1,5 +1,6 @@
 package org.sil.storyproducer.tools.media.story
 
+import android.content.Context
 import android.media.MediaFormat
 import android.util.Log
 
@@ -28,7 +29,7 @@ class StoryMaker
  * Note: this helps drive length of video.
  * @param slideCrossFadeUs cross-fade duration, in microseconds, between page images.
  */
-(private val mOutputFile: File, private val mOutputFormat: Int, private val mVideoFormat: MediaFormat?, private val mAudioFormat: MediaFormat,
+(private val context: Context, private val mOutputFile: File, private val mOutputFormat: Int, private val mVideoFormat: MediaFormat?, private val mAudioFormat: MediaFormat,
  private val mPages: Array<StoryPage>, private val mAudioTransitionUs: Long, private val mSlideCrossFadeUs: Long) : Closeable {
 
     private var mSoundtrackVolumeModifier = 0.5f
@@ -100,15 +101,15 @@ class StoryMaker
             Log.e(TAG, "StoryMaker already finished!")
         }
 
-        val soundtrackConcatenator = PipedAudioConcatenator(0, mSampleRate, mChannelCount)
+        val soundtrackConcatenator = PipedAudioConcatenator(context,0, mSampleRate, mChannelCount)
         soundtrackConcatenator.setFadeOut(SOUNDTRACK_FADE_OUT_US)
-        val narrationConcatenator = PipedAudioConcatenator(mAudioTransitionUs, mSampleRate, mChannelCount)
+        val narrationConcatenator = PipedAudioConcatenator(context, mAudioTransitionUs, mSampleRate, mChannelCount)
         val audioMixer = PipedAudioMixer()
         val audioEncoder = PipedMediaEncoder(mAudioFormat)
         var videoDrawer: StoryFrameDrawer? = null
         var videoEncoder: PipedVideoSurfaceEncoder? = null
         if (mVideoFormat != null) {
-            videoDrawer = StoryFrameDrawer(mVideoFormat, mPages, mAudioTransitionUs, mSlideCrossFadeUs)
+            videoDrawer = StoryFrameDrawer(context, mVideoFormat, mPages, mAudioTransitionUs, mSlideCrossFadeUs)
             videoEncoder = PipedVideoSurfaceEncoder()
         }
         mMuxer = PipedMediaMuxer(mOutputFile.absolutePath, mOutputFormat)
@@ -123,19 +124,19 @@ class StoryMaker
             audioMixer.addSource(narrationConcatenator)
 
             var soundtrackDuration: Long = 0
-            var lastSoundtrack: File? = null
+            var lastSoundtrack: String? = null
             for (page in mPages) {
-                val narration = page.narrationAudio
+                val narration = page.narrationAudioPath
                 val audioDuration = page.audioDuration
 
-                val soundtrack = page.soundtrackAudio
+                val soundtrack = page.soundtrackAudioPath
                 val pageDuration = page.getDuration(mAudioTransitionUs)
 
                 //If we encounter a new soundtrack, stop the current one and start the new one.
                 //Otherwise, continue playing last soundtrack.
                 if (soundtrack == null || soundtrack != lastSoundtrack) {
                     if (lastSoundtrack != null) {
-                        soundtrackConcatenator.addSourcePath(lastSoundtrack.absolutePath, soundtrackDuration)
+                        soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration)
                     } else if (soundtrackDuration > 0) {
                         soundtrackConcatenator.addSource(null, soundtrackDuration)
                     }
@@ -146,20 +147,19 @@ class StoryMaker
                     soundtrackDuration += pageDuration
                 }
 
-                val path = narration?.absolutePath
-                narrationConcatenator.addSourcePath(path, audioDuration)
+                narrationConcatenator.addSourcePath(narration, audioDuration)
             }
 
             //Add last soundtrack
             if (lastSoundtrack != null) {
-                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack.absolutePath, soundtrackDuration)
+                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration)
             }
 
 
             if (mVideoFormat != null) {
                 mMuxer!!.addSource(videoEncoder!!)
 
-                videoEncoder!!.addSource(videoDrawer)
+                videoEncoder.addSource(videoDrawer)
             }
             success = mMuxer!!.crunch()
             Log.i(TAG, "Video saved to $mOutputFile")
