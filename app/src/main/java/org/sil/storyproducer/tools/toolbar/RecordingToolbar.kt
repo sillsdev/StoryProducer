@@ -36,6 +36,7 @@ import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
+import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 import java.io.File
 import java.io.FileInputStream
@@ -98,7 +99,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
-    protected var voiceRecorder: AudioRecorder = AudioRecorder()
+    protected var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
     protected var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording = voiceRecorder.isRecording
 
@@ -202,13 +203,13 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
     protected open fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
-        voiceRecorder.startNewRecording(activity, recordingRelPath)
+        voiceRecorder.startNewRecording(recordingRelPath)
         startRecordingAnimation(false, 0)
         recordingListener.onStartedRecordingOrPlayback(true)
     }
 
     protected open fun stopRecording() {
-        voiceRecorder.stop(activity)
+        voiceRecorder.stop()
         stopRecordingAnimation()
         recordingListener.onStoppedRecording()
     }

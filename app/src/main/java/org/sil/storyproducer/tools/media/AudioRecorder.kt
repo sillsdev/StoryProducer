@@ -30,11 +30,29 @@ internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
 
 private const val AUDIO_RECORDER = "audio_recorder"
 
-class AudioRecorder {
+abstract class AudioRecorder(val activity: Activity) {
+    var isRecording = false
+        protected set
+
+    init {
+        if (ContextCompat.checkSelfPermission(activity,
+                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(activity,
+                    arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+        }
+    }
+
+    abstract fun startNewRecording(relPath: String)
+
+    abstract fun stop()
+
+}
+
+
+class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
-    var isRecording = false
-    private set
 
     private fun initRecorder(){
         mRecorder.release()
@@ -46,15 +64,9 @@ class AudioRecorder {
         mRecorder.setAudioSamplingRate(SAMPLE_RATE)
     }
 
-    fun startNewRecording(activity: Activity, relPath: String,
-                               storyName: String = Workspace.activeStory.title){
-        if (ContextCompat.checkSelfPermission(activity,
-                        Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    arrayOf(Manifest.permission.RECORD_AUDIO), 1)
-        }
+    override fun startNewRecording(relPath: String){
         initRecorder()
-        mRecorder.setOutputFile(getStoryFileDescriptor(activity,relPath,storyName))
+        mRecorder.setOutputFile(getStoryFileDescriptor(activity,relPath))
         isRecording = true
         try{
             mRecorder.prepare()
@@ -71,19 +83,17 @@ class AudioRecorder {
         }
     }
 
-    fun stop(context: Context) {
+    override fun stop() {
         try {
             mRecorder.stop()
             mRecorder.reset()
             mRecorder.release()
             isRecording = false
-            Toast.makeText(context, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
         } catch (stopException: RuntimeException) {
-            Toast.makeText(context, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
         } catch (e: InterruptedException) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
         }
     }
-
-    fun release(){mRecorder.release()}
 }

@@ -10,13 +10,11 @@ import android.widget.RelativeLayout
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.media.wavaudio.AudioRecorderWav
 import org.sil.storyproducer.tools.media.wavaudio.ConcatenateAudioFiles
-import org.sil.storyproducer.tools.media.wavaudio.WavAudioRecorder
 
-import java.io.File
 import java.io.FileNotFoundException
 
 
@@ -53,6 +51,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var checkButton: ImageButton? = null
     private val AUDIO_TEMP_NAME = getTempAppendAudioRelPath()
 
+
+    init{
+        voiceRecorder = AudioRecorderWav(activity)
+    }
     /**
      * This function is used to stop all the media sources on the toolbar from playing or recording.
      * The auxiliary medias are not stopped because the calling class should be responsible for
@@ -111,6 +113,9 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      * Used to add buttons to the toolbar
      */
     override fun setupToolbarButtons() {
+        //TODO merge the pausing recording toolbar and recording toolbar accepting "enableCheckButton" as an option.  Call it "enablePause".
+        //This is needed because this function is called by the child constructor before this classes constructor can initialize the variable.
+        enableCheckButton = true
         rootViewToolbarLayout.removeAllViews()
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
