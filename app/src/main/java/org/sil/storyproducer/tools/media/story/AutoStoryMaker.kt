@@ -1,12 +1,10 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
-import android.provider.DocumentsContract
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -17,7 +15,6 @@ import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import org.sil.storyproducer.tools.media.graphics.TextOverlayHelper
 import org.sil.storyproducer.tools.media.graphics.overlayJPEG
 
 import java.io.Closeable
@@ -175,50 +172,51 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         val titleOverlay = TextOverlay(Workspace.activeStory.slides[0].translatedContent)
         titleOverlay.setFontSize(TITLE_FONT_SIZE)
 
-        var titleImage = getStoryImage(context,0)
+        var titleRelPath = Workspace.activeStory.slides[0].imageFile
 
         try {
             overlayJPEG(context, Workspace.activeStory.slides[0].imageFile, tempTitle, titleOverlay)
-            titleImage = getStoryImage(context,tempTitle)
+            titleRelPath = tempTitle
         } catch (e: IOException) {
             Log.w(TAG, "Failed to create overlayed title slide!")
         }
 
-        var lastSoundtrack: File? = null
+        var lastSoundtrack = ""
         var iSlide = 0
+        var image: String = ""
         while (iSlide < slideCount) {
-            var image: File? = null
+            val slide = Workspace.activeStory.slides[iSlide]
             if (mIncludePictures) {
                 if (iSlide == 0) {
-                    image = titleImage
+                    image = titleRelPath
                 } else {
-                    image = getStoryImage(context, iSlide)
+                    image = slide.imageFile
                 }
-            }
-            var audio = AudioFiles.getDramatization(mStory, iSlide)
+            }else image = ""
+            var audio = slide.chosenDramatizationFile
             //fallback to draft audio
-            if (!audio.exists()) {
-                audio = AudioFiles.getDraft(mStory, iSlide)
+            if (audio == "") {
+                audio = slide.chosenDraftFile
             }
             //fallback to LWC audio
-            if (!audio.exists()) {
-                //audio = AudioFiles.INSTANCE.getNarration(mStory, iSlide);
+            if (audio == "") {
+                audio = slide.narrationFile
             }
             //error
-            if (!audio.exists()) {
+            if (audio == "") {
                 error("Audio missing for slide " + (iSlide + 1))
                 return null
             }
 
-            var soundtrack: File? = null
+            var soundtrack = slide.musicFile
             if (mIncludeBackgroundMusic) {
                 //FIXME
                 //soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
-                if (soundtrack == null) {
+                if (soundtrack == "") {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
-                } else if (!soundtrack.exists()) {
-                    error("Soundtrack missing from template: " + soundtrack.name)
+                } else if (soundtrack == "") {
+                    error("Soundtrack missing from template: " + soundtrack)
                 }
 
                 lastSoundtrack = soundtrack
@@ -226,25 +224,26 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
             var kbfx: KenBurnsEffect? = null
             if (mIncludePictures && mIncludeKBFX && iSlide != 0) {
-                kbfx = KenBurnsSpec.getKenBurnsEffect(mStory, iSlide)
+                kbfx = KenBurnsEffect.fromSlide(slide)
             }
 
-            var text: String? = null
+            var text = ""
             if (mIncludeText) {
-                text = TextFiles.getDramatizationText(mStory, iSlide)
-                text = if (text == "") null else text
+                text = slide.translatedContent
             }
 
             pages.add(StoryPage(image, audio, 0, kbfx, text, soundtrack))
             iSlide++
         }
 
+        //TODO re-enable copyright
+        /*
         var copyrightImage: File? = null
         if (mIncludePictures) {
             copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT)
         }
         pages.add(StoryPage(copyrightImage, COPYRIGHT_SLIDE_US))
-
+        */
         //TODO: add hymn
 
         return pages.toTypedArray()
@@ -274,11 +273,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     private fun error(message: String) {
-        if (mContext != null) {
-            Toast.makeText(mContext, message, Toast.LENGTH_LONG).show()
-        } else {
-            Log.e(TAG, message)
-        }
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     override fun close() {

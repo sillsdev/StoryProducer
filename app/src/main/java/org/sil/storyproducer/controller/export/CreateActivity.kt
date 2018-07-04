@@ -612,14 +612,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private fun startExport(outputRelPath: String) {
         synchronized(storyMakerLock) {
-            storyMaker = AutoStoryMaker()
-            storyMaker!!.setContext(this)
-
-            var title: String? = mEditTextTitle!!.text.toString()
-            if (title == null || title.isEmpty()) {
-                title = Workspace.activeStory.title
-            }
-            storyMaker!!.setTitle(title)
+            storyMaker = AutoStoryMaker(this)
 
             storyMaker!!.toggleBackgroundMusic(mCheckboxSoundtrack!!.isChecked)
             storyMaker!!.togglePictures(mCheckboxPictures!!.isChecked)
