@@ -203,9 +203,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         backgroundPlayer.release();
         if (recordingToolbar != null) {
             recordingToolbar.onPause();
-            //FIXME
-            //recordingToolbar.closeToolbar();
-            recordingToolbar.releaseToolbarAudio();
+            recordingToolbar.close();
         }
 
     }

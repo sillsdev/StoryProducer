@@ -73,8 +73,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
     override fun onPause() {
         super.onPause()
         recordingToolbar?.onPause()
-        recordingToolbar?.stopToolbarMedia()
-        recordingToolbar?.releaseToolbarAudio()
     }
 
     /**

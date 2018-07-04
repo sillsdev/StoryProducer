@@ -101,7 +101,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private var isToolbarRed = false
     protected var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
     protected var audioPlayer: AudioPlayer = AudioPlayer()
-    val isRecording = voiceRecorder.isRecording
+    val isRecording : Boolean
+        get() {return voiceRecorder.isRecording}
 
     init {
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar))
@@ -156,10 +157,6 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         }
     }
 
-    fun releaseToolbarAudio() {
-        audioPlayer.release()
-    }
-
     /**
      * This function is used so that other potential media sources outside the toolbar can be
      * stopped if the toolbar is pressed.
@@ -184,6 +181,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      */
     open fun onPause() {
         stopToolbarMedia()
+        audioPlayer.release()
     }
     
     open fun hideButtons() {

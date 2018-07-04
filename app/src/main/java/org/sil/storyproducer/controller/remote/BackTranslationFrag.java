@@ -216,7 +216,6 @@ public class BackTranslationFrag extends Fragment {
         draftPlayer.release();
         if(recordingToolbar != null){
             recordingToolbar.onPause();
-            recordingToolbar.releaseToolbarAudio();
         }
 
         closeKeyboard(rootView);

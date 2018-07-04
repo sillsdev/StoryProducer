@@ -30,35 +30,22 @@ class AudioRecorderWav (activity: Activity) : AudioRecorder(activity) {
     private var wavRelPath: String = ""
     private val pcmRelPath: String
     get() { return wavRelPath.slice(0 until max(0,wavRelPath.length-4)) + PCM_EXTENSION}
-    private val writePcmToFileRunnable: Runnable
+    private val writePcmToFileRunnable: Runnable = Runnable { createPcmFile() }
     private var isPCMWritingDone: Boolean = false
 
     private var audioRecord: AudioRecord? = null
 
     private val recordingLock = Any()
 
-    init {
-
-        writePcmToFileRunnable = Runnable { createPcmFile() }
-
-        audioRecord = AudioRecord(INPUT_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize)
-    }
 
     override fun startNewRecording(relPath: String) {
+        wavRelPath = relPath
+        audioRecord = AudioRecord(INPUT_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize)
         if (!isRecording) {
-            if (audioRecord!!.state == AudioRecord.STATE_INITIALIZED) {
-                isPCMWritingDone = false
-                isRecording = true
-                audioRecord!!.startRecording()
-                Thread(writePcmToFileRunnable).start()
-            } else if (audioRecord!!.state == AudioRecord.STATE_UNINITIALIZED) {
-                audioRecord = AudioRecord(INPUT_SOURCE, SAMPLE_RATE, CHANNEL_CONFIG, AUDIO_FORMAT, minBufferSize)
-
-                isPCMWritingDone = false
-                isRecording = true
-                audioRecord!!.startRecording()
-                Thread(writePcmToFileRunnable).start()
-            }
+            isPCMWritingDone = false
+            isRecording = true
+            audioRecord!!.startRecording()
+            Thread(writePcmToFileRunnable).start()
         }
     }
 
@@ -78,8 +65,8 @@ class AudioRecorderWav (activity: Activity) : AudioRecorder(activity) {
                 }
 
             }
-            createWavFile()
             audioRecord!!.release()
+            createWavFile()
         }
     }
 
@@ -134,7 +121,7 @@ class AudioRecorderWav (activity: Activity) : AudioRecorder(activity) {
                 iStream.close()
 
                 //write the WAV file to phone
-                val oStream = getChildOutputStream(activity,wavRelPath)
+                val oStream = getStoryChildOutputStream(activity,wavRelPath)
                 oStream?.write(wavBytes)
                 oStream?.close()
 

@@ -85,7 +85,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      */
     override fun onPause() {
         super.onPause()
-        if (isRecording) {
+        if (voiceRecorder.isRecording) {
             //simulate a stop of recording.
             micButton.callOnClick()
         }
@@ -171,7 +171,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     override fun setOnClickListeners() {
         super.setOnClickListeners()
         val micListener = View.OnClickListener {
-            if (isRecording) {
+            if (voiceRecorder.isRecording) {
                 stopRecording()
                 if (isAppendingOn) {
                     try {

@@ -120,8 +120,8 @@ class LearnActivity : PhaseBaseActivity() {
             if(story.slides[k].musicFile != ""){
                 val uri = getStoryUri(story.slides[k].musicFile,story.title)
                 audioStartValue += (MediaHelper.getAudioDuration(this,uri) / 1000).toInt()
-                backgroundAudioJumps.add(k, audioStartValue)
             }
+            backgroundAudioJumps.add(k, audioStartValue)
         }
         backgroundAudioJumps.add(audioStartValue)        //this last one is just added for the copyrights slide
     }
@@ -186,7 +186,6 @@ class LearnActivity : PhaseBaseActivity() {
         backgroundPlayer.release()
         recordingToolbar!!.onPause()
         recordingToolbar!!.close()
-        recordingToolbar!!.releaseToolbarAudio()
     }
 
     /**
