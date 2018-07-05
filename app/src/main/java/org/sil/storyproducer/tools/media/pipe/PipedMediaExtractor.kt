@@ -44,7 +44,8 @@ class PipedMediaExtractor
         }
 
         mExtractor = MediaExtractor()
-        mExtractor!!.setDataSource(getStoryFileDescriptor(context, mPath)!!)
+        val fd = getStoryFileDescriptor(context, mPath)
+        mExtractor!!.setDataSource(fd!!)
 
         var foundTrack = false
 

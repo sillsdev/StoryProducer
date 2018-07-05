@@ -124,7 +124,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
-            copyFiles(context,Uri.fromFile(videoTempFile),videoRelPath)
+            copyToStoryPath(context,Uri.fromFile(videoTempFile),videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
@@ -232,7 +232,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 text = slide.translatedContent
             }
 
-            pages.add(StoryPage(image, audio, 0, kbfx, text, soundtrack))
+            val duration = MediaHelper.getAudioDuration(context, getStoryUri(slide.chosenDramatizationFile))
+
+            pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
             iSlide++
         }
 

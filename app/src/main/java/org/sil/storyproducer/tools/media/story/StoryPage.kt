@@ -1,5 +1,6 @@
 package org.sil.storyproducer.tools.media.story
 
+import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 
 import java.io.File
@@ -29,11 +30,7 @@ class StoryPage
     //FIXME
     //return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
     val audioDuration: Long
-        get() = if (narrationAudioPath != "") {
-            0
-        } else {
-            mDuration
-        }
+        get() = mDuration
 
     /**
      * Create page.

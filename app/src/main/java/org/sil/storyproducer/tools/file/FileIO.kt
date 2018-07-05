@@ -17,14 +17,14 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-fun copyFiles(context: Context, sourceUri: Uri, destRelPath: String){
+fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
 //    var iStream: AutoCloseInputStream = null
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val opfd = getChildOuputPFD(context, destRelPath)
+        val opfd = getChildOuputPFD(context, Workspace.activeStory.title + "/" + destRelPath)
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
         oStream.write(iStream.readBytes())
         iStream.close()

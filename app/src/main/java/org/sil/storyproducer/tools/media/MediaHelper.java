@@ -35,10 +35,16 @@ final public class MediaHelper {
      */
     public static long getAudioDuration(Context context, Uri uri) {
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(context, uri);
-        String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        return Integer.parseInt(durationStr) * 1000;
+        try {
+            mmr.setDataSource(context, uri);
+            String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+            return Integer.parseInt(durationStr) * 1000;
+        }catch (Exception e){
+            //I don't know what happened, but lets not stop everything.
+        }
+        return 0;
     }
+
 
     private static final NumberFormat form2Dec = new DecimalFormat("#0.00");
     /**

@@ -13,7 +13,7 @@ import java.io.*
 import java.util.*
 
 internal const val PROJECT_DIR = "project"
-internal const val VIDEO_DIR = "video"
+internal const val VIDEO_DIR = "videos"
 internal const val PROJECT_FILE = "story.json"
 
 @JsonClass(generateAdapter = true)
@@ -21,6 +21,7 @@ class Story(var title: String, val slides: List<Slide>){
 
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
+    var exportedVideos: MutableList<String> = ArrayList()
     companion object
 
 }
