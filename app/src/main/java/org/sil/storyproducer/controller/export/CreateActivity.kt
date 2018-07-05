@@ -31,9 +31,8 @@ import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.VideoFiles
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import java.util.*
 
-import java.util.ArrayList
-import java.util.Arrays
 import java.util.regex.Pattern
 
 class CreateActivity : PhaseBaseActivity() {
@@ -633,6 +632,8 @@ class CreateActivity : PhaseBaseActivity() {
 
             storyMaker!!.setOutputFile(outputRelPath)
             Workspace.activeStory.exportedVideos.add(outputRelPath)
+            //only take unique values.
+            Workspace.activeStory.exportedVideos = Workspace.activeStory.exportedVideos.distinct().toMutableList()
         }
 
         storyMaker!!.start()

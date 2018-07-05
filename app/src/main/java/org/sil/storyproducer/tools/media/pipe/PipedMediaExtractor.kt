@@ -5,7 +5,9 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.util.Log
+import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 import org.sil.storyproducer.tools.file.getStoryPFD
 
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -43,9 +45,7 @@ class PipedMediaExtractor
         }
 
         mExtractor = MediaExtractor()
-        val pfd = getStoryPFD(context, mPath,"r")
-        mExtractor!!.setDataSource(pfd!!.fileDescriptor!!)
-        pfd.close()
+        mExtractor!!.setDataSource(getStoryFileDescriptor(context, mPath,"","r"))
 
         var foundTrack = false
 
