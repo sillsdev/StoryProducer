@@ -632,6 +632,7 @@ class CreateActivity : PhaseBaseActivity() {
 
 
             storyMaker!!.setOutputFile(outputRelPath)
+            Workspace.activeStory.exportedVideos.add(outputRelPath)
         }
 
         storyMaker!!.start()

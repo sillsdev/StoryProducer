@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.export
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.DocumentsProvider
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -31,7 +32,6 @@ class ShareActivity : PhaseBaseActivity() {
     private var mVideosListView: ListView? = null
 
     private var videosAdapter: ExportedVideosAdapter? = null
-    private var mStory: String? = null
 
 
     //accordion variables
@@ -42,29 +42,12 @@ class ShareActivity : PhaseBaseActivity() {
      * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
      * @return Array list of video paths
      */
-    private//make sure the file actually exists
-    //If the file doesn't exist or we encountered it a second time in the list, remove it.
-    val exportedVideosForStory: List<String>
-        get() {
-            val actualPaths = ArrayList<String>()
-            val videoPaths = StorySharedPreferences.getExportedVideosForStory(mStory)
-            for (path in videoPaths) {
-                val file = File(path)
-                if (file.exists() && !actualPaths.contains(path)) {
-                    actualPaths.add(path)
-                } else {
-                    StorySharedPreferences.removeExportedVideoForStory(path, mStory)
-                }
-            }
-            return actualPaths
-        }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mStory = StoryState.getStoryName()     //needs to be set first because some of the views use it
         val phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_share)
-        mStory = StoryState.getStoryName()
         setupViews()
         invalidateOptionsMenu()
         if (phaseUnlocked) {
@@ -73,13 +56,6 @@ class ShareActivity : PhaseBaseActivity() {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
-        loadPreferences()
-    }
-
-    override fun onDestroy() {
-        savePreferences()
-
-        super.onDestroy()
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
@@ -100,48 +76,18 @@ class ShareActivity : PhaseBaseActivity() {
             sectionViews[i] = findViewById(sectionIds[i])
         }
 
-
         //share view
         mShareSection = findViewById(R.id.share_section)
         videosAdapter = ExportedVideosAdapter(this)
         mVideosListView = findViewById(R.id.videos_list)
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
-        setVideoAdapterPaths()
 
-    }
-
-    /**
-     * sets the videos for the list adapter
-     */
-    private fun setVideoAdapterPaths() {
-        val actualPaths = exportedVideosForStory
+        val actualPaths = Workspace.activeStory.exportedVideos
         if (actualPaths.size > 0) {
             mNoVideosText!!.visibility = View.GONE
         }
         videosAdapter!!.setVideoPaths(actualPaths)
     }
-
-    /**
-     * Save current configuration options to shared preferences.
-     */
-    //TODO PROB DONT NEED THESE ANYMORE
-    private fun savePreferences() {
-        val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
-        editor.apply()
-    }
-
-    /**
-     * Load configuration options from shared preferences.
-     */
-    private fun loadPreferences() {
-        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-    }
-
-    companion object {
-
-        private val PREF_FILE = "Share_Config"
-    }
-
 
 }

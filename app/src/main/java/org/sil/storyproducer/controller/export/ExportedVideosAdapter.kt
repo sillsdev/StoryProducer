@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.getStoryUri
 
 import java.util.ArrayList
 
@@ -40,10 +41,7 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         return position.toLong()
     }
 
-    override fun getView(position: Int, rowView: View, parent: ViewGroup): View {
-        var rowView = rowView
-        var holder: RowViewHolder? = null
-
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val path = videoPaths[position]
 
         //split the path so we can get just the file name witch will be used in the view
@@ -51,8 +49,8 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         val fileName = splitPath[splitPath.size - 1]
 
         //recreate the holder every time because the views are changing around
-        holder = RowViewHolder()
-        rowView = mInflater.inflate(R.layout.exported_video_row, null)
+        val rowView = mInflater.inflate(R.layout.exported_video_row, null)
+        val holder = RowViewHolder()
         holder.textView = rowView.findViewById(R.id.video_title)
         holder.playButton = rowView.findViewById(R.id.video_play_button)
         holder.shareButton = rowView.findViewById(R.id.file_share_button)
@@ -75,7 +73,8 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        videoIntent.setDataAndType(Uri.parse("file://$path"), "video/*")
+        val absPath = getStoryUri(path)!!.path
+        videoIntent.setDataAndType(Uri.parse(absPath), "video/*")
         context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))
     }
 
@@ -84,7 +83,8 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://$path"))
+        val absPath = getStoryUri(path)!!.path
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://$absPath"))
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))

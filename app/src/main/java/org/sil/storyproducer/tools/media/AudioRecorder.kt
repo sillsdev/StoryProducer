@@ -6,13 +6,13 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
+import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+import org.sil.storyproducer.tools.file.getStoryPFD
 import java.io.IOException
 
 
@@ -53,6 +53,7 @@ abstract class AudioRecorder(val activity: Activity) {
 class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
+    private var pfd: ParcelFileDescriptor? = null
 
     private fun initRecorder(){
         mRecorder.release()
@@ -66,7 +67,8 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     override fun startNewRecording(relPath: String){
         initRecorder()
-        mRecorder.setOutputFile(getStoryFileDescriptor(activity,relPath))
+        pfd = getStoryPFD(activity,relPath,"w")
+        mRecorder.setOutputFile(pfd?.fileDescriptor)
         isRecording = true
         try{
             mRecorder.prepare()
@@ -88,6 +90,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.stop()
             mRecorder.reset()
             mRecorder.release()
+            pfd?.close()
             isRecording = false
             Toast.makeText(activity, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
         } catch (stopException: RuntimeException) {

@@ -24,7 +24,7 @@ fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val opfd = getChildOuputPFD(context, Workspace.activeStory.title + "/" + destRelPath)
+        val opfd = getStoryPFD(context, destRelPath,"w")
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
         oStream.write(iStream.readBytes())
         iStream.close()
@@ -65,9 +65,9 @@ fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.titl
             Uri.encode("/$storyTitle/$relPath"))
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
+fun getStoryFileDescriptor(context: Context, relPath: String, mode: String = "r", storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
     if (storyTitle == "") return null
-    val pfd = getChildOuputPFD(context, "$storyTitle/$relPath") ?: return null
+    val pfd = getPFD(context, "$storyTitle/$relPath",mode) ?: return null
     return pfd.fileDescriptor
 }
 
@@ -93,11 +93,16 @@ fun getText(context: Context, relPath: String) : String? {
 }
 
 fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-    val pfd = getChildOuputPFD(context, relPath, mimeType)
+    val pfd = getPFD(context, relPath, mimeType,"w")
     return ParcelFileDescriptor.AutoCloseOutputStream(pfd)
 }
 
-fun getChildOuputPFD(context: Context, relPath: String, mimeType: String = "") : ParcelFileDescriptor? {
+fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : ParcelFileDescriptor? {
+    if (storyTitle == "") return null
+    return getPFD(context, "$storyTitle/$relPath", mimeType, mode)
+}
+
+fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
     if (!Workspace.workspace.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
@@ -129,7 +134,7 @@ fun getChildOuputPFD(context: Context, relPath: String, mimeType: String = "") :
         }
         false -> df = df_new
     }
-    return context.contentResolver.openFileDescriptor(df.uri,"w")
+    return context.contentResolver.openFileDescriptor(df.uri,mode)
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
