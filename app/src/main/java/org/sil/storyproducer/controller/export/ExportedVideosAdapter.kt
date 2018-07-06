@@ -12,6 +12,7 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 import java.util.ArrayList
 
@@ -73,8 +74,9 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        val absPath = getStoryUri(path)!!.path
-        videoIntent.setDataAndType(Uri.parse(absPath), "video/*")
+        val uri = getStoryUri(path)
+        //TODO fix this so it actually plays.  Why not?
+        videoIntent.setDataAndNormalize(uri)
         context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))
     }
 

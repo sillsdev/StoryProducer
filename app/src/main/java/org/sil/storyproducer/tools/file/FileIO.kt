@@ -105,18 +105,21 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     //build the document tree if it is needed
     val segments = relPath.split("/")
     var df = Workspace.workspace
+    var uri = df.uri
     var df_new : DocumentFile?
     for (i in 0 .. segments.size-2){
-        df_new = df.findFile(segments[i])
-        when(df_new == null){
-            true ->  df = df.createDirectory(segments[i])
-            false -> df = df_new
+        uri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+        df_new = DocumentFile.fromSingleUri(context,uri)
+        when(df_new?.exists() ?: false){
+            false ->  df = df.createDirectory(segments[i])
+            true -> df = df_new!!
         }
     }
     //create the file if it is needed
-    df_new = df.findFile(segments.last())
-    when(df_new == null){
-        true -> {
+    uri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
+    df_new = DocumentFile.fromSingleUri(context,uri)
+    when(df_new?.exists() ?: false){
+        false -> {
             //find the mime type by extension
             var mType = mimeType
             if(mType == "") {
@@ -130,7 +133,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             }
             df = df.createFile(mType,segments.last())
         }
-        false -> df = df_new
+        true -> df = df_new
     }
     return context.contentResolver.openFileDescriptor(df.uri,mode)
 }
