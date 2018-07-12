@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import android.provider.DocumentsProvider
 
 import java.io.File
 import android.support.v4.provider.DocumentFile
@@ -54,8 +55,8 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 
 fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
     if(relPath == "") return false
-    if(getChildInputStream(context, "$storyTitle/$relPath" ) == null)
-        return false
+    //if we can get the type, it exists.
+    context.contentResolver.getType(getStoryUri(relPath,storyTitle)) ?: return false
     return true
 }
 
@@ -104,38 +105,36 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     if (!Workspace.workspace.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
-    var df = Workspace.workspace
-    var uri = df.uri
-    var df_new : DocumentFile?
+    var uri = Workspace.workspace.uri
     for (i in 0 .. segments.size-2){
-        uri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-        df_new = DocumentFile.fromTreeUri(context,uri)
-        when(df_new?.exists() ?: false){
-            false ->  df = df.createDirectory(segments[i])
-            true -> df = df_new!!
+        //TODO make this faster.
+        val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+        val isDirectory = context.contentResolver.getType(newUri)?.
+                contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
+        if(!isDirectory){
+            DocumentsContract.createDocument(context.contentResolver,uri,
+                    DocumentsContract.Document.MIME_TYPE_DIR,segments[i])
         }
+        uri = newUri
     }
     //create the file if it is needed
-    uri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
-    df_new = DocumentFile.fromSingleUri(context,uri)
-    when(df_new?.exists() ?: false){
-        false -> {
-            //find the mime type by extension
-            var mType = mimeType
-            if(mType == "") {
-                when (File(df.uri.path).extension) {
-                    "json" -> mType = "application/json"
-                    "mp3"  -> mType = "audio/x-mp3"
-                    "wav" -> mType = "audio/w-wav"
-                    "txt" -> mType = "plain/text"
-                    else -> mType = "*/*"
-                }
+    val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
+    //TODO replace with custom exists thing.
+    if(context.contentResolver.getType(newUri) == null){
+        //find the mime type by extension
+        var mType = mimeType
+        if(mType == "") {
+            mType = when (File(uri.path).extension) {
+                "json" -> "application/json"
+                "mp3"  -> "audio/x-mp3"
+                "wav" -> "audio/w-wav"
+                "txt" -> "plain/text"
+                else -> "*/*"
             }
-            df = df.createFile(mType,segments.last())
         }
-        true -> df = df_new
+        DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
     }
-    return context.contentResolver.openFileDescriptor(df.uri,mode)
+    return context.contentResolver.openFileDescriptor(newUri,mode)
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {

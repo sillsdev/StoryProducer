@@ -208,8 +208,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             currentPlayingButton = buttonClickedNow
             currentPlayingButton!!.setImageResource(R.drawable.ic_stop_red)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { currentPlayingButton!!.setImageResource(R.drawable.ic_green_play) })
-            if (storyRelPathExists(context,recordingTitle)) {
-                audioPlayer.setStorySource(context,recordingTitle)
+            if (storyRelPathExists(context,"$PROJECT_DIR/$recordingTitle")) {
+                audioPlayer.setStorySource(context,"$PROJECT_DIR/$recordingTitle")
                 audioPlayer.playAudio()
                 Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
             } else {
