@@ -28,7 +28,8 @@ object Workspace{
     val Stories: MutableList<Story> = ArrayList()
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
-    private var activePhaseIndex: Int = -1
+    var activePhaseIndex: Int = -1
+        private set
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
@@ -40,6 +41,13 @@ object Workspace{
         activeSlideNum = 0
     }
     var activePhase: Phase = Phase(PhaseType.LEARN)
+        set(value){
+            field = value
+            activeSlideNum = -1
+            for((i,p) in phases.withIndex()){
+                if(p.phaseType == value.phaseType) activeSlideNum = i
+            }
+        }
     var activeSlideNum: Int = -1
     set(value){
         if(value >= 0 && value < activeStory.slides.size) field = value
@@ -115,8 +123,6 @@ object Workspace{
         //there was a successful phase change!
         return true
     }
-
-    fun getPhaseIndex() : Int {return activePhaseIndex}
 
     fun goToNextSlide() : Boolean {
         if(activeStory.title == "") return false

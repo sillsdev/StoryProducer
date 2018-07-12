@@ -20,6 +20,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Spinner
@@ -30,7 +31,7 @@ import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.tools.PhaseMenuItemListener
 
-abstract class PhaseBaseActivity : AppCompatActivity() {
+abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
     private var mDrawerList: ListView? = null
     private var mAdapter: ArrayAdapter<String>? = null
@@ -82,7 +83,7 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
 
         val item = menu.findItem(R.id.spinner)
         val spinner = MenuItemCompat.getActionView(item) as Spinner
-        spinner.onItemSelectedListener = PhaseMenuItemListener(this)
+        spinner.onItemSelectedListener = this
         val adapter: ArrayAdapter<CharSequence>
         if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
@@ -96,8 +97,17 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         spinner.adapter = adapter
-        spinner.setSelection(Workspace.getPhaseIndex())
         return true
+    }
+
+
+    override fun onItemSelected(parent: AdapterView<*>, view: View,
+                                pos: Int, id: Long) {
+        jumpToPhase(Workspace.phases[pos])
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>) {
+        // Another interface callback
     }
 
     /**
@@ -164,7 +174,7 @@ abstract class PhaseBaseActivity : AppCompatActivity() {
     }
 
     fun jumpToPhase(newPhase: Phase) {
-        if(newPhase == phase) return
+        if(newPhase.phaseType == phase.phaseType) return
         Workspace.activePhase = newPhase
         val intent = Intent(this.applicationContext, newPhase.getTheClass())
         intent.putExtra("storyname", Workspace.activeStory.title)

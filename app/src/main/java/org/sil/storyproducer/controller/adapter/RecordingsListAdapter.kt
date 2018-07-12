@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
-import android.support.v4.app.Fragment
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +14,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.AudioFiles
 import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.renameStoryFile
@@ -162,7 +158,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
         val tb = rootView!!.findViewById<Toolbar>(R.id.toolbar2)
         //Note that user-facing slide number is 1-based while it is 0-based in code.
-        tb.setTitle(R.string.draft_recordings_title)
+        tb.setTitle(R.string.recordings_title)
         val exit = rootView!!.findViewById<ImageButton>(R.id.exitButton)
 
         val alertDialog = AlertDialog.Builder(context)
