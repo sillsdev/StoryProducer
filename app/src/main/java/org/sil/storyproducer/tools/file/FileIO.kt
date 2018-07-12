@@ -109,7 +109,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     var df_new : DocumentFile?
     for (i in 0 .. segments.size-2){
         uri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-        df_new = DocumentFile.fromSingleUri(context,uri)
+        df_new = DocumentFile.fromTreeUri(context,uri)
         when(df_new?.exists() ?: false){
             false ->  df = df.createDirectory(segments[i])
             true -> df = df_new!!
