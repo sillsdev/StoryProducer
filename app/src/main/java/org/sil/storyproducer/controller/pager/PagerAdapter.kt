@@ -73,7 +73,9 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
      * @return page count
      */
     override fun getCount(): Int {
-        return Workspace.activeStory.slides.size
+        //Don't show the last page, because that is the credits. (size - 1)
+        //TODO make the last page visible during draft to edit the credits.
+        return Workspace.activeStory.slides.size - 1
     }
 
     /**

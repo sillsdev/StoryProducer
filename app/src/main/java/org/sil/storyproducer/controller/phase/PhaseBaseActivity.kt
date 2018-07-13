@@ -29,7 +29,6 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
-import org.sil.storyproducer.tools.PhaseMenuItemListener
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
