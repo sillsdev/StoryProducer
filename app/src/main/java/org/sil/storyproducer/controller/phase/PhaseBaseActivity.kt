@@ -83,7 +83,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
         val item = menu.findItem(R.id.spinner)
         val spinner = MenuItemCompat.getActionView(item) as Spinner
-        spinner.onItemSelectedListener = this
         val adapter: ArrayAdapter<CharSequence>
         if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
@@ -97,6 +96,10 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         spinner.adapter = adapter
+        //Set the selection before setting the listener.  If flipped, the listener would be called
+        //when initializing and cause bad things.
+        spinner.setSelection(Workspace.activePhaseIndex)
+        spinner.onItemSelectedListener = this
         return true
     }
 

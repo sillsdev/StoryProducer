@@ -43,9 +43,9 @@ object Workspace{
     var activePhase: Phase = Phase(PhaseType.LEARN)
         set(value){
             field = value
-            activeSlideNum = -1
+            activePhaseIndex = -1
             for((i,p) in phases.withIndex()){
-                if(p.phaseType == value.phaseType) activeSlideNum = i
+                if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
     var activeSlideNum: Int = -1
