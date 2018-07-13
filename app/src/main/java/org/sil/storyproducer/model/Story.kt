@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import android.graphics.Rect
 import android.util.Log
 import com.squareup.moshi.JsonClass
+import org.sil.storyproducer.model.logging.LogEntry
 import org.sil.storyproducer.tools.file.FileSystem
 
 import org.sil.storyproducer.tools.file.ProjectXML
@@ -22,6 +23,7 @@ class Story(var title: String, val slides: List<Slide>){
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var exportedVideos: MutableList<String> = ArrayList()
+    var activityLogs: MutableList<LogEntry> = ArrayList()
     companion object
 
 }

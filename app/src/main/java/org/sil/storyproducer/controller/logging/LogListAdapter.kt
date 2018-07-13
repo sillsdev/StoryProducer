@@ -9,70 +9,45 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.logging.ComChkEntry
-import org.sil.storyproducer.model.logging.DraftEntry
-import org.sil.storyproducer.model.logging.LearnEntry
-import org.sil.storyproducer.model.logging.Log
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.LogEntry
 
 import java.util.ArrayList
-import java.util.TreeSet
 
-internal class LogListAdapter(private val context: Context, log: Log?, slide: Int) : BaseAdapter() {
+internal class LogListAdapter(private val context: Context, slide: Int) : BaseAdapter() {
 
-    private var displayEntries: Array<LogEntry>? = null
-    private val learnEntries = ArrayList<LearnEntry>()
-    private val draftEntries = ArrayList<DraftEntry>()
-    private val comChkEntries = ArrayList<ComChkEntry>()
+    private val allEntries = ArrayList<LogEntry>()
+    private var displayEntries = ArrayList<LogEntry>()
 
     init {
-        if (log == null) {
-            displayEntries = arrayOf()
-        } else {
-            if (slide < 0) {
-                displayEntries = log.toTypedArray()
-            } else {
-                for (le in log) {
-                    if (le.appliesToSlideNum(slide)) {
-                        if (le is LearnEntry) {
-                            learnEntries.add(le)
-                        } else if (le is DraftEntry) {
-                            draftEntries.add(le)
-                        } else if (le is ComChkEntry) {
-                            comChkEntries.add(le)
-                        }
-                    }
-                }
-                val sorter = TreeSet<LogEntry>()
-                sorter.addAll(learnEntries)
-                sorter.addAll(draftEntries)
-                sorter.addAll(comChkEntries)
-                displayEntries = sorter.toTypedArray()
+        for (le in Workspace.activeStory.activityLogs) {
+            if (le.appliesToSlideNum(slide)) {
+                allEntries.add(le)
             }
         }
+        displayEntries = allEntries
     }
 
     fun updateList(learn: Boolean, draft: Boolean, comCheck: Boolean) {
-        val sorter = TreeSet<LogEntry>()
-        if (learn) {
-            sorter.addAll(learnEntries)
+        displayEntries = ArrayList()
+        for (le in allEntries) {
+            when(le.phase.phaseType){
+                PhaseType.LEARN -> if(learn) displayEntries.add(le)
+                PhaseType.DRAFT -> if(draft) displayEntries.add(le)
+                PhaseType.COMMUNITY_CHECK -> if(comCheck) displayEntries.add(le)
+                else -> {}
+            }
         }
-        if (draft) {
-            sorter.addAll(draftEntries)
-        }
-        if (comCheck) {
-            sorter.addAll(comChkEntries)
-        }
-        displayEntries = sorter.toTypedArray()
         notifyDataSetChanged()
     }
 
     override fun getCount(): Int {
-        return displayEntries!!.size
+        return displayEntries.size
     }
 
     override fun getItem(position: Int): LogEntry {
-        return displayEntries!![position]
+        return displayEntries[position]
     }
 
     override fun getItemId(position: Int): Long {
@@ -80,20 +55,20 @@ internal class LogListAdapter(private val context: Context, log: Log?, slide: In
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context)
+        var cView = convertView
+        if (cView == null) {
+            cView = LayoutInflater.from(context)
                     .inflate(R.layout.log_list_item, parent, false)
         }
 
-        val date = convertView!!.findViewById<TextView>(R.id.textView_logging_date)
-        val info = convertView.findViewById<TextView>(R.id.textView_logging_type)
+        val date = cView!!.findViewById<TextView>(R.id.textView_logging_date)
+        val info = cView.findViewById<TextView>(R.id.textView_logging_type)
 
         val entry = getItem(position)
-        date.text = entry.dateTime
-        info.text = entry.phase + " - " + entry.description
-        convertView.setBackgroundColor(ContextCompat.getColor(context, entry.color))
+        date.text = entry.dateTimeString
+        info.text = "${entry.phase.getPrettyName()} - ${entry.description}"
+        cView.setBackgroundColor(ContextCompat.getColor(context, entry.phase.getColor()))
 
-        return convertView
+        return cView
     }
 }

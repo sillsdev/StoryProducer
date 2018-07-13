@@ -105,8 +105,6 @@ public class FileSystem {
                 }
             }
         }
-
-        LogFiles.init(con);
     }
 
     public static String getLanguage(){

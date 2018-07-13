@@ -25,12 +25,10 @@ import com.android.volley.toolbox.StringRequest
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
+import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.ComChkEntry
-import org.sil.storyproducer.model.logging.DraftEntry
-import org.sil.storyproducer.model.logging.LearnEntry
-import org.sil.storyproducer.model.logging.LogEntry
+import org.sil.storyproducer.model.logging.*
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.*
@@ -349,8 +347,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
                         recordingListener.onStartedRecordingOrPlayback(false)
                         //TODO: make this logging more robust and encapsulated
-                        if (Workspace.activePhase.phaseType === PhaseType.DRAFT) {
-                            LogFiles.saveLogEntry(DraftEntry.Type.DRAFT_PLAYBACK.makeEntry())
+                        when (Workspace.activePhase.phaseType){
+                                PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
+                                PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
+                                else ->{}
                         }
                     } else {
                         Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
@@ -537,6 +537,11 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     private fun recordAudio(recordingRelPath: String) {
         stopPlayBackAndRecording()
         startRecording(recordingRelPath)
+        when(Workspace.activePhase.phaseType){
+            PhaseType.DRAFT -> saveLog(activity.getString(R.string.DRAFT_RECORDING))
+            PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.COMMENT_RECORDING))
+            else -> {}
+        }
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
         if (enableDeleteButton) {
             deleteButton.visibility = View.INVISIBLE

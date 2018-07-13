@@ -106,6 +106,8 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     }
 
     override fun fillCanvas(canv: Canvas): Long {
+
+        //TODO somethere in here is where the video time is not working properly.
         val currentTimeUs = MediaHelper.getTimeFromIndex(mFrameRate.toLong(), mCurrentFrame)
 
         var nextSlideTransitionUs = mSlideCrossFadeUs

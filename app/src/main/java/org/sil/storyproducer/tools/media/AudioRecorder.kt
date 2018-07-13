@@ -2,9 +2,11 @@ package org.sil.storyproducer.tools.media
 
 import android.Manifest
 import android.app.Activity
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.MediaCodec
+import android.media.MediaExtractor
+import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
@@ -12,8 +14,14 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.getStoryChildInputStream
+import org.sil.storyproducer.tools.file.getStoryChildOutputStream
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.media.pipe.PipedMediaByteBufferSource
+import org.sil.storyproducer.tools.media.pipe.SourceClosedException
 import java.io.IOException
+import java.nio.ByteBuffer
 
 
 //See https://developer.android.com/guide/topics/media/media-formats.html for supported formats.
@@ -96,4 +104,55 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
         }
     }
+
+    companion object {
+        /**
+         * This class is used to concatenate two Wav files together.
+         * <br></br>
+         * Assumes the header of the Wav file resembles Microsoft's RIFF specification.<br></br>
+         * A specification can be found [here](http://soundfile.sapp.org/doc/WaveFormat/).
+         */
+
+        private val TAG = "AudioRecorder"
+        fun ConcatenateAudioFiles(context: Context, destAudioRelPath: String, srcAudioRelPath: String) {
+
+            if (!storyRelPathExists(context, destAudioRelPath) ||
+                    !storyRelPathExists(context, destAudioRelPath)) {
+                Toast.makeText(context, "Cannot concatenate files!", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            val extractor = MediaExtractor()
+            //read the files in
+            val destAudioFileByte = getStoryChildInputStream(context, destAudioRelPath)!!.readBytes()
+            val srcAudioFileByte = getStoryChildInputStream(context, srcAudioRelPath)!!.readBytes()
+        }
+
+        fun StreamThread(mMuxer: MediaMuxer, mSource: PipedMediaByteBufferSource, mTrackIndex: Int) : Boolean {
+            var buffer: ByteBuffer
+            val info = MediaCodec.BufferInfo()
+            var success = true
+            try {
+                while (!mSource.isDone) {
+                    buffer = mSource.getBuffer(info)
+                    if (MediaHelper.VERBOSE)
+                        Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
+                                + info.size + " for time " + info.presentationTimeUs)
+
+
+                    synchronized(mMuxer) {
+                        mMuxer.writeSampleData(mTrackIndex, buffer, info)
+                    }
+                    mSource.releaseBuffer(buffer)
+                }
+            } catch (e: SourceClosedException) {
+                Log.w(TAG, "Source closed forcibly", e)
+                success = false
+            }
+
+            return success
+        }
+
+    }
 }
+

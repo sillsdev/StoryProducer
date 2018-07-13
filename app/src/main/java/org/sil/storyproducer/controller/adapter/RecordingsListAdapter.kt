@@ -14,7 +14,9 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.AudioFiles
 import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.renameStoryFile
@@ -208,6 +210,11 @@ class RecordingsList(private val context: Context, private val parentFragment: M
                 audioPlayer.setStorySource(context,"$PROJECT_DIR/$recordingTitle")
                 audioPlayer.playAudio()
                 Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
+                when (Workspace.activePhase.phaseType){
+                    PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
+                    PhaseType.COMMUNITY_CHECK-> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
+                    else -> {}
+                }
             } else {
                 Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
             }

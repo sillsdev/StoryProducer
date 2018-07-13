@@ -18,7 +18,7 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.LearnEntry
+import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -161,8 +161,10 @@ class LearnActivity : PhaseBaseActivity() {
         if (narrationPlayer.isAudioPlaying || backgroundPlayer.isAudioPlaying
                 || request) {
             if (startPos != -1) {
-                LearnEntry.saveFilteredLogEntry(startPos, Workspace.activeSlideNum,
-                        System.currentTimeMillis() - startTime)
+                val duration = System.currentTimeMillis() - startTime
+                if(duration > 500){
+                    saveLearnLog(this, startPos,Workspace.activeSlideNum, duration)
+                }
                 startPos = -1
             }
         }

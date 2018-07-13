@@ -50,7 +50,8 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
         MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
-        //TODO: worrry about KEY_CAPTURE_RATE being API 21+
+        //TODO: worry about KEY_CAPTURE_RATE being API 21+
+        //TODO This may be why the video playback is not synced with newer phones.
         //MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
 
         //encoder input buffers are too small, by default, to handle some decoder output buffers

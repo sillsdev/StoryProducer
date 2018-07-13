@@ -1,34 +1,20 @@
 package org.sil.storyproducer.controller
 
-import android.graphics.Bitmap
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsList
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.StoryState
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.DraftEntry
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.LogFiles
-import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 
@@ -110,7 +96,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                    LogFiles.saveLogEntry(DraftEntry.Type.LWC_PLAYBACK.makeEntry())
+                    when(Workspace.activePhase.phaseType){
+                        PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.DRAFT_PLAYBACK))
+                        else -> {}
+                    }
                 }
             }
         }

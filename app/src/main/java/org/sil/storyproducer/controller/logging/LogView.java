@@ -11,23 +11,19 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.model.logging.Log;
-import org.sil.storyproducer.tools.file.FileSystem;
-import org.sil.storyproducer.tools.file.LogFiles;
+import org.sil.storyproducer.model.Workspace;
 
 public class LogView {
 
     //TODO: figure out versioning on serialized classes?
     public static void makeModal(Context c){
         final AlertDialog.Builder alertDialog = new AlertDialog.Builder(c);
-        int slide = StoryState.getCurrentStorySlide();
+        int slide = Workspace.INSTANCE.getActiveSlideNum();
         LayoutInflater linf = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View dialogLayout = linf.inflate(R.layout.activity_log_view, null);
 
         ListView listView = dialogLayout.findViewById(R.id.log_list_view);
-        Log log = LogFiles.getLog(FileSystem.getLanguage(), StoryState.getStoryName());
-        final LogListAdapter lla = new LogListAdapter(c, log, StoryState.getCurrentStorySlide());
+        final LogListAdapter lla = new LogListAdapter(c, slide);
         listView.setAdapter(lla);
         Toolbar tb = dialogLayout.findViewById(R.id.toolbar2);
         //Note that user-facing slide number is 1-based while it is 0-based in code.

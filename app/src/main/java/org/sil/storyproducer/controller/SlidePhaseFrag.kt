@@ -18,11 +18,11 @@ import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.DraftEntry
+import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.LogFiles
 import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -179,7 +179,11 @@ abstract class SlidePhaseFrag : Fragment() {
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                    LogFiles.saveLogEntry(DraftEntry.Type.LWC_PLAYBACK.makeEntry())
+                    when(Workspace.activePhase.phaseType){
+                        PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.DRAFT_PLAYBACK))
+                        else -> {}
+                    }
                 }
             }
         }

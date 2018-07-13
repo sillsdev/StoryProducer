@@ -2,18 +2,10 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.os.ParcelFileDescriptor
 
 import java.io.File
 import java.util.*
 import android.support.v4.provider.DocumentFile
-import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.file.LogFiles
-import java.io.InputStream
-import java.io.OutputStream
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -67,7 +59,6 @@ object Workspace{
         //TODO get workspace from preferences - after a "change workspace" option has been implemented.
         registration.load(context)
         updateStories(context)
-        LogFiles.init(context)
         isInitialized = true
     }
 
