@@ -67,7 +67,7 @@ class LearnActivity : PhaseBaseActivity() {
 
         setSeekBarListener()
 
-        setPic(learnImageView)     //set the first image to show
+        setPic(learnImageView,0)     //set the first image to show
 
         //set the recording toolbar stuffs
         invalidateOptionsMenu()
@@ -131,17 +131,15 @@ class LearnActivity : PhaseBaseActivity() {
         //create audio players
         narrationPlayer = AudioPlayer()
         narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            if(Workspace.activeSlideNum == story.slides.size - 1){
+            if(videoSeekBar!!.progress >= story.slides.size - 1){
                 //at the end of video so special case
                 makeLogIfNecessary(true)
-
-                videoSeekBar!!.progress = story.slides.size
                 playButton!!.setImageResource(R.drawable.ic_play_gray)
-                setPic(learnImageView)     //sets the pic to the end image
+                setPic(learnImageView,videoSeekBar!!.progress)     //sets the pic to the end image
                 showStartPracticeSnackBar()
             } else {
                 //just play the next slide!
-                Workspace.goToNextSlide()         //move to the next slide
+                videoSeekBar!!.progress++
                 playVideo()
             }
         })
@@ -153,7 +151,7 @@ class LearnActivity : PhaseBaseActivity() {
     }
 
     private fun markLogStart() {
-        startPos = Workspace.activeSlideNum
+        startPos = videoSeekBar!!.progress
         startTime = System.currentTimeMillis()
     }
 
@@ -163,7 +161,7 @@ class LearnActivity : PhaseBaseActivity() {
             if (startPos != -1) {
                 val duration = System.currentTimeMillis() - startTime
                 if(duration > 500){
-                    saveLearnLog(this, startPos,Workspace.activeSlideNum, duration)
+                    saveLearnLog(this, startPos,videoSeekBar!!.progress, duration)
                 }
                 startPos = -1
             }
@@ -194,13 +192,12 @@ class LearnActivity : PhaseBaseActivity() {
      * Plays the video and runs every time the audio is completed
      */
     internal fun playVideo() {
-        setPic(learnImageView) //set the next image
+        setPic(learnImageView,videoSeekBar!!.progress) //set the next image
         //set the next audio
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
-        narrationPlayer.setStorySource(this, Workspace.activeSlide!!.narrationFile)
+        narrationPlayer.setStorySource(this, Workspace.activeStory.slides[videoSeekBar!!.progress].narrationFile)
         narrationPlayer.playAudio()
 
-        videoSeekBar!!.progress = Workspace.activeSlideNum
     }
 
     /**
@@ -217,7 +214,6 @@ class LearnActivity : PhaseBaseActivity() {
 
             if (videoSeekBar!!.progress >= story.slides.size) {        //reset the video to the beginning because they already finished it
                 videoSeekBar!!.progress = 0
-                Workspace.activeSlideNum = 0
                 playBackgroundMusic()
                 playVideo()
             } else {
@@ -262,15 +258,14 @@ class LearnActivity : PhaseBaseActivity() {
                 if (fromUser) {
                     makeLogIfNecessary()
 
-                    Workspace.activeSlideNum = progress
                     narrationPlayer.stopAudio()
-                    backgroundPlayer.seekTo(backgroundAudioJumps[Workspace.activeSlideNum])
+                    backgroundPlayer.seekTo(backgroundAudioJumps[progress])
                     if (!backgroundPlayer.isAudioPlaying) {
                         backgroundPlayer.resumeAudio()
                     }
                     if (progress == story.slides.size) {
                         playButton!!.setImageResource(R.drawable.ic_play_gray)
-                        setPic(learnImageView)     //sets the pic to the end image
+                        setPic(learnImageView,progress)     //sets the pic to the end image
                         showStartPracticeSnackBar()
                     } else {
                         markLogStart()
@@ -289,7 +284,6 @@ class LearnActivity : PhaseBaseActivity() {
     private fun resetVideoWithSoundOff() {
         playButton!!.setImageResource(R.drawable.ic_pause_gray)
         videoSeekBar!!.progress = 0
-        Workspace.activeSlideNum = 0
         narrationPlayer.setVolume(0.0f)
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         backgroundPlayer.stopAudio()
@@ -360,7 +354,7 @@ class LearnActivity : PhaseBaseActivity() {
      *
      * @param aView    The ImageView that will contain the picture.
      */
-    private fun setPic(aView: View?) {
+    private fun setPic(aView: View?,slideNum: Int) {
         if (aView == null || aView !is ImageView) {
             return
         }
@@ -373,7 +367,7 @@ class LearnActivity : PhaseBaseActivity() {
             //slidePicture = ImageFiles.getBitmap(story.title, ImageFiles.COPYRIGHT)
         } else {
             //Get a normal story image.
-            slidePicture = getStoryImage(this)
+            slidePicture = getStoryImage(this,slideNum)
         }
 
         if (slidePicture == null) {
