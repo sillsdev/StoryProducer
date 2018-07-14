@@ -87,7 +87,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         //TODO replace prefs with storing MD5 or SHA1 of the draft audio.
         val prefs = activity.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
-        val prefsKeyString = storyName + Workspace.activeSlideNum.toString() + IS_CHECKED
+        val prefsKeyString = storyName + slideNum.toString() + IS_CHECKED
         isChecked = prefs.getBoolean(prefsKeyString, false)
         if (isChecked) {
             //TODO: use non-deprecated method; currently used to support older devices
