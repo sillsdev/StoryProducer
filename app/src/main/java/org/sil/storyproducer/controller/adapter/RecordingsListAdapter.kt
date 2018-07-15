@@ -50,7 +50,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         titleView.text = values[position]
 
         //things specifically for the modals
-        if (Workspace.activePhase.hasChosenFilename) {
+        if (Workspace.activePhase.hasChosenFilename()) {
             rowView.setOnClickListener { listeners.onRowClick(values[position]) }
             titleView.setOnClickListener { listeners.onRowClick(values[position]) }
             if("$PROJECT_DIR/" + values[position] == Workspace.activePhase.getChosenFilename()) {

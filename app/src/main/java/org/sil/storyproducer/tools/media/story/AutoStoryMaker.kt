@@ -161,7 +161,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     private fun generatePages(): Array<StoryPage>? {
-        val slideCount = Workspace.activeStory.slides.size
         //TODO: add hymn to count
         val pages: MutableList<StoryPage> = mutableListOf()
 
@@ -184,7 +183,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var lastSoundtrack = ""
         var iSlide = 0
         var image: String = ""
-        while (iSlide < slideCount) {
+        //don't use the last image - it's the copyright.
+        while (iSlide < (Workspace.activeStory.numberOfContentSlides())) {
             val slide = Workspace.activeStory.slides[iSlide]
             if (mIncludePictures) {
                 if (iSlide == 0) {
@@ -238,14 +238,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             iSlide++
         }
 
-        //TODO re-enable copyright
-        /*
-        var copyrightImage: File? = null
-        if (mIncludePictures) {
-            copyrightImage = ImageFiles.getFile(mStory, ImageFiles.COPYRIGHT)
+        val tempCopyright = "$PROJECT_DIR/tempCopyright.jpg"
+        try {
+            val copyrightOverlay = TextOverlay("Creative Commons")
+            overlayJPEG(context, Workspace.activeStory.slides.last().imageFile, tempCopyright,copyrightOverlay)
+            pages.add(StoryPage(tempCopyright,COPYRIGHT_SLIDE_US))
+        } catch (e: IOException) {
+            Log.w(TAG, "Failed to create overlayed title slide!")
         }
-        pages.add(StoryPage(copyrightImage, COPYRIGHT_SLIDE_US))
-        */
+
         //TODO: add hymn
 
         return pages.toTypedArray()

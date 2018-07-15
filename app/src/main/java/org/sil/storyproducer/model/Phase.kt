@@ -22,7 +22,7 @@ class Phase(val phaseType: PhaseType) {
     /**
      * Return chosen file.  Null if the current phase has no chosen file.
      */
-    val hasChosenFilename: Boolean = phaseType in listOf(PhaseType.DRAFT,PhaseType.COMMUNITY_CHECK,PhaseType.DRAMATIZATION,PhaseType.BACKT)
+    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.COMMUNITY_CHECK,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
 
     fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){

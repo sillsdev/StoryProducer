@@ -24,11 +24,9 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
-import org.sil.storyproducer.tools.file.VideoFiles
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
@@ -154,6 +152,8 @@ class CreateActivity : PhaseBaseActivity() {
             }
         }
     }
+
+    private var storyMaker: AutoStoryMaker? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -698,6 +698,5 @@ class CreateActivity : PhaseBaseActivity() {
         @Volatile
         private var buttonLocked = false
         private val storyMakerLock = Any()
-        private var storyMaker: AutoStoryMaker? = null
     }
 }

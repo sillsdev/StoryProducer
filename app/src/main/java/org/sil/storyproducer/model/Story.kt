@@ -26,6 +26,14 @@ class Story(var title: String, val slides: List<Slide>){
     var activityLogs: MutableList<LogEntry> = ArrayList()
     companion object
 
+    //TODO replace the "size-1" with this.  Will there be templates without a last slide?
+    fun numberOfContentSlides() : Int{
+        var num = 0
+        for(s in slides){
+            if((s.imageFile != "") and (s.content != "")) num++
+        }
+        return num
+    }
 }
 
 fun emptyStory() : Story {return Story("",ArrayList())}
