@@ -184,7 +184,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var iSlide = 0
         var image: String = ""
         //don't use the last image - it's the copyright.
-        while (iSlide < (Workspace.activeStory.numberOfContentSlides())) {
+        while (iSlide < (Workspace.activeStory.slides.size - 1)) {
             val slide = Workspace.activeStory.slides[iSlide]
             if (mIncludePictures) {
                 if (iSlide == 0) {
@@ -238,14 +238,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             iSlide++
         }
 
-        val tempCopyright = "$PROJECT_DIR/tempCopyright.jpg"
-        try {
-            val copyrightOverlay = TextOverlay("Creative Commons")
-            overlayJPEG(context, Workspace.activeStory.slides.last().imageFile, tempCopyright,copyrightOverlay)
-            pages.add(StoryPage(tempCopyright,COPYRIGHT_SLIDE_US))
-        } catch (e: IOException) {
-            Log.w(TAG, "Failed to create overlayed title slide!")
-        }
+        pages.add(StoryPage(Workspace.activeStory.slides.last().imageFile,COPYRIGHT_SLIDE_US))
 
         //TODO: add hymn
 
@@ -295,7 +288,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
 
-        private val COPYRIGHT_SLIDE_US: Long = 2000000
+        private val COPYRIGHT_SLIDE_US: Long = 3000000
 
         // parameters for the video encoder
         private val VIDEO_MIME_TYPE = "video/avc"    // H.264 Advanced Video Coding
