@@ -46,7 +46,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
     private var mIsVideoDone = false
 
-    private var bitmaps: Map<>
+    private var bitmaps: MutableMap<String,Bitmap?> = mutableMapOf()
 
     init {
 
@@ -182,7 +182,11 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         }
 
         val page = mPages[pageIndex]
-        val bitmap = getStoryImage(context,page.imRelPath!!)
+        if(!bitmaps.containsKey(page.imRelPath)){
+            bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath)
+        }
+        val bitmap = bitmaps[page.imRelPath]
+
         if (bitmap != null) {
             val kbfx = page.kenBurnsEffect
 
