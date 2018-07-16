@@ -120,7 +120,6 @@ class StoryMaker
             mMuxer!!.addSource(audioEncoder)
 
             audioEncoder.addSource(audioMixer)
-            audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier)
             audioMixer.addSource(narrationConcatenator)
 
             var soundtrackDuration: Long = 0
@@ -155,6 +154,9 @@ class StoryMaker
                 soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration)
             }
 
+            //Add soundtrack only if there is one!
+            if(soundtrackConcatenator.numOfSources() > 0)
+                audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier)
 
             if (mVideoFormat != null) {
                 mMuxer!!.addSource(videoEncoder!!)

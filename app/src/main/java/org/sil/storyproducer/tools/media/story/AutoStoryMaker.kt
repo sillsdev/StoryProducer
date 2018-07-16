@@ -136,15 +136,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 + MediaHelper.getDecimal(duration / 1000.toDouble()) + " seconds")
     }
 
-    private fun generateAudioFormat(): MediaFormat {
-        val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
-        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
-        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
-        audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
-        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
 
-        return audioFormat
-    }
 
     private fun generateVideoFormat(): MediaFormat? {
         //If no video component, use null format.
@@ -304,5 +296,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 48000
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
+
+        fun generateAudioFormat(): MediaFormat {
+            val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
+            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
+
+            return audioFormat
+        }
     }
 }

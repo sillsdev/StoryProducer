@@ -12,6 +12,8 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.media.AudioRecorder
+import org.sil.storyproducer.tools.media.AudioRecorderMP4
 import org.sil.storyproducer.tools.media.wavaudio.AudioRecorderWav
 import org.sil.storyproducer.tools.media.wavaudio.ConcatenateAudioFiles
 
@@ -51,7 +53,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
 
 
     init{
-        voiceRecorder = AudioRecorderWav(activity)
+        voiceRecorder = AudioRecorderMP4(activity)
     }
     /**
      * This function is used to stop all the media sources on the toolbar from playing or recording.
@@ -173,7 +175,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                 stopRecording()
                 if (isAppendingOn) {
                     try {
-                        ConcatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
                     } catch (e: FileNotFoundException) {
                         Log.e(TAG, "Did not concatenate audio files", e);
                     }

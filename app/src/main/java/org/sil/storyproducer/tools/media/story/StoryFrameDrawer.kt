@@ -46,6 +46,8 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
     private var mIsVideoDone = false
 
+    private var bitmaps: Map<>
+
     init {
 
         var correctedSlideTransitionUs = slideCrossFadeUs

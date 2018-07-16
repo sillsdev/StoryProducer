@@ -17,6 +17,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
+import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 
@@ -92,7 +93,7 @@ class DramatizationFrag : MultiRecordFrag() {
             val rList = RecordingsList(context, this)
 
             //TODO re-enable the pausing recording toolbar when wav saving and concatentation are working again.
-            recordingToolbar = RecordingToolbar(activity, rootViewToolbar!!, rootView as RelativeLayout,
+            recordingToolbar = PausingRecordingToolbar(activity, rootViewToolbar!!, rootView as RelativeLayout,
                     true, false, true, false, rList, recordingListener, slideNum)
             recordingToolbar!!.keepToolbarVisible()
         }

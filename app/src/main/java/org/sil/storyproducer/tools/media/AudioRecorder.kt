@@ -19,6 +19,9 @@ import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.pipe.PipedMediaByteBufferSource
 import org.sil.storyproducer.tools.media.pipe.SourceClosedException
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import org.sil.storyproducer.tools.media.story.StoryMaker
+import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
@@ -55,6 +58,39 @@ abstract class AudioRecorder(val activity: Activity) {
 
     abstract fun stop()
 
+    companion object {
+        /**
+         * This class is used to concatenate two Wav files together.
+         * <br></br>
+         * Assumes the header of the Wav file resembles Microsoft's RIFF specification.<br></br>
+         * A specification can be found [here](http://soundfile.sapp.org/doc/WaveFormat/).
+         */
+
+        fun concatenateAudioFiles(context: Context, orgAudioRelPath: String, appendAudioRelPath: String) {
+
+            val tempDestPath  = "${context.filesDir}/temp.mp4"
+
+
+            val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+            val audioFormat = AutoStoryMaker.generateAudioFormat()
+            val pages: MutableList<StoryPage> = mutableListOf()
+
+            var duration = MediaHelper.getAudioDuration(context, getStoryUri(orgAudioRelPath))
+            pages.add(StoryPage("",orgAudioRelPath,duration,null,""))
+            duration = MediaHelper.getAudioDuration(context, getStoryUri(appendAudioRelPath))
+            pages.add(StoryPage("",appendAudioRelPath,duration,null,""))
+
+            //If pages weren't generated, exit.
+
+            val mStoryMaker = StoryMaker(context, File(tempDestPath), outputFormat, null, audioFormat,
+                    pages.toTypedArray(), 10000, 10000)
+
+            mStoryMaker.churn()
+            mStoryMaker.close()
+
+            copyToStoryPath(context, Uri.fromFile(File(tempDestPath)),orgAudioRelPath)
+        }
+    }
 }
 
 
@@ -102,31 +138,6 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
         } catch (e: InterruptedException) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
-        }
-    }
-
-    companion object {
-        /**
-         * This class is used to concatenate two Wav files together.
-         * <br></br>
-         * Assumes the header of the Wav file resembles Microsoft's RIFF specification.<br></br>
-         * A specification can be found [here](http://soundfile.sapp.org/doc/WaveFormat/).
-         */
-
-        fun ConcatenateAudioFiles(context: Context, orgAudioRelPath: String, appendAudioRelPath: String) {
-
-            val orgIStream = getStoryChildInputStream(context, orgAudioRelPath)
-            val appendIStream = getStoryChildInputStream(context, appendAudioRelPath)
-
-            val tempDestPath  = "${context.filesDir}/temp.mp4"
-
-            val pcmEncoder = PCMEncoder(BIT_RATE, SAMPLE_RATE, 1)
-            pcmEncoder.setOutputPath(tempDestPath)
-            pcmEncoder.prepare()
-            pcmEncoder.encode(orgIStream, SAMPLE_RATE)
-            pcmEncoder.encode(appendIStream, SAMPLE_RATE)
-            pcmEncoder.stop()
-            copyToStoryPath(context, Uri.fromFile(File(tempDestPath)),orgAudioRelPath)
         }
     }
 }

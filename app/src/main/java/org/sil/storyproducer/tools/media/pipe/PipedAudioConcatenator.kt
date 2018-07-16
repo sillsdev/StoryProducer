@@ -117,6 +117,8 @@ class PipedAudioConcatenator
         return mOutputFormat
     }
 
+    fun numOfSources(): Int {return mSources.size}
+
     /**
      *
      * Add a source without an expected duration. The audio stream will be used in its entirety.
