@@ -8,18 +8,18 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaMuxer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.getStoryChildInputStream
-import org.sil.storyproducer.tools.file.getStoryChildOutputStream
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.pipe.PipedMediaByteBufferSource
 import org.sil.storyproducer.tools.media.pipe.SourceClosedException
+import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
 
@@ -113,46 +113,21 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
          * A specification can be found [here](http://soundfile.sapp.org/doc/WaveFormat/).
          */
 
-        private val TAG = "AudioRecorder"
-        fun ConcatenateAudioFiles(context: Context, destAudioRelPath: String, srcAudioRelPath: String) {
+        fun ConcatenateAudioFiles(context: Context, orgAudioRelPath: String, appendAudioRelPath: String) {
 
-            if (!storyRelPathExists(context, destAudioRelPath) ||
-                    !storyRelPathExists(context, destAudioRelPath)) {
-                Toast.makeText(context, "Cannot concatenate files!", Toast.LENGTH_SHORT).show()
-                return
-            }
+            val orgIStream = getStoryChildInputStream(context, orgAudioRelPath)
+            val appendIStream = getStoryChildInputStream(context, appendAudioRelPath)
 
-            val extractor = MediaExtractor()
-            //read the files in
-            val destAudioFileByte = getStoryChildInputStream(context, destAudioRelPath)!!.readBytes()
-            val srcAudioFileByte = getStoryChildInputStream(context, srcAudioRelPath)!!.readBytes()
+            val tempDestPath  = "${context.filesDir}/temp.mp4"
+
+            val pcmEncoder = PCMEncoder(BIT_RATE, SAMPLE_RATE, 1)
+            pcmEncoder.setOutputPath(tempDestPath)
+            pcmEncoder.prepare()
+            pcmEncoder.encode(orgIStream, SAMPLE_RATE)
+            pcmEncoder.encode(appendIStream, SAMPLE_RATE)
+            pcmEncoder.stop()
+            copyToStoryPath(context, Uri.fromFile(File(tempDestPath)),orgAudioRelPath)
         }
-
-        fun StreamThread(mMuxer: MediaMuxer, mSource: PipedMediaByteBufferSource, mTrackIndex: Int) : Boolean {
-            var buffer: ByteBuffer
-            val info = MediaCodec.BufferInfo()
-            var success = true
-            try {
-                while (!mSource.isDone) {
-                    buffer = mSource.getBuffer(info)
-                    if (MediaHelper.VERBOSE)
-                        Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
-                                + info.size + " for time " + info.presentationTimeUs)
-
-
-                    synchronized(mMuxer) {
-                        mMuxer.writeSampleData(mTrackIndex, buffer, info)
-                    }
-                    mSource.releaseBuffer(buffer)
-                }
-            } catch (e: SourceClosedException) {
-                Log.w(TAG, "Source closed forcibly", e)
-                success = false
-            }
-
-            return success
-        }
-
     }
 }
 
