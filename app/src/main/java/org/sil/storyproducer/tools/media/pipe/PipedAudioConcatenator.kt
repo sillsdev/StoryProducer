@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.tools.file.getStoryUri
 
 import org.sil.storyproducer.tools.media.MediaHelper
 
@@ -190,9 +191,7 @@ class PipedAudioConcatenator
     @Throws(SourceUnacceptableException::class)
     fun addLoopingSourcePath(sourcePath: String?, duration: Long) {
         if (sourcePath != null) {
-            //FIXME
-            //long sourceDuration = MediaHelper.getAudioDuration(sourcePath);
-            val sourceDuration: Long = 0
+            val sourceDuration: Long = MediaHelper.getAudioDuration(context,getStoryUri(sourcePath))
             if (sourceDuration < duration) {
                 //Only add a looper if necessary
                 addSource(PipedAudioLooper(context,sourcePath, duration), duration)

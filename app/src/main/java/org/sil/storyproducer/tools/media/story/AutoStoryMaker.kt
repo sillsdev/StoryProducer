@@ -207,8 +207,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
             var soundtrack = slide.musicFile
             if (mIncludeBackgroundMusic) {
-                //FIXME
-                //soundtrack = AudioFiles.getSoundtrack(mStory, iSlide);
+
                 if (soundtrack == "") {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
@@ -229,7 +228,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 text = slide.translatedContent
             }
 
-            val duration = MediaHelper.getAudioDuration(context, getStoryUri(slide.chosenDramatizationFile))
+            val duration = MediaHelper.getAudioDuration(context, getStoryUri(audio))
 
             pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
             iSlide++

@@ -27,19 +27,9 @@ class StoryPage
      * Get the audio duration without any transition time.
      * @return duration in microseconds.
      */
-    //FIXME
-    //return MediaHelper.getAudioDuration(mNarrationAudio.getPath());
+
     val audioDuration: Long
         get() = mDuration
-
-    /**
-     * Create page.
-     * @param image picture for the video.
-     * @param narrationAudio narration for the background of the video.
-     * @param kbfx Ken Burns effect for the image.
-     * @param text text for overlaying page.
-     */
-    @JvmOverloads constructor(image: String, narrationAudio: String, kbfx: KenBurnsEffect, text: String = "") : this(image, narrationAudio, 0, kbfx, text) {}
 
     /**
      * Create page.
