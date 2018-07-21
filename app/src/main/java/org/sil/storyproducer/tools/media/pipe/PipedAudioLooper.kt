@@ -37,9 +37,7 @@ class PipedAudioLooper
     private var mHasBuffer = false
 
     private val mInfo = MediaCodec.BufferInfo()
-    override fun getComponentName(): String {
-        return TAG
-    }
+    override val componentName: String = TAG
 
     init {
         mSampleRate = sampleRate
@@ -59,7 +57,7 @@ class PipedAudioLooper
         mSource = PipedAudioDecoderMaverick(context, mPath, mSampleRate, mChannelCount, mVolumeModifier)
         mSource!!.setup()
 
-        validateSource(mSource)
+        validateSource(mSource!!)
 
         try {
             fetchSourceBuffer()

@@ -30,6 +30,7 @@ class PipedAudioConcatenator
 (private val context: Context, private val mTransitionUs: Long //duration of the audio transition
  , sampleRate: Int, channelCount: Int) : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
+    override val componentName: String = TAG
     private var mCurrentState = ConcatState.TRANSITION //start in transition
 
     private val mSources = LinkedList<PipedMediaByteBufferSource>()
@@ -89,9 +90,6 @@ class PipedAudioConcatenator
             return nextSource
         }
 
-    override fun getComponentName(): String {
-        return TAG
-    }
 
     private enum class ConcatState {
         DATA,

@@ -66,8 +66,8 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
      * @param channelCount number of channels in the new, resampled audio stream.
      */
     public PipedAudioResampler(int sampleRate, int channelCount) {
-        mSampleRate = sampleRate;
-        mChannelCount = channelCount;
+        setMSampleRate(sampleRate);
+        setMChannelCount(channelCount);
     }
 
     /**
@@ -116,7 +116,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        if(mComponentState != State.UNINITIALIZED) {
+        if(getMComponentState() != State.UNINITIALIZED) {
             return;
         }
 
@@ -133,13 +133,13 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
         mSourceUsPerSample = 1000000f / mSourceSampleRate; //1000000 us/s
         mSourceChannelCount = mSourceFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
-        if(mChannelCount == 0) {
-            mChannelCount = mSourceChannelCount;
+        if(getMChannelCount() == 0) {
+            setMChannelCount(mSourceChannelCount);
         }
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
-        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
-        mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, getMSampleRate());
+        mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, getMChannelCount());
 
         //Initialize sample data to 0.
         mLeftSamples = new short[mSourceChannelCount];
@@ -157,7 +157,7 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
             throw new SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e);
         }
 
-        mComponentState = State.SETUP;
+        setMComponentState(State.SETUP);
 
         start();
     }
@@ -173,11 +173,11 @@ public class PipedAudioResampler extends PipedAudioShortManipulator implements P
     protected short getSampleForChannel(int channel) {
         short left, right;
 
-        if(mChannelCount == mSourceChannelCount) {
+        if(getMChannelCount() == mSourceChannelCount) {
             left = mLeftSamples[channel];
             right = mRightSamples[channel];
         }
-        else if(mChannelCount == 1/* && mSourceChannelCount == 2*/) {
+        else if(getMChannelCount() == 1/* && mSourceChannelCount == 2*/) {
             left = (short) (mLeftSamples[0]/2 + mLeftSamples[1]/2);
             right = (short) (mRightSamples[0]/2 + mRightSamples[1]/2);
         }

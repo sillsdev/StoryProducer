@@ -62,7 +62,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        if(mComponentState != State.UNINITIALIZED) {
+        if(getMComponentState() != State.UNINITIALIZED) {
             return;
         }
 
@@ -73,14 +73,14 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         for (int i = 0; i < mSources.size(); i++) {
             PipedMediaByteBufferSource source = mSources.get(i);
             source.setup();
-            validateSource(source, mChannelCount, mSampleRate);
+            validateSource(source, getMChannelCount(), getMSampleRate());
 
             MediaFormat format = source.getOutputFormat();
-            if (mChannelCount == 0) {
-                mChannelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
+            if (getMChannelCount() == 0) {
+                setMChannelCount(format.getInteger(MediaFormat.KEY_CHANNEL_COUNT));
             }
-            if (mSampleRate == 0) {
-                mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+            if (getMSampleRate() == 0) {
+                setMSampleRate(format.getInteger(MediaFormat.KEY_SAMPLE_RATE));
             }
 
             mSourceBufferAs.add(new short[MediaHelper.MAX_INPUT_BUFFER_SIZE / 2]);
@@ -95,12 +95,12 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
         }
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO);
-        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate);
-        mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount);
+        mOutputFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, getMSampleRate());
+        mOutputFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, getMChannelCount());
 
-        mCurrentSample = new short[mChannelCount];
+        mCurrentSample = new short[getMChannelCount()];
 
-        mComponentState = State.SETUP;
+        setMComponentState(State.SETUP);
 
         start();
     }
@@ -111,7 +111,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
 
     @Override
     protected boolean loadSamplesForTime(long time) throws SourceClosedException {
-        for(int i = 0; i < mChannelCount; i++) {
+        for(int i = 0; i < getMChannelCount(); i++) {
             mCurrentSample[i] = 0;
         }
 
@@ -129,7 +129,7 @@ public class PipedAudioMixer extends PipedAudioShortManipulator implements Piped
                 buffer = mSourceBufferAs.get(iSource);
             }
             if(buffer != null) {
-                for(int iChannel = 0; iChannel < mChannelCount; iChannel++) {
+                for(int iChannel = 0; iChannel < getMChannelCount(); iChannel++) {
                     mCurrentSample[iChannel] += buffer[pos++] * volumeModifier;
                 }
                 mSourcePos.set(iSource, pos);
