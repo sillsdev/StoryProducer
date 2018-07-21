@@ -137,6 +137,7 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
             outShortBuffer.clear();
 
             int iSample;
+            long sampleRateMultiplier = 1000000L / mSampleRate;
             for(iSample = 0; iSample < length; iSample += mChannelCount) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
@@ -146,7 +147,8 @@ public abstract class PipedAudioShortManipulator implements PipedMediaByteBuffer
 
                 //Keep track of the current presentation time in the output audio stream.
                 mAbsoluteSampleIndex++;
-                mSeekTime = getTimeFromIndex(mSampleRate, mAbsoluteSampleIndex);
+                //get time from index
+                mSeekTime = mAbsoluteSampleIndex * sampleRateMultiplier;
 
                 //Give warning about new time
                 mNonvolatileIsDone = !loadSamplesForTime(mSeekTime);

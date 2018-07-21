@@ -102,6 +102,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     override fun start() {
         val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
+        //TODO switch for smartphone and dumb phone.
+        //The dumbphone format is:
+        // video: H263, 176x144, frame rate = 15
+        // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
+
         val audioFormat = generateAudioFormat()
         val videoFormat = generateVideoFormat()
         val pages = generatePages() ?: return
