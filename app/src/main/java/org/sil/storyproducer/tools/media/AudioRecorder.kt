@@ -81,7 +81,6 @@ abstract class AudioRecorder(val activity: Activity) {
             pages.add(StoryPage("",appendAudioRelPath,duration,null,""))
 
             //If pages weren't generated, exit.
-
             val mStoryMaker = StoryMaker(context, File(tempDestPath), outputFormat, null, audioFormat,
                     pages.toTypedArray(), 10000, 10000)
 
