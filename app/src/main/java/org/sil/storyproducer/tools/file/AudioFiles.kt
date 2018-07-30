@@ -12,7 +12,7 @@ import java.util.*
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
  */
 
-internal val AUDIO_EXT = ".mp4"
+internal val AUDIO_EXT = ".m4a"
 
 internal val dtf = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ROOT)
 
