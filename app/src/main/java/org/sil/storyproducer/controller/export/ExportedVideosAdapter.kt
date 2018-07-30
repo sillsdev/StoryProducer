@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.export
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryUri
-import org.sil.storyproducer.tools.file.storyRelPathExists
 
 import java.util.ArrayList
 
@@ -50,10 +48,11 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         val fileName = splitPath[splitPath.size - 1]
 
         //recreate the holder every time because the views are changing around
+
         val rowView = mInflater.inflate(R.layout.exported_video_row, null)
         val holder = RowViewHolder()
         holder.textView = rowView.findViewById(R.id.video_title)
-        holder.playButton = rowView.findViewById(R.id.video_play_button)
+        holder.playButton = rowView.findViewById(R.id.video_play_button)!!
         holder.shareButton = rowView.findViewById(R.id.file_share_button)
 
         //set the two different button listeners
@@ -77,6 +76,8 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         val uri = getStoryUri(path)
         //TODO fix this so it actually plays.  Why not?
         videoIntent.setDataAndNormalize(uri)
+        videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
+        videoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))
     }
 
@@ -85,8 +86,8 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        val absPath = getStoryUri(path)!!.path
-        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://$absPath"))
+        val uri = getStoryUri(path)
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))
