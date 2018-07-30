@@ -2,20 +2,15 @@ package org.sil.storyproducer.controller.remote;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,17 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.model.Phase;
-import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.StorySharedPreferences;
-import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
-import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
 import java.util.HashMap;
@@ -91,11 +78,13 @@ public class BackTranslationFrag extends Fragment {
     @Override
     public void onCreate(Bundle savedState) {
         super.onCreate(savedState);
+        /* FIXME
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
         storyName = StoryState.getStoryName();
         setRecordFilePath();
         setHasOptionsMenu(true);
+        */
 
     }
 
@@ -156,7 +145,7 @@ public class BackTranslationFrag extends Fragment {
 
     public void onStart() {
         super.onStart();
-
+        /*FIXME
         setToolbar(rootViewToolbar);
 
         draftPlayer = new AudioPlayer();
@@ -191,6 +180,7 @@ public class BackTranslationFrag extends Fragment {
                 unlockDramatizationPhase();
             }
         }
+        */
     }
 
     /**
@@ -292,6 +282,8 @@ public class BackTranslationFrag extends Fragment {
      */
     private void setPic(final ImageView slideImage, int slideNum) {
 
+        /*FIXME
+
         Bitmap slidePicture = ImageFiles.getBitmap(storyName, slideNum);
 
         if (slidePicture == null) {
@@ -312,6 +304,7 @@ public class BackTranslationFrag extends Fragment {
         slideImage.requestLayout();
 
         slideImage.setImageBitmap(slidePicture);
+        */
     }
 
     /**
@@ -361,6 +354,7 @@ public class BackTranslationFrag extends Fragment {
     }
 
     private void setRecordFilePath() {
+        /*FIXME
         int nextDraftIndex = AudioFiles.INSTANCE.getBackTranslationTitles(StoryState.getStoryName(), slideNumber).length + 1;
         File recordFile = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber,getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         while (recordFile.exists()) {
@@ -368,12 +362,14 @@ public class BackTranslationFrag extends Fragment {
             recordFile = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber, getString(R.string.backTranslation_record_file_backT_name, nextDraftIndex));
         }
         backTranslationRecordingFile = recordFile;
+        */
     }
 
     /**
      * Initializes the toolbar and toolbar buttons.
      */
     private void setToolbar(View toolbar) {
+        /*FIXME
         if (rootView instanceof RelativeLayout) {
             String playBackFilePath = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
             RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
@@ -399,6 +395,7 @@ public class BackTranslationFrag extends Fragment {
                     true, false, true, true, modal,recordingListener, 0);
             recordingToolbar.keepToolbarVisible();
         }
+        */
     }
 
     /**
@@ -465,6 +462,7 @@ public class BackTranslationFrag extends Fragment {
 
     //TODO: check to see if all slides have been approved.
     public boolean checkAllMarked(){
+        /* FIXME
         int marked;
         SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         int numStorySlides = FileSystem.getContentSlideAmount(storyName);
@@ -474,10 +472,12 @@ public class BackTranslationFrag extends Fragment {
                 return false;
             }
         }
+        */
         return true;
     }
 
     private void unlockDramatizationPhase(){
+        /* FIXME
         Toast.makeText(getContext(), "Congrats!", Toast.LENGTH_SHORT).show();
         saveConsultantApproval();
         int dramatizationPhaseIndex = 6;
@@ -486,10 +486,11 @@ public class BackTranslationFrag extends Fragment {
         Intent intent = new Intent(getContext(), StoryState.getCurrentPhase().getTheClass());
         intent.putExtra(SLIDE_NUM, 0);
         getActivity().startActivity(intent);
+        */
     }
 
     public void getSlidesStatus() {
-
+        /* FIXME
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -561,10 +562,12 @@ public class BackTranslationFrag extends Fragment {
         };
 
         VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
+        */
     }
 
     public void requestRemoteReview(Context con, int numSlides){
 
+        /*
         final String phone_id = Settings.Secure.getString(con.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         js = new HashMap<>();
@@ -598,6 +601,7 @@ public class BackTranslationFrag extends Fragment {
 
 
         VolleySingleton.getInstance(getActivity().getApplicationContext()).addToRequestQueue(req);
+        */
     }
 
     private void addTranscription() {

@@ -364,7 +364,6 @@ class LearnActivity : PhaseBaseActivity() {
         if (videoSeekBar!!.progress == story.slides.size) {
             //gets the end image if we are at the end of the story
             //TODO what image are we actually getting?  -3.png?  this doesn't make sense.
-            //slidePicture = ImageFiles.getBitmap(story.title, ImageFiles.COPYRIGHT)
         } else {
             //Get a normal story image.
             slidePicture = getStoryImage(this,slideNum)

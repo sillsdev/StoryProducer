@@ -14,7 +14,6 @@ import android.widget.Toast;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
-import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.tools.StorySharedPreferences;
 import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
@@ -77,6 +76,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
      * Updates the list of backtranslation recordings at beginning of fragment creation and after any list change
      */
     private void createRecordingList() {
+        /* FIXME
         ListView listView = rootView.findViewById(R.id.recordings_list);
         listView.setScrollbarFadingEnabled(false);
         backT_Titles = AudioFiles.INSTANCE.getBackTranslationTitles(StoryState.getStoryName(), slidePosition);
@@ -84,20 +84,23 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
         adapter.setDeleteTitle(context.getResources().getString(R.string.delete_backT_message));
         adapter.setDeleteMessage(context.getResources().getString(R.string.delete_backT_message));
         listView.setAdapter(adapter);
+        */
     }
 
 
     @Override
     public void onRowClick(String recordingTitle) {
+        /* FIXME
         StorySharedPreferences.setBackTranslationForSlideAndStory(recordingTitle, slidePosition, StoryState.getStoryName());
         parentFragment.updatePlayBackPath();
 
         dialog.dismiss();
-
+        */
     }
 
     @Override
     public void onPlayClick(String recordingTitle, ImageButton buttonClickedNow) {
+        /* FIXME
         parentFragment.stopPlayBackAndRecording();
         if (audioPlayer.isAudioPlaying() && currentPlayingButton.equals(buttonClickedNow)) {
             currentPlayingButton.setImageResource(R.drawable.ic_green_play);
@@ -126,10 +129,12 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
             }
 
         }
+        */
     }
 
     @Override
     public void onDeleteClick(String recordingTitle) {
+        /* FIXME
         AudioFiles.INSTANCE.deleteBackTranslation(StoryState.getStoryName(), slidePosition, recordingTitle);
         createRecordingList();
         if (StorySharedPreferences.getBackTranslationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(recordingTitle)) {        //deleted the selected file
@@ -142,23 +147,29 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
 
         }
         parentFragment.setPlayBackPath();
+        */
     }
 
 
     @Override
     public AudioFiles.RenameCode onRenameClick(String name, String newName) {
+        /* FIXME
         lastOldName = name;
         lastNewName = newName;
         return AudioFiles.INSTANCE.renameBackTranslation(StoryState.getStoryName(), slidePosition, name, newName);
+        */
+        return AudioFiles.RenameCode.SUCCESS;
     }
 
     @Override
     public void onRenameSuccess() {
+        /* FIXME
         createRecordingList();
         if (StorySharedPreferences.getBackTranslationForSlideAndStory(slidePosition, StoryState.getStoryName()).equals(lastOldName)) {
             StorySharedPreferences.setBackTranslationForSlideAndStory(lastNewName, slidePosition, StoryState.getStoryName());
         }
         parentFragment.setPlayBackPath();
+        */
     }
 }
 

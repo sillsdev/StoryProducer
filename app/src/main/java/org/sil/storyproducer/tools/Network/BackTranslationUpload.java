@@ -12,7 +12,6 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.IOUtils;
-import org.sil.storyproducer.model.StoryState;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +30,7 @@ public class BackTranslationUpload {
         public static Map<String,String> js;
 
         public static void Upload ( final File fileName, Context con, int slide) throws IOException {
-
+        /* FIXME
             final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
             final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
             String phone_id = Settings.Secure.getString(con.getContentResolver(),
@@ -85,7 +84,7 @@ public class BackTranslationUpload {
 
 
             VolleySingleton.getInstance(con).addToRequestQueue(req);
-
+*/
         }
 
 

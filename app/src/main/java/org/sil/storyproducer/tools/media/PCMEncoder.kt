@@ -31,7 +31,7 @@ class MP4Encoder
  * @param channelCount
  */
 (private val bitrate: Int, private val sampleRate: Int, private val channelCount: Int) {
-
+    //FIXME - delete this file, but use it as a basis for refractoring story generation if needed.
     private var mediaFormat: MediaFormat? = null
     private var mediaCodec: MediaCodec? = null
     private var mediaMuxer: MediaMuxer? = null

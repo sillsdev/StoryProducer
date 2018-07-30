@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
-import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.SlidePhaseFrag
 
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
@@ -14,10 +13,7 @@ import org.sil.storyproducer.controller.draft.DraftFrag
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag
 import org.sil.storyproducer.controller.remote.BackTranslationFrag
 import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.FileSystem
 
 class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 

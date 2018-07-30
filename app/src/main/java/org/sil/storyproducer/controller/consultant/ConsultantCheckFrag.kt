@@ -2,17 +2,10 @@ package org.sil.storyproducer.controller.consultant
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v4.content.ContextCompat
 import android.text.InputType
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
@@ -20,22 +13,13 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogView
-import org.sil.storyproducer.model.SlideText
-import org.sil.storyproducer.model.StoryState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.FileSystem
-import org.sil.storyproducer.tools.file.ImageFiles
-import org.sil.storyproducer.tools.file.TextFiles
 
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
@@ -207,12 +191,15 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun launchDramatizationPhase() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
+        //FIXME
+        /*
         val dramatizationPhaseIndex = 4
         val phases = StoryState.getPhases()
         StoryState.setCurrentPhase(phases[dramatizationPhaseIndex])
         val intent = Intent(context, StoryState.getCurrentPhase().getTheClass())
         intent.putExtra(SLIDE_NUM, 0)
         activity.startActivity(intent)
+        */
     }
 
     /**

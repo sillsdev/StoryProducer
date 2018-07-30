@@ -1,12 +1,7 @@
 package org.sil.storyproducer.controller.remote;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +14,8 @@ import android.widget.Switch;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.model.StoryState;
-import org.sil.storyproducer.tools.BitmapScaler;
 import org.sil.storyproducer.tools.file.AudioFiles;
-import org.sil.storyproducer.tools.file.FileSystem;
-import org.sil.storyproducer.tools.file.ImageFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.media.MediaHelper;
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
@@ -65,6 +55,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*FIXME
         setContentView(R.layout.activity_whole_story);
         rootView = findViewById(R.id.phase_frame);
 
@@ -90,6 +81,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         invalidateOptionsMenu();
         setVolumeSwitchAndFloatingButtonVisible();
         recordingToolbar.keepToolbarVisible();
+        */
     }
 
     @Override
@@ -230,6 +222,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * @param view button to set listeners for
      */
     public void onClickPlayPauseButton(View view) {
+        /* FIXME
         if(narrationPlayer.isAudioPlaying()) {
             pauseVideo();
 
@@ -259,6 +252,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 resumeVideo();
             }
         }
+        */
     }
 
     /**
@@ -329,7 +323,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * helper function that resets the video to the beginning and turns off the sound
      */
     private void resetVideoWithSoundOff() {
-
+        /*
         videoSeekBar.setProgress(0);
         slideNumber = 0;
         narrationPlayer.setVolume(0.0f);
@@ -346,6 +340,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
             playButton.setImageResource(R.drawable.ic_pause_gray);
             playVideo();
         }
+        */
     }
 
     /**
@@ -383,6 +378,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * @param aView    The ImageView that will contain the picture.
      */
     private void setPic(View aView) {
+        /*FIXME
         if (aView == null || !(aView instanceof ImageView)) {
             return;
         }
@@ -411,6 +407,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         slideImage.requestLayout();
 
         slideImage.setImageBitmap(slidePicture);
+        */
     }
 
     /**

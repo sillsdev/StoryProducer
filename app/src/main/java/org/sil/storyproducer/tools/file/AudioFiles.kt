@@ -115,55 +115,7 @@ object AudioFiles {
         return File(FileSystem.getProjectDirectory(story), DRAFT_AUDIO_PREFIX + slide + "_" + draftTitle + PREFER_EXTENSION)
     }
 
-    fun getDraftTitle(file: File): String {
-        val filename = file.name
-        return getTitleFromPath(filename, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION)
-    }
 
-    fun allDraftsComplete(story: String, slideCount: Int): Boolean {
-        for (i in 0 until slideCount) {
-            val draftAudio = getDraft(story, i)
-            if (!draftAudio.exists()) {
-                return false
-            }
-        }
-        return true
-    }
-
-    /**
-     * deletes the designated audio draft
-     * @param story the story the draft comes from
-     * @param slide the slide the draft comes from
-     * @param draftTitle the name of the draft in question
-     */
-    fun deleteDraft(story: String, slide: Int, draftTitle: String) {
-        val file = getDraft(story, slide, draftTitle)
-        if (file.exists()) {
-            file.delete()
-        }
-    }
-
-    /**
-     * renames the designated audio draft if the new name is valid and the file exists
-     * @param story the story the draft comes from
-     * @param slide the slide of the story the draft comes from
-     * @param oldTitle the old title of the draft
-     * @param newTitle the proposed new title for the draft
-     * @return returns success or error code of renaming
-     */
-    fun renameDraft(story: String, slide: Int, oldTitle: String, newTitle: String): RenameCode {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAFT, PREFER_EXTENSION)
-    }
-
-    /**
-     * Returns a list of draft titles for the story and slide in question
-     * @param story the story where the drafts come from
-     * @param slide the slide where the drafts come from
-     * @return the array of draft titles
-     */
-    fun getDraftTitles(story: String, slide: Int): Array<String> {
-        return getRecordingTitlesHelper(story, slide, DRAFT_AUDIO_PREFIX, PREFER_EXTENSION)
-    }
 
     //*** Community Check ***
 
@@ -171,54 +123,13 @@ object AudioFiles {
         return File(FileSystem.getProjectDirectory(story), COMMENT_PREFIX + slide + "_" + commentTitle + PREFER_EXTENSION)
     }
 
-    /**
-     * deletes the designated audio comment
-     * @param story the story the comment comes from
-     * @param slide the slide the comment comes from
-     * @param commentTitle the name of the comment in question
-     */
-    fun deleteComment(story: String, slide: Int, commentTitle: String) {
-        val file = getComment(story, slide, commentTitle)
-        if (file.exists()) {
-            file.delete()
-        }
-    }
 
-    /**
-     * renames the designated audio comment if the new name is valid and the file exists
-     * @param story the story the comment comes from
-     * @param slide the slide of the story the comment comes from
-     * @param oldTitle the old title of the comment
-     * @param newTitle the proposed new title for the comment
-     * @return returns success or error code of renaming
-     */
-    fun renameComment(story: String, slide: Int, oldTitle: String, newTitle: String): RenameCode {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.COMMUNITY, PREFER_EXTENSION)
-    }
-
-    /**
-     * Returns a list of comment titles for the story and slide in question
-     * @param story the story where the comments come from
-     * @param slide the slide where the comments come from
-     * @return the array of comment titles
-     */
-    fun getCommentTitles(story: String, slide: Int): Array<String> {
-        return getRecordingTitlesHelper(story, slide, COMMENT_PREFIX, PREFER_EXTENSION)
-    }
 
     @JvmOverloads
     fun getBackTranslation(story: String, slide: Int, backTitle: String = StorySharedPreferences.getBackTranslationForSlideAndStory(slide, story)): File {
         return File(FileSystem.getProjectDirectory(story), BACKTRANSLATION_AUDIO_PREFIX + slide + "_" + backTitle + WAV_EXTENSION)
     }
 
-    fun getBackTranslationTemp(story: String): File {
-        return File(FileSystem.getHiddenTempDirectory(story), BACKTRANSLATION_AUDIO_PREFIX + "_" + "T" + WAV_EXTENSION)
-    }
-
-    fun getBackTranslationTitle(file: File): String {
-        val filename = file.name
-        return getTitleFromPath(filename, BACKTRANSLATION_AUDIO_PREFIX, WAV_EXTENSION)
-    }
 
 
     /**
@@ -261,49 +172,8 @@ object AudioFiles {
         return File(FileSystem.getProjectDirectory(story), DRAMATIZATION_AUDIO_PREFIX + slide + "_" + dramaTitle + WAV_EXTENSION)
     }
 
-    fun getDramatizationTemp(story: String): File {
-        return File(FileSystem.getHiddenTempDirectory(story), DRAMATIZATION_AUDIO_PREFIX + "_" + "T" + WAV_EXTENSION)
-    }
 
-    fun getDramatizationTitle(file: File): String {
-        val filename = file.name
-        return getTitleFromPath(filename, DRAMATIZATION_AUDIO_PREFIX, WAV_EXTENSION)
-    }
 
-    /**
-     * deletes the designated audio dramatization
-     * @param story the story the dramatization comes from
-     * @param slide the slide the dramatization comes from
-     * @param draftTitle the name of the dramatization in question
-     */
-    fun deleteDramatization(story: String, slide: Int, draftTitle: String) {
-        val file = getDramatization(story, slide, draftTitle)
-        if (file.exists()) {
-            file.delete()
-        }
-    }
-
-    /**
-     * renames the designated audio dramatization if the new name is valid and the file exists
-     * @param story the story the dramatization comes from
-     * @param slide the slide of the story the dramatization comes from
-     * @param oldTitle the old title of the dramatization
-     * @param newTitle the proposed new title for the dramatization
-     * @return returns success or error code of renaming
-     */
-    fun renameDramatization(story: String, slide: Int, oldTitle: String, newTitle: String): RenameCode {
-        return renameAudioFileHelper(story, slide, oldTitle, newTitle, ModalType.DRAMATIZATION, PREFER_EXTENSION)
-    }
-
-    /**
-     * Returns a list of dramatization titles for the story and slide in question
-     * @param story the story where the dramatization come from
-     * @param slide the slide where the dramatization come from
-     * @return the array of dramatization titles
-     */
-    fun getDramatizationTitles(story: String, slide: Int): Array<String> {
-        return getRecordingTitlesHelper(story, slide, DRAMATIZATION_AUDIO_PREFIX, WAV_EXTENSION)
-    }
 
     //**** Helpers ***//
     private fun renameAudioFileHelper(story: String, slide: Int, oldTitle: String, newTitle: String, type: ModalType, extension: String): RenameCode {

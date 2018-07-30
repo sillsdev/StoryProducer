@@ -37,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
-import org.sil.storyproducer.model.StoryState;
 import org.sil.storyproducer.model.messaging.Message;
 import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.Network.paramStringRequest;
@@ -87,7 +86,8 @@ public class RemoteCheckFrag extends Fragment {
         super.onCreate(savedState);
         Bundle passedArgs = this.getArguments();
         slideNumber = passedArgs.getInt(SLIDE_NUM);
-        storyName = StoryState.getStoryName();
+        //FIXME
+        // storyName = StoryState.getStoryName();
         setHasOptionsMenu(true);
         successToast = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_sent, Toast.LENGTH_SHORT);
         noConnection = Toast.makeText(getActivity().getApplicationContext(), R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT);
@@ -260,7 +260,8 @@ public class RemoteCheckFrag extends Fragment {
         js.put("Message",message);
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
-        js.put("StoryTitle" , StoryState.getStoryName());
+        //FIXME
+        // js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
 
         paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
@@ -337,7 +338,8 @@ public class RemoteCheckFrag extends Fragment {
         js = new HashMap<String,String>();
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
-        js.put("StoryTitle" , StoryState.getStoryName());
+        //FIXME
+        // js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
         js.put("LastId", Integer.toString(msgAdapter.getLastID()));
 
