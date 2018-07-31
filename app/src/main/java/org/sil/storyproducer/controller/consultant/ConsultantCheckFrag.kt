@@ -19,6 +19,9 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogView
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -191,15 +194,9 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun launchDramatizationPhase() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
-        //FIXME
-        /*
-        val dramatizationPhaseIndex = 4
-        val phases = StoryState.getPhases()
-        StoryState.setCurrentPhase(phases[dramatizationPhaseIndex])
-        val intent = Intent(context, StoryState.getCurrentPhase().getTheClass())
-        intent.putExtra(SLIDE_NUM, 0)
-        activity.startActivity(intent)
-        */
+        //Move to dramatization, slide 0.
+        Workspace.activeSlideNum = 0
+        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.DRAMATIZATION))
     }
 
     /**

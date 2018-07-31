@@ -103,6 +103,7 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     //build a query to look for the child documents
+    //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
     val cursor = context.contentResolver.query(
             DocumentsContract.buildChildDocumentsUriUsingTree(
                     Workspace.workspace.uri,
@@ -112,6 +113,7 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
                     ))
             ,arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
             null,null,null)
+    //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
     cursor.moveToFirst()
     val childDocs: MutableList<String> = ArrayList()
     do{
