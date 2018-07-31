@@ -81,12 +81,12 @@ class CreateActivity : PhaseBaseActivity() {
             }
             sections.add(title)
 
-            val country = RegistrationActivity.getCountry()
+            val country = RegistrationActivity.country
             if (country != null && !country.isEmpty()) {
                 sections.add(country)
             }
 
-            val languageCode = RegistrationActivity.getLanguageCode()
+            val languageCode = RegistrationActivity.languageCode
             if (languageCode != null && !languageCode.isEmpty()) {
                 sections.add(languageCode)
             }

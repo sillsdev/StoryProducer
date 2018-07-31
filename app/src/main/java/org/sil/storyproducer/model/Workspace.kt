@@ -2,6 +2,8 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
+import android.provider.DocumentsContract
 
 import java.io.File
 import java.util.*
@@ -10,12 +12,8 @@ import android.support.v4.provider.DocumentFile
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {
-            if (value.isDirectory) {
-                field = value
-                val tempPrefs = prefs
-                if (tempPrefs != null)
-                    tempPrefs.edit().putString("workspace", field.toString()).apply()
-            }
+            field = value
+            prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
         }
     val Stories: MutableList<Story> = ArrayList()
     var registration: Registration = Registration()
@@ -55,23 +53,18 @@ object Workspace{
     fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        //get registration from the json file, if there is any.
-        //TODO get workspace from preferences - after a "change workspace" option has been implemented.
-        registration.load(context)
-        updateStories(context)
+        setupWorkspacePath(context,Uri.parse(prefs!!.getString("workspace","")))
         isInitialized = true
     }
 
-
-    fun completeRegistration(context: Context){
-        registration.save(context)
-        //update phases based upon registration selection
-        phases = when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases()
-            else -> Phase.getLocalPhases()
-        }
-        activePhaseIndex = 0
+    fun setupWorkspacePath(context: Context, uri: Uri){
+        try {
+            workspace = DocumentFile.fromTreeUri(context, uri)
+            registration.load(context)
+        } catch ( e : Exception) {}
+        updateStories(context)
     }
+
 
     fun updateStories(context: Context) {
         //Iterate external files directories.
@@ -89,6 +82,12 @@ object Workspace{
                 }
             }
         }
+        //update phases based upon registration selection
+        phases = when(registration.getString("consultant_location_type")) {
+            "remote" -> Phase.getRemotePhases()
+            else -> Phase.getLocalPhases()
+        }
+        activePhaseIndex = 0
     }
 
     fun goToNextPhase() : Boolean {

@@ -9,6 +9,11 @@ val REGISTRATION_FILENAME = "registration.json"
 
 class Registration{
     private var jsonData: JSONObject = JSONObject()
+
+    var complete : Boolean
+    get() {return getBoolean("registration_complete",false)}
+    set(value){putBoolean("registration_complete",value)}
+
     fun load(context: Context) {
         val regString: String? = getText(context,REGISTRATION_FILENAME)
         if(regString != null) {
