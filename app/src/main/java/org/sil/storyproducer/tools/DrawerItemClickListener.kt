@@ -36,6 +36,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
             2 -> {
                 intent = Intent(activity, RegistrationActivity::class.java)
                 activity.startActivity(intent)
+                activity.finish()
             }
             3 -> {
                 val dialog = AlertDialog.Builder(activity)

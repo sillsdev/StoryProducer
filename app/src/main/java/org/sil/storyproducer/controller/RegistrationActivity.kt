@@ -500,12 +500,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { dialog, id ->
-                    if (isFirstActivity) {
-                        val intent = Intent(this@RegistrationActivity, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        finish()
-                    }
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                 }.create()
 
         dialog.show()
@@ -524,12 +519,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     storeRegistrationInfo()
-                    if (isFirstActivity) {
-                        val intent = Intent(this@RegistrationActivity, MainActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        finish()
-                    }
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                 }.create()
 
         dialog.show()
