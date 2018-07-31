@@ -65,6 +65,10 @@ object Workspace{
         updateStories(context)
     }
 
+    fun clearWorkspace(){
+        workspace = DocumentFile.fromFile(File(""))
+
+    }
 
     fun updateStories(context: Context) {
         //Iterate external files directories.

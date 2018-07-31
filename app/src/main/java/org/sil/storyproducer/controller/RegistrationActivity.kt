@@ -42,6 +42,7 @@ import java.util.Calendar
 import java.util.HashMap
 import java.util.Stack
 import android.provider.Settings.Secure
+import java.io.File
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -81,7 +82,7 @@ import android.provider.Settings.Secure
 const val FIRST_ACTIVITY_KEY = "first"
 
 
-class RegistrationActivity : AppCompatActivity() {
+open class RegistrationActivity : AppCompatActivity() {
 
     private val sectionIds = intArrayOf(R.id.language_section, R.id.translator_section, R.id.consultant_section, R.id.trainer_section, R.id.archive_section)
     private val headerIds = intArrayOf(R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header)
@@ -684,5 +685,13 @@ class RegistrationActivity : AppCompatActivity() {
             }
             return message.toString()
         }
+    }
+}
+
+class WorkspaceAndRegistrationActivity : RegistrationActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Workspace.clearWorkspace()
+        super.onCreate(savedInstanceState)
     }
 }

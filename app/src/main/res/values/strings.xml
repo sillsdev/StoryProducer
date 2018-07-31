@@ -313,6 +313,7 @@
     <string name="menu_info">Registration Info</string>
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
+    <string name="update_workspace">Update Workspace</string>
 
     <!-- license -->
     <string name="license_title">License</string>

@@ -43,6 +43,8 @@
         <!-- Registration -->
         <activity android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".controller.WorkspaceAndRegistrationActivity"
+            android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
             android:name=".controller.learn.LearnActivity"
