@@ -101,6 +101,25 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
     return getPFD(context, "$storyTitle/$relPath", mimeType, mode)
 }
 
+fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
+    //build a query to look for the child documents
+    val cursor = context.contentResolver.query(
+            DocumentsContract.buildChildDocumentsUriUsingTree(
+                    Workspace.workspace.uri,
+                    DocumentsContract.getDocumentId(
+                            Uri.parse(Workspace.workspace.uri.toString() +
+                                    Uri.encode("/$relPath"))
+                    ))
+            ,arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+            null,null,null)
+    cursor.moveToFirst()
+    val childDocs: MutableList<String> = ArrayList()
+    do{
+        childDocs.add(VIDEO_DIR + "/" + cursor.getString(0))
+    }while((!cursor.isLast))
+    return childDocs
+}
+
 fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
     if (!Workspace.workspace.isDirectory) return null
     //build the document tree if it is needed

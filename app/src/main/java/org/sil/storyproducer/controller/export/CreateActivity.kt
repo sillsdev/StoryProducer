@@ -631,9 +631,6 @@ class CreateActivity : PhaseBaseActivity() {
 
 
             storyMaker!!.setOutputFile(outputRelPath)
-            Workspace.activeStory.exportedVideos.add(outputRelPath)
-            //only take unique values.
-            Workspace.activeStory.exportedVideos = Workspace.activeStory.exportedVideos.distinct().toMutableList()
         }
 
         storyMaker!!.start()

@@ -22,7 +22,6 @@ class Story(var title: String, val slides: List<Slide>){
 
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
-    var exportedVideos: MutableList<String> = ArrayList()
     var activityLogs: MutableList<LogEntry> = ArrayList()
     companion object
 

@@ -3,6 +3,9 @@ package org.sil.storyproducer.controller.export
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.provider.DocumentsContract
+import android.provider.DocumentsProvider
+import android.support.v4.provider.DocumentFile
 import android.view.Menu
 import android.view.View
 import android.widget.LinearLayout
@@ -11,9 +14,11 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
-
+import org.sil.storyproducer.tools.file.getChildDocuments
+import org.sil.storyproducer.tools.file.getStoryUri
 
 
 /**
@@ -74,15 +79,14 @@ class ShareActivity : PhaseBaseActivity() {
         //share view
         mShareSection = findViewById(R.id.share_section)
         videosAdapter = ExportedVideosAdapter(this)
-        mVideosListView = findViewById(R.id.videos_list)
+        mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
 
-        val actualPaths = Workspace.activeStory.exportedVideos
-        if (actualPaths.size > 0) {
+        val exportedVideos = getChildDocuments(this,"${Workspace.activeStory.title}/$VIDEO_DIR")
+        if (exportedVideos.isNotEmpty()) {
             mNoVideosText!!.visibility = View.GONE
         }
-        videosAdapter!!.setVideoPaths(actualPaths)
+        videosAdapter!!.setVideoPaths(exportedVideos)
     }
-
 }
