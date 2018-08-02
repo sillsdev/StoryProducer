@@ -1,15 +1,8 @@
 package org.sil.storyproducer.model
 
-import android.graphics.Rect
-import android.util.Log
+
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.model.logging.LogEntry
-import org.sil.storyproducer.tools.file.FileSystem
-
-import org.sil.storyproducer.tools.file.ProjectXML
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-import org.sil.storyproducer.tools.media.graphics.RectHelper
-import java.io.*
 
 import java.util.*
 
@@ -23,6 +16,8 @@ class Story(var title: String, val slides: List<Slide>){
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var activityLogs: MutableList<LogEntry> = ArrayList()
+    var lastPhaseType: PhaseType = PhaseType.LEARN
+    var lastSlideNum: Int = 0
     companion object
 
     //TODO replace the "size-1" with this.  Will there be templates without a last slide?

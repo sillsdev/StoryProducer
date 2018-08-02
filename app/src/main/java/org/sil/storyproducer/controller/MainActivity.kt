@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
@@ -13,9 +12,6 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
@@ -27,9 +23,6 @@ import org.sil.storyproducer.model.Workspace
 
 
 import java.io.Serializable
-
-import java.security.AccessController.getContext
-import org.sil.storyproducer.controller.remote.RemoteCheckFrag.R_CONSULTANT_PREFS
 
 
 class MainActivity : AppCompatActivity(), Serializable {

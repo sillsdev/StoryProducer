@@ -26,9 +26,9 @@ object Workspace{
     var activeStory: Story = emptyStory()
     set(value){
         field = value
-        activePhase = Phase(PhaseType.LEARN)
-        //TODO do we want to save slide number in prefernces?
-        activeSlideNum = 0
+        //You are switching the active story.  Recall the last phase and slide.
+        activePhase = Phase(value.lastPhaseType)
+        activeSlideNum = value.lastSlideNum
     }
     var activePhase: Phase = Phase(PhaseType.LEARN)
         set(value){

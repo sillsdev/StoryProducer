@@ -1,6 +1,5 @@
 package org.sil.storyproducer.model
 
-import android.content.Context
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
