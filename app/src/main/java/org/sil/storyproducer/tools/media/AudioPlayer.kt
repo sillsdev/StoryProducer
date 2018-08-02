@@ -11,7 +11,7 @@ import java.io.IOException
 
 class AudioPlayer {
 
-    private val mPlayer: MediaPlayer
+    private var mPlayer: MediaPlayer
     private var fileExists: Boolean = false
     private var isPrepared: Boolean = false
 
@@ -59,14 +59,14 @@ class AudioPlayer {
      */
     fun setSource(context: Context, uri: Uri) : Boolean {
         try {
-            if (fileExists) {
-                mPlayer.reset()
-                isPrepared = false
-            }
+            mPlayer.release()
+            mPlayer = MediaPlayer()
+            isPrepared = false
             mPlayer.setDataSource(context, uri)
             fileExists = true
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             //TODO maybe do something with this exception
+            fileExists = false
             e.printStackTrace()
         }
         return fileExists
@@ -80,14 +80,7 @@ class AudioPlayer {
                        storyName: String = Workspace.activeStory.title) : Boolean {
         val uri: Uri? = getStoryUri(relPath,storyName)
         if(uri == null) return false
-        try{
-            setSource(context, uri)
-            return true
-        } catch (e: IOException){}
-        catch (e: IllegalArgumentException){}
-        catch (e: SecurityException){}
-        catch (e:IllegalStateException) {}
-        return false
+        return setSource(context, uri)
     }
 
     /**

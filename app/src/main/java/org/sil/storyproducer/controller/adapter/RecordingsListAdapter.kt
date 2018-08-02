@@ -7,7 +7,6 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
 import org.sil.storyproducer.R
@@ -17,10 +16,7 @@ import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.AudioFiles
-import org.sil.storyproducer.tools.file.deleteStoryFile
-import org.sil.storyproducer.tools.file.renameStoryFile
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 /**
@@ -85,7 +81,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
                 .setTitle(deleteTitle)
                 .setMessage(deleteMessage)
                 .setNegativeButton(context.getString(R.string.no), null)
-                .setPositiveButton(context.getString(R.string.yes)) { dialog, id -> listeners.onDeleteClick(values[position]) }.create()
+                .setPositiveButton(context.getString(R.string.yes)) { _, _ -> listeners.onDeleteClick(values[position]) }.create()
 
         dialog.show()
     }
@@ -133,10 +129,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
                 }.create()
 
         dialog.show()
-        // show keyboard for renaming
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
-
+        //TODO make keyboard show at once, but right now there are too many issues with it.
     }
 }
 
@@ -166,7 +159,13 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         val alertDialog = AlertDialog.Builder(context)
         alertDialog.setView(rootView)
         dialog = alertDialog.create()
-        exit.setOnClickListener { dialog!!.dismiss() }
+        exit.setOnClickListener {
+            dialog!!.dismiss()
+        }
+        dialog!!.setOnDismissListener {
+            if (audioPlayer.isAudioPlaying)
+                audioPlayer.stopAudio()
+        }
         dialog!!.show()
 
     }
@@ -193,7 +192,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         dialog!!.dismiss()
     }
 
-    override fun onPlayClick(recordingTitle: String, buttonClickedNow: ImageButton) {
+    override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
         parentFragment.stopPlayBackAndRecording()
         if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
             currentPlayingButton!!.setImageResource(R.drawable.ic_green_play)
@@ -206,8 +205,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             currentPlayingButton = buttonClickedNow
             currentPlayingButton!!.setImageResource(R.drawable.ic_stop_red)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { currentPlayingButton!!.setImageResource(R.drawable.ic_green_play) })
-            if (storyRelPathExists(context,"$PROJECT_DIR/$recordingTitle")) {
-                audioPlayer.setStorySource(context,"$PROJECT_DIR/$recordingTitle")
+            if (storyRelPathExists(context,"$PROJECT_DIR/$name")) {
+                audioPlayer.setStorySource(context,"$PROJECT_DIR/$name")
                 audioPlayer.playAudio()
                 Toast.makeText(parentFragment.context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
                 when (Workspace.activePhase.phaseType){
@@ -222,10 +221,10 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         }
     }
 
-    override fun onDeleteClick(recordingTitle: String) {
-        filenames.remove("$PROJECT_DIR/$recordingTitle")
-        deleteStoryFile(context, "$PROJECT_DIR/$recordingTitle")
-        if("$PROJECT_DIR/$recordingTitle" == Workspace.activePhase.getChosenFilename()){
+    override fun onDeleteClick(name: String) {
+        filenames.remove("$PROJECT_DIR/$name")
+        deleteStoryFile(context, "$PROJECT_DIR/$name")
+        if("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()){
             if(filenames.size > 0)
                 Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
             else{
@@ -238,8 +237,9 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
         lastOldName = name
-        lastNewName = newName
-        when(renameStoryFile(context,"$PROJECT_DIR/$name",newName)){
+        val tempName = newName + AUDIO_EXT
+        lastNewName = tempName
+        when(renameStoryFile(context,"$PROJECT_DIR/$name",tempName)){
             true -> return AudioFiles.RenameCode.SUCCESS
             false -> return AudioFiles.RenameCode.ERROR_UNDEFINED
         }
@@ -249,6 +249,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
         filenames.removeAt(index)
         filenames.add(index,"$PROJECT_DIR/$lastNewName")
+        onRowClick(lastNewName!!)
         createRecordingList()
     }
 }
