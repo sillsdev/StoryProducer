@@ -190,18 +190,6 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     /**
-     * Listen for callback from FileChooserActivity.
-     */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        // See which child activity is calling us back.
-        if (requestCode == FILE_CHOOSER_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                setLocation(data.getStringExtra(FileChooserActivity.FILE_PATH))
-            }
-        }
-    }
-
-    /**
      * Remove focus from EditText when tapping outside. See http://stackoverflow.com/a/28939113/4639640
      */
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

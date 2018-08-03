@@ -13,6 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:textSize="@dimen/text_body"
+        android:textSize="@dimen/text_title"
         android:text="@string/stories_not_found_body" />
 </LinearLayout>

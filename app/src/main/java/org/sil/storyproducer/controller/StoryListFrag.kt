@@ -20,6 +20,8 @@ class StoryListFrag : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
+        if(!Workspace.isInitialized) Workspace.initializeWorskpace(activity)
+
         if (Workspace.Stories.isEmpty()) return inflater!!.inflate(R.layout.fragment_no_stories, container, false)
 
         val lfview = inflater!!.inflate(R.layout.activity_list_view, container, false)

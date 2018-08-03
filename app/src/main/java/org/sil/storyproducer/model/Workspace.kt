@@ -14,8 +14,10 @@ object Workspace{
         set(value) {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
+            storiesUpdated = false
         }
-    val Stories: MutableList<Story> = ArrayList()
+    val Stories: MutableList<Story> = mutableListOf()
+    var storiesUpdated = false
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
@@ -73,6 +75,7 @@ object Workspace{
     fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
+        if(storiesUpdated) return
         if(workspace.isDirectory){
             //find all stories
             Stories.removeAll(Stories)
@@ -92,6 +95,7 @@ object Workspace{
             else -> Phase.getLocalPhases()
         }
         activePhaseIndex = 0
+        storiesUpdated = true
     }
 
     fun goToNextPhase() : Boolean {

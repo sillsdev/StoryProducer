@@ -5,6 +5,7 @@ import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.getStoryChildOutputStream
 import org.sil.storyproducer.tools.file.getStoryText
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -37,7 +38,7 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     //Check if path is path
     if(!storyPath.isDirectory) return null
     //make a project directory if there is none.
-    if (storyPath.findFile(PROJECT_DIR) != null) {
+    if (storyRelPathExists(context,PROJECT_DIR,storyPath.name)) {
         //parse the project file, if there is one.
         story = storyFromJson(context,storyPath.name)
         //if there is a story from the file, do not try to read any templates, just return.
