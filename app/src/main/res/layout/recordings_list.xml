@@ -7,9 +7,9 @@
         android:id="@+id/toolbar2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/colorPrimary"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" >
+        android:background="?android:attr/colorPrimary"
+        android:minHeight="?android:attr/actionBarSize"
+        android:theme="?android:attr/actionBarTheme" >
 
         <!-- TODO replace with back arrow or triangle -->
         <ImageButton
