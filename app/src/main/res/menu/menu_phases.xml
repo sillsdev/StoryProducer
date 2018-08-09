@@ -8,7 +8,7 @@
         android:id="@+id/icon_logo"
         android:title="@string/menu_search"
         android:icon="@drawable/ic_learn"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:height="500dp"
         android:width="500dp"
         />
@@ -16,7 +16,7 @@
         android:id="@+id/spinner"
         android:title=""
         app:actionViewClass="android.widget.Spinner"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:checkable="false" />
 
 </menu>
