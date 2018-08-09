@@ -111,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:layout_alignBaseline="@+id/concheck_draft_playback_button"
+                android:layout_alignBaseline="@+id/concheck_logs_button"
                 android:layout_margin="10dp"/>
 
         </RelativeLayout>

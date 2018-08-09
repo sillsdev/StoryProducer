@@ -130,19 +130,6 @@ class LearnActivity : PhaseBaseActivity() {
         super.onStart()
         //create audio players
         narrationPlayer = AudioPlayer()
-        narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            if(videoSeekBar!!.progress >= story.slides.size - 1){
-                //at the end of video so special case
-                makeLogIfNecessary(true)
-                playButton!!.setImageResource(R.drawable.ic_play_gray)
-                setPic(learnImageView,videoSeekBar!!.progress)     //sets the pic to the end image
-                showStartPracticeSnackBar()
-            } else {
-                //just play the next slide!
-                videoSeekBar!!.progress++
-                playVideo()
-            }
-        })
         //recordingToolbar.hideFloatingActionButton();
 
         backgroundPlayer = AudioPlayer()
@@ -196,6 +183,19 @@ class LearnActivity : PhaseBaseActivity() {
         //set the next audio
         narrationPlayer.setStorySource(this, Workspace.activeStory.slides[videoSeekBar!!.progress].narrationFile)
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
+        narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            if(videoSeekBar!!.progress >= story.slides.size - 1){
+                //at the end of video so special case
+                makeLogIfNecessary(true)
+                playButton!!.setImageResource(R.drawable.ic_play_gray)
+                setPic(learnImageView,videoSeekBar!!.progress)     //sets the pic to the end image
+                showStartPracticeSnackBar()
+            } else {
+                //just play the next slide!
+                videoSeekBar!!.progress++
+                playVideo()
+            }
+        })
         narrationPlayer.playAudio()
 
     }

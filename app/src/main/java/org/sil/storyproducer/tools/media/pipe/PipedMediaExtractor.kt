@@ -106,8 +106,6 @@ class PipedMediaExtractor
         //TODO: Do we need this SDK check?
         if (Build.VERSION.SDK_INT >= 21 && actualFlags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0) {
             info.flags = info.flags or MediaCodec.BUFFER_FLAG_KEY_FRAME
-        } else if (Build.VERSION.SDK_INT < 21 && actualFlags and MediaCodec.BUFFER_FLAG_SYNC_FRAME != 0) {
-            info.flags = info.flags or MediaCodec.BUFFER_FLAG_SYNC_FRAME
         }
         if (actualFlags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
             info.flags = info.flags or MediaCodec.BUFFER_FLAG_END_OF_STREAM
