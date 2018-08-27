@@ -12,7 +12,7 @@ Developers:
    * Prototype app: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
    * Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
    * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
-   * Software engineers for v1.5 - v1.9: John Lambert and Grant Dennison
+   * Software engineer for v2.3 and later: John Lambert
 
 Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
@@ -25,22 +25,19 @@ Translate and produce stories (starting with templates in a major language made 
 * SHARE the videos
 
 ## Installing the application
-> Note: When you wish to install a newer APK, first delete the older APK. Installing a new APK will delete all the templates from the previous app. You must manually load the templates back onto the phone after the new APK is installed.  
 * Minimum Requirements:  
     * Android 4.4.x (API 19) and 1GB storage available
     * Android file browser: [ASTRO File Manager](https://play.google.com/store/apps/details?id=com.metago.astro&hl=en) or [File Manager](https://play.google.com/store/apps/details?id=com.asus.filemanager&hl=en) by ZenUI  
 * Prepare your Android device: 
-    * If you have installed Story Producer before, delete the previous version. (This will delete the template folders.)
+    * If you have installed Story Producer before, delete the previous version. If the version of the app that you delete is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
     * Enable a manual install of apk file: 
         * Settings(gear icon) -> Security -> (scroll down) Enable "Unknown sources"; disable "Verify apps"
     * Insert SD card if desired
-         * You will need approximately 1 GB of storage for each story you wish to produce.
+         * You will need approximately 300 MB of storage for each story you wish to produce.
     * Connect to your device via USB (it will show as a drive on your computer)
         * If it does not show up as a drive, swipe down from the top.  You should see a notification: USB for charging.  Touch it.  Select USB for file transfer.
-    * Download StoryProducer_v1.2.apk [here](https://drive.google.com/open?id=0Bw7whhMtjqJTY1dxM0UyOE1qREk) and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.  Then open Story Producer and close it.  (This will create the org.sil.storyproducer directory)
-    * Reboot the device (optional)
+    * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
     * Download the [template folders](https://drive.google.com/drive/folders/0Bw7whhMtjqJTVkljWlY0akZXeDg?usp=sharing) to your computer
-    * Copy the unzipped templates folder to your device under **Android/data/org.sil.storyproducer/files/**
-        * using an SD card to conserve space may be a good idea
-    * After you restart Story Producer, skip Registration, you should see the templates available. 
-        * If not, in the Template screen, you might need to tap the language icon in the top right corner to bring up a Change Language window with a drop down menu.  Tap the language you want and SAVE.
+    * Copy the unzipped templates folder to your usb card.  A good directory would be **\[thumb drive\]/SPWorkspace**
+    * Open Story Producer and select the "workspace" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
+    * Continue with registration and use the app!
