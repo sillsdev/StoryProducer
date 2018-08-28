@@ -7,7 +7,7 @@ import android.util.Log
 import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.nio.ByteBuffer
-import java.nio.ShortBuffer
+import kotlin.math.min
 
 /**
  *
@@ -15,8 +15,8 @@ import java.nio.ShortBuffer
  * which care about touching every output short.
  *
  *
- * The most important methods for a class overriding this class are [.loadSamplesForTime]
- * and [.getSampleForChannel]. [.loadSamplesForTime] will be called exactly
+ * The most important methods for a class overriding this class are [.loadSamples]
+ * and [.getSampleForChannel]. [.loadSamples] will be called exactly
  * once, in order, for each time step according to [.mSampleRate]. After each of these calls,
  * [.getSampleForChannel] will be called exactly once, in order, for each channel
  * according to [.mChannelCount].
@@ -46,9 +46,19 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
 
     protected var mSampleRate: Int = 0
     protected var mChannelCount: Int = 0
-    private var mSeekTime: Long = 0
+    protected var mAbsoluteSampleIndex = 0
+    protected val mSeekTime: Long get() {
+        if(mSampleRate == 0) return 0
+        return mAbsoluteSampleIndex * 1000000L / mSampleRate
+    }
 
-    private var mAbsoluteSampleIndex = 0
+    protected var mSource: PipedMediaByteBufferSource? = null
+    private val mInfo = MediaCodec.BufferInfo()
+    protected val srcBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
+    protected var srcPos: Int = 0
+    protected var srcEnd: Int = 0
+    protected val srcSamplesAvailable: Int get() {return srcEnd - srcPos}
+    protected var srcHasBuffer = false
 
     override fun getMediaType(): MediaHelper.MediaType {
         return MediaHelper.MediaType.AUDIO
@@ -96,70 +106,51 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
 
     @Throws(SourceClosedException::class)
     private fun spinInput() {
+        var durationNs: Long = 0
+        val info = MediaCodec.BufferInfo()
+
         if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.spinInput starting")
 
-        mNonvolatileIsDone = !loadSamplesForTime(mSeekTime)
-
         while (mComponentState != PipedMediaSource.State.CLOSED && !mIsDone) {
-            var durationNs: Long = 0
             if (MediaHelper.DEBUG) {
                 durationNs = -System.nanoTime()
             }
+            //Prepare outBuffer
             val outBuffer = mBufferQueue.getEmptyBuffer(MediaHelper.TIMEOUT_USEC)
-
             if (outBuffer == null) {
                 if (MediaHelper.VERBOSE)
                     Log.d(TAG, "$componentName.spinInput: empty buffer unavailable")
                 continue
             }
 
-            val info = MediaCodec.BufferInfo()
-
-            //reset output buffer
             outBuffer.clear()
-
-            //reset output buffer info
             info.set(0, 0, mSeekTime, 0)
-
-            //prepare a ShortBuffer view of the output buffer
             val outShortBuffer = MediaHelper.getShortBuffer(outBuffer)
+            val osbLength = outShortBuffer.remaining()
+            var osbPos = 0
 
-            val length = outShortBuffer.remaining()
-            var pos = 0
-
-            outShortBuffer.get(mShortBuffer, pos, length)
+            outShortBuffer.get(mShortBuffer, osbPos, osbLength)
             outShortBuffer.clear()
 
-            var iSample: Int
-            val sampleRateMultiplier = 1000000L / mSampleRate
-            iSample = 0
-            while (iSample < length) {
+            mNonvolatileIsDone = !loadSamples()
+
+            while ((osbPos < osbLength) && !mNonvolatileIsDone && srcHasBuffer) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
-                for (i in 0 until mChannelCount) {
-                    mShortBuffer[pos++] = getSampleForChannel(i)
+                val copyLength = min(osbLength-osbPos,srcSamplesAvailable)
+                while (osbPos < copyLength){
+                    mShortBuffer[osbPos++] = srcBuffer[srcPos++]
                 }
-
                 //Keep track of the current presentation time in the output audio stream.
-                mAbsoluteSampleIndex++
-                //get time from index
-                mSeekTime = mAbsoluteSampleIndex * sampleRateMultiplier
+                mAbsoluteSampleIndex += copyLength
 
                 //Give warning about new time
-                mNonvolatileIsDone = !loadSamplesForTime(mSeekTime)
-
-                //Break out only in exception case of exhausting source.
-                if (mNonvolatileIsDone) {
-                    //Since iSample is used outside the loop, count this last iteration.
-                    iSample += mChannelCount
-                    break
-                }
-                iSample += mChannelCount
+                mNonvolatileIsDone = !loadSamples()
             }
 
-            info.size = iSample * 2 //short = 2 bytes
+            info.size = osbPos * 2 //short = 2 bytes
 
-            outShortBuffer.put(mShortBuffer, 0, length)
+            outShortBuffer.put(mShortBuffer, 0, osbLength)
 
             //just to be sure
             outBuffer.position(info.offset)
@@ -187,27 +178,15 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
 
     /**
      *
-     * Get a sample for given a channel from the source media pipeline component using linear interpolation.
-     *
-     *
-     * Note: No two calls to this function will elicit information for the same state.
-     * @param channel
-     * @return
-     */
-    protected abstract fun getSampleForChannel(channel: Int): Short
-
-    /**
-     *
-     * Instruct the callee to prepare to provide samples for a given time.
+     * Instruct the callee to prepare to provide samples for a given mSeekTime.
      * Only this abstract base class should call this function.
      *
      *
      * Note: Sequential calls to this function will provide strictly increasing times.
-     * @param time
      * @return true if the component has more source input to process and false if [.spinInput] should finish
      */
     @Throws(SourceClosedException::class)
-    protected abstract fun loadSamplesForTime(time: Long): Boolean
+    protected abstract fun loadSamples(): Boolean
 
     /**
      *
@@ -254,6 +233,35 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
         if (sampleRate != 0 && sampleRate != format.getInteger(MediaFormat.KEY_SAMPLE_RATE)) {
             throw SourceUnacceptableException("Source audio sample rates don't match!")
         }
+    }
+
+    @Throws(SourceClosedException::class)
+    protected fun fetchSourceBuffer() {
+        if (mSource!!.isDone) {
+            srcHasBuffer = false
+            return
+        }
+
+        //buffer of bytes
+        val buffer = mSource!!.getBuffer(mInfo)
+        //buffer of shorts (16-bit samples)
+        val sBuffer = MediaHelper.getShortBuffer(buffer)
+
+        if (MediaHelper.VERBOSE) {
+            Log.v(TAG, "Received " + (if (buffer.isDirect) "direct" else "non-direct")
+                    + " buffer of size " + mInfo.size
+                    + " with" + (if (buffer.hasArray()) "" else "out") + " array")
+        }
+
+        srcPos = 0
+        srcEnd = sBuffer.remaining()
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        sBuffer.get(srcBuffer, srcPos, srcEnd)
+
+        //Release buffer since data was copied.
+        mSource!!.releaseBuffer(buffer)
+
+        srcHasBuffer = true
     }
 
     override fun close() {

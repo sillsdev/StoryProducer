@@ -28,7 +28,6 @@ class PipedAudioResampler
 
     private var mVolumeModifier = 1f
 
-    private var mSource: PipedMediaByteBufferSource? = null
     private var mSourceFormat: MediaFormat? = null
     private var mOutputFormat: MediaFormat? = null
 
@@ -44,16 +43,7 @@ class PipedAudioResampler
     //N.B. Starting at -1 ensures starting with right and left from source.
     private var mAbsoluteRightSampleIndex = -1
 
-    private val mSourceBufferA = ShortArray(SOURCE_BUFFER_CAPACITY / 2)
-    private var mHasBuffer = false
-
-    private var mSeekTime: Long = 0
-
-    private var mSourcePos: Int = 0
-
     private val mInfo = MediaCodec.BufferInfo()
-
-    private var mSourceSize: Int = 0
 
     init {
         mSampleRate = sampleRate
@@ -128,18 +118,21 @@ class PipedAudioResampler
         start()
     }
 
-    /**
-     *
-     * Get a sample for a given time and channel from the source media pipeline component using linear interpolation.
-     *
-     *
-     * Note: Sequential calls to this function must provide strictly increasing times.
-     * @param channel which channel to get sample for current time
-     * @return sample for current time and channel
-     */
-    override fun getSampleForChannel(channel: Int): Short {
+    @Throws(SourceClosedException::class)
+    override fun loadSamples(): Boolean {
+        var moreInput = true
+
+        //Move window forward until left and right appropriately surround the given time.
+        //N.B. Left is inclusive; right is exclusive.
+        while (mSeekTime >= mRightSeekTime) {
+            moreInput = advanceWindow()
+        }
+
+        /*
+        //FIXME!! You have to resample thw whole thing here and put the data into srcBuffer.
         val left: Short
         val right: Short
+        val channel = 0 //FIXME this should be all channels...
 
         if (mChannelCount == mSourceChannelCount) {
             left = mLeftSamples!![channel]
@@ -163,19 +156,7 @@ class PipedAudioResampler
 
             return (mVolumeModifier * interpolatedSample).toShort()
         }
-    }
-
-    @Throws(SourceClosedException::class)
-    override fun loadSamplesForTime(time: Long): Boolean {
-        var moreInput = true
-
-        mSeekTime = time
-
-        //Move window forward until left and right appropriately surround the given time.
-        //N.B. Left is inclusive; right is exclusive.
-        while (mSeekTime >= mRightSeekTime) {
-            moreInput = advanceWindow()
-        }
+        */
 
         return moreInput
     }
@@ -198,11 +179,11 @@ class PipedAudioResampler
         mAbsoluteRightSampleIndex++
         mRightSeekTime = getTimeFromIndex(mSourceSampleRate.toLong(), mAbsoluteRightSampleIndex)
 
-        while (mHasBuffer && mSourcePos >= mSourceSize) {
+        while (srcHasBuffer && srcPos >= srcEnd) {
             fetchSourceBuffer()
         }
         //If we hit the end of input, use 0 as the last right sample value.
-        if (!mHasBuffer) {
+        if (!srcHasBuffer) {
             isDone = true
 
             mSource!!.close()
@@ -214,8 +195,9 @@ class PipedAudioResampler
         } else {
             //Get right's values from the input buffer.
             for (i in 0 until mSourceChannelCount) {
+                //FIXME this is wrong!!
                 try {
-                    mRightSamples!![i] = mSourceBufferA[mSourcePos++]
+                    mRightSamples!![i] = srcBuffer[srcPos++]
                 } catch (e: ArrayIndexOutOfBoundsException) {
                     Log.e(TAG, "Tried to read beyond buffer", e)
                 }
@@ -224,37 +206,6 @@ class PipedAudioResampler
         }
 
         return !isDone
-    }
-
-    @Throws(SourceClosedException::class)
-    private fun fetchSourceBuffer() {
-        mHasBuffer = false
-
-        if (mSource!!.isDone) {
-            return
-        }
-
-        //buffer of bytes
-        val tempSourceBuffer = mSource!!.getBuffer(mInfo)
-
-        if (MediaHelper.VERBOSE) {
-            Log.v(TAG, "Received " + (if (tempSourceBuffer.isDirect) "direct" else "non-direct")
-                    + " buffer of size " + mInfo.size
-                    + " with" + (if (tempSourceBuffer.hasArray()) "" else "out") + " array")
-        }
-
-        //buffer of shorts (16-bit samples)
-        val tempShortBuffer = MediaHelper.getShortBuffer(tempSourceBuffer)
-
-        mSourcePos = 0
-        mSourceSize = tempShortBuffer.remaining()
-        //Copy ShortBuffer to array of shorts in hopes of speedup.
-        tempShortBuffer.get(mSourceBufferA, mSourcePos, mSourceSize)
-
-        //Release buffer since data was copied.
-        mSource!!.releaseBuffer(tempSourceBuffer)
-
-        mHasBuffer = true
     }
 
     override fun close() {

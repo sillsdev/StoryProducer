@@ -2,13 +2,13 @@ package org.sil.storyproducer.tools.media.pipe
 
 import android.media.MediaCodec
 import android.media.MediaFormat
+import android.util.Log
 
 import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.ShortBuffer
 import java.util.ArrayList
+import kotlin.math.min
 
 /**
  *
@@ -22,12 +22,11 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
     private var mOutputFormat: MediaFormat? = null
 
-    private val mSources = ArrayList<PipedMediaByteBufferSource>()
-    private val mSourceVolumeModifiers = ArrayList<Float>()
-
-    private val mSourceBufferAs = ArrayList<ShortArray>()
-    private val mSourcePos = ArrayList<Int>()
-    private val mSourceSizes = ArrayList<Int>()
+    private val mixSources = ArrayList<PipedMediaByteBufferSource>()
+    private val mixVolumeModifiers = ArrayList<Float>()
+    private val mixBuffers = ArrayList<ShortArray?>()
+    private val mixPoss = ArrayList<Int>()
+    private val mixEnds = ArrayList<Int>()
 
     private var mCurrentSample: ShortArray? = null
 
@@ -54,8 +53,8 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
             throw SourceUnacceptableException("Source cannot be null!")
         }
 
-        mSources.add(src)
-        mSourceVolumeModifiers.add(volumeModifier)
+        mixSources.add(src)
+        mixVolumeModifiers.add(volumeModifier)
     }
 
     @Throws(IOException::class, SourceUnacceptableException::class)
@@ -64,12 +63,12 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
             return
         }
 
-        if (mSources.isEmpty()) {
+        if (mixSources.isEmpty()) {
             throw SourceUnacceptableException("No sources specified!")
         }
 
-        for (i in mSources.indices) {
-            val source = mSources[i]
+        for (i in mixSources.indices) {
+            val source = mixSources[i]
             source.setup()
             validateSource(source, mChannelCount, mSampleRate)
 
@@ -81,9 +80,9 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
                 mSampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
             }
 
-            mSourceBufferAs.add(ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2))
-            mSourcePos.add(0)
-            mSourceSizes.add(0)
+            mixBuffers.add(ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2))
+            mixPoss.add(0)
+            mixEnds.add(0)
             try {
                 fetchSourceBuffer(i)
             } catch (e: SourceClosedException) {
@@ -104,58 +103,76 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         start()
     }
 
-    override fun getSampleForChannel(channel: Int): Short {
-        return mCurrentSample!![channel]
-    }
-
     @Throws(SourceClosedException::class)
-    override fun loadSamplesForTime(time: Long): Boolean {
+    override fun loadSamples(): Boolean {
         for (i in 0 until mChannelCount) {
             mCurrentSample!![i] = 0
         }
 
-        //Loop through all sources and add samples.
+        //Loop through all sources and fetch buffers if we need to
         var iSource = 0
-        while (iSource < mSources.size) {
-            var size = mSourceSizes[iSource]
-            var pos = mSourcePos[iSource]
-            var buffer: ShortArray? = mSourceBufferAs[iSource]
-            val volumeModifier = mSourceVolumeModifiers[iSource]
-            while (buffer != null && pos >= size) {
+        var allLength = 1000000
+        while (iSource < mixSources.size) {
+            if (mixPoss[iSource] >= mixEnds[iSource] && mixBuffers[iSource] != null) {
                 fetchSourceBuffer(iSource)
-
-                size = mSourceSizes[iSource]
-                pos = mSourcePos[iSource]
-                buffer = mSourceBufferAs[iSource]
             }
-            if (buffer != null) {
-                for (iChannel: Int in 0 until mChannelCount) {
-                    mCurrentSample!![iChannel] = (mCurrentSample!![iChannel] + buffer[pos++] * volumeModifier).toShort()
-                }
-                mSourcePos[iSource] = pos
-            } else {
+            //The source is depleted!
+            if (mixBuffers[iSource] == null) {
                 //Remove depleted sources from the lists.
-                mSources.removeAt(iSource)
-                mSourceBufferAs.removeAt(iSource)
-                mSourcePos.removeAt(iSource)
-                mSourceSizes.removeAt(iSource)
-
-                //Decrement iSource so that former source iSource + 1 is not skipped.
-                iSource--
+                mixSources.removeAt(iSource)
+                mixBuffers.removeAt(iSource)
+                mixPoss.removeAt(iSource)
+                mixEnds.removeAt(iSource)
+                continue
             }
+            allLength = min(allLength,mixEnds[iSource] - mixPoss[iSource])
             iSource++
         }
 
-        //If sources are all gone, this component is done.
-        return !mSources.isEmpty()
+        if(mixSources.isEmpty()) return false
+
+        //prep srcBuffer with the mixing of all channels available.
+
+        //do the first channel
+        //grab the buffer
+        var pos = mixPoss[0]
+        var buffer: ShortArray = mixBuffers[0]!!
+        var volumeModifier = mixVolumeModifiers[0]
+
+        //setup the data as a source.  Copy the buffer
+        for (index in 0 .. allLength){
+            srcBuffer[index] = (buffer[pos++] * volumeModifier).toShort()
+        }
+        mixPoss[0] = pos
+
+        //do all other channels
+        iSource = 1
+        while (iSource < mixSources.size) {
+            //grab the buffer
+            pos = mixPoss[iSource]
+            buffer = mixBuffers[iSource]!!
+            volumeModifier = mixVolumeModifiers[iSource]
+
+            //setup the data as a source.  Copy the buffer
+            for (index in 0 .. allLength){
+                srcBuffer[index] = (srcBuffer[index] + buffer[pos++] * volumeModifier).toShort()
+            }
+            mixPoss[iSource] = pos
+            iSource++
+        }
+
+        srcPos = 0
+        srcEnd = allLength
+
+        return true
     }
 
     @Throws(SourceClosedException::class)
-    private fun fetchSourceBuffer(sourceIndex: Int) {
-        val source = mSources[sourceIndex]
+    fun fetchSourceBuffer(sourceIndex: Int) {
+        val source = mixSources[sourceIndex]
         if (source.isDone) {
             source.close()
-            mSourceBufferAs.set(sourceIndex, ShortArray(0))
+            mixBuffers[sourceIndex] = null
             return
         }
 
@@ -164,12 +181,18 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         //buffer of shorts (16-bit samples)
         val sBuffer = MediaHelper.getShortBuffer(buffer)
 
+        if (MediaHelper.VERBOSE) {
+            Log.v(TAG, "Received " + (if (buffer.isDirect) "direct" else "non-direct")
+                    + " buffer of size " + mInfo.size
+                    + " with" + (if (buffer.hasArray()) "" else "out") + " array")
+        }
+
         val pos = 0
         val size = sBuffer.remaining()
         //Copy ShortBuffer to array of shorts in hopes of speedup.
-        sBuffer.get(mSourceBufferAs[sourceIndex], pos, size)
-        mSourcePos[sourceIndex] = pos
-        mSourceSizes[sourceIndex] = size
+        sBuffer.get(mixBuffers[sourceIndex], pos, size)
+        mixPoss[sourceIndex] = pos
+        mixEnds[sourceIndex] = size
 
         //Release buffer since data was copied.
         source.releaseBuffer(buffer)
@@ -177,8 +200,8 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
     override fun close() {
         super.close()
-        while (!mSources.isEmpty()) {
-            val source = mSources.removeAt(0)
+        while (!mixSources.isEmpty()) {
+            val source = mixSources.removeAt(0)
             source.close()
         }
     }

@@ -9,10 +9,9 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.ShortBuffer
 import java.util.LinkedList
-import java.util.Queue
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *
@@ -34,22 +33,18 @@ class PipedAudioConcatenator
     override val componentName: String = TAG
     private var mCurrentState = ConcatState.TRANSITION //start in transition
 
-    private val mSources = LinkedList<PipedMediaByteBufferSource>()
-    private val mSourceExpectedDurations = LinkedList<Long>()
+    private val catSources = LinkedList<PipedMediaByteBufferSource>()
+    private val catExpectedDurations = LinkedList<Long>()
 
     private var mFadeOutUs: Long = 0
+    private val fadeOutSamples: Int get() {return (mFadeOutUs * mSampleRate / 1000000L).toInt()}
 
-    private var mSource: PipedMediaByteBufferSource? = null //current source
+
     private var mSourceExpectedDuration: Long = 0 //current source expected duration (us)
 
     private var mTransitionStart: Long = 0 //timestamp (us) of current transition start
     private var mSourceStart: Long = 0 //timestamp (us) of current source start (i.e. after prior transition)
 
-    private val mSourceBufferA = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
-    private var mHasMoreBuffers = false
-
-    private var mPos: Int = 0
-    private var mSize: Int = 0
     private var mVolumeModifier: Float = 0.toFloat()
 
     private val mInfo = MediaCodec.BufferInfo()
@@ -63,10 +58,10 @@ class PipedAudioConcatenator
 
             var nextSource: PipedMediaByteBufferSource? = null
 
-            if (!mSources.isEmpty()) {
+            if (!catSources.isEmpty()) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "getNextSource source found")
 
-                nextSource = mSources.remove()
+                nextSource = catSources.remove()
                 if (nextSource == null) {
                     return null
                 }
@@ -75,7 +70,7 @@ class PipedAudioConcatenator
                     nextSource.setup()
 
                     nextSource = PipedAudioResampler.correctSampling(nextSource, mSampleRate, mChannelCount)
-                    nextSource!!.setup()
+                    nextSource.setup()
 
                     validateSource(nextSource)
                 } catch (e: IOException) {
@@ -116,7 +111,7 @@ class PipedAudioConcatenator
         return mOutputFormat
     }
 
-    fun numOfSources(): Int {return mSources.size}
+    fun numOfSources(): Int {return catSources.size}
 
     /**
      *
@@ -142,8 +137,8 @@ class PipedAudioConcatenator
      */
     @Throws(SourceUnacceptableException::class)
     fun addSource(source: PipedMediaByteBufferSource?, duration: Long) {
-        if(source!=null) mSources.add(source)
-        mSourceExpectedDurations.add(duration)
+        if(source!=null) catSources.add(source)
+        catExpectedDurations.add(duration)
     }
 
     /**
@@ -209,7 +204,7 @@ class PipedAudioConcatenator
             return
         }
 
-        if (mSources.isEmpty()) {
+        if (catSources.isEmpty()) {
             throw SourceUnacceptableException("No sources provided!")
         }
 
@@ -222,31 +217,36 @@ class PipedAudioConcatenator
         start()
     }
 
-    override fun getSampleForChannel(channel: Int): Short {
-        return if (mCurrentState == ConcatState.DATA) {
-            (mVolumeModifier * mSourceBufferA[mPos + channel]).toShort()
-        } else {
-            0
+    private fun zeroSourceBuffer(timeUntil: Long){
+        srcPos = 0
+        srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000L).toInt())
+        for(index in 0 .. srcEnd){
+            srcBuffer[index] = 0
         }
+        srcHasBuffer = true
     }
 
     @Throws(SourceClosedException::class)
-    override fun loadSamplesForTime(time: Long): Boolean {
+    override fun loadSamples(): Boolean {
         var isDone = false
-
-        //Reset volume modifier.
-        mVolumeModifier = 1f
 
         if (mCurrentState == ConcatState.TRANSITION) {
             var transitionUs = mTransitionUs
             //For pre-first-source and last source, make the transition half as long.
-            if (time <= mTransitionUs / 2 || mSources.isEmpty()) {
+            if (mSeekTime <= mTransitionUs / 2 || catSources.isEmpty()) {
                 transitionUs /= 2
             }
 
-            val transitionComplete = time > mTransitionStart + transitionUs
-            if (transitionComplete) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime transition complete!")
+
+            val transitionComplete = mSeekTime >= mTransitionStart + transitionUs
+            if (!transitionComplete){
+                //fill the buffer with blank data of a size until the transition is complete or
+                //the buffer is not large enough.
+                zeroSourceBuffer(mTransitionStart + transitionUs)
+                return true
+            } else {
+                //we are ready for some new data.  Load it up!
+                if (MediaHelper.VERBOSE) Log.v(TAG, "loadSamples transition complete!")
 
                 //Clear out the current source.
                 if (mSource != null) {
@@ -255,9 +255,9 @@ class PipedAudioConcatenator
                 }
 
                 //Reset these stats so fetchSourceBuffer loop will trigger.
-                mPos = 0
-                mSize = 0
-                mHasMoreBuffers = true
+                srcPos = 0
+                srcEnd = 0
+                srcHasBuffer = true
 
                 //Assume DATA state.
                 mCurrentState = ConcatState.DATA
@@ -265,44 +265,52 @@ class PipedAudioConcatenator
                 //Get a (valid) source or get to DONE state.
                 while (mSource == null && !isDone) {
                     //If sources are all gone, this component is done.
-                    if (mSources.isEmpty()) {
+                    if (catSources.isEmpty()) {
                         isDone = true
                         mCurrentState = ConcatState.DONE
                     } else {
                         mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs
 
                         mSource = nextSource
-                        mSourceExpectedDuration = mSourceExpectedDurations.remove()
+                        mSourceExpectedDuration = catExpectedDurations.remove()
                     }
                 }
 
-                if (!isDone && mSourceStart > time) {
+                if (!isDone && mSourceStart > mSeekTime) {
                     mCurrentState = ConcatState.BEFORE_SOURCE
                 }
             }
         }
 
-        if (mCurrentState == ConcatState.BEFORE_SOURCE && time >= mSourceStart) {
+        if(mSeekTime < mSourceStart){
+            //Before Start
+            zeroSourceBuffer(mSourceStart)
+            return true
+        }
+
+        if (mCurrentState == ConcatState.BEFORE_SOURCE) {
             mCurrentState = ConcatState.DATA
         }
 
         if (mCurrentState == ConcatState.DATA) {
-            mPos += mChannelCount
-
-            val sourceEnd = mSourceStart + mSourceExpectedDuration
-            val sourceRemainingDuration = sourceEnd - time
-
-            if (sourceRemainingDuration < mFadeOutUs) {
-                mVolumeModifier = sourceRemainingDuration / mFadeOutUs.toFloat()
-            }
-
-            while (mHasMoreBuffers && mPos >= mSize) {
+            if (srcHasBuffer && srcPos >= srcEnd) {
                 fetchSourceBuffer()
             }
-            val isWithinExpectedTime = mSourceExpectedDuration == 0L || time <= sourceEnd
 
-            if (!mHasMoreBuffers || !isWithinExpectedTime) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, "loadSamplesForTime starting transition")
+            //Only need to modify fadeout samples.
+            val sourceEnd = mSourceStart + mSourceExpectedDuration
+            val fadeOutStartTime = sourceEnd - mFadeOutUs
+            val fadeOutEndPos = max(srcPos,(sourceEnd * mSampleRate / 1000000L).toInt())
+            val fadeOutPos = max(srcPos,srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000L).toInt())
+            val fadeOutMult : Float = (1.0/fadeOutSamples).toFloat()
+
+            for (index in fadeOutPos .. srcEnd){
+                srcBuffer[index] = (srcBuffer[index] * (fadeOutEndPos - index)*fadeOutMult).toShort()
+            }
+
+            val isWithinExpectedTime = mSourceExpectedDuration == 0L || mSeekTime <= sourceEnd
+            if (!srcHasBuffer || !isWithinExpectedTime) {
+                if (MediaHelper.VERBOSE) Log.v(TAG, "loadSamples starting transition")
 
                 mCurrentState = ConcatState.TRANSITION
 
@@ -312,7 +320,7 @@ class PipedAudioConcatenator
 
                 //If no particular duration was expected, start transition now. Otherwise use precise time.
                 if (mSourceExpectedDuration == 0L) {
-                    mTransitionStart = time
+                    mTransitionStart = mSeekTime
                 } else {
                     mTransitionStart = sourceEnd
                 }
@@ -320,30 +328,6 @@ class PipedAudioConcatenator
         }
 
         return !isDone
-    }
-
-    @Throws(SourceClosedException::class)
-    private fun fetchSourceBuffer() {
-        mHasMoreBuffers = false
-
-        if (mSource!!.isDone) {
-            return
-        }
-
-        //buffer of bytes
-        val buffer = mSource!!.getBuffer(mInfo)
-        //buffer of shorts (16-bit samples)
-        val sBuffer = MediaHelper.getShortBuffer(buffer)
-
-        mPos = 0
-        mSize = sBuffer.remaining()
-        //Copy ShortBuffer to array of shorts in hopes of speedup.
-        sBuffer.get(mSourceBufferA, mPos, mSize)
-
-        //Release buffer since data was copied.
-        mSource!!.releaseBuffer(buffer)
-
-        mHasMoreBuffers = true
     }
 
     override fun close() {
