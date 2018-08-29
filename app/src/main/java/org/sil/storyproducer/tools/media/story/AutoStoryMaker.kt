@@ -297,7 +297,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         // parameters for the audio encoder
         private val AUDIO_MIME_TYPE = "audio/mp4a-latm" //MediaFormat.MIMETYPE_AUDIO_AAC;
-        private val AUDIO_SAMPLE_RATE = 48000
+        private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 

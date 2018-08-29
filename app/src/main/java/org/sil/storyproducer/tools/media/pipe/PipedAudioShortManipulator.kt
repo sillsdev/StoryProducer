@@ -134,7 +134,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
 
             if (srcSamplesAvailable == 0) mNonvolatileIsDone = !loadSamples()
 
-            while ((osbPos < osbLength) && !mNonvolatileIsDone && srcHasBuffer) {
+            while ((osbPos < osbLength) && !mNonvolatileIsDone) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
                 val copyLength = min(osbLength - osbPos, srcSamplesAvailable)
