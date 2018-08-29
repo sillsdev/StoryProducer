@@ -49,7 +49,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     protected var mAbsoluteSampleIndex = 0
     protected val mSeekTime: Long get() {
         if(mSampleRate == 0) return 0
-        return mAbsoluteSampleIndex * 1000000L / mSampleRate
+        return (mAbsoluteSampleIndex * 1000000.0 / mSampleRate).toLong()
     }
 
     protected var mSource: PipedMediaByteBufferSource? = null
@@ -187,21 +187,6 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
      */
     @Throws(SourceClosedException::class)
     protected abstract fun loadSamples(): Boolean
-
-    /**
-     *
-     * Get the sample time from the sample index given a sample rate.
-     *
-     *
-     * Note: This method provides more accurate timestamps than simply keeping track
-     * of the current timestamp and deltas.
-     * @param sampleRate
-     * @param index
-     * @return timestamp associated with index (in microseconds)
-     */
-    protected fun getTimeFromIndex(sampleRate: Long, index: Int): Long {
-        return index * 1000000L / sampleRate
-    }
 
     /**
      * Validate the source as raw audio against specified channel count and sample rate.

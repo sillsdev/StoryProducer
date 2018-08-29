@@ -28,7 +28,7 @@ public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
         if(mSourceFormat == null) {
             return null;
         }
-        return MediaHelper.getTypeFromFormat(mSourceFormat);
+        return MediaHelper.INSTANCE.getTypeFromFormat(mSourceFormat);
     }
 
     @Override

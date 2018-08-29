@@ -38,7 +38,7 @@ class PipedAudioResampler
     private var orgCumBufferEnd: Int = 0
     private val orgBufferEndTime: Long get() {
         if(mSourceSampleRate == 0) return 0
-        return orgCumBufferEnd * 1000000L / mSourceSampleRate
+        return (orgCumBufferEnd * 1000000.0 / mSourceSampleRate).toLong()
     }
     private var mSourceUsPerSample: Float = 0.toFloat()
     private var mSourceChannelCount: Int = 0
@@ -113,14 +113,6 @@ class PipedAudioResampler
             mRightSamples!![i] = 0
         }
 
-        //Get the first input buffer.
-        try {
-            fetchSourceBufferWithPrepend(ShortArray(0))
-        } catch (e: SourceClosedException) {
-            //This case should not happen.
-            throw SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e)
-        }
-
         mComponentState = PipedMediaSource.State.SETUP
 
         start()
@@ -128,71 +120,64 @@ class PipedAudioResampler
 
     @Throws(SourceClosedException::class)
     override fun loadSamples(): Boolean {
-        //Component is done if duration is exceeded.
-        if (!srcHasBuffer && srcPos >= srcEnd) {
+        //grab the last sample for interpolation before the first sample of the new data
+        val last = ShortArray(mSourceChannelCount)
+        var ch = 0
+        if(orgEnd > 0) { // don't populate if it is the first run through, where orgEnd == 0.
+            for (index in orgEnd - mSourceChannelCount until orgEnd) {
+                last[ch++] = orgBuffer[index]
+            }
+        }
+        val orgStartTime = orgBufferEndTime
+        //grab the new buffer into org buffer
+        //prepend the "last" samples.
+        fetchSourceBufferWithPrepend(last)
+        //There is no new data.  Return.
+        if (!srcHasBuffer) {
             mSource!!.close()
             mSource = null
             return false
         }
+        //Or, there is data.
+        //Find out how many interpolated samples we can actually make based on the available time.
+        srcPos = 0
+        srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000.0).toFloat()).toInt() * mChannelCount
 
-        if (srcHasBuffer && srcPos >= srcEnd) {
-            //grab the last sample for interpolation before the first sample of the new data
-            val last = ShortArray(mSourceChannelCount)
-            var ch = 0
-            for (index in srcEnd - mSourceChannelCount until srcEnd) {
-                last[ch++] = orgBuffer[index]
+        //convert all the samples
+        val relStartTime = mSeekTime - orgStartTime
+        val srMult = (1000000.0 / mSampleRate).toFloat()
+        val ssrMult = (mSourceSampleRate / 1000000.0).toFloat()
+        if (mChannelCount == 2 && mSourceChannelCount == 2) {
+            for (i in 0 until srcEnd) {
+                val cChannel = i % 2
+                val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
+                val si = floor(fSample).toInt() * 2 + cChannel  // first index
+                val sw = fSample - floor(fSample) //weight of second term
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toShort()
             }
-            val orgStartTime = orgBufferEndTime
-            //grab the new buffer into org buffer
-            //prepend the "last" samples.
-            fetchSourceBufferWithPrepend(last)
-            //There is no new data.  Return.
-            if (!srcHasBuffer) {
-                mSource!!.close()
-                mSource = null
-                return false
+        } else if (mChannelCount == 1 && mSourceChannelCount == 2) {
+            for (i in 0 until srcEnd) {
+                val fSample = (relStartTime + i * srMult) * ssrMult
+                val si = floor(fSample).toInt() * 2  // first index
+                val sw = fSample - floor(fSample) //weight of second term
+                srcBuffer[i] = (mVolumeModifier *
+                        ((orgBuffer[si] + orgBuffer[si + 2]) * (1 - sw) +
+                                (orgBuffer[si + 1] + orgBuffer[si + 3]) * sw) / 2.0).toShort()
             }
-            //Or, there is data.
-            //Find out how many interpolated samples we can actually make based on the available time.
-            srcPos = 0
-            srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000L).toFloat()).toInt() * mChannelCount
-
-            //convert all the samples
-            val relStartTime = mSeekTime - orgStartTime
-            val srMult = (1000000L / mSampleRate).toFloat()
-            val ssrMult = (mSourceSampleRate / 1000000L).toFloat()
-            if (mChannelCount == 2 && mSourceChannelCount == 2) {
-                for (i in 0 until srcEnd) {
-                    val cChannel = i % 2
-                    val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
-                    val si = floor(fSample).toInt() * 2 + cChannel  // first index
-                    val sw = fSample - floor(fSample) //weight of second term
-                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toShort()
-                }
-            } else if (mChannelCount == 1 && mSourceChannelCount == 2) {
-                for (i in 0 until srcEnd) {
-                    val fSample = (relStartTime + i * srMult) * ssrMult
-                    val si = floor(fSample).toInt() * 2  // first index
-                    val sw = fSample - floor(fSample) //weight of second term
-                    srcBuffer[i] = (mVolumeModifier *
-                            ((orgBuffer[si] + orgBuffer[si + 2]) * (1 - sw) +
-                                    (orgBuffer[si + 1] + orgBuffer[si + 3]) * sw) / 2.0).toShort()
-                }
-            } else if (mChannelCount == 2 && mSourceChannelCount == 1) {
-                for (i in 0 until srcEnd step 2) {
-                    val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
-                    val si = floor(fSample).toInt() // first index
-                    val sw = fSample - si //weight of second term
-                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
-                    srcBuffer[i + 1] = srcBuffer[i]
-                }
-            } else {//1,1
-                for (i in 0 until srcEnd) {
-                    val fSample = (relStartTime + i * srMult) * ssrMult
-                    val si = floor(fSample).toInt() // first index
-                    val sw = fSample - si //weight of second term
-                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
-                }
+        } else if (mChannelCount == 2 && mSourceChannelCount == 1) {
+            for (i in 0 until srcEnd step 2) {
+                val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
+                val si = floor(fSample).toInt() // first index
+                val sw = fSample - si //weight of second term
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
+                srcBuffer[i + 1] = srcBuffer[i]
+            }
+        } else {//1,1
+            for (i in 0 until srcEnd) {
+                val fSample = (relStartTime + i * srMult) * ssrMult
+                val si = floor(fSample).toInt() // first index
+                val sw = fSample - si //weight of second term
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
             }
         }
         return true
@@ -221,13 +206,13 @@ class PipedAudioResampler
 
         orgPos = prependSamples.size
         orgEnd = sBuffer.remaining() + prependSamples.size
+        orgCumBufferEnd += sBuffer.remaining()
         //Copy ShortBuffer to array of shorts in hopes of speedup.
-        sBuffer.get(orgBuffer, orgPos, orgEnd)
+        sBuffer.get(orgBuffer, orgPos, sBuffer.remaining())
 
         //Release buffer since data was copied.
         mSource!!.releaseBuffer(buffer)
 
-        orgCumBufferEnd += orgEnd - orgPos
 
         srcHasBuffer = true
     }

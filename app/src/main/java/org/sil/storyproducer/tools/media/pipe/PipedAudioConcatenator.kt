@@ -37,7 +37,7 @@ class PipedAudioConcatenator
     private val catExpectedDurations = LinkedList<Long>()
 
     private var mFadeOutUs: Long = 0
-    private val fadeOutSamples: Int get() {return (mFadeOutUs * mSampleRate / 1000000L).toInt()}
+    private val fadeOutSamples: Int get() {return (mFadeOutUs * mSampleRate / 1000000.0).toInt()}
 
 
     private var mSourceExpectedDuration: Long = 0 //current source expected duration (us)
@@ -186,7 +186,7 @@ class PipedAudioConcatenator
     @Throws(SourceUnacceptableException::class)
     fun addLoopingSourcePath(sourcePath: String?, duration: Long) {
         if (sourcePath != null) {
-            val sourceDuration: Long = MediaHelper.getAudioDuration(context,getStoryUri(sourcePath))
+            val sourceDuration: Long = MediaHelper.getAudioDuration(context,getStoryUri(sourcePath)!!)
             if (sourceDuration < duration) {
                 //Only add a looper if necessary
                 addSource(PipedAudioLooper(context,sourcePath, duration), duration)
@@ -219,7 +219,7 @@ class PipedAudioConcatenator
 
     private fun zeroSourceBuffer(timeUntil: Long){
         srcPos = 0
-        srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000L).toInt())
+        srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000.0).toInt())
         for(index in 0 until srcEnd){
             srcBuffer[index] = 0
         }
@@ -300,8 +300,8 @@ class PipedAudioConcatenator
             //Only need to modify fadeout samples.
             val sourceEnd = mSourceStart + mSourceExpectedDuration
             val fadeOutStartTime = sourceEnd - mFadeOutUs
-            val fadeOutEndPos = max(srcPos,(sourceEnd * mSampleRate / 1000000L).toInt())
-            val fadeOutPos = max(srcPos,srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000L).toInt())
+            val fadeOutEndPos = max(srcPos,(sourceEnd * mSampleRate / 1000000.0).toInt())
+            val fadeOutPos = max(srcPos,srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
             val fadeOutMult : Float = (1.0/fadeOutSamples).toFloat()
 
             for (index in fadeOutPos until srcEnd){

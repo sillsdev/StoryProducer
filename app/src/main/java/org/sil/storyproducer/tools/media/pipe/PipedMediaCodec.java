@@ -111,7 +111,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         //If actually trying to get a buffer and we cached the buffer, return buffer from cache.
         if(!getFormat && !mBuffersBeforeFormat.isEmpty()) {
             MediaBuffer tempBuffer = mBuffersBeforeFormat.remove();
-            MediaHelper.copyBufferInfo(tempBuffer.info, info);
+            MediaHelper.INSTANCE.copyBufferInfo(tempBuffer.info, info);
             return tempBuffer.buffer;
         }
 
@@ -122,17 +122,17 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 throw new SourceClosedException();
             }
             int pollCode = mCodec.dequeueOutputBuffer(
-                        info, MediaHelper.TIMEOUT_USEC);
+                        info, MediaHelper.INSTANCE.getTIMEOUT_USEC());
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: no output buffer");
+                if (MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".pullBuffer: no output buffer");
                 //Do nothing.
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (MediaHelper.DEBUG) Log.d(TAG, getComponentName() + ".pullBuffer: output buffers changed");
+                if (MediaHelper.INSTANCE.getDEBUG()) Log.d(TAG, getComponentName() + ".pullBuffer: output buffers changed");
                 mOutputBuffers = mCodec.getOutputBuffers();
             }
             else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: output format changed");
+                if (MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".pullBuffer: output format changed");
                 if (mOutputFormat != null) {
                     throw new RuntimeException("changed output format again?");
                 }
@@ -145,7 +145,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 Log.w(TAG, getComponentName() + ".pullBuffer: unrecognized pollCode");
             }
             else if((info.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0){
-                if (MediaHelper.DEBUG) Log.d(TAG, getComponentName() + ".pullBuffer: codec config buffer");
+                if (MediaHelper.INSTANCE.getDEBUG()) Log.d(TAG, getComponentName() + ".pullBuffer: codec config buffer");
                 //Note: Perhaps these buffers should not be ignored in the future.
                 // Simply ignore codec config buffers.
                 mCodec.releaseOutputBuffer(pollCode, false);
@@ -154,7 +154,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                 ByteBuffer buffer = mOutputBuffers[pollCode];
 
                 if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".pullBuffer: EOS");
+                    if (MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".pullBuffer: EOS");
                     mIsDone = true;
                 }
                 else {
@@ -163,18 +163,18 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
                     buffer.limit(info.offset + info.size);
                 }
 
-                if (MediaHelper.DEBUG) {
+                if (MediaHelper.INSTANCE.getDEBUG()) {
                     durationNs += System.nanoTime();
                     double sec = durationNs / 1E9;
                     Log.d(TAG, getComponentName() + ".pullBuffer: return output buffer after "
-                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
+                            + MediaHelper.INSTANCE.getDecimal(sec) + " seconds: " + pollCode
                             + " of size " + info.size + " for time " + info.presentationTimeUs);
                 }
 
                 //If trying to get the format, save the buffer for later and don't return it.
                 if(getFormat) {
                     MediaCodec.BufferInfo tempInfo = new MediaCodec.BufferInfo();
-                    MediaHelper.copyBufferInfo(info, tempInfo);
+                    MediaHelper.INSTANCE.copyBufferInfo(info, tempInfo);
                     mBuffersBeforeFormat.add(new MediaBuffer(buffer, tempInfo));
                 }
                 else {
@@ -213,7 +213,7 @@ public abstract class PipedMediaCodec implements PipedMediaByteBufferSource {
         //Wait for two times the length of the timeout in the pullBuffer loop to ensure the codec
         //stops being used.
         try {
-            Thread.sleep((long) (MediaHelper.TIMEOUT_USEC * 2 / 1E6) + 1);
+            Thread.sleep((long) (MediaHelper.INSTANCE.getTIMEOUT_USEC() * 2 / 1E6) + 1);
         } catch (InterruptedException e) {
             Log.w(TAG, "sleep interrupted", e);
         }

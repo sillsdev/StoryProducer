@@ -31,18 +31,18 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
             throw new RuntimeException("No source specified for encoder!");
         }
 
-        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput starting");
+        if(MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".spinInput starting");
 
         while(mComponentState != State.CLOSED && !mSource.isDone()) {
-            int pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC);
+            int pollCode = mCodec.dequeueInputBuffer(MediaHelper.INSTANCE.getTIMEOUT_USEC());
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput: no input buffer");
+                if (MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".spinInput: no input buffer");
                 //Do nothing.
             } else {
-                if (MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput: returned input buffer: " + pollCode);
+                if (MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".spinInput: returned input buffer: " + pollCode);
 
-                long durationNs;
-                if(MediaHelper.DEBUG) {
+                long durationNs = 0;
+                if(MediaHelper.INSTANCE.getDEBUG()) {
                     durationNs = -System.nanoTime();
                 }
 
@@ -50,17 +50,17 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
                 mSource.fillBuffer(inputBuffer, mInfo);
                 mCodec.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags);
 
-                if (MediaHelper.DEBUG) {
+                if (MediaHelper.INSTANCE.getDEBUG()) {
                     durationNs += System.nanoTime();
                     double sec = durationNs / 1E9;
                     Log.d(TAG, getComponentName() + ".spinInput: fill/queue input buffer after "
-                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
+                            + MediaHelper.INSTANCE.getDecimal(sec) + " seconds: " + pollCode
                             + " of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
                 }
             }
         }
 
-        if(MediaHelper.VERBOSE) Log.v(TAG, getComponentName() + ".spinInput complete!");
+        if(MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".spinInput complete!");
 
         mSource.close();
     }

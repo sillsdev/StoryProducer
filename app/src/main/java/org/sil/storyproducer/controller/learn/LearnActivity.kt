@@ -119,7 +119,7 @@ class LearnActivity : PhaseBaseActivity() {
         for (k in 0 until story.slides.size) {
             if(story.slides[k].musicFile != ""){
                 val uri = getStoryUri(story.slides[k].musicFile,story.title)
-                audioStartValue += (MediaHelper.getAudioDuration(this,uri) / 1000).toInt()
+                audioStartValue += (MediaHelper.getAudioDuration(this,uri!!) / 1000).toInt()
             }
             backgroundAudioJumps.add(k, audioStartValue)
         }

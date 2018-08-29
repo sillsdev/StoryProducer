@@ -29,7 +29,7 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
 
     @Override
     public MediaHelper.MediaType getMediaType() {
-        return MediaHelper.getTypeFromFormat(mConfigureFormat);
+        return MediaHelper.INSTANCE.getTypeFromFormat(mConfigureFormat);
     }
 
     @Override
@@ -42,20 +42,20 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         mSourceFormat = mSource.getOutputFormat();
 
         //audio keys
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_SAMPLE_RATE);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_SAMPLE_RATE);
 
         //video keys
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
-        MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_WIDTH);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_HEIGHT);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_COLOR_FORMAT);
+        MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_FRAME_RATE);
         //TODO: worry about KEY_CAPTURE_RATE being API 21+
         //TODO This may be why the video playback is not synced with newer phones.
         //MediaHelper.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CAPTURE_RATE);
 
         //encoder input buffers are too small, by default, to handle some decoder output buffers
-        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.MAX_INPUT_BUFFER_SIZE);
+        mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.INSTANCE.getMAX_INPUT_BUFFER_SIZE());
 
         mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
         mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);

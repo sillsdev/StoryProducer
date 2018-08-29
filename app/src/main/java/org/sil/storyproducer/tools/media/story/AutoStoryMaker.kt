@@ -228,7 +228,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 text = slide.translatedContent
             }
 
-            val duration = MediaHelper.getAudioDuration(context, getStoryUri(audio))
+            val duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
 
             pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
             iSlide++

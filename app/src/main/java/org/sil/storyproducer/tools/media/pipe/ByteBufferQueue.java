@@ -100,7 +100,7 @@ public class ByteBufferQueue {
         try {
             while(mb == null) {
                 mb = mFilledBuffers.poll(1, TimeUnit.SECONDS);
-                if(MediaHelper.VERBOSE && mb == null) {
+                if(MediaHelper.INSTANCE.getVERBOSE() && mb == null) {
                     Log.d(TAG, "filled buffer unavailable");
                 }
             }
@@ -108,7 +108,7 @@ public class ByteBufferQueue {
             Log.e(TAG, "interrupted while getting filled buffer", e);
             return null;
         }
-        MediaHelper.copyBufferInfo(mb.info, info);
+        MediaHelper.INSTANCE.copyBufferInfo(mb.info, info);
         return mb.buffer;
     }
 
