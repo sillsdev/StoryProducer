@@ -106,12 +106,12 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
 
     @Throws(SourceClosedException::class)
     private fun spinInput() {
-        var durationNs: Long = 0
-        val info = MediaCodec.BufferInfo()
 
         if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.spinInput starting")
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mIsDone) {
+            var durationNs: Long = 0
+            val info = MediaCodec.BufferInfo()
             if (MediaHelper.DEBUG) {
                 durationNs = -System.nanoTime()
             }
@@ -132,20 +132,20 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
             outShortBuffer.get(mShortBuffer, osbPos, osbLength)
             outShortBuffer.clear()
 
-            mNonvolatileIsDone = !loadSamples()
+            if (srcSamplesAvailable == 0) mNonvolatileIsDone = !loadSamples()
 
             while ((osbPos < osbLength) && !mNonvolatileIsDone && srcHasBuffer) {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
-                val copyLength = min(osbLength-osbPos,srcSamplesAvailable)
-                while (osbPos < copyLength){
+                val copyLength = min(osbLength - osbPos, srcSamplesAvailable)
+                val obsEndCopy = osbPos + copyLength
+                while (osbPos < obsEndCopy) {
                     mShortBuffer[osbPos++] = srcBuffer[srcPos++]
                 }
                 //Keep track of the current presentation time in the output audio stream.
                 mAbsoluteSampleIndex += copyLength
 
-                //Give warning about new time
-                mNonvolatileIsDone = !loadSamples()
+                if (srcSamplesAvailable == 0) mNonvolatileIsDone = !loadSamples()
             }
 
             info.size = osbPos * 2 //short = 2 bytes

@@ -40,6 +40,8 @@ class PipedAudioResampler
         if(mSourceSampleRate == 0) return 0
         return (orgCumBufferEnd * 1000000.0 / mSourceSampleRate).toLong()
     }
+    private var orgBufferStartTime: Long = 0
+
     private var mSourceUsPerSample: Float = 0.toFloat()
     private var mSourceChannelCount: Int = 0
 
@@ -128,7 +130,6 @@ class PipedAudioResampler
                 last[ch++] = orgBuffer[index]
             }
         }
-        val orgStartTime = orgBufferEndTime
         //grab the new buffer into org buffer
         //prepend the "last" samples.
         fetchSourceBufferWithPrepend(last)
@@ -140,11 +141,12 @@ class PipedAudioResampler
         }
         //Or, there is data.
         //Find out how many interpolated samples we can actually make based on the available time.
+        //add one to capture the last element.
         srcPos = 0
-        srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000.0).toFloat()).toInt() * mChannelCount
+        srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000.0 + 1).toFloat()).toInt() * mChannelCount
 
         //convert all the samples
-        val relStartTime = mSeekTime - orgStartTime
+        val relStartTime = mSeekTime - orgBufferStartTime
         val srMult = (1000000.0 / mSampleRate).toFloat()
         val ssrMult = (mSourceSampleRate / 1000000.0).toFloat()
         if (mChannelCount == 2 && mSourceChannelCount == 2) {
@@ -204,6 +206,7 @@ class PipedAudioResampler
         for (i in 0 until prependSamples.size)
             orgBuffer[i] = prependSamples[i]
 
+        orgBufferStartTime = orgBufferEndTime
         orgPos = prependSamples.size
         orgEnd = sBuffer.remaining() + prependSamples.size
         orgCumBufferEnd += sBuffer.remaining()

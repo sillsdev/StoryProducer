@@ -218,7 +218,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     }
 
     override fun close() {
-        //Do nothing.
+        bitmaps.clear()
     }
 
     companion object {

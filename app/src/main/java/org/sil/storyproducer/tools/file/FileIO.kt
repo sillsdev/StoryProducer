@@ -149,6 +149,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         if(mType == "") {
             mType = when (File(uri.path).extension) {
                 "json" -> "application/json"
+                //todo - use m4p.
                 "mp3"  -> "audio/x-mp3"
                 "wav" -> "audio/w-wav"
                 "txt" -> "plain/text"
