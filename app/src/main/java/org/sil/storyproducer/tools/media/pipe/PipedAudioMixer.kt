@@ -140,7 +140,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         var volumeModifier = mixVolumeModifiers[0]
 
         //setup the data as a source.  Copy the buffer
-        for (index in 0 .. allLength){
+        for (index in 0 until allLength){
             srcBuffer[index] = (buffer[pos++] * volumeModifier).toShort()
         }
         mixPoss[0] = pos
@@ -154,7 +154,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
             volumeModifier = mixVolumeModifiers[iSource]
 
             //setup the data as a source.  Copy the buffer
-            for (index in 0 .. allLength){
+            for (index in 0 until allLength){
                 srcBuffer[index] = (srcBuffer[index] + buffer[pos++] * volumeModifier).toShort()
             }
             mixPoss[iSource] = pos

@@ -236,7 +236,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     }
 
     @Throws(SourceClosedException::class)
-    protected fun fetchSourceBuffer() {
+    open fun fetchSourceBuffer() {
         if (mSource!!.isDone) {
             srcHasBuffer = false
             return
@@ -275,6 +275,10 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
             }
 
             mThread = null
+        }
+        if (mSource != null) {
+            mSource!!.close()
+            mSource = null
         }
     }
 

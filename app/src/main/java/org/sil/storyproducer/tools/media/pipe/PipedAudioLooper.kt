@@ -77,8 +77,7 @@ class PipedAudioLooper
             return false
         }
 
-        while (srcHasBuffer && srcPos >= srcEnd) {
-            releaseSourceBuffer()
+        if (srcHasBuffer && srcPos >= srcEnd) {
             fetchSourceBuffer()
         }
         if (!srcHasBuffer) {
@@ -103,18 +102,6 @@ class PipedAudioLooper
         }
 
         return true
-    }
-
-    private fun releaseSourceBuffer() {
-        srcHasBuffer = false
-    }
-
-    override fun close() {
-        super.close()
-        if (mSource != null) {
-            mSource!!.close()
-            mSource = null
-        }
     }
 
     companion object {

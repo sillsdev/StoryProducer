@@ -220,7 +220,7 @@ class PipedAudioConcatenator
     private fun zeroSourceBuffer(timeUntil: Long){
         srcPos = 0
         srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000L).toInt())
-        for(index in 0 .. srcEnd){
+        for(index in 0 until srcEnd){
             srcBuffer[index] = 0
         }
         srcHasBuffer = true
@@ -304,7 +304,7 @@ class PipedAudioConcatenator
             val fadeOutPos = max(srcPos,srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000L).toInt())
             val fadeOutMult : Float = (1.0/fadeOutSamples).toFloat()
 
-            for (index in fadeOutPos .. srcEnd){
+            for (index in fadeOutPos until srcEnd){
                 srcBuffer[index] = (srcBuffer[index] * (fadeOutEndPos - index)*fadeOutMult).toShort()
             }
 
@@ -328,14 +328,6 @@ class PipedAudioConcatenator
         }
 
         return !isDone
-    }
-
-    override fun close() {
-        super.close()
-        if (mSource != null) {
-            mSource!!.close()
-            mSource = null
-        }
     }
 
     companion object {

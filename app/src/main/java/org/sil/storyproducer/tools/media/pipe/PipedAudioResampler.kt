@@ -7,8 +7,8 @@ import android.util.Log
 import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.nio.ShortBuffer
+import kotlin.math.floor
+import kotlin.math.truncate
 
 /**
  *
@@ -31,7 +31,15 @@ class PipedAudioResampler
     private var mSourceFormat: MediaFormat? = null
     private var mOutputFormat: MediaFormat? = null
 
+    protected val orgBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
+    protected var orgPos: Int = 0
+    protected var orgEnd: Int = 0
     private var mSourceSampleRate: Int = 0
+    private var orgCumBufferEnd: Int = 0
+    private val orgBufferEndTime: Long get() {
+        if(mSourceSampleRate == 0) return 0
+        return orgCumBufferEnd * 1000000L / mSourceSampleRate
+    }
     private var mSourceUsPerSample: Float = 0.toFloat()
     private var mSourceChannelCount: Int = 0
 
@@ -107,7 +115,7 @@ class PipedAudioResampler
 
         //Get the first input buffer.
         try {
-            fetchSourceBuffer()
+            fetchSourceBufferWithPrepend(ShortArray(0))
         } catch (e: SourceClosedException) {
             //This case should not happen.
             throw SourceUnacceptableException("First fetchSourceBuffer failed! Strange", e)
@@ -120,100 +128,108 @@ class PipedAudioResampler
 
     @Throws(SourceClosedException::class)
     override fun loadSamples(): Boolean {
-        var moreInput = true
-
-        //Move window forward until left and right appropriately surround the given time.
-        //N.B. Left is inclusive; right is exclusive.
-        while (mSeekTime >= mRightSeekTime) {
-            moreInput = advanceWindow()
-        }
-
-        /*
-        //FIXME!! You have to resample thw whole thing here and put the data into srcBuffer.
-        val left: Short
-        val right: Short
-        val channel = 0 //FIXME this should be all channels...
-
-        if (mChannelCount == mSourceChannelCount) {
-            left = mLeftSamples!![channel]
-            right = mRightSamples!![channel]
-        } else if (mChannelCount == 1/* && mSourceChannelCount == 2*/) {
-            left = (mLeftSamples!![0] / 2 + mLeftSamples!![1] / 2).toShort()
-            right = (mRightSamples!![0] / 2 + mRightSamples!![1] / 2).toShort()
-        } else { //mChannelCount == 2 && mSourceChannelCount == 1
-            left = mLeftSamples!![0]
-            right = mRightSamples!![0]
-        }
-
-        if (mSeekTime == mLeftSeekTime) {
-            return left
-        } else {
-            //Perform linear interpolation.
-            val rightWeight = (mSeekTime - mLeftSeekTime) / mSourceUsPerSample
-            val leftWeight = 1 - rightWeight
-
-            val interpolatedSample = ((leftWeight * left).toShort() + (rightWeight * right).toShort()).toShort()
-
-            return (mVolumeModifier * interpolatedSample).toShort()
-        }
-        */
-
-        return moreInput
-    }
-
-    /**
-     * Slide the window forward by one sample.
-     */
-    @Throws(SourceClosedException::class)
-    private fun advanceWindow(): Boolean {
-        var isDone = false
-
-        //Set left's values to be right's current values.
-        val temp = mLeftSamples
-        mLeftSamples = mRightSamples
-        mRightSamples = temp
-
-        mLeftSeekTime = mRightSeekTime
-
-        //Update right's time.
-        mAbsoluteRightSampleIndex++
-        mRightSeekTime = getTimeFromIndex(mSourceSampleRate.toLong(), mAbsoluteRightSampleIndex)
-
-        while (srcHasBuffer && srcPos >= srcEnd) {
-            fetchSourceBuffer()
-        }
-        //If we hit the end of input, use 0 as the last right sample value.
-        if (!srcHasBuffer) {
-            isDone = true
-
+        //Component is done if duration is exceeded.
+        if (!srcHasBuffer && srcPos >= srcEnd) {
             mSource!!.close()
             mSource = null
+            return false
+        }
 
-            for (i in 0 until mSourceChannelCount) {
-                mRightSamples!![i] = 0
+        if (srcHasBuffer && srcPos >= srcEnd) {
+            //grab the last sample for interpolation before the first sample of the new data
+            val last = ShortArray(mSourceChannelCount)
+            var ch = 0
+            for (index in srcEnd - mSourceChannelCount until srcEnd) {
+                last[ch++] = orgBuffer[index]
             }
-        } else {
-            //Get right's values from the input buffer.
-            for (i in 0 until mSourceChannelCount) {
-                //FIXME this is wrong!!
-                try {
-                    mRightSamples!![i] = srcBuffer[srcPos++]
-                } catch (e: ArrayIndexOutOfBoundsException) {
-                    Log.e(TAG, "Tried to read beyond buffer", e)
+            val orgStartTime = orgBufferEndTime
+            //grab the new buffer into org buffer
+            //prepend the "last" samples.
+            fetchSourceBufferWithPrepend(last)
+            //There is no new data.  Return.
+            if (!srcHasBuffer) {
+                mSource!!.close()
+                mSource = null
+                return false
+            }
+            //Or, there is data.
+            //Find out how many interpolated samples we can actually make based on the available time.
+            srcPos = 0
+            srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000L).toFloat()).toInt() * mChannelCount
+
+            //convert all the samples
+            val relStartTime = mSeekTime - orgStartTime
+            val srMult = (1000000L / mSampleRate).toFloat()
+            val ssrMult = (mSourceSampleRate / 1000000L).toFloat()
+            if (mChannelCount == 2 && mSourceChannelCount == 2) {
+                for (i in 0 until srcEnd) {
+                    val cChannel = i % 2
+                    val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
+                    val si = floor(fSample).toInt() * 2 + cChannel  // first index
+                    val sw = fSample - floor(fSample) //weight of second term
+                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toShort()
                 }
-
+            } else if (mChannelCount == 1 && mSourceChannelCount == 2) {
+                for (i in 0 until srcEnd) {
+                    val fSample = (relStartTime + i * srMult) * ssrMult
+                    val si = floor(fSample).toInt() * 2  // first index
+                    val sw = fSample - floor(fSample) //weight of second term
+                    srcBuffer[i] = (mVolumeModifier *
+                            ((orgBuffer[si] + orgBuffer[si + 2]) * (1 - sw) +
+                                    (orgBuffer[si + 1] + orgBuffer[si + 3]) * sw) / 2.0).toShort()
+                }
+            } else if (mChannelCount == 2 && mSourceChannelCount == 1) {
+                for (i in 0 until srcEnd step 2) {
+                    val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
+                    val si = floor(fSample).toInt() // first index
+                    val sw = fSample - si //weight of second term
+                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
+                    srcBuffer[i + 1] = srcBuffer[i]
+                }
+            } else {//1,1
+                for (i in 0 until srcEnd) {
+                    val fSample = (relStartTime + i * srMult) * ssrMult
+                    val si = floor(fSample).toInt() // first index
+                    val sw = fSample - si //weight of second term
+                    srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
+                }
             }
         }
-
-        return !isDone
+        return true
     }
 
-    override fun close() {
-        super.close()
-        if (mSource != null) {
-            mSource!!.close()
-            mSource = null
+    @Throws(SourceClosedException::class)
+    fun fetchSourceBufferWithPrepend(prependSamples : ShortArray) {
+        if (mSource!!.isDone) {
+            srcHasBuffer = false
+            return
         }
+
+        //buffer of bytes
+        val buffer = mSource!!.getBuffer(mInfo)
+        //buffer of shorts (16-bit samples)
+        val sBuffer = MediaHelper.getShortBuffer(buffer)
+
+        if (MediaHelper.VERBOSE) {
+            Log.v(TAG, "Received " + (if (buffer.isDirect) "direct" else "non-direct")
+                    + " buffer of size " + mInfo.size
+                    + " with" + (if (buffer.hasArray()) "" else "out") + " array")
+        }
+
+        for (i in 0 until prependSamples.size)
+            orgBuffer[i] = prependSamples[i]
+
+        orgPos = prependSamples.size
+        orgEnd = sBuffer.remaining() + prependSamples.size
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        sBuffer.get(orgBuffer, orgPos, orgEnd)
+
+        //Release buffer since data was copied.
+        mSource!!.releaseBuffer(buffer)
+
+        orgCumBufferEnd += orgEnd - orgPos
+
+        srcHasBuffer = true
     }
 
     companion object {
