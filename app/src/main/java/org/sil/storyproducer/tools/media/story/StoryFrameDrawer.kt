@@ -168,6 +168,13 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
                     nextOffsetUs / nextSlideTransitionUs.toFloat(), mNextTextOverlay)
         }
 
+        //clear image cache to save memory.
+        if(mCurrentSlideIndex >= 1) {
+            if (bitmaps.containsKey(mPages[mCurrentSlideIndex - 1].imRelPath)) {
+                bitmaps.remove(mPages[mCurrentSlideIndex - 1].imRelPath)
+            }
+        }
+
         mCurrentFrame++
 
         return currentTimeUs
