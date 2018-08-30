@@ -8,7 +8,6 @@ import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
 import kotlin.math.floor
-import kotlin.math.truncate
 
 /**
  *
@@ -28,30 +27,20 @@ class PipedAudioResampler
 
     private var mVolumeModifier = 1f
 
-    private var mSourceFormat: MediaFormat? = null
     private var mOutputFormat: MediaFormat? = null
 
+    private var orgFormat: MediaFormat? = null
     protected val orgBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
     protected var orgPos: Int = 0
     protected var orgEnd: Int = 0
-    private var mSourceSampleRate: Int = 0
+    private var orgSampleRate: Int = 0
     private var orgCumBufferEnd: Int = 0
+    private var orgChannelCount: Int = 0
     private val orgBufferEndTime: Long get() {
-        if(mSourceSampleRate == 0) return 0
-        return (orgCumBufferEnd * 1000000.0 / mSourceSampleRate).toLong()
+        if(orgSampleRate == 0) return 0
+        return (orgCumBufferEnd * 1000000.0 / orgSampleRate / orgChannelCount).toLong()
     }
     private var orgBufferStartTime: Long = 0
-
-    private var mSourceUsPerSample: Float = 0.toFloat()
-    private var mSourceChannelCount: Int = 0
-
-    //variables for our sliding window of source data
-    private var mLeftSamples: ShortArray? = null
-    private var mRightSamples: ShortArray? = null
-    private var mLeftSeekTime: Long = 0
-    private var mRightSeekTime: Long = 0
-    //N.B. Starting at -1 ensures starting with right and left from source.
-    private var mAbsoluteRightSampleIndex = -1
 
     private val mInfo = MediaCodec.BufferInfo()
 
@@ -94,26 +83,17 @@ class PipedAudioResampler
 
         validateSource(mSource!!, 0, 0)
 
-        mSourceFormat = mSource!!.outputFormat
-        mSourceSampleRate = mSourceFormat!!.getInteger(MediaFormat.KEY_SAMPLE_RATE)
-        mSourceUsPerSample = 1000000f / mSourceSampleRate //1000000 us/s
-        mSourceChannelCount = mSourceFormat!!.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
+        orgFormat = mSource!!.outputFormat
+        orgSampleRate = orgFormat!!.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+        orgChannelCount = orgFormat!!.getInteger(MediaFormat.KEY_CHANNEL_COUNT)
 
         if (mChannelCount == 0) {
-            mChannelCount = mSourceChannelCount
+            mChannelCount = orgChannelCount
         }
 
         mOutputFormat = MediaHelper.createFormat(MediaHelper.MIMETYPE_RAW_AUDIO)
         mOutputFormat!!.setInteger(MediaFormat.KEY_SAMPLE_RATE, mSampleRate)
         mOutputFormat!!.setInteger(MediaFormat.KEY_CHANNEL_COUNT, mChannelCount)
-
-        //Initialize sample data to 0.
-        mLeftSamples = ShortArray(mSourceChannelCount)
-        mRightSamples = ShortArray(mSourceChannelCount)
-        for (i in 0 until mSourceChannelCount) {
-            mLeftSamples!![i] = 0
-            mRightSamples!![i] = 0
-        }
 
         mComponentState = PipedMediaSource.State.SETUP
 
@@ -123,10 +103,10 @@ class PipedAudioResampler
     @Throws(SourceClosedException::class)
     override fun loadSamples(): Boolean {
         //grab the last sample for interpolation before the first sample of the new data
-        val last = ShortArray(mSourceChannelCount)
+        val last = ShortArray(orgChannelCount)
         var ch = 0
         if(orgEnd > 0) { // don't populate if it is the first run through, where orgEnd == 0.
-            for (index in orgEnd - mSourceChannelCount until orgEnd) {
+            for (index in orgEnd - orgChannelCount until orgEnd) {
                 last[ch++] = orgBuffer[index]
             }
         }
@@ -148,8 +128,8 @@ class PipedAudioResampler
         //convert all the samples
         val relStartTime = mSeekTime - orgBufferStartTime
         val srMult = (1000000.0 / mSampleRate).toFloat()
-        val ssrMult = (mSourceSampleRate / 1000000.0).toFloat()
-        if (mChannelCount == 2 && mSourceChannelCount == 2) {
+        val ssrMult = (orgSampleRate / 1000000.0).toFloat()
+        if (mChannelCount == 2 && orgChannelCount == 2) {
             for (i in 0 until srcEnd) {
                 val cChannel = i % 2
                 val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
@@ -157,7 +137,7 @@ class PipedAudioResampler
                 val sw = fSample - floor(fSample) //weight of second term
                 srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toShort()
             }
-        } else if (mChannelCount == 1 && mSourceChannelCount == 2) {
+        } else if (mChannelCount == 1 && orgChannelCount == 2) {
             for (i in 0 until srcEnd) {
                 val fSample = (relStartTime + i * srMult) * ssrMult
                 val si = floor(fSample).toInt() * 2  // first index
@@ -166,7 +146,7 @@ class PipedAudioResampler
                         ((orgBuffer[si] + orgBuffer[si + 2]) * (1 - sw) +
                                 (orgBuffer[si + 1] + orgBuffer[si + 3]) * sw) / 2.0).toShort()
             }
-        } else if (mChannelCount == 2 && mSourceChannelCount == 1) {
+        } else if (mChannelCount == 2 && orgChannelCount == 1) {
             for (i in 0 until srcEnd step 2) {
                 val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
                 val si = floor(fSample).toInt() // first index

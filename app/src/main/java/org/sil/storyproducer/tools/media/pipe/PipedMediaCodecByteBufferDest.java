@@ -58,6 +58,12 @@ public abstract class PipedMediaCodecByteBufferDest extends PipedMediaCodec impl
                             + " of size " + mInfo.size + " for time " + mInfo.presentationTimeUs);
                 }
             }
+            //If unable to get a buffer, wait a little bit and try again.
+            try {
+                Thread.sleep(1, 0);
+            } catch (InterruptedException e) {
+                Log.d(TAG, "interrupted while dequeing buffers", e);
+            }
         }
 
         if(MediaHelper.INSTANCE.getVERBOSE()) Log.v(TAG, getComponentName() + ".spinInput complete!");

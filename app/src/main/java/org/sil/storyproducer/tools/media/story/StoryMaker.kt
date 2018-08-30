@@ -119,9 +119,6 @@ class StoryMaker
         try {
             mMuxer!!.addSource(audioEncoder)
 
-            audioEncoder.addSource(audioMixer)
-            audioMixer.addSource(narrationConcatenator)
-
             var soundtrackDuration: Long = 0
             var lastSoundtrack: String = ""
             for (page in mPages) {
@@ -155,8 +152,14 @@ class StoryMaker
             }
 
             //Add soundtrack only if there is one!
-            if(soundtrackConcatenator.numOfSources() > 0)
+            if(soundtrackConcatenator.numOfSources() > 0) {
+                audioEncoder.addSource(audioMixer)
+                audioMixer.addSource(narrationConcatenator)
                 audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier)
+            } else {
+                //no mixing needed - bypass.
+                audioEncoder.addSource(narrationConcatenator)
+            }
 
             if (mVideoFormat != null) {
                 mMuxer!!.addSource(videoEncoder!!)
