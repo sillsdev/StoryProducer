@@ -38,8 +38,8 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
             return;
         }
 
-        mSource.setup();
-        mSourceFormat = mSource.getOutputFormat();
+        getMSource().setup();
+        mSourceFormat = getMSource().getOutputFormat();
 
         //audio keys
         MediaHelper.INSTANCE.copyFormatIntKey(mSourceFormat, mConfigureFormat, MediaFormat.KEY_CHANNEL_COUNT);

@@ -132,7 +132,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
             outShortBuffer.get(mShortBuffer, osbPos, osbLength)
             outShortBuffer.clear()
 
-            if (srcSamplesAvailable == 0) mNonvolatileIsDone = !loadSamples()
+            if (srcSamplesAvailable <= 0) mNonvolatileIsDone = !loadSamples()
 
             while ((osbPos < osbLength) && !mNonvolatileIsDone) {
                 //interleave channels
@@ -145,7 +145,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
                 //Keep track of the current presentation time in the output audio stream.
                 mAbsoluteSampleIndex += copyLength
 
-                if (srcSamplesAvailable == 0) mNonvolatileIsDone = !loadSamples()
+                if (srcSamplesAvailable <= 0) mNonvolatileIsDone = !loadSamples()
             }
 
             info.size = osbPos * 2 //short = 2 bytes

@@ -37,8 +37,8 @@ public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
             return;
         }
 
-        mSource.setup();
-        mSourceFormat = mSource.getOutputFormat();
+        getMSource().setup();
+        mSourceFormat = getMSource().getOutputFormat();
         mCodec = MediaCodec.createDecoderByType(mSourceFormat.getString(MediaFormat.KEY_MIME));
         mCodec.configure(mSourceFormat, null, null, 0);
 

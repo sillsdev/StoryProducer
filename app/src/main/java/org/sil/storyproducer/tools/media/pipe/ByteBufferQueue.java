@@ -53,8 +53,7 @@ public class ByteBufferQueue {
      * @return empty buffer
      */
     public ByteBuffer getEmptyBuffer(long timeoutUs) {
-        int sleepNs = 10000;
-        long loops = timeoutUs / (sleepNs / 1000);
+        long loops = timeoutUs / 1000;
 
         for(long i = 0; i < loops; i++) {
             synchronized (mLock) {
@@ -67,7 +66,7 @@ public class ByteBufferQueue {
 
             //If unable to get a buffer, wait a little bit and try again.
             try {
-                Thread.sleep(0, sleepNs);
+                Thread.sleep(1, 0);
             } catch (InterruptedException e) {
                 Log.d(TAG, "interrupted while getting empty buffer", e);
                 return null;

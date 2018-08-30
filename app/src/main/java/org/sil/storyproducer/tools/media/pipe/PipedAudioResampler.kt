@@ -8,6 +8,8 @@ import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
 import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  *
@@ -123,7 +125,7 @@ class PipedAudioResampler
         //Find out how many interpolated samples we can actually make based on the available time.
         //add one to capture the last element.
         srcPos = 0
-        srcEnd = floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000.0 + 1).toFloat()).toInt() * mChannelCount
+        srcEnd = max(0,floor(((orgBufferEndTime - mSeekTime) * mSampleRate / 1000000.0 + 1).toFloat()).toInt() * mChannelCount)
 
         //convert all the samples
         val relStartTime = mSeekTime - orgBufferStartTime

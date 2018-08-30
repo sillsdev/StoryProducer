@@ -23,7 +23,7 @@ object MediaHelper {
     //Note: Perhaps this max size should be increased in the future.
     /** the maximum size of input buffers; currently used to prevent buffer overflow  */
     val MAX_INPUT_BUFFER_SIZE = 128 * 1024
-    val TIMEOUT_USEC: Long = 1000
+    val TIMEOUT_USEC: Long = 10000
 
     val MIMETYPE_RAW_AUDIO = "audio/raw"
 
