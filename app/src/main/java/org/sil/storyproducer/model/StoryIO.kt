@@ -45,7 +45,11 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
         if(story != null) return story
     }
     //TODO If not, See if there is an html bloom file there
-    story = parsePhotoStoryXML(context, storyPath)
+    try {
+        story = parsePhotoStoryXML(context, storyPath)
+    } catch (e : Exception){
+        story = null
+    }
     //write the story (if it is not null) to json.
     if(story != null) {
         story.toJson(context)
