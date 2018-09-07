@@ -299,13 +299,15 @@ class PipedAudioConcatenator
 
             //Only need to modify fadeout samples.
             val sourceEnd = mSourceStart + mSourceExpectedDuration
-            val fadeOutStartTime = sourceEnd - mFadeOutUs
-            val fadeOutEndPos = max(srcPos,(sourceEnd * mSampleRate / 1000000.0).toInt())
-            val fadeOutPos = max(srcPos,srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
-            val fadeOutMult : Float = (1.0/fadeOutSamples).toFloat()
 
-            for (index in fadeOutPos until srcEnd){
-                srcBuffer[index] = (srcBuffer[index] * (fadeOutEndPos - index)*fadeOutMult).toShort()
+            if (mFadeOutUs > 0){
+                val fadeOutStartTime = sourceEnd - mFadeOutUs
+                val fadeOutSamplesToEnd = (sourceEnd *  mSampleRate / 1000000.0 - mAbsoluteSampleIndex).toInt()
+                val fadeOutPos = max(srcPos, srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
+                val fadeOutMult: Float = (1.0 / fadeOutSamples).toFloat()
+                for (index in fadeOutPos until srcEnd) {
+                    srcBuffer[index] = (srcBuffer[index] * (fadeOutSamplesToEnd - index) * fadeOutMult).toShort()
+                }
             }
 
             val isWithinExpectedTime = mSourceExpectedDuration == 0L || mSeekTime <= sourceEnd
