@@ -119,7 +119,8 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
         cursor.moveToFirst()
         do {
             childDocs.add(VIDEO_DIR + "/" + cursor.getString(0))
-        } while ((!cursor.isLast))
+            cursor.moveToNext()
+        } while ((!cursor.isAfterLast))
     } catch (e: Exception) { return ArrayList() }
     return childDocs
 }
