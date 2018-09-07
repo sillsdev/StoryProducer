@@ -145,8 +145,8 @@ class PipedAudioResampler
                 val si = floor(fSample).toInt() * 2  // first index
                 val sw = fSample - floor(fSample) //weight of second term
                 srcBuffer[i] = (mVolumeModifier *
-                        ((orgBuffer[si] + orgBuffer[si + 2]) * (1 - sw) +
-                                (orgBuffer[si + 1] + orgBuffer[si + 3]) * sw) / 2.0).toShort()
+                        ((orgBuffer[si] + orgBuffer[si + 1]) * (1 - sw) +
+                                (orgBuffer[si + 2] + orgBuffer[si + 3]) * sw) * 0.5).toShort()
             }
         } else if (mChannelCount == 2 && orgChannelCount == 1) {
             for (i in 0 until srcEnd step 2) {
