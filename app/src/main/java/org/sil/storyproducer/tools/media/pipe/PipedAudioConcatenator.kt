@@ -33,7 +33,7 @@ class PipedAudioConcatenator
     override val componentName: String = TAG
     private var mCurrentState = ConcatState.TRANSITION //start in transition
 
-    private val catSources = LinkedList<PipedMediaByteBufferSource>()
+    private val catSources = LinkedList<PipedMediaByteBufferSource?>()
     private val catExpectedDurations = LinkedList<Long>()
 
     private var mFadeOutUs: Long = 0
@@ -137,7 +137,8 @@ class PipedAudioConcatenator
      */
     @Throws(SourceUnacceptableException::class)
     fun addSource(source: PipedMediaByteBufferSource?, duration: Long) {
-        if(source!=null) catSources.add(source)
+        //even if it is null, add it.  If it is null, then we just add blank data.
+        catSources.add(source)
         catExpectedDurations.add(duration)
     }
 
@@ -219,7 +220,7 @@ class PipedAudioConcatenator
 
     private fun zeroSourceBuffer(timeUntil: Long){
         srcPos = 0
-        srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000.0 + 1).toInt())
+        srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000.0).toInt()+1)
         for(index in 0 until srcEnd){
             srcBuffer[index] = 0
         }
@@ -233,7 +234,7 @@ class PipedAudioConcatenator
         if (mCurrentState == ConcatState.TRANSITION) {
             var transitionUs = mTransitionUs
             //For pre-first-source and last source, make the transition half as long.
-            if (mSeekTime <= mTransitionUs / 2 || catSources.isEmpty()) {
+            if (mSeekTime <= mTransitionUs / 2 + 10000 || catSources.isEmpty()) {
                 transitionUs /= 2
             }
 
@@ -250,7 +251,7 @@ class PipedAudioConcatenator
 
                 //Clear out the current source.
                 if (mSource != null) {
-                    mSource!!.close()
+                    mSource?.close()
                     mSource = null
                 }
 
@@ -263,16 +264,20 @@ class PipedAudioConcatenator
                 mCurrentState = ConcatState.DATA
 
                 //Get a (valid) source or get to DONE state.
-                while (mSource == null && !isDone) {
-                    //If sources are all gone, this component is done.
-                    if (catSources.isEmpty()) {
-                        isDone = true
-                        mCurrentState = ConcatState.DONE
-                    } else {
-                        mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs
+                //If sources are all gone, this component is done.
+                if (catSources.isEmpty()) {
+                    isDone = true
+                    mCurrentState = ConcatState.DONE
+                } else {
+                    mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs
 
-                        mSource = nextSource
-                        mSourceExpectedDuration = catExpectedDurations.remove()
+                    mSource = nextSource
+                    mSourceExpectedDuration = catExpectedDurations.remove()
+                    //If no particular duration was expected, start transition now. Otherwise use precise time.
+                    if (mSourceExpectedDuration == 0L) {
+                        mTransitionStart = mSeekTime
+                    } else {
+                        mTransitionStart = mSourceStart + mSourceExpectedDuration
                     }
                 }
 
@@ -293,13 +298,23 @@ class PipedAudioConcatenator
         }
 
         if (mCurrentState == ConcatState.DATA) {
+
+            if(mSource == null){
+                //This is a blank data source (silent, no data).
+                zeroSourceBuffer(mSourceStart + mSourceExpectedDuration)
+                if(mSeekTime > mSourceStart + mSourceExpectedDuration) {
+                    mCurrentState = ConcatState.TRANSITION
+                }
+                return true
+            }
+            val sourceEnd = mSourceStart + mSourceExpectedDuration
+
+
             if (srcHasBuffer && srcPos >= srcEnd) {
                 fetchSourceBuffer()
             }
 
             //Only need to modify fadeout samples.
-            val sourceEnd = mSourceStart + mSourceExpectedDuration
-
             if (mFadeOutUs > 0){
                 val fadeOutStartTime = sourceEnd - mFadeOutUs
                 val fadeOutSamplesToEnd = (sourceEnd *  mSampleRate / 1000000.0 - mAbsoluteSampleIndex).toInt()
@@ -317,15 +332,8 @@ class PipedAudioConcatenator
                 mCurrentState = ConcatState.TRANSITION
 
                 //Clear out the current source.
-                mSource!!.close()
+                mSource?.close()
                 mSource = null
-
-                //If no particular duration was expected, start transition now. Otherwise use precise time.
-                if (mSourceExpectedDuration == 0L) {
-                    mTransitionStart = mSeekTime
-                } else {
-                    mTransitionStart = sourceEnd
-                }
             }
         }
 
