@@ -1,0 +1,242 @@
+package org.sil.storyproducer.tools.media.pipe
+
+import android.media.MediaCodec
+import android.media.MediaFormat
+import android.util.Log
+
+import org.sil.storyproducer.tools.media.MediaHelper
+
+import java.nio.ByteBuffer
+import java.util.LinkedList
+import java.util.Queue
+
+/**
+ *
+ * This abstract media pipeline component provides a base for components which encode or decode
+ * media streams. This class primarily encapsulates a [MediaCodec].
+ *
+ * Note: This class is spawns a child thread which keeps churning input while other calling code
+ * pulls output.
+ */
+abstract class PipedMediaCodec : PipedMediaByteBufferSource {
+
+    protected abstract val componentName: String
+
+    internal var mThread: Thread? = null
+
+    @Volatile
+    protected var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
+
+    protected var mCodec: MediaCodec? = null
+    protected var mInputBuffers: Array<ByteBuffer>? = null
+    protected var mOutputBuffers: Array<ByteBuffer>? = null
+    private var mOutputFormat: MediaFormat? = null
+
+    private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
+
+    @Volatile
+    private var mIsDone = false
+    private var mPresentationTimeUsLast: Long = 0
+
+    private val mInfo = MediaCodec.BufferInfo()
+
+    override fun getOutputFormat(): MediaFormat {
+        if (mOutputFormat == null) {
+            try {
+                pullBuffer(mInfo, true)
+            } catch (e: SourceClosedException) {
+                throw RuntimeException("format retrieval interrupted", e)
+            }
+
+            if (mOutputFormat == null) {
+                throw RuntimeException("format was not retrieved from loop")
+            }
+        }
+        return mOutputFormat!!
+    }
+
+    override fun isDone(): Boolean {
+        return mIsDone
+    }
+
+    @Throws(SourceClosedException::class)
+    override fun fillBuffer(buffer: ByteBuffer, info: MediaCodec.BufferInfo) {
+        val outputBuffer = pullBuffer(info, false)
+        buffer.clear()
+        buffer.put(outputBuffer)
+        releaseBuffer(outputBuffer)
+    }
+
+    @Throws(SourceClosedException::class)
+    override fun getBuffer(info: MediaCodec.BufferInfo): ByteBuffer? {
+        return pullBuffer(info, false)
+    }
+
+    @Throws(InvalidBufferException::class, SourceClosedException::class)
+    override fun releaseBuffer(buffer: ByteBuffer?) {
+        if (mComponentState == PipedMediaSource.State.CLOSED) {
+            throw SourceClosedException()
+        }
+        for (i in mOutputBuffers!!.indices) {
+            if (mOutputBuffers!![i] === buffer) {
+                mCodec!!.releaseOutputBuffer(i, true)
+                return
+            }
+        }
+        throw InvalidBufferException("I don't own that buffer!")
+    }
+
+    protected fun start() {
+        mCodec!!.start()
+        mInputBuffers = mCodec!!.inputBuffers
+        mOutputBuffers = mCodec!!.outputBuffers
+
+        mThread = Thread(Runnable {
+            try {
+                spinInput()
+            } catch (e: SourceClosedException) {
+                Log.w(TAG, "spinInput stopped prematurely", e)
+            }
+        })
+        mComponentState = PipedMediaSource.State.RUNNING
+        mThread!!.start()
+    }
+
+    @Throws(SourceClosedException::class)
+    private fun pullBuffer(info: MediaCodec.BufferInfo, getFormat: Boolean): ByteBuffer? {
+        if (mIsDone) {
+            throw RuntimeException("pullBuffer called after depleted")
+        }
+
+        //If actually trying to get a buffer and we cached the buffer, return buffer from cache.
+        if (!getFormat && !mBuffersBeforeFormat.isEmpty()) {
+            val tempBuffer = mBuffersBeforeFormat.remove()
+            MediaHelper.copyBufferInfo(tempBuffer.info, info)
+            return tempBuffer.buffer
+        }
+
+        var durationNs = -System.nanoTime()
+
+        while (!mIsDone) {
+            if (mComponentState == PipedMediaSource.State.CLOSED) {
+                throw SourceClosedException()
+            }
+            val pollCode = mCodec!!.dequeueOutputBuffer(
+                    info, MediaHelper.TIMEOUT_USEC)
+            if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
+                if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: no output buffer")
+                //Do nothing.
+            } else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                if (MediaHelper.DEBUG) Log.d(TAG, "$componentName.pullBuffer: output buffers changed")
+                mOutputBuffers = mCodec!!.outputBuffers
+            } else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: output format changed")
+                if (mOutputFormat != null) {
+                    throw RuntimeException("changed output format again?")
+                }
+                mOutputFormat = mCodec!!.outputFormat
+                if (getFormat) {
+                    return null
+                }
+            } else if (pollCode < 0) {
+                Log.w(TAG, "$componentName.pullBuffer: unrecognized pollCode")
+            } else if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+                if (MediaHelper.DEBUG) Log.d(TAG, "$componentName.pullBuffer: codec config buffer")
+                //Note: Perhaps these buffers should not be ignored in the future.
+                // Simply ignore codec config buffers.
+                mCodec!!.releaseOutputBuffer(pollCode, true)
+            } else {
+                val buffer = mOutputBuffers!![pollCode]
+
+                if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
+                    if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: EOS")
+                    mIsDone = true
+                } else {
+                    correctTime(info)
+                    buffer.position(info.offset)
+                    buffer.limit(info.offset + info.size)
+                }
+
+                if (MediaHelper.DEBUG) {
+                    durationNs += System.nanoTime()
+                    val sec = durationNs / 1E9
+                    Log.d(TAG, componentName + ".pullBuffer: return output buffer after "
+                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
+                            + " of size " + info.size + " for time " + info.presentationTimeUs)
+                }
+
+                //If trying to get the format, save the buffer for later and don't return it.
+                if (getFormat) {
+                    val tempInfo = MediaCodec.BufferInfo()
+                    MediaHelper.copyBufferInfo(info, tempInfo)
+                    mBuffersBeforeFormat.add(MediaBuffer(buffer, tempInfo))
+                } else {
+                    return buffer
+                }
+            }
+        }
+
+        return null
+    }
+
+    /**
+     * Correct the presentation time of the current buffer.
+     * This function is primarily intended to be overridden by [PipedVideoSurfaceEncoder] to
+     * allow video frames to be displayed at the proper time.
+     * @param info to be updated
+     */
+    protected open fun correctTime(info: MediaCodec.BufferInfo) {
+        if (mPresentationTimeUsLast > info.presentationTimeUs) {
+            throw RuntimeException("buffer presentation time out of order!")
+        }
+        mPresentationTimeUsLast = info.presentationTimeUs
+    }
+
+    /**
+     *
+     * Gather input from source, feeding it into mCodec, until source is depleted.
+     *
+     * Note: This method **must return after [.mComponentState] becomes CLOSED**.
+     */
+    @Throws(SourceClosedException::class)
+    protected abstract fun spinInput()
+
+    override fun close() {
+        //Shutdown child thread
+        mComponentState = PipedMediaSource.State.CLOSED
+
+        //Wait for two times the length of the timeout in the pullBuffer loop to ensure the codec
+        //stops being used.
+        try {
+            Thread.sleep((MediaHelper.TIMEOUT_USEC * 2 / 1E6).toLong() + 1)
+        } catch (e: InterruptedException) {
+            Log.w(TAG, "sleep interrupted", e)
+        }
+
+        if (mThread != null) {
+            try {
+                mThread!!.join()
+            } catch (e: InterruptedException) {
+                Log.w(TAG, "$componentName: Failed to close input thread!", e)
+            }
+
+            mThread = null
+        }
+
+        //Shutdown MediaCodec
+        if (mCodec != null) {
+            try {
+                mCodec!!.stop()
+            } catch (e: IllegalStateException) {
+                Log.w(TAG, "$componentName: Failed to stop MediaCodec!", e)
+            } finally {
+                mCodec!!.release()
+            }
+            mCodec = null
+        }
+    }
+
+    companion object {
+        private val TAG = "PipedMediaCodec"
+    }
+}

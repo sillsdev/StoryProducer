@@ -34,7 +34,7 @@ abstract class PipedMediaCodecByteBufferDest : PipedMediaCodec(), PipedMediaByte
         if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.spinInput starting")
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
-            val pollCode = mCodec.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC)
+            val pollCode = mCodec!!.dequeueInputBuffer(MediaHelper.TIMEOUT_USEC)
             if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.spinInput: no input buffer")
                 //Do nothing.
@@ -46,9 +46,9 @@ abstract class PipedMediaCodecByteBufferDest : PipedMediaCodec(), PipedMediaByte
                     durationNs = -System.nanoTime()
                 }
 
-                val inputBuffer = mInputBuffers[pollCode]
+                val inputBuffer = mInputBuffers!![pollCode]
                 mSource!!.fillBuffer(inputBuffer, mInfo)
-                mCodec.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags)
+                mCodec!!.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags)
 
                 if (MediaHelper.DEBUG) {
                     durationNs += System.nanoTime()

@@ -34,7 +34,7 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
 
     @Override
     public void setup() throws IOException, SourceUnacceptableException {
-        if(mComponentState != State.UNINITIALIZED) {
+        if(getMComponentState() != State.UNINITIALIZED) {
             return;
         }
 
@@ -57,10 +57,10 @@ public class PipedMediaEncoder extends PipedMediaCodecByteBufferDest {
         //encoder input buffers are too small, by default, to handle some decoder output buffers
         mConfigureFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MediaHelper.INSTANCE.getMAX_INPUT_BUFFER_SIZE());
 
-        mCodec = MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME));
-        mCodec.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        setMCodec(MediaCodec.createEncoderByType(mConfigureFormat.getString(MediaFormat.KEY_MIME)));
+        getMCodec().configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
 
-        mComponentState = State.SETUP;
+        setMComponentState(State.SETUP);
 
         start();
     }

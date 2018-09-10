@@ -164,7 +164,7 @@ class StoryMaker
             if (mVideoFormat != null) {
                 mMuxer!!.addSource(videoEncoder!!)
 
-                videoEncoder.addSource(videoDrawer)
+                videoEncoder.addSource(videoDrawer!!)
             }
             success = mMuxer!!.crunch()
             Log.i(TAG, "Video saved to $mOutputFile")
