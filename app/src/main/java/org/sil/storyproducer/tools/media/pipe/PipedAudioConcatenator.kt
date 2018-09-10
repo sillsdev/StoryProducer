@@ -56,34 +56,34 @@ class PipedAudioConcatenator
         get() {
             if (MediaHelper.VERBOSE) Log.v(TAG, "getNextSource starting")
 
-            var nextSource: PipedMediaByteBufferSource? = null
+            var ns: PipedMediaByteBufferSource? = null
 
             if (!catSources.isEmpty()) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "getNextSource source found")
 
-                nextSource = catSources.remove()
-                if (nextSource == null) {
+                ns = catSources.remove()
+                if (ns == null) {
                     return null
                 }
 
                 try {
-                    nextSource.setup()
+                    ns.setup()
 
-                    nextSource = PipedAudioResampler.correctSampling(nextSource, mSampleRate, mChannelCount)
-                    nextSource.setup()
+                    ns = PipedAudioResampler.correctSampling(ns, mSampleRate, mChannelCount)
+                    ns.setup()
 
-                    validateSource(nextSource)
+                    validateSource(ns)
                 } catch (e: IOException) {
                     Log.e(TAG, "Silencing failed source setup.", e)
-                    nextSource = null
+                    ns = null
                 } catch (e: SourceUnacceptableException) {
                     Log.e(TAG, "Silencing failed source setup.", e)
-                    nextSource = null
+                    ns = null
                 }
 
             }
 
-            return nextSource
+            return ns
         }
 
 
