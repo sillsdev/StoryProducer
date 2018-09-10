@@ -160,12 +160,15 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration,
                 1f, mCurrentTextOverlay)
 
-        if (currentTimeUs > nextSlideTransitionStartUs) {
+        if (currentTimeUs >= nextSlideTransitionStartUs) {
             val timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs
             val extraOffsetUs = mSlideCrossFadeUs - nextSlideTransitionUs //0 normally, transition/2 for edge cases
             val nextOffsetUs = timeSinceTransitionStartUs + extraOffsetUs
+            var alpha = nextOffsetUs / nextSlideTransitionUs.toFloat()
+            //Don't "fade in" at the beginning.
+            if(mCurrentSlideIndex==-1) alpha = 1.0f
             drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, mNextSlideImgDuration,
-                    nextOffsetUs / nextSlideTransitionUs.toFloat(), mNextTextOverlay)
+                    alpha, mNextTextOverlay)
         }
 
         //clear image cache to save memory.
