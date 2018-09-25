@@ -28,6 +28,11 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         main.java.srcDirs += 'build/generated/source/kaptKotlin'
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 repositories {
@@ -53,4 +58,7 @@ dependencies {
     implementation 'com.github.codekidX:storage-chooser:2.0.3'
     implementation 'com.squareup.moshi:moshi:1.6.0'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:3.8'
+    testCompile "org.mockito:mockito-core:2.+"
 }
