@@ -4,6 +4,7 @@ package org.sil.storyproducer.tools.file
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
@@ -33,21 +34,24 @@ fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
     } catch (e: Exception) {}
 }
 
-fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
-    if(story.title == "") return null
+fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+    if(story.title == "") return genDefaultImage()
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,story)
 }
 
-fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
-    val iStream = getStoryChildInputStream(context,relPath,story.title)
-    if(iStream != null){
-        val options = BitmapFactory.Options()
-        options.inSampleSize = sampleSize
-        return BitmapFactory.decodeStream(iStream, null, options)
-    }
-    return null
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    val options = BitmapFactory.Options()
+    options.inSampleSize = sampleSize
+    return BitmapFactory.decodeStream(iStream, null, options)
 }
 
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(1500,1125,Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
+}
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = Workspace.activeStory.title) : OutputStream? {
     if (storyTitle == "") return null
     return getChildOutputStream(context, "$storyTitle/$relPath", mimeType)

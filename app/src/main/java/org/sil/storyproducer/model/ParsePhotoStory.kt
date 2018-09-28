@@ -93,7 +93,7 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
             }
             "MusicTrack" -> {
-                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
+                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
 
                 parser.nextTag()
                 parser.require(XmlPullParser.START_TAG, null, "SoundTrack")

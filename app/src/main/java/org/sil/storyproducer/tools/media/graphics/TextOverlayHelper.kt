@@ -14,13 +14,13 @@ import java.io.IOException
 
 @Throws(IOException::class)
 fun overlayJPEG(context: Context, relPath: String, outRelPath: String, overlay: TextOverlay) {
+
     val source = getStoryImage(context, relPath)
-    val dest = source!!.copy(Bitmap.Config.ARGB_8888, true)
+    val dest = source.copy(Bitmap.Config.ARGB_8888, true)
     val canvas = Canvas(dest)
 
     overlay.draw(canvas)
 
-    //Write file.
     val out = getStoryChildOutputStream(context,outRelPath)
     dest.compress(Bitmap.CompressFormat.JPEG, 95, out)
     out!!.flush()

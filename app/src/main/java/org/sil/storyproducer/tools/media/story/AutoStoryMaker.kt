@@ -199,11 +199,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             if (audio == "") {
                 audio = slide.narrationFile
             }
-            //error
-            if (audio == "") {
-                error("Audio missing for slide " + (iSlide + 1))
-                return null
-            }
 
             var soundtrack = slide.musicFile
             if (mIncludeBackgroundMusic) {
@@ -228,7 +223,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 text = slide.translatedContent
             }
 
-            val duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
+            //error
+            var duration = 3000000L  // 3 seconds, microseconds.
+            if (audio != "") {
+                duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
+            }
 
             pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
             iSlide++

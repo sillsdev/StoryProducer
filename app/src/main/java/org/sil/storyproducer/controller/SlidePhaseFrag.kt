@@ -1,6 +1,8 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -109,11 +111,7 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap? = getStoryImage(context,slideNum)
-
-        if (slidePicture == null) {
-            Snackbar.make(rootView!!, R.string.dramatization_draft_no_picture, Snackbar.LENGTH_SHORT).show()
-        }
+        var slidePicture: Bitmap = getStoryImage(context,slideNum)
 
         //Get the height of the phone.
         val phoneProperties = context.resources.displayMetrics
@@ -122,7 +120,7 @@ abstract class SlidePhaseFrag : Fragment() {
         height = (height * scalingFactor).toInt()
 
         //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture!!, height)
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
 
         //Set the height of the image view
         slideImage.layoutParams.height = height
@@ -161,7 +159,8 @@ abstract class SlidePhaseFrag : Fragment() {
                 return
             }
         }
-        textView.setText(R.string.draft_bible_story)
+        //There is no reference text.
+        textView.text = ""
     }
 
     protected open fun setReferenceAudioButton(playButton: ImageButton) {

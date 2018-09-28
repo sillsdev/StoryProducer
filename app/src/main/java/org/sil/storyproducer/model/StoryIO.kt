@@ -50,6 +50,13 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     } catch (e : Exception){
         story = null
     }
+    if(story == null){
+        try {
+            story = parseBloomHTML(context, storyPath)
+        } catch (e : Exception){
+            story = null
+        }
+    }
     //write the story (if it is not null) to json.
     if(story != null) {
         story.toJson(context)
