@@ -28,7 +28,12 @@ fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
         val opfd = getStoryPFD(context, destRelPath,"","w")
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
-        oStream.write(iStream.readBytes())
+        val bArray = ByteArray(100000)
+        var bytesRead = iStream.read(bArray)
+        while(bytesRead > 0){ //eof not reached
+            oStream.write(bArray,0,bytesRead)
+            bytesRead = iStream.read(bArray)
+        }
         iStream.close()
         iStream.close()
     } catch (e: Exception) {}

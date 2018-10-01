@@ -93,7 +93,7 @@ class DramatizationFrag : MultiRecordFrag() {
             val rList = RecordingsList(context, this)
 
             //TODO re-enable the pausing recording toolbar when wav saving and concatentation are working again.
-            recordingToolbar = PausingRecordingToolbar(activity, rootViewToolbar!!, rootView as RelativeLayout,
+            recordingToolbar = PausingRecordingToolbar(activity, toolbar!!, rootView as RelativeLayout,
                     true, false, true, false, rList, recordingListener, slideNum)
             recordingToolbar!!.keepToolbarVisible()
         }
