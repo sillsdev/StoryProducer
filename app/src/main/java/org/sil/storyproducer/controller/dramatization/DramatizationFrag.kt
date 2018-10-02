@@ -2,14 +2,12 @@ package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
@@ -17,8 +15,8 @@ import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 
 
@@ -26,6 +24,10 @@ class DramatizationFrag : MultiRecordFrag() {
 
     private var phaseUnlocked: Boolean = false
     private var slideText: EditText? = null
+    private var draftPlaybackSeekBar: SeekBar? = null
+    private var draftPlaybackProgress = 0
+    private var draftPlaybackDuration = 0
+    private var wasAudioPlaying = false
 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -47,14 +49,47 @@ class DramatizationFrag : MultiRecordFrag() {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
+        draftPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+
         return rootView
     }
 
+    override fun onResume() {
+        super.onResume()
+        setSeekBarListener()
+    }
+
+
+    private fun setSeekBarListener() {
+        draftPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
+        draftPlaybackSeekBar!!.max = draftPlaybackDuration
+        referenceAudioPlayer.currentPosition = draftPlaybackProgress
+        draftPlaybackSeekBar!!.progress = draftPlaybackProgress
+        draftPlaybackSeekBar!!.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(sBar: SeekBar) {
+                referenceAudioPlayer.currentPosition = draftPlaybackProgress
+                if(wasAudioPlaying){
+                    referenceAudioPlayer.resumeAudio()
+                }
+            }
+            override fun onStartTrackingTouch(sBar: SeekBar) {
+                wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
+                referenceAudioPlayer.pauseAudio()
+                referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+            }
+            override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    draftPlaybackProgress = progress
+                }
+            }
+        })
+    }
     /**
      * This function serves to stop the audio streams from continuing after dramatization has been
      * put on pause.
      */
     override fun onPause() {
+        draftPlaybackProgress = referenceAudioPlayer.currentPosition
         super.onPause()
         closeKeyboard(rootView)
     }
@@ -76,6 +111,29 @@ class DramatizationFrag : MultiRecordFrag() {
                     recordingToolbar!!.onPause()
                 }
                 closeKeyboard(rootView)
+            }
+        }
+    }
+
+    override fun setReferenceAudioButton() {
+        referncePlayButton!!.setOnClickListener {
+            if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+                //TODO make "no audio" string work for all phases
+                Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
+            } else {
+                if (referenceAudioPlayer.isAudioPlaying) {
+                    referenceAudioPlayer.pauseAudio()
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                    draftPlaybackProgress = referenceAudioPlayer.currentPosition
+                    draftPlaybackSeekBar!!.setProgress(draftPlaybackProgress)
+                } else {
+                    //stop other playback streams.
+                    referenceAudioPlayer.currentPosition = draftPlaybackProgress
+                    referenceAudioPlayer.playAudio()
+
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

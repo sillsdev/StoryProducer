@@ -130,7 +130,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
         //Set up the reference audio and slide number overlays
         referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
-        setReferenceAudioButton(referncePlayButton!!)
+        setReferenceAudioButton()
 
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
         slideNumberText.text = slideNum.toString()
@@ -163,20 +163,20 @@ abstract class SlidePhaseFrag : Fragment() {
         textView.text = ""
     }
 
-    protected open fun setReferenceAudioButton(playButton: ImageButton) {
-        playButton.setOnClickListener {
+    protected open fun setReferenceAudioButton() {
+        referncePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.stopAudio()
-                    playButton.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
                 } else {
                     //stop other playback streams.
                     referenceAudioPlayer.playAudio()
 
-                    playButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
                         PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))

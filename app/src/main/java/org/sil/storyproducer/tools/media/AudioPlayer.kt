@@ -14,6 +14,7 @@ class AudioPlayer {
     private var mPlayer: MediaPlayer
     private var fileExists: Boolean = false
     private var isPrepared: Boolean = false
+    private var onCompletionListenerPersist: MediaPlayer.OnCompletionListener? = null
 
     /**
      * returns the duration of the audio as an int
@@ -28,6 +29,10 @@ class AudioPlayer {
      */
     val audioDurationInMilliseconds: Int
         get() = mPlayer.duration
+
+    var currentPosition: Int
+        get() = mPlayer.currentPosition
+        set(value) { mPlayer.seekTo(value) }
 
     /**
      * returns if the audio is being played or not
@@ -61,6 +66,7 @@ class AudioPlayer {
         try {
             mPlayer.release()
             mPlayer = MediaPlayer()
+            mPlayer.setOnCompletionListener(onCompletionListenerPersist)
             isPrepared = false
             mPlayer.setDataSource(context, uri)
             fileExists = true
@@ -184,6 +190,7 @@ class AudioPlayer {
      * @param listener handler for OnCompletionListener
      */
     fun onPlayBackStop(listener: MediaPlayer.OnCompletionListener) {
+        onCompletionListenerPersist = listener
         mPlayer.setOnCompletionListener(listener)
     }
 
