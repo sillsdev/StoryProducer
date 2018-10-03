@@ -10,7 +10,7 @@
             <shape android:shape="rectangle">
 
                 <corners android:radius="15dip" />
-                <solid android:color="@color/darkGray" />
+                <solid android:color="@color/black_semi_transparent" />
             </shape>
         </rotate>
     </item>

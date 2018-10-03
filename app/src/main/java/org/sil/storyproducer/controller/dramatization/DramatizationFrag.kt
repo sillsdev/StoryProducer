@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -56,6 +57,13 @@ class DramatizationFrag : MultiRecordFrag() {
 
     override fun onResume() {
         super.onResume()
+
+        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            draftPlaybackProgress = 0
+            referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+            draftPlaybackSeekBar!!.progress = draftPlaybackProgress
+        })
+
         setSeekBarListener()
     }
 
