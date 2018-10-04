@@ -19,14 +19,14 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
+fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 //    var iStream: AutoCloseInputStream = null
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val opfd = getStoryPFD(context, destRelPath,"","w")
+        val opfd = getPFD(context, destRelPath,"","w")
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
         val bArray = ByteArray(100000)
         var bytesRead = iStream.read(bArray)
@@ -73,6 +73,10 @@ fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.titl
     if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$storyTitle/$relPath"))
+}
+
+fun getWorkspaceUri(relPath: String) : Uri? {
+    return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
 }
 
 fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : String? {
@@ -127,7 +131,7 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
         //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
         cursor.moveToFirst()
         do {
-            childDocs.add(VIDEO_DIR + "/" + cursor.getString(0))
+            childDocs.add(cursor.getString(0))
             cursor.moveToNext()
         } while ((!cursor.isAfterLast))
     } catch (e: Exception) { return ArrayList() }

@@ -16,17 +16,32 @@ class Story(var title: String, val slides: List<Slide>){
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var activityLogs: MutableList<LogEntry> = ArrayList()
+    var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
     companion object
 
-    //TODO replace the "size-1" with this.  Will there be templates without a last slide?
-    fun numberOfContentSlides() : Int{
-        var num = 0
-        for(s in slides){
-            if((s.imageFile != "") and (s.content != "")) num++
+    fun addVideo(video: String){
+        if(!(video in outputVideos)){
+            outputVideos.add(video)
+            outputVideos.sort()
         }
-        return num
+    }
+
+    fun getVideoTitle() : String {
+        var a = "hello.txt"
+        val ovNoPath : MutableList<String> = ArrayList()
+        for (ov in outputVideos){
+            ovNoPath.add(ov.split(".")[0])
+        }
+        a.split(".")[0]
+        var i = 1
+        if(!((title) in ovNoPath)) return title
+        for(i in 1..100){
+            val temp = "${title}_$i"
+            if(!((temp) in ovNoPath)) return temp
+        }
+        return ""
     }
 }
 
