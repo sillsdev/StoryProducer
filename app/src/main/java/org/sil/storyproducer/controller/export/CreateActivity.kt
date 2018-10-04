@@ -19,9 +19,11 @@ import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
 
@@ -371,7 +373,7 @@ class CreateActivity : PhaseBaseActivity() {
         mOutputPath = mEditTextTitle!!.text.toString()
         val outputRelPath = mOutputPath + ext
 
-        if (storyRelPathExists(this,outputRelPath)) {
+        if (workspaceRelPathExists(this,"$VIDEO_DIR/$outputRelPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
@@ -383,22 +385,6 @@ class CreateActivity : PhaseBaseActivity() {
             //mStory = mOutputPath.split("/")[mOutputPath.split("/").length - 1];
             startExport(outputRelPath)
         }
-    }
-
-    private fun stringJoin(list: List<String>, delimeter: String): String {
-        val result = StringBuilder()
-
-        var isFirst = true
-        for (str in list) {
-            if (isFirst) {
-                isFirst = false
-            } else {
-                result.append(delimeter)
-            }
-
-            result.append(str)
-        }
-        return result.toString()
     }
 
     private fun startExport(outputRelPath: String) {

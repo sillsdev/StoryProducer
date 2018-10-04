@@ -69,6 +69,13 @@ fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = W
     return true
 }
 
+fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
+    if(relPath == "") return false
+    //if we can get the type, it exists.
+    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
+    return true
+}
+
 fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
     if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
