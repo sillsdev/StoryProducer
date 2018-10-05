@@ -5,13 +5,13 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    buildToolsVersion '28.0.2'
     defaultConfig {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
         targetSdkVersion 26
         versionCode 9
-        versionName '2.3.13'
+        versionName '2.3.14'
     }
     buildTypes {
         release {

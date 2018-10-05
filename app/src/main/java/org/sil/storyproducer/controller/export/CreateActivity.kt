@@ -1,12 +1,9 @@
 package org.sil.storyproducer.controller.export
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.v4.content.res.ResourcesCompat
 import android.util.Log
 import android.view.Menu
 import android.view.MotionEvent
@@ -17,17 +14,16 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.RadioButton
 import android.widget.Spinner
 import android.widget.Toast
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
 
@@ -46,13 +42,6 @@ class CreateActivity : PhaseBaseActivity() {
     private var mResolutionAdapterAll: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterHigh: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterLow: ArrayAdapter<CharSequence>? = null
-    private var mRadioButtonSmartPhone: RadioButton? = null
-    private var mRadioButtonDumbPhone: RadioButton? = null
-    private val mSpinnerFormat: Spinner? = null
-    private val mFormatAdapterSmartphone: ArrayAdapter<CharSequence>? = null
-    private val mFormatAdapterAll: ArrayAdapter<CharSequence>? = null
-    private val mEditTextLocation: EditText? = null
-    private val mButtonBrowse: Button? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
@@ -63,37 +52,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private var mTextConfirmationChecked: Boolean = false
 
-    //accordion variables
-    private val sectionIds = intArrayOf(R.id.export_section)
-    private val sectionViews = arrayOfNulls<View>(sectionIds.size)
     private var mProgressUpdater: Thread? = null
-
-    private val videoRelPath: String
-        get() {
-            var filename = "HEY"
-
-            val sections = ArrayList<String>()
-            var title: String? = mEditTextTitle!!.text.toString().replace(" ".toRegex(), "")
-                    .replace("[^a-zA-Z0-9\\-_ ]".toRegex(), "")
-            if (title == null || title.isEmpty()) {
-                title = Workspace.activeStory.title.replace(" ".toRegex(), "")
-                        .replace("[^a-zA-Z0-9\\-_ ]".toRegex(), "")
-            }
-            sections.add(title)
-
-            val country = RegistrationActivity.country
-            if (country != null && !country.isEmpty()) {
-                sections.add(country)
-            }
-
-            val languageCode = RegistrationActivity.languageCode
-            if (languageCode != null && !languageCode.isEmpty()) {
-                sections.add(languageCode)
-            }
-
-            filename = stringJoin(sections, "_")
-            return "$VIDEO_DIR/$filename"
-        }
 
     private val PROGRESS_UPDATER = Runnable {
         var isDone = false
@@ -125,16 +84,7 @@ class CreateActivity : PhaseBaseActivity() {
         }
     }
 
-    private val formatExtension: String
-        get() {
-            var ext = ".mp4"
-            if (mRadioButtonSmartPhone!!.isChecked) {
-                ext = resources.getStringArray(R.array.export_format_extensions)[0]
-            } else {
-                ext = resources.getStringArray(R.array.export_format_extensions)[1]
-            }
-            return ext
-        }
+    private val formatExtension: String = ".mp4"
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -260,27 +210,6 @@ class CreateActivity : PhaseBaseActivity() {
 
         mSpinnerResolution!!.adapter = mResolutionAdapterAll
 
-        mRadioButtonSmartPhone = findViewById(R.id.radio_smartphone)
-        mRadioButtonDumbPhone = findViewById(R.id.radio_dumbphone)
-
-
-        /*String[] formatArray = getResources().getStringArray(R.array.export_format_options);
-        List<String> immutableListFormat = Arrays.asList(formatArray);
-        ArrayList<String> formatList = new ArrayList<>(immutableListFormat);
-
-        mFormatAdapterSmartphone = new ArrayAdapter(this,
-                R.layout.simple_spinner_dropdown_item, formatList);
-        mFormatAdapterSmartphone.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-        mFormatAdapterSmartphone.remove(mFormatAdapterSmartphone.getItem(1));
-
-        mFormatAdapterAll = ArrayAdapter.createFromResource(this,
-                R.array.export_format_options, android.R.layout.simple_spinner_item);
-        mFormatAdapterAll.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
-
-
-        mSpinnerFormat = (Spinner) findViewById(R.id.spinner_export_format);
-        mSpinnerFormat.setAdapter(mFormatAdapterAll);*/
-
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
         setOnClickListeners()
@@ -289,25 +218,14 @@ class CreateActivity : PhaseBaseActivity() {
         mProgressBar!!.max = PROGRESS_MAX
         mProgressBar!!.progress = 0
 
+        mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle())
+
     }
 
     /**
      * Setup listeners for start/cancel.
      */
     private fun setOnClickListeners() {
-        /*mEditTextLocation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });*/
-
-        /*mButtonBrowse.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openFileExplorerToExport();
-            }
-        });*/
 
         mButtonStart!!.setOnClickListener {
             if (!buttonLocked) {
@@ -323,71 +241,16 @@ class CreateActivity : PhaseBaseActivity() {
             lockButtons()
         }
 
-        /*mSpinnerFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) {
-                    mSpinnerResolution.setAdapter(mResolutionAdapterAll);
-                    mSpinnerResolution.setSelection(1, true);
-                } else {
-                    mSpinnerResolution.setAdapter(mResolutionAdapterLow);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });*/
-
-    }
-
-
-    /**
-     * This function sets the click listeners to implement the accordion functionality
-     * for each section of the registration page
-     *
-     * @param headerView  a variable of type View denoting the field the user will click to open up
-     * a section of the registration
-     * @param sectionView a variable of type View denoting the section that will open up
-     */
-    private fun setAccordionListener(headerView: View, sectionView: View) {
-        headerView.setOnClickListener {
-            if (sectionView.visibility == View.GONE) {
-                setSectionsClosedExceptView(sectionView)
-            } else {
-                sectionView.visibility = View.GONE
-                headerView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.gray, null))
-            }
-        }
-    }
-
-    /**
-     * sets all the accordion sections closed except for the one passed
-     * @param sectionView that is wanted to be made open
-     */
-    private fun setSectionsClosedExceptView(sectionView: View) {
-        for (sectionView1 in sectionViews) {
-            if (sectionView1 === sectionView) {
-                sectionView1.visibility = View.VISIBLE
-            } else {
-                sectionView1?.visibility = View.GONE
-            }
-        }
-
     }
 
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
     private fun toggleVisibleElements() {
-        var isStoryMakerBusy = false
-
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
             if (storyMaker != null) {
-                isStoryMakerBusy = true
 
                 visibilityPreExport = View.GONE
                 visibilityWhileExport = View.VISIBLE
@@ -453,52 +316,9 @@ class CreateActivity : PhaseBaseActivity() {
                     mSpinnerResolution!!.adapter = mResolutionAdapterHigh
                     mTextConfirmationChecked = false
                     textOrKBFX(true)
-                    mRadioButtonDumbPhone!!.isChecked = false
-                    mRadioButtonSmartPhone!!.isChecked = true
                 }.create()
 
         dialog.show()
-    }
-
-    /*
-    **Method for handling the click event for the radio buttons
-     */
-    fun onRadioButtonClicked(view: View) {
-        // Is the button now checked?
-        val checked = (view as RadioButton).isChecked
-
-        // Check which radio button was clicked
-        when (view.getId()) {
-            R.id.radio_dumbphone -> {
-                if (checked)
-                //Only low resolution on dumbphone and uncheck include text
-                    mSpinnerResolution!!.adapter = mResolutionAdapterLow
-                mCheckboxText!!.isChecked = false
-            }
-            R.id.radio_smartphone -> {
-                if (checked)
-                //Default to medium resolution on smartphone
-                    mSpinnerResolution!!.adapter = mResolutionAdapterAll
-                mSpinnerResolution!!.setSelection(1, true)
-            }
-        }
-    }
-
-    /**
-     * Set the path for export location, including UI.
-     * @param path new export location.
-     */
-    private fun setLocation(path: String?) {
-        var path = path
-        if (path == null) {
-            path = ""
-        }
-        mOutputPath = path
-        var display: String = path
-        if (path.length > LOCATION_MAX_CHAR_DISPLAY) {
-            display = "..." + path.substring(path.length - LOCATION_MAX_CHAR_DISPLAY + 3)
-        }
-        //mEditTextLocation.setText(display);
     }
 
     /**
@@ -513,12 +333,6 @@ class CreateActivity : PhaseBaseActivity() {
         editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX!!.isChecked)
 
         editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution!!.selectedItem.toString())
-        //editor.putString(PREF_KEY_FORMAT, mSpinnerFormat.getSelectedItem().toString());
-        editor.putBoolean(PREF_RB_DUMBPHONE, mRadioButtonDumbPhone!!.isChecked)
-        editor.putBoolean(PREF_RB_SMARTPHONE, mRadioButtonSmartPhone!!.isChecked)
-
-        editor.putString(Workspace.activeStory.title + PREF_KEY_TITLE, mEditTextTitle!!.text.toString())
-        editor.putString(Workspace.activeStory.title + PREF_KEY_FILE, mOutputPath)
 
         editor.apply()
     }
@@ -535,13 +349,6 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
 
         setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null))
-        //setSpinnerValue(mSpinnerFormat, prefs.getString(PREF_KEY_FORMAT, null));
-        mRadioButtonDumbPhone!!.isChecked = prefs.getBoolean(PREF_RB_DUMBPHONE, true)
-        mRadioButtonSmartPhone!!.isChecked = prefs.getBoolean(PREF_RB_SMARTPHONE, false)
-        mEditTextTitle!!.setText(prefs.getString(Workspace.activeStory.title + PREF_KEY_TITLE, Workspace.activeStory.title))
-        setLocation(prefs.getString(Workspace.activeStory.title + PREF_KEY_FILE, null))
-
-        //mTextConfirmationChecked = true;
     }
 
     /**
@@ -562,12 +369,11 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun tryStartExport() {
-        setLocation(videoRelPath)
-
         val ext = formatExtension
+        mOutputPath = mEditTextTitle!!.text.toString()
         val outputRelPath = mOutputPath + ext
 
-        if (storyRelPathExists(this,outputRelPath)) {
+        if (workspaceRelPathExists(this,"$VIDEO_DIR/$outputRelPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
@@ -581,30 +387,15 @@ class CreateActivity : PhaseBaseActivity() {
         }
     }
 
-    private fun stringJoin(list: List<String>, delimeter: String): String {
-        val result = StringBuilder()
-
-        var isFirst = true
-        for (str in list) {
-            if (isFirst) {
-                isFirst = false
-            } else {
-                result.append(delimeter)
-            }
-
-            result.append(str)
-        }
-        return result.toString()
-    }
-
     private fun startExport(outputRelPath: String) {
         synchronized(storyMakerLock) {
             storyMaker = AutoStoryMaker(this)
 
-            storyMaker!!.toggleBackgroundMusic(mCheckboxSoundtrack!!.isChecked)
-            storyMaker!!.togglePictures(mCheckboxPictures!!.isChecked)
-            storyMaker!!.toggleText(mCheckboxText!!.isChecked)
-            storyMaker!!.toggleKenBurns(mCheckboxKBFX!!.isChecked)
+            storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack!!.isChecked
+            storyMaker!!.mIncludePictures = mCheckboxPictures!!.isChecked
+            storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
+            storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
+
 
             val resolutionStr = mSpinnerResolution!!.selectedItem.toString()
             //Parse resolution string of "[WIDTH]x[HEIGHT]"
@@ -612,7 +403,8 @@ class CreateActivity : PhaseBaseActivity() {
             val m = p.matcher(resolutionStr)
             val found = m.find()
             if (found) {
-                storyMaker!!.setResolution(Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)))
+                storyMaker!!.mWidth = Integer.parseInt(m.group(1))
+                storyMaker!!.mHeight = Integer.parseInt(m.group(2))
             } else {
                 Log.e(TAG, "Resolution in spinner un-parsable.")
             }
@@ -661,7 +453,6 @@ class CreateActivity : PhaseBaseActivity() {
     companion object {
         private val TAG = "CreateActivity"
 
-        private val FILE_CHOOSER_CODE = 1
         private val LOCATION_MAX_CHAR_DISPLAY = 25
 
         private val BUTTON_LOCK_DURATION_MS: Long = 1000
@@ -675,9 +466,6 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_TEXT = "include_text"
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
         private val PREF_KEY_RESOLUTION = "resolution"
-        private val PREF_KEY_FORMAT = "format"
-        private val PREF_RB_SMARTPHONE = "smartphone"
-        private val PREF_RB_DUMBPHONE = "dumbphone"
         private val PREF_KEY_FILE = "file"
 
         @Volatile

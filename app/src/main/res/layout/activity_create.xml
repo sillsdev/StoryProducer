@@ -95,31 +95,6 @@
                             android:orientation="vertical" />
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:labelFor="@+id/spinner_export_format"
-                        android:text="@string/export_format_label"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-                    <RadioGroup
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <RadioButton android:id="@+id/radio_dumbphone"
-                            android:drawableEnd="@drawable/ic_dumbphone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/dumbphone_and_extension"
-                            android:onClick="onRadioButtonClicked"/>
-                        <RadioButton android:id="@+id/radio_smartphone"
-                            android:drawableEnd="@drawable/ic_smartphone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/smartphone_and_extension"
-                            android:onClick="onRadioButtonClicked"/>
-                    </RadioGroup>
-
                     <Space
                         android:layout_width="match_parent"
                         android:layout_height="20dp"
