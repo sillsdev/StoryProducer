@@ -87,7 +87,10 @@ class AudioPlayer {
         return setSource(context, uri)
     }
 
-    fun playAudio() { resumeAudio()}
+    fun playAudio() {
+        currentPosition = 0
+        resumeAudio()
+    }
 
     /**
      * Pauses the audio if it is currently being played
