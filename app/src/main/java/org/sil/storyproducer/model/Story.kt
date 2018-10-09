@@ -29,14 +29,11 @@ class Story(var title: String, val slides: List<Slide>){
     }
 
     fun getVideoTitle() : String {
-        var a = "hello.txt"
         val ovNoPath : MutableList<String> = ArrayList()
         for (ov in outputVideos){
             ovNoPath.add(ov.split(".")[0])
         }
-        a.split(".")[0]
-        var i = 1
-        if(!((title) in ovNoPath)) return title
+        if(title !in ovNoPath) return title
         for(i in 1..100){
             val temp = "${title}_$i"
             if(!((temp) in ovNoPath)) return temp
