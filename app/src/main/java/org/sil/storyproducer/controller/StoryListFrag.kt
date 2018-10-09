@@ -63,7 +63,7 @@ class ListAdapter(context: Context,
 
         if(position <= stories.size){
             val story = stories[position]
-            holder.txtTitle.text = story.slides[0].title
+            holder.txtTitle.text = story.title
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
             holder.imgIcon.setImageBitmap(getStoryImage(context,1,25,story))
