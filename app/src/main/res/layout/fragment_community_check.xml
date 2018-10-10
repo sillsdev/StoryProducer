@@ -1,86 +1,73 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray">
+    android:background="@color/gray"
+    tools:context="org.sil.storyproducer.controller.MultiRecordFrag"
+    android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/image_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <!-- TODO does this do anything?  Is this hidden? -->
-        <ImageView
-            android:id="@+id/fragment_commcheck_image_view"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/story_picture" />
-        <TextView
-            android:layout_width="@dimen/triangle_width"
-            android:layout_height="@dimen/triangle_height"
-            android:layout_alignBottom="@id/fragment_commcheck_image_view"
-            android:layout_alignEnd="@id/fragment_commcheck_image_view"
-            android:background="@drawable/triangle_background"/>
-        <TextView
-            android:id="@+id/slide_number_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/fragment_commcheck_image_view"
-            android:layout_alignEnd="@id/fragment_commcheck_image_view"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:text=""
-            android:textSize="@dimen/text_body"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/fragment_commcheck_Relative_Layout"
+    <LinearLayout
+        android:id="@+id/fragment_envelope"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/image_container"
-        android:background="@color/gray"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
-        android:paddingTop="10dp">
-
-        <ListView
-            android:id="@+id/audio_comment_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:scrollbars="vertical"
-            android:layout_above="@+id/buttonLayout">
-        </ListView>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/buttonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp">
+            android:id="@+id/fragment_image_envelope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_commcheck_add_comment_button"
+            <ImageView
+                android:id="@+id/fragment_image_view"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/story_picture" />
+
+            <ImageView
+                android:layout_width="@dimen/circle_diameter"
+                android:layout_height="@dimen/circle_diameter"
+                android:layout_alignBottom="@id/fragment_image_view"
+                android:layout_alignStart="@id/fragment_image_view"
+                android:background="@drawable/circle_bottom_left" />
+
+            <ImageButton
+                android:id="@+id/fragment_reference_audio_button"
+                android:layout_width="@dimen/reference_audio_button"
+                android:layout_height="@dimen/reference_audio_button"
+                android:layout_alignStart="@+id/fragment_image_view"
+                android:layout_alignBottom="@+id/fragment_image_view"
+                android:background="@drawable/ic_menu_play"
+                android:contentDescription="@string/draft_play_narration_audio" />
+
+            <ImageView
+                android:layout_width="@dimen/triangle_width"
+                android:layout_height="@dimen/triangle_height"
+                android:layout_alignBottom="@id/fragment_image_view"
+                android:layout_alignEnd="@id/fragment_image_view"
+                android:background="@drawable/triangle_background" />
+
+            <TextView
+                android:id="@+id/slide_number_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                fab:fab_title="Record"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="17dp" />
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fragment_draft_playback_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                fab:fab_title="Play"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="17dp" />
-
+                android:layout_alignBottom="@id/fragment_image_view"
+                android:layout_alignEnd="@id/fragment_image_view"
+                android:paddingStart="7dp"
+                android:paddingEnd="7dp"
+                android:text=""
+                android:textSize="@dimen/text_body" />
         </RelativeLayout>
 
-
-    </RelativeLayout>
+        <ListView
+            android:id="@+id/recordings_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            android:scrollbars="vertical">
+        </ListView>
+    </LinearLayout>
 
 </RelativeLayout>
