@@ -168,9 +168,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 audio = slide.narrationFile
             }
 
-            var soundtrack = slide.musicFile
+            var soundtrack = ""
             if (mIncludeBackgroundMusic) {
 
+                soundtrack = slide.musicFile
                 if (soundtrack == "") {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
