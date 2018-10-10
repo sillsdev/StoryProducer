@@ -58,12 +58,6 @@ class ShareActivity : PhaseBaseActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_share)
-        return true
-    }
-
     /**
      * Get handles to all necessary views and add some listeners.
      */

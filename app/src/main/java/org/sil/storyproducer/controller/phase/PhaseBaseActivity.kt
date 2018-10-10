@@ -66,6 +66,12 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         mDrawerList!!.bringToFront()
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        val item = menu.getItem(0)
+        item.setIcon(phase.getIcon())
+        return true
+    }
+
     /**
      * sets the Menu spinner_item object
      * @param menu

@@ -158,12 +158,6 @@ class CreateActivity : PhaseBaseActivity() {
         return super.dispatchTouchEvent(event)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_create)
-        return true
-    }
-
     /**
      * Get handles to all necessary views and add some listeners.
      */

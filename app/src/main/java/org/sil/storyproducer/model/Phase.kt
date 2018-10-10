@@ -55,6 +55,22 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
+    fun getIcon(phase: PhaseType = phaseType) : Int {
+        return when (phase){
+            PhaseType.LEARN -> R.drawable.ic_learn
+            PhaseType.DRAFT -> R.drawable.ic_mic_black
+            PhaseType.CREATE -> R.drawable.ic_create
+            PhaseType.SHARE -> R.drawable.ic_share
+            PhaseType.COMMUNITY_CHECK -> R.drawable.ic_comcheck
+            PhaseType.CONSULTANT_CHECK -> R.drawable.ic_concheck
+            PhaseType.WHOLE_STORY -> R.drawable.ic_concheck
+            PhaseType.REMOTE_CHECK -> R.drawable.ic_concheck
+            PhaseType.BACKT -> R.drawable.ic_backtranslation
+            PhaseType.DRAMATIZATION -> R.drawable.ic_dramatize
+            else -> R.drawable.ic_mic_black
+        }
+    }
+
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
