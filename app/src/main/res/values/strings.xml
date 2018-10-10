@@ -244,6 +244,7 @@
     <string name="export_start">Create Video</string>
     <string name="export_cancel">Cancel</string>
     <string name="export_cancel_confirmation">Are you sure you want to stop the video creation process?</string>
+    <string name="export_cancel_comment">Do not leave this screen until the video is complete.</string>
 
     <!-- ListView -->
     <string name="playVideo">Play</string>

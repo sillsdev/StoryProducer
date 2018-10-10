@@ -137,7 +137,7 @@ class DramatizationFrag : MultiRecordFrag() {
                 } else {
                     //stop other playback streams.
                     referenceAudioPlayer.currentPosition = draftPlaybackProgress
-                    referenceAudioPlayer.playAudio()
+                    referenceAudioPlayer.resumeAudio()
 
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()

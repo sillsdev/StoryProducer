@@ -33,6 +33,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private var mEditTextTitle: EditText? = null
     private var mLayoutConfiguration: View? = null
+    private var mLayoutCancel: View? = null
     private var mCheckboxSoundtrack: CheckBox? = null
     private var mCheckboxPictures: CheckBox? = null
     private var mCheckboxText: CheckBox? = null
@@ -158,12 +159,6 @@ class CreateActivity : PhaseBaseActivity() {
         return super.dispatchTouchEvent(event)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_create)
-        return true
-    }
-
     /**
      * Get handles to all necessary views and add some listeners.
      */
@@ -175,6 +170,7 @@ class CreateActivity : PhaseBaseActivity() {
         mEditTextTitle = findViewById(R.id.editText_export_title)
 
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration)
+        mLayoutCancel = findViewById(R.id.layout_cancel)
 
         mCheckboxSoundtrack = findViewById(R.id.checkbox_export_soundtrack)
         mCheckboxPictures = findViewById(R.id.checkbox_export_pictures)
@@ -258,9 +254,8 @@ class CreateActivity : PhaseBaseActivity() {
         }
 
         mLayoutConfiguration!!.visibility = visibilityPreExport
+        mLayoutCancel!!.visibility = visibilityWhileExport
         mButtonStart!!.visibility = visibilityPreExport
-        mButtonCancel!!.visibility = visibilityWhileExport
-        mProgressBar!!.visibility = visibilityWhileExport
 
         mCheckboxKBFX!!.visibility = if (mCheckboxPictures!!.isChecked) View.VISIBLE else View.GONE
 

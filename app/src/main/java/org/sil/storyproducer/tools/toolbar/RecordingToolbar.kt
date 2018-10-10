@@ -7,40 +7,27 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
-import android.media.MediaRecorder
 import android.os.Handler
-import android.provider.Settings
 import android.support.v4.widget.Space
-import android.util.Base64
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
 
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.*
-import org.sil.storyproducer.tools.Network.VolleySingleton
-import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.util.ArrayList
-import java.util.HashMap
 
 private const val RECORDING_ANIMATION_DURATION = 1500
 private const val STOP_RECORDING_DELAY = 0
@@ -52,9 +39,9 @@ private const val TAG = "AnimationToolbar"
  * This class utilizes an empty layout for the toolbar and floating action button found in this layout:
  * (toolbar_for_recording.xml). <br></br>
  * The toolbar is where buttons are added to.<br></br> The toolbar is then placed at the
- * bottom of the rootViewLayout that is passed in to the this class' constructor. So, the rootViewLayout
+ * bottom of the rootView that is passed in to the this class' constructor. So, the rootView
  * must be of type RelativeLayout because the code related to placing the toolbar in the
- * rootViewLayout requires the rootViewLayout to be of type RelativeLayout. See: [.setupToolbar]<br></br><br></br>
+ * rootView requires the rootView to be of type RelativeLayout. See: [.setupToolbar]<br></br><br></br>
  * This class also saves the recording and allows playback <br></br> from the toolbar. see: [.createToolbar]
  * <br></br><br></br>
  */
@@ -64,16 +51,16 @@ open class RecordingToolbar
  * The ctor.
  *
  * @param activity              The activity from the calling class.
- * @param rootViewToolbarLayout The rootViewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
+ * @param rootViewToolbarLayout The viewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
  * must be of type LinearLayout so that buttons can be
  * evenly spaced.
- * @param rootViewLayout        The rootViewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
+ * @param rootView        The viewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
  * @param enablePlaybackButton  Enable playback of recording.
  * @param enableDeleteButton    Enable the delete button, does not work as of now.
  * @param enableSendAudioButton Enable the sending of audio to the server
  */
 @Throws(ClassCastException::class)
-constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: RelativeLayout,
+constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
             protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
             protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
             private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener,
@@ -83,7 +70,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
     protected var toolbar: LinearLayout = rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar)
 
     protected var rootViewToolbarLayout: LinearLayout = rootViewToolbarLayout as LinearLayout
-    private val rootViewToEmbedToolbarIn: View = rootViewLayout
+    private val viewToEmbedToolbarIn: LinearLayout = rootView.findViewById(R.id.fragment_envelope) as LinearLayout
     protected var appContext: Context
 
     protected var micButton: ImageButton = ImageButton(activity)
@@ -103,7 +90,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         get() {return voiceRecorder.isRecording}
 
     init {
-        super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar))
+        super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), toolbar)
 
         this.activity = activity
         this.appContext = activity.applicationContext //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
@@ -271,23 +258,17 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
      * calling class.
      */
     protected fun setupToolbar() {
-        val myParams = arrayOf(/*new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT),*/
-                RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT))
-        val myRules = intArrayOf(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.ALIGN_END, RelativeLayout.ALIGN_PARENT_RIGHT)
-        val myView = arrayOf<View>(/*fabPlus,*/toolbar)
+        val myParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val myRules = intArrayOf(RelativeLayout.ALIGN_PARENT_BOTTOM,RelativeLayout.ALIGN_END)
 
         //Must remove all children of the layout, before appending them to the new rootView
-        rootViewToolbarLayout.removeAllViews()
-        for (i in myParams.indices) {
-            for (myRule in myRules) {
-                myParams[i].addRule(myRule, rootViewToEmbedToolbarIn.id)
-            }
-            myView[i].layoutParams = myParams[i]
-            (rootViewToEmbedToolbarIn as RelativeLayout).addView(myView[i])
+        for (myRule in myRules) {
+            myParams.addRule(myRule, viewToEmbedToolbarIn.id)
         }
-        //Index corresponds to the myView array
-        //fabPlus = (FloatingActionButton) myView[0];
-        toolbar = myView[0] as LinearLayout
+        toolbar.layoutParams = myParams
+        rootViewToolbarLayout.removeAllViews()
+        viewToEmbedToolbarIn.addView(toolbar)
     }
 
     /**

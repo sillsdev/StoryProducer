@@ -21,13 +21,12 @@ class Phase(val phaseType: PhaseType) {
     /**
      * Return chosen file.  Null if the current phase has no chosen file.
      */
-    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.COMMUNITY_CHECK,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
+    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
 
     fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){
             PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenCommunityCheckFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
             else -> ""
@@ -37,7 +36,6 @@ class Phase(val phaseType: PhaseType) {
     fun setChosenFilename(filename: String, slideNum: Int = Workspace.activeSlideNum){
         when(phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = filename
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenCommunityCheckFile = filename
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = filename
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = filename
             else -> return
@@ -45,14 +43,29 @@ class Phase(val phaseType: PhaseType) {
         return
     }
 
-    val recordedAudioFiles: MutableList<String>?
-    get(){
+    fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>? {
         return when (phaseType){
-            PhaseType.DRAFT -> Workspace.activeSlide!!.draftAudioFiles
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.communityCheckAudioFiles
-            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.dramatizationAudioFiles
-            PhaseType.BACKT -> Workspace.activeSlide!!.backTranslationAudioFiles
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             else -> null
+        }
+    }
+
+    fun getIcon(phase: PhaseType = phaseType) : Int {
+        return when (phase){
+            PhaseType.LEARN -> R.drawable.ic_learn
+            PhaseType.DRAFT -> R.drawable.ic_mic_black
+            PhaseType.CREATE -> R.drawable.ic_create
+            PhaseType.SHARE -> R.drawable.ic_share
+            PhaseType.COMMUNITY_CHECK -> R.drawable.ic_comcheck
+            PhaseType.CONSULTANT_CHECK -> R.drawable.ic_concheck
+            PhaseType.WHOLE_STORY -> R.drawable.ic_concheck
+            PhaseType.REMOTE_CHECK -> R.drawable.ic_concheck
+            PhaseType.BACKT -> R.drawable.ic_backtranslation
+            PhaseType.DRAMATIZATION -> R.drawable.ic_dramatize
+            else -> R.drawable.ic_mic_black
         }
     }
 
