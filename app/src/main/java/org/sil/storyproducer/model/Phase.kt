@@ -21,7 +21,7 @@ class Phase(val phaseType: PhaseType) {
     /**
      * Return chosen file.  Null if the current phase has no chosen file.
      */
-    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.COMMUNITY_CHECK,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
+    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
 
     fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){
@@ -45,13 +45,12 @@ class Phase(val phaseType: PhaseType) {
         return
     }
 
-    val recordedAudioFiles: MutableList<String>?
-    get(){
+    fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>? {
         return when (phaseType){
-            PhaseType.DRAFT -> Workspace.activeSlide!!.draftAudioFiles
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.communityCheckAudioFiles
-            PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.dramatizationAudioFiles
-            PhaseType.BACKT -> Workspace.activeSlide!!.backTranslationAudioFiles
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             else -> null
         }
     }

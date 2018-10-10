@@ -133,7 +133,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
     }
 }
 
-class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag) : RecordingsListAdapter.ClickListeners, Modal {
+class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag, private val slideNum : Int = Workspace.activeSlideNum) : RecordingsListAdapter.ClickListeners, Modal {
     private var rootView: ViewGroup? = null
     private var dialog: AlertDialog? = null
 
@@ -156,7 +156,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
         }
 
-        filenames = Workspace.activePhase.recordedAudioFiles!!
+        filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
         createRecordingList()
 
 
@@ -183,7 +183,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     /**
      * Updates the list of draft recordings at beginning of fragment creation and after any list change
      */
-    private fun createRecordingList() {
+    fun createRecordingList() {
         val listView = rootView!!.findViewById<ListView>(R.id.recordings_list)
         listView.isScrollbarFadingEnabled = false
         val strippedFilenames = filenames.toMutableList()

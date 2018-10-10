@@ -7,10 +7,11 @@
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/fragment_envelope"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -70,9 +71,9 @@
 
         <RelativeLayout
             android:id="@+id/fragment_dramatization_edit_text_envelope"
-            android:layout_below="@+id/fragment_image_envelope"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:focusable="true"
             android:focusableInTouchMode="true">
             <EditText
@@ -84,7 +85,7 @@
                 android:maxLength="20000"
                 android:maxLines="10" />
         </RelativeLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/lock_overlay"

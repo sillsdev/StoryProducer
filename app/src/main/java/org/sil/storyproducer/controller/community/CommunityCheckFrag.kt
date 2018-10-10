@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
  * Fragment for the community check view. The purpose of this phase is for the community to make
@@ -23,10 +25,28 @@ class CommunityCheckFrag : MultiRecordFrag() {
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setToolbar()
-        dispList = RecordingsList(context, this)
+        dispList = RecordingsList(context, this,slideNum)
         dispList!!.embedList(rootView!! as ViewGroup)
         dispList!!.show()
         return rootView
+    }
+
+    override fun setToolbar() {
+        val recordingListener = object : RecordingToolbar.RecordingListener {
+            override fun onStoppedRecording() {
+                dispList!!.createRecordingList()
+            }
+
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                //not used here
+            }
+        }
+        val rList = RecordingsList(context, this)
+
+        recordingToolbar = RecordingToolbar(this.activity, rootViewToolbar!!, rootView as RelativeLayout,
+                false, false, false, false,  rList , recordingListener, slideNum);
+        recordingToolbar!!.keepToolbarVisible()
+        recordingToolbar!!.stopToolbarMedia()
     }
 
 }

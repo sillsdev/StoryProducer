@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     android:background="@color/gray">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/fragment_envelope"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -62,8 +63,8 @@
         <RelativeLayout
             android:id="@+id/fragment_text_envelope"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/fragment_image_envelope"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:background="@color/gray"
             android:paddingStart="@dimen/activity_horizontal_margin"
             android:paddingEnd="@dimen/activity_horizontal_margin"
@@ -92,30 +93,31 @@
                 android:textSize="@dimen/text_body"
                 android:text=""
                 tools:ignore="HardcodedText" />
-        </RelativeLayout>
-        <RelativeLayout
-            android:id="@+id/concheck_button_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/concheck_logs_button"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/concheck_button_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_margin="10dp"/>
+                android:layout_alignParentBottom="true">
 
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/concheck_checkmark_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_alignBaseline="@+id/concheck_logs_button"
-                android:layout_margin="10dp"/>
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/concheck_logs_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_margin="10dp"/>
 
+                <com.getbase.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/concheck_checkmark_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignBaseline="@+id/concheck_logs_button"
+                    android:layout_margin="10dp"/>
+
+            </RelativeLayout>
         </RelativeLayout>
-    </RelativeLayout>
+    </LinearLayout>
 
 
 
