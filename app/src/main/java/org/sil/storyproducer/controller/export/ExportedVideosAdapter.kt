@@ -10,7 +10,9 @@ import android.widget.ImageButton
 import android.widget.TextView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.getWorkspaceUri
 
 import java.util.ArrayList
 
@@ -73,7 +75,7 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        val uri = getStoryUri(path)
+        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
         //TODO fix this so it actually plays.  Why not?
         videoIntent.setDataAndNormalize(uri)
         videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
@@ -86,7 +88,7 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        val uri = getStoryUri(path)
+        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)

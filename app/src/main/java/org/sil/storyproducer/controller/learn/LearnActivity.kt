@@ -84,12 +84,6 @@ class LearnActivity : PhaseBaseActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_learn)
-        return true
-    }
-
     /**
      * sets that the learn phase has already been gone through once
      * and the recording button can be shown from the beginning

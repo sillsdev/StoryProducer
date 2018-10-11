@@ -7,6 +7,7 @@ import org.sil.storyproducer.tools.StorySharedPreferences
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
 
 /**
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
@@ -29,27 +30,29 @@ fun assignNewAudioRelPath() : String {
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
     var relPath: String = ""
+    val files = Workspace.activePhase.getRecordedAudioFiles()
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so
     //they are used for the stages that do that.
-    relPath = when(phase.phaseType) {
+    when(phase.phaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
-            "$PROJECT_DIR/$phaseName" + AUDIO_EXT
+            relPath = "$PROJECT_DIR/$phaseName" + AUDIO_EXT
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
-            "$PROJECT_DIR/$phaseName" +
-                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_EXT
+            //find the next number that is available for saving files at.
+            val rFileNum = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
+            var maxNum = 0
+            for (f in files!!){
+                val num = rFileNum.find(f)
+                if(num != null)
+                    maxNum = max(maxNum,num.groupValues[1].toInt())
+            }
+            relPath = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_${maxNum+1}" + AUDIO_EXT
         }
-        //If you want, append the file
-        //TODO re-enable when wav recording is fixed.
-//        PhaseType.DRAMATIZATION -> {
-//            "$PROJECT_DIR/$phaseName" +
-//                    Workspace.activeSlideNum.toString() + "_" + dtf.format(Date()) + AUDIO_APPEND_EXT
-//        }
-        else -> {""}
+        else -> {}
     }
 
     //register it in the story data structure.
@@ -60,7 +63,6 @@ fun assignNewAudioRelPath() : String {
         //multiple files, no distinction.
         PhaseType.COMMUNITY_CHECK -> {
             Workspace.activeSlide!!.communityCheckAudioFiles.add(relPath)
-            Workspace.activeSlide!!.chosenCommunityCheckFile = relPath
         }
         PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(relPath)}
         //multiple files, one chosen.
@@ -232,7 +234,4 @@ object AudioFiles {
         return filename.replaceFirst("$prefix\\d+_".toRegex(), "").replace(extension, "")
     }
 
-}//*** Draft ***
-//*** Consultant Check ***
-//*** Back Translation ***
-//*** Dramatization ***
+}

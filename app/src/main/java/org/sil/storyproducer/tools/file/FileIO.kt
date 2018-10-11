@@ -19,16 +19,21 @@ import java.io.InputStream
 import java.io.OutputStream
 
 
-fun copyToStoryPath(context: Context, sourceUri: Uri, destRelPath: String){
+fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 //    var iStream: AutoCloseInputStream = null
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val opfd = getStoryPFD(context, destRelPath,"","w")
+        val opfd = getPFD(context, destRelPath,"","w")
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
-        oStream.write(iStream.readBytes())
+        val bArray = ByteArray(100000)
+        var bytesRead = iStream.read(bArray)
+        while(bytesRead > 0){ //eof not reached
+            oStream.write(bArray,0,bytesRead)
+            bytesRead = iStream.read(bArray)
+        }
         iStream.close()
         iStream.close()
     } catch (e: Exception) {}
@@ -64,10 +69,21 @@ fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = W
     return true
 }
 
+fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
+    if(relPath == "") return false
+    //if we can get the type, it exists.
+    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
+    return true
+}
+
 fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
     if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$storyTitle/$relPath"))
+}
+
+fun getWorkspaceUri(relPath: String) : Uri? {
+    return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
 }
 
 fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : String? {
@@ -122,7 +138,7 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
         //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
         cursor.moveToFirst()
         do {
-            childDocs.add(VIDEO_DIR + "/" + cursor.getString(0))
+            childDocs.add(cursor.getString(0))
             cursor.moveToNext()
         } while ((!cursor.isAfterLast))
     } catch (e: Exception) { return ArrayList() }

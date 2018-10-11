@@ -4,27 +4,21 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.MediaCodec
-import android.media.MediaExtractor
 import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
-import android.os.ParcelFileDescriptor
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.media.pipe.PipedMediaByteBufferSource
-import org.sil.storyproducer.tools.media.pipe.SourceClosedException
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
 import java.io.IOException
-import java.nio.ByteBuffer
 
 
 //See https://developer.android.com/guide/topics/media/media-formats.html for supported formats.
@@ -87,7 +81,8 @@ abstract class AudioRecorder(val activity: Activity) {
             mStoryMaker.churn()
             mStoryMaker.close()
 
-            copyToStoryPath(context, Uri.fromFile(File(tempDestPath)),orgAudioRelPath)
+            copyToWorkspacePath(context, Uri.fromFile(File(tempDestPath)),
+                    "${Workspace.activeStory.title}/$orgAudioRelPath")
         }
     }
 }

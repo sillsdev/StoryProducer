@@ -79,22 +79,22 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
 
 
 
-    override fun setReferenceAudioButton(playButton: ImageButton) {
-        playButton.setOnClickListener {
+    override fun setReferenceAudioButton() {
+        referncePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.stopAudio()
-                    playButton.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
                 } else {
                     //stop other playback streams.
                     recordingToolbar!!.stopToolbarMedia()
                     referenceAudioPlayer.playAudio()
-                    recordingToolbar?.onToolbarTouchStopAudio(playButton, R.drawable.ic_menu_play, referenceAudioPlayer)
+                    recordingToolbar?.onToolbarTouchStopAudio(referncePlayButton!!, R.drawable.ic_menu_play, referenceAudioPlayer)
 
-                    playButton.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
                         PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))

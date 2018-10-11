@@ -41,7 +41,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
         //soundtrack
         val mSoundTrack = reSoundTrack.matcher(t)
-        if(mSoundTrack.find()) {slide.musicFile = mSoundTrack.group(1)}
+        if(mSoundTrack.find()) {slide.musicFile = "audio/${mSoundTrack.group(1)}"}
         val mSoundTrackV = reSoundTrackVolume.matcher(t)
         if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1).toDouble()}
 
@@ -59,17 +59,25 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         }
         val mSR = reSR.matcher(t)
         if(mSR.find()) {
-            slide.startMotion = Rect((mSR.group(1).toDouble()*slide.width).toInt(), //left
-                    (mSR.group(2).toDouble()*slide.height).toInt(),  //top
-                    (mSR.group(3).toDouble()*slide.width).toInt(),   //right
-                    (mSR.group(4).toDouble()*slide.height).toInt())  //bottom
+            val x = mSR.group(1).toDouble()*slide.width
+            val y = mSR.group(2).toDouble()*slide.width
+            val w = mSR.group(3).toDouble()*slide.width
+            val h = mSR.group(4).toDouble()*slide.width
+            slide.startMotion = Rect((x).toInt(), //left
+                    (y).toInt(),  //top
+                    (x+w).toInt(),   //right
+                    (y+h).toInt())  //bottom
         }
         val mER = reER.matcher(t)
         if(mER.find()) {
-            slide.endMotion = Rect((mER.group(1).toDouble()*slide.width).toInt(), //left
-                    (mER.group(2).toDouble()*slide.height).toInt(),  //top
-                    (mER.group(3).toDouble()*slide.width).toInt(),   //right
-                    (mER.group(4).toDouble()*slide.height).toInt())  //bottom
+            val x = mER.group(1).toDouble()*slide.width
+            val y = mER.group(2).toDouble()*slide.width
+            val w = mER.group(3).toDouble()*slide.width
+            val h = mER.group(4).toDouble()*slide.width
+            slide.endMotion = Rect((x).toInt(), //left
+                    (y).toInt(),  //top
+                    (x+w).toInt(),   //right
+                    (y+h).toInt())  //bottom
         }
         slides.add(slide)
     }

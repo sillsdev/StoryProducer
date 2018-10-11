@@ -36,7 +36,10 @@ class PipedAudioConcatenator
     private val catSources = LinkedList<PipedMediaByteBufferSource?>()
     private val catExpectedDurations = LinkedList<Long>()
 
-    private var mFadeOutUs: Long = 0
+    //default to 20ms - get most of the finger press noise.
+    private var mFadeInUs: Long = 20000
+    private var mFadeOutUs: Long = 20000
+    private val fadeInSamples: Int get() {return (mFadeInUs * mSampleRate / 1000000.0).toInt()}
     private val fadeOutSamples: Int get() {return (mFadeOutUs * mSampleRate / 1000000.0).toInt()}
 
 
@@ -314,16 +317,23 @@ class PipedAudioConcatenator
                 fetchSourceBuffer()
             }
 
-            //Only need to modify fadeout samples.
-            if (mFadeOutUs > 0){
-                val fadeOutStartTime = sourceEnd - mFadeOutUs
-                val fadeOutSamplesToEnd = (sourceEnd *  mSampleRate / 1000000.0 - mAbsoluteSampleIndex).toInt()
-                val fadeOutPos = max(srcPos, srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
-                val fadeOutMult: Float = (1.0 / fadeOutSamples).toFloat()
-                for (index in fadeOutPos until srcEnd) {
-                    srcBuffer[index] = (srcBuffer[index] * (fadeOutSamplesToEnd - index) * fadeOutMult).toShort()
-                }
+            //Do a controlled fade out/fade in.
+            val fadeInEndTime = mSourceStart + mFadeInUs
+            val fadeInSamplesAtPos = ((mSeekTime - mSourceStart) *  mSampleRate / 1000000.0).toInt()
+            val fadeInEnd = min(srcEnd, srcPos + ((fadeInEndTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
+            val fadeInMult: Float = (1.0 / fadeInSamples).toFloat()
+            for (index in srcPos until fadeInEnd) {
+                srcBuffer[index] = (srcBuffer[index] * (fadeInSamplesAtPos + index) * fadeInMult).toShort()
             }
+
+            val fadeOutStartTime = sourceEnd - mFadeOutUs
+            val fadeOutSamplesToEnd = (sourceEnd *  mSampleRate / 1000000.0 - mAbsoluteSampleIndex).toInt()
+            val fadeOutPos = max(srcPos, srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
+            val fadeOutMult: Float = (1.0 / fadeOutSamples).toFloat()
+            for (index in fadeOutPos until srcEnd) {
+                srcBuffer[index] = (srcBuffer[index] * (fadeOutSamplesToEnd - index) * fadeOutMult).toShort()
+            }
+
 
             val isWithinExpectedTime = mSourceExpectedDuration == 0L || mSeekTime <= sourceEnd
             if (!srcHasBuffer || !isWithinExpectedTime) {

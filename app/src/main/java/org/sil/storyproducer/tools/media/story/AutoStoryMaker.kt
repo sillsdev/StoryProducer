@@ -30,20 +30,23 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     // size of a frame, in pixels
     // first size isn't great quality, but runs faster
-    private var mWidth = 320
-    private var mHeight = 240
+    var mWidth = 320
+    var mHeight = 240
 
     private var mOutputExt = ".mp4"
-    private var videoRelPath: String = VIDEO_DIR + "/" +
-            Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
+    private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
-    private var mVideoBitRate: Int = 0
+    private val mVideoBitRate: Int
+        get() {
+            return ((1280 * mHeight * VIDEO_FRAME_RATE).toFloat()
+                    * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
+        }
 
-    private var mIncludeBackgroundMusic = true
-    private var mIncludePictures = true
-    private var mIncludeText = false
-    private var mIncludeKBFX = true
+    var mIncludeBackgroundMusic = true
+    var mIncludePictures = true
+    var mIncludeText = false
+    var mIncludeKBFX = true
 
     private var mLogProgress = false
 
@@ -59,44 +62,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             mStoryMaker!!.progress
         }
 
-    init {
-        setResolution(mWidth, mHeight)
-    }
-
     fun setOutputFile(relPath: String) {
         videoRelPath = relPath
-    }
-
-    fun setResolution(width: Int, height: Int) {
-        mWidth = width
-        mHeight = height
-
-        val pixelRate = mWidth * mHeight * VIDEO_FRAME_RATE
-        mVideoBitRate = (pixelRate.toFloat() * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
-    }
-
-    fun toggleBackgroundMusic(includeBackgroundMusic: Boolean) {
-        mIncludeBackgroundMusic = includeBackgroundMusic
-    }
-
-    fun togglePictures(includePictures: Boolean) {
-        mIncludePictures = includePictures
-    }
-
-    fun toggleText(includeText: Boolean) {
-        mIncludeText = includeText
-    }
-
-    fun toggleKenBurns(includeKBFX: Boolean) {
-        mIncludeKBFX = includeKBFX
-    }
-
-    /**
-     * Set whether progress is periodically logged in console. Default is false (no console logging).
-     * @param logProgress whether progress should be logged in console.
-     */
-    fun toggleLogProgress(logProgress: Boolean) {
-        mLogProgress = logProgress
     }
 
     override fun start() {
@@ -129,7 +96,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
-            copyToStoryPath(context,Uri.fromFile(videoTempFile),videoRelPath)
+            copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
+            Workspace.activeStory.addVideo(videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
@@ -149,7 +117,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val videoFormat = MediaFormat.createVideoFormat(VIDEO_MIME_TYPE, mWidth, mHeight)
+        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
@@ -200,9 +168,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 audio = slide.narrationFile
             }
 
-            var soundtrack = slide.musicFile
+            var soundtrack = ""
             if (mIncludeBackgroundMusic) {
 
+                soundtrack = slide.musicFile
                 if (soundtrack == "") {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
@@ -275,8 +244,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     companion object {
         private val TAG = "AutoStoryMaker"
-        //    private int mWidth = 1280;
-        //    private int mHeight = 720;
 
         private val TITLE_FONT_SIZE = 20
 
@@ -286,12 +253,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val COPYRIGHT_SLIDE_US: Long = 3000000
 
         // parameters for the video encoder
-        private val VIDEO_MIME_TYPE = "video/avc"    // H.264 Advanced Video Coding
         private val VIDEO_FRAME_RATE = 30               // 30fps
         private val VIDEO_IFRAME_INTERVAL = 1           // 1 second between I-frames
 
         // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 2                   // 1, 2, or 4
+        private val MOTION_FACTOR = 4                   // 1, 2, or 4
         private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder

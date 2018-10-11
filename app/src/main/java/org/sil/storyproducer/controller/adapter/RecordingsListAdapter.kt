@@ -103,9 +103,9 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         val newName = EditText(context)
 
         // Programmatically set layout properties for edit text field
-        val params = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
+        val params = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT)
         // Apply layout properties
         newName.layoutParams = params
 
@@ -133,8 +133,8 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
     }
 }
 
-class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag) : RecordingsListAdapter.ClickListeners, Modal {
-    private var rootView: LinearLayout? = null
+class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag, private val slideNum : Int = Workspace.activeSlideNum) : RecordingsListAdapter.ClickListeners, Modal {
+    private var rootView: ViewGroup? = null
     private var dialog: AlertDialog? = null
 
     private var filenames: MutableList<String> = mutableListOf()
@@ -143,37 +143,47 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     private val audioPlayer: AudioPlayer = AudioPlayer()
     private var currentPlayingButton: ImageButton? = null
+    private var embedded = false
+
+    fun embedList(view: ViewGroup){
+        rootView = view
+        embedded = true
+    }
 
     override fun show() {
         val inflater = parentFragment.activity.layoutInflater
-        rootView = inflater.inflate(R.layout.recordings_list, null) as LinearLayout
+        if(!embedded) {
+            rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
+        }
 
-        filenames = Workspace.activePhase.recordedAudioFiles!!
+        filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
         createRecordingList()
 
-        val tb = rootView!!.findViewById<Toolbar>(R.id.toolbar2)
-        //Note that user-facing slide number is 1-based while it is 0-based in code.
-        tb.setTitle(R.string.recordings_title)
-        val exit = rootView!!.findViewById<ImageButton>(R.id.exitButton)
 
-        val alertDialog = AlertDialog.Builder(context)
-        alertDialog.setView(rootView)
-        dialog = alertDialog.create()
-        exit.setOnClickListener {
-            dialog!!.dismiss()
-        }
-        dialog!!.setOnDismissListener {
-            if (audioPlayer.isAudioPlaying)
-                audioPlayer.stopAudio()
-        }
-        dialog!!.show()
+        if(!embedded){
+            val tb = rootView!!.findViewById<Toolbar>(R.id.toolbar2)
+            tb?.setTitle(R.string.recordings_title)
 
+            val alertDialog = AlertDialog.Builder(context)
+            alertDialog.setView(rootView)
+            dialog = alertDialog.create()
+
+            val exit = rootView!!.findViewById<ImageButton>(R.id.exitButton)
+            exit?.setOnClickListener {
+                dialog!!.dismiss()
+            }
+            dialog!!.setOnDismissListener {
+                if (audioPlayer.isAudioPlaying)
+                    audioPlayer.stopAudio()
+            }
+            dialog!!.show()
+        }
     }
 
     /**
      * Updates the list of draft recordings at beginning of fragment creation and after any list change
      */
-    private fun createRecordingList() {
+    fun createRecordingList() {
         val listView = rootView!!.findViewById<ListView>(R.id.recordings_list)
         listView.isScrollbarFadingEnabled = false
         val strippedFilenames = filenames.toMutableList()

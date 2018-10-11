@@ -58,12 +58,6 @@ class ShareActivity : PhaseBaseActivity() {
         }
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_share)
-        return true
-    }
-
     /**
      * Get handles to all necessary views and add some listeners.
      */
@@ -83,7 +77,13 @@ class ShareActivity : PhaseBaseActivity() {
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
 
-        val exportedVideos = getChildDocuments(this,"${Workspace.activeStory.title}/$VIDEO_DIR")
+        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val exportedVideos : MutableList<String> = ArrayList()
+        for (i in 0 until presentVideos.size){
+            if(presentVideos[i] in story.outputVideos){
+                exportedVideos.add(presentVideos[i])
+            }
+        }
         if (exportedVideos.isNotEmpty()) {
             mNoVideosText!!.visibility = View.GONE
         }
