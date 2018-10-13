@@ -82,5 +82,5 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         slides.add(slide)
     }
 
-    return Story(storyPath.name,slides)
+    return Story(storyPath.name!!,slides)
 }

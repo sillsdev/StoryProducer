@@ -151,13 +151,13 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 R.string.nav_open, R.string.nav_close) {
 
             /** Called when a drawer has settled in a completely open state.  */
-            override fun onDrawerOpened(drawerView: View?) {
+            override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
                 invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely closed state.  */
-            override fun onDrawerClosed(view: View?) {
+            override fun onDrawerClosed(view: View) {
                 super.onDrawerClosed(view)
                 invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
             }

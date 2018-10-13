@@ -22,7 +22,7 @@ class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.On
     }
 
     private fun handleSetNextItem() {
-        val lastPosition = mViewPager.adapter.count - 1
+        val lastPosition = mViewPager.adapter!!.count - 1
         if (Workspace.activeSlideNum == 0) {
             mViewPager.setCurrentItem(lastPosition, false)
         } else if (Workspace.activeSlideNum == lastPosition) {

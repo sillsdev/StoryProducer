@@ -82,7 +82,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         }
         for (i in mOutputBuffers!!.indices) {
             if (mOutputBuffers!![i] === buffer) {
-                mCodec!!.releaseOutputBuffer(i, mPresentationTimeQueue.remove())
+                mCodec!!.releaseOutputBuffer(i, 0)
                 return
             }
         }

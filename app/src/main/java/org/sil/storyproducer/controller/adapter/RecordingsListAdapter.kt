@@ -151,7 +151,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     }
 
     override fun show() {
-        val inflater = parentFragment.activity.layoutInflater
+        val inflater = parentFragment.activity!!.layoutInflater
         if(!embedded) {
             rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
         }
@@ -170,13 +170,13 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
             val exit = rootView!!.findViewById<ImageButton>(R.id.exitButton)
             exit?.setOnClickListener {
-                dialog!!.dismiss()
+                dialog?.dismiss()
             }
-            dialog!!.setOnDismissListener {
+            dialog?.setOnDismissListener {
                 if (audioPlayer.isAudioPlaying)
                     audioPlayer.stopAudio()
             }
-            dialog!!.show()
+            dialog?.show()
         }
     }
 
@@ -199,7 +199,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     override fun onRowClick(recordingTitle: String) {
         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$recordingTitle")
-        dialog!!.dismiss()
+        dialog?.dismiss()
     }
 
     override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {

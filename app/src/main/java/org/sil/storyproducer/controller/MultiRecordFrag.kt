@@ -26,10 +26,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
     protected var recordingToolbar: RecordingToolbar? = null
 
 
-    override fun onCreateView(inflater: LayoutInflater?,
+    override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        rootViewToolbar = inflater!!.inflate(R.layout.toolbar_for_recording, container, false)
+        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setToolbar()
         return rootView
     }
@@ -81,7 +81,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
 
     override fun setReferenceAudioButton() {
         referncePlayButton!!.setOnClickListener {
-            if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+            if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
@@ -97,8 +97,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
                         else -> {}
                     }
                 }
@@ -119,9 +119,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
                 //not used here
             }
         }
-        val rList = RecordingsList(context, this)
+        val rList = RecordingsList(context!!, this)
 
-        recordingToolbar = RecordingToolbar(this.activity, rootViewToolbar!!, rootView as RelativeLayout,
+        recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as RelativeLayout,
                 true, false, true, false,  rList , recordingListener, slideNum);
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
