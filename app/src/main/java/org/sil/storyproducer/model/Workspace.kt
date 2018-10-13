@@ -61,7 +61,7 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri){
         try {
-            workspace = DocumentFile.fromTreeUri(context, uri)
+            workspace = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)

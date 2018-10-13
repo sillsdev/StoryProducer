@@ -38,9 +38,9 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     //Check if path is path
     if(!storyPath.isDirectory) return null
     //make a project directory if there is none.
-    if (storyRelPathExists(context,PROJECT_DIR,storyPath.name)) {
+    if (storyRelPathExists(context,PROJECT_DIR,storyPath.name!!)) {
         //parse the project file, if there is one.
-        story = storyFromJson(context,storyPath.name)
+        story = storyFromJson(context,storyPath.name!!)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }

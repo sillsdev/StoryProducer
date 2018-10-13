@@ -44,16 +44,16 @@ abstract class SlidePhaseFrag : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        slideNum = this.arguments.getInt(SLIDE_NUM)
+        slideNum = this.arguments!!.getInt(SLIDE_NUM)
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?,
+    override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        rootView = inflater!!.inflate(R.layout.fragment_slide, container, false)
+        rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
@@ -72,7 +72,7 @@ abstract class SlidePhaseFrag : Fragment() {
         super.onResume()
 
         referenceAudioPlayer = AudioPlayer()
-        referenceAudioPlayer.setStorySource(context,Workspace.activePhase.getReferenceAudioFile(slideNum))
+        referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
     }
@@ -93,14 +93,14 @@ abstract class SlidePhaseFrag : Fragment() {
     protected open fun setUiColors() {
         if (slideNum == 0) {
             var rl = rootView!!.findViewById<ViewGroup>(R.id.fragment_envelope)
-            rl?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
             rl = rootView!!.findViewById(R.id.fragment_text_envelope)
-            rl?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
 
             var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
-            tv?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
             tv = rootView!!.findViewById(R.id.fragment_reference_text)
-            tv?.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryDark))
+            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
         }
     }
 
@@ -111,10 +111,10 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap = getStoryImage(context,slideNum)
+        var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
 
         //Get the height of the phone.
-        val phoneProperties = context.resources.displayMetrics
+        val phoneProperties = context!!.resources.displayMetrics
         var height = phoneProperties.heightPixels
         val scalingFactor = 0.4
         height = (height * scalingFactor).toInt()
@@ -165,7 +165,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
     protected open fun setReferenceAudioButton() {
         referncePlayButton!!.setOnClickListener {
-            if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+            if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
@@ -179,8 +179,8 @@ abstract class SlidePhaseFrag : Fragment() {
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(activity.getString(R.string.LWC_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
                         else -> {}
                     }
                 }

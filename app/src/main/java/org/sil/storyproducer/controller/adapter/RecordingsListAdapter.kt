@@ -151,7 +151,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     }
 
     override fun show() {
-        val inflater = parentFragment.activity.layoutInflater
+        val inflater = parentFragment.activity!!.layoutInflater
         if(!embedded) {
             rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
         }

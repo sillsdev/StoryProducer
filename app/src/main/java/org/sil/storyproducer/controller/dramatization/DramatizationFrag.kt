@@ -31,8 +31,8 @@ class DramatizationFrag : MultiRecordFrag() {
     private var wasAudioPlaying = false
 
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater!!.inflate(R.layout.fragment_dramatization, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
@@ -125,7 +125,7 @@ class DramatizationFrag : MultiRecordFrag() {
 
     override fun setReferenceAudioButton() {
         referncePlayButton!!.setOnClickListener {
-            if (!storyRelPathExists(context,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+            if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
@@ -156,10 +156,10 @@ class DramatizationFrag : MultiRecordFrag() {
                 override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
             }
 
-            val rList = RecordingsList(context, this)
+            val rList = RecordingsList(context!!, this)
 
             //TODO re-enable the pausing recording toolbar when wav saving and concatentation are working again.
-            recordingToolbar = PausingRecordingToolbar(activity, toolbar!!, rootView as RelativeLayout,
+            recordingToolbar = PausingRecordingToolbar(activity!!, toolbar!!, rootView as RelativeLayout,
                     true, false, true, false, rList, recordingListener, slideNum)
             recordingToolbar!!.keepToolbarVisible()
         }
@@ -185,7 +185,7 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     private fun closeKeyboard(viewToFocus: View?) {
         if (viewToFocus != null) {
-            val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
