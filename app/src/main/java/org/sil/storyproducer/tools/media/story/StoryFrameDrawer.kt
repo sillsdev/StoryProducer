@@ -90,20 +90,14 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
     @Throws(IOException::class, SourceUnacceptableException::class)
     override fun setup() {
-        if (mPages.size > 0) {
+        if (mPages.isNotEmpty()) {
             val nextPage = mPages[0]
             mNextSlideImgDuration = nextPage.getVisibleDuration(mAudioTransitionUs, mSlideCrossFadeUs)
 
             val nextText = nextPage.text
-            if (nextText == null) {
-                mNextTextOverlay = null
-            } else {
-                mNextTextOverlay = TextOverlay(nextText)
-                //Push text to bottom if there is a picture.
-                if (nextPage.imRelPath != null) {
-                    mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
-                }
-            }
+            mNextTextOverlay = TextOverlay(nextText)
+            //Push text to bottom if there is a picture.
+            mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
         }
     }
 
@@ -130,7 +124,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
             val currentPage = mPages[mCurrentSlideIndex]
 
-            mCurrentSlideStart = mCurrentSlideStart + mCurrentSlideExDuration + nextSlideTransitionUs
+            mCurrentSlideStart += mCurrentSlideExDuration + nextSlideTransitionUs
             mCurrentSlideExDuration = currentPage.getExclusiveDuration(mAudioTransitionUs, mSlideCrossFadeUs)
             mCurrentSlideImgDuration = mNextSlideImgDuration
             nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration
@@ -142,15 +136,9 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
                 mNextSlideImgDuration = nextPage.getVisibleDuration(mAudioTransitionUs, mSlideCrossFadeUs)
 
                 val nextText = nextPage.text
-                if (nextText == null) {
-                    mNextTextOverlay = null
-                } else {
-                    mNextTextOverlay = TextOverlay(nextText)
-                    //Push text to bottom if there is a picture.
-                    if (nextPage.imRelPath != null) {
-                        mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
-                    }
-                }
+                mNextTextOverlay = TextOverlay(nextText)
+                //Push text to bottom if there is a picture.
+                mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
             }
         }
 
@@ -205,17 +193,17 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             if (kbfx != null) {
                 drawRect = kbfx.interpolate(position)
             } else {
-                drawRect = Rect(0, 0, bitmap!!.getWidth(), bitmap!!.getHeight())
+                drawRect = Rect(0, 0, bitmap.width, bitmap.height)
             }
 
             if (MediaHelper.DEBUG) {
-                Log.d(TAG, "drawing bitmap (" + bitmap!!.getWidth() + "x" + bitmap!!.getHeight() + ") from "
+                Log.d(TAG, "drawing bitmap (" + bitmap.width + "x" + bitmap.height + ") from "
                         + drawRect + " to canvas " + mScreenRect)
             }
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 
-            canv.drawBitmap(bitmap!!, drawRect, mScreenRect, mBitmapPaint)
+            canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint)
         } else {
             //If there is no picture, draw black background for text overlay.
             canv.drawARGB((alpha * 255).toInt(), 0, 0, 0)

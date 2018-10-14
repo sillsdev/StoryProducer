@@ -32,8 +32,6 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     private var mConfigureFormat: MediaFormat? = null
     private var mSource: Source? = null
 
-    private val mPresentationTimeQueue = LinkedList<Long>()
-
     private var mCurrentPresentationTime: Long = 0
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -75,38 +73,20 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         start()
     }
 
-    @Throws(InvalidBufferException::class, SourceClosedException::class)
-    override fun releaseBuffer(buffer: ByteBuffer?) {
-        if (mComponentState == PipedMediaSource.State.CLOSED) {
-            throw SourceClosedException()
-        }
-        for (i in mOutputBuffers!!.indices) {
-            if (mOutputBuffers!![i] === buffer) {
-                mCodec!!.releaseOutputBuffer(i, 0)
-                return
-            }
-        }
-        throw InvalidBufferException("I don't own that buffer!")
-    }
-
     override fun spinInput() {
         if (mSource == null) {
             throw RuntimeException("No source provided!")
         }
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
-            val canv: Canvas
             //Note: This method of getting a canvas to draw to may be invalid
             //per documentation of MediaCodec.getInputSurface().
-            if (Build.VERSION.SDK_INT >= 23) {
-                canv = mSurface!!.lockHardwareCanvas()
+            val canv = if (Build.VERSION.SDK_INT >= 23) {
+                mSurface!!.lockHardwareCanvas()
             } else {
-                canv = mSurface!!.lockCanvas(null)
+                mSurface!!.lockCanvas(null)
             }
             mCurrentPresentationTime = mSource!!.fillCanvas(canv)
-            synchronized(mPresentationTimeQueue) {
-                mPresentationTimeQueue.add(mCurrentPresentationTime)
-            }
             mSurface!!.unlockCanvasAndPost(canv)
         }
 
@@ -118,14 +98,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     }
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
-        try {
-            synchronized(mPresentationTimeQueue) {
-                info.presentationTimeUs = mPresentationTimeQueue.last()
-            }
-        } catch (e: NoSuchElementException) {
-            throw RuntimeException("Tried to correct time for extra frame", e)
-        }
-
+        info.presentationTimeUs = mCurrentPresentationTime
     }
 
     /**

@@ -30,7 +30,9 @@ class AudioPlayer {
         get() = mPlayer.duration
 
     var currentPosition: Int
-        get() = mPlayer.currentPosition
+        get() =
+            try{ mPlayer.currentPosition
+            } catch (e : Exception){ 0 }
         set(value) { if(fileExists) mPlayer.seekTo(value) }
 
     /**
