@@ -62,12 +62,6 @@ class DramatizationFrag : MultiRecordFrag() {
     override fun onResume() {
         super.onResume()
 
-        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            draftPlaybackProgress = 0
-            referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
-            draftPlaybackSeekBar?.progress = draftPlaybackProgress
-        })
-
         mSeekBarTimer = Timer()
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
@@ -76,7 +70,7 @@ class DramatizationFrag : MultiRecordFrag() {
                     draftPlaybackSeekBar?.progress = draftPlaybackProgress
                 }
             }
-        },0,200)
+        },0,33)
 
         setSeekBarListener()
     }

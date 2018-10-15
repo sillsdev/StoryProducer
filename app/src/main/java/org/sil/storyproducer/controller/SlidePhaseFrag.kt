@@ -74,7 +74,10 @@ abstract class SlidePhaseFrag : Fragment() {
         referenceAudioPlayer = AudioPlayer()
         referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
 
-        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
+        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+            referenceAudioPlayer.currentPosition = 0
+        })
     }
 
     /**
