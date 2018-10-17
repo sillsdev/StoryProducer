@@ -44,7 +44,6 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
-    //TODO If not, See if there is an html bloom file there
     try {
         story = parsePhotoStoryXML(context, storyPath)
     } catch (e : Exception){
