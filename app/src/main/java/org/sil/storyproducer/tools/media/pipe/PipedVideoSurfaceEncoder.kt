@@ -32,6 +32,8 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     private var mConfigureFormat: MediaFormat? = null
     private var mSource: Source? = null
 
+    private val mPresentationTimeQueue = LinkedList<Long>()
+
     private var mCurrentPresentationTime: Long = 0
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -87,6 +89,9 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
                 mSurface!!.lockCanvas(null)
             }
             mCurrentPresentationTime = mSource!!.fillCanvas(canv)
+            synchronized(mPresentationTimeQueue) {
+                mPresentationTimeQueue.add(mCurrentPresentationTime)
+            }
             mSurface!!.unlockCanvasAndPost(canv)
         }
 
@@ -98,7 +103,13 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     }
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
-        info.presentationTimeUs = mCurrentPresentationTime
+        try {
+            synchronized(mPresentationTimeQueue) {
+                info.presentationTimeUs = mPresentationTimeQueue.pop()
+            }
+        } catch (e: NoSuchElementException) {
+            throw RuntimeException("Tried to correct time for extra frame", e)
+        }
     }
 
     /**

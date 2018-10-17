@@ -11,7 +11,6 @@ import android.util.Log
 import org.sil.storyproducer.tools.file.getStoryImage
 
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder
 import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException
@@ -22,7 +21,7 @@ import java.io.IOException
  * This class knows how to draw the frames provided to it by [StoryMaker].
  */
 internal class StoryFrameDrawer(private val context: Context, private val mVideoFormat: MediaFormat, private val mPages: Array<StoryPage>, private val mAudioTransitionUs: Long, slideCrossFadeUs: Long) : PipedVideoSurfaceEncoder.Source {
-    private val mSlideCrossFadeUs: Long
+    private val xTime: Long //transition (cross fade) time
 
     private val mFrameRate: Int
 
@@ -35,12 +34,22 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     private var mCurrentTextOverlay: TextOverlay? = null
     private var mNextTextOverlay: TextOverlay? = null
 
-    private var mCurrentSlideIndex = -1 //starts at -1 to allow initial transition
-    private var mCurrentSlideExDuration: Long = 0 //exclusive duration of current slide
-    private var mCurrentSlideStart: Long = 0 //time (after transition) of audio start
-
-    private var mCurrentSlideImgDuration: Long = 0 //total duration of current slide image (cached for performance)
-    private var mNextSlideImgDuration: Long = 0 //total duration of next slide image (cached for performance)
+    private var slideIndex = -1 //starts at -1 to allow initial transition
+    private var slideAudioStart: Long = 0
+    private var slideAudioEnd: Long = 0
+    private var nSlideAudioEnd: Long = 0
+    private val slideVisStart: Long
+        get() {return if(slideIndex<=0){slideAudioStart} else {slideAudioStart-xTime/2}}
+    private val slideXStart: Long  //beginning of the next transition
+        get() {return if(slideIndex>=mPages.size-1){slideAudioEnd} else {slideAudioEnd-xTime/2}}
+    private val slideXEnd: Long  //end of the next transition
+        get() {return if(slideIndex>=mPages.size-1){slideAudioEnd} else {slideAudioEnd+xTime/2}}
+    private val nSlideXEnd: Long  //end of the next transition
+        get() {return if(slideIndex>=mPages.size-2){nSlideAudioEnd} else {nSlideAudioEnd+xTime/2}}
+    private val slideVisDur: Long // the visible duration of the slide
+        get() {return slideXEnd - slideVisStart}
+    private val nSlideVisDur: Long // the visible duration of the next slide
+        get() {return nSlideXEnd - slideXStart}
 
     private var mCurrentFrame = 0
 
@@ -62,7 +71,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             }
         }
 
-        mSlideCrossFadeUs = correctedSlideTransitionUs
+        xTime = correctedSlideTransitionUs
 
         mFrameRate = mVideoFormat.getInteger(MediaFormat.KEY_FRAME_RATE)
 
@@ -92,7 +101,6 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     override fun setup() {
         if (mPages.isNotEmpty()) {
             val nextPage = mPages[0]
-            mNextSlideImgDuration = nextPage.getVisibleDuration(mAudioTransitionUs, mSlideCrossFadeUs)
 
             val nextText = nextPage.text
             mNextTextOverlay = TextOverlay(nextText)
@@ -103,72 +111,61 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
     override fun fillCanvas(canv: Canvas): Long {
 
-        //TODO somethere in here is where the video time is not working properly.
-        val currentTimeUs = MediaHelper.getTimeFromIndex(mFrameRate.toLong(), mCurrentFrame)
+        //[-|-page-1-|-| ]
+        //           [ |-|-page-2-|-| ]
+        //                        [ |-|-page-last-|-]
+        // | | | (two bars) = transition time (xtime)
+        // | | (one bar) = 1/2 xtime
+        // --- (dash) sound playing from slide
+        // Exclusive time + xtime/2 for first and last slide
+        // "current page" is the page until it ends
+        // "Next page" is growing in intensity for "xtime"
+        // Visible time
 
-        var nextSlideTransitionUs = mSlideCrossFadeUs
-        //For pre-first "slide" and last slide, make the transition half as long.
-        if (mCurrentSlideIndex == -1 || mCurrentSlideIndex == mPages.size - 1) {
-            nextSlideTransitionUs /= 2
-        }
+        //Each time this is called, go forward 1/30 of a second.
+        val cTime = MediaHelper.getTimeFromIndex(mFrameRate.toLong(), mCurrentFrame)
 
-        var nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration
+        if(cTime > slideXEnd){
+            //go to the next slide
+            slideIndex++
 
-        while (currentTimeUs > nextSlideTransitionStartUs + nextSlideTransitionUs) {
-            mCurrentSlideIndex++
-
-            if (mCurrentSlideIndex >= mPages.size) {
+            if (slideIndex >= mPages.size) {
                 mIsVideoDone = true
-                break
-            }
+            } else {
+                slideAudioStart = slideAudioEnd
+                slideAudioEnd += mPages[slideIndex].getDuration(mAudioTransitionUs)
+                mCurrentTextOverlay = mNextTextOverlay
 
-            val currentPage = mPages[mCurrentSlideIndex]
+                if (slideIndex + 1 < mPages.size) {
+                    nSlideAudioEnd = slideAudioEnd + mPages[slideIndex + 1].getDuration(mAudioTransitionUs)
 
-            mCurrentSlideStart += mCurrentSlideExDuration + nextSlideTransitionUs
-            mCurrentSlideExDuration = currentPage.getExclusiveDuration(mAudioTransitionUs, mSlideCrossFadeUs)
-            mCurrentSlideImgDuration = mNextSlideImgDuration
-            nextSlideTransitionStartUs = mCurrentSlideStart + mCurrentSlideExDuration
-
-            mCurrentTextOverlay = mNextTextOverlay
-
-            if (mCurrentSlideIndex + 1 < mPages.size) {
-                val nextPage = mPages[mCurrentSlideIndex + 1]
-                mNextSlideImgDuration = nextPage.getVisibleDuration(mAudioTransitionUs, mSlideCrossFadeUs)
-
-                val nextText = nextPage.text
-                mNextTextOverlay = TextOverlay(nextText)
-                //Push text to bottom if there is a picture.
-                mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+                    val nextText = mPages[slideIndex + 1].text
+                    mNextTextOverlay = TextOverlay(nextText)
+                    //Push text to bottom if there is a picture.
+                    mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+                }
             }
         }
 
-        val timeSinceCurrentSlideStartUs = currentTimeUs - mCurrentSlideStart
-        val currentSlideOffsetUs = timeSinceCurrentSlideStartUs + mSlideCrossFadeUs
-
-        drawFrame(canv, mCurrentSlideIndex, currentSlideOffsetUs, mCurrentSlideImgDuration,
+        drawFrame(canv, slideIndex, cTime - slideVisStart, slideVisDur,
                 1f, mCurrentTextOverlay)
 
-        if (currentTimeUs >= nextSlideTransitionStartUs) {
-            val timeSinceTransitionStartUs = currentTimeUs - nextSlideTransitionStartUs
-            val extraOffsetUs = mSlideCrossFadeUs - nextSlideTransitionUs //0 normally, transition/2 for edge cases
-            val nextOffsetUs = timeSinceTransitionStartUs + extraOffsetUs
-            var alpha = nextOffsetUs / nextSlideTransitionUs.toFloat()
-            //Don't "fade in" at the beginning.
-            if(mCurrentSlideIndex==-1) alpha = 1.0f
-            drawFrame(canv, mCurrentSlideIndex + 1, nextOffsetUs, mNextSlideImgDuration,
+        if (cTime >= slideXStart) {
+            val alpha = (cTime - slideXStart) / xTime.toFloat()
+            drawFrame(canv, slideIndex + 1, cTime - slideXStart, nSlideVisDur,
                     alpha, mNextTextOverlay)
         }
 
         //clear image cache to save memory.
-        if(mCurrentSlideIndex >= 1) {
-            if (bitmaps.containsKey(mPages[mCurrentSlideIndex - 1].imRelPath)) {
-                bitmaps.remove(mPages[mCurrentSlideIndex - 1].imRelPath)
+        if(slideIndex >= 1) {
+            if (bitmaps.containsKey(mPages[slideIndex - 1].imRelPath)) {
+                bitmaps.remove(mPages[slideIndex - 1].imRelPath)
             }
         }
 
         mCurrentFrame++
 
-        return currentTimeUs
+        return cTime
     }
 
     private fun drawFrame(canv: Canvas, pageIndex: Int, timeOffsetUs: Long, imgDurationUs: Long,
