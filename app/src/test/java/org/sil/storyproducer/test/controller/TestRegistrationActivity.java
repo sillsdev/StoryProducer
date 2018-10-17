@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.Any;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
@@ -34,7 +35,6 @@ public class TestRegistrationActivity {
         Workspace.INSTANCE.setWorkspace(mockFile);
 
         RegistrationActivity registrationActivity = Robolectric.buildActivity(RegistrationActivity.class).create().get();
-        registrationActivity.onPostCreate();
 
         Intent startedActivity = Shadows.shadowOf(registrationActivity).peekNextStartedActivity();
         Assert.assertNull(startedActivity);
