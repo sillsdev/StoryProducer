@@ -1,24 +1,22 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.view.*
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
@@ -142,7 +140,28 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        val words = slide.content.split(" ")
+        val newString = SpannableString(slide.content)
+        var counter = 0
+        for(text in words){
+            if(Workspace.keytermsMap.containsKey(text)){
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(textView : View) {
+                        //bundle up the key term to send to new fragment
+                        val args = Bundle()
+                        args.putParcelable("KeyTerm", Workspace.keytermsMap[text])
+                        val fragment = KeyTermView()
+                        fragment.arguments = args
+                        //fragmentManager.beginTransaction().replace(R.id.frame_id, fragment).addToBackStack("").commit()
+                    }
+                }
+                newString.setSpan(clickableSpan, counter, counter + text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                newString.setSpan(ForegroundColorSpan(Color.BLUE),counter, counter + text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            counter += text.length + 1
+        }
+        textView.text = newString
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     /**
