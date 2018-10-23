@@ -64,7 +64,7 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri){
         try {
-            workspace = DocumentFile.fromTreeUri(context, uri)
+            workspace = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)
@@ -111,6 +111,25 @@ object Workspace{
         var pfd = context.contentResolver.openFileDescriptor(keytermsFile?.uri, "r")
         var fileReader = FileReader(pfd?.fileDescriptor)
         var csvReader = CSVReader(fileReader)
+
+        var csvLines = csvReader.readAll()
+        csvLines.removeAt(0)
+        for(line in csvLines){
+            var keyterm = createKeytermFromList(line.toMutableList())
+        }
+
+    }
+
+    fun createKeytermFromList(line: List<String>): Keyterm{
+        var keyterm = Keyterm()
+        if(line != null && line.size == 5){
+            keyterm.term = line[0]
+            keyterm.termForms = line[1].split(";").toMutableList()
+            keyterm.alternateRenderings = line[2]
+            keyterm.explanation = line[3]
+            keyterm.relatedTerms = line[4].split(";").toMutableList()
+        }
+        return keyterm
     }
 
     fun goToNextPhase() : Boolean {
