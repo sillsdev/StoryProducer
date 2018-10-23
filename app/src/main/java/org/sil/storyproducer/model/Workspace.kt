@@ -3,11 +3,12 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import android.provider.DocumentsContract
-
-import java.io.File
-import java.util.*
 import android.support.v4.provider.DocumentFile
+import android.util.Log
+import com.opencsv.CSVReader
+import java.io.File
+import java.io.FileReader
+import java.util.*
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -49,6 +50,8 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
+    var keyterms: List<Keyterm> = mutableListOf()
+    var keytermMap: Map<String, Keyterm> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -98,6 +101,16 @@ object Workspace{
         }
         activePhaseIndex = 0
         storiesUpdated = true
+        importKeyterms(context)
+    }
+
+    fun importKeyterms(context: Context) {
+        var keytermsDirectory = workspace.findFile("keyterms")
+        var keytermsFile = keytermsDirectory?.findFile("keyterms.csv")
+
+        var pfd = context.contentResolver.openFileDescriptor(keytermsFile?.uri, "r")
+        var fileReader = FileReader(pfd?.fileDescriptor)
+        var csvReader = CSVReader(fileReader)
     }
 
     fun goToNextPhase() : Boolean {
