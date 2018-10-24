@@ -7,6 +7,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="error">Error</string>
+    <string name="help">Help</string>
 
     <string name="submit">Submit</string>
     <string name="save">Save</string>
@@ -323,6 +324,20 @@
                                 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
                                 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
                                 OR OTHER DEALINGS IN THE SOFTWARE.</string>
+
+    <!-- Help -->
+    <string name="workspace_help">Workspace Help</string>
+    <string name="registration_help">Registration Help</string>
+    <string name="story_list_help">Story List Help</string>
+    <string name="template_list_help">Template List Help</string>
+    <string name="learn_help">Learn Help</string>
+    <string name="draft_help">Draft Help</string>
+    <string name="community_help">Community Help</string>
+    <string name="consulatant_help">Consulatant Help</string>
+    <string name="dramatize_help">Dramatize Help</string>
+    <string name="create_help">Create Help</string>
+    <string name="share_help">Share Help</string>
+
 
     <!-- Logging -->
     <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>

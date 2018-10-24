@@ -14,9 +14,16 @@
         />
     <item
         android:id="@+id/spinner"
+        android:icon="@drawable/ic_apps_white_24dp"
         android:title=""
         app:actionViewClass="android.widget.Spinner"
         app:showAsAction="always"
         android:checkable="false" />
+    <item
+        android:id="@+id/helpButton"
+        android:icon="@drawable/ic_help_white_24dp"
+        android:title="@string/help"
+        app:showAsAction="always"/>
+
 
 </menu>

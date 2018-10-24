@@ -1,6 +1,10 @@
 package org.sil.storyproducer.model
 
+import android.content.Context
+import android.graphics.Color
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
@@ -9,7 +13,7 @@ import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
-    LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
+    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
 }
 
 /**
@@ -129,11 +133,15 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> R.color.backT_phase
             PhaseType.WHOLE_STORY -> R.color.whole_story_phase
             PhaseType.REMOTE_CHECK -> R.color.remote_check_phase
+            else -> R.color.black
         }
     }
 
     fun getTheClass() : Class<*> {
         return when(phaseType){
+            PhaseType.WORKSPACE -> RegistrationActivity::class.java
+            PhaseType.REGISTRATION -> RegistrationActivity::class.java
+            PhaseType.STORY_LIST -> MainActivity::class.java
             PhaseType.LEARN -> LearnActivity::class.java
             PhaseType.DRAFT -> PagerBaseActivity::class.java
             PhaseType.COMMUNITY_CHECK -> PagerBaseActivity::class.java
@@ -169,6 +177,22 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.DRAMATIZATION),
                     Phase(PhaseType.CREATE),
                     Phase(PhaseType.SHARE))
+        }
+
+        fun getHelp(context: Context, phase: PhaseType) : String {
+            return when (phase) {
+                PhaseType.WORKSPACE -> context.getString(R.string.workspace_help)
+                PhaseType.REGISTRATION -> context.getString(R.string.registration_help)
+                PhaseType.STORY_LIST -> context.getString(R.string.story_list_help)
+                PhaseType.LEARN -> context.getString(R.string.learn_help)
+                PhaseType.DRAFT -> context.getString(R.string.draft_help)
+                PhaseType.COMMUNITY_CHECK -> context.getString(R.string.community_help)
+                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consulatant_help)
+                PhaseType.DRAMATIZATION -> context.getString(R.string.dramatize_help)
+                PhaseType.CREATE -> context.getString(R.string.create_help)
+                PhaseType.SHARE -> context.getString(R.string.share_help)
+                else -> "No Help Found"
+            }
         }
     }
 }
