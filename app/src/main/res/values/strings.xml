@@ -29,20 +29,20 @@
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
-    <string name="draft_title">Draft</string>
+    <string name="draft_title">Translate</string>
     <string name="community_check_title">Community Check</string>
-    <string name="consultant_check_title">Consultant Check</string>
-    <string name="dramatization_title">Dramatize</string>
-    <string name="create_title">Finalize</string>
+    <string name="consultant_check_title">Accuracy Check</string>
+    <string name="dramatization_title">Voice Acting</string>
+    <string name="create_title">Make Video</string>
     <string name="share_title">Share</string>
-    <string name="whole_story_title">Whole story back translation </string>
-    <string name="back_translation_title">Back Translation </string>
+    <string name="whole_story_title">Whole Story Back Translation</string>
+    <string name="back_translation_title">Back Translation</string>
     <string name="submission_title">Submission to Remote Consultant</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
     <string name="title_fragment_community">Community Check</string>
-    <string name="title_fragment_consultant">Consultant Check</string>
+    <string name="title_fragment_consultant">Accuracy Check</string>
 
     <!--String names for Info Page-->
     <string name="consultant_phone">"Consultant Phone:  "</string>
@@ -331,11 +331,11 @@
     <string name="story_list_help">Story List Help</string>
     <string name="template_list_help">Template List Help</string>
     <string name="learn_help">Learn Help</string>
-    <string name="draft_help">Draft Help</string>
+    <string name="draft_help">Translate Help</string>
     <string name="community_help">Community Help</string>
-    <string name="consulatant_help">Consulatant Help</string>
-    <string name="dramatize_help">Dramatize Help</string>
-    <string name="create_help">Create Help</string>
+    <string name="consulatant_help">Accuracy Help</string>
+    <string name="dramatize_help">Voice Acting Help</string>
+    <string name="create_help">Make Video Help</string>
     <string name="share_help">Share Help</string>
 
 

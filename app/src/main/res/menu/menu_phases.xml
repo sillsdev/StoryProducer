@@ -7,7 +7,7 @@
     <item
         android:id="@+id/icon_logo"
         android:title="@string/menu_search"
-        android:icon="@drawable/ic_learn"
+        android:icon="@drawable/ic_mic_white_48dp"
         app:showAsAction="always"
         android:height="500dp"
         android:width="500dp"

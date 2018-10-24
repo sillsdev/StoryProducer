@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.graphics.Color
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -59,17 +58,17 @@ class Phase(val phaseType: PhaseType) {
 
     fun getIcon(phase: PhaseType = phaseType) : Int {
         return when (phase){
-            PhaseType.LEARN -> R.drawable.ic_learn
-            PhaseType.DRAFT -> R.drawable.ic_mic_black
-            PhaseType.CREATE -> R.drawable.ic_create
-            PhaseType.SHARE -> R.drawable.ic_share
-            PhaseType.COMMUNITY_CHECK -> R.drawable.ic_comcheck
-            PhaseType.CONSULTANT_CHECK -> R.drawable.ic_concheck
-            PhaseType.WHOLE_STORY -> R.drawable.ic_concheck
-            PhaseType.REMOTE_CHECK -> R.drawable.ic_concheck
-            PhaseType.BACKT -> R.drawable.ic_backtranslation
-            PhaseType.DRAMATIZATION -> R.drawable.ic_dramatize
-            else -> R.drawable.ic_mic_black
+            PhaseType.LEARN -> R.drawable.ic_hearing_white_48dp
+            PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
+            PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
+            PhaseType.SHARE -> R.drawable.ic_share_white_48dp
+            PhaseType.COMMUNITY_CHECK -> R.drawable.ic_people_white_48dp
+            PhaseType.CONSULTANT_CHECK -> R.drawable.ic_school_white_48dp
+            PhaseType.WHOLE_STORY -> R.drawable.ic_school_white_48dp
+            PhaseType.REMOTE_CHECK -> R.drawable.ic_school_white_48dp
+            PhaseType.BACKT -> R.drawable.ic_headset_mic_white_48dp
+            PhaseType.DRAMATIZATION -> R.drawable.ic_mic_box_48dp
+            else -> R.drawable.ic_mic_white_48dp
         }
     }
 
@@ -93,27 +92,29 @@ class Phase(val phaseType: PhaseType) {
     fun getPrettyName() : String {
         return when (phaseType) {
             PhaseType.LEARN -> "Learn"
-            PhaseType.DRAFT -> "Draft"
-            PhaseType.CREATE -> "Create"
+            PhaseType.DRAFT -> "Translate"
+            PhaseType.CREATE -> "Make Video"
             PhaseType.SHARE -> "Share"
             PhaseType.COMMUNITY_CHECK -> "Community Check"
-            PhaseType.CONSULTANT_CHECK -> "Consultant Check"
+            PhaseType.CONSULTANT_CHECK -> "Accuracy Check"
             PhaseType.WHOLE_STORY -> "Whole Story"
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
-            PhaseType.DRAMATIZATION -> "Dramatization"
+            PhaseType.DRAMATIZATION -> "Voice Acting"
             else -> phaseType.toString().toLowerCase()
         }
     }
 
     fun getShortName() : String {
         return when (phaseType) {
+            PhaseType.DRAFT -> "trnslt"
             PhaseType.COMMUNITY_CHECK -> "comChk"
-            PhaseType.CONSULTANT_CHECK -> "cnsltChk"
+            PhaseType.CONSULTANT_CHECK -> "accChk"
             PhaseType.WHOLE_STORY -> "whlStry"
             PhaseType.REMOTE_CHECK -> "rmotChk"
             PhaseType.BACKT -> "backT"
-            PhaseType.DRAMATIZATION -> "drama"
+            PhaseType.DRAMATIZATION -> "vcAct"
+            PhaseType.CREATE -> "mkVid"
             else -> phaseType.toString().toLowerCase()
         }
     }

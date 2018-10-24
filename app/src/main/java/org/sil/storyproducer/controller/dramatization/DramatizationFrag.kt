@@ -91,7 +91,7 @@ class DramatizationFrag : MultiRecordFrag() {
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
-                referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -140,7 +140,7 @@ class DramatizationFrag : MultiRecordFrag() {
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.pauseAudio()
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                     draftPlaybackProgress = referenceAudioPlayer.currentPosition
                     draftPlaybackSeekBar?.progress = draftPlaybackProgress
                 } else {
@@ -148,7 +148,7 @@ class DramatizationFrag : MultiRecordFrag() {
                     referenceAudioPlayer.currentPosition = draftPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                 }
             }

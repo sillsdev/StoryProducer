@@ -87,12 +87,12 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.stopAudio()
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                 } else {
                     //stop other playback streams.
                     recordingToolbar!!.stopToolbarMedia()
                     referenceAudioPlayer.playAudio()
-                    recordingToolbar?.onToolbarTouchStopAudio(referncePlayButton!!, R.drawable.ic_menu_play, referenceAudioPlayer)
+                    recordingToolbar?.onToolbarTouchStopAudio(referncePlayButton!!, R.drawable.ic_play_arrow_white_36dp, referenceAudioPlayer)
 
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
