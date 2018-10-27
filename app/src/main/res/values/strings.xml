@@ -30,10 +30,10 @@
     <!-- Phases -->
     <string name="learn_title">Learn</string>
     <string name="draft_title">Translate</string>
-    <string name="community_check_title">Community Check</string>
+    <string name="community_check_title">Community Work</string>
     <string name="consultant_check_title">Accuracy Check</string>
-    <string name="dramatization_title">Voice Acting</string>
-    <string name="create_title">Make Video</string>
+    <string name="dramatization_title">Voice Studio</string>
+    <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
@@ -41,7 +41,7 @@
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
-    <string name="title_fragment_community">Community Check</string>
+    <string name="title_fragment_community">Community Work</string>
     <string name="title_fragment_consultant">Accuracy Check</string>
 
     <!--String names for Info Page-->
@@ -334,7 +334,7 @@
     <string name="draft_help">Translate Help</string>
     <string name="community_help">Community Help</string>
     <string name="consulatant_help">Accuracy Help</string>
-    <string name="dramatize_help">Voice Acting Help</string>
+    <string name="dramatize_help">Voice Studio Help</string>
     <string name="create_help">Make Video Help</string>
     <string name="share_help">Share Help</string>
 

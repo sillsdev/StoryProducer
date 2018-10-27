@@ -93,14 +93,14 @@ class Phase(val phaseType: PhaseType) {
         return when (phaseType) {
             PhaseType.LEARN -> "Learn"
             PhaseType.DRAFT -> "Translate"
-            PhaseType.CREATE -> "Make Video"
+            PhaseType.CREATE -> "Finalize"
             PhaseType.SHARE -> "Share"
-            PhaseType.COMMUNITY_CHECK -> "Community Check"
+            PhaseType.COMMUNITY_CHECK -> "Community Work"
             PhaseType.CONSULTANT_CHECK -> "Accuracy Check"
             PhaseType.WHOLE_STORY -> "Whole Story"
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
-            PhaseType.DRAMATIZATION -> "Voice Acting"
+            PhaseType.DRAMATIZATION -> "Voice Studio"
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -108,13 +108,13 @@ class Phase(val phaseType: PhaseType) {
     fun getShortName() : String {
         return when (phaseType) {
             PhaseType.DRAFT -> "trnslt"
-            PhaseType.COMMUNITY_CHECK -> "comChk"
+            PhaseType.COMMUNITY_CHECK -> "comWrk"
             PhaseType.CONSULTANT_CHECK -> "accChk"
             PhaseType.WHOLE_STORY -> "whlStry"
             PhaseType.REMOTE_CHECK -> "rmotChk"
             PhaseType.BACKT -> "backT"
-            PhaseType.DRAMATIZATION -> "vcAct"
-            PhaseType.CREATE -> "mkVid"
+            PhaseType.DRAMATIZATION -> "vcStdio"
+            PhaseType.CREATE -> "fnlz"
             else -> phaseType.toString().toLowerCase()
         }
     }
