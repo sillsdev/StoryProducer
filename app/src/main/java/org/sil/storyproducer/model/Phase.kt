@@ -188,7 +188,7 @@ class Phase(val phaseType: PhaseType) {
                 PhaseType.LEARN -> context.getString(R.string.learn_help)
                 PhaseType.DRAFT -> context.getString(R.string.draft_help)
                 PhaseType.COMMUNITY_CHECK -> context.getString(R.string.community_help)
-                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consulatant_help)
+                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consultant_help)
                 PhaseType.DRAMATIZATION -> context.getString(R.string.dramatize_help)
                 PhaseType.CREATE -> context.getString(R.string.create_help)
                 PhaseType.SHARE -> context.getString(R.string.share_help)
