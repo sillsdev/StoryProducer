@@ -121,7 +121,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     open fun stopToolbarMedia() {
         if (voiceRecorder.isRecording) {
             stopRecording()
-            micButton.setBackgroundResource(R.drawable.ic_mic_white)
+            micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
             //set playback button visible
             if (enableDeleteButton) {
                 deleteButton.visibility = View.VISIBLE
@@ -210,7 +210,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
-        val drawables = intArrayOf(R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_send_audio_48dp)
+        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_send_audio_48dp)
         val imageButtons = arrayOf(ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext))
         val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton)
 
@@ -278,7 +278,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         val micListener = View.OnClickListener {
             if (voiceRecorder.isRecording) {
                 stopRecording()
-                micButton.setBackgroundResource(R.drawable.ic_mic_white)
+                micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
                 if (enableDeleteButton) {
                     deleteButton.visibility = View.VISIBLE
                 }

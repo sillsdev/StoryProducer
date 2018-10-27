@@ -38,7 +38,7 @@
                 android:layout_height="@dimen/reference_audio_button"
                 android:layout_alignStart="@+id/fragment_image_view"
                 android:layout_alignBottom="@+id/fragment_image_view"
-                android:background="@drawable/ic_menu_play"
+                android:background="@drawable/ic_play_arrow_white_36dp"
                 android:contentDescription="@string/draft_play_narration_audio" />
 
             <ImageView

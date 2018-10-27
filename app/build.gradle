@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 9
-        versionName '2.3.16'
+        versionName '2.3.17'
     }
     buildTypes {
         release {
@@ -27,6 +27,14 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         main.java.srcDirs += 'build/generated/source/kaptKotlin'
+    }
+    lintOptions {
+        abortOnError false
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
 
@@ -53,5 +61,9 @@ dependencies {
     implementation 'com.github.codekidX:storage-chooser:2.0.3'
     implementation 'com.squareup.moshi:moshi:1.6.0'
     implementation 'com.opencsv:opencsv:4.3.2'
+    implementation 'org.jsoup:jsoup:1.11.3'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.robolectric:robolectric:4.0-beta-1'
+    testImplementation "org.mockito:mockito-core:2.23.0"
 }

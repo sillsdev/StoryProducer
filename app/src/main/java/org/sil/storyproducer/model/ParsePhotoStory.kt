@@ -14,7 +14,7 @@ import java.util.ArrayList
 
 fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
-    val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name) ?: return null
+    val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
@@ -23,6 +23,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     parser.nextTag()
     parser.require(XmlPullParser.START_TAG, null, "MSPhotoStoryProject")
     parser.next()
+    var firstSlide = true
     while ((parser.eventType != XmlPullParser.END_TAG) || (parser.name != "MSPhotoStoryProject")) {
         if (parser.eventType != XmlPullParser.START_TAG) {
             parser.next()
@@ -31,9 +32,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         val tag = parser.name
         when (tag) {
             "VisualUnit" -> {
-                var slide = parseSlideXML(parser)
+                val slide = parseSlideXML(parser)
+                if(firstSlide) {
+                    slide.slideType = SlideType.FRONTCOVER
+                    firstSlide = false
+                }
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
-                val textFile = getStoryText(context,slide.textFile,storyPath.name)
+                val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
                     val textList = textFile.split("~")
                     if (textList.size > 0) slide.title = textList[0]
@@ -56,7 +61,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         }
         parser.next()
     }
-    val story = Story(storyPath.name,slides)
+    val story = Story(storyPath.name!!,slides)
     return story
 }
 

@@ -17,19 +17,19 @@ class StoryListFrag : Fragment() {
 
     private var listView: ListView? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
-        if(!Workspace.isInitialized) Workspace.initializeWorskpace(activity)
+        if(!Workspace.isInitialized) Workspace.initializeWorskpace(activity!!)
 
-        if (Workspace.Stories.isEmpty()) return inflater!!.inflate(R.layout.fragment_no_stories, container, false)
+        if (Workspace.Stories.isEmpty()) return inflater.inflate(R.layout.fragment_no_stories, container, false)
 
-        val lfview = inflater!!.inflate(R.layout.activity_list_view, container, false)
+        val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 
         // Get ListView object from xml
-        listView = activity.findViewById(R.id.story_list_view)
+        listView = activity!!.findViewById(R.id.story_list_view)
 
-        val adapter = ListAdapter(context, R.layout.story_list_item, Workspace.Stories)
+        val adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
 
         listView = lfview.findViewById(R.id.story_list_view)
         // Assign adapter to ListView
