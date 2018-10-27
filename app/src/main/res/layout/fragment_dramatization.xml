@@ -44,7 +44,7 @@
                     android:layout_width="@dimen/reference_audio_button"
                     android:layout_height="@dimen/reference_audio_button"
                     android:layout_gravity="center"
-                    android:background="@drawable/ic_menu_play"
+                    android:background="@drawable/ic_play_arrow_white_36dp"
                     android:contentDescription="@string/draft_play_narration_audio" />
 
                 <SeekBar

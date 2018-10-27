@@ -32,7 +32,7 @@ class StoryMaker
 (private val context: Context, private val mOutputFile: File, private val mOutputFormat: Int, private val mVideoFormat: MediaFormat?, private val mAudioFormat: MediaFormat,
  private val mPages: Array<StoryPage>, private val mAudioTransitionUs: Long, private val mSlideCrossFadeUs: Long) : Closeable {
 
-    private var mSoundtrackVolumeModifier = 0.5f
+    private var mSoundtrackVolumeModifier = 0.25f
 
     private val mSampleRate: Int
     private val mChannelCount: Int
