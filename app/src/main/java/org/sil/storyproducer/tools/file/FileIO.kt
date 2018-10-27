@@ -49,7 +49,7 @@ fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story:
     if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
     val options = BitmapFactory.Options()
     options.inSampleSize = sampleSize
-    return BitmapFactory.decodeStream(iStream, null, options)
+    return BitmapFactory.decodeStream(iStream, null, options)!!
 }
 
 fun genDefaultImage(): Bitmap {
@@ -65,7 +65,8 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
-    context.contentResolver.getType(getStoryUri(relPath,storyTitle)) ?: return false
+    val uri = getStoryUri(relPath,storyTitle) ?: return false
+    context.contentResolver.getType(uri) ?: return false
     return true
 }
 

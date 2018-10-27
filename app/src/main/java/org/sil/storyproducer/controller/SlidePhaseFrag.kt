@@ -64,7 +64,7 @@ abstract class SlidePhaseFrag : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         val item = menu!!.getItem(0)
         super.onCreateOptionsMenu(menu, inflater)
-        item.setIcon(R.drawable.ic_draft)
+        item.setIcon(R.drawable.ic_mic_white_48dp)
     }
 
 
@@ -74,7 +74,10 @@ abstract class SlidePhaseFrag : Fragment() {
         referenceAudioPlayer = AudioPlayer()
         referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
 
-        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play) })
+        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+            referenceAudioPlayer.currentPosition = 0
+        })
     }
 
     /**
@@ -171,7 +174,7 @@ abstract class SlidePhaseFrag : Fragment() {
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.stopAudio()
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                 } else {
                     //stop other playback streams.
                     referenceAudioPlayer.playAudio()

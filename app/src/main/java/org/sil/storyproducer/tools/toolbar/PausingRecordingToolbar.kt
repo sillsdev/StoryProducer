@@ -14,8 +14,6 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-import org.sil.storyproducer.tools.media.wavaudio.AudioRecorderWav
-import org.sil.storyproducer.tools.media.wavaudio.ConcatenateAudioFiles
 
 import java.io.FileNotFoundException
 
@@ -120,7 +118,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
-        val drawables = intArrayOf(R.drawable.ic_mic_white, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp)
+        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp)
         val imageButtons = arrayOf(ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext))
         val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableMultiRecordButton, enableCheckButton, enableSendAudioButton)
 
@@ -183,7 +181,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     isAppendingOn = true
                     checkButton!!.visibility = View.VISIBLE
                 }
-                micButton.setBackgroundResource(R.drawable.ic_mic_black_append)
+                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48pd)
                 if (enableDeleteButton) {
                     deleteButton.visibility = View.VISIBLE
                 }
@@ -234,7 +232,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                 //make the button invisible till after the next new recording
                 isAppendingOn = false
                 checkButton!!.visibility = View.INVISIBLE
-                micButton.setBackgroundResource(R.drawable.ic_mic_white)
+                micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
                 if (enableSendAudioButton) {
                     sendAudioButton.visibility = View.VISIBLE
                 }

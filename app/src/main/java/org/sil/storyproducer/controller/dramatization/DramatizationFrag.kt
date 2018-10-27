@@ -19,6 +19,8 @@ import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
+import android.R.attr.duration
+import java.util.*
 
 
 class DramatizationFrag : MultiRecordFrag() {
@@ -26,6 +28,8 @@ class DramatizationFrag : MultiRecordFrag() {
     private var phaseUnlocked: Boolean = false
     private var slideText: EditText? = null
     private var draftPlaybackSeekBar: SeekBar? = null
+    private var mSeekBarTimer = Timer()
+
     private var draftPlaybackProgress = 0
     private var draftPlaybackDuration = 0
     private var wasAudioPlaying = false
@@ -58,11 +62,15 @@ class DramatizationFrag : MultiRecordFrag() {
     override fun onResume() {
         super.onResume()
 
-        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            draftPlaybackProgress = 0
-            referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
-            draftPlaybackSeekBar!!.progress = draftPlaybackProgress
-        })
+        mSeekBarTimer = Timer()
+        mSeekBarTimer.schedule(object : TimerTask() {
+            override fun run() {
+                activity!!.runOnUiThread{
+                    draftPlaybackProgress = referenceAudioPlayer.currentPosition
+                    draftPlaybackSeekBar?.progress = draftPlaybackProgress
+                }
+            }
+        },0,33)
 
         setSeekBarListener()
     }
@@ -70,10 +78,10 @@ class DramatizationFrag : MultiRecordFrag() {
 
     private fun setSeekBarListener() {
         draftPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
-        draftPlaybackSeekBar!!.max = draftPlaybackDuration
+        draftPlaybackSeekBar?.max = draftPlaybackDuration
         referenceAudioPlayer.currentPosition = draftPlaybackProgress
-        draftPlaybackSeekBar!!.progress = draftPlaybackProgress
-        draftPlaybackSeekBar!!.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        draftPlaybackSeekBar?.progress = draftPlaybackProgress
+        draftPlaybackSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {
                 referenceAudioPlayer.currentPosition = draftPlaybackProgress
                 if(wasAudioPlaying){
@@ -83,7 +91,7 @@ class DramatizationFrag : MultiRecordFrag() {
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
-                referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -98,6 +106,7 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun onPause() {
         draftPlaybackProgress = referenceAudioPlayer.currentPosition
+        mSeekBarTimer.cancel()
         super.onPause()
         closeKeyboard(rootView)
     }
@@ -131,15 +140,15 @@ class DramatizationFrag : MultiRecordFrag() {
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
                     referenceAudioPlayer.pauseAudio()
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_menu_play)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                     draftPlaybackProgress = referenceAudioPlayer.currentPosition
-                    draftPlaybackSeekBar!!.setProgress(draftPlaybackProgress)
+                    draftPlaybackSeekBar?.progress = draftPlaybackProgress
                 } else {
                     //stop other playback streams.
                     referenceAudioPlayer.currentPosition = draftPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                 }
             }
