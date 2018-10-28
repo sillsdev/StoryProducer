@@ -1,12 +1,13 @@
 package org.sil.storyproducer.model
 
-import com.squareup.moshi.JsonClass
-
-@JsonClass(generateAdapter = true)
-class Keyterm{
-    var term = ""
-    var termForms: MutableList<String> = ArrayList<String>()
-    var alternateRenderings = ""
-    var explanation = ""
-    var relatedTerms: MutableList<String> = ArrayList<String>()
+class Keyterm (term: String,
+               termForms: MutableList<String>,
+               alternateRenderings: String,
+               explanation: String,
+               relatedTerms: MutableList<String>){
+    var term = term
+    var termForms: MutableList<String> = termForms
+    var alternateRenderings = alternateRenderings
+    var explanation = explanation
+    var relatedTerms: MutableList<String> = relatedTerms
 }
