@@ -9,6 +9,9 @@ import java.io.File
 import java.io.FileReader
 import java.util.*
 
+internal const val KEYTERMS_DIR = "keyterms"
+internal const val KEYTERMS_FILE = "keyterms.csv"
+
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {
@@ -51,9 +54,6 @@ object Workspace{
     }
     var keyterms: MutableList<Keyterm> = mutableListOf()
     var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
-
-    val KEYTERMS_DIRECTORY = "keyterms"
-    val KEYTERMS_CSV = "keyterms.csv"
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -107,8 +107,8 @@ object Workspace{
     }
 
     fun importKeyterms(context: Context) {
-        val keytermsDirectory = workspace.findFile(KEYTERMS_DIRECTORY)
-        val keytermsFile = keytermsDirectory?.findFile(KEYTERMS_CSV)
+        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
+        val keytermsFile = keytermsDirectory?.findFile(KEYTERMS_FILE)
 
         if(keytermsFile != null){
             val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")
