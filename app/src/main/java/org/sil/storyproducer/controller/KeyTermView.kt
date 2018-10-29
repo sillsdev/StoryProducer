@@ -3,12 +3,15 @@ package org.sil.storyproducer.controller
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.KeyTerm
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.stringToSpannableString
 
 
 /**
@@ -23,10 +26,10 @@ import org.sil.storyproducer.model.KeyTerm
 class KeyTermView : Fragment() {
 
     private var term: String = ""
-    private var termForms: MutableList<String> = ArrayList<String>()
+    private var termForms: MutableList<String> = ArrayList()
     private var alternateRenderings: String = ""
     private var explanation: String = ""
-    private var relatedTerms: MutableList<String> = ArrayList<String>()
+    private var relatedTerms: MutableList<String> = ArrayList()
     //private var listener: OnFragmentInteractionListener? = null
 
     companion object {
@@ -37,7 +40,7 @@ class KeyTermView : Fragment() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val item = this.arguments.getParcelable<KeyTerm>("KeyTerm")
+        val item = this.arguments!!.getParcelable<KeyTerm>("KeyTerm")
         term = item.term
         termForms = item.termForms
         alternateRenderings = item.alternateRenderings
@@ -53,7 +56,10 @@ class KeyTermView : Fragment() {
         view.findViewById<TextView>(R.id.termForms_text).text = termForms.toString()
         view.findViewById<TextView>(R.id.alternateRenderings_text).text = alternateRenderings
         view.findViewById<TextView>(R.id.explanation_text).text = explanation
-        view.findViewById<TextView>(R.id.relatedTerms_text).text = relatedTerms.toString()
+
+        val relatedTermsView = view.findViewById<TextView>(R.id.relatedTerms_text)
+        relatedTermsView.text = stringToSpannableString(relatedTerms)
+        relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
 
         return view
     }

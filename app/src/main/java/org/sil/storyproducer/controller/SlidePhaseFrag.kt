@@ -26,6 +26,7 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.stringToSpannableString
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 /**
@@ -145,26 +146,7 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
-        val newString = SpannableString(slide.content)
-        var counter = 0
-        for(text in words){
-            if(Workspace.keytermsMap.containsKey(text)){
-                val clickableSpan = object : ClickableSpan() {
-                    override fun onClick(textView : View) {
-                        //bundle up the key term to send to new fragment
-                        val args = Bundle()
-                        args.putParcelable("KeyTerm", Workspace.keytermsMap[text])
-                        val fragment = KeyTermView()
-                        fragment.arguments = args
-                        //fragmentManager.beginTransaction().replace(R.id.frame_id, fragment).addToBackStack("").commit()
-                    }
-                }
-                newString.setSpan(clickableSpan, counter, counter + text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                newString.setSpan(ForegroundColorSpan(Color.BLUE),counter, counter + text.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
-            counter += text.length + 1
-        }
-        textView.text = newString
+        textView.text = stringToSpannableString(words as MutableList<String>)
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
