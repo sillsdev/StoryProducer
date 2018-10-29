@@ -17,14 +17,18 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import android.widget.ListView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -91,6 +95,14 @@ class MainActivity : AppCompatActivity(), Serializable {
                 mDrawerLayout!!.openDrawer(GravityCompat.START)
                 true
             }
+            R.id.helpButton -> {
+                val dialog = AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.help))
+                        .setMessage(Phase.getHelp(this, PhaseType.STORY_LIST))
+                        .create()
+                dialog.show()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -103,11 +115,12 @@ class MainActivity : AppCompatActivity(), Serializable {
         val actionbar: ActionBar? = supportActionBar
         actionbar?.apply {
             setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu)
+            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
         }
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
+
         mDrawerLayout = findViewById(R.id.drawer_layout)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
@@ -147,8 +160,6 @@ class MainActivity : AppCompatActivity(), Serializable {
 
             true
         }
-
-
     }
 }
 

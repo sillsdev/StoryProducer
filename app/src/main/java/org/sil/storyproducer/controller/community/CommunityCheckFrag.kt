@@ -18,14 +18,14 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 class CommunityCheckFrag : MultiRecordFrag() {
     private var dispList : RecordingsList? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater!!.inflate(R.layout.fragment_community_check, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.fragment_community_check, container, false)
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setToolbar()
-        dispList = RecordingsList(context, this,slideNum)
+        dispList = RecordingsList(context!!, this,slideNum)
         dispList!!.embedList(rootView!! as ViewGroup)
         dispList!!.show()
         return rootView
@@ -41,9 +41,9 @@ class CommunityCheckFrag : MultiRecordFrag() {
                 //not used here
             }
         }
-        val rList = RecordingsList(context, this)
+        val rList = RecordingsList(context!!, this)
 
-        recordingToolbar = RecordingToolbar(this.activity, rootViewToolbar!!, rootView as RelativeLayout,
+        recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as RelativeLayout,
                 false, false, false, false,  rList , recordingListener, slideNum);
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()

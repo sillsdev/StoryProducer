@@ -14,6 +14,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val slides: MutableList<Slide> = ArrayList()
 
     //Image and transition pattern
+    val reSlideType = Pattern.compile("(^[^\"]+)")
     val reNarration = Pattern.compile("id=\"narration[^>]+>([^<]+)")
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
     val reSoundTrackVolume = Pattern.compile("data-backgroundaudiovolume=\"([^\"]+)")
@@ -30,6 +31,17 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         //Don't keep the first element, as it is before the first slide.
         val slide = Slide()
         val t = pageTextList[i]
+
+        //slide type
+        val mSlideVariables = reSlideType.matcher(t)
+        if(mSlideVariables.find()){
+            val sv = mSlideVariables.group(1).split(" ")
+            if("frontCover" in sv) slide.slideType = SlideType.FRONTCOVER
+            if("numberedPage" in sv) slide.slideType = SlideType.NUMBEREDPAGE
+            if("credits1" in sv) slide.slideType = SlideType.CREDITS1
+            if("credits2" in sv) slide.slideType = SlideType.CREDITS2ATTRIBUTIONS
+            if("theEndPage" in sv) slide.slideType = SlideType.ENDPAGE
+        }
 
         //narration
         val mNarration = reNarration.matcher(t)
@@ -82,5 +94,5 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         slides.add(slide)
     }
 
-    return Story(storyPath.name,slides)
+    return Story(storyPath.name!!,slides)
 }

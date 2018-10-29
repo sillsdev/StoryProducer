@@ -5,15 +5,15 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:background="@color/black">
 
     <ImageButton
         android:id="@+id/audio_comment_play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
-        app:srcCompat="@drawable/ic_green_play"
-        android:background="@color/white"
+        app:srcCompat="@drawable/ic_play_arrow_white_36dp"
+        android:background="@color/black"
         android:layout_weight="0"
         android:contentDescription="@string/play" />
 
@@ -21,7 +21,7 @@
         android:id="@+id/audio_comment_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/black_semi_transparent"
+        android:textColor="@color/white"
         android:textSize="@dimen/text_body"
         android:text="Fill with Audio Comment"
         android:layout_margin="2dp"
@@ -34,8 +34,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="2dp"
-        app:srcCompat="@drawable/ic_delete_red"
-        android:background="@color/white"
+        app:srcCompat="@drawable/ic_delete_forever_white_36dp"
+        android:background="@color/black"
         android:layout_weight="0"
         android:contentDescription="@string/delete" />
 

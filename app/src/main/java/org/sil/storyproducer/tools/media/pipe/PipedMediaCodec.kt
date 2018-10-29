@@ -29,7 +29,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
 
     protected var mCodec: MediaCodec? = null
     protected var mInputBuffers: Array<ByteBuffer>? = null
-    protected var mOutputBuffers: Array<ByteBuffer>? = null
+    protected var outputBufferId: Int = 0
     private var mOutputFormat: MediaFormat? = null
 
     private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
@@ -77,19 +77,13 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
         if (mComponentState == PipedMediaSource.State.CLOSED) {
             throw SourceClosedException()
         }
-        for (i in mOutputBuffers!!.indices) {
-            if (mOutputBuffers!![i] === buffer) {
-                mCodec!!.releaseOutputBuffer(i, true)
-                return
-            }
-        }
-        throw InvalidBufferException("I don't own that buffer!")
+        mCodec!!.releaseOutputBuffer(outputBufferId,true)
+        return
     }
 
     protected fun start() {
         mCodec!!.start()
         mInputBuffers = mCodec!!.inputBuffers
-        mOutputBuffers = mCodec!!.outputBuffers
 
         mThread = Thread(Runnable {
             try {
@@ -115,21 +109,16 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             return tempBuffer.buffer
         }
 
-        var durationNs = -System.nanoTime()
-
         while (!mIsDone) {
             if (mComponentState == PipedMediaSource.State.CLOSED) {
                 throw SourceClosedException()
             }
-            val pollCode = mCodec!!.dequeueOutputBuffer(
+            outputBufferId = mCodec!!.dequeueOutputBuffer(
                     info, MediaHelper.TIMEOUT_USEC)
-            if (pollCode == MediaCodec.INFO_TRY_AGAIN_LATER) {
+            if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: no output buffer")
                 //Do nothing.
-            } else if (pollCode == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                if (MediaHelper.DEBUG) Log.d(TAG, "$componentName.pullBuffer: output buffers changed")
-                mOutputBuffers = mCodec!!.outputBuffers
-            } else if (pollCode == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+            } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: output format changed")
                 if (mOutputFormat != null) {
                     throw RuntimeException("changed output format again?")
@@ -138,15 +127,15 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 if (getFormat) {
                     return null
                 }
-            } else if (pollCode < 0) {
+            } else if (outputBufferId < 0) {
                 Log.w(TAG, "$componentName.pullBuffer: unrecognized pollCode")
             } else if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                 if (MediaHelper.DEBUG) Log.d(TAG, "$componentName.pullBuffer: codec config buffer")
                 //Note: Perhaps these buffers should not be ignored in the future.
                 // Simply ignore codec config buffers.
-                mCodec!!.releaseOutputBuffer(pollCode, true)
+                mCodec!!.releaseOutputBuffer(outputBufferId, true)
             } else {
-                val buffer = mOutputBuffers!![pollCode]
+                val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
 
                 if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
                     if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: EOS")
@@ -155,14 +144,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                     correctTime(info)
                     buffer.position(info.offset)
                     buffer.limit(info.offset + info.size)
-                }
-
-                if (MediaHelper.DEBUG) {
-                    durationNs += System.nanoTime()
-                    val sec = durationNs / 1E9
-                    Log.d(TAG, componentName + ".pullBuffer: return output buffer after "
-                            + MediaHelper.getDecimal(sec) + " seconds: " + pollCode
-                            + " of size " + info.size + " for time " + info.presentationTimeUs)
                 }
 
                 //If trying to get the format, save the buffer for later and don't return it.
