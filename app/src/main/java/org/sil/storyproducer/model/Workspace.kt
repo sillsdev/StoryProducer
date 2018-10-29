@@ -3,11 +3,14 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import android.provider.DocumentsContract
-
-import java.io.File
-import java.util.*
 import android.support.v4.provider.DocumentFile
+import com.opencsv.CSVReader
+import java.io.File
+import java.io.FileReader
+import java.util.*
+
+internal const val KEYTERMS_DIR = "keyterms"
+internal const val KEYTERMS_FILE = "keyterms.csv"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -49,6 +52,8 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
+    var keyterms: MutableList<Keyterm> = mutableListOf()
+    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -65,6 +70,7 @@ object Workspace{
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)
+        importKeyterms(context)
     }
 
     fun clearWorkspace(){
@@ -98,6 +104,45 @@ object Workspace{
         }
         activePhaseIndex = 0
         storiesUpdated = true
+    }
+
+    fun importKeyterms(context: Context) {
+        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
+        val keytermsFile = keytermsDirectory?.findFile(KEYTERMS_FILE)
+
+        if(keytermsFile != null){
+            val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")
+            val fileReader = FileReader(fileDescriptor?.fileDescriptor)
+            val csvReader = CSVReader(fileReader)
+
+            val csvLines = csvReader.readAll()
+            val headers = csvLines.removeAt(0)
+            if(headers.size == 5){
+                for(line in csvLines){
+                    val keyterm = Keyterm(
+                            line[0],
+                            stringToMutableList(line[1],","),
+                            line[2],
+                            line[3],
+                            stringToMutableList(line[4],","))
+                    keyterms.add(keyterm)
+                    termsToKeyterms.put(keyterm.term, keyterm)
+                    for(termForm in keyterm.termForms){
+                        termsToKeyterms.put(termForm, keyterm)
+                    }
+                }
+            }
+        }
+    }
+
+    fun stringToMutableList(field: String, separator: String): MutableList<String>{
+        var mutableList:MutableList<String> = mutableListOf()
+        if(field.isNotEmpty()){
+            val list = field.split(separator)
+            val trimmedList = list.map{ it.trim() }
+            mutableList = trimmedList.toMutableList()
+        }
+        return mutableList
     }
 
     fun goToNextPhase() : Boolean {
