@@ -24,7 +24,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
     private val mixSources = ArrayList<PipedMediaByteBufferSource>()
     private val mixVolumeModifiers = ArrayList<Float>()
-    private val mixBuffers = ArrayList<ShortArray?>()
+    private val mixBuffers = ArrayList<ShortArray>()
     private val mixPoss = ArrayList<Int>()
     private val mixEnds = ArrayList<Int>()
 
@@ -113,14 +113,13 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         var iSource = 0
         var allLength = 1000000
         while (iSource < mixSources.size) {
-            if (mixPoss[iSource] >= mixEnds[iSource] && mixBuffers[iSource] != null) {
+            if (mixPoss[iSource] >= mixEnds[iSource] && mixBuffers.getOrNull(iSource) != null) {
                 fetchSourceBuffer(iSource)
             }
             //The source is depleted!
-            if (mixBuffers[iSource] == null) {
+            if (mixBuffers.getOrNull(iSource) == null) {
                 //Remove depleted sources from the lists.
                 mixSources.removeAt(iSource)
-                mixBuffers.removeAt(iSource)
                 mixPoss.removeAt(iSource)
                 mixEnds.removeAt(iSource)
                 continue
@@ -136,7 +135,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         //do the first channel
         //grab the buffer
         var pos = mixPoss[0]
-        var buffer: ShortArray = mixBuffers[0]!!
+        var buffer: ShortArray = mixBuffers[0]
         var volumeModifier = mixVolumeModifiers[0]
 
         //setup the data as a source.  Copy the buffer
@@ -150,7 +149,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         while (iSource < mixSources.size) {
             //grab the buffer
             pos = mixPoss[iSource]
-            buffer = mixBuffers[iSource]!!
+            buffer = mixBuffers[iSource]
             volumeModifier = mixVolumeModifiers[iSource]
 
             //setup the data as a source.  Copy the buffer
@@ -172,7 +171,7 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
         val source = mixSources[sourceIndex]
         if (source.isDone) {
             source.close()
-            mixBuffers[sourceIndex] = null
+            mixBuffers.removeAt(sourceIndex)
             return
         }
 

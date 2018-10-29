@@ -1,11 +1,13 @@
 package org.sil.storyproducer.controller.phase
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GestureDetectorCompat
+import android.support.v4.view.GravityCompat
 import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
@@ -133,7 +135,24 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return mDrawerToggle!!.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            android.R.id.home -> {
+                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                true
+            }
+            R.id.spinner -> {
+                mDrawerToggle!!.onOptionsItemSelected(item)
+            }
+            R.id.helpButton -> {
+                val dialog = AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.help))
+                        .setMessage(Phase.getHelp(this, phase.phaseType))
+                        .create()
+                dialog.show()
+                true
+            }
+            else -> mDrawerToggle!!.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -151,13 +170,13 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 R.string.nav_open, R.string.nav_close) {
 
             /** Called when a drawer has settled in a completely open state.  */
-            override fun onDrawerOpened(drawerView: View?) {
+            override fun onDrawerOpened(drawerView: View) {
                 super.onDrawerOpened(drawerView)
                 invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely closed state.  */
-            override fun onDrawerClosed(view: View?) {
+            override fun onDrawerClosed(view: View) {
                 super.onDrawerClosed(view)
                 invalidateOptionsMenu() // creates call to onPrepareOptionsMenu()
             }

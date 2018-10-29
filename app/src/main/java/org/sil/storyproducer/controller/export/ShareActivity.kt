@@ -84,6 +84,16 @@ class ShareActivity : PhaseBaseActivity() {
                 exportedVideos.add(presentVideos[i])
             }
         }
+        //If the file has been deleted, remove it.
+        val toRemove = mutableListOf<Int>()
+        for (i in 0 until story.outputVideos.size){
+            if(story.outputVideos[i] !in presentVideos){
+                toRemove.add(0,i) //add at beginning
+            }
+        }
+        for (i in toRemove){
+            story.outputVideos.removeAt(i)
+        }
         if (exportedVideos.isNotEmpty()) {
             mNoVideosText!!.visibility = View.GONE
         }

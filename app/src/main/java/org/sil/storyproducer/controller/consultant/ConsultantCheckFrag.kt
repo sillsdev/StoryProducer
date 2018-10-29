@@ -31,11 +31,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private var storyName: String = Workspace.activeStory.title
     private var isChecked: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        rootView = inflater!!.inflate(R.layout.fragment_consultant_check, container, false)
+        rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
@@ -72,7 +72,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun setCheckmarkButton(button: ImageButton) {
         //TODO replace prefs with storing MD5 or SHA1 of the draft audio.
-        val prefs = activity.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        val prefs = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
         val prefsKeyString = storyName + slideNum.toString() + IS_CHECKED
         isChecked = prefs.getBoolean(prefsKeyString, false)
@@ -124,7 +124,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun checkAllMarked(): Boolean {
         var marked: Boolean
-        val prefs = activity.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        val prefs = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
         //dont check the last slide, it's the copyright.
         val numStorySlides = Workspace.activeStory.slides.size - 1
         for (i in 0 until numStorySlides) {
@@ -183,7 +183,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * Updates the shared preference file to mark the story as approved
      */
     private fun saveConsultantApproval() {
-        val prefsEditor = activity.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit()
+        val prefsEditor = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit()
         prefsEditor.putBoolean(storyName!! + IS_CONSULTANT_APPROVED, true)
         prefsEditor.apply()
     }
@@ -206,7 +206,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param aView The view associated with the soft input keyboard.
      */
     private fun toggleKeyboard(showKeyBoard: Boolean, aView: View?) {
-        val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (showKeyBoard) {
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
         } else {

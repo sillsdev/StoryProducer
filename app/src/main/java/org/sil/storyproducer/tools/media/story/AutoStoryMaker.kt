@@ -117,8 +117,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
-        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE)
+        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_MPEG4, mWidth, mHeight)
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 30)
+        //videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_FRAME_RATE)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
 

@@ -19,6 +19,7 @@ import com.squareup.moshi.FromJson
 @JsonClass(generateAdapter = true)
 class Slide{
     // template information
+    var slideType: SlideType = SlideType.NUMBEREDPAGE
     var narrationFile = ""
     var title = ""
     var subtitle = ""
@@ -52,6 +53,10 @@ class Slide{
     var chosenBackTranslationFile = ""
 
     companion object
+}
+
+enum class SlideType {
+    FRONTCOVER, NUMBEREDPAGE, CREDITS1, CREDITS2ATTRIBUTIONS, ENDPAGE
 }
 
 @JsonClass(generateAdapter = true)
