@@ -107,14 +107,14 @@ class Phase(val phaseType: PhaseType) {
 
     fun getShortName() : String {
         return when (phaseType) {
-            PhaseType.DRAFT -> "trnslt"
-            PhaseType.COMMUNITY_CHECK -> "comWrk"
-            PhaseType.CONSULTANT_CHECK -> "accChk"
-            PhaseType.WHOLE_STORY -> "whlStry"
-            PhaseType.REMOTE_CHECK -> "rmotChk"
-            PhaseType.BACKT -> "backT"
-            PhaseType.DRAMATIZATION -> "vcStdio"
-            PhaseType.CREATE -> "fnlz"
+            PhaseType.DRAFT -> "Translate"
+            PhaseType.COMMUNITY_CHECK -> "Community"
+            PhaseType.CONSULTANT_CHECK -> "Accuracy"
+            PhaseType.WHOLE_STORY -> "Whole"
+            PhaseType.REMOTE_CHECK -> "Remote"
+            PhaseType.BACKT -> "BackTrans"
+            PhaseType.DRAMATIZATION -> "VStudio"
+            PhaseType.CREATE -> "Finalize"
             else -> phaseType.toString().toLowerCase()
         }
     }
