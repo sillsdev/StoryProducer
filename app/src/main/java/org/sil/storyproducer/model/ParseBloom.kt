@@ -6,10 +6,21 @@ import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
 import java.util.regex.Pattern
+import org.jsoup.Jsoup
+import org.sil.storyproducer.tools.file.getChildDocuments
 
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is a BLOOM html file there
-    val htmlText = getText(context,"${storyPath.name}/index.html") ?: return null
+    val childDocs = getChildDocuments(context, storyPath.name!!)
+    var html_name = ""
+    for (f in childDocs) {
+        if (f.endsWith(".html") || f.endsWith(".htm")){
+            html_name = f
+            continue
+        }
+    }
+    if(html_name == "") return null
+    val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
 
