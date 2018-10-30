@@ -122,7 +122,7 @@ public class RemoteCheckFrag extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
-        item.setIcon(R.drawable.ic_message);
+        item.setIcon(R.drawable.ic_message_white_24dp);
     }
 
     public void onStart() {

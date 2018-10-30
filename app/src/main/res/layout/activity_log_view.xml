@@ -16,10 +16,9 @@
         <!-- TODO replace with back arrow or triangle -->
         <ImageButton
             android:id="@+id/exitButton"
-            android:background="@drawable/ic_red_ex_48dp"
-            android:backgroundTint="@color/white"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:background="@drawable/ic_close_white_36dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_gravity="end"
             android:contentDescription="@string/cancel" />
 

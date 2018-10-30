@@ -43,7 +43,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         val playButton = rowView.findViewById<ImageButton>(R.id.audio_comment_play_button)
         val deleteButton = rowView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
 
-        titleView.text = values[position]
+        titleView.text = values[position].split(".")[0]
 
         //things specifically for the modals
         if (Workspace.activePhase.hasChosenFilename()) {
