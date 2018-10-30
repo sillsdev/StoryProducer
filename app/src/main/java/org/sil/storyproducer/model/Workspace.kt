@@ -1,7 +1,5 @@
 package org.sil.storyproducer.model
 
-import android.content.ContentProvider
-import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
@@ -54,8 +52,8 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
-    var keyterms: MutableList<Keyterm> = mutableListOf()
-    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
+    var keyterms: List<Keyterm> = listOf()
+    var termsToKeyterms: Map<String, Keyterm> = mapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -125,7 +123,7 @@ object Workspace{
         }
     }
 
-    private fun readCsvDocumentFile(context: Context, file: DocumentFile): MutableList<Array<String>>{
+    private fun readCsvDocumentFile(context: Context, file: DocumentFile): List<Array<String>>{
         val parcelFileDescriptor = context.contentResolver.openFileDescriptor(file.uri, "r")
         val fileReader = FileReader(parcelFileDescriptor?.fileDescriptor)
         val csvReader = CSVReader(fileReader)
@@ -133,7 +131,7 @@ object Workspace{
         return csvReader.readAll()
     }
 
-    private fun parseKeytermLines(csvLines: MutableList<Array<String>>): MutableList<Keyterm>{
+    private fun parseKeytermLines(csvLines: List<Array<String>>): List<Keyterm>{
         val keyterms: MutableList<Keyterm> = mutableListOf()
 
         val headers = csvLines.firstOrNull()
@@ -141,10 +139,10 @@ object Workspace{
             for (line in csvLines.drop(1)) {
                 val keyterm = Keyterm(
                         line[0],
-                        stringToMutableList(line[1], ","),
+                        stringToList(line[1], ","),
                         line[2],
                         line[3],
-                        stringToMutableList(line[4], ","))
+                        stringToList(line[4], ","))
                 keyterms.add(keyterm)
             }
         }
@@ -152,7 +150,7 @@ object Workspace{
         return keyterms
     }
 
-    private fun mapTermsToKeyterms(keyterms: MutableList<Keyterm>): MutableMap<String, Keyterm>{
+    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): Map<String, Keyterm>{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm in keyterms) {
@@ -165,14 +163,14 @@ object Workspace{
         return termsToKeyterms
     }
 
-    private fun stringToMutableList(field: String, separator: String): MutableList<String>{
+    private fun stringToList(field: String, separator: String): List<String>{
         if(field.isNotEmpty()){
             val list = field.split(separator)
             val trimmedList = list.map{ it.trim() }
-            return trimmedList.toMutableList()
+            return trimmedList
         }
         else{
-            return mutableListOf()
+            return listOf()
         }
     }
 
