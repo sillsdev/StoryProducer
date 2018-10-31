@@ -1,13 +1,12 @@
 package org.sil.storyproducer.model
 
-class Keyterm (term: String,
-               termForms: MutableList<String>,
-               alternateRenderings: String,
-               explanation: String,
-               relatedTerms: MutableList<String>){
-    var term = term
-    var termForms: MutableList<String> = termForms
-    var alternateRenderings = alternateRenderings
-    var explanation = explanation
-    var relatedTerms: MutableList<String> = relatedTerms
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+class Keyterm (var term: String,
+               var termForms: MutableList<String>,
+               var alternateRenderings: String,
+               var explanation: String,
+               var relatedTerms: MutableList<String>) : Parcelable {
 }
