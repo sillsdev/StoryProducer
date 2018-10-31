@@ -218,7 +218,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             currentPlayingButton = buttonClickedNow
             currentPlayingButton!!.setImageResource(R.drawable.ic_stop_white_36dp)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp) })
+                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                audioPlayer.stopAudio()})
             if (storyRelPathExists(context,"$PROJECT_DIR/$name")) {
                 audioPlayer.setStorySource(context,"$PROJECT_DIR/$name")
                 audioPlayer.playAudio()

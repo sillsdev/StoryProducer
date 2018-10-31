@@ -76,7 +76,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-            referenceAudioPlayer.currentPosition = 0
+            referenceAudioPlayer.stopAudio()
         })
     }
 
