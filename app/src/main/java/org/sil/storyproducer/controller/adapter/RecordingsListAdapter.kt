@@ -133,7 +133,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
     }
 }
 
-class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag, private val slideNum : Int = Workspace.activeSlideNum) : RecordingsListAdapter.ClickListeners, Modal {
+class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag) : RecordingsListAdapter.ClickListeners, Modal {
     private var rootView: ViewGroup? = null
     private var dialog: AlertDialog? = null
 
@@ -145,9 +145,15 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     private var currentPlayingButton: ImageButton? = null
     private var embedded = false
 
+    private var mSlideNum = -1
+
     fun embedList(view: ViewGroup){
         rootView = view
         embedded = true
+    }
+
+    fun setSlideNum(slideNum : Int){
+        mSlideNum = slideNum
     }
 
     override fun show() {
@@ -156,7 +162,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
         }
 
-        filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
+        if(mSlideNum == -1) mSlideNum = Workspace.activeSlideNum
+        filenames = Workspace.activePhase.getRecordedAudioFiles(mSlideNum)!!
         createRecordingList()
 
 
@@ -173,8 +180,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
                 dialog?.dismiss()
             }
             dialog?.setOnDismissListener {
-                if (audioPlayer.isAudioPlaying)
-                    audioPlayer.stopAudio()
+                stopAudio()
             }
             dialog?.show()
         }
@@ -203,15 +209,12 @@ class RecordingsList(private val context: Context, private val parentFragment: M
     }
 
     override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
-        parentFragment.stopPlayBackAndRecording()
         if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
             currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
             audioPlayer.stopAudio()
         } else {
-            if (audioPlayer.isAudioPlaying) {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
-            }
+            stopAudio()
+            parentFragment.stopPlayBackAndRecording()
             currentPlayingButton = buttonClickedNow
             currentPlayingButton!!.setImageResource(R.drawable.ic_stop_white_36dp)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
@@ -262,5 +265,12 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         filenames.add(index,"$PROJECT_DIR/$lastNewName")
         onRowClick(lastNewName!!)
         createRecordingList()
+    }
+
+    fun stopAudio() {
+        if (audioPlayer.isAudioPlaying) {
+            currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+            audioPlayer.stopAudio()
+        }
     }
 }

@@ -323,12 +323,7 @@ class LearnActivity : PhaseBaseActivity() {
         //make the floating button visible
         //recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
-        val soundOff = findViewById<ImageView>(R.id.soundOff)
-        val soundOn = findViewById<ImageView>(R.id.soundOn)
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
-        soundOff.visibility = View.VISIBLE
-        soundOn.visibility = View.VISIBLE
-        volumeSwitch.visibility = View.VISIBLE
         //set the volume switch change listener
         volumeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
