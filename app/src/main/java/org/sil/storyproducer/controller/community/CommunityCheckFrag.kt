@@ -32,6 +32,11 @@ class CommunityCheckFrag : MultiRecordFrag() {
         return rootView
     }
 
+    override fun onPause() {
+        super.onPause()
+        dispList!!.stopAudio()
+    }
+
     override fun setToolbar() {
         val recordingListener = object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
