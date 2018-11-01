@@ -30,6 +30,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
             continue
         }
         val tag = parser.name
+
         when (tag) {
             "VisualUnit" -> {
                 val slide = parseSlideXML(parser)
@@ -61,6 +62,9 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         }
         parser.next()
     }
+    if (slides.isEmpty()) {
+        return null
+    }
     val story = Story(storyPath.name!!,slides)
     return story
 }
@@ -85,9 +89,7 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
             }
             "Image" -> {
                 slide.imageFile = parser.getAttributeValue(null, "path")
-                val noExtRange = 0..(slide.imageFile.length
-                        - File(slide.imageFile).extension.length-2)
-                slide.textFile = slide.imageFile.slice(noExtRange) + ".txt"
+                slide.textFile = slide.imageFile.replace(Regex("""\..+$"""), ".txt")
                 slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
                 slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
             }
