@@ -145,7 +145,9 @@ class AudioPlayer {
      * Releases the MediaPlayer object after completion
      */
     fun release() {
-        mPlayer.release()
+        try {
+            mPlayer.release()
+        } catch (e : Exception) {}
     }
 
     /**

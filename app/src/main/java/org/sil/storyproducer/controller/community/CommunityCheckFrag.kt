@@ -34,7 +34,17 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
     override fun onPause() {
         super.onPause()
-        dispList!!.stopAudio()
+        dispList?.stopAudio()
+    }
+
+    /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        dispList?.stopAudio()
     }
 
     override fun setToolbar() {

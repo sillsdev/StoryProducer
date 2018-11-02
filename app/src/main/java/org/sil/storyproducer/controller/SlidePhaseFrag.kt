@@ -90,6 +90,18 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        referenceAudioPlayer.stopAudio()
+        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
+
+
+        /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
