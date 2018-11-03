@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller
 
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
@@ -122,7 +121,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         }
         val rList = RecordingsList(context!!, this)
 
-        recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as ConstraintLayout,
+        recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as RelativeLayout,
                 true, false, true, false,  rList , recordingListener, slideNum);
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()

@@ -1,11 +1,11 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.ImageButton
@@ -19,6 +19,7 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -49,8 +50,8 @@ abstract class SlidePhaseFrag : Fragment() {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
-        //setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        setUiColors()
+        setPic(rootView!!.findViewById<ImageView>(R.id.fragment_image_view))
 
         return rootView
     }
@@ -89,15 +90,15 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected open fun setUiColors() {
         if (slideNum == 0) {
-            //var rl = rootView!!.findViewById<ViewGroup>(R.id.fragment_envelope)
-            //rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-            //rl = rootView!!.findViewById(R.id.fragment_text_envelope)
-            //rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
+            var rl = rootView!!.findViewById<ViewGroup>(R.id.fragment_envelope)
+            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
+            rl = rootView!!.findViewById(R.id.fragment_text_envelope)
+            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
 
-            //var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
-            //tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-            //tv = rootView!!.findViewById(R.id.fragment_reference_text)
-            //tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
+            var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
+            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
+            tv = rootView!!.findViewById(R.id.fragment_reference_text)
+            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
         }
     }
 
@@ -109,6 +110,19 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setPic(slideImage: ImageView) {
         var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
+
+        //Get the height of the phone.
+        val phoneProperties = context!!.resources.displayMetrics
+        var height = phoneProperties.heightPixels
+        val scalingFactor = 0.4
+        height = (height * scalingFactor).toInt()
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+
+        //Set the height of the image view
+        slideImage.layoutParams.height = height
+        slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
 

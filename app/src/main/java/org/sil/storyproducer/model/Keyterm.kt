@@ -5,8 +5,8 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 class Keyterm (var term: String,
-               var termForms: MutableList<String>,
+               var termForms: List<String>,
                var alternateRenderings: String,
                var explanation: String,
-               var relatedTerms: MutableList<String>) : Parcelable {
+               var relatedTerms: List<String>) : Parcelable {
 }
