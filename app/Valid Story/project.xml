@@ -9,6 +9,9 @@
                 <TextOverlay text="God is happy when a person repents." verticalAlignment="4" horizontalAlignment="1" fontReferenceWidth="312" fontReferenceHeight="234">
                     <Font faceName="Microsoft Sans Serif" width="0" height="-21" weight="400" strikeout="0" italic="0" underline="0" charset="0" clipprecision="2" escapement="0" orientation="0" outprecision="3" pitchandfamily="34" quality="1" color="16777215"/>
                 </TextOverlay>
+                <RotateAndCrop rotateType="0">
+                    <Rectangle upperLeftX="20" upperLeftY="40" width="700" height="500"/>
+                </RotateAndCrop>
             </Edit>
             <Motion manual="0" workingImageWidth="720" workingImageHeight="540">
                 <Rect upperLeftX="0" upperLeftY="0" width="720" height="540" weight="100"/>
