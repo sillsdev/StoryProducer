@@ -14,8 +14,8 @@
                 </RotateAndCrop>
             </Edit>
             <Motion manual="0" workingImageWidth="720" workingImageHeight="540">
-                <Rect upperLeftX="0" upperLeftY="0" width="720" height="540" weight="100"/>
-                <Rect upperLeftX="0" upperLeftY="0" width="720" height="540" weight="100"/>
+                <Rect upperLeftX="0" upperLeftY="0" width="540" height="405" weight="100"/>
+                <Rect upperLeftX="100" upperLeftY="50" width="620" height="490" weight="100"/>
             </Motion>
             <Motion2 manual="0">
                 <RelativeRect left="0" top="0" width="1" height="1"/>
@@ -29,6 +29,9 @@
             </MusicTrack>
         </Image>
     </VisualUnit>
+    <ExtraTagThatTheParserShouldIgnore>
+        <DummyTag />
+    </ExtraTagThatTheParserShouldIgnore>
     <VisualUnit duration="12.989" type="1">
         <Transition duration="0.5" withPrevImage="-1" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
         <Transition duration="0.5" withPrevImage="0" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>

@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
+import org.sil.storyproducer.model.Slide;
 import org.sil.storyproducer.model.Story;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -75,6 +76,13 @@ public class TestParsePhotoStory {
     }
 
     @Test
+    public void parsePhotoStoryXML_When_ASlideHasAMusicTrack_Should_ParseTheVolume() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals(9, result.getSlides().get(0).getVolume(), 0.1);
+    }
+
+    @Test
     public void parsePhotoStoryXML_When_ASlideHasAnImageWithRotateAndCrop_Should_ParseCropRectangle() {
         Story result = parseValidStory();
 
@@ -82,6 +90,28 @@ public class TestParsePhotoStory {
         Assert.assertEquals(40, result.getSlides().get(0).getCrop().top);
         Assert.assertEquals(720, result.getSlides().get(0).getCrop().right);
         Assert.assertEquals(540, result.getSlides().get(0).getCrop().bottom);
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_ASlideHasAMotion_Should_ParseStartAndEndRectangles() {
+        Story result = parseValidStory();
+
+        Slide slide = result.getSlides().get(0);
+        Assert.assertEquals(0, slide.getStartMotion().left);
+        Assert.assertEquals(0, slide.getStartMotion().top);
+        Assert.assertEquals(540, slide.getStartMotion().right);
+        Assert.assertEquals(405, slide.getStartMotion().bottom);
+        Assert.assertEquals(100, slide.getEndMotion().left);
+        Assert.assertEquals(50, slide.getEndMotion().top);
+        Assert.assertEquals(720, slide.getEndMotion().right);
+        Assert.assertEquals(540, slide.getEndMotion().bottom);
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_StoryHasExtraTagsInsideRoot_Should_IgnoreThem() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals(2, result.getSlides().size());
     }
 
     @Test
