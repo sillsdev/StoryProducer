@@ -90,9 +90,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
-        //kill the generated file first - if not, it will make all files created at least as big
-        //as the last one.
-        videoTempFile.delete()
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
 
