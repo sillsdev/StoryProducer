@@ -1,10 +1,12 @@
 package org.sil.storyproducer.tools.media.story
 
+import android.bluetooth.BluetoothClass
 import android.content.Context
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -39,14 +41,19 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private val mVideoBitRate: Int
         get() {
-            return ((1280 * mHeight * VIDEO_FRAME_RATE).toFloat()
+            return ((1280 * mHeight * mVideoFrameRate).toFloat()
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
+        }
+    private val mVideoFrameRate: Int
+        get() {
+            return if(mDumbPhone) VIDEO_FRAME_RATE else VIDEO_FRAME_RATE_DUMBPHONE
         }
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
+    var mDumbPhone = false
 
     private var mLogProgress = false
 
@@ -67,15 +74,20 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     override fun start() {
-        val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+        val outputFormat : Int
+        if(mDumbPhone && Build.VERSION.SDK_INT >= 26){
+            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
+        } else {
+            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+        }
 
         //TODO switch for smartphone and dumb phone.
         //The dumbphone format is:
         // video: H263, 176x144, frame rate = 15
         // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
 
-        val audioFormat = generateAudioFormat()
         val videoFormat = generateVideoFormat()
+        val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
         //kill the generated file first - if not, it will make all files created at least as big
@@ -118,8 +130,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
-        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_FRAME_RATE)
+
+        val videoFormat =
+                if(mDumbPhone) MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_H263, mWidth, mHeight)
+                else MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
+
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
 
@@ -255,10 +271,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
+        private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
         private val VIDEO_IFRAME_INTERVAL = 1           // 1 second between I-frames
 
         // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 3                   // 1, 2, or 4
+        private val MOTION_FACTOR = 4                   // 1, 2, or 4
         private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder
