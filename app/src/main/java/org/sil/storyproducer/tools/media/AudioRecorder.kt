@@ -84,6 +84,7 @@ abstract class AudioRecorder(val activity: Activity) {
 
             copyToWorkspacePath(context, Uri.fromFile(File(tempDestPath)),
                     "${Workspace.activeStory.title}/$orgAudioRelPath")
+            File(tempDestPath).delete()
         }
     }
 }

@@ -228,6 +228,7 @@ class PipedAudioConcatenator
     private fun zeroSourceBuffer(timeUntil: Long){
         srcPos = 0
         srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000.0).toInt()+1)
+        if(srcEnd < 1) srcEnd = 1
         srcBuffer.fill(0,0,srcEnd-1)
         srcHasBuffer = true
     }

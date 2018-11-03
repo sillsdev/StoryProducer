@@ -112,9 +112,6 @@ class StoryMaker
             videoDrawer = StoryFrameDrawer(context, mVideoFormat, mPages, mAudioTransitionUs, mSlideCrossFadeUs)
             videoEncoder = PipedVideoSurfaceEncoder()
         }
-        //kill the generated file first - if not, it will make all files created at least as big
-        //as the last one.
-        mOutputFile.delete()
         mMuxer = PipedMediaMuxer(mOutputFile.absolutePath, mOutputFormat)
 
         var success = false

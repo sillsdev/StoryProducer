@@ -46,7 +46,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         }
     private val mVideoFrameRate: Int
         get() {
-            return if(mDumbPhone) VIDEO_FRAME_RATE else VIDEO_FRAME_RATE_DUMBPHONE
+            return if(mDumbPhone) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
         }
 
     var mIncludeBackgroundMusic = true
@@ -87,7 +87,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
 
         val videoFormat = generateVideoFormat()
-        val audioFormat = generateAudioFormat()
+        val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
         val pages = generatePages() ?: return
 
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
@@ -107,6 +107,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
+            videoTempFile.delete()
             Workspace.activeStory.addVideo(videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
@@ -126,7 +127,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         if (!mIncludePictures && !mIncludeText) {
             return null
         }
-
 
         val videoFormat =
                 if(mDumbPhone) MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_H263, mWidth, mHeight)
@@ -281,7 +281,17 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 
+        fun generateDumbAudioFormat(): MediaFormat {
+            // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
+            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, 16000)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, 8000)
+            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
+            return audioFormat
+        }
+
         fun generateAudioFormat(): MediaFormat {
+
             val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
             audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
