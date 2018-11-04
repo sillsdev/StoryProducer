@@ -140,7 +140,7 @@ object Workspace{
                 val keyterm = Keyterm(
                         line[0],
                         stringToList(line[1], ","),
-                        line[2],
+                        stringToList(line[2], ";"),
                         line[3],
                         stringToList(line[4], ","))
                 keyterms.add(keyterm)
@@ -164,9 +164,10 @@ object Workspace{
     }
 
     private fun stringToList(field: String, separator: String): List<String>{
-        if(field.isNotEmpty()){
+        if(field.isNotEmpty()) {
             val list = field.split(separator)
-            val trimmedList = list.map{ it.trim() }
+            val trimmedList = list.map { it.trim() }.toMutableList()
+            trimmedList.remove("")
             return trimmedList
         }
         else{
