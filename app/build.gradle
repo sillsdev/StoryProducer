@@ -26,7 +26,6 @@ android {
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
-        main.java.srcDirs += 'build/generated/source/kaptKotlin'
     }
     lintOptions {
         abortOnError false

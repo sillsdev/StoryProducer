@@ -117,7 +117,7 @@ public class TestParsePhotoStory {
     @Test
     public void parsePhotoStoryXML_When_StoryFolderDoesNotExist_Should_ReturnNull() {
         DocumentFile inputFile = Mockito.mock(DocumentFile.class);
-        Mockito.when(inputFile.getName()).thenReturn("I do not exist");
+        Mockito.when(inputFile.getName()).thenReturn("sampledata/IDoNotExist");
 
         Story result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), inputFile);
 
@@ -127,7 +127,7 @@ public class TestParsePhotoStory {
     @Test
     public void parsePhotoStoryXML_When_StoryHasNoSlides_Should_ReturnNull() {
         DocumentFile inputFile = Mockito.mock(DocumentFile.class);
-        Mockito.when(inputFile.getName()).thenReturn("Story with no slides");
+        Mockito.when(inputFile.getName()).thenReturn("sampledata/StoryWithNoSlides");
 
         Story result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), inputFile);
 
@@ -136,7 +136,7 @@ public class TestParsePhotoStory {
 
     private Story parseValidStory() {
         DocumentFile inputFile = Mockito.mock(DocumentFile.class);
-        Mockito.when(inputFile.getName()).thenReturn("Valid Story");
+        Mockito.when(inputFile.getName()).thenReturn("sampledata/ValidStory");
 
         return parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), inputFile);
     }
