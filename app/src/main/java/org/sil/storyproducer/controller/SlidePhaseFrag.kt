@@ -141,7 +141,7 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
-        textView.text = stringToSpannableString(words as MutableList<String>, this.context)
+        textView.text = stringToSpannableString(words, this.context)
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 
 import org.sil.storyproducer.R
 
-class keyterm_audio : Fragment() {
+class KeyTermAudioFrag : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {

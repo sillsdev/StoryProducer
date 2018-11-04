@@ -5,7 +5,7 @@
     android:id="@+id/keyterm_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controller.keyterm.keyterm_text">
+    tools:context=".controller.keyterm.KeyTermTextFrag">
 
     <TextView
         android:id="@+id/term_text"

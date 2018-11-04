@@ -11,7 +11,7 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Keyterm
 
-class keyterm_text : Fragment() {
+class KeyTermTextFrag : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
