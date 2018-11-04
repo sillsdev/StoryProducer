@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                     intent = Intent(this.applicationContext, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     this.startActivity(intent)
+                    this.finish()
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)

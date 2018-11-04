@@ -87,7 +87,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem item =  menu.getItem(0);
-        item.setIcon(R.drawable.ic_wholestory);
+        item.setIcon(R.drawable.ic_school_white_48dp);
         return true;
     }
 
@@ -130,7 +130,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                     //makeLogIfNecessary(true);
 
                     videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
-                    playButton.setImageResource(R.drawable.ic_play_gray);
+                    playButton.setImageResource(R.drawable.ic_play_circle_outline_white_36dp);
                     setPic(wStoryImageView);     //sets the pic to the end image
                 }
             }
@@ -262,7 +262,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         //makeLogIfNecessary();
         narrationPlayer.pauseAudio();
         backgroundPlayer.pauseAudio();
-        playButton.setImageResource(R.drawable.ic_play_gray);
+        playButton.setImageResource(R.drawable.ic_play_circle_outline_white_36dp);
     }
 
     /**
@@ -306,12 +306,12 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                         }
                     }
                     if(slideNumber == CONTENT_SLIDE_COUNT) {
-                        playButton.setImageResource(R.drawable.ic_play_gray);
+                        playButton.setImageResource(R.drawable.ic_play_circle_outline_white_36dp);
                         setPic(wStoryImageView);     //sets the pic to the end image
                     } else {
                         //markLogStart();
                         playVideo();
-                        playButton.setImageResource(R.drawable.ic_pause_gray);
+                        playButton.setImageResource(R.drawable.ic_pause_circle_outline_white_36dp);
                     }
 
                 }

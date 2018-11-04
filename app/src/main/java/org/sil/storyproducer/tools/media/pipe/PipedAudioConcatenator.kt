@@ -114,7 +114,11 @@ class PipedAudioConcatenator
         return mOutputFormat
     }
 
-    fun numOfSources(): Int {return catSources.size}
+    fun anyNonNull(): Boolean {
+        for (s in catSources)
+            if (s != null) return true
+        return false
+    }
 
     /**
      *
@@ -224,9 +228,8 @@ class PipedAudioConcatenator
     private fun zeroSourceBuffer(timeUntil: Long){
         srcPos = 0
         srcEnd = min(srcBuffer.size,((timeUntil - mSeekTime) * mSampleRate / 1000000.0).toInt()+1)
-        for(index in 0 until srcEnd){
-            srcBuffer[index] = 0
-        }
+        if(srcEnd < 1) srcEnd = 1
+        srcBuffer.fill(0,0,srcEnd-1)
         srcHasBuffer = true
     }
 
