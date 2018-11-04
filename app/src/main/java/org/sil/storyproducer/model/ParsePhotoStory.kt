@@ -8,7 +8,6 @@ import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 
@@ -45,19 +44,12 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                     if (textList.size > 0) slide.title = textList[0]
                     if (textList.size > 1) slide.subtitle= textList[1]
                     if (textList.size > 2) slide.reference = textList[2]
-                    if (textList.size > 3) slide.content = textList[3]
+                    if (textList.size > 3) slide.content = textList[3].trim()
                 }
                 slides.add(slide)
             }
             else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
+                skipToNextTag(parser)
             }
         }
         parser.next()
@@ -83,70 +75,89 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
         val tag = parser.name
         when (tag) {
             "Narration" -> {
-                slide.narrationFile = parser.getAttributeValue(null, "path")
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Narration")
+                parseNarration(slide, parser)
             }
             "Image" -> {
-                slide.imageFile = parser.getAttributeValue(null, "path")
-                slide.textFile = slide.imageFile.replace(Regex("""\..+$"""), ".txt")
-                slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
-                slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+                parseImage(slide, parser)
             }
-            "Edit" -> {
-                parser.nextTag()
-                while (parser.name != "Edit") {
-                    when (parser.name) {
-                        "RotateAndCrop" -> {
-                            parser.nextTag()
-                            slide.crop = parseRect(parser, "Rectangle")
-                            parser.nextTag()
-                            parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
-                        }
-                    }
-                    parser.next()
-                }
-                parser.require(XmlPullParser.END_TAG, null, "Edit")
-            }
-            "MusicTrack" -> {
-                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
-
-                parser.nextTag()
-                parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
-
-                slide.musicFile = parser.getAttributeValue(null, "path")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
-            }
-            "Motion" -> {
-                val rectTag = "Rect"
-                parser.nextTag()
-                slide.startMotion = parseRect(parser, rectTag)
-                parser.nextTag()
-                slide.endMotion = parseRect(parser, rectTag)
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Motion")
-            }
-        //ignore
             else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
+                skipToNextTag(parser)
             }
         }
         parser.next()
     }
     return slide
+}
+
+private fun parseNarration(slide: Slide, parser: XmlPullParser) {
+    slide.narrationFile = parser.getAttributeValue(null, "path")
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "Narration")
+}
+
+private fun parseImage(slide: Slide, parser: XmlPullParser) {
+    slide.imageFile = parser.getAttributeValue(null, "path")
+    slide.textFile = slide.imageFile.replace(Regex("""\..+$"""), ".txt")
+    slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
+    slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+    parser.nextTag()
+    while (parser.name != "Image") {
+        when (parser.name) {
+            "Edit" -> {
+                parseEdit(parser, slide)
+            }
+            "MusicTrack" -> {
+                parseMusicTrack(slide, parser)
+            }
+            "Motion" -> {
+                parseMotion(parser, slide)
+            }
+        }
+        parser.next()
+    }
+    parser.require(XmlPullParser.END_TAG, null, "Image")
+}
+
+private fun parseEdit(parser: XmlPullParser, slide: Slide) {
+    parser.nextTag()
+    while (parser.name != "Edit") {
+        when (parser.name) {
+            "RotateAndCrop" -> {
+                parser.nextTag()
+                slide.crop = parseRect(parser, "Rectangle")
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
+            }
+        }
+        parser.next()
+    }
+    parser.require(XmlPullParser.END_TAG, null, "Edit")
+}
+
+private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
+    slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
+
+    parser.nextTag()
+    parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
+
+    slide.musicFile = parser.getAttributeValue(null, "path")
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
+}
+
+private fun parseMotion(parser: XmlPullParser, slide: Slide) {
+    val rectTag = "Rect"
+    parser.nextTag()
+    slide.startMotion = parseRect(parser, rectTag)
+    parser.nextTag()
+    slide.endMotion = parseRect(parser, rectTag)
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "Motion")
 }
 
 @Throws(IOException::class, XmlPullParserException::class)
@@ -165,4 +176,14 @@ private fun parseRect(parser: XmlPullParser, rectangleTag: String): Rect {
     parser.require(XmlPullParser.END_TAG, null, rectangleTag)
 
     return Rect(left, top, right, bottom)
+}
+
+private fun skipToNextTag(parser: XmlPullParser) {
+    var depth: Int = 1
+    while (depth != 0) {
+        when (parser.next()) {
+            XmlPullParser.END_TAG -> depth--
+            XmlPullParser.START_TAG -> depth++
+        }
+    }
 }

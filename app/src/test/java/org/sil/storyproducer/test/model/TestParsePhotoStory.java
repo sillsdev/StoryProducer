@@ -62,6 +62,34 @@ public class TestParsePhotoStory {
     }
 
     @Test
+    public void parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideTitleFromCorrespondingTextFile() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals("The Valid Story", result.getSlides().get(0).getTitle());
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideSubtitleFromCorrespondingTextFile() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals("When Testing Works", result.getSlides().get(0).getSubtitle());
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideReferenceFromCorrespondingTextFile() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals("Exodus 20:20", result.getSlides().get(0).getReference());
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideContentFromCorrespondingTextFile() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals("Once there was a sample story template that was formatted correctly.", result.getSlides().get(0).getContent());
+    }
+
+    @Test
     public void parsePhotoStoryXML_When_ASlideHasANarrationTag_Should_ParseTheNameOfTheNarrationFile() {
         Story result = parseValidStory();
 
