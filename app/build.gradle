@@ -60,6 +60,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation 'com.github.codekidX:storage-chooser:2.0.3'
     implementation 'com.squareup.moshi:moshi:1.6.0'
+    implementation 'com.opencsv:opencsv:4.3.2'
     implementation 'org.jsoup:jsoup:1.11.3'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
     testImplementation 'junit:junit:4.12'
