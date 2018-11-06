@@ -1,25 +1,20 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.text.method.LinkMovementMethod
+import android.view.*
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.stringToSpannableString
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
@@ -56,7 +51,7 @@ abstract class SlidePhaseFrag : Fragment() {
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
         setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        setPic(rootView!!.findViewById<ImageView>(R.id.fragment_image_view))
 
         return rootView
     }
@@ -145,7 +140,9 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        val words = slide.content.split(" ")
+        textView.text = stringToSpannableString(words, this.context)
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     /**

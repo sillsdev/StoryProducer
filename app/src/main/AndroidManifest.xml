@@ -6,17 +6,16 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="false"
         android:icon="@mipmap/logo_new_splash"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:fullBackupContent="false"
-        >
+        android:theme="@style/AppTheme">
 
         <!-- Pager Base -->
         <activity
@@ -28,8 +27,8 @@
         <activity
             android:name=".controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
-            android:screenOrientation="portrait"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -42,9 +41,11 @@
             android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait" />
         <!-- Registration -->
-        <activity android:name=".controller.RegistrationActivity"
+        <activity
+            android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".controller.WorkspaceAndRegistrationActivity"
+        <activity
+            android:name=".controller.WorkspaceAndRegistrationActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
@@ -54,13 +55,22 @@
             android:name=".controller.remote.WholeStoryBackTranslationActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
-        <activity android:name=".controller.export.CreateActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.export.CreateActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <!-- Share -->
-        <activity android:name=".controller.export.ShareActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.export.ShareActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <!--Keyterm -->
+        <activity
+            android:name=".controller.keyterm.KeyTermActivity"
+            android:screenOrientation="portrait"
+            android:label="Keyterm"
+            android:parentActivityName=".controller.pager.PagerBaseActivity"/>
+
     </application>
 
 </manifest>
