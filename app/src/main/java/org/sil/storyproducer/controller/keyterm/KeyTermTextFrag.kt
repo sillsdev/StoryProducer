@@ -20,7 +20,7 @@ class KeyTermTextFrag : Fragment() {
         val keyterm = arguments?.getParcelable<Keyterm>("Keyterm")
         if(keyterm != null) {
             view.findViewById<TextView>(R.id.term_text).text = keyterm.term
-            view.findViewById<TextView>(R.id.alternateRenderings_text).text = keyterm.alternateRenderings
+            view.findViewById<TextView>(R.id.alternateRenderings_text).text = keyterm.alternateRenderings.toString()
             view.findViewById<TextView>(R.id.explanation_text).text = keyterm.explanation
 
             val relatedTermsView = view.findViewById<TextView>(R.id.relatedTerms_text)
