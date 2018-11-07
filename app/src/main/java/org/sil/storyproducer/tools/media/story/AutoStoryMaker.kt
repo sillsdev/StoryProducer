@@ -22,6 +22,7 @@ import org.sil.storyproducer.tools.media.graphics.overlayJPEG
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
+import kotlin.math.sqrt
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -41,7 +42,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private val mVideoBitRate: Int
         get() {
-            return ((1280 * mHeight * mVideoFrameRate).toFloat()
+            return ((1280 * sqrt((mHeight*1280).toFloat()) * mVideoFrameRate).toFloat()
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
         }
     private val mVideoFrameRate: Int
@@ -80,11 +81,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         } else {
             outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
         }
-
-        //TODO switch for smartphone and dumb phone.
-        //The dumbphone format is:
-        // video: H263, 176x144, frame rate = 15
-        // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
 
         val videoFormat = generateVideoFormat()
         val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
@@ -280,13 +276,14 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
+        private val AUDIO_BIT_RATE_AMR = 128000
 
         fun generateDumbAudioFormat(): MediaFormat {
             // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
             val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
-            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, 16000)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, 8000)
-            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1)
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
             return audioFormat
         }
 
