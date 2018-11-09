@@ -31,31 +31,32 @@
                 android:layout_alignBottom="@id/fragment_image_view"
                 android:layout_alignStart="@id/fragment_image_view" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/rect_height"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:background="@color/black_semi_transparent"
-                android:orientation="horizontal">
-                <ImageButton
-                    android:id="@+id/fragment_reference_audio_button"
-                    android:layout_width="@dimen/reference_audio_button"
-                    android:layout_height="@dimen/reference_audio_button"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ic_play_arrow_white_48dp"
-                    android:contentDescription="@string/draft_play_narration_audio" />
-
-                <SeekBar
-                    android:id="@+id/videoSeekBar"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="@dimen/nav_drawer_margin"
-                    android:max="100" />
-
-            </LinearLayout>
         </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/rect_height"
+            android:background="@color/black_semi_transparent"
+            android:orientation="horizontal">
+            <ImageButton
+                android:id="@+id/fragment_reference_audio_button"
+                android:layout_width="@dimen/reference_audio_button"
+                android:layout_height="@dimen/reference_audio_button"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play_arrow_white_48dp"
+                android:onClick="onClickPlayPauseButton"
+                android:background="@color/transparent"
+                android:contentDescription="@string/draft_play_narration_audio" />
+
+            <SeekBar
+                android:id="@+id/videoSeekBar"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="@dimen/nav_drawer_margin"
+                android:max="100" />
+
+        </LinearLayout>
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
