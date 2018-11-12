@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -16,8 +15,6 @@ import android.widget.*
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
@@ -43,8 +40,6 @@ class CreateActivity : PhaseBaseActivity() {
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
-
-    private var phaseUnlocked = false
 
     private var mOutputPath: String = ""
 
@@ -113,11 +108,10 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_create)
         setupViews()
         invalidateOptionsMenu()
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)

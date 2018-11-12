@@ -28,8 +28,6 @@ import org.sil.storyproducer.model.Workspace
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
 class ConsultantCheckFrag : SlidePhaseFrag() {
-    private var storyName: String = Workspace.activeStory.title
-    private var isChecked: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -71,12 +69,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the check button
      */
     private fun setCheckmarkButton(button: ImageButton) {
-        //TODO replace prefs with storing MD5 or SHA1 of the draft audio.
-        val prefs = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
-        val prefsKeyString = storyName + slideNum.toString() + IS_CHECKED
-        isChecked = prefs.getBoolean(prefsKeyString, false)
-        if (isChecked) {
+        //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
+        if (Workspace.activeStory.slides[slideNum].isChecked) {
             //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
         } else {
@@ -84,23 +78,18 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
         }
         button.setOnClickListener(View.OnClickListener {
-            val isApproved = prefs.getBoolean(storyName + IS_CONSULTANT_APPROVED, false)
-            if (isApproved) {
+            if (Workspace.activeStory.isApproved) {
                 Toast.makeText(context, "Story already approved", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
-            if (isChecked) {
+            if (Workspace.activeStory.slides[slideNum].isChecked) {
                 //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
-                isChecked = false
-                prefsEditor.putBoolean(prefsKeyString, false)
-                prefsEditor.apply()
+                Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
                 //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
-                isChecked = true
-                prefsEditor.putBoolean(prefsKeyString, true)
-                prefsEditor.commit()
+                Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
                 }
@@ -123,13 +112,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @return true if all approved, otherwise false
      */
     private fun checkAllMarked(): Boolean {
-        var marked: Boolean
-        val prefs = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE)
         //dont check the last slide, it's the copyright.
         val numStorySlides = Workspace.activeStory.slides.size - 1
         for (i in 0 until numStorySlides) {
-            marked = prefs.getBoolean(storyName + i + IS_CHECKED, false)
-            if (!marked) {
+            if (!Workspace.activeStory.slides[i].isChecked) {
                 return false
             }
         }
@@ -183,9 +169,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * Updates the shared preference file to mark the story as approved
      */
     private fun saveConsultantApproval() {
-        val prefsEditor = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit()
-        prefsEditor.putBoolean(storyName!! + IS_CONSULTANT_APPROVED, true)
-        prefsEditor.apply()
+        Workspace.activeStory.isApproved = true
     }
 
     /**

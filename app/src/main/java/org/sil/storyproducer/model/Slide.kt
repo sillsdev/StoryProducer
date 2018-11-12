@@ -52,6 +52,9 @@ class Slide{
     var backTranslationAudioFiles: MutableList<String> = ArrayList()
     var chosenBackTranslationFile = ""
 
+    //consultant approval
+    var isChecked: Boolean = false
+
     companion object
 }
 

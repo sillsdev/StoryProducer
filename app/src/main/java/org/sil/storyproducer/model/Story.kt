@@ -13,6 +13,8 @@ internal const val PROJECT_FILE = "story.json"
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
 
+    var isApproved: Boolean = false
+
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var activityLogs: MutableList<LogEntry> = ArrayList()

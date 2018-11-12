@@ -1,12 +1,6 @@
 package org.sil.storyproducer.controller.export
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.DocumentsContract
-import android.provider.DocumentsProvider
-import android.support.v4.provider.DocumentFile
-import android.view.Menu
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -16,9 +10,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.getChildDocuments
-import org.sil.storyproducer.tools.file.getStoryUri
 
 
 /**
@@ -46,11 +38,10 @@ class ShareActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_share)
         setupViews()
         invalidateOptionsMenu()
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)

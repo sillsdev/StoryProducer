@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
@@ -15,17 +14,14 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-import android.R.attr.duration
 import java.util.*
 
 
 class DramatizationFrag : MultiRecordFrag() {
 
-    private var phaseUnlocked: Boolean = false
     private var slideText: EditText? = null
     private var draftPlaybackSeekBar: SeekBar? = null
     private var mSeekBarTimer = Timer()
@@ -43,9 +39,7 @@ class DramatizationFrag : MultiRecordFrag() {
         slideText = rootView!!.findViewById(R.id.fragment_dramatization_edit_text)
         slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
-
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
             setToolbar(rootViewToolbar)
             closeKeyboardOnTouch(rootView)
