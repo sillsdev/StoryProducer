@@ -1,10 +1,7 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
+import android.graphics.*
 import android.media.MediaFormat
 import android.text.Layout
 import android.util.Log
@@ -27,7 +24,6 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
     private val mWidth: Int
     private val mHeight: Int
-    private val mScreenRect: Rect
 
     private val mBitmapPaint: Paint
 
@@ -77,7 +73,6 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
         mWidth = mVideoFormat.getInteger(MediaFormat.KEY_WIDTH)
         mHeight = mVideoFormat.getInteger(MediaFormat.KEY_HEIGHT)
-        mScreenRect = Rect(0, 0, mWidth, mHeight)
 
         mBitmapPaint = Paint()
         mBitmapPaint.isAntiAlias = true
@@ -186,21 +181,17 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             val kbfx = page.kenBurnsEffect
 
             val position = (timeOffsetUs / imgDurationUs.toDouble()).toFloat()
-            val drawRect: Rect
-            if (kbfx != null) {
-                drawRect = kbfx.interpolate(position)
-            } else {
-                drawRect = Rect(0, 0, bitmap.width, bitmap.height)
-            }
 
-            if (MediaHelper.DEBUG) {
-                Log.d(TAG, "drawing bitmap (" + bitmap.width + "x" + bitmap.height + ") from "
-                        + drawRect + " to canvas " + mScreenRect)
+            val drawRect: RectF
+            if (kbfx != null) {
+                drawRect = kbfx.revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height)
+            } else {
+                drawRect = RectF(0f, 0f, mWidth*1f, mHeight*1f)
             }
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 
-            canv.drawBitmap(bitmap, drawRect, mScreenRect, mBitmapPaint)
+            canv.drawBitmap(bitmap, null, drawRect, mBitmapPaint)
         } else {
             //If there is no picture, draw black background for text overlay.
             canv.drawARGB((alpha * 255).toInt(), 0, 0, 0)

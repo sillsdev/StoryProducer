@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.graphics
 
 import android.graphics.Rect
+import android.graphics.RectF
 import org.sil.storyproducer.model.Slide
 
 import org.sil.storyproducer.tools.media.graphics.RectHelper
@@ -91,6 +92,34 @@ class KenBurnsEffect
 
         return Rect(left, top, right, bottom)
     }
+
+    fun revInterpolate(position: Float, scrWidth: Int, scrHeight: Int, imWidth: Int, imHeight: Int): RectF {
+        var position = position
+        //Clamp position to [0, 1]
+        if (position < 0) {
+            position = 0f
+        } else if (position > 1) {
+            position = 1f
+        }
+
+        //Start by calculating the "internal rectangle" that is stored in the Bloom file
+        //This is where the screen is looking at the picture
+        val irL = mStart.left + position * dLeft
+        val irT = mStart.top + position * dTop
+        val irR = mStart.right + position * dRight
+        val irB = mStart.bottom + position * dBottom
+        val irH = irB - irT
+        val irW = irR - irL
+
+        //now, lets invert it where the picture is stretched to be outside of the screen.
+        val top = -irT/irH*scrHeight
+        val bottom = ((imHeight-irB)/irH + 1)*scrHeight
+        val left = -irL/irW*scrWidth
+        val right = ((imWidth-irR)/irW + 1)*scrWidth
+
+        return RectF(left, top, right, bottom)
+    }
+
 
     companion object {
         fun fromSlide(slide: Slide) : KenBurnsEffect {
