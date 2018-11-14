@@ -4,8 +4,6 @@ import android.graphics.Rect
 import android.graphics.RectF
 import org.sil.storyproducer.model.Slide
 
-import org.sil.storyproducer.tools.media.graphics.RectHelper
-
 /**
  * This class encapsulates a single, un-timed Ken Burns effect for an image (Bitmap). In other words,
  * this class stores two crops of an image and provides help with intermediary crops.
@@ -23,16 +21,10 @@ class KenBurnsEffect
     private val mStart: Rect
     private val mEnd: Rect
 
-    private val mEasing: Easing
-
     private val dLeft: Int
     private val dTop: Int
     private val dRight: Int
     private val dBottom: Int
-
-    enum class Easing {
-        LINEAR
-    }
 
     init {
         mStart = Rect(start)
@@ -45,8 +37,6 @@ class KenBurnsEffect
             RectHelper.translate(mEnd, crop.left, crop.top)
         }
 
-        mEasing = Easing.LINEAR
-
         dLeft = mEnd.left - mStart.left
         dTop = mEnd.top - mStart.top
         dRight = mEnd.right - mStart.right
@@ -57,42 +47,8 @@ class KenBurnsEffect
      * Obtain an intermediary crop from the Ken Burns effect.
      * @param position time-step between 0 and 1 (inclusive)
      * where 0 corresponds to the starting crop.
-     * @return crop at time-step.
+     * @return stretch of original image over screen size to make crop
      */
-    fun interpolate(position: Float): Rect {
-        var position = position
-        //Clamp position to [0, 1]
-        if (position < 0) {
-            position = 0f
-        } else if (position > 1) {
-            position = 1f
-        }
-
-        val left: Int
-        val top: Int
-        val right: Int
-        val bottom: Int
-
-        when (mEasing) {
-            KenBurnsEffect.Easing.LINEAR -> {
-                left = mStart.left + (position * dLeft).toInt()
-                top = mStart.top + (position * dTop).toInt()
-                right = mStart.right + (position * dRight).toInt()
-                bottom = mStart.bottom + (position * dBottom).toInt()
-            }
-        //Fall through to default case.
-            else //default to linear
-            -> {
-                left = mStart.left + (position * dLeft).toInt()
-                top = mStart.top + (position * dTop).toInt()
-                right = mStart.right + (position * dRight).toInt()
-                bottom = mStart.bottom + (position * dBottom).toInt()
-            }
-        }
-
-        return Rect(left, top, right, bottom)
-    }
-
     fun revInterpolate(position: Float, scrWidth: Int, scrHeight: Int, imWidth: Int, imHeight: Int): RectF {
         var position = position
         //Clamp position to [0, 1]
@@ -132,8 +88,3 @@ class KenBurnsEffect
         }
     }
 }
-/**
- * Create Ken Burns effect with starting and ending rectangles.
- * @param start starting crop of effect.
- * @param end ending crop of effect.
- */

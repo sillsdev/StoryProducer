@@ -81,13 +81,6 @@ public class TextOverlay {
         }
     }
 
-    public void setOutlineColor(int color) {
-        mOutlineColor = color;
-        if(mTextOutlinePaint != null) {
-            mTextOutlinePaint.setColor(mOutlineColor);
-        }
-    }
-
     public void setPadding(int padding) {
         mPadding = padding;
         mIsDirty = true;

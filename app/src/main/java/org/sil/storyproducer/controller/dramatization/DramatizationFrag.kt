@@ -201,6 +201,7 @@ class DramatizationFrag : MultiRecordFrag() {
             viewToFocus.requestFocus()
         }
         Workspace.activeStory.slides[slideNum].translatedContent = slideText!!.text.toString()
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
     }
 
 }

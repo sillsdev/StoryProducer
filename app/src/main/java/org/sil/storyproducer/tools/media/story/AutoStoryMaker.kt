@@ -10,18 +10,16 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.VIDEO_DIR
 
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import org.sil.storyproducer.tools.media.graphics.overlayJPEG
 
 import java.io.Closeable
 import java.io.File
-import java.io.IOException
 import kotlin.math.sqrt
 
 /**
@@ -42,7 +40,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private val mVideoBitRate: Int
         get() {
-            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate).toFloat()
+            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
         }
     private val mVideoFrameRate: Int
@@ -139,35 +137,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         //TODO: add hymn to count
         val pages: MutableList<StoryPage> = mutableListOf()
 
-        val widthToHeight = mWidth / mHeight.toDouble()
-
-        val tempTitle = "$PROJECT_DIR/temptitle.jpg"
-        //TODO enable better title selection.
-        val titleOverlay = TextOverlay(Workspace.activeStory.slides[0].translatedContent)
-        titleOverlay.setFontSize(TITLE_FONT_SIZE)
-
-        var titleRelPath = Workspace.activeStory.slides[0].imageFile
-
-        try {
-            overlayJPEG(context, Workspace.activeStory.slides[0].imageFile, tempTitle, titleOverlay)
-            titleRelPath = tempTitle
-        } catch (e: IOException) {
-            Log.w(TAG, "Failed to create overlayed title slide!")
-        }
-
         var lastSoundtrack = ""
         var iSlide = 0
-        var image: String = ""
         //don't use the last image - it's the copyright.
         while (iSlide < (Workspace.activeStory.slides.size - 1)) {
             val slide = Workspace.activeStory.slides[iSlide]
-            if (mIncludePictures) {
-                if (iSlide == 0) {
-                    image = titleRelPath
-                } else {
-                    image = slide.imageFile
-                }
-            }else image = ""
+            val image = if (mIncludePictures) slide.imageFile else ""
             var audio = slide.chosenDramatizationFile
             //fallback to draft audio
             if (audio == "") {
@@ -197,10 +172,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
 
-            var text = ""
-            if (mIncludeText) {
-                text = slide.translatedContent
-            }
+            val overlayText = slide.getOverlayText(mIncludeText)
 
             //error
             var duration = 3000000L  // 3 seconds, microseconds.
@@ -208,11 +180,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
 
-            pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
+            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,slide.slideType))
             iSlide++
         }
 
-        pages.add(StoryPage(Workspace.activeStory.slides.last().imageFile,COPYRIGHT_SLIDE_US))
+        pages.add(StoryPage(Workspace.activeStory.slides.last().imageFile,"",COPYRIGHT_SLIDE_US))
 
         //TODO: add hymn
 
@@ -255,7 +227,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        private val TITLE_FONT_SIZE = 20
+        val TITLE_FONT_SIZE = 24
+        val BODY_FONT_SIZE = 26
 
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
@@ -265,10 +238,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
         private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
-        private val VIDEO_IFRAME_INTERVAL = 1           // 1 second between I-frames
+        private val VIDEO_IFRAME_INTERVAL = 5           // 5 second between I-frames
 
         // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 1                   // 1, 2, or 4
+        private val MOTION_FACTOR = 1.5                  // 1, 2, or 4
         private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder

@@ -3,16 +3,11 @@ package org.sil.storyproducer.tools.media.story
 import android.content.Context
 import android.graphics.*
 import android.media.MediaFormat
-import android.text.Layout
 import android.util.Log
 import org.sil.storyproducer.tools.file.getStoryImage
 
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder
-import org.sil.storyproducer.tools.media.pipe.SourceUnacceptableException
-
-import java.io.IOException
 
 /**
  * This class knows how to draw the frames provided to it by [StoryMaker].
@@ -26,9 +21,6 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     private val mHeight: Int
 
     private val mBitmapPaint: Paint
-
-    private var mCurrentTextOverlay: TextOverlay? = null
-    private var mNextTextOverlay: TextOverlay? = null
 
     private var slideIndex = -1 //starts at -1 to allow initial transition
     private var slideAudioStart: Long = 0
@@ -92,17 +84,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         return mIsVideoDone
     }
 
-    @Throws(IOException::class, SourceUnacceptableException::class)
-    override fun setup() {
-        if (mPages.isNotEmpty()) {
-            val nextPage = mPages[0]
-
-            val nextText = nextPage.text
-            mNextTextOverlay = TextOverlay(nextText)
-            //Push text to bottom if there is a picture.
-            mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
-        }
-    }
+    override fun setup() {}
 
     override fun fillCanvas(canv: Canvas): Long {
 
@@ -129,26 +111,20 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             } else {
                 slideAudioStart = slideAudioEnd
                 slideAudioEnd += mPages[slideIndex].getDuration(mAudioTransitionUs)
-                mCurrentTextOverlay = mNextTextOverlay
 
                 if (slideIndex + 1 < mPages.size) {
                     nSlideAudioEnd = slideAudioEnd + mPages[slideIndex + 1].getDuration(mAudioTransitionUs)
-
-                    val nextText = mPages[slideIndex + 1].text
-                    mNextTextOverlay = TextOverlay(nextText)
-                    //Push text to bottom if there is a picture.
-                    mNextTextOverlay!!.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
                 }
             }
         }
 
         drawFrame(canv, slideIndex, cTime - slideVisStart, slideVisDur,
-                1f, mCurrentTextOverlay)
+                1f)
 
         if (cTime >= slideXStart) {
             val alpha = (cTime - slideXStart) / xTime.toFloat()
             drawFrame(canv, slideIndex + 1, cTime - slideXStart, nSlideVisDur,
-                    alpha, mNextTextOverlay)
+                    alpha)
         }
 
         //clear image cache to save memory.
@@ -164,7 +140,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     }
 
     private fun drawFrame(canv: Canvas, pageIndex: Int, timeOffsetUs: Long, imgDurationUs: Long,
-                          alpha: Float, overlay: TextOverlay?) {
+                          alpha: Float) {
         //In edge cases, draw a black frame with alpha value.
         if (pageIndex < 0 || pageIndex >= mPages.size) {
             canv.drawARGB((alpha * 255).toInt(), 0, 0, 0)
@@ -197,9 +173,10 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             canv.drawARGB((alpha * 255).toInt(), 0, 0, 0)
         }
 
-        if (overlay != null) {
-            overlay.setAlpha(alpha)
-            overlay.draw(canv)
+        val tOverlay = page.textOverlay
+        if (tOverlay != null) {
+            tOverlay.setAlpha(alpha)
+            tOverlay.draw(canv)
         }
     }
 
