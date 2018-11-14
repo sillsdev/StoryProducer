@@ -3,8 +3,10 @@ package org.sil.storyproducer.controller.dramatization
 import android.app.Activity
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -13,6 +15,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
@@ -50,6 +53,11 @@ class DramatizationFrag : MultiRecordFrag() {
 
         draftPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
 
+        //Make the text bigger if it is the front Page.
+        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
+            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+        }
         return rootView
     }
 

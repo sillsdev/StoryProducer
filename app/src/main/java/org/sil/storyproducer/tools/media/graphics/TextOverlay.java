@@ -11,7 +11,7 @@ public class TextOverlay {
     private static final int FONT_SIZE_SCALE_FACTOR = 240;
 
     private final String mText;
-    private int mFontSize = 12;
+    private int mFontSize = 18;
     private float mAlpha = 1f;
     private int mTextColor = Color.WHITE;
     private int mOutlineColor = Color.BLACK;

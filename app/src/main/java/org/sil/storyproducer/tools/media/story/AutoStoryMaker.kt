@@ -42,7 +42,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private val mVideoBitRate: Int
         get() {
-            return ((1280 * sqrt((mHeight*1280).toFloat()) * mVideoFrameRate).toFloat()
+            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate).toFloat()
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
         }
     private val mVideoFrameRate: Int
@@ -268,7 +268,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val VIDEO_IFRAME_INTERVAL = 1           // 1 second between I-frames
 
         // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 4                   // 1, 2, or 4
+        private val MOTION_FACTOR = 1                   // 1, 2, or 4
         private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder
