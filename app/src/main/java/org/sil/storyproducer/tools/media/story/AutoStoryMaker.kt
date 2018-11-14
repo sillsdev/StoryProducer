@@ -238,7 +238,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
         private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
-        private val VIDEO_IFRAME_INTERVAL = 5           // 5 second between I-frames
+        private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
 
         // using Kush Gauge for video bit rate
         private val MOTION_FACTOR = 1.5                  // 1, 2, or 4
