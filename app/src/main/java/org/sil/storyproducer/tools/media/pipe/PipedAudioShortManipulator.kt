@@ -7,6 +7,7 @@ import android.util.Log
 import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.nio.ByteBuffer
+import java.nio.ShortBuffer
 import kotlin.math.min
 
 /**
@@ -138,10 +139,11 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
                 //interleave channels
                 //N.B. Always put all samples (of different channels) of the same time in the same buffer.
                 val copyLength = min(osbLength - osbPos, srcSamplesAvailable)
-                val obsEndCopy = osbPos + copyLength
-                while (osbPos < obsEndCopy) {
-                    mShortBuffer[osbPos++] = srcBuffer[srcPos++]
-                }
+                val transBuffer = ShortBuffer.wrap(srcBuffer,srcPos,copyLength)
+                transBuffer.get(mShortBuffer,osbPos,copyLength)
+                osbPos += copyLength
+                srcPos += copyLength
+
                 //Keep track of the current presentation time in the output audio stream.
                 mAbsoluteSampleIndex += copyLength
 

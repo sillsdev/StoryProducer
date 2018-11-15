@@ -1,20 +1,25 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.text.method.LinkMovementMethod
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.stringToSpannableString
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
@@ -51,7 +56,7 @@ abstract class SlidePhaseFrag : Fragment() {
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
         setUiColors()
-        setPic(rootView!!.findViewById<ImageView>(R.id.fragment_image_view))
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         return rootView
     }
@@ -71,7 +76,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-            referenceAudioPlayer.currentPosition = 0
+            referenceAudioPlayer.stopAudio()
         })
     }
 
@@ -85,6 +90,18 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        referenceAudioPlayer.stopAudio()
+        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
+
+
+        /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
@@ -140,9 +157,7 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        val words = slide.content.split(" ")
-        textView.text = stringToSpannableString(words, this.context)
-        textView.movementMethod = LinkMovementMethod.getInstance()
+        textView.text = slide.content
     }
 
     /**

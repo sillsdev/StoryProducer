@@ -25,10 +25,26 @@ class CommunityCheckFrag : MultiRecordFrag() {
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setToolbar()
-        dispList = RecordingsList(context!!, this,slideNum)
+        dispList = RecordingsList(context!!, this)
         dispList!!.embedList(rootView!! as ViewGroup)
+        dispList!!.setSlideNum(slideNum)
         dispList!!.show()
         return rootView
+    }
+
+    override fun onPause() {
+        super.onPause()
+        dispList?.stopAudio()
+    }
+
+    /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        dispList?.stopAudio()
     }
 
     override fun setToolbar() {
@@ -47,6 +63,15 @@ class CommunityCheckFrag : MultiRecordFrag() {
                 false, false, false, false,  rList , recordingListener, slideNum);
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
+    }
+
+    /**
+     * Stops the toolbar from recording or playing back media.
+     * Used in [DraftListRecordingsModal]
+     */
+    override fun stopPlayBackAndRecording() {
+        super.stopPlayBackAndRecording()
+        dispList!!.stopAudio()
     }
 
 }

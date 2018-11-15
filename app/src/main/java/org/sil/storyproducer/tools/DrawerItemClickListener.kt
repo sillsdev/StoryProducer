@@ -32,6 +32,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 intent = Intent(activity.applicationContext, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity.startActivity(intent)
+                activity.finish()
             }
             2 -> {
                 intent = Intent(activity, RegistrationActivity::class.java)

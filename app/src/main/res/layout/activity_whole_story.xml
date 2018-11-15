@@ -31,7 +31,7 @@
             android:layout_centerVertical="true"
             android:background="@null"
             android:onClick="onClickPlayPauseButton"
-            android:src="@drawable/ic_play_gray"
+            android:src="@drawable/ic_play_circle_outline_white_36dp"
             android:contentDescription="@string/play" />
 
         <SeekBar
@@ -51,11 +51,11 @@
 
             <ImageView
                 android:id="@+id/soundOff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:layout_alignParentEnd="true"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_menu_play"
+                app:srcCompat="@drawable/ic_volume_off_white_36dp"
                 android:contentDescription="@string/sound_off" />
 
             <Switch
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/volumeSwitch"
                 android:visibility="gone"
-                app:srcCompat="@drawable/ic_no_audio"
+                app:srcCompat="@drawable/ic_volume_off_white_36dp"
                 android:contentDescription="@string/sound_on" />
         </RelativeLayout>
     </RelativeLayout>
