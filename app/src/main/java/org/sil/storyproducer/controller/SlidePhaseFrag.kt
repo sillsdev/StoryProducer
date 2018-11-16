@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -20,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.stringToSpannableString
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
@@ -157,7 +159,9 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        val words = slide.content.split(" ")
+        textView.text = stringToSpannableString(words, this.context)
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     /**
