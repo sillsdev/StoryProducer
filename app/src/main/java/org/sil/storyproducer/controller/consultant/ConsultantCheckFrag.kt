@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.consultant
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.graphics.drawable.VectorDrawableCompat
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -33,12 +31,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
-
-        setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
@@ -47,24 +40,6 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
         return rootView
     }
-
-    /**
-     * This function serves to handle page changes and stops the audio streams from
-     * continuing.
-     * @param isVisibleToUser
-     */
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        // Make sure that we are currently visible
-        if (this.isVisible) {
-            // If we are becoming invisible, then...
-            if (!isVisibleToUser) {
-                referenceAudioPlayer.stopAudio()
-            }
-        }
-    }
-
 
     /**
      * Sets on click listener for consultant to check off the slide and approve
@@ -78,10 +53,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         isChecked = prefs.getBoolean(prefsKeyString, false)
         if (isChecked) {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
+            button.setBackgroundResource(R.drawable.ic_checkmark_green)
         } else {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
+            button.setBackgroundResource(R.drawable.ic_checkmark_red)
         }
         button.setOnClickListener(View.OnClickListener {
             val isApproved = prefs.getBoolean(storyName + IS_CONSULTANT_APPROVED, false)
@@ -91,13 +66,13 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             }
             if (isChecked) {
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
+                button.setBackgroundResource(R.drawable.ic_checkmark_red)
                 isChecked = false
                 prefsEditor.putBoolean(prefsKeyString, false)
                 prefsEditor.apply()
             } else {
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
+                button.setBackgroundResource(R.drawable.ic_checkmark_green)
                 isChecked = true
                 prefsEditor.putBoolean(prefsKeyString, true)
                 prefsEditor.commit()
@@ -114,7 +89,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun setLogsButton(button: ImageButton) {
         //TODO: use non-deprecated method; currently used to support older devices
-        button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_logs_blue, null))
+        button.setBackgroundResource(R.drawable.ic_logs_blue)
         button.setOnClickListener { LogView.makeModal(context) }
     }
 
@@ -161,13 +136,13 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
         // This manually sets the submit button listener so that the dialog doesn't always submit
         // If the password is incorrect, we want to stay on the dialog and give an error message
-        dialog.setOnShowListener { dialog ->
-            val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+        dialog.setOnShowListener { mess ->
+            val button = (mess as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
                 val passwordText = password.text.toString()
                 if (passwordText.contentEquals(PASSWORD)) {
                     saveConsultantApproval()
-                    dialog.dismiss()
+                    mess.dismiss()
                     launchDramatizationPhase()
                 } else {
                     password.error = getString(R.string.consultant_incorrect_password_message)
@@ -184,7 +159,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun saveConsultantApproval() {
         val prefsEditor = activity!!.getSharedPreferences(CONSULTANT_PREFS, Context.MODE_PRIVATE).edit()
-        prefsEditor.putBoolean(storyName!! + IS_CONSULTANT_APPROVED, true)
+        prefsEditor.putBoolean(storyName + IS_CONSULTANT_APPROVED, true)
         prefsEditor.apply()
     }
 

@@ -67,7 +67,7 @@
         android:ems="10"
         android:hint="New Back Translation"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fragment"
         app:layout_constraintEnd_toStartOf="@+id/imageButton"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -78,7 +78,17 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:src="@drawable/send_message"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/fragment"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <fragment
+        android:id="@+id/fragment"
+        android:name="org.sil.storyproducer.controller.ToolbarFrag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout="@layout/toolbar_for_recording" />
 
 </android.support.constraint.ConstraintLayout>

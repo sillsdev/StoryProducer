@@ -22,5 +22,6 @@
     <dimen name="circle_diameter">120dp</dimen>
     <dimen name="rect_height">60dp</dimen>
     <dimen name="reference_audio_button">50dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 
 </resources>

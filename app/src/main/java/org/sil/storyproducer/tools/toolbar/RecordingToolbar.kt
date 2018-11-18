@@ -70,7 +70,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     protected var toolbar: LinearLayout = rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar)
 
     protected var rootViewToolbarLayout: LinearLayout = rootViewToolbarLayout as LinearLayout
-    private val viewToEmbedToolbarIn: LinearLayout = rootView.findViewById(R.id.fragment_envelope) as LinearLayout
+    private val viewToEmbedToolbarIn: LinearLayout = rootView.findViewById(R.id.toolbar_for_recording_toolbar) as LinearLayout
+    // this was used private val viewToEmbedToolbarIn: LinearLayout = rootView.findViewById(R.id.fragment_envelope) as LinearLayout
     protected var appContext: Context
 
     protected var micButton: ImageButton = ImageButton(activity)
@@ -90,7 +91,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         get() {return voiceRecorder.isRecording}
 
     init {
-        super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), toolbar)
+        //super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), toolbar)
 
         this.activity = activity
         this.appContext = activity.applicationContext //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.

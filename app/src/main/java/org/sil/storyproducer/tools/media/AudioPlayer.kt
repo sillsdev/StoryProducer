@@ -62,7 +62,7 @@ class AudioPlayer {
      * Only sets the path for the audio to
      * @param path String path for the audio
      */
-    fun setSource(context: Context, uri: Uri) : Boolean {
+    private fun setSource(context: Context, uri: Uri) : Boolean {
         try {
             mPlayer.release()
             mPlayer = MediaPlayer()
@@ -84,8 +84,7 @@ class AudioPlayer {
 
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
-        val uri: Uri? = getStoryUri(relPath,storyName)
-        if(uri == null) return false
+        val uri: Uri = getStoryUri(relPath,storyName) ?: return false
         return setSource(context, uri)
     }
 
@@ -136,6 +135,10 @@ class AudioPlayer {
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
+    }
+
+    fun reset(){
+        mPlayer.reset()
     }
 
     /**

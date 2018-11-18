@@ -1,127 +1,90 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_draft_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray">
 
-    <LinearLayout
-        android:id="@+id/fragment_envelope"
+
+    <fragment
+        android:id="@+id/slide_picture"
+        android:name="org.sil.storyproducer.controller.ImageSlide"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_image_slide" />
 
-        <RelativeLayout
-            android:id="@+id/fragment_image_envelope"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
 
-            <ImageView
-                android:id="@+id/fragment_image_view"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/story_picture" />
+    <TextView
+        android:id="@+id/fragment_reference_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/gray"
+        android:text=""
+        android:textSize="@dimen/text_title"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
+        tools:ignore="HardcodedText" />
 
-            <ImageView
-                android:layout_width="@dimen/circle_diameter"
-                android:layout_height="@dimen/circle_diameter"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignStart="@id/fragment_image_view"
-                android:background="@drawable/circle_bottom_left" />
+    <TextView
+        android:id="@+id/fragment_scripture_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_reference_text"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/gray"
+        android:text=""
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fragment_reference_text"
+        tools:ignore="HardcodedText" />
 
-            <ImageButton
-                android:id="@+id/fragment_reference_audio_button"
-                android:layout_width="@dimen/reference_audio_button"
-                android:layout_height="@dimen/reference_audio_button"
-                android:layout_alignStart="@+id/fragment_image_view"
-                android:layout_alignBottom="@+id/fragment_image_view"
-                android:background="@drawable/ic_play_arrow_white_36dp"
-                android:contentDescription="@string/draft_play_narration_audio" />
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/concheck_logs_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/concheck_checkmark_button"
+        app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageView
-                android:layout_width="@dimen/triangle_width"
-                android:layout_height="@dimen/triangle_height"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignEnd="@id/fragment_image_view"
-                android:background="@drawable/triangle_background" />
-
-            <TextView
-                android:id="@+id/slide_number_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignEnd="@id/fragment_image_view"
-                android:paddingStart="7dp"
-                android:paddingEnd="7dp"
-                android:text=""
-                android:textSize="@dimen/text_body" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/fragment_text_envelope"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/gray"
-            android:paddingStart="@dimen/activity_horizontal_margin"
-            android:paddingEnd="@dimen/activity_horizontal_margin"
-            android:paddingTop="10dp">
-
-            <TextView
-                android:id="@+id/fragment_reference_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:background="@color/gray"
-                android:text=""
-                android:textSize="@dimen/text_title"
-                android:textStyle="bold|italic"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:id="@+id/fragment_scripture_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/fragment_reference_text"
-                android:background="@color/gray"
-                android:textSize="@dimen/text_body"
-                android:text=""
-                tools:ignore="HardcodedText" />
-
-            <RelativeLayout
-                android:id="@+id/concheck_button_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true">
-
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/concheck_logs_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_margin="10dp"/>
-
-                <com.getbase.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/concheck_checkmark_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignBaseline="@+id/concheck_logs_button"
-                    android:layout_margin="10dp"/>
-
-            </RelativeLayout>
-        </RelativeLayout>
-    </LinearLayout>
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/concheck_checkmark_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/concheck_logs_button"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/concheck_logs_button" />
 
 
-
-
-
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

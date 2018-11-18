@@ -1,74 +1,50 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
-    tools:context="org.sil.storyproducer.controller.MultiRecordFrag"
-    android:orientation="vertical">
+    tools:context="org.sil.storyproducer.controller.MultiRecordFrag">
 
-    <LinearLayout
-        android:id="@+id/fragment_envelope"
+
+    <fragment
+        android:id="@+id/slide_frag"
+        android:name="org.sil.storyproducer.controller.ImageSlideFrag"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="0dp"
+        android:layout_marginBottom="1dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/fragment_image_slide" />
 
-        <RelativeLayout
-            android:id="@+id/fragment_image_envelope"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
 
-            <ImageView
-                android:id="@+id/fragment_image_view"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/story_picture" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recording_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-            <ImageView
-                android:layout_width="@dimen/circle_diameter"
-                android:layout_height="@dimen/circle_diameter"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignStart="@id/fragment_image_view"
-                android:background="@drawable/circle_bottom_left" />
+    <fragment
+        android:id="@+id/bottom_toolbar"
+        android:name="org.sil.storyproducer.controller.ToolbarFrag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout="@layout/toolbar_for_recording" />
 
-            <ImageButton
-                android:id="@+id/fragment_reference_audio_button"
-                android:layout_width="@dimen/reference_audio_button"
-                android:layout_height="@dimen/reference_audio_button"
-                android:layout_alignStart="@+id/fragment_image_view"
-                android:layout_alignBottom="@+id/fragment_image_view"
-                android:background="@drawable/ic_play_arrow_white_36dp"
-                android:contentDescription="@string/draft_play_narration_audio" />
 
-            <ImageView
-                android:layout_width="@dimen/triangle_width"
-                android:layout_height="@dimen/triangle_height"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignEnd="@id/fragment_image_view"
-                android:background="@drawable/triangle_background" />
-
-            <TextView
-                android:id="@+id/slide_number_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignEnd="@id/fragment_image_view"
-                android:paddingStart="7dp"
-                android:paddingEnd="7dp"
-                android:text=""
-                android:textSize="@dimen/text_body" />
-        </RelativeLayout>
-
-        <ListView
-            android:id="@+id/recordings_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="10dp"
-            android:scrollbars="vertical">
-        </ListView>
-    </LinearLayout>
-
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

@@ -5,7 +5,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.content.res.ResourcesCompat
-import android.view.Menu
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -16,10 +15,10 @@ import android.widget.Switch
 import android.widget.TextView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.ToolbarFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -41,7 +40,7 @@ class LearnActivity : PhaseBaseActivity() {
     private val backgroundAudioJumps: MutableList<Int> = ArrayList()
 
     //recording toolbar vars
-    private var recordingToolbar: RecordingToolbar? = null
+    //private var recordingToolbar: RecordingToolbar? = null
 
     private var isFirstTime = true         //used to know if it is the first time the activity is started up for playing the vid
     private var startPos = -1
@@ -55,13 +54,25 @@ class LearnActivity : PhaseBaseActivity() {
         learnImageView = findViewById(R.id.learnImageView)
         playButton = findViewById(R.id.playButton)
         videoSeekBar = findViewById(R.id.videoSeekBar)
-        recordingToolbar = RecordingToolbar(this,
-                layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
-                rootView!!, true, false, false, false,
-                null, object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {resetVideoWithSoundOff()}
-        }, 0)
+
+        val arguments = Bundle()
+        arguments.putBoolean("enablePlaybackButton", true)
+        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableMultiRecordButton", false)
+        arguments.putBoolean("enableSendAudioButton", false)
+        arguments.putInt("slideNum", 0)
+
+        val toolbarFrag = supportFragmentManager.findFragmentById(R.id.bottom_toolbar) as ToolbarFrag
+        toolbarFrag.arguments = arguments
+        toolbarFrag.setupToolbarButtons()
+
+//        recordingToolbar = RecordingToolbar(this,
+//                layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
+//                rootView!!, true, false, false, false,
+//                null, object : RecordingToolbar.RecordingListener {
+//            override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
+//            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {resetVideoWithSoundOff()}
+//        }, 0)
 
         setBackgroundAudioJumps()
 
@@ -71,17 +82,17 @@ class LearnActivity : PhaseBaseActivity() {
 
         //set the recording toolbar stuffs
         invalidateOptionsMenu()
-        recordingToolbar!!.keepToolbarVisible()
+        //recordingToolbar!!.keepToolbarVisible()
 
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
-        val dummyView = rootView!!.findViewById<RelativeLayout>(R.id.activity_learn)
-        dummyView.setOnClickListener {
-            if (recordingToolbar!!.isOpen && !recordingToolbar!!.isRecording) {
-                recordingToolbar!!.keepToolbarVisible()
-                //recordingToolbar.hideFloatingActionButton();
-            }
-        }
+//        val dummyView = rootView?.findViewById<RelativeLayout>(R.id.activity_learn)
+//        dummyView?.setOnClickListener {
+//            if (recordingToolbar?.isOpen == true && recordingToolbar?.isRecording == false) {
+//                recordingToolbar?.keepToolbarVisible()
+//                //recordingToolbar.hideFloatingActionButton();
+//            }
+//        }
     }
 
     /**
@@ -152,8 +163,8 @@ class LearnActivity : PhaseBaseActivity() {
     public override fun onPause() {
         super.onPause()
         pauseVideo()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.close()
+//        recordingToolbar!!.onPause()
+//        recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -165,15 +176,15 @@ class LearnActivity : PhaseBaseActivity() {
         super.onStop()
         narrationPlayer.release()
         backgroundPlayer.release()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.close()
+//        recordingToolbar?.onPause()
+//        recordingToolbar?.close()
     }
 
     /**
      * Plays the video and runs every time the audio is completed
      */
     internal fun playVideo() {
-        setPic(learnImageView,videoSeekBar!!.progress) //set the next image
+        setPic(learnImageView,videoSeekBar?.progress) //set the next image
         //set the next audio
         narrationPlayer.setStorySource(this, Workspace.activeStory.slides[videoSeekBar!!.progress].narrationFile)
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
@@ -223,7 +234,7 @@ class LearnActivity : PhaseBaseActivity() {
         makeLogIfNecessary()
         narrationPlayer.pauseAudio()
         backgroundPlayer.pauseAudio()
-        playButton!!.setImageResource(R.drawable.ic_play_gray)
+        playButton?.setImageResource(R.drawable.ic_play_gray)
     }
 
     /**
@@ -244,8 +255,8 @@ class LearnActivity : PhaseBaseActivity() {
      * Sets the seekBar listener for the video seek bar
      */
     private fun setSeekBarListener() {
-        videoSeekBar!!.max = story.slides.size      //set the progress bar to have as many markers as images
-        videoSeekBar!!.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+        videoSeekBar?.max = story.slides.size      //set the progress bar to have as many markers as images
+        videoSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {}
             override fun onStartTrackingTouch(sBar: SeekBar) {}
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -276,8 +287,8 @@ class LearnActivity : PhaseBaseActivity() {
      * helper function that resets the video to the beginning and turns off the sound
      */
     private fun resetVideoWithSoundOff() {
-        playButton!!.setImageResource(R.drawable.ic_pause_gray)
-        videoSeekBar!!.progress = 0
+        playButton?.setImageResource(R.drawable.ic_pause_gray)
+        videoSeekBar?.progress = 0
         narrationPlayer.setVolume(0.0f)
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         backgroundPlayer.stopAudio()
@@ -307,7 +318,7 @@ class LearnActivity : PhaseBaseActivity() {
                 //reset the story with the volume off
                 resetVideoWithSoundOff()
                 setVolumeSwitchAndFloatingButtonVisible()
-                recordingToolbar!!.keepToolbarVisible()
+                //recordingToolbar?.keepToolbarVisible()
                 //recordingToolbar.hideFloatingActionButton();
             }
             snackbar.show()
@@ -348,39 +359,26 @@ class LearnActivity : PhaseBaseActivity() {
      *
      * @param aView    The ImageView that will contain the picture.
      */
-    private fun setPic(aView: View?,slideNum: Int) {
+    private fun setPic(aView: View?,slideNum: Int?) {
         if (aView == null || aView !is ImageView) {
             return
         }
 
-        val slideImage = aView as ImageView?
         var slidePicture: Bitmap? = null
-        if (videoSeekBar!!.progress == story.slides.size) {
+        if (videoSeekBar?.progress == story.slides.size) {
             //gets the end image if we are at the end of the story
             //TODO what image are we actually getting?  -3.png?  this doesn't make sense.
         } else {
             //Get a normal story image.
-            slidePicture = getStoryImage(this,slideNum)
+            slidePicture = getStoryImage(this,slideNum!!)
         }
 
         if (slidePicture == null) {
             Snackbar.make(rootView!!, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show()
-        }else{
-            //Get the height of the phone.
-            val phoneProperties = resources.displayMetrics
-            var height = phoneProperties.heightPixels
-            val scalingFactor = 0.4
-            height = (height * scalingFactor).toInt()
-
-            //scale bitmap
-            slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+        }
+        else{
             //Set the height of the image view
-            if(slideImage != null) {
-                slideImage.layoutParams.height = height
-                slideImage.requestLayout()
-
-                slideImage.setImageBitmap(slidePicture)
-            }
+            (aView as ImageView?)?.setImageBitmap(slidePicture)
         }
     }
 
