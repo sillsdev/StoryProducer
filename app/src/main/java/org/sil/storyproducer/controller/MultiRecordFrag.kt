@@ -59,7 +59,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      * Stops the toolbar from recording or playing back media.
      * Used in [DraftListRecordingsModal]
      */
-    fun stopPlayBackAndRecording() {
+    open fun stopPlayBackAndRecording() {
         recordingToolbar?.stopToolbarMedia()
     }
 }

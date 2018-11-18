@@ -22,18 +22,21 @@ class AudioPlayer {
     val audioDurationInSeconds: Int
         get() = (mPlayer.duration * 0.001).toInt()
 
+    var currentPosition: Int
+        get() =
+            try{ mPlayer.currentPosition
+            } catch (e : Exception){ 0 }
+        set(value) {
+            try { mPlayer.seekTo(value)
+            } catch (e : Exception) {}
+        }
+
     /**
      * returns the duration of the audio as an int in milliseconds
      * @return the duration of the audio as an int
      */
     val audioDurationInMilliseconds: Int
         get() = mPlayer.duration
-
-    var currentPosition: Int
-        get() =
-            try{ mPlayer.currentPosition
-            } catch (e : Exception){ 0 }
-        set(value) { if(fileExists) mPlayer.seekTo(value) }
 
     /**
      * returns if the audio is being played or not
@@ -99,7 +102,8 @@ class AudioPlayer {
     fun pauseAudio() {
         if (mPlayer.isPlaying) {
             try {
-                mPlayer.pause()
+                if(mPlayer.isPlaying)
+                    mPlayer.pause()
             } catch (e: IllegalStateException) {
                 //TODO maybe do something with this exception
                 e.printStackTrace()
@@ -115,7 +119,6 @@ class AudioPlayer {
         if(!fileExists) return
         try {
             if(fileExists) {
-                mPlayer.seekTo(mPlayer.currentPosition)
                 mPlayer.start()
             }
         } catch (e: IOException) {
@@ -130,8 +133,8 @@ class AudioPlayer {
      */
     fun stopAudio() {
         try {
-            mPlayer.pause()
-            currentPosition = 0
+            if(mPlayer.isPlaying) mPlayer.pause()
+            if(currentPosition != 0) currentPosition = 0
         } catch (e: IllegalStateException) {
             e.printStackTrace()
         }
@@ -145,7 +148,9 @@ class AudioPlayer {
      * Releases the MediaPlayer object after completion
      */
     fun release() {
-        mPlayer.release()
+        try {
+            mPlayer.release()
+        } catch (e : Exception) {}
     }
 
     /**

@@ -26,7 +26,7 @@
         android:background="@null"
         android:contentDescription="@string/play"
         android:onClick="onClickPlayPauseButton"
-        android:src="@drawable/ic_play_gray"
+        android:src="@drawable/ic_play_circle_outline_white_36dp"
         app:layout_constraintBottom_toBottomOf="@id/learnImageView"
         app:layout_constraintEnd_toEndOf="@id/learnImageView"
         app:layout_constraintStart_toStartOf="@+id/learnImageView"
@@ -63,7 +63,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_menu_play" />
+        app:srcCompat="@drawable/ic_volume_off_white_36dp" />
 
     <Switch
         android:id="@+id/volumeSwitch"
@@ -85,7 +85,7 @@
         android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/volumeSwitch"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_no_audio" />
+        app:srcCompat="@drawable/ic_volume_up_white_36dp" />
 
     <fragment
         android:id="@+id/bottom_toolbar"

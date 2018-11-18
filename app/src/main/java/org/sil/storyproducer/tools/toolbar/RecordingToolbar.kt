@@ -97,7 +97,9 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         this.appContext = activity.applicationContext //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
         createToolbar()
         setupRecordingAnimationHandler()
-        audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener { playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp) })
+        audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+            audioPlayer.stopAudio()})
     }
 
     interface RecordingListener {

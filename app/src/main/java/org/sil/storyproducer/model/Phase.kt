@@ -93,28 +93,28 @@ class Phase(val phaseType: PhaseType) {
         return when (phaseType) {
             PhaseType.LEARN -> "Learn"
             PhaseType.DRAFT -> "Translate"
-            PhaseType.CREATE -> "Make Video"
+            PhaseType.CREATE -> "Finalize"
             PhaseType.SHARE -> "Share"
-            PhaseType.COMMUNITY_CHECK -> "Community Check"
+            PhaseType.COMMUNITY_CHECK -> "Community Work"
             PhaseType.CONSULTANT_CHECK -> "Accuracy Check"
             PhaseType.WHOLE_STORY -> "Whole Story"
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
-            PhaseType.DRAMATIZATION -> "Voice Acting"
+            PhaseType.DRAMATIZATION -> "Voice Studio"
             else -> phaseType.toString().toLowerCase()
         }
     }
 
     fun getShortName() : String {
         return when (phaseType) {
-            PhaseType.DRAFT -> "trnslt"
-            PhaseType.COMMUNITY_CHECK -> "comChk"
-            PhaseType.CONSULTANT_CHECK -> "accChk"
-            PhaseType.WHOLE_STORY -> "whlStry"
-            PhaseType.REMOTE_CHECK -> "rmotChk"
-            PhaseType.BACKT -> "backT"
-            PhaseType.DRAMATIZATION -> "vcAct"
-            PhaseType.CREATE -> "mkVid"
+            PhaseType.DRAFT -> "Translate"
+            PhaseType.COMMUNITY_CHECK -> "Community"
+            PhaseType.CONSULTANT_CHECK -> "Accuracy"
+            PhaseType.WHOLE_STORY -> "Whole"
+            PhaseType.REMOTE_CHECK -> "Remote"
+            PhaseType.BACKT -> "BackTrans"
+            PhaseType.DRAMATIZATION -> "VStudio"
+            PhaseType.CREATE -> "Finalize"
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -188,7 +188,7 @@ class Phase(val phaseType: PhaseType) {
                 PhaseType.LEARN -> context.getString(R.string.learn_help)
                 PhaseType.DRAFT -> context.getString(R.string.draft_help)
                 PhaseType.COMMUNITY_CHECK -> context.getString(R.string.community_help)
-                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consulatant_help)
+                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consultant_help)
                 PhaseType.DRAMATIZATION -> context.getString(R.string.dramatize_help)
                 PhaseType.CREATE -> context.getString(R.string.create_help)
                 PhaseType.SHARE -> context.getString(R.string.share_help)

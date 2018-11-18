@@ -26,6 +26,7 @@ internal val OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4
 internal val AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC
 internal val SAMPLE_RATE = 44100
 internal val BIT_DEPTH = 16
+internal val AUDIO_CHANNELS = 1
 //Set bit rate to exact spec of Android doc or to SAMPLE_RATE * BIT_DEPTH.
 internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
 
@@ -83,6 +84,7 @@ abstract class AudioRecorder(val activity: Activity) {
 
             copyToWorkspacePath(context, Uri.fromFile(File(tempDestPath)),
                     "${Workspace.activeStory.title}/$orgAudioRelPath")
+            File(tempDestPath).delete()
         }
     }
 }
@@ -100,6 +102,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         mRecorder.setAudioEncoder(AUDIO_ENCODER)
         mRecorder.setAudioEncodingBitRate(BIT_RATE)
         mRecorder.setAudioSamplingRate(SAMPLE_RATE)
+        mRecorder.setAudioChannels(AUDIO_CHANNELS)
     }
 
     override fun startNewRecording(relPath: String){

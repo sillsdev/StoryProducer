@@ -181,7 +181,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     isAppendingOn = true
                     checkButton!!.visibility = View.VISIBLE
                 }
-                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48pd)
+                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
                 if (enableDeleteButton) {
                     deleteButton.visibility = View.VISIBLE
                 }

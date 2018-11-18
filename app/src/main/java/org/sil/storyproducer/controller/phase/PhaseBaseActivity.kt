@@ -86,7 +86,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum
         story.lastPhaseType = Workspace.activePhase.phaseType
-        story.toJson(this)
+        Thread(Runnable{story.toJson(this)}).start()
     }
 
     //Override setContentView to coerce into child view.

@@ -5,15 +5,16 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/black">
+    android:background="@color/black_semi_transparent"
+    android:elevation="3dp">
 
     <ImageButton
         android:id="@+id/audio_comment_play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="4dp"
-        android:background="@color/black"
+        android:layout_margin="12dp"
+        android:layout_gravity="center_vertical"
+        android:background="@color/transparent"
         android:contentDescription="@string/play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/audio_comment_title"
@@ -23,9 +24,11 @@
 
     <TextView
         android:id="@+id/audio_comment_title"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:lines="2"
+        android:layout_gravity="center_vertical|start"
+        android:maxLines="2"
+        android:layout_weight="1"
         android:text="Fill with Audio Comment"
         android:textColor="@color/white"
         android:textSize="@dimen/text_body"
@@ -39,9 +42,8 @@
         android:id="@+id/audio_comment_delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="1dp"
-        android:background="@color/black"
+        android:layout_margin="12dp"
+        android:layout_gravity="center_vertical"
         android:contentDescription="@string/delete"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,21 +3,16 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Spinner
-import android.widget.Toast
-
 import org.sil.storyproducer.R
+import android.widget.*
+
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
@@ -43,6 +38,8 @@ class CreateActivity : PhaseBaseActivity() {
     private var mResolutionAdapterAll: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterHigh: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterLow: ArrayAdapter<CharSequence>? = null
+    private var mRadioButtonSmartPhone: RadioButton? = null
+    private var mRadioButtonDumbPhone: RadioButton? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
@@ -82,10 +79,18 @@ class CreateActivity : PhaseBaseActivity() {
         runOnUiThread {
             stopExport()
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle())
         }
     }
 
-    private val formatExtension: String = ".mp4"
+    private val formatExtension: String
+        get() {
+            var ext = ".mp4"
+            if (mRadioButtonDumbPhone!!.isChecked) {
+                ext = ".3gp"
+            }
+            return ext
+        }
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -199,12 +204,16 @@ class CreateActivity : PhaseBaseActivity() {
         mResolutionAdapterLow!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
         mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
+        mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
 
         mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item)
         mResolutionAdapterAll!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         mSpinnerResolution!!.adapter = mResolutionAdapterAll
+
+        mRadioButtonSmartPhone = findViewById(R.id.radio_smartphone)
+        mRadioButtonDumbPhone = findViewById(R.id.radio_dumbphone)
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
@@ -316,6 +325,35 @@ class CreateActivity : PhaseBaseActivity() {
         dialog.show()
     }
 
+    /*
+    **Method for handling the click event for the radio buttons
+     */
+    fun onRadioButtonClicked(view: View) {
+        // Is the button now checked?
+        val checked = (view as RadioButton).isChecked
+
+        // Check which radio button was clicked
+        when (view.getId()) {
+            R.id.radio_dumbphone -> {
+                if (Build.VERSION.SDK_INT < 26){
+                    Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
+                    view.isChecked = false
+                    findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
+                } else {
+                    if (checked)
+                    //Only low resolution on dumbphone and uncheck include text
+                        mSpinnerResolution!!.adapter = mResolutionAdapterLow
+                    mCheckboxText!!.isChecked = false
+                }
+            }
+            R.id.radio_smartphone -> {
+                if (checked)
+                //Default to medium resolution on smartphone
+                    mSpinnerResolution!!.adapter = mResolutionAdapterAll
+                mSpinnerResolution!!.setSelection(1, true)
+            }
+        }
+    }
     /**
      * Save current configuration options to shared preferences.
      */
@@ -390,7 +428,7 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludePictures = mCheckboxPictures!!.isChecked
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
-
+            storyMaker!!.mDumbPhone = mRadioButtonDumbPhone!!.isChecked
 
             val resolutionStr = mSpinnerResolution!!.selectedItem.toString()
             //Parse resolution string of "[WIDTH]x[HEIGHT]"

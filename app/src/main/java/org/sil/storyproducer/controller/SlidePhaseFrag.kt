@@ -1,38 +1,21 @@
 package org.sil.storyproducer.controller
 
-import android.graphics.Bitmap
-import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
 import android.text.method.LinkMovementMethod
 import android.view.*
-import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.stringToSpannableString
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.getStoryImage
-import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.tools.media.AudioPlayer
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
 abstract class SlidePhaseFrag : Fragment() {
     protected var rootView: View? = null
-    //protected var rootViewToolbar: View? = null
-
-    //protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
-    //protected var referncePlayButton: ImageButton? = null
 
     protected var slideNum: Int = 0 //gets overwritten
     protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
@@ -75,6 +58,18 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        referenceAudioPlayer.stopAudio()
+        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
+
+
+        /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */

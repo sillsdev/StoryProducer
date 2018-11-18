@@ -30,10 +30,10 @@
     <!-- Phases -->
     <string name="learn_title">Learn</string>
     <string name="draft_title">Translate</string>
-    <string name="community_check_title">Community Check</string>
+    <string name="community_check_title">Community Work</string>
     <string name="consultant_check_title">Accuracy Check</string>
-    <string name="dramatization_title">Voice Acting</string>
-    <string name="create_title">Make Video</string>
+    <string name="dramatization_title">Voice Studio</string>
+    <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
@@ -41,7 +41,7 @@
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
-    <string name="title_fragment_community">Community Check</string>
+    <string name="title_fragment_community">Community Work</string>
     <string name="title_fragment_consultant">Accuracy Check</string>
 
     <!--String names for Info Page-->
@@ -229,9 +229,18 @@
 
     <string name="export_resolution_label">Video Quality</string>
     <string-array name="export_resolution_options">
+        <item>VLow (176x144)</item>
         <item>Low (320x240)</item>
         <item>Medium (640x480)</item>
         <item>High (1280x720)</item>
+    </string-array>
+    <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
+    <string name = "smartphone_and_extension">Smartphone (MP4)</string>
+    <string name = "min_SDK_26">Need Oreo Phone</string>
+    <string name="export_format_label">File Format</string>
+    <string-array name="export_format_options">
+        <item>Smartphone</item>
+        <item>Dumb Phone</item>
     </string-array>
 
     <string name="export_location_header">Save To</string>
@@ -333,8 +342,8 @@
     <string name="learn_help">Learn Help</string>
     <string name="draft_help">Translate Help</string>
     <string name="community_help">Community Help</string>
-    <string name="consulatant_help">Accuracy Help</string>
-    <string name="dramatize_help">Voice Acting Help</string>
+    <string name="consultant_help">Accuracy Help</string>
+    <string name="dramatize_help">Voice Studio Help</string>
     <string name="create_help">Make Video Help</string>
     <string name="share_help">Share Help</string>
 
