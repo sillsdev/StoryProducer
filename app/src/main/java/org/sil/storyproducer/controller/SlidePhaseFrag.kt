@@ -62,11 +62,11 @@ abstract class SlidePhaseFrag : Fragment() {
      * continuing.
      */
 
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-        referenceAudioPlayer.stopAudio()
-        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-    }
+//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+//        super.setUserVisibleHint(isVisibleToUser)
+//        referenceAudioPlayer.stopAudio()
+//        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+//    }
 
 
         /**

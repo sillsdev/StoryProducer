@@ -329,12 +329,12 @@ class ToolbarFrag: Fragment() {
 
         }
 
-        fun onRowClick(name: String) {
+        private fun onRowClick(name: String) {
             Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
             dialog?.dismiss()
         }
 
-        fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
+        private fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
             listener?.onPlayButtonClicked("$PROJECT_DIR/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
             when (Workspace.activePhase.phaseType){
                 PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
@@ -343,7 +343,7 @@ class ToolbarFrag: Fragment() {
             }
         }
 
-        fun onDeleteClick(name: String) {
+        private fun onDeleteClick(name: String) {
             filenames?.remove(name)
             deleteStoryFile(context, "$PROJECT_DIR/$name")
             if("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()){

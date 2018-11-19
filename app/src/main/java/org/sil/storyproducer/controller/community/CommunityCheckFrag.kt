@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.community
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -26,12 +27,18 @@ import org.sil.storyproducer.tools.file.deleteStoryFile
 class CommunityCheckFrag : SlidePhaseFrag() {
     private lateinit var viewManager : RecyclerView.LayoutManager
     private lateinit var viewAdapter : RecyclerView.Adapter<*>
-    private var currentPlayingButton: ImageButton? = null
     private var values : MutableList<String>? = null
     private var listener : OnAudioPlayListener? = null
 
     interface OnAudioPlayListener {
         fun onPlayButtonClicked(path: String, image : ImageButton, stopImage: Int, playImage : Int)
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if(context is CommunityCheckFrag.OnAudioPlayListener) {
+            listener = context
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,9 +86,8 @@ class CommunityCheckFrag : SlidePhaseFrag() {
 
         return rootView
     }
-    fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
-        //if(currentPlayingButton?.background == buttonClickedNow)
-        listener?.onPlayButtonClicked(name, currentPlayingButton!!, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
+    private fun onPlayClick(name: String, image: ImageButton) {
+        listener?.onPlayButtonClicked(name, image, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
         Toast.makeText(context!!, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
         when (Workspace.activePhase.phaseType){
             PhaseType.DRAFT -> saveLog(context!!.getString(R.string.DRAFT_PLAYBACK))
@@ -89,7 +95,7 @@ class CommunityCheckFrag : SlidePhaseFrag() {
             else -> {}
         }
     }
-    fun onDeleteClick(name: String) {
+    private fun onDeleteClick(name: String) {
         values?.remove(name)
         deleteStoryFile(context!!, name)
         if(name == Workspace.activePhase.getChosenFilename()){

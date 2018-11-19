@@ -22,12 +22,13 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.ImageSlideFrag
 import org.sil.storyproducer.controller.ToolbarFrag
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
+import org.sil.storyproducer.controller.dramatization.DramatizationFrag
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.tools.media.AudioPlayer
 
-abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, ToolbarFrag.OnAudioPlayListener, ImageSlideFrag.OnAudioPlayListener, CommunityCheckFrag.OnAudioPlayListener {
+abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, ToolbarFrag.OnAudioPlayListener, ImageSlideFrag.OnAudioPlayListener, CommunityCheckFrag.OnAudioPlayListener, DramatizationFrag.OnAudioPlayListener {
     private var mDetector: GestureDetectorCompat? = null
     private var mDrawerList: ListView? = null
     private var mAdapter: ArrayAdapter<String>? = null
@@ -80,6 +81,44 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 Toast.makeText(this, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    override fun onPauseButtonClicked(path: String, image: ImageButton, stopImage: Int, playImage: Int) : Int? {
+        mediaPlayer?.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            image.setBackgroundResource(playImage)
+        })
+        if(mediaPlayer?.isAudioPlaying!!){
+            oldImage?.setBackgroundResource(playImage)
+            mediaPlayer?.pauseAudio()
+        }
+        else{
+            oldImage = null
+        }
+        if(oldImage != image) {
+            mediaPlayer?.reset()
+            if (mediaPlayer?.setStorySource(this, path) == true) {
+                oldImage = image
+                mediaPlayer?.playAudio()
+                Toast.makeText(this, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                image.setBackgroundResource(stopImage)
+            } else {
+                Toast.makeText(this, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
+            }
+        }
+        else{
+            mediaPlayer?.resumeAudio()
+        }
+        return mediaPlayer?.currentPosition
+    }
+
+    override fun getCurrentAudioPosition() : Int? {
+        return mediaPlayer?.currentPosition
+    }
+
+    override fun getDuration() : Int?{
+        return mediaPlayer?.audioDurationInMilliseconds
+    }
+    override fun setPosition(pos: Int) {
+        mediaPlayer?.currentPosition = pos
     }
 
     override fun onPause(){
