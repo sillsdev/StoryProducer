@@ -122,7 +122,9 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
                 1f)
 
         if (cTime >= slideXStart) {
-            val alpha = (cTime - slideXStart) / xTime.toFloat()
+            var alpha = (cTime - slideXStart) / xTime.toFloat()
+            if(cTime < xTime.toFloat()/2)
+                alpha = 1.0f
             drawFrame(canv, slideIndex + 1, cTime - slideXStart, nSlideVisDur,
                     alpha)
         }
