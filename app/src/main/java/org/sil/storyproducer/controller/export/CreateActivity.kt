@@ -279,6 +279,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
         } else {
             mSpinnerResolution!!.adapter = mResolutionAdapterAll
+            setSpinnerValue()
             //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true
         }
@@ -341,10 +342,11 @@ class CreateActivity : PhaseBaseActivity() {
                 }
             }
             R.id.radio_smartphone -> {
-                if (checked)
-                //Default to medium resolution on smartphone
+                if (checked) {
+                    //Default to medium resolution on smartphone
                     mSpinnerResolution!!.adapter = mResolutionAdapterAll
-                mSpinnerResolution!!.setSelection(1, true)
+                    setSpinnerValue()
+                }
             }
         }
     }
@@ -354,12 +356,12 @@ class CreateActivity : PhaseBaseActivity() {
     private fun savePreferences() {
         val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
 
-        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX!!.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
 
-        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution!!.selectedItem.toString())
+        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
 
         editor.apply()
     }
@@ -375,7 +377,7 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
 
-        setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null))
+        setSpinnerValue()
     }
 
     /**
@@ -383,14 +385,12 @@ class CreateActivity : PhaseBaseActivity() {
      * @param spinner spinner to update value.
      * @param value new value of spinner.
      */
-    private fun setSpinnerValue(spinner: Spinner?, value: String?) {
-        if (value == null) {
-            return
-        }
-
-        for (i in 0 until spinner!!.count) {
-            if (value == spinner.getItemAtPosition(i).toString()) {
-                spinner.setSelection(i)
+    private fun setSpinnerValue() {
+        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val temp = prefs.getString(PREF_KEY_RESOLUTION, null)?.toIntOrNull()
+        if (temp != null) {
+            if (temp < mSpinnerResolution?.count ?: 0 && temp >= 0) {
+                mSpinnerResolution?.setSelection(temp,true)
             }
         }
     }
