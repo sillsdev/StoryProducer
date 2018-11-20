@@ -12,13 +12,14 @@ import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
 
 /**
- * The fragment for the Draft view. This is where a user can draft out the story slide by slide
+ * The fragment is for the views that need to set the scripture and reference texts.
+ * This is where a user can draft out the story slide by slide
  */
 abstract class SlidePhaseFrag : Fragment() {
     protected var rootView: View? = null
 
-    protected var slideNum: Int = 0 //gets overwritten
-    protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
+    protected var slideNum: Int = 0
+    protected var slide: Slide = Workspace.activeSlide!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,9 +46,6 @@ abstract class SlidePhaseFrag : Fragment() {
         toolbarFrag.arguments = arguments
         toolbarFrag.setupToolbarButtons()
 
-        //setUiColors()
-        //setPic(rootView!!.findViewById<ImageView>(R.id.fragment_image_view))
-
         return rootView
     }
 
@@ -68,25 +66,6 @@ abstract class SlidePhaseFrag : Fragment() {
 //        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
 //    }
 
-
-        /**
-     * This function sets the first slide of each story to the blue color in order to prevent
-     * clashing of the grey starting picture.
-     */
-//    protected open fun setUiColors() {
-//        if (slideNum == 0) {
-//            var rl = rootView!!.findViewById<ViewGroup>(R.id.fragment_envelope)
-//            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-//            rl = rootView!!.findViewById(R.id.fragment_text_envelope)
-//            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-//
-//            var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
-//            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-//            tv = rootView!!.findViewById(R.id.fragment_reference_text)
-//            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-//        }
-//    }
-
     /**
      * Sets the main text of the layout.
      *
@@ -94,7 +73,7 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
-        textView.text = stringToSpannableString(words, this.context)
+        textView.text = stringToSpannableString(words, activity!!)
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
@@ -118,6 +97,5 @@ abstract class SlidePhaseFrag : Fragment() {
 
     companion object {
         const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
-
     }
 }

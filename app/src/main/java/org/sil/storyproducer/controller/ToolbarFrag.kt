@@ -1,10 +1,8 @@
 package org.sil.storyproducer.controller
 
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DividerItemDecoration
@@ -19,21 +17,40 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingAdapterV2
-import org.sil.storyproducer.controller.draft.DraftFrag
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 /**
- * A simple [Fragment] subclass.
+ * This fragment is the bottom toolbar that is shown on most of the different views for the application
+ * It has been more modularized so that it is self contained and can simply be dropped in the xml.
+ * For most of the views, the media player has been taken out and put into the activity that is
+ * holding the view so that it can manage them all and not have each fragment trying to deal with others.
+ *
+ * To work this toolbar (fragment) the following must be included in the fragment/activity where the
+ * toolbar resides with the arguments set to true or false depending on what is wanted to be shown as
+ * well as the interface implemented:
+ *
+ * class [ACTIVITYNAME] : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener
+ *
+ * In onCreateView
+        val arguments = Bundle()
+        arguments.putBoolean("enablePlaybackButton", true)
+        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableMultiRecordButton", true)
+        arguments.putBoolean("enableSendAudioButton", false)
+        arguments.putInt("slideNum", slideNum)
+
+        val toolbarFrag = childFragmentManager.findFragmentById(R.id.[NameOfFragment]) as ToolbarFrag
+        toolbarFrag.arguments = arguments
+        toolbarFrag.setupToolbarButtons()
  *
  */
+
 class ToolbarFrag: Fragment() {
 
     private var toolbar : LinearLayout? = null

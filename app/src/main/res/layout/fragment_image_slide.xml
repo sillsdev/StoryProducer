@@ -5,7 +5,7 @@
     android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controller.ImageSlide">
+    tools:context=".controller.ImageSlideFrag">
 
     <ImageView
         android:id="@+id/fragment_image_view"

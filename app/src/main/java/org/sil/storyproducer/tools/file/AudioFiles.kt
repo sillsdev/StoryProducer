@@ -41,7 +41,8 @@ fun assignNewAudioRelPath() : String {
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
-        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK,
+        PhaseType.KEYTERM -> {
             //find the next number that is available for saving files at.
             val rFileNum = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
             var maxNum = 0
@@ -73,6 +74,10 @@ fun assignNewAudioRelPath() : String {
         PhaseType.DRAMATIZATION -> {
             Workspace.activeSlide!!.dramatizationAudioFiles.add(relPath)
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
+        }
+        PhaseType.KEYTERM -> {
+            Workspace.activeSlide!!.keytermAudioFiles.add(relPath)
+            Workspace.activeSlide!!.chosenKeytermFile = relPath
         }
         else -> relPath = ""
     }

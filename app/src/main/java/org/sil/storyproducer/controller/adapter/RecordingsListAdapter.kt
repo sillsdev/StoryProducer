@@ -11,7 +11,7 @@ import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -113,18 +113,17 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
                 .setTitle(context.getString(R.string.rename_title))
                 .setView(newName)
                 .setNegativeButton(context.getString(R.string.cancel), null)
-                .setPositiveButton(context.getString(R.string.save)) { dialog, id ->
-                    val newNameText = newName.text.toString()
+                .setPositiveButton(context.getString(R.string.save)) { _, _ ->
                     val returnCode = listeners.onRenameClick(values[position], newName.text.toString())
                     when (returnCode) {
 
                         AudioFiles.RenameCode.SUCCESS -> {
                             listeners.onRenameSuccess()
-                            Toast.makeText(getContext(), context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                         }
-                        AudioFiles.RenameCode.ERROR_LENGTH -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
-                        AudioFiles.RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
-                        AudioFiles.RenameCode.ERROR_UNDEFINED -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
+                        AudioFiles.RenameCode.ERROR_LENGTH -> Toast.makeText(context, context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
+                        AudioFiles.RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(context, context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
+                        AudioFiles.RenameCode.ERROR_UNDEFINED -> Toast.makeText(context, context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
                     }
                 }.create()
 
@@ -133,7 +132,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
     }
 }
 
-class RecordingsList(private val context: Context, private val parentFragment: MultiRecordFrag) : RecordingsListAdapter.ClickListeners, Modal {
+class RecordingsList(private val context: Context, private val parentFragment: SlidePhaseFrag, private val slideNum : Int = Workspace.activeSlideNum) : RecordingsListAdapter.ClickListeners, Modal {
     private var rootView: ViewGroup? = null
     private var dialog: AlertDialog? = null
 
@@ -143,53 +142,36 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     private val audioPlayer: AudioPlayer = AudioPlayer()
     private var currentPlayingButton: ImageButton? = null
-    private var embedded = false
-
-    private var mSlideNum = -1
-
-    fun embedList(view: ViewGroup){
-        rootView = view
-        embedded = true
-    }
-
-    fun setSlideNum(slideNum : Int){
-        mSlideNum = slideNum
-    }
 
     override fun show() {
         val inflater = parentFragment.activity!!.layoutInflater
-        if(!embedded) {
-            rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
-        }
+        rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
 
-        if(mSlideNum == -1) mSlideNum = Workspace.activeSlideNum
-        filenames = Workspace.activePhase.getRecordedAudioFiles(mSlideNum)!!
+        filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
         createRecordingList()
 
+        val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)
+        tb?.setTitle(R.string.recordings_title)
 
-        if(!embedded){
-            val tb = rootView!!.findViewById<Toolbar>(R.id.toolbar2)
-            tb?.setTitle(R.string.recordings_title)
+        val alertDialog = AlertDialog.Builder(context)
+        alertDialog.setView(rootView)
+        dialog = alertDialog.create()
 
-            val alertDialog = AlertDialog.Builder(context)
-            alertDialog.setView(rootView)
-            dialog = alertDialog.create()
-
-            val exit = rootView!!.findViewById<ImageButton>(R.id.exitButton)
-            exit?.setOnClickListener {
-                dialog?.dismiss()
-            }
-            dialog?.setOnDismissListener {
-                stopAudio()
-            }
-            dialog?.show()
+        val exit = rootView?.findViewById<ImageButton>(R.id.exitButton)
+        exit?.setOnClickListener {
+            dialog?.dismiss()
         }
+        dialog?.setOnDismissListener {
+            if (audioPlayer.isAudioPlaying)
+                audioPlayer.stopAudio()
+        }
+        dialog?.show()
     }
 
     /**
      * Updates the list of draft recordings at beginning of fragment creation and after any list change
      */
-    fun createRecordingList() {
+    private fun createRecordingList() {
         val listView = rootView!!.findViewById<ListView>(R.id.recordings_list)
         listView.isScrollbarFadingEnabled = false
         val strippedFilenames = filenames.toMutableList()
@@ -203,8 +185,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     }
 
-    override fun onRowClick(recordingTitle: String) {
-        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$recordingTitle")
+    override fun onRowClick(name: String) {
+        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
         dialog?.dismiss()
     }
 
@@ -214,11 +196,10 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             audioPlayer.stopAudio()
         } else {
             stopAudio()
-            parentFragment.stopPlayBackAndRecording()
             currentPlayingButton = buttonClickedNow
-            currentPlayingButton!!.setImageResource(R.drawable.ic_stop_white_36dp)
+            currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
             audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()})
             if (storyRelPathExists(context,"$PROJECT_DIR/$name")) {
                 audioPlayer.setStorySource(context,"$PROJECT_DIR/$name")
@@ -244,7 +225,6 @@ class RecordingsList(private val context: Context, private val parentFragment: M
                 Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
             else{
                 Workspace.activePhase.setChosenFilename("")
-                parentFragment.hideButtonsToolbar()
             }
         }
         createRecordingList()
@@ -254,9 +234,9 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         lastOldName = name
         val tempName = newName + AUDIO_EXT
         lastNewName = tempName
-        when(renameStoryFile(context,"$PROJECT_DIR/$name",tempName)){
-            true -> return AudioFiles.RenameCode.SUCCESS
-            false -> return AudioFiles.RenameCode.ERROR_UNDEFINED
+        return when(renameStoryFile(context,"$PROJECT_DIR/$name",tempName)){
+            true -> AudioFiles.RenameCode.SUCCESS
+            false -> AudioFiles.RenameCode.ERROR_UNDEFINED
         }
     }
 
@@ -264,7 +244,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
         filenames.removeAt(index)
         filenames.add(index,"$PROJECT_DIR/$lastNewName")
-        onRowClick(lastNewName!!)
+        onRowClick(lastNewName.toString())
         createRecordingList()
     }
 

@@ -6,13 +6,14 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
-    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
+    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK, KEYTERM
 }
 
 /**
@@ -41,6 +42,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = filename
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = filename
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = filename
+            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].chosenKeytermFile = filename
             else -> return
         }
         return
@@ -49,6 +51,7 @@ class Phase(val phaseType: PhaseType) {
     fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>? {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
+            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].keytermAudioFiles
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
@@ -75,6 +78,7 @@ class Phase(val phaseType: PhaseType) {
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
+            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile
@@ -101,6 +105,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
             PhaseType.DRAMATIZATION -> "Voice Studio"
+            PhaseType.KEYTERM -> "Keyterm"
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -115,6 +120,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> "BackTrans"
             PhaseType.DRAMATIZATION -> "VStudio"
             PhaseType.CREATE -> "Finalize"
+
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -134,6 +140,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> R.color.backT_phase
             PhaseType.WHOLE_STORY -> R.color.whole_story_phase
             PhaseType.REMOTE_CHECK -> R.color.remote_check_phase
+            PhaseType.KEYTERM -> R.color.keyterm_phase
             else -> R.color.black
         }
     }
@@ -153,6 +160,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> PagerBaseActivity::class.java
             PhaseType.WHOLE_STORY -> WholeStoryBackTranslationActivity::class.java
             PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
+            PhaseType.KEYTERM -> KeyTermActivity::class.java
         }
     }
     companion object {
@@ -164,6 +172,7 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.CONSULTANT_CHECK),
                     Phase(PhaseType.DRAMATIZATION),
                     Phase(PhaseType.CREATE),
+                    Phase(PhaseType.KEYTERM),
                     Phase(PhaseType.SHARE))
         }
 
@@ -177,6 +186,7 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.REMOTE_CHECK),
                     Phase(PhaseType.DRAMATIZATION),
                     Phase(PhaseType.CREATE),
+                    Phase(PhaseType.KEYTERM),
                     Phase(PhaseType.SHARE))
         }
 
@@ -192,6 +202,7 @@ class Phase(val phaseType: PhaseType) {
                 PhaseType.DRAMATIZATION -> context.getString(R.string.dramatize_help)
                 PhaseType.CREATE -> context.getString(R.string.create_help)
                 PhaseType.SHARE -> context.getString(R.string.share_help)
+                PhaseType.KEYTERM -> context.getString(R.string.keyterm_help)
                 else -> "No Help Found"
             }
         }

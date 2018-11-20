@@ -3,10 +3,12 @@ package org.sil.storyproducer.controller.phase
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.Image
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.GravityCompat
@@ -49,13 +51,14 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(mActionBarToolbar)
-        supportActionBar!!.title = ""
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+        supportActionBar?.title = ""
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 phase.getColor(), null)))
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
         mediaPlayer = AudioPlayer()
         setupDrawer()
+        setupStatusBar()
     }
 
     override fun onPlayButtonClicked(path: String, image: ImageButton, stopImage: Int, playImage: Int) {
@@ -291,8 +294,16 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         }
     }
 
-    companion object {
+    private fun setupStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
+            Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
+            hsv[2] *= 0.8f
+            window.statusBarColor = Color.HSVToColor(hsv)
+        }
+    }
 
+    companion object {
         fun disableViewAndChildren(view: View) {
             view.isEnabled = false
             if (view is ViewGroup) {
@@ -303,5 +314,4 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             }
         }
     }
-
 }
