@@ -14,6 +14,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -144,11 +146,20 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 mDrawerToggle!!.onOptionsItemSelected(item)
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage(Phase.getHelp(this, phase.phaseType))
-                        .create()
-                dialog.show()
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)
