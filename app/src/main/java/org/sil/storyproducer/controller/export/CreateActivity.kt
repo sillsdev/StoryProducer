@@ -74,7 +74,7 @@ class CreateActivity : PhaseBaseActivity() {
         runOnUiThread {
             stopExport()
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
-            mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle())
+            mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle(mEditTextTitle!!.text.toString()))
         }
     }
 

@@ -30,8 +30,9 @@ class Story(var title: String, val slides: List<Slide>){
         }
     }
 
-    fun getVideoTitle() : String {
+    fun getVideoTitle(existingTitle : String = "") : String {
         val ovNoPath : MutableList<String> = ArrayList()
+        ovNoPath.add(existingTitle)
         for (ov in outputVideos){
             ovNoPath.add(ov.split(".")[0])
         }
