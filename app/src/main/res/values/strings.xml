@@ -336,17 +336,17 @@
                                 OR OTHER DEALINGS IN THE SOFTWARE.</string>
 
     <!-- Help -->
-    <string name="workspace_help">Workspace Help</string>
-    <string name="registration_help">Registration Help</string>
-    <string name="story_list_help">Story List Help</string>
-    <string name="template_list_help">Template List Help</string>
-    <string name="learn_help">Learn Help</string>
-    <string name="draft_help">Translate Help</string>
-    <string name="community_help">Community Help</string>
-    <string name="consultant_help">Accuracy Help</string>
-    <string name="dramatize_help">Voice Studio Help</string>
-    <string name="create_help">Make Video Help</string>
-    <string name="share_help">Share Help</string>
+    <string name="workspace_help">See Help file</string>
+    <string name="registration_help">See Help file</string>
+    <string name="story_list_help">See Help file</string>
+    <string name="template_list_help">See Help file</string>
+    <string name="learn_help">See Help file</string>
+    <string name="draft_help">See Help file</string>
+    <string name="community_help">See Help file</string>
+    <string name="consultant_help">See Help file</string>
+    <string name="dramatize_help">See Help file</string>
+    <string name="create_help">See Help file</string>
+    <string name="share_help">See Help file</string>
 
 
     <!-- Logging -->
