@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.export
 
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -11,6 +12,9 @@ import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getChildDocuments
+import android.support.v4.os.HandlerCompat.postDelayed
+
+
 
 
 /**
@@ -39,7 +43,6 @@ class ShareActivity : PhaseBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
-        setupViews()
         invalidateOptionsMenu()
         if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
@@ -47,14 +50,18 @@ class ShareActivity : PhaseBaseActivity() {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
+        initView()
+        runOnUiThread{
+            //This allows the video file to write if it just did
+            val handler = Handler()
+            handler.postDelayed({
+                refreshViews()
+                //your code here
+            }, 3000)
+        }
     }
 
-    /**
-     * Get handles to all necessary views and add some listeners.
-     */
-    //TODO: cleanup
-    private fun setupViews() {
-
+    private fun initView() {
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
         for (i in sectionIds.indices) {
@@ -75,6 +82,25 @@ class ShareActivity : PhaseBaseActivity() {
                 exportedVideos.add(presentVideos[i])
             }
         }
+        if (exportedVideos.isNotEmpty()) {
+            mNoVideosText!!.visibility = View.GONE
+        }
+        videosAdapter!!.setVideoPaths(exportedVideos)
+    }
+
+    /**
+     * Get handles to all necessary views and add some listeners.
+     */
+    //TODO: cleanup
+    private fun refreshViews() {
+
+        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val exportedVideos : MutableList<String> = ArrayList()
+        for (i in 0 until presentVideos.size){
+            if(presentVideos[i] in story.outputVideos){
+                exportedVideos.add(presentVideos[i])
+            }
+        }
         //If the file has been deleted, remove it.
         val toRemove = mutableListOf<Int>()
         for (i in 0 until story.outputVideos.size){
@@ -87,6 +113,8 @@ class ShareActivity : PhaseBaseActivity() {
         }
         if (exportedVideos.isNotEmpty()) {
             mNoVideosText!!.visibility = View.GONE
+        }else{
+            mNoVideosText!!.visibility = View.VISIBLE
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
     }
