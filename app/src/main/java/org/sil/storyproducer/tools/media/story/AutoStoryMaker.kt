@@ -139,8 +139,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         var lastSoundtrack = ""
         var iSlide = 0
-        //don't use the last image - it's the copyright.
-        while (iSlide < (Workspace.activeStory.slides.size - 1)) {
+        while (iSlide < (Workspace.activeStory.slides.size)) {
             val slide = Workspace.activeStory.slides[iSlide]
             val image = if (mIncludePictures) slide.imageFile else ""
             var audio = slide.chosenDramatizationFile
@@ -168,14 +167,14 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             var kbfx: KenBurnsEffect? = null
-            if (mIncludePictures && mIncludeKBFX && iSlide != 0) {
+            if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
 
             val overlayText = slide.getOverlayText(mIncludeText)
 
             //error
-            var duration = 3000000L  // 3 seconds, microseconds.
+            var duration = 5000000L  // 3 seconds, microseconds.
             if (audio != "") {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
@@ -183,10 +182,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,slide.slideType))
             iSlide++
         }
-
-        pages.add(StoryPage(Workspace.activeStory.slides.last().imageFile,"",COPYRIGHT_SLIDE_US))
-
-        //TODO: add hymn
 
         return pages.toTypedArray()
     }

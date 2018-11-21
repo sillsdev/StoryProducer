@@ -130,8 +130,9 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         }
 
         //clear image cache to save memory.
-        if(slideIndex >= 1) {
-            if (bitmaps.containsKey(mPages[slideIndex - 1].imRelPath)) {
+        if(slideIndex >= 1 && slideIndex < mPages.size) {
+            if (bitmaps.containsKey(mPages[slideIndex - 1].imRelPath) &&
+                    mPages[slideIndex - 1].imRelPath != mPages[slideIndex].imRelPath) {
                 bitmaps.remove(mPages[slideIndex - 1].imRelPath)
             }
         }

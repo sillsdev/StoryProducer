@@ -165,8 +165,8 @@
     <string name="dramatization_draft_no_picture">Could not find picture</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
     <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
-    <string name="dramatization_edit_text_hint">Story text</string>
-    <string name="dramatization_edit_title_text_hint">Story Title</string>
+    <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>
+    <string name="dramatization_edit_title_text_hint">Write story title to show for all videos made.</string>
     <string name="dramatization_playing_dramatize">Playing dramatization</string>
     <string name="dramatization_no_drama_found">No dramatization found</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
@@ -266,7 +266,9 @@
 
     <!-- Local Credits -->
     <string name="LC_translator_prefix">Translator:</string>
-    <string name="LC_consultant_prefix">Consultant:</string>
+    <string name="LC_consultant_prefix">Consultant:\</string>
+    <string name="LC_community_prefix">Community Workers:</string>
+    <string name="LC_dramatize_prefix">Voice Actors:\</string>
     <string name="LC_no_translator_name">No translator name</string>
     <string name="LC_no_consultant_name">No consultant name</string>
 

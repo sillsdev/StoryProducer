@@ -27,7 +27,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //Image and transition pattern
     val reTitle = Pattern.compile("<title>([^<]+)<")
     val reSlideType = Pattern.compile("(^[^\"]+)")
-    val reNarration = Pattern.compile("id=\"narration[^>]+>([^<]+)")
+    val reNarration = Pattern.compile("id=\"narration([0-9]+)[^>]+>([^<]+)")
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
     val reSoundTrackVolume = Pattern.compile("data-backgroundaudiovolume=\"([^\"]+)")
     val reImage = Pattern.compile("\"(\\w+.(jpg|png))")
@@ -42,13 +42,15 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     if(pageTextList.size <= 2) return null
 
     //add the title slide
-    val mTitle = reTitle.matcher(pageTextList[0])
     var slide = Slide()
-    if(mTitle.find()){
+    val mNarration = reNarration.matcher(pageTextList[0])
+    if(mNarration.find()) {
         slide.slideType = SlideType.FRONTCOVER
-        slide.content = mTitle.group(1)
+        slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
+        slide.content = mNarration.group(2)
+        slide.title = slide.content
         slides.add(slide)
-    }
+    } else { return null }
 
     for(i in 1 until pageTextList.size){
         //Don't keep the first element, as it is before the first slide.
@@ -67,8 +69,8 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         //narration
         val mNarration = reNarration.matcher(t)
         if(mNarration.find()){
-            slide.narrationFile = "audio/narration${i-1}.mp3"
-            slide.content = mNarration.group(1)
+            slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
+            slide.content = mNarration.group(2)
             if(i==1) slide.title = slide.content  //first slide title
         }
 
@@ -93,9 +95,9 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mSR = reSR.matcher(t)
         if(mSR.find()) {
             val x = mSR.group(1).toDouble()*slide.width
-            val y = mSR.group(2).toDouble()*slide.width
+            val y = mSR.group(2).toDouble()*slide.height
             val w = mSR.group(3).toDouble()*slide.width
-            val h = mSR.group(4).toDouble()*slide.width
+            val h = mSR.group(4).toDouble()*slide.height
             slide.startMotion = Rect((x).toInt(), //left
                     (y).toInt(),  //top
                     (x+w).toInt(),   //right
@@ -104,9 +106,9 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mER = reER.matcher(t)
         if(mER.find()) {
             val x = mER.group(1).toDouble()*slide.width
-            val y = mER.group(2).toDouble()*slide.width
+            val y = mER.group(2).toDouble()*slide.height
             val w = mER.group(3).toDouble()*slide.width
-            val h = mER.group(4).toDouble()*slide.width
+            val h = mER.group(4).toDouble()*slide.height
             slide.endMotion = Rect((x).toInt(), //left
                     (y).toInt(),  //top
                     (x+w).toInt(),   //right
@@ -135,6 +137,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
             slide.content += mOAParts.group(1)
         }
         slide.content
+        slide.translatedContent = slide.content
         slides.add(slide)
     }
 

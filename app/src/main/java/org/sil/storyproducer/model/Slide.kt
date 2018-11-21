@@ -69,7 +69,7 @@ class Slide{
         val tOverlay = TextOverlay(overlayText)
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
-            SlideType.CREDITS1, SlideType.CREDITS2ATTRIBUTIONS -> 24
+            SlideType.CREDITS1, SlideType.CREDITS2ATTRIBUTIONS -> 16
             SlideType.NUMBEREDPAGE, SlideType.NONE -> 16
         }
         tOverlay.setFontSize(fontSize)

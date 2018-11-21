@@ -68,6 +68,7 @@ public class TextOverlay {
 
     public void setAlpha(float alpha) {
         mAlpha = alpha;
+        mIsDirty = true;
         if(mTextPaint != null && mTextOutlinePaint != null) {
             mTextPaint.setAlpha((int) (mAlpha * 255));
             mTextOutlinePaint.setAlpha((int) (mAlpha * 255));
@@ -154,3 +155,4 @@ public class TextOverlay {
         mIsDirty = false;
     }
 }
+
