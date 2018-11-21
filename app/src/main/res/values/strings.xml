@@ -263,7 +263,13 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_splash_screen">Story Producer</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Local Credits -->
+    <string name="LC_translator_prefix">Translator:</string>
+    <string name="LC_consultant_prefix">Consultant:</string>
+    <string name="LC_no_translator_name">No translator name</string>
+    <string name="LC_no_consultant_name">No consultant name</string>
+
 
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>

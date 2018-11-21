@@ -84,6 +84,7 @@ object Workspace{
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context,storyPath)
                     if (story != null) {
+                        updateLocalCredits(context,story)
                         Stories.add(story)
                     }
                 }
@@ -98,6 +99,13 @@ object Workspace{
         }
         activePhaseIndex = 0
         storiesUpdated = true
+    }
+
+    private fun updateLocalCredits(context: Context, story: Story) {
+        for(slide in story.slides){
+            if(slide.slideType == SlideType.CREDITS1) //local credits
+                slide.content = registration.getLocalCreditsStart(context)
+        }
     }
 
     fun goToNextPhase() : Boolean {

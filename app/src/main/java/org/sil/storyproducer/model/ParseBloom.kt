@@ -25,6 +25,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val slides: MutableList<Slide> = ArrayList()
 
     //Image and transition pattern
+    val reTitle = Pattern.compile("<title>([^<]+)<")
     val reSlideType = Pattern.compile("(^[^\"]+)")
     val reNarration = Pattern.compile("id=\"narration[^>]+>([^<]+)")
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
@@ -33,25 +34,34 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val reHW = Pattern.compile("bloom-backgroundImage[^\\n]+title=\"[\\w.]+ [0-9]+ \\w+ ([0-9]+) x ([0-9]+)")
     val reSR = Pattern.compile("data-initialrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
     val reER = Pattern.compile("data-finalrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
+    val reOrgAckn = Pattern.compile("originalAcknowledgments.*>([\\w\\W]*?)</div>")
+    val reOrgAcknSplit = Pattern.compile(">([^<]*[a-zA-Z0-9]+[^<]*)<")
 
     val pageTextList = htmlText.split("class=\"bloom-page")
 
     if(pageTextList.size <= 2) return null
 
+    //add the title slide
+    val mTitle = reTitle.matcher(pageTextList[0])
+    var slide = Slide()
+    if(mTitle.find()){
+        slide.slideType = SlideType.FRONTCOVER
+        slide.content = mTitle.group(1)
+        slides.add(slide)
+    }
+
     for(i in 1 until pageTextList.size){
         //Don't keep the first element, as it is before the first slide.
-        val slide = Slide()
+        slide = Slide()
         val t = pageTextList[i]
 
         //slide type
         val mSlideVariables = reSlideType.matcher(t)
         if(mSlideVariables.find()){
             val sv = mSlideVariables.group(1).split(" ")
-            if("frontCover" in sv) slide.slideType = SlideType.FRONTCOVER
             if("numberedPage" in sv) slide.slideType = SlideType.NUMBEREDPAGE
-            if("credits1" in sv) slide.slideType = SlideType.CREDITS1
-            if("credits2" in sv) slide.slideType = SlideType.CREDITS2ATTRIBUTIONS
-            if("theEndPage" in sv) slide.slideType = SlideType.ENDPAGE
+            //only add the numbered pages.
+            else continue
         }
 
         //narration
@@ -102,6 +112,29 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
                     (x+w).toInt(),   //right
                     (y+h).toInt())  //bottom
         }
+        slides.add(slide)
+    }
+
+    //Add the Local credits slide
+    slide = Slide()
+    slide.slideType = SlideType.CREDITS1
+    slides.add(slide)
+
+    //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.
+    //If they are there, append to the end of the slides.
+    val mOrgOckn = reOrgAckn.matcher(pageTextList[0])
+    if(mOrgOckn.find()){
+        val slide = Slide()
+        slide.slideType = SlideType.CREDITS2ATTRIBUTIONS
+        val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1))
+        slide.content = ""
+        var firstLine = true
+        while(mOAParts.find()){
+            if(!firstLine) slide.content += "\n"
+            firstLine = false
+            slide.content += mOAParts.group(1)
+        }
+        slide.content
         slides.add(slide)
     }
 
