@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import android.net.Uri
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -9,6 +10,7 @@ import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
+import java.io.File
 
 
 enum class PhaseType {
@@ -58,7 +60,7 @@ class Phase(val phaseType: PhaseType) {
 
     fun getIcon(phase: PhaseType = phaseType) : Int {
         return when (phase){
-            PhaseType.LEARN -> R.drawable.ic_hearing_white_48dp
+            PhaseType.LEARN -> R.drawable.ic_ear_white_48dp
             PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
             PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
             PhaseType.SHARE -> R.drawable.ic_share_white_48dp
@@ -180,20 +182,8 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.SHARE))
         }
 
-        fun getHelp(context: Context, phase: PhaseType) : String {
-            return when (phase) {
-                PhaseType.WORKSPACE -> context.getString(R.string.workspace_help)
-                PhaseType.REGISTRATION -> context.getString(R.string.registration_help)
-                PhaseType.STORY_LIST -> context.getString(R.string.story_list_help)
-                PhaseType.LEARN -> context.getString(R.string.learn_help)
-                PhaseType.DRAFT -> context.getString(R.string.draft_help)
-                PhaseType.COMMUNITY_CHECK -> context.getString(R.string.community_help)
-                PhaseType.CONSULTANT_CHECK -> context.getString(R.string.consultant_help)
-                PhaseType.DRAMATIZATION -> context.getString(R.string.dramatize_help)
-                PhaseType.CREATE -> context.getString(R.string.create_help)
-                PhaseType.SHARE -> context.getString(R.string.share_help)
-                else -> "No Help Found"
-            }
+        fun getHelpName(phase: PhaseType) : String {
+            return "${phase.name.toLowerCase()}.html"
         }
     }
 }

@@ -1,9 +1,8 @@
 package org.sil.storyproducer.tools.media.graphics
 
 import android.graphics.Rect
+import android.graphics.RectF
 import org.sil.storyproducer.model.Slide
-
-import org.sil.storyproducer.tools.media.graphics.RectHelper
 
 /**
  * This class encapsulates a single, un-timed Ken Burns effect for an image (Bitmap). In other words,
@@ -22,16 +21,10 @@ class KenBurnsEffect
     private val mStart: Rect
     private val mEnd: Rect
 
-    private val mEasing: Easing
-
     private val dLeft: Int
     private val dTop: Int
     private val dRight: Int
     private val dBottom: Int
-
-    enum class Easing {
-        LINEAR
-    }
 
     init {
         mStart = Rect(start)
@@ -44,8 +37,6 @@ class KenBurnsEffect
             RectHelper.translate(mEnd, crop.left, crop.top)
         }
 
-        mEasing = Easing.LINEAR
-
         dLeft = mEnd.left - mStart.left
         dTop = mEnd.top - mStart.top
         dRight = mEnd.right - mStart.right
@@ -56,9 +47,9 @@ class KenBurnsEffect
      * Obtain an intermediary crop from the Ken Burns effect.
      * @param position time-step between 0 and 1 (inclusive)
      * where 0 corresponds to the starting crop.
-     * @return crop at time-step.
+     * @return stretch of original image over screen size to make crop
      */
-    fun interpolate(position: Float): Rect {
+    fun revInterpolate(position: Float, scrWidth: Int, scrHeight: Int, imWidth: Int, imHeight: Int): RectF {
         var position = position
         //Clamp position to [0, 1]
         if (position < 0) {
@@ -67,30 +58,24 @@ class KenBurnsEffect
             position = 1f
         }
 
-        val left: Int
-        val top: Int
-        val right: Int
-        val bottom: Int
+        //Start by calculating the "internal rectangle" that is stored in the Bloom file
+        //This is where the screen is looking at the picture
+        val irL = mStart.left + position * dLeft
+        val irT = mStart.top + position * dTop
+        val irR = mStart.right + position * dRight
+        val irB = mStart.bottom + position * dBottom
+        val irH = irB - irT
+        val irW = irR - irL
 
-        when (mEasing) {
-            KenBurnsEffect.Easing.LINEAR -> {
-                left = mStart.left + (position * dLeft).toInt()
-                top = mStart.top + (position * dTop).toInt()
-                right = mStart.right + (position * dRight).toInt()
-                bottom = mStart.bottom + (position * dBottom).toInt()
-            }
-        //Fall through to default case.
-            else //default to linear
-            -> {
-                left = mStart.left + (position * dLeft).toInt()
-                top = mStart.top + (position * dTop).toInt()
-                right = mStart.right + (position * dRight).toInt()
-                bottom = mStart.bottom + (position * dBottom).toInt()
-            }
-        }
+        //now, lets invert it where the picture is stretched to be outside of the screen.
+        val top = -irT/irH*scrHeight
+        val bottom = ((imHeight-irB)/irH + 1)*scrHeight
+        val left = -irL/irW*scrWidth
+        val right = ((imWidth-irR)/irW + 1)*scrWidth
 
-        return Rect(left, top, right, bottom)
+        return RectF(left, top, right, bottom)
     }
+
 
     companion object {
         fun fromSlide(slide: Slide) : KenBurnsEffect {
@@ -103,8 +88,3 @@ class KenBurnsEffect
         }
     }
 }
-/**
- * Create Ken Burns effect with starting and ending rectangles.
- * @param start starting crop of effect.
- * @param end ending crop of effect.
- */

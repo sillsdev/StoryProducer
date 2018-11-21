@@ -5,12 +5,14 @@ import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
 import android.support.v4.provider.DocumentFile
+import android.text.Layout
 import com.squareup.moshi.*
 
 import java.io.File
 import com.squareup.moshi.ToJson
 import com.squareup.moshi.FromJson
-
+import org.sil.storyproducer.tools.media.graphics.TextOverlay
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
 
 /**
@@ -52,11 +54,35 @@ class Slide{
     var backTranslationAudioFiles: MutableList<String> = ArrayList()
     var chosenBackTranslationFile = ""
 
+    //consultant approval
+    var isChecked: Boolean = false
+
+    fun getOverlayText(dispStory: Boolean = false) : TextOverlay? {
+        //There is no text overlay on normal slides or "no slides"
+        if(!dispStory){
+            if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
+        }
+        val overlayText = when(slideType){
+            SlideType.CREDITS1 -> "$content\n$translatedContent"
+            else -> translatedContent
+        }
+        val tOverlay = TextOverlay(overlayText)
+        val fontSize : Int = when(slideType){
+            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            SlideType.CREDITS1, SlideType.CREDITS2ATTRIBUTIONS -> 16
+            SlideType.NUMBEREDPAGE, SlideType.NONE -> 16
+        }
+        tOverlay.setFontSize(fontSize)
+        if(slideType == SlideType.NUMBEREDPAGE)
+            tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+        return tOverlay
+    }
+
     companion object
 }
 
 enum class SlideType {
-    FRONTCOVER, NUMBEREDPAGE, CREDITS1, CREDITS2ATTRIBUTIONS, ENDPAGE
+    NONE, FRONTCOVER, NUMBEREDPAGE, CREDITS1, CREDITS2ATTRIBUTIONS, ENDPAGE
 }
 
 @JsonClass(generateAdapter = true)

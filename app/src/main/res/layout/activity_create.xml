@@ -108,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <RadioButton android:id="@+id/radio_dumbphone"
-                            android:drawableEnd="@drawable/ic_phone_white_24dp"
+                            android:drawableEnd="@drawable/ic_dumbphone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/dumbphone_and_extension"

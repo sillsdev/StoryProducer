@@ -82,6 +82,7 @@
                 android:layout_height="wrap_content"
                 android:hint="@string/dramatization_edit_text_hint"
                 android:inputType="textCapSentences|textMultiLine"
+                android:textSize="@dimen/text_body"
                 android:maxLength="20000"
                 android:maxLines="10" />
         </RelativeLayout>
