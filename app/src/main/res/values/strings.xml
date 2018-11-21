@@ -275,28 +275,6 @@
     <string name="byte_unit_singular">" byte"</string>
     <string name="byte_unit_plural">" bytes"</string>
 
-    <!-- File Explorer -->
-    <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
-    <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
-    <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
-    <string name="file_explorer_folderNamePrompt">Please specify a name for your new folder:</string>
-    <string name="file_explorer_newFolder">New Folder</string>
-    <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
-    <string name="file_explorer_fileAlreadyExists_1">File \"</string>
-    <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
-    <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
-    <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
-    <string name="file_explorer_hint">Enter filename&#8230;</string>
-    <plurals name="file_explorer_numItems">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
-
-    <plurals name="file_explorer_numBytes">
-        <item quantity="one">%d byte</item>
-        <item quantity="other">%d bytes</item>
-    </plurals>
-
     <string name="LWC_PLAYBACK">LWC Playback</string>
     <string name="DRAFT_RECORDING">Draft Recording</string>
     <string name="DRAFT_PLAYBACK">Draft Playback</string>
