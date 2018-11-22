@@ -1,13 +1,12 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
@@ -16,12 +15,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.stringToSpannableString
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
@@ -160,7 +158,9 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
-        textView.text = stringToSpannableString(words, this.context)
+        textView.text = words.fold(SpannableStringBuilder()){
+            result, word -> result.append(stringToKeytermLink(word, context)).append(" ")
+        }
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
