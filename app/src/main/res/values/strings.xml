@@ -149,6 +149,8 @@
 
     <!-- Keyterm Tool -->
     <string name="keyterm_submit_backTranslation_hint">Submit new back translation</string>
+    <string name="keyterm_close">Close</string>
+    <string name="keyterm_help">Keyterm Help</string>
 
     <!-- Learn Phase -->
     <string name="learn_phase_practice">Retell the whole story in your language!</string>
