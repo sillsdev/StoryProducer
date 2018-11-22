@@ -153,7 +153,7 @@ object Workspace{
     private fun mapTermsToKeyterms(keyterms: List<Keyterm>): Map<String, Keyterm>{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
-        for(keyterm in keyterms) {
+        for(keyterm: Keyterm in keyterms) {
             termsToKeyterms.put(keyterm.term, keyterm)
             for (termForm in keyterm.termForms) {
                 termsToKeyterms.put(termForm, keyterm)

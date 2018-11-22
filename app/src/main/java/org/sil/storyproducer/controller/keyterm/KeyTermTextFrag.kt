@@ -19,8 +19,11 @@ class KeyTermTextFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_keyterm_text, container, false)
         val keyterm = arguments?.getParcelable<Keyterm>("Keyterm")
         if(keyterm != null) {
-            view.findViewById<TextView>(R.id.term_text).text = keyterm.term
-            view.findViewById<TextView>(R.id.alternateRenderings_text).text = keyterm.alternateRenderings.toString()
+            val formattedAlternateRenderings = keyterm.alternateRenderings.fold(""){
+                result, element -> result + formatAlternateRendering(element)
+            }.removeSuffix("\n")
+            view.findViewById<TextView>(R.id.alternateRenderings_text).text = formattedAlternateRenderings
+
             view.findViewById<TextView>(R.id.explanation_text).text = keyterm.explanation
 
             val relatedTermsView = view.findViewById<TextView>(R.id.relatedTerms_text)
@@ -28,5 +31,9 @@ class KeyTermTextFrag : Fragment() {
             relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
         }
         return view
+    }
+
+    private fun formatAlternateRendering(alternateRendering: String): String{
+        return "\u2022 " + alternateRendering + "\n"
     }
 }
