@@ -10,7 +10,7 @@
 
     <include
         android:id="@+id/include4"
-        layout="@layout/fragment_keyterm_translation_list_item"
+        layout="@layout/fragment_keyterm_recording_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
