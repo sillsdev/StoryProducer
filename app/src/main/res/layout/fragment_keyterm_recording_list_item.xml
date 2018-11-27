@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include
-        android:id="@+id/include"
+        android:id="@+id/audio_comment_list_item"
         layout="@layout/audio_comment_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,18 +17,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/include2"
+        android:id="@+id/backtranslation_comment_list_item"
         layout="@layout/backtranslation_comment_list_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toEndOf="@+id/include"
+        app:layout_constraintEnd_toEndOf="@+id/audio_comment_list_item"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
+        app:layout_constraintTop_toBottomOf="@+id/audio_comment_list_item" />
 
     <include
+        android:id="@+id/submit_backtranslation_item"
         layout="@layout/submit_backtranslation_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,6 +38,6 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/include2" />
+        app:layout_constraintTop_toBottomOf="@+id/backtranslation_comment_list_item" />
 
 </android.support.constraint.ConstraintLayout>
