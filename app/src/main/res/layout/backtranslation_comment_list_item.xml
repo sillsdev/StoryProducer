@@ -9,7 +9,7 @@
     android:elevation="3dp">
 
     <TextView
-        android:id="@+id/audio_comment_title"
+        android:id="@+id/backtranslation_comment_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|start"
@@ -23,7 +23,7 @@
         tools:ignore="HardcodedText" />
 
     <ImageButton
-        android:id="@+id/audio_comment_delete_button"
+        android:id="@+id/backtranslation_comment_delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
