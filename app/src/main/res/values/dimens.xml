@@ -24,4 +24,5 @@
     <dimen name="reference_audio_button">50dp</dimen>
     <dimen name="horizontal_text_margin">16dp</dimen>
     <dimen name="vertical_text_margin">16dp</dimen>
+    <dimen name="alternateRendering_indent">16dp</dimen>
 </resources>

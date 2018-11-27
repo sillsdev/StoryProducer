@@ -12,12 +12,12 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.Keyterm
 
-class KeyTermTextFrag : Fragment() {
+class KeyTermMainFrag : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_keyterm_text, container, false)
+        val view = inflater.inflate(R.layout.fragment_keyterm_main, container, false)
         val keyterm = arguments?.getParcelable<Keyterm>("Keyterm")
         if(keyterm != null) {
             val relatedTermsView = view.findViewById<TextView>(R.id.relatedTerms_text)
