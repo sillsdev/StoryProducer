@@ -39,7 +39,7 @@ class Slide{
     var endMotion: Rect? = null
 
     var musicFile = ""
-    var volume = 0.0
+    var volume = 0.0f
 
     //translated text
     var translatedContent: String = ""

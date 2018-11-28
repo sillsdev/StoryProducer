@@ -44,8 +44,6 @@ class PipedAudioResampler
     }
     private var orgBufferStartTime: Long = 0
 
-    private val mInfo = MediaCodec.BufferInfo()
-
     init {
         mSampleRate = sampleRate
         mChannelCount = channelCount

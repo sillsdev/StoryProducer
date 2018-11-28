@@ -23,38 +23,28 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
     private var mOutputFormat: MediaFormat? = null
 
     private val mixSources = ArrayList<PipedMediaByteBufferSource>()
-    private val mixVolumeModifiers = ArrayList<Float>()
     private val mixBuffers = ArrayList<ShortArray>()
     private val mixPoss = ArrayList<Int>()
     private val mixEnds = ArrayList<Int>()
 
     private var mCurrentSample: ShortArray? = null
 
-    private val mInfo = MediaCodec.BufferInfo()
-
     override fun getOutputFormat(): MediaFormat? {
         return mOutputFormat
-    }
-
-    @Throws(SourceUnacceptableException::class)
-    override fun addSource(src: PipedMediaByteBufferSource) {
-        addSource(src, 1f)
     }
 
     /**
      * Specify a predecessor of this component in the pipeline with a specified volume scaling factor.
      * @param src the preceding component of the pipeline.
-     * @param volumeModifier volume scaling factor.
      * @throws SourceUnacceptableException if source is null.
      */
     @Throws(SourceUnacceptableException::class)
-    fun addSource(src: PipedMediaByteBufferSource?, volumeModifier: Float) {
+    override fun addSource(src: PipedMediaByteBufferSource?) {
         if (src == null) {
             throw SourceUnacceptableException("Source cannot be null!")
         }
 
         mixSources.add(src)
-        mixVolumeModifiers.add(volumeModifier)
     }
 
     @Throws(IOException::class, SourceUnacceptableException::class)
@@ -134,29 +124,23 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
         //do the first channel
         //grab the buffer
-        var pos = mixPoss[0]
-        var buffer: ShortArray = mixBuffers[0]
-        var volumeModifier = mixVolumeModifiers[0]
 
         //setup the data as a source.  Copy the buffer
-        for (index in 0 until allLength){
-            srcBuffer[index] = (buffer[pos++] * volumeModifier).toShort()
-        }
-        mixPoss[0] = pos
+
+        srcBuffer = mixBuffers[0].copyOfRange(mixPoss[0],mixPoss[0]+allLength)
+        mixPoss[0] += allLength
 
         //do all other channels
         iSource = 1
         while (iSource < mixSources.size) {
             //grab the buffer
-            pos = mixPoss[iSource]
-            buffer = mixBuffers[iSource]
-            volumeModifier = mixVolumeModifiers[iSource]
+            val pos = mixPoss[iSource]
+            val mb = mixBuffers[iSource].sliceArray(pos..pos+allLength)
 
             //setup the data as a source.  Copy the buffer
-            for (index in 0 until allLength){
-                srcBuffer[index] = (srcBuffer[index] + buffer[pos++] * volumeModifier).toShort()
-            }
-            mixPoss[iSource] = pos
+            srcBuffer.forEachIndexed { index, sh ->  srcBuffer[index] = (sh + mb[index]).toShort()}
+
+            mixPoss[iSource] += allLength
             iSource++
         }
 

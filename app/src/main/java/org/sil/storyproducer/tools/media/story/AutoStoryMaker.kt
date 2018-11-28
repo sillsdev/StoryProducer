@@ -138,6 +138,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         val pages: MutableList<StoryPage> = mutableListOf()
 
         var lastSoundtrack = ""
+        var lastSoundtrackVolume = 0.0f
         var iSlide = 0
         while (iSlide < (Workspace.activeStory.slides.size)) {
             val slide = Workspace.activeStory.slides[iSlide]
@@ -153,17 +154,21 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             var soundtrack = ""
+            var soundtrackVolume = 0.0f
             if (mIncludeBackgroundMusic) {
 
                 soundtrack = slide.musicFile
+                soundtrackVolume = slide.volume
                 if (soundtrack == "") {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
+                    soundtrackVolume = lastSoundtrackVolume
                 } else if (soundtrack == "") {
                     error("Soundtrack missing from template: " + soundtrack)
                 }
 
                 lastSoundtrack = soundtrack
+                lastSoundtrackVolume = soundtrackVolume
             }
 
             var kbfx: KenBurnsEffect? = null
@@ -179,7 +184,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
 
-            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,slide.slideType))
+            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,slide.slideType))
             iSlide++
         }
 
