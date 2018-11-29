@@ -33,6 +33,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+            PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile
             else -> ""
         }
     }
@@ -42,7 +43,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = filename
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = filename
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = filename
-            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].chosenKeytermFile = filename
+            PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile = filename
             else -> return
         }
         return
@@ -51,7 +52,13 @@ class Phase(val phaseType: PhaseType) {
     fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>? {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
-            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].keytermAudioFiles
+            PhaseType.KEYTERM -> {
+                val audioFiles : MutableList<String> = mutableListOf()
+                for(audioFile in Workspace.activeKeyterm.backTranslations){
+                    audioFiles.add(audioFile.audioBackTranslation)
+                }
+                audioFiles
+            }
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
@@ -78,7 +85,6 @@ class Phase(val phaseType: PhaseType) {
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
-            PhaseType.KEYTERM -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile

@@ -26,19 +26,6 @@ class KeyTermTextFrag : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_keyterm_text, container, false)
-
-        val arguments = Bundle()
-        arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableDeleteButton", false)
-        arguments.putBoolean("enableMultiRecordButton", true)
-        arguments.putBoolean("enableSendAudioButton", false)
-        arguments.putInt("slideNum", 0)
-
-        val toolbarFrag = childFragmentManager.findFragmentById(R.id.bottom_toolbar) as ToolbarFrag
-        toolbarFrag.arguments = arguments
-        toolbarFrag.setupToolbarButtons()
-
-        return view
+        return inflater.inflate(R.layout.fragment_keyterm_text, container, false)
     }
 }

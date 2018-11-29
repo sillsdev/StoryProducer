@@ -20,6 +20,7 @@ import org.sil.storyproducer.controller.adapter.RecordingAdapterV2
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.Workspace.activeKeyterm
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioRecorder
@@ -116,7 +117,12 @@ class ToolbarFrag: Fragment() {
                 }
             }
         }
-        val playBackFileExist = storyRelPathExists(activity!!,Workspace.activePhase.getChosenFilename(slideNum))
+        val playBackFileExist : Boolean = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+            keytermRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        }
+        else {
+            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        }
         if (enablePlaybackButton) {
             playButton?.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
@@ -184,21 +190,29 @@ class ToolbarFrag: Fragment() {
         else {
             //Now we need to start recording!
             val recordingRelPath = assignNewAudioRelPath()
-            if (storyRelPathExists(activity!!,recordingRelPath)) {
-                val dialog = AlertDialog.Builder(activity!!)
-                        .setTitle(activity!!.getString(R.string.overwrite))
-                        .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
-                        .setNegativeButton(activity!!.getString(R.string.no)) { dialog, id ->
-                            //do nothing
-                        }
-                        .setPositiveButton(activity!!.getString(R.string.yes)) { dialog, id ->
-                            //overwrite audio
-                            recordAudio(recordingRelPath)
-                        }.create()
-
-                dialog.show()
-            } else {
-                recordAudio(recordingRelPath)
+            val dialog = AlertDialog.Builder(activity!!)
+                    .setTitle(activity!!.getString(R.string.overwrite))
+                    .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
+                    .setNegativeButton(activity!!.getString(R.string.no)) { dialog, id ->
+                        //do nothing
+                    }
+                    .setPositiveButton(activity!!.getString(R.string.yes)) { dialog, id ->
+                        //overwrite audio
+                        recordAudio(recordingRelPath)
+                    }.create()
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+                if (keytermRelPathExists(activity!!, recordingRelPath)) {
+                    dialog.show()
+                } else {
+                    recordAudio(recordingRelPath)
+                }
+            }
+            else {
+                if (storyRelPathExists(activity!!, recordingRelPath)) {
+                    dialog.show()
+                } else {
+                    recordAudio(recordingRelPath)
+                }
             }
         }
     }
@@ -347,12 +361,22 @@ class ToolbarFrag: Fragment() {
         }
 
         private fun onRowClick(name: String) {
-            Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}/$name")
+            }
+            else{
+                Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
+            }
             dialog?.dismiss()
         }
 
         private fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
-            listener?.onPlayButtonClicked("$PROJECT_DIR/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+                listener?.onPlayButtonClicked("${Workspace.activeKeyterm.term}/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
+            }
+            else {
+                listener?.onPlayButtonClicked("$PROJECT_DIR/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
+            }
             when (Workspace.activePhase.phaseType){
                 PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
                 PhaseType.COMMUNITY_CHECK-> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
@@ -362,12 +386,30 @@ class ToolbarFrag: Fragment() {
 
         private fun onDeleteClick(name: String) {
             filenames?.remove(name)
-            deleteStoryFile(context, "$PROJECT_DIR/$name")
-            if("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()){
-                if(filenames!!.size > 0)
-                    Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames?.last())
-                else{
-                    Workspace.activePhase.setChosenFilename("")
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                for((i, audioFile)in Workspace.activeKeyterm.backTranslations.withIndex()){
+                    if(audioFile.audioBackTranslation == Workspace.activeKeyterm.term + "/" + name){
+                        Workspace.activeKeyterm.backTranslations.removeAt(i)
+                        break
+                    }
+                }
+                deleteKeytermFile(context, "${Workspace.activeKeyterm.term}/$name")
+                if("${Workspace.activeKeyterm.term}/$name" == Workspace.activePhase.getChosenFilename()){
+                    if(filenames!!.size > 0)
+                        Workspace.activePhase.setChosenFilename(filenames?.last()!!)
+                    else{
+                        Workspace.activePhase.setChosenFilename("")
+                    }
+                }
+            }
+            else{
+                deleteStoryFile(context, "$PROJECT_DIR/$name")
+                if("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()){
+                    if(filenames!!.size > 0)
+                        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames?.last())
+                    else{
+                        Workspace.activePhase.setChosenFilename("")
+                    }
                 }
             }
             createRecordingList()

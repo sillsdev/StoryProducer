@@ -21,10 +21,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.ToolbarFrag
-import org.sil.storyproducer.model.Keyterm
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 
@@ -109,20 +106,23 @@ fun stringToSpannableString(strings : List<String>, fragmentActivity : FragmentA
         if(Workspace.termsToKeyterms.containsKey(text)){
             val clickableSpan = object : ClickableSpan() {
                 override fun onClick(textView : View) {
+
                     if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                         //bundle up the key term to update fragment if in keyterm view already
                         var keyTermLayout = KeyTermLayout()
                         val bundle = Bundle()
-                        bundle.putParcelable("Keyterm", Workspace.termsToKeyterms[text])
+                        bundle.putParcelable("Keyterm", Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term])
                         keyTermLayout.arguments = bundle
                         fragmentActivity.supportFragmentManager.beginTransaction().replace(R.id.keyterm_info, keyTermLayout).addToBackStack("").commit()
+                        Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term]!!
                     }
                     else {
                         //bundle up the key term to send to new keyterm activity
                         val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                        intent.putExtra("Keyterm", Workspace.termsToKeyterms[text])
+                        intent.putExtra("Keyterm", Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term])
                         intent.putExtra("Phase", Workspace.activePhase.getName())
                         fragmentActivity?.startActivity(intent)
+                        Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term]!!
                     }
                 }
             }

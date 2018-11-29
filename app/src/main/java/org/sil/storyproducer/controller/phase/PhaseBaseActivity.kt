@@ -36,7 +36,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     private var mAdapter: ArrayAdapter<String>? = null
     private var mDrawerToggle: ActionBarDrawerToggle? = null
     private var mDrawerLayout: DrawerLayout? = null
-    private  var mediaPlayer: AudioPlayer? = null
+    private var mediaPlayer: AudioPlayer? = null
     private var oldImage : ImageButton? = null
 
     protected var phase: Phase = Workspace.activePhase

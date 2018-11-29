@@ -51,8 +51,6 @@ class Slide{
     var chosenDramatizationFile = ""
     var backTranslationAudioFiles: MutableList<String> = ArrayList()
     var chosenBackTranslationFile = ""
-    var keytermAudioFiles: MutableList<String> = ArrayList()
-    var chosenKeytermFile: String = ""
 
     companion object
 }

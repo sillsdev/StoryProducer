@@ -11,6 +11,7 @@ import java.util.*
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
+internal const val KEYTERMS_JSON_FILE = "keyterms.json"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -43,6 +44,7 @@ object Workspace{
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
+    lateinit var activeKeyterm: Keyterm
     var activeSlideNum: Int = -1
     set(value){
         if(value >= 0 && value < activeStory.slides.size) field = value
@@ -53,7 +55,7 @@ object Workspace{
         return activeStory.slides[activeSlideNum]
     }
     var keyterms: List<Keyterm> = listOf()
-    var termsToKeyterms: Map<String, Keyterm> = mapOf()
+    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -106,6 +108,20 @@ object Workspace{
         storiesUpdated = true
     }
 
+    fun updateKeyterms(context: Context){
+        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
+        if (keytermsDirectory != null) {
+            for (keytermItem in keytermsDirectory.listFiles()) {
+                if (keytermItem.isDirectory) {
+                    val keyterm = parseKeytermIfPresent(context,keytermItem)
+                    if (keyterm != null) {
+                        termsToKeyterms[keyterm.term] = keyterm
+                    }
+                }
+            }
+        }
+    }
+
     fun importKeyterms(context: Context) {
         val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
 
@@ -120,6 +136,9 @@ object Workspace{
             val csvLines = readCsvDocumentFile(context, keytermsFile)
             keyterms = parseKeytermLines(csvLines)
             termsToKeyterms = mapTermsToKeyterms(keyterms)
+
+            //add json file information to keyterms
+            updateKeyterms(context)
         }
     }
 
@@ -150,7 +169,7 @@ object Workspace{
         return keyterms
     }
 
-    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): Map<String, Keyterm>{
+    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): MutableMap<String, Keyterm>{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm in keyterms) {
