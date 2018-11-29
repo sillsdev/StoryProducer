@@ -118,7 +118,7 @@ class ToolbarFrag: Fragment() {
             }
         }
         val playBackFileExist : Boolean = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-            keytermRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum), "keyterms")
         }
         else {
             storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
@@ -154,7 +154,7 @@ class ToolbarFrag: Fragment() {
         if (enablePlaybackButton) {
             playButton?.setOnClickListener{
                 //listener?.onPlayButtonClicked(playButton!!, R.drawable.ic_play_arrow_white_48dp)
-                val id = listener?.onPlayButtonClicked(Workspace.activePhase.getChosenFilename(), playButton!!, R.drawable.ic_stop_white_48dp, R.drawable.ic_play_arrow_white_48dp)
+                listener?.onPlayButtonClicked(Workspace.activePhase.getChosenFilename(), playButton!!, R.drawable.ic_stop_white_48dp, R.drawable.ic_play_arrow_white_48dp)
                 stopToolbarMedia()
                 Toast.makeText(context!!, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                 //TODO: make this logging more robust and encapsulated
@@ -166,7 +166,16 @@ class ToolbarFrag: Fragment() {
             }
         }
         if (enableDeleteButton) {
-            deleteButton?.setOnClickListener { stopToolbarMedia() }
+            val dialog = AlertDialog.Builder(context)
+                    .setTitle("Delete?")
+                    .setMessage("Delete File")
+                    .setNegativeButton("No"){_,_->}
+                    .setPositiveButton("Yes") { _, _ -> }
+                    .create()
+            deleteButton?.setOnClickListener {
+                stopToolbarMedia()
+                dialog.show()
+            }
         }
         if (enableMultiRecordButton) {
                 multiRecordButton?.setOnClickListener {
@@ -201,7 +210,7 @@ class ToolbarFrag: Fragment() {
                         recordAudio(recordingRelPath)
                     }.create()
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                if (keytermRelPathExists(activity!!, recordingRelPath)) {
+                if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
                     dialog.show()
                 } else {
                     recordAudio(recordingRelPath)
@@ -285,6 +294,7 @@ class ToolbarFrag: Fragment() {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String>? = null
+        private var strippedFilenames: MutableList<String>? = null
         private var lastNewName: String? = null
         private var lastOldName: String? = null
 
@@ -296,12 +306,7 @@ class ToolbarFrag: Fragment() {
 
             filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)
 
-            val strippedFilenames = filenames
-            if (strippedFilenames != null) {
-                for (i in 0 until strippedFilenames.size){
-                    strippedFilenames[i] = strippedFilenames[i].split("/").last()
-                }
-            }
+            updateRecordingList()
 
             val viewManager = LinearLayoutManager(context)
             val viewAdapter = RecordingAdapterV2(strippedFilenames)
@@ -315,11 +320,16 @@ class ToolbarFrag: Fragment() {
             (viewAdapter).onItemClick = { value ->
                 onRowClick(value)
             }
+            (viewAdapter).onItemLongClick = { value ->
+                Toast.makeText(context, "Long Pressed: $value", Toast.LENGTH_LONG).show()
+            }
             (viewAdapter).onPlayClick = { name, button ->
                 onPlayClick(name, button)
             }
             (viewAdapter).onDeleteClick = { name ->
                 onDeleteClick(name)
+                updateRecordingList()
+                (recyclerView?.adapter as RecordingAdapterV2).notifyDataSetChanged()
             }
 
             val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)
@@ -344,20 +354,13 @@ class ToolbarFrag: Fragment() {
         /**
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
-        private fun createRecordingList() {
-            val listView = rootView?.findViewById<RecyclerView>(R.id.recordings_list)
-            val strippedFilenames = filenames
+        private fun updateRecordingList() {
+            strippedFilenames = filenames
             if (strippedFilenames != null) {
-                for (i in 0 until strippedFilenames.size){
-                    strippedFilenames[i] = strippedFilenames[i].split("/").last()
+                for (i in 0 until strippedFilenames!!.size){
+                    strippedFilenames!![i] = strippedFilenames!![i].split("/").last()
                 }
             }
-            (listView?.adapter as RecordingAdapterV2).notifyDataSetChanged()
-            val adapter = RecordingAdapterV2(strippedFilenames)
-            //adapter.setDeleteTitle(context.resources.getString(R.string.delete_draft_title))
-            //adapter.setDeleteMessage(context.resources.getString(R.string.delete_draft_message))
-            listView.adapter = adapter
-
         }
 
         private fun onRowClick(name: String) {
@@ -393,12 +396,14 @@ class ToolbarFrag: Fragment() {
                         break
                     }
                 }
-                deleteKeytermFile(context, "${Workspace.activeKeyterm.term}/$name")
+                deleteStoryFile(context, "${Workspace.activeKeyterm.term}/$name", "keyterms")
                 if("${Workspace.activeKeyterm.term}/$name" == Workspace.activePhase.getChosenFilename()){
                     if(filenames!!.size > 0)
                         Workspace.activePhase.setChosenFilename(filenames?.last()!!)
                     else{
                         Workspace.activePhase.setChosenFilename("")
+                        toolbar?.removeAllViews()
+                        setupToolbarButtons()
                     }
                 }
             }
@@ -409,10 +414,11 @@ class ToolbarFrag: Fragment() {
                         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames?.last())
                     else{
                         Workspace.activePhase.setChosenFilename("")
+                        toolbar?.removeAllViews()
+                        setupToolbarButtons()
                     }
                 }
             }
-            createRecordingList()
         }
 
         fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
@@ -432,7 +438,7 @@ class ToolbarFrag: Fragment() {
                 filenames?.add(index,"$PROJECT_DIR/$lastNewName")
             }
             onRowClick(lastNewName.toString())
-            createRecordingList()
+            updateRecordingList()
         }
     }
 }

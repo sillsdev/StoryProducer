@@ -76,15 +76,6 @@ fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = W
     return true
 }
 
-fun keytermRelPathExists(context: Context, relPath: String) : Boolean{
-    if(relPath == "") return false
-    else {
-        val uri = getKeytermUri(relPath) ?: return false
-        context.contentResolver.getType(uri) ?: return false
-    }
-    return true
-}
-
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
@@ -100,21 +91,8 @@ fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.titl
     }
 }
 
-fun getKeytermUri(relPath: String) : Uri? {
-    return Uri.parse(Workspace.workspace.uri.toString() +
-            Uri.encode("/keyterms/$relPath"))
-}
-
 fun getWorkspaceUri(relPath: String) : Uri? {
     return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
-}
-
-fun getKeytermText(context: Context, relPath: String) : String? {
-    val iStream = getStoryChildInputStream(context, relPath, "keyterms")
-    if (iStream != null)
-        return iStream.reader().use {
-            it.readText() }
-    return null
 }
 
 fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : String? {
@@ -145,7 +123,7 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
 
 fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
     return if (Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-        getKeytermPFD(context,relPath,mimeType,mode)?.fileDescriptor
+        getStoryPFD(context,relPath,mimeType,mode,"keyterms")?.fileDescriptor
     } else{
         getStoryPFD(context,relPath,mimeType,mode,storyTitle)?.fileDescriptor
     }
@@ -154,10 +132,6 @@ fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String =
 fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : ParcelFileDescriptor? {
     if (storyTitle == "") return null
     return getPFD(context, "$storyTitle/$relPath", mimeType, mode)
-}
-
-fun getKeytermPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
-    return getPFD(context, "keyterms/$relPath", mimeType, mode)
 }
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
@@ -239,14 +213,6 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
 fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
     if(storyRelPathExists(context, relPath, storyTitle)){
         val uri = getStoryUri(relPath,storyTitle)
-        return DocumentsContract.deleteDocument(context.contentResolver,uri)
-    }
-    return false
-}
-
-fun deleteKeytermFile(context: Context, relPath: String) : Boolean {
-    if(keytermRelPathExists(context, relPath)){
-        val uri = getKeytermUri(relPath)
         return DocumentsContract.deleteDocument(context.contentResolver,uri)
     }
     return false

@@ -3,9 +3,7 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.Moshi
-import org.sil.storyproducer.tools.file.getKeytermChildOutputStream
-import org.sil.storyproducer.tools.file.getKeytermText
-import org.sil.storyproducer.tools.file.keytermRelPathExists
+import org.sil.storyproducer.tools.file.*
 
 fun Keyterm.toJson(context: Context){
     val moshi = Moshi
@@ -26,7 +24,7 @@ fun keytermFromJson(context: Context, keytermName: String): Keyterm?{
             .add(UriAdapter())
             .build()
     val adapter = Keyterm.jsonAdapter(moshi)
-    val fileContents = getKeytermText(context,"$keytermName/$keytermName.json") ?: return null
+    val fileContents = getStoryText(context,"$keytermName/$keytermName.json", "keyterms") ?: return null
     return adapter.fromJson(fileContents)
 }
 
@@ -35,7 +33,7 @@ fun parseKeytermIfPresent(context: Context, keytermPath: DocumentFile): Keyterm?
     //Check if path is path
     if(!keytermPath.isDirectory) return null
     //make a project directory if there is none.
-    if (keytermRelPathExists(context,keytermPath.name!!)) {
+    if (storyRelPathExists(context,keytermPath.name!!, "keyterms")) {
         //parse the project file, if there is one.
         keyterm = keytermFromJson(context, keytermPath.name!!)
         //if there is a story from the file, do not try to read any templates, just return.

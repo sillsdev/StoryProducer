@@ -7,7 +7,6 @@ import android.net.Uri
 import android.util.Log
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.getKeytermUri
 
 import java.io.IOException
 
@@ -90,7 +89,7 @@ class AudioPlayer {
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
         val uri: Uri = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-            getKeytermUri(relPath) ?: return false
+            getStoryUri(relPath, "keyterms") ?: return false
         }
         else{
             getStoryUri(relPath,storyName) ?: return false

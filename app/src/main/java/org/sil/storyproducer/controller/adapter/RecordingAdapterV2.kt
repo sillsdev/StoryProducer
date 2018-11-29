@@ -14,6 +14,7 @@ import org.sil.storyproducer.model.Workspace
 open class RecordingAdapterV2(private val values: MutableList<String>?) : RecyclerView.Adapter<RecordingAdapterV2.ViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
+    var onItemLongClick: ((String) -> Unit)? = null
     var onPlayClick: ((String, ImageButton) -> Unit)? = null
     var onDeleteClick: ((String) -> Unit)? = null
 
@@ -28,40 +29,40 @@ open class RecordingAdapterV2(private val values: MutableList<String>?) : Recycl
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioText = values?.get(position)
-        if(Workspace.activePhase.getChosenFilename().contains(audioText.toString())){
-            holder.itemView.setBackgroundColor(Color.CYAN)
-        }
-
-        val textView = holder.messageButton
-        textView.text = audioText
-
-        val playButton = holder.playButton
-        playButton.setOnClickListener {
-            if (audioText != null) {
-                onPlayClick?.invoke(audioText, playButton)
-            }
-        }
-
-        val deleteButton = holder.deleteButton
-        deleteButton.setOnClickListener {
-            if (audioText != null) {
-                onDeleteClick?.invoke(audioText)
-            }
+        if (audioText != null) {
+            holder.bindView(audioText)
         }
     }
 
-
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         init {
             itemView.setOnClickListener{
                 onItemClick?.invoke(values?.get(adapterPosition).toString())
             }
+            itemView.setOnLongClickListener {
+                onItemLongClick?.invoke(values?.get(adapterPosition).toString())
+                return@setOnLongClickListener true
+            }
         }
 
-        var playButton: ImageButton = itemView.findViewById(R.id.audio_comment_play_button)
-        var messageButton: TextView = itemView.findViewById(R.id.audio_comment_title)
-        var deleteButton: ImageButton = itemView.findViewById(R.id.audio_comment_delete_button)
+        fun bindView(text : String){
+            if(Workspace.activePhase.getChosenFilename().contains(text)){
+                itemView.setBackgroundColor(Color.CYAN)
+            }
+            val messageButton =  itemView.findViewById<TextView>(R.id.audio_comment_title)
+            messageButton.text = text
 
+            val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
+            playButton.setOnClickListener {
+                onPlayClick?.invoke(text, playButton)
+            }
+
+            val deleteButton = itemView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
+            deleteButton.setOnClickListener {
+                onDeleteClick?.invoke(text)
+            }
+        }
 
     }
 }
