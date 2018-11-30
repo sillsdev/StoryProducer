@@ -372,7 +372,8 @@ class PipedAudioConcatenator
         sBuffer.get(srcBuffer, srcPos, srcEnd)
 
         if(mSourceVolume != 1.0f)
-            srcBuffer.forEachIndexed { index, sh -> srcBuffer[index] = (sh*mSourceVolume).toShort() }
+            srcBuffer.sliceArray(srcPos..srcEnd).forEachIndexed {
+                index, sh -> srcBuffer[index] = (sh*mSourceVolume).toShort() }
 
         //Release buffer since data was copied.
         mSource!!.releaseBuffer(buffer)
