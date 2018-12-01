@@ -64,8 +64,8 @@ class CommunityCheckFrag : SlidePhaseFrag() {
         (viewAdapter as RecordingAdapterV2).onPlayClick = { name, button ->
             onPlayClick(name, button)
         }
-        (viewAdapter as RecordingAdapterV2).onDeleteClick = { name ->
-            onDeleteClick(name)
+        (viewAdapter as RecordingAdapterV2).onDeleteClick = { name, pos ->
+            onDeleteClick(name, pos)
         }
 
         val arguments = Bundle()
@@ -95,7 +95,7 @@ class CommunityCheckFrag : SlidePhaseFrag() {
             else -> {}
         }
     }
-    private fun onDeleteClick(name: String) {
+    private fun onDeleteClick(name: String, position: Int) {
         values?.remove(name)
         deleteStoryFile(context!!, name)
         if(name == Workspace.activePhase.getChosenFilename()){
@@ -106,6 +106,6 @@ class CommunityCheckFrag : SlidePhaseFrag() {
             }
         }
         val listView = rootView?.findViewById<RecyclerView>(R.id.recording_list)
-        (listView?.adapter)?.notifyDataSetChanged()
+        (listView?.adapter)?.notifyItemRemoved(position)
     }
 }

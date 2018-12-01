@@ -28,6 +28,7 @@ class KeyTermLayout : Fragment() {
         val rootView = inflater.inflate(R.layout.fragment_key_term, container, false)
 
         keyTerm = arguments?.getParcelable("Keyterm")
+        Workspace.activeKeyterm = keyTerm!!
         rootView.findViewById<TextView>(R.id.term_text).text = keyTerm?.term
         rootView.findViewById<TextView>(R.id.alternateRenderings_text).text = keyTerm?.alternateRenderings.toString()
         rootView.findViewById<TextView>(R.id.explanation_text).text = keyTerm?.explanation

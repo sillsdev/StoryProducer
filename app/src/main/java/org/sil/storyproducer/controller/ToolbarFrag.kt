@@ -295,6 +295,7 @@ class ToolbarFrag: Fragment() {
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String>? = null
         private var strippedFilenames: MutableList<String>? = null
+        private var recyclerView: RecyclerView? = null
         private var lastNewName: String? = null
         private var lastOldName: String? = null
 
@@ -311,7 +312,7 @@ class ToolbarFrag: Fragment() {
             val viewManager = LinearLayoutManager(context)
             val viewAdapter = RecordingAdapterV2(strippedFilenames)
 
-            val recyclerView = rootView?.findViewById<RecyclerView>(R.id.recordings_list)
+            recyclerView = rootView?.findViewById(R.id.recordings_list)
             recyclerView?.setHasFixedSize(true)
             recyclerView?.adapter = viewAdapter
             recyclerView?.layoutManager = viewManager
@@ -326,10 +327,8 @@ class ToolbarFrag: Fragment() {
             (viewAdapter).onPlayClick = { name, button ->
                 onPlayClick(name, button)
             }
-            (viewAdapter).onDeleteClick = { name ->
-                onDeleteClick(name)
-                updateRecordingList()
-                (recyclerView?.adapter as RecordingAdapterV2).notifyDataSetChanged()
+            (viewAdapter).onDeleteClick = { name, pos ->
+                showDeleteItemDialog(name, pos)
             }
 
             val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)
@@ -351,6 +350,19 @@ class ToolbarFrag: Fragment() {
             dialog?.show()
         }
 
+        private fun showDeleteItemDialog(name: String, position: Int) {
+            val dialog = AlertDialog.Builder(context)
+                    .setTitle("Delete Recording")
+                    .setMessage("Are you sure you want to delete recording: $name?")
+                    .setNegativeButton(context.getString(R.string.no), null)
+                    .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
+                        onDeleteClick(name)
+                        updateRecordingList()
+                        (recyclerView?.adapter as RecordingAdapterV2).notifyItemRemoved(position)}
+                    .create()
+
+            dialog.show()
+        }
         /**
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
@@ -365,7 +377,7 @@ class ToolbarFrag: Fragment() {
 
         private fun onRowClick(name: String) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}/$name")
+                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name")
             }
             else{
                 Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
@@ -375,7 +387,7 @@ class ToolbarFrag: Fragment() {
 
         private fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                listener?.onPlayButtonClicked("${Workspace.activeKeyterm.term}/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
+                listener?.onPlayButtonClicked("${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
             }
             else {
                 listener?.onPlayButtonClicked("$PROJECT_DIR/$name", buttonClickedNow, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
@@ -391,19 +403,20 @@ class ToolbarFrag: Fragment() {
             filenames?.remove(name)
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
                 for((i, audioFile)in Workspace.activeKeyterm.backTranslations.withIndex()){
-                    if(audioFile.audioBackTranslation == Workspace.activeKeyterm.term + "/" + name){
+                    if(audioFile.audioBackTranslation == "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name"){
                         Workspace.activeKeyterm.backTranslations.removeAt(i)
                         break
                     }
                 }
-                deleteStoryFile(context, "${Workspace.activeKeyterm.term}/$name", "keyterms")
-                if("${Workspace.activeKeyterm.term}/$name" == Workspace.activePhase.getChosenFilename()){
+                deleteStoryFile(context, "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name", "keyterms")
+                if("${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name" == Workspace.activePhase.getChosenFilename()){
                     if(filenames!!.size > 0)
-                        Workspace.activePhase.setChosenFilename(filenames?.last()!!)
+                        Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/${filenames?.last()!!}")
                     else{
                         Workspace.activePhase.setChosenFilename("")
                         toolbar?.removeAllViews()
                         setupToolbarButtons()
+                        dialog?.dismiss()
                     }
                 }
             }
@@ -416,6 +429,7 @@ class ToolbarFrag: Fragment() {
                         Workspace.activePhase.setChosenFilename("")
                         toolbar?.removeAllViews()
                         setupToolbarButtons()
+                        dialog?.dismiss()
                     }
                 }
             }

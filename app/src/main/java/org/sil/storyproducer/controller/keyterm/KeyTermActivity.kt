@@ -114,7 +114,6 @@ fun stringToSpannableString(strings : List<String>, fragmentActivity : FragmentA
                         bundle.putParcelable("Keyterm", Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term])
                         keyTermLayout.arguments = bundle
                         fragmentActivity.supportFragmentManager.beginTransaction().replace(R.id.keyterm_info, keyTermLayout).addToBackStack("").commit()
-                        Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term]!!
                     }
                     else {
                         //bundle up the key term to send to new keyterm activity
@@ -122,7 +121,6 @@ fun stringToSpannableString(strings : List<String>, fragmentActivity : FragmentA
                         intent.putExtra("Keyterm", Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term])
                         intent.putExtra("Phase", Workspace.activePhase.getName())
                         fragmentActivity?.startActivity(intent)
-                        Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[text]?.term]!!
                     }
                 }
             }

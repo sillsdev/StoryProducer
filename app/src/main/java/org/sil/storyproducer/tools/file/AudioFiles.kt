@@ -54,14 +54,14 @@ fun assignNewAudioRelPath() : String {
         }
         PhaseType.KEYTERM -> {
             //find the next number that is available for saving files at.
-            val rFileNum = "${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
+            val rFileNum = "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)
                 if(num != null)
                     maxNum = max(maxNum,num.groupValues[1].toInt())
             }
-            relPath = "${Workspace.activeKeyterm.term}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
+            relPath = "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
         }
         else -> {}
     }

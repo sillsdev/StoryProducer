@@ -11,7 +11,7 @@ fun Keyterm.toJson(context: Context){
             .build()
     val adapter = Keyterm.jsonAdapter(moshi)
     val oStream = getKeytermChildOutputStream(context,
-            "${this.term}.json","",this.term)
+            "${this.term}.json","","${this.term}_${this.term.hashCode()}")
     if(oStream != null) {
         oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
         oStream.close()
@@ -24,7 +24,7 @@ fun keytermFromJson(context: Context, keytermName: String): Keyterm?{
             .add(UriAdapter())
             .build()
     val adapter = Keyterm.jsonAdapter(moshi)
-    val fileContents = getStoryText(context,"$keytermName/$keytermName.json", "keyterms") ?: return null
+    val fileContents = getStoryText(context,"${keytermName}_${keytermName.hashCode()}/$keytermName.json", "keyterms") ?: return null
     return adapter.fromJson(fileContents)
 }
 

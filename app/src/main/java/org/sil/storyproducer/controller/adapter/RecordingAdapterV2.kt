@@ -16,7 +16,7 @@ open class RecordingAdapterV2(private val values: MutableList<String>?) : Recycl
     var onItemClick: ((String) -> Unit)? = null
     var onItemLongClick: ((String) -> Unit)? = null
     var onPlayClick: ((String, ImageButton) -> Unit)? = null
-    var onDeleteClick: ((String) -> Unit)? = null
+    var onDeleteClick: ((String, Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater : LayoutInflater = LayoutInflater.from(parent.context)
@@ -60,7 +60,7 @@ open class RecordingAdapterV2(private val values: MutableList<String>?) : Recycl
 
             val deleteButton = itemView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
             deleteButton.setOnClickListener {
-                onDeleteClick?.invoke(text)
+                onDeleteClick?.invoke(text, this.adapterPosition)
             }
         }
 
