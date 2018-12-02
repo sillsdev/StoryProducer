@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/black_semi_transparent"
-    android:elevation="3dp">
+    android:layout_height="match_parent"
+    android:paddingStart="@dimen/keyterm_layout_margin"
+    android:paddingEnd="@dimen/keyterm_layout_margin"
+    android:background="@color/darkGray">
 
-    <TextView
-        android:id="@+id/backtranslation_comment_title"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
-        android:paddingStart="8dp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_body"
-        android:text="Fill with Backtranslation Comment"
-        android:layout_margin="8dp"
-        android:maxLines="2"
-        android:layout_weight="1"
-        tools:ignore="HardcodedText" />
+        android:background="@drawable/backtranslation_comment_list_item_background"
+        android:elevation="3dp">
 
-    <ImageButton
-        android:id="@+id/backtranslation_comment_delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_delete_forever_white_24dp"
-        android:background="@color/transparent"
-        android:layout_weight="0"
-        android:contentDescription="@string/delete" />
+        <TextView
+            android:id="@+id/backtranslation_comment_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|start"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/keyterm_layout_margin"
+            android:paddingStart="@dimen/keyterm_layout_margin"
+            android:text="Backtranslation"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_body"
+            tools:ignore="HardcodedText" />
 
+        <ImageButton
+            android:id="@+id/backtranslation_comment_delete_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/keyterm_layout_margin"
+            android:layout_marginEnd="@dimen/keyterm_layout_margin"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_delete_forever_white_24dp"
+            android:contentDescription="@string/delete" />
+
+    </LinearLayout>
 </LinearLayout>

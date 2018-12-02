@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/keyterm_layout"
@@ -11,10 +12,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
+        android:layout_margin="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,44 +23,44 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/relatedTerms_text"
+                android:id="@+id/related_terms_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/horizontal_text_margin"
-                android:layout_marginTop="@dimen/vertical_text_margin"
-                android:layout_marginEnd="@dimen/horizontal_text_margin"
                 android:layout_weight="1"
+                android:layout_marginStart="@dimen/keyterm_text_margin"
+                android:layout_marginTop="@dimen/keyterm_text_margin"
+                android:layout_marginEnd="@dimen/keyterm_text_margin"
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:id="@+id/alternateRenderings_text"
+                android:id="@+id/alternate_renderings_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/horizontal_text_margin"
-                android:layout_marginTop="@dimen/vertical_text_margin"
-                android:layout_marginEnd="@dimen/horizontal_text_margin"
                 android:layout_weight="1"
-                android:paddingStart="@dimen/alternateRendering_indent"
+                android:layout_marginStart="@dimen/keyterm_text_margin"
+                android:layout_marginTop="@dimen/keyterm_text_margin"
+                android:layout_marginEnd="@dimen/keyterm_text_margin"
+                android:paddingStart="@dimen/alternate_rendering_indent"
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/relatedTerms_text"/>
+                app:layout_constraintTop_toBottomOf="@+id/related_terms_text"/>
 
             <TextView
                 android:id="@+id/explanation_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/horizontal_text_margin"
-                android:layout_marginTop="@dimen/vertical_text_margin"
-                android:layout_marginEnd="@dimen/horizontal_text_margin"
                 android:layout_weight="1"
+                android:layout_marginStart="@dimen/keyterm_text_margin"
+                android:layout_marginTop="@dimen/keyterm_text_margin"
+                android:layout_marginEnd="@dimen/keyterm_text_margin"
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alternateRenderings_text"/>
+                app:layout_constraintTop_toBottomOf="@+id/alternate_renderings_text"/>
 
         </android.support.constraint.ConstraintLayout>
 

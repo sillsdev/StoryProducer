@@ -20,13 +20,13 @@ class KeyTermMainFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_keyterm_main, container, false)
         val keyterm = arguments?.getParcelable<Keyterm>("Keyterm")
         if(keyterm != null) {
-            val relatedTermsView = view.findViewById<TextView>(R.id.relatedTerms_text)
+            val relatedTermsView = view.findViewById<TextView>(R.id.related_terms_text)
             relatedTermsView.text = keyterm.relatedTerms.fold(SpannableStringBuilder()){
                 result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, context)).append("   ")
             }
             relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
 
-            view.findViewById<TextView>(R.id.alternateRenderings_text).text = keyterm.alternateRenderings.fold(""){
+            view.findViewById<TextView>(R.id.alternate_renderings_text).text = keyterm.alternateRenderings.fold(""){
                 result, alternateRendering -> result + "\u2022 $alternateRendering\n"
             }.removeSuffix("\n")
 
