@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:paddingStart="@dimen/keyterm_layout_margin"
     android:paddingEnd="@dimen/keyterm_layout_margin"
+    android:paddingBottom="@dimen/keyterm_layout_margin"
     android:background="@color/darkGray">
 
     <LinearLayout

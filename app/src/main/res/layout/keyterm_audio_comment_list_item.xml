@@ -6,9 +6,18 @@
     android:paddingTop="@dimen/keyterm_layout_margin"
     android:background="@color/gray">
 
-    <include
-        layout="@layout/audio_comment_list_item"
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/keyterm_layout_margin"
+        android:background="@color/darkGray">
+
+        <include
+            layout="@layout/audio_comment_list_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>
