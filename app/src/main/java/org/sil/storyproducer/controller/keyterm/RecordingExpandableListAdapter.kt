@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.RecordingBacktranslationsPair
 
 class RecordingExpandableListAdapter(val context: Context?, val recordings: List<RecordingBacktranslationsPair>) : BaseExpandableListAdapter(){
     override fun getChild(groupPosition: Int, childPosititon: Int): Any {

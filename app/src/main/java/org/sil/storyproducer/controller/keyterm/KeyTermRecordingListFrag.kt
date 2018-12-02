@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ExpandableListView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.RecordingBacktranslationsPair
 
 class KeyTermRecordingListFrag : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
