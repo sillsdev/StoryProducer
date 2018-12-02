@@ -25,12 +25,23 @@ class KeyTermMainFrag : Fragment() {
                 result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, context)).append("   ")
             }
             relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
+            if(keyterm.relatedTerms.isEmpty()){
+                relatedTermsView.visibility = View.GONE
+            }
 
-            view.findViewById<TextView>(R.id.alternate_renderings_text).text = keyterm.alternateRenderings.fold(""){
+            val alternateRenderingsView = view.findViewById<TextView>(R.id.alternate_renderings_text)
+            alternateRenderingsView.text = keyterm.alternateRenderings.fold(""){
                 result, alternateRendering -> result + "\u2022 $alternateRendering\n"
             }.removeSuffix("\n")
+            if(keyterm.alternateRenderings.isEmpty()){
+                alternateRenderingsView.visibility = View.GONE
+            }
 
-            view.findViewById<TextView>(R.id.explanation_text).text = keyterm.explanation
+            val explanationView = view.findViewById<TextView>(R.id.explanation_text)
+            explanationView.text = keyterm.explanation
+            if(keyterm.explanation == ""){
+                explanationView.visibility = View.GONE
+            }
         }
         return view
     }
