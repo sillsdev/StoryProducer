@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/submit_backtranslation_item_background">
+
+    <EditText
+        android:id="@+id/backtranslation_edit_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="12dp"
+        android:paddingEnd="0dp"
+        android:paddingBottom="@dimen/keyterm_layout_margin"
+        android:paddingTop="@dimen/keyterm_layout_margin"
+        android:background="@color/transparent"
+        android:hint="@string/keyterm_submit_backTranslation_hint"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/submit_backtranslation_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill"/>
+
+    <ImageButton
+        android:id="@+id/submit_backtranslation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/keyterm_layout_margin"
+        android:layout_marginBottom="@dimen/keyterm_layout_margin"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_send_black_24dp"
+        android:contentDescription="@string/submit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</android.support.constraint.ConstraintLayout>
