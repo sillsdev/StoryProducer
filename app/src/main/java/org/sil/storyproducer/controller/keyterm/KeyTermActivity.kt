@@ -66,12 +66,13 @@ class KeyTermActivity : AppCompatActivity() {
     companion object {
         fun stringToKeytermLink(string: String, context: Context?): SpannableString{
             val spannableString = SpannableString(string)
-            if(Workspace.termsToKeyterms.containsKey(string)){
+            if(Workspace.termsToKeyterms.containsKey(string.toLowerCase())){
                 val clickableSpan = object : ClickableSpan() {
                     override fun onClick(textView : View) {
                         //bundle up the key term to send to new activity
                         val intent = Intent(context, KeyTermActivity::class.java)
-                        intent.putExtra("Keyterm", Workspace.termsToKeyterms[string])
+                        val keyterm = Workspace.termsToKeyterms[string.toLowerCase()]
+                        intent.putExtra("Keyterm", keyterm)
                         context?.startActivity(intent)
                     }
 

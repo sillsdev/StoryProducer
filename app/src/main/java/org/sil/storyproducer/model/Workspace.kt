@@ -154,9 +154,9 @@ object Workspace{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms.put(keyterm.term, keyterm)
+            termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
             for (termForm in keyterm.termForms) {
-                termsToKeyterms.put(termForm, keyterm)
+                termsToKeyterms[termForm.toLowerCase()] = keyterm
             }
         }
 
@@ -166,7 +166,7 @@ object Workspace{
     private fun stringToList(field: String, separator: String): List<String>{
         if(field.isNotEmpty()) {
             val list = field.split(separator)
-            val trimmedList = list.map { it.trim() }.toMutableList()
+            val trimmedList = list.asSequence().map { it.trim() }.toMutableList()
             trimmedList.remove("")
             return trimmedList
         }
