@@ -71,9 +71,9 @@ abstract class AudioRecorder(val activity: Activity) {
             val pages: MutableList<StoryPage> = mutableListOf()
 
             var duration = MediaHelper.getAudioDuration(context, getStoryUri(orgAudioRelPath)!!)
-            pages.add(StoryPage("",orgAudioRelPath,duration,null,""))
+            pages.add(StoryPage("",orgAudioRelPath,duration,null,null))
             duration = MediaHelper.getAudioDuration(context, getStoryUri(appendAudioRelPath)!!)
-            pages.add(StoryPage("",appendAudioRelPath,duration,null,""))
+            pages.add(StoryPage("",appendAudioRelPath,duration,null,null))
 
             //If pages weren't generated, exit.
             val mStoryMaker = StoryMaker(context, File(tempDestPath), outputFormat, null, audioFormat,

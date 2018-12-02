@@ -22,7 +22,6 @@ import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 import java.util.ArrayList
 
@@ -51,8 +50,8 @@ class LearnActivity : PhaseBaseActivity() {
         setContentView(R.layout.activity_learn)
 
         rootView = findViewById(R.id.phase_frame)
-        learnImageView = findViewById(R.id.learnImageView)
-        playButton = findViewById(R.id.playButton)
+        learnImageView = findViewById(R.id.fragment_image_view)
+        playButton = findViewById(R.id.fragment_reference_audio_button)
         videoSeekBar = findViewById(R.id.videoSeekBar)
 
         val arguments = Bundle()
@@ -192,7 +191,7 @@ class LearnActivity : PhaseBaseActivity() {
             if(videoSeekBar!!.progress >= story.slides.size - 1){
                 //at the end of video so special case
                 makeLogIfNecessary(true)
-                playButton!!.setImageResource(R.drawable.ic_play_circle_outline_white_36dp)
+                playButton!!.setImageResource(R.drawable.ic_play_arrow_white_48dp)
                 setPic(learnImageView,videoSeekBar!!.progress)     //sets the pic to the end image
                 showStartPracticeSnackBar()
             } else {
@@ -215,7 +214,7 @@ class LearnActivity : PhaseBaseActivity() {
         } else {
             markLogStart()
 
-            playButton!!.setImageResource(R.drawable.ic_pause_circle_outline_white_36dp)
+            playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
 
             if (videoSeekBar!!.progress >= story.slides.size) {        //reset the video to the beginning because they already finished it
                 videoSeekBar!!.progress = 0
@@ -234,7 +233,7 @@ class LearnActivity : PhaseBaseActivity() {
         makeLogIfNecessary()
         narrationPlayer.pauseAudio()
         backgroundPlayer.pauseAudio()
-        playButton?.setImageResource(R.drawable.ic_play_circle_outline_white_36dp)
+        playButton!!.setImageResource(R.drawable.ic_play_arrow_white_48dp)
     }
 
     /**
@@ -269,13 +268,13 @@ class LearnActivity : PhaseBaseActivity() {
                         backgroundPlayer.resumeAudio()
                     }
                     if (progress == story.slides.size) {
-                        playButton!!.setImageResource(R.drawable.ic_play_circle_outline_white_36dp)
+                        playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
                         setPic(learnImageView,progress)     //sets the pic to the end image
                         showStartPracticeSnackBar()
                     } else {
                         markLogStart()
                         playVideo()
-                        playButton!!.setImageResource(R.drawable.ic_pause_circle_outline_white_36dp)
+                        playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
                     }
 
                 }
@@ -287,7 +286,7 @@ class LearnActivity : PhaseBaseActivity() {
      * helper function that resets the video to the beginning and turns off the sound
      */
     private fun resetVideoWithSoundOff() {
-        playButton?.setImageResource(R.drawable.ic_pause_circle_outline_white_36dp)
+        playButton?.setImageResource(R.drawable.ic_pause_white_48dp)
         videoSeekBar?.progress = 0
         narrationPlayer.setVolume(0.0f)
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)

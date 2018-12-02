@@ -466,6 +466,9 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.putBoolean("isRemote", isRemote!!)
 
         reg.save(this)
+
+        //Update workspace text
+        Workspace.updateStoryLocalCredits(applicationContext)
     }
 
     /**

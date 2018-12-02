@@ -79,6 +79,9 @@
         android:id="@+id/fragment_dramatization_edit_text"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:hint="@string/dramatization_edit_text_hint"
@@ -107,8 +110,8 @@
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:contentDescription="@string/stage_locked"
-            app:srcCompat="@drawable/ic_lock_blue" />
+            app:srcCompat="@drawable/ic_lock_blue"
+            android:contentDescription="@string/stage_locked" />
     </RelativeLayout>
 
     <fragment

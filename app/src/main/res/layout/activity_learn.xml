@@ -19,19 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/playButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:contentDescription="@string/play"
-        android:onClick="onClickPlayPauseButton"
-        android:src="@drawable/ic_play_circle_outline_white_36dp"
-        app:layout_constraintBottom_toBottomOf="@id/learnImageView"
-        app:layout_constraintEnd_toEndOf="@id/learnImageView"
-        app:layout_constraintStart_toStartOf="@+id/learnImageView"
-        app:layout_constraintTop_toTopOf="@id/learnImageView" />
-
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
@@ -39,8 +26,21 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent=".5" />
 
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black_semi_transparent"
+        android:contentDescription="@string/play"
+        android:onClick="onClickPlayPauseButton"
+        android:src="@drawable/ic_play_circle_outline_white_36dp"
+        app:layout_constraintEnd_toStartOf="@id/videoSeekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
     <SeekBar
         android:id="@+id/videoSeekBar"
+        android:background="@color/black_semi_transparent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -49,7 +49,7 @@
         android:max="100"
         android:paddingBottom="@dimen/nav_drawer_margin"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/playButton"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
 
 

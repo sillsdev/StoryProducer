@@ -1,7 +1,18 @@
 package org.sil.storyproducer.controller
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.TextView
@@ -60,11 +71,11 @@ abstract class SlidePhaseFrag : Fragment() {
      * continuing.
      */
 
-//    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-//        super.setUserVisibleHint(isVisibleToUser)
-//        referenceAudioPlayer.stopAudio()
-//        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-//    }
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        //referenceAudioPlayer.stopAudio()
+        //referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
 
     /**
      * Sets the main text of the layout.

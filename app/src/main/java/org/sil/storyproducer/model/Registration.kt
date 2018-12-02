@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import android.content.Context
 import org.json.JSONException
 import org.json.JSONObject
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 
 val REGISTRATION_FILENAME = "registration.json"
@@ -50,6 +51,14 @@ class Registration{
             regVal = jsonData.getBoolean(name)
         } catch (e: JSONException) { }
         return regVal
+    }
+
+    fun getLocalCreditsStart(context: Context) : String {
+        var translatorName = getString("translator_name","")
+        if(translatorName == "") translatorName = context.getString(R.string.LC_no_translator_name)
+        var consultantName = getString("consultant_name","")
+        if(consultantName == "") consultantName = context.getString(R.string.LC_no_consultant_name)
+        return "${context.getString(R.string.LC_translator_prefix)} $translatorName\n${context.getString(R.string.LC_consultant_prefix)} $consultantName"
     }
 }
 

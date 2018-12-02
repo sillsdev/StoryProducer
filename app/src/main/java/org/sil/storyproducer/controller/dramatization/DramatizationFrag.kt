@@ -5,16 +5,18 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.ToolbarFrag
@@ -24,7 +26,6 @@ import java.util.*
 
 class DramatizationFrag : SlidePhaseFrag() {
 
-    private var phaseUnlocked: Boolean = false
     private var slideText: EditText? = null
     private var draftPlaybackSeekBar: SeekBar? = null
     private var mSeekBarTimer = Timer()
@@ -73,17 +74,20 @@ class DramatizationFrag : SlidePhaseFrag() {
         referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
         setReferenceAudioButton()
 
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, context)
-
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             closeKeyboardOnTouch(rootView)
-            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
+            rootView?.findViewById(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
         draftPlaybackSeekBar = rootView?.findViewById(R.id.videoSeekBar)
 
+        //Make the text bigger if it is the front Page.
+        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
+            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+        }
         return rootView
     }
 
