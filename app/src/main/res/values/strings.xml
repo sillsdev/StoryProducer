@@ -40,6 +40,7 @@
     <string name="submission_title">Submission to Remote Consultant</string>
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
+    <string name="title_activity_keyterm_list">Keyterms</string>
     <string name="title_fragment_translate">Translate</string>
     <string name="title_fragment_community">Community Work</string>
     <string name="title_fragment_consultant">Accuracy Check</string>

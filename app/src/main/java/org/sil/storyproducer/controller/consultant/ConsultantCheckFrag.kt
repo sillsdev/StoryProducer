@@ -51,7 +51,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                referenceAudioPlayer.stopAudio()
+                //referenceAudioPlayer.stopAudio()
             }
         }
     }
@@ -64,10 +64,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun setCheckmarkButton(button: ImageButton) {
         //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
-            //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundResource(R.drawable.ic_checkmark_green)
         } else {
-            //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundResource(R.drawable.ic_checkmark_red)
         }
         button.setOnClickListener(View.OnClickListener {
@@ -76,11 +74,9 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
-                //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundResource(R.drawable.ic_checkmark_red)
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
-                //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundResource(R.drawable.ic_checkmark_green)
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
@@ -95,7 +91,6 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the logs button
      */
     private fun setLogsButton(button: ImageButton) {
-        //TODO: use non-deprecated method; currently used to support older devices
         button.setBackgroundResource(R.drawable.ic_logs_blue)
         button.setOnClickListener { LogView.makeModal(context) }
     }
@@ -193,10 +188,9 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
     companion object {
 
-        val CONSULTANT_PREFS = "Consultant_Checks"
-        val IS_CONSULTANT_APPROVED = "isApproved"
-        private val IS_CHECKED = "isChecked"
-        private val PASSWORD = "appr00ved"
+        const val CONSULTANT_PREFS = "Consultant_Checks"
+        const val IS_CONSULTANT_APPROVED = "isApproved"
+        private const val PASSWORD = "appr00ved"
     }
 
 }

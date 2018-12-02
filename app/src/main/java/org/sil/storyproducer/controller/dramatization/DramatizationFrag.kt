@@ -8,7 +8,6 @@ import android.support.design.widget.Snackbar
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -74,9 +73,11 @@ class DramatizationFrag : SlidePhaseFrag() {
         referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
         setReferenceAudioButton()
 
+        rootView?.findViewById<TextView>(R.id.slide_number_text)?.text = slideNum.toString()
+
         if (Workspace.activeStory.isApproved) {
             closeKeyboardOnTouch(rootView)
-            rootView?.findViewById(R.id.lock_overlay)?.visibility = View.INVISIBLE
+            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }

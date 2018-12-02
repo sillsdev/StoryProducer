@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.community
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
@@ -65,7 +66,7 @@ class CommunityCheckFrag : SlidePhaseFrag() {
             onPlayClick(name, button)
         }
         (viewAdapter as RecordingAdapterV2).onDeleteClick = { name, pos ->
-            onDeleteClick(name, pos)
+            showDeleteItemDialog(name, pos)
         }
 
         val arguments = Bundle()
@@ -86,6 +87,7 @@ class CommunityCheckFrag : SlidePhaseFrag() {
 
         return rootView
     }
+
     private fun onPlayClick(name: String, image: ImageButton) {
         listener?.onPlayButtonClicked(name, image, R.drawable.ic_stop_white_36dp, R.drawable.ic_play_arrow_white_36dp)
         Toast.makeText(context!!, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
@@ -95,6 +97,18 @@ class CommunityCheckFrag : SlidePhaseFrag() {
             else -> {}
         }
     }
+
+    private fun showDeleteItemDialog(name: String, position: Int) {
+        val dialog = AlertDialog.Builder(context)
+                .setTitle("Delete Recording")
+                .setMessage("Are you sure you want to delete recording: $name?")
+                .setNegativeButton(context?.getString(R.string.no), null)
+                .setPositiveButton(context?.getString(R.string.yes)) { _, _ ->
+                    onDeleteClick(name, position)}
+                .create()
+        dialog.show()
+    }
+
     private fun onDeleteClick(name: String, position: Int) {
         values?.remove(name)
         deleteStoryFile(context!!, name)

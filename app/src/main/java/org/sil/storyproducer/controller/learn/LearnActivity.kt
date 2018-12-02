@@ -214,7 +214,7 @@ class LearnActivity : PhaseBaseActivity() {
         } else {
             markLogStart()
 
-            playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
+            playButton?.setImageResource(R.drawable.ic_pause_white_48dp)
 
             if (videoSeekBar!!.progress >= story.slides.size) {        //reset the video to the beginning because they already finished it
                 videoSeekBar!!.progress = 0

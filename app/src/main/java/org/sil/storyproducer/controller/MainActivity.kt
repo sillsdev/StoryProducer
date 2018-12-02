@@ -27,6 +27,7 @@ import android.widget.ImageButton
 import android.widget.ListView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -150,6 +151,11 @@ class MainActivity : AppCompatActivity(), Serializable {
                 R.id.nav_stories -> {
                     intent = Intent(this.applicationContext, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_keyterm_list -> {
+                    intent = Intent(this, KeyTermListActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }

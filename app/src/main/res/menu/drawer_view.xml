@@ -8,6 +8,9 @@
             android:id="@+id/nav_stories"
             android:title="@string/title_activity_story_templates" />
         <item
+            android:id="@+id/nav_keyterm_list"
+            android:title="@string/title_activity_keyterm_list" />
+        <item
             android:id="@+id/nav_registration"
             android:title="@string/update_registration" />
         <item
