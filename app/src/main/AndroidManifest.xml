@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.sil.storyproducer">
 
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
@@ -15,7 +16,8 @@
         android:fullBackupContent="false"
         android:icon="@mipmap/logo_new_splash"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <!-- Pager Base -->
         <activity

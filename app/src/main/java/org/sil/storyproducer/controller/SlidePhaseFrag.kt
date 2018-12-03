@@ -1,24 +1,19 @@
 package org.sil.storyproducer.controller
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.text.method.LinkMovementMethod
-import android.view.*
 import android.widget.TextView
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.stringToSpannableString
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
 
@@ -84,7 +79,9 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
-        textView.text = stringToSpannableString(words, activity!!)
+        textView.text = words.fold(SpannableStringBuilder()){
+            result, word -> result.append(stringToKeytermLink(word, this)).append(" ")
+        }
         textView.movementMethod = LinkMovementMethod.getInstance()
     }
 

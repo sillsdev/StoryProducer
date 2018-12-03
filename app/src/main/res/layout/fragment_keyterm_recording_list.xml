@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray"
+    tools:context=".controller.keyterm.KeyTermRecordingListFrag">
+
+    <ExpandableListView
+        android:id="@+id/recording_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/keyterm_layout_margin"
+        android:layout_marginEnd="@dimen/keyterm_layout_margin"
+        android:layout_marginBottom="@dimen/keyterm_layout_margin"
+        android:divider="@color/darkGray"
+        android:dividerHeight="0dp"
+        android:childDivider="@color/darkGray"
+        android:groupIndicator="@color/transparent"
+        android:scrollbars="vertical">
+    </ExpandableListView>
+
+    <include
+        android:id="@+id/submit_backtranslation_item"
+        layout="@layout/submit_backtranslation_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/keyterm_layout_margin"
+        android:layout_marginEnd="@dimen/keyterm_layout_margin"
+        android:layout_marginBottom="@dimen/keyterm_layout_margin"
+        android:elevation="12dp"/>
+
+</LinearLayout>
