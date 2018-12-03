@@ -12,10 +12,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
@@ -26,6 +23,7 @@ import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
+import java.util.*
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -36,6 +34,13 @@ abstract class SlidePhaseFrag : Fragment() {
 
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
     protected var referncePlayButton: ImageButton? = null
+    protected var refPlaybackSeekBar: SeekBar? = null
+    private var mSeekBarTimer = Timer()
+
+    private var refPlaybackProgress = 0
+    private var refPlaybackDuration = 0
+    private var wasAudioPlaying = false
+
 
     protected var slideNum: Int = 0 //gets overwritten
     protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
@@ -76,14 +81,53 @@ abstract class SlidePhaseFrag : Fragment() {
             referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             referenceAudioPlayer.stopAudio()
         })
+
+        refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+        mSeekBarTimer = Timer()
+        mSeekBarTimer.schedule(object : TimerTask() {
+            override fun run() {
+                activity!!.runOnUiThread{
+                    refPlaybackProgress = referenceAudioPlayer.currentPosition
+                    refPlaybackSeekBar?.progress = refPlaybackProgress
+                }
+            }
+        },0,33)
+
+        setSeekBarListener()
     }
 
+    private fun setSeekBarListener() {
+        refPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
+        refPlaybackSeekBar?.max = refPlaybackDuration
+        referenceAudioPlayer.currentPosition = refPlaybackProgress
+        refPlaybackSeekBar?.progress = refPlaybackProgress
+        refPlaybackSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(sBar: SeekBar) {
+                referenceAudioPlayer.currentPosition = refPlaybackProgress
+                if(wasAudioPlaying){
+                    referenceAudioPlayer.resumeAudio()
+                }
+            }
+            override fun onStartTrackingTouch(sBar: SeekBar) {
+                wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
+                referenceAudioPlayer.pauseAudio()
+                referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+            }
+            override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    refPlaybackProgress = progress
+                }
+            }
+        })
+    }
     /**
      * This function serves to stop the audio streams from continuing after the draft has been
      * put on pause.
      */
     override fun onPause() {
         super.onPause()
+        refPlaybackProgress = referenceAudioPlayer.currentPosition
+        mSeekBarTimer.cancel()
         referenceAudioPlayer.release()
     }
 
@@ -181,20 +225,23 @@ abstract class SlidePhaseFrag : Fragment() {
         textView.text = ""
     }
 
-    protected open fun setReferenceAudioButton() {
+    protected fun setReferenceAudioButton() {
         referncePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 if (referenceAudioPlayer.isAudioPlaying) {
-                    referenceAudioPlayer.stopAudio()
+                    referenceAudioPlayer.pauseAudio()
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                    refPlaybackProgress = referenceAudioPlayer.currentPosition
+                    refPlaybackSeekBar?.progress = refPlaybackProgress
                 } else {
                     //stop other playback streams.
-                    referenceAudioPlayer.playAudio()
+                    referenceAudioPlayer.currentPosition = refPlaybackProgress
+                    referenceAudioPlayer.resumeAudio()
 
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_stop_white_36dp)
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
                         PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
@@ -205,8 +252,6 @@ abstract class SlidePhaseFrag : Fragment() {
             }
         }
     }
-
-
     companion object {
         const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
 
