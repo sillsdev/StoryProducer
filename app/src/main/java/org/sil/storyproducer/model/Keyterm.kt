@@ -20,7 +20,7 @@ class Keyterm (var term: String = "",
 
 @JsonClass(generateAdapter = true)
 @Parcelize
-class BackTranslation (var textBackTranslation : List<String> = listOf(),
+class BackTranslation (var textBackTranslation : MutableList<String> = mutableListOf(),
                        var audioBackTranslation : String = "") : Parcelable {
     companion object
 }

@@ -42,23 +42,20 @@ class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
         if(intent.hasExtra("Keyterm")) {
             keyterm = intent.getParcelableExtra("Keyterm")
             viewPager = findViewById(R.id.viewPager)
-            viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, keyTerm)
+            viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, keyterm!!)
         }
         if(intent.hasExtra("Phase")) {
             previousPhase = intent.getStringExtra("Phase")
         }
 
-        //set action bar to have back button (android_manifest is where parent is set)
-        setSupportActionBar(findViewById(R.id.keyterm_toolbar))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
-                Workspace.activePhase.getColor(), null)))
-
         mediaPlayer = AudioPlayer()
+
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         toolbar.title = keyterm?.term
         setSupportActionBar(toolbar)
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+                Workspace.activePhase.getColor(), null)))
     }
 
     override fun onPause() {
@@ -139,17 +136,17 @@ class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
                     override fun onClick(textView: View) {
                         if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                             //bundle up the key term to update fragment if in keyterm view already
-                            var keyTermLayout = KeyTermLayout()
-                            val bundle = Bundle()
-                            val keyterm = Workspace.termsToKeyterms[string.toLowerCase()]
+                            val keyTermLayout = KeyTermMainFrag()
+                            var bundle = Bundle()
+                            val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
                             bundle.putParcelable("Keyterm", keyterm)
                             keyTermLayout.arguments = bundle
-                            fragmentActivity.supportFragmentManager.beginTransaction().replace(R.id.keyterm_info, keyTermLayout).addToBackStack("").commit()
+                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
                         }
                         else {
                             //bundle up the key term to send to new keyterm activity
                             val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                            val keyterm = Workspace.termsToKeyterms[string.toLowerCase()]
+                            val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
                             intent.putExtra("Keyterm", keyterm)
                             intent.putExtra("Phase", Workspace.activePhase.getName())
                             fragmentActivity?.startActivity(intent)

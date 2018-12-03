@@ -6,7 +6,7 @@
     android:id="@+id/keyterm_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".controller.keyterm.KeyTermTextFrag">
+    tools:context=".controller.keyterm.KeyTermAudioFrag">
 
     <FrameLayout
         android:id="@+id/keyterm_info"

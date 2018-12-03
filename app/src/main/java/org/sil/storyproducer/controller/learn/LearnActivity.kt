@@ -56,7 +56,7 @@ class LearnActivity : PhaseBaseActivity() {
 
         val arguments = Bundle()
         arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableCheckButton", false)
         arguments.putBoolean("enableMultiRecordButton", false)
         arguments.putBoolean("enableSendAudioButton", false)
         arguments.putInt("slideNum", 0)

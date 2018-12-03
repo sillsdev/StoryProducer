@@ -9,6 +9,7 @@ import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,8 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
+import java.io.FileNotFoundException
 
 /**
  * This fragment is the bottom toolbar that is shown on most of the different views for the application
@@ -57,17 +60,19 @@ class ToolbarFrag: Fragment() {
     private var toolbar : LinearLayout? = null
     private var micButton: ImageButton? = null
     private var playButton: ImageButton? = null
-    private var deleteButton: ImageButton? = null
     private var multiRecordButton: ImageButton? = null
     private var sendAudioButton: ImageButton? = null
     private var enablePlaybackButton: Boolean = false
-    private var enableDeleteButton: Boolean = false
+    private var enableCheckButton: Boolean = false
     private var enableMultiRecordButton: Boolean = false
     private var enableSendAudioButton: Boolean = false
     private lateinit var voiceRecorder: AudioRecorder
     private var multiRecordModal: Modal? = null
     private var slideNum : Int = 0
     private var listener : OnAudioPlayListener? = null
+    private var isAppendingOn: Boolean = false
+    private var checkButton: ImageButton? = null
+    private val AUDIO_TEMP_NAME = getTempAppendAudioRelPath()
 
     interface OnAudioPlayListener {
         fun onPlayButtonClicked(path: String, image : ImageButton, stopImage: Int, playImage : Int)
@@ -80,7 +85,7 @@ class ToolbarFrag: Fragment() {
     }
     fun setupToolbarButtons() {
         enablePlaybackButton = arguments?.getBoolean("enablePlaybackButton") ?: false
-        enableDeleteButton = arguments?.getBoolean("enableDeleteButton") ?: false
+        enableCheckButton = arguments?.getBoolean("enableCheckButton") ?: false
         enableMultiRecordButton = arguments?.getBoolean("enableMultiRecordButton") ?: false
         enableSendAudioButton = arguments?.getBoolean("enableSendAudioButton") ?: false
         slideNum = arguments?.getInt("slideNum") ?: 0
@@ -89,9 +94,9 @@ class ToolbarFrag: Fragment() {
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
-        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_send_audio_48dp)
+        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp)
         val imageButtons = arrayOf(ImageButton(context), ImageButton(context), ImageButton(context), ImageButton(context), ImageButton(context))
-        val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton)
+        val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableMultiRecordButton, enableCheckButton, enableSendAudioButton)
 
         var buttonSpacing = android.widget.Space(context!!)
         buttonSpacing.layoutParams = spaceLayoutParams
@@ -111,8 +116,8 @@ class ToolbarFrag: Fragment() {
                 when (i) {
                     0 -> micButton = imageButtons[i]
                     1 -> playButton = imageButtons[i]
-                    2 -> deleteButton = imageButtons[i]
-                    3 -> multiRecordButton = imageButtons[i]
+                    2 -> multiRecordButton = imageButtons[i]
+                    3 -> checkButton = imageButtons[i]
                     4 -> sendAudioButton = imageButtons[i]
                 }
             }
@@ -129,8 +134,8 @@ class ToolbarFrag: Fragment() {
         if (enableMultiRecordButton) {
             multiRecordButton?.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
-        if (enableDeleteButton) {
-            deleteButton?.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton?.visibility = if (playBackFileExist && isAppendingOn) View.VISIBLE else View.INVISIBLE
         }
         if (enableSendAudioButton) {
             sendAudioButton?.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
@@ -147,7 +152,6 @@ class ToolbarFrag: Fragment() {
 
     private fun setOnClickListeners() {
         micButton?.setOnClickListener {
-            //If recording, stop
             micListener()
         }
 
@@ -165,16 +169,18 @@ class ToolbarFrag: Fragment() {
                 }
             }
         }
-        if (enableDeleteButton) {
-            val dialog = AlertDialog.Builder(context)
-                    .setTitle("Delete?")
-                    .setMessage("Delete File")
-                    .setNegativeButton("No"){_,_->}
-                    .setPositiveButton("Yes") { _, _ -> }
-                    .create()
-            deleteButton?.setOnClickListener {
+        if (enableCheckButton) {
+            checkButton?.setOnClickListener {
+                //Delete the temp file wav file
                 stopToolbarMedia()
-                dialog.show()
+                deleteStoryFile(context!!, AUDIO_TEMP_NAME)
+                //make the button invisible till after the next new recording
+                isAppendingOn = false
+                checkButton?.visibility = View.INVISIBLE
+                micButton?.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+                if (enableSendAudioButton) {
+                    sendAudioButton?.visibility = View.VISIBLE
+                }
             }
         }
         if (enableMultiRecordButton) {
@@ -193,34 +199,76 @@ class ToolbarFrag: Fragment() {
     }
 
     fun micListener(){
-        if (voiceRecorder.isRecording) {
-            stopToolbarMedia()
-        }
-        else {
-            //Now we need to start recording!
-            val recordingRelPath = assignNewAudioRelPath()
-            val dialog = AlertDialog.Builder(activity!!)
-                    .setTitle(activity!!.getString(R.string.overwrite))
-                    .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
-                    .setNegativeButton(activity!!.getString(R.string.no)) { dialog, id ->
-                        //do nothing
+        if(enableCheckButton){
+            if (voiceRecorder.isRecording) {
+                stopRecording()
+                if (isAppendingOn) {
+                    try {
+                        AudioRecorder.concatenateAudioFiles(context!!, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+                    } catch (e: FileNotFoundException) {
+                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e);
                     }
-                    .setPositiveButton(activity!!.getString(R.string.yes)) { dialog, id ->
-                        //overwrite audio
-                        recordAudio(recordingRelPath)
-                    }.create()
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
-                    dialog.show()
                 } else {
-                    recordAudio(recordingRelPath)
+                    isAppendingOn = true
+                    checkButton!!.visibility = View.VISIBLE
+                }
+                micButton?.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
+                if (enablePlaybackButton) {
+                    playButton?.visibility = View.VISIBLE
+                }
+                if (enableMultiRecordButton) {
+                    multiRecordButton?.visibility = View.VISIBLE
+                }
+                if (enableCheckButton) {
+                    checkButton?.visibility = View.VISIBLE
+                }
+            } else {
+                stopToolbarMedia()
+                if (isAppendingOn) {
+                    startRecording(AUDIO_TEMP_NAME)
+                }else{
+                    startRecording(assignNewAudioRelPath())
+                }
+                micButton?.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                if (enablePlaybackButton) {
+                    playButton?.visibility = View.INVISIBLE
+                }
+                if (enableMultiRecordButton) {
+                    multiRecordButton?.visibility = View.INVISIBLE
+                }
+                if (enableSendAudioButton) {
+                    sendAudioButton?.visibility = View.INVISIBLE
                 }
             }
-            else {
-                if (storyRelPathExists(activity!!, recordingRelPath)) {
-                    dialog.show()
+        }
+        else {
+            if (voiceRecorder.isRecording) {
+                stopToolbarMedia()
+            } else {
+                //Now we need to start recording!
+                val recordingRelPath = assignNewAudioRelPath()
+                val dialog = AlertDialog.Builder(activity!!)
+                        .setTitle(activity!!.getString(R.string.overwrite))
+                        .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
+                        .setNegativeButton(activity!!.getString(R.string.no)) { dialog, id ->
+                            //do nothing
+                        }
+                        .setPositiveButton(activity!!.getString(R.string.yes)) { dialog, id ->
+                            //overwrite audio
+                            recordAudio(recordingRelPath)
+                        }.create()
+                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                    if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
+                        dialog.show()
+                    } else {
+                        recordAudio(recordingRelPath)
+                    }
                 } else {
-                    recordAudio(recordingRelPath)
+                    if (storyRelPathExists(activity!!, recordingRelPath)) {
+                        dialog.show()
+                    } else {
+                        recordAudio(recordingRelPath)
+                    }
                 }
             }
         }
@@ -233,8 +281,8 @@ class ToolbarFrag: Fragment() {
         if (enableMultiRecordButton) {
             multiRecordButton?.visibility = View.INVISIBLE
         }
-        if (enableDeleteButton) {
-            deleteButton?.visibility = View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton?.visibility = View.INVISIBLE
         }
         if (enableSendAudioButton) {
             sendAudioButton?.visibility = View.INVISIBLE
@@ -246,6 +294,10 @@ class ToolbarFrag: Fragment() {
         voiceRecorder.startNewRecording(recordingRelPath)
     }
 
+    private fun stopRecording() {
+        voiceRecorder.stop()
+    }
+
     private fun recordAudio(recordingRelPath: String) {
         stopToolbarMedia()
         startRecording(recordingRelPath)
@@ -255,8 +307,8 @@ class ToolbarFrag: Fragment() {
             else -> {}
         }
         micButton?.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-        if (enableDeleteButton) {
-            deleteButton?.visibility = View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton?.visibility = View.INVISIBLE
         }
         if (enablePlaybackButton) {
             playButton?.visibility = View.INVISIBLE
@@ -271,12 +323,15 @@ class ToolbarFrag: Fragment() {
 
     private fun stopToolbarMedia() {
         if (voiceRecorder.isRecording) {
+            if(enableCheckButton){
+                multiRecordButton?.visibility = View.VISIBLE
+            }
             voiceRecorder.stop()
             micButton?.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         }
         //set playback button visible
-        if (enableDeleteButton) {
-            deleteButton?.visibility = View.VISIBLE
+        if (enableCheckButton) {
+            checkButton?.visibility = View.VISIBLE
         }
         if (enablePlaybackButton) {
             playButton?.visibility = View.VISIBLE
@@ -286,6 +341,13 @@ class ToolbarFrag: Fragment() {
         }
         if (enableSendAudioButton) {
             sendAudioButton?.visibility = View.VISIBLE
+        }
+    }
+
+    fun stopAppendingSession() {
+        if (isAppendingOn) {
+            //simulate a finish recording session and set isAppendingOn to false
+            checkButton?.callOnClick()
         }
     }
 

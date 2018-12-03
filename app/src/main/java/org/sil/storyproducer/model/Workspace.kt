@@ -175,9 +175,9 @@ object Workspace{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
+            termsToKeyterms[keyterm.term] = keyterm
             for (termForm in keyterm.termForms) {
-                termsToKeyterms[termForm.toLowerCase()] = keyterm
+                termsToKeyterms[termForm] = keyterm
             }
         }
 

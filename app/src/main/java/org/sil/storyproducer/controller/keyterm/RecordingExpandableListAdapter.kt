@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.ImageButton
 import android.widget.TextView
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.RecordingBacktranslationsPair
+import org.sil.storyproducer.model.BackTranslation
 
-class RecordingExpandableListAdapter(val context: Context?, val recordings: List<RecordingBacktranslationsPair>) : BaseExpandableListAdapter(){
+class RecordingExpandableListAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>) : BaseExpandableListAdapter(){
+
     override fun getChild(groupPosition: Int, childPosititon: Int): Any {
-        return recordings[groupPosition].backtranslations[childPosititon]
+        return recordings[groupPosition].textBackTranslation[childPosititon]
     }
 
     override fun getChildId(groupPosition: Int, childPosition: Int): Long {
@@ -26,14 +28,19 @@ class RecordingExpandableListAdapter(val context: Context?, val recordings: List
             childView = infalInflater.inflate(R.layout.backtranslation_comment_list_item, null)
         }
 
-        val backtranslationCommentTitle = childView?.findViewById(R.id.backtranslation_comment_title) as TextView
-        backtranslationCommentTitle.text = getChild(groupPosition, childPosition) as String
+        val backtranslationCommentTitle = childView?.findViewById<TextView>(R.id.backtranslation_comment_title)
+        backtranslationCommentTitle?.text = getChild(groupPosition, childPosition) as String
 
-        return childView
+        val audioCommentDeleteButton = childView?.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
+        audioCommentDeleteButton?.setOnClickListener {
+            recordings[groupPosition].textBackTranslation.removeAt(childPosition)
+        }
+
+        return childView!!
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
-        return recordings[groupPosition].backtranslations.size
+        return recordings[groupPosition].textBackTranslation.size
     }
 
     override fun getGroup(groupPosition: Int): Any {
@@ -56,11 +63,11 @@ class RecordingExpandableListAdapter(val context: Context?, val recordings: List
             groupView = infalInflater.inflate(R.layout.keyterm_audio_comment_list_item, null)
         }
 
-        val audioCommentTitle = groupView?.findViewById(R.id.audio_comment_title) as TextView
-        val group = getGroup(groupPosition) as RecordingBacktranslationsPair
-        audioCommentTitle.text = group.recording
+        val audioCommentTitle = groupView?.findViewById<TextView>(R.id.audio_comment_title)
+        val group = getGroup(groupPosition) as BackTranslation
+        audioCommentTitle?.text = group.audioBackTranslation
 
-        return groupView
+        return groupView!!
     }
 
     override fun hasStableIds(): Boolean {

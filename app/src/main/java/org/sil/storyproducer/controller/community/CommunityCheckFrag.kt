@@ -71,7 +71,7 @@ class CommunityCheckFrag : SlidePhaseFrag() {
 
         val arguments = Bundle()
         arguments.putBoolean("enablePlaybackButton", false)
-        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableCheckButton", false)
         arguments.putBoolean("enableMultiRecordButton", false)
         arguments.putBoolean("enableSendAudioButton", false)
         arguments.putInt("slideNum", slideNum)

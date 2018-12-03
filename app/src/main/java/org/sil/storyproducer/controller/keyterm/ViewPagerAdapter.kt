@@ -13,14 +13,15 @@ class ViewPagerAdapter(fm:FragmentManager, val keyterm: Keyterm) : FragmentPager
 
         when(p0){
             0 -> {
-                val keyterm_text = KeyTermMainFrag()
-                keyterm_text.arguments = bundle
-                return keyterm_text
-            }
-            1 -> {
-                val keyterm_audio = KeyTermRecordingListFrag()
+                val keyterm_audio = KeyTermAudioFrag()
                 keyterm_audio.arguments = bundle
                 return keyterm_audio
+
+            }
+            1 -> {
+                val keyterm_text = KeyTermTextFrag()
+                keyterm_text.arguments = bundle
+                return keyterm_text
             }
         }
         return null

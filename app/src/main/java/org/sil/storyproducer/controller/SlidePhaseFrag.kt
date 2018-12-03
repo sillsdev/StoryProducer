@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -43,7 +42,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
         val arguments = Bundle()
         arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableCheckButton", false)
         arguments.putBoolean("enableMultiRecordButton", true)
         arguments.putBoolean("enableSendAudioButton", false)
         arguments.putInt("slideNum", slideNum)
@@ -80,7 +79,7 @@ abstract class SlidePhaseFrag : Fragment() {
     protected fun setScriptureText(textView: TextView) {
         val words = slide.content.split(" ")
         textView.text = words.fold(SpannableStringBuilder()){
-            result, word -> result.append(stringToKeytermLink(word, this)).append(" ")
+            result, word -> result.append(stringToKeytermLink(word, activity)).append(" ")
         }
         textView.movementMethod = LinkMovementMethod.getInstance()
     }

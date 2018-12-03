@@ -61,7 +61,7 @@ class DramatizationFrag : SlidePhaseFrag() {
 
         val arguments = Bundle()
         arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableDeleteButton", false)
+        arguments.putBoolean("enableCheckButton", true)
         arguments.putBoolean("enableMultiRecordButton", true)
         arguments.putBoolean("enableSendAudioButton", false)
         arguments.putInt("slideNum", 0)
@@ -78,7 +78,8 @@ class DramatizationFrag : SlidePhaseFrag() {
         if (Workspace.activeStory.isApproved) {
             closeKeyboardOnTouch(rootView)
             rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
-        } else {
+        }
+        else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
@@ -86,8 +87,8 @@ class DramatizationFrag : SlidePhaseFrag() {
 
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
-            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
         return rootView
     }
