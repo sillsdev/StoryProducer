@@ -205,7 +205,7 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     override fun onRowClick(recordingTitle: String) {
         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$recordingTitle")
-        dialog?.dismiss()
+        createRecordingList()
     }
 
     override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {

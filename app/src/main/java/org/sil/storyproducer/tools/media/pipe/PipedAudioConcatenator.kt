@@ -35,6 +35,7 @@ class PipedAudioConcatenator
 
     private val catSources = LinkedList<PipedMediaByteBufferSource?>()
     private val catExpectedDurations = LinkedList<Long>()
+    private val catVolume = LinkedList<Float>()
 
     //default to 20ms - get most of the finger press noise.
     private var mFadeInUs: Long = 20000
@@ -44,13 +45,10 @@ class PipedAudioConcatenator
 
 
     private var mSourceExpectedDuration: Long = 0 //current source expected duration (us)
+    private var mSourceVolume: Float = 1.0f //current source volume
 
     private var mTransitionStart: Long = 0 //timestamp (us) of current transition start
     private var mSourceStart: Long = 0 //timestamp (us) of current source start (i.e. after prior transition)
-
-    private var mVolumeModifier: Float = 0.toFloat()
-
-    private val mInfo = MediaCodec.BufferInfo()
 
     private var mOutputFormat: MediaFormat? = null
 
@@ -143,10 +141,11 @@ class PipedAudioConcatenator
      * @param duration expected duration of the source audio stream.
      */
     @Throws(SourceUnacceptableException::class)
-    fun addSource(source: PipedMediaByteBufferSource?, duration: Long) {
+    fun addSource(source: PipedMediaByteBufferSource?, duration: Long, volume: Float = 1.0f) {
         //even if it is null, add it.  If it is null, then we just add blank data.
         catSources.add(source)
         catExpectedDurations.add(duration)
+        catVolume.add(volume)
     }
 
     /**
@@ -167,9 +166,9 @@ class PipedAudioConcatenator
      */
     @Throws(SourceUnacceptableException::class)
     @JvmOverloads
-    fun addSourcePath(sourcePath: String?, duration: Long = 0) {
+    fun addSourcePath(sourcePath: String?, duration: Long = 0, volume: Float = 1.0f) {
         if (sourcePath != null) {
-            addSource(PipedAudioDecoderMaverick(context,sourcePath), duration)
+            addSource(PipedAudioDecoderMaverick(context,sourcePath), duration, volume)
         } else {
             addSource(null, duration)
         }
@@ -192,17 +191,17 @@ class PipedAudioConcatenator
      * @param duration expected duration of the source audio stream.
      */
     @Throws(SourceUnacceptableException::class)
-    fun addLoopingSourcePath(sourcePath: String?, duration: Long) {
+    fun addLoopingSourcePath(sourcePath: String?, duration: Long, volume: Float = 1.0f) {
         if (sourcePath != null) {
             val sourceDuration: Long = MediaHelper.getAudioDuration(context,getStoryUri(sourcePath)!!)
             if (sourceDuration < duration) {
                 //Only add a looper if necessary
-                addSource(PipedAudioLooper(context,sourcePath, duration), duration)
+                addSource(PipedAudioLooper(context,sourcePath, duration), duration, volume)
             } else {
-                addSourcePath(sourcePath, duration)
+                addSourcePath(sourcePath, duration, volume)
             }
         } else {
-            addSource(null, duration)
+            addSource(null, duration, volume)
         }
     }
 
@@ -279,6 +278,7 @@ class PipedAudioConcatenator
 
                     mSource = nextSource
                     mSourceExpectedDuration = catExpectedDurations.remove()
+                    mSourceVolume = catVolume.remove()
                     //If no particular duration was expected, start transition now. Otherwise use precise time.
                     if (mSourceExpectedDuration == 0L) {
                         mTransitionStart = mSeekTime
@@ -320,6 +320,7 @@ class PipedAudioConcatenator
                 fetchSourceBuffer()
             }
 
+
             //Do a controlled fade out/fade in.
             val fadeInEndTime = mSourceStart + mFadeInUs
             val fadeInSamplesAtPos = ((mSeekTime - mSourceStart) *  mSampleRate / 1000000.0).toInt()
@@ -352,6 +353,34 @@ class PipedAudioConcatenator
 
         return !isDone
     }
+
+    @Throws(SourceClosedException::class)
+    override fun fetchSourceBuffer() {
+        if (mSource!!.isDone) {
+            srcHasBuffer = false
+            return
+        }
+
+        //buffer of bytes
+        val buffer = mSource!!.getBuffer(mInfo)
+        //buffer of shorts (16-bit samples)
+        val sBuffer = MediaHelper.getShortBuffer(buffer)
+
+        srcPos = 0
+        srcEnd = sBuffer.remaining()
+        //Copy ShortBuffer to array of shorts in hopes of speedup.
+        sBuffer.get(srcBuffer, srcPos, srcEnd)
+
+        if(mSourceVolume != 1.0f)
+            srcBuffer.sliceArray(srcPos..srcEnd).forEachIndexed {
+                index, sh -> srcBuffer[index] = (sh*mSourceVolume).toShort() }
+
+        //Release buffer since data was copied.
+        mSource!!.releaseBuffer(buffer)
+
+        srcHasBuffer = true
+    }
+
 
     companion object {
         private val TAG = "PipedAudioConcatenator"

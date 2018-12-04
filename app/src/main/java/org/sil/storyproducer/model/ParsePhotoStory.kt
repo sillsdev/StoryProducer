@@ -98,7 +98,9 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
             }
             "MusicTrack" -> {
-                slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
+                //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
+                //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
+                slide.volume = 0.25f
 
                 parser.nextTag()
                 parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
