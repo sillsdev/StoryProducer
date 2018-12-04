@@ -24,7 +24,7 @@ fun keytermFromJson(context: Context, keytermName: String): Keyterm?{
             .add(UriAdapter())
             .build()
     val adapter = Keyterm.jsonAdapter(moshi)
-    val fileContents = getStoryText(context,"${keytermName}_${keytermName.hashCode()}/$keytermName.json", "keyterms") ?: return null
+    val fileContents = getStoryText(context,"$keytermName/${keytermName.substringBefore('_')}.json", "keyterms") ?: return null
     return adapter.fromJson(fileContents)
 }
 

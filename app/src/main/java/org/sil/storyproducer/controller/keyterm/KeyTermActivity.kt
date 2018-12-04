@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.keyterm
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
@@ -19,19 +18,13 @@ import android.text.style.ClickableSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageButton
-import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.ToolbarFrag
 import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.media.AudioPlayer
 
 
-class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
+class KeyTermActivity : AppCompatActivity() {
 
     private var viewPager: ViewPager? = null
-    private var mediaPlayer: AudioPlayer? = null
-    private var oldImage : ImageButton? = null
     private var previousPhase : String? = null
     private var keyterm : Keyterm? = null
 
@@ -48,8 +41,6 @@ class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
             previousPhase = intent.getStringExtra("Phase")
         }
 
-        mediaPlayer = AudioPlayer()
-
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         toolbar.title = keyterm?.term
@@ -63,31 +54,6 @@ class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
         for(type in PhaseType.values()){
             if(type.name == previousPhase?.toUpperCase()){
                 Workspace.activePhase = Phase(type)
-            }
-        }
-    }
-
-    override fun onPlayButtonClicked(path: String, image: ImageButton, stopImage: Int, playImage: Int) {
-        mediaPlayer?.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            image.setBackgroundResource(playImage)
-        })
-        if(mediaPlayer?.isAudioPlaying!!){
-            oldImage?.setBackgroundResource(playImage)
-            mediaPlayer?.stopAudio()
-            mediaPlayer?.reset()
-        }
-        else{
-            oldImage = null
-        }
-        if(oldImage != image) {
-            mediaPlayer?.reset()
-            if (mediaPlayer?.setStorySource(this, path) == true) {
-                oldImage = image
-                mediaPlayer?.playAudio()
-                Toast.makeText(this, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
-                image.setBackgroundResource(stopImage)
-            } else {
-                Toast.makeText(this, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -137,7 +103,7 @@ class KeyTermActivity : AppCompatActivity(), ToolbarFrag.OnAudioPlayListener {
                         if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                             //bundle up the key term to update fragment if in keyterm view already
                             val keyTermLayout = KeyTermMainFrag()
-                            var bundle = Bundle()
+                            val bundle = Bundle()
                             val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
                             bundle.putParcelable("Keyterm", keyterm)
                             keyTermLayout.arguments = bundle

@@ -43,7 +43,8 @@ fun assignNewAudioRelPath() : String {
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             //find the next number that is available for saving files at.
-            val rFileNum = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
+            //deleted $PROJECT_DIR/ from rFileNum might need to restore
+            val rFileNum = "$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)
@@ -54,7 +55,7 @@ fun assignNewAudioRelPath() : String {
         }
         PhaseType.KEYTERM -> {
             //find the next number that is available for saving files at.
-            val rFileNum = "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
+            val rFileNum = "${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)

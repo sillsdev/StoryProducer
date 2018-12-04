@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -29,7 +30,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
+        // The last two arguments ensure LayoutParams are inflated
+        // properly.
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
+
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
@@ -51,7 +56,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                //referenceAudioPlayer.stopAudio()
+                referenceAudioPlayer.stopAudio()
             }
         }
     }
@@ -64,8 +69,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun setCheckmarkButton(button: ImageButton) {
         //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
+            //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundResource(R.drawable.ic_checkmark_green)
         } else {
+            //TODO: use non-deprecated method; currently used to support older devices
             button.setBackgroundResource(R.drawable.ic_checkmark_red)
         }
         button.setOnClickListener(View.OnClickListener {
@@ -74,9 +81,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
+                //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundResource(R.drawable.ic_checkmark_red)
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
+                //TODO: use non-deprecated method; currently used to support older devices
                 button.setBackgroundResource(R.drawable.ic_checkmark_green)
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
@@ -91,6 +100,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the logs button
      */
     private fun setLogsButton(button: ImageButton) {
+        //TODO: use non-deprecated method; currently used to support older devices
         button.setBackgroundResource(R.drawable.ic_logs_blue)
         button.setOnClickListener { LogView.makeModal(context) }
     }
@@ -135,13 +145,13 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
         // This manually sets the submit button listener so that the dialog doesn't always submit
         // If the password is incorrect, we want to stay on the dialog and give an error message
-        dialog.setOnShowListener { mess ->
-            val button = (mess as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+        dialog.setOnShowListener { dialog ->
+            val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
                 val passwordText = password.text.toString()
                 if (passwordText.contentEquals(PASSWORD)) {
                     saveConsultantApproval()
-                    mess.dismiss()
+                    dialog.dismiss()
                     launchDramatizationPhase()
                 } else {
                     password.error = getString(R.string.consultant_incorrect_password_message)
@@ -188,9 +198,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
     companion object {
 
-        const val CONSULTANT_PREFS = "Consultant_Checks"
-        const val IS_CONSULTANT_APPROVED = "isApproved"
-        private const val PASSWORD = "appr00ved"
+        val CONSULTANT_PREFS = "Consultant_Checks"
+        val IS_CONSULTANT_APPROVED = "isApproved"
+        private val IS_CHECKED = "isChecked"
+        private val PASSWORD = "appr00ved"
     }
 
 }

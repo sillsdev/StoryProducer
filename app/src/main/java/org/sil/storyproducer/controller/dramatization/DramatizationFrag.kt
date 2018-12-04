@@ -1,9 +1,8 @@
 package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
@@ -13,17 +12,17 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.controller.SlidePhaseFrag
-import org.sil.storyproducer.controller.ToolbarFrag
-import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 import java.util.*
 
 
-class DramatizationFrag : SlidePhaseFrag() {
+class DramatizationFrag : MultiRecordFrag() {
 
     private var slideText: EditText? = null
     private var draftPlaybackSeekBar: SeekBar? = null
@@ -32,63 +31,29 @@ class DramatizationFrag : SlidePhaseFrag() {
     private var draftPlaybackProgress = 0
     private var draftPlaybackDuration = 0
     private var wasAudioPlaying = false
-    private var referencePlayButton : ImageButton? = null
-    private var listener : DramatizationFrag.OnAudioPlayListener? = null
 
-    interface OnAudioPlayListener {
-        //fun onPlayButtonClicked(path: String, image : ImageButton, stopImage: Int, playImage : Int)
-        fun onPauseButtonClicked(path: String, image : ImageButton, stopImage: Int, playImage : Int) : Int?
-        fun getCurrentAudioPosition() : Int?
-        fun getDuration() : Int?
-        fun setPosition(pos: Int)
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if(context is DramatizationFrag.OnAudioPlayListener) {
-            listener = context
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
-        val slidePicture: Bitmap = getStoryImage(activity!!,slideNum)
-        rootView?.findViewById<ImageView>(R.id.fragment_image_view)?.setImageBitmap(slidePicture)
-
-        slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
-        slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
-
-        val arguments = Bundle()
-        arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableCheckButton", true)
-        arguments.putBoolean("enableMultiRecordButton", true)
-        arguments.putBoolean("enableSendAudioButton", false)
-        arguments.putInt("slideNum", 0)
-
-        val toolbarFrag = childFragmentManager.findFragmentById(R.id.bottom_toolbar) as ToolbarFrag
-        toolbarFrag.arguments = arguments
-        toolbarFrag.setupToolbarButtons()
-
-        referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
-        setReferenceAudioButton()
-
-        rootView?.findViewById<TextView>(R.id.slide_number_text)?.text = slideNum.toString()
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        slideText = rootView!!.findViewById(R.id.fragment_dramatization_edit_text)
+        slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
+            setToolbar(null)
             closeKeyboardOnTouch(rootView)
-            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
-        }
-        else {
+            rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
+        } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
-        draftPlaybackSeekBar = rootView?.findViewById(R.id.videoSeekBar)
+        draftPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
 
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
-            slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
         return rootView
     }
@@ -99,8 +64,8 @@ class DramatizationFrag : SlidePhaseFrag() {
         mSeekBarTimer = Timer()
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
-                activity?.runOnUiThread{
-                    draftPlaybackProgress = listener?.getCurrentAudioPosition()!!
+                activity!!.runOnUiThread{
+                    draftPlaybackProgress = referenceAudioPlayer.currentPosition
                     draftPlaybackSeekBar?.progress = draftPlaybackProgress
                 }
             }
@@ -111,21 +76,21 @@ class DramatizationFrag : SlidePhaseFrag() {
 
 
     private fun setSeekBarListener() {
-        draftPlaybackDuration = listener?.getDuration()!!
+        draftPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
         draftPlaybackSeekBar?.max = draftPlaybackDuration
-        listener?.setPosition(draftPlaybackProgress)
+        referenceAudioPlayer.currentPosition = draftPlaybackProgress
         draftPlaybackSeekBar?.progress = draftPlaybackProgress
         draftPlaybackSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {
-                listener?.setPosition(draftPlaybackProgress)
-//                if(wasAudioPlaying){
-//                    referenceAudioPlayer.resumeAudio()
-//                }
+                referenceAudioPlayer.currentPosition = draftPlaybackProgress
+                if(wasAudioPlaying){
+                    referenceAudioPlayer.resumeAudio()
+                }
             }
             override fun onStartTrackingTouch(sBar: SeekBar) {
-//                wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
-//                referenceAudioPlayer.pauseAudio()
-                referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
+                referenceAudioPlayer.pauseAudio()
+                referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -139,7 +104,7 @@ class DramatizationFrag : SlidePhaseFrag() {
      * put on pause.
      */
     override fun onPause() {
-        draftPlaybackProgress = listener?.getCurrentAudioPosition()!!
+        draftPlaybackProgress = referenceAudioPlayer.currentPosition
         mSeekBarTimer.cancel()
         super.onPause()
         closeKeyboard(rootView)
@@ -158,23 +123,50 @@ class DramatizationFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-//                if (recordingToolbar != null) {
-//                    recordingToolbar!!.onPause()
-//                }
+                if (recordingToolbar != null) {
+                    recordingToolbar!!.onPause()
+                }
                 closeKeyboard(rootView)
             }
         }
     }
 
-    private fun setReferenceAudioButton() {
-        referencePlayButton?.setOnClickListener {
+    override fun setReferenceAudioButton() {
+        referncePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
-                draftPlaybackProgress = listener?.onPauseButtonClicked(Workspace.activePhase.getReferenceAudioFile(slideNum), referencePlayButton!!, R.drawable.ic_pause_white_48dp, R.drawable.ic_play_arrow_white_36dp)!!
-                draftPlaybackSeekBar?.progress = draftPlaybackProgress
+                if (referenceAudioPlayer.isAudioPlaying) {
+                    referenceAudioPlayer.pauseAudio()
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                    draftPlaybackProgress = referenceAudioPlayer.currentPosition
+                    draftPlaybackSeekBar?.progress = draftPlaybackProgress
+                } else {
+                    //stop other playback streams.
+                    referenceAudioPlayer.currentPosition = draftPlaybackProgress
+                    referenceAudioPlayer.resumeAudio()
+
+                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                }
             }
+        }
+    }
+
+    /**
+     * Initializes the toolbar and toolbar buttons.
+     */
+    private fun setToolbar(toolbar: View?) {
+        if (rootView is ConstraintLayout) {
+            val recordingListener = object : RecordingListener {
+                override fun onStoppedRecording() {}
+                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+            }
+
+            recordingToolbar = RecordingToolbar(activity!!, rootView!!,
+                    true, true, true, false, recordingListener, slideNum)
+            recordingToolbar!!.keepToolbarVisible()
         }
     }
 
@@ -202,7 +194,8 @@ class DramatizationFrag : SlidePhaseFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        Workspace.activeStory.slides[slideNum].translatedContent = slideText?.text.toString()
+        Workspace.activeStory.slides[slideNum].translatedContent = slideText!!.text.toString()
+        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
     }
 
 }

@@ -27,26 +27,25 @@
         app:layout_constraintGuide_percent=".5" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recording_list"
+        android:id="@+id/recordings_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_toolbar"
+        app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guideline" />
 
-    <fragment
-        android:id="@+id/bottom_toolbar"
-        android:name="org.sil.storyproducer.controller.ToolbarFrag"
+    <include
+        android:id="@+id/toolbar_for_recording_toolbar"
+        layout="@layout/toolbar_for_recording"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout="@layout/toolbar_for_recording" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

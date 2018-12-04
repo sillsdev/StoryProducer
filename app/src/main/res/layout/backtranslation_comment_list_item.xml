@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/darkGray"
     android:paddingStart="@dimen/keyterm_layout_margin"
     android:paddingEnd="@dimen/keyterm_layout_margin"
-    android:paddingBottom="@dimen/keyterm_layout_margin"
-    android:background="@color/darkGray">
+    android:paddingBottom="@dimen/keyterm_layout_margin">
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <TextView
+        android:id="@+id/backtranslation_comment_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/keyterm_layout_margin"
+        android:layout_weight="1"
         android:background="@drawable/backtranslation_comment_list_item_background"
-        android:elevation="3dp">
+        android:padding="@dimen/keyterm_layout_margin"
+        android:text="Backtranslation"
+        android:textAlignment="viewStart"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
-        <TextView
-            android:id="@+id/backtranslation_comment_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|start"
-            android:layout_weight="1"
-            android:layout_margin="@dimen/keyterm_layout_margin"
-            android:paddingStart="@dimen/keyterm_layout_margin"
-            android:text="Backtranslation"
-            android:textColor="@color/white"
-            android:textSize="@dimen/text_body"
-            tools:ignore="HardcodedText" />
+    <ImageButton
+        android:id="@+id/backtranslation_comment_delete_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="0"
+        android:background="@color/transparent"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/ic_delete_forever_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/backtranslation_comment_title"
+        app:layout_constraintEnd_toEndOf="@+id/backtranslation_comment_title"
+        app:layout_constraintTop_toTopOf="@+id/backtranslation_comment_title" />
 
-        <ImageButton
-            android:id="@+id/backtranslation_comment_delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/keyterm_layout_margin"
-            android:layout_marginEnd="@dimen/keyterm_layout_margin"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0"
-            android:background="@color/transparent"
-            android:src="@drawable/ic_delete_forever_white_24dp"
-            android:contentDescription="@string/delete" />
-
-    </LinearLayout>
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

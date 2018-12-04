@@ -8,18 +8,19 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.ToolbarFrag
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.Keyterm
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.toJson
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class KeyTermMainFrag : Fragment() {
 
+    private var recordingToolbar: RecordingToolbar? = null
     private var keyterm : Keyterm? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -53,20 +54,12 @@ class KeyTermMainFrag : Fragment() {
             explanationView.visibility = View.GONE
         }
 
-        val arguments = Bundle()
-        arguments.putBoolean("enablePlaybackButton", true)
-        arguments.putBoolean("enableCheckButton", false)
-        arguments.putBoolean("enableMultiRecordButton", true)
-        arguments.putBoolean("enableSendAudioButton", false)
-        arguments.putInt("slideNum", 0)
-
-        val toolbarFrag = childFragmentManager.findFragmentById(R.id.bottom_toolbar) as ToolbarFrag
-        toolbarFrag.arguments = arguments
-        toolbarFrag.setupToolbarButtons()
-        toolbarFrag.view?.findViewById<ImageButton>(0)?.setOnClickListener {
-            toolbarFrag.micListener()
-
-        }
+        recordingToolbar = RecordingToolbar(activity!!,
+                view!!, true, false, false, false,
+                object : RecordingToolbar.RecordingListener {
+            override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+        }, 0)
 
         return view
     }

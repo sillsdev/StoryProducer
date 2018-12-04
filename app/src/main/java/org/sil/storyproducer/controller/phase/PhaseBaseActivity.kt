@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -19,31 +18,22 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Spinner
-import android.widget.*
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.ImageSlideFrag
-import org.sil.storyproducer.controller.ToolbarFrag
-import org.sil.storyproducer.controller.community.CommunityCheckFrag
-import org.sil.storyproducer.controller.dramatization.DramatizationFrag
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
-import org.sil.storyproducer.tools.media.AudioPlayer
 
-abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, ToolbarFrag.OnAudioPlayListener, ImageSlideFrag.OnAudioPlayListener, CommunityCheckFrag.OnAudioPlayListener, DramatizationFrag.OnAudioPlayListener {
+abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
     private var mDrawerList: ListView? = null
     private var mAdapter: ArrayAdapter<String>? = null
     private var mDrawerToggle: ActionBarDrawerToggle? = null
     private var mDrawerLayout: DrawerLayout? = null
-    private var mediaPlayer: AudioPlayer? = null
-    private var oldImage : ImageButton? = null
 
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
@@ -62,72 +52,9 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 phase.getColor(), null)))
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
-        mediaPlayer = AudioPlayer()
+
         setupDrawer()
         setupStatusBar()
-    }
-
-    override fun onPlayButtonClicked(path: String, image: ImageButton, stopImage: Int, playImage: Int) {
-        mediaPlayer?.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            image.setBackgroundResource(playImage)
-        })
-        if(mediaPlayer?.isAudioPlaying!!){
-            oldImage?.setBackgroundResource(playImage)
-            mediaPlayer?.stopAudio()
-            mediaPlayer?.reset()
-        }
-        else{
-            oldImage = null
-        }
-        if(oldImage != image) {
-            mediaPlayer?.reset()
-            if (mediaPlayer?.setStorySource(this, path) == true) {
-                oldImage = image
-                mediaPlayer?.playAudio()
-                Toast.makeText(this, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
-                image.setBackgroundResource(stopImage)
-            } else {
-                Toast.makeText(this, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    override fun onPauseButtonClicked(path: String, image: ImageButton, stopImage: Int, playImage: Int) : Int? {
-        mediaPlayer?.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            image.setBackgroundResource(playImage)
-        })
-        if(mediaPlayer?.isAudioPlaying!!){
-            oldImage?.setBackgroundResource(playImage)
-            mediaPlayer?.pauseAudio()
-        }
-        else{
-            oldImage = null
-        }
-        if(oldImage != image) {
-            mediaPlayer?.reset()
-            if (mediaPlayer?.setStorySource(this, path) == true) {
-                oldImage = image
-                mediaPlayer?.playAudio()
-                Toast.makeText(this, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                image.setBackgroundResource(stopImage)
-            } else {
-                Toast.makeText(this, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
-            }
-        }
-        else{
-            mediaPlayer?.resumeAudio()
-        }
-        return mediaPlayer?.currentPosition
-    }
-
-    override fun getCurrentAudioPosition() : Int? {
-        return mediaPlayer?.currentPosition
-    }
-
-    override fun getDuration() : Int?{
-        return mediaPlayer?.audioDurationInMilliseconds
-    }
-    override fun setPosition(pos: Int) {
-        mediaPlayer?.currentPosition = pos
     }
 
     override fun onPause(){

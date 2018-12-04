@@ -8,20 +8,29 @@
     android:background="@color/gray"
     tools:context=".controller.keyterm.KeyTermRecordingListFrag">
 
-    <ExpandableListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/recording_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginStart="@dimen/keyterm_layout_margin"
         android:layout_marginEnd="@dimen/keyterm_layout_margin"
-        android:layout_marginBottom="@dimen/keyterm_layout_margin"
-        android:divider="@color/darkGray"
-        android:dividerHeight="0dp"
-        android:childDivider="@color/darkGray"
-        android:groupIndicator="@color/transparent"
-        android:scrollbars="vertical">
-    </ExpandableListView>
+        android:layout_marginBottom="@dimen/keyterm_layout_margin" />
+
+    <!--<ExpandableListView-->
+        <!--android:id="@+id/recording_list"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="1"-->
+        <!--android:layout_marginStart="@dimen/keyterm_layout_margin"-->
+        <!--android:layout_marginEnd="@dimen/keyterm_layout_margin"-->
+        <!--android:layout_marginBottom="@dimen/keyterm_layout_margin"-->
+        <!--android:divider="@color/darkGray"-->
+        <!--android:dividerHeight="0dp"-->
+        <!--android:childDivider="@color/darkGray"-->
+        <!--android:groupIndicator="@color/transparent"-->
+        <!--android:scrollbars="vertical">-->
+    <!--</ExpandableListView>-->
 
     <include
         android:id="@+id/submit_backtranslation_item"
