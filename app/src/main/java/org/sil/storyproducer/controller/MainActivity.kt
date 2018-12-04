@@ -131,6 +131,8 @@ class MainActivity : AppCompatActivity(), Serializable {
         supportActionBar!!.setHomeButtonEnabled(true)
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
+        //Lock from opening with left swipe
+        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             // set item as selected to persist highlight
