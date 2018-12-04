@@ -5,38 +5,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/submit_backtranslation_item_background">
+    android:background="@color/darkGray"
+    android:paddingStart="@dimen/keyterm_layout_margin"
+    android:paddingEnd="@dimen/keyterm_layout_margin"
+    android:paddingBottom="@dimen/keyterm_layout_margin">
 
     <EditText
         android:id="@+id/backtranslation_edit_text"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="0dp"
-        android:paddingBottom="@dimen/keyterm_layout_margin"
-        android:paddingTop="@dimen/keyterm_layout_margin"
-        android:background="@color/transparent"
+        android:layout_margin="@dimen/keyterm_layout_margin"
+        android:background="@drawable/submit_backtranslation_item_background"
         android:hint="@string/keyterm_submit_backTranslation_hint"
         android:inputType="textMultiLine"
         android:maxLines="3"
+        android:padding="@dimen/keyterm_layout_margin"
         android:textColor="@color/black"
         android:textColorHint="@color/gray"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/submit_backtranslation_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="Autofill"/>
+        tools:ignore="Autofill" />
 
     <ImageButton
         android:id="@+id/submit_backtranslation_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/keyterm_layout_margin"
-        android:layout_marginBottom="@dimen/keyterm_layout_margin"
+        android:layout_weight="0"
         android:background="@color/transparent"
-        android:src="@drawable/ic_send_black_24dp"
         android:contentDescription="@string/submit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:src="@drawable/ic_send_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/backtranslation_edit_text"
+        app:layout_constraintEnd_toEndOf="@+id/backtranslation_edit_text"
+        app:layout_constraintTop_toTopOf="@+id/backtranslation_edit_text" />
 
 </android.support.constraint.ConstraintLayout>

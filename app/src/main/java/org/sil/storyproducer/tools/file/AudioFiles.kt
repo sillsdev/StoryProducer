@@ -87,7 +87,7 @@ fun assignNewAudioRelPath() : String {
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
         }
         PhaseType.KEYTERM -> {
-            Workspace.activeKeyterm.backTranslations.add(BackTranslation(mutableListOf(), relPath))
+            Workspace.activeKeyterm.backTranslations.add(BackTranslation("", relPath))
             Workspace.activeKeyterm.chosenKeytermFile = relPath
         }
         else -> relPath = ""

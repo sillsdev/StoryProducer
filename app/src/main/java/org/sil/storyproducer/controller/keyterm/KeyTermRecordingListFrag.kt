@@ -41,16 +41,6 @@ class KeyTermRecordingListFrag : Fragment() {
         dispList?.embedList(view!! as ViewGroup)
         dispList?.show()
 
-        val addBacktranslation = view.findViewById<ImageButton>(R.id.submit_backtranslation_button)
-        val editText = view.findViewById<EditText>(R.id.backtranslation_edit_text)
-        addBacktranslation.setOnClickListener {
-            if(editText.text.toString() != ""){
-                Workspace.activeKeyterm.backTranslations[adapter.currentPosition].textBackTranslation.add(editText.text.toString())
-                recordingExpandableListView.adapter = adapter
-                editText.setText("")
-            }
-        }
-
         return view
     }
 
