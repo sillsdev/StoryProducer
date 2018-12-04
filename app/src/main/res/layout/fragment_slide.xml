@@ -26,6 +26,14 @@
                 android:scaleType="centerCrop"
                 android:contentDescription="@string/story_picture" />
 
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/insert_image_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="invisible"
+                android:backgroundTint="@color/black_semi_transparent"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/rect_height"
