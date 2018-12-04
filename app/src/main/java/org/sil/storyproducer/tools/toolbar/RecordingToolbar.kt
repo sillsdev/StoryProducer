@@ -570,12 +570,7 @@ constructor(activity: Activity, rootView: View,
      */
     private fun setupRecordingAnimationHandler() {
         val red = Color.rgb(255, 0, 0)
-        var colorOfToolbar = if(view.background == null){
-            Color.BLACK
-        }
-        else{
-            (view.background as ColorDrawable).color
-        }
+        var colorOfToolbar = Color.rgb(0, 0, 255) /*Arbitrary color value of blue used initially*/
 
         val relBackgroundColor = toolbar.background
         if (relBackgroundColor is ColorDrawable) {
