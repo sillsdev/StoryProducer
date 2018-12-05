@@ -43,15 +43,4 @@ class KeyTermRecordingListFrag : Fragment() {
 
         return view
     }
-
-    override fun onPause() {
-        super.onPause()
-        Workspace.termsToKeyterms[keyterm?.term!!] = Workspace.activeKeyterm
-        Thread(Runnable{ activity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Workspace.activeKeyterm = arguments?.getParcelable("Keyterm")!!
-    }
 }

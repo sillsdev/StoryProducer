@@ -94,6 +94,13 @@ class KeyTermActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(supportFragmentManager.backStackEntryCount != 0){
+            supportFragmentManager.popBackStack()
+        }
+    }
+
     companion object {
         fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
             val spannableString = SpannableString(string)
@@ -107,6 +114,10 @@ class KeyTermActivity : AppCompatActivity() {
                             val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
                             bundle.putParcelable("Keyterm", keyterm)
                             keyTermLayout.arguments = bundle
+                            val keyTermAudioLayout = KeyTermRecordingListFrag()
+                            keyTermAudioLayout.arguments = bundle
+                            //KeyTermRecordingListFrag sets the active key term and KeyTermMainFrag does the saving to the json file (order here matters)
+                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack("")?.commit()
                             fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
                         }
                         else {

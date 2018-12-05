@@ -62,7 +62,7 @@ fun assignNewAudioRelPath() : String {
                 if(num != null)
                     maxNum = max(maxNum,num.groupValues[1].toInt())
             }
-            relPath = "${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
+            relPath = "${Workspace.activeKeyterm.term}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
         }
         else -> {}
     }

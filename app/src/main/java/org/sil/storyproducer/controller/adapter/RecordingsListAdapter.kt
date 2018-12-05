@@ -238,7 +238,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
 
         private fun onRowClick(name: String) {
             if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}_${Workspace.activeKeyterm.term.hashCode()}/$name")
+                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}/$name")
             } else {
                 Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
             }

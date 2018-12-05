@@ -26,7 +26,6 @@ class KeyTermMainFrag : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_keyterm_main, container, false)
         keyterm = arguments?.getParcelable("Keyterm")
-        Workspace.activeKeyterm = keyterm!!
 
         val actionBar = (activity as AppCompatActivity).supportActionBar
         actionBar?.title = keyterm?.term
