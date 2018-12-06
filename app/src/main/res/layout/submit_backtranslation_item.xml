@@ -6,15 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/darkGray"
-    android:paddingStart="@dimen/keyterm_layout_margin"
-    android:paddingEnd="@dimen/keyterm_layout_margin"
-    android:paddingBottom="@dimen/keyterm_layout_margin">
+    android:padding="8dp">
 
     <EditText
         android:id="@+id/backtranslation_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/keyterm_layout_margin"
         android:background="@drawable/submit_backtranslation_item_background"
         android:hint="@string/keyterm_submit_backTranslation_hint"
         android:inputType="textMultiLine"
