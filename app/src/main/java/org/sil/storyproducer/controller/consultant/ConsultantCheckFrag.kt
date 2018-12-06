@@ -201,7 +201,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         val CONSULTANT_PREFS = "Consultant_Checks"
         val IS_CONSULTANT_APPROVED = "isApproved"
         private val IS_CHECKED = "isChecked"
-        private val PASSWORD = "appr00ved"
+        private val PASSWORD = "password" //"appr00ved"
     }
 
 }
