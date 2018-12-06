@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/darkGray"
-    android:padding="8dp">
+    android:padding="@dimen/keyterm_layout_margin">
 
     <EditText
         android:id="@+id/backtranslation_edit_text"
@@ -19,6 +19,7 @@
         android:padding="@dimen/keyterm_layout_margin"
         android:textColor="@color/black"
         android:textColorHint="@color/gray"
+        android:textSize="@dimen/text_body"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
