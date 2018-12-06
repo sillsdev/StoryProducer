@@ -3,11 +3,13 @@ package org.sil.storyproducer.controller.keyterm
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
@@ -59,6 +61,15 @@ class KeyTermMainFrag : Fragment() {
             override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
         }, 0)
+
+        //Probably not the best way to find the recording list on the other fragment but it will be there
+        //TODO change this to make it nicer
+        val recyclerView = (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.keyterm_info_audio)?.view?.findViewById<RecyclerView>(R.id.recording_list)
+
+        recordingToolbar?.toolbar?.findViewWithTag<ImageButton>("tag")?.setOnClickListener {
+            recordingToolbar?.setMicListener()
+            (recyclerView?.adapter)?.notifyDataSetChanged()
+        }
 
         return view
     }

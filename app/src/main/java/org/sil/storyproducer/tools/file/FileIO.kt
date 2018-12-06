@@ -10,13 +10,12 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.provider.DocumentsProvider
 
-import java.io.File
 import android.support.v4.provider.DocumentFile
+import android.widget.Toast
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.*
-import java.io.FileDescriptor
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
+import java.net.URI
 
 
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
@@ -221,8 +220,12 @@ fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Work
 fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
     if(storyRelPathExists(context, relPath, storyTitle)){
         val uri = getStoryUri(relPath,storyTitle)
-        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
-        if(newUri != null) return true
+        try {
+            val newUri = DocumentsContract.renameDocument(context.contentResolver, uri, newFilename)
+            if(newUri != null) return true
+        }
+        catch (e : IOException){
+        }
     }
     return false
 }
