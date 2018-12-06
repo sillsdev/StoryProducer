@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,6 +23,7 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import kotlin.coroutines.experimental.coroutineContext
 
 class RecordingsListAdapter(private val values: MutableList<String>?) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
@@ -60,7 +62,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
 
         fun bindView(text: String) {
             if (Workspace.activePhase.getChosenFilename().contains(text)) {
-                itemView.setBackgroundColor(Color.CYAN)
+                val color = ContextCompat.getColor(itemView.context, R.color.primary)
+                itemView.setBackgroundColor(color)
             }
             val messageButton = itemView.findViewById<TextView>(R.id.audio_comment_title)
             messageButton.text = text
