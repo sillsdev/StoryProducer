@@ -1,22 +1,13 @@
 package org.sil.storyproducer.controller
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.SeekBar
-import android.widget.Toast
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.adapter.RecordingsList
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-import java.util.*
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -87,7 +78,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         }
 
         recordingToolbar = RecordingToolbar(this.activity!!, rootView!!,
-                true, false, true, false, recordingListener, slideNum);
+                true, false, true, false, recordingListener, slideNum)
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
     }

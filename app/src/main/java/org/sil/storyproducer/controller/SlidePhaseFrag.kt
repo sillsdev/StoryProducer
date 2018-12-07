@@ -147,7 +147,7 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
+        val slidePicture: Bitmap = getStoryImage(context!!,slideNum)
 
         slideImage.setImageBitmap(slidePicture)
 

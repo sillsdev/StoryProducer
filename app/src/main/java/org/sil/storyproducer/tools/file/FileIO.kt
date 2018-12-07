@@ -68,10 +68,8 @@ fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: Str
 
 fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
     if(relPath == "") return false
-    else{
-        val uri = getStoryUri(relPath,storyTitle) ?: return false
-        context.contentResolver.getType(uri) ?: return false
-    }
+    val uri = getStoryUri(relPath,storyTitle) ?: return false
+    context.contentResolver.getType(uri) ?: return false
     return true
 }
 
@@ -83,11 +81,9 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 }
 
 fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
-    return if (storyTitle == "") null
-    else{
-        Uri.parse(Workspace.workspace.uri.toString() +
+    if (storyTitle == "") return null
+    return Uri.parse(Workspace.workspace.uri.toString() +
                 Uri.encode("/$storyTitle/$relPath"))
-    }
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {

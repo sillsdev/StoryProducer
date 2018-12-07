@@ -146,10 +146,6 @@ class AudioPlayer {
         }
     }
 
-    fun reset(){
-        mPlayer.reset()
-    }
-
     /**
      * Releases the MediaPlayer object after completion
      */

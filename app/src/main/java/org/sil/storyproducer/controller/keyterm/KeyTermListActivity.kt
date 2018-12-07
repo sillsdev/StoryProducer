@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
@@ -48,19 +49,19 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyAdapter.MyViewHolder {
 
-        val rootView = LayoutInflater.from(parent.context)
-                .inflate(R.layout.nav_list_item, parent, false)
-        // set the view's size, margins, paddings and layout parameters
+        val rootView = LayoutInflater.from(parent.context).inflate(R.layout.story_list_item, parent, false)
 
         return MyViewHolder(rootView)
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
 
-        holder.item.findViewById<TextView>(R.id.title).text = myDataset[position]
+        holder.item.findViewById<TextView>(R.id.story_list_title).text = myDataset[position]
+        holder.item.findViewById<TextView>(R.id.story_list_subtitle).visibility = View.GONE
+        holder.item.findViewById<ImageView>(R.id.story_list_image).visibility = View.GONE
         holder.item.setOnClickListener {
+            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[myDataset[position]]?.term]!!
             val intent = Intent(context , KeyTermActivity::class.java)
-            intent.putExtra("Keyterm", Workspace.termsToKeyterms[Workspace.termsToKeyterms[myDataset[position]]?.term])
             context.startActivity(intent)
         }
     }
