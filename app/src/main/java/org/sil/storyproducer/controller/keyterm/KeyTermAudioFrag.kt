@@ -7,20 +7,15 @@ import android.view.View
 import android.view.ViewGroup
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Keyterm
+import org.sil.storyproducer.model.Workspace
 
 class KeyTermAudioFrag : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val keyTerm = arguments?.getParcelable<Keyterm>("Keyterm")
-        val bundle = Bundle()
-        bundle.putParcelable("Keyterm", keyTerm)
-
         val keyTermAudioLayout = KeyTermRecordingListFrag()
-        keyTermAudioLayout.arguments = bundle
-        activity?.supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info_audio, keyTermAudioLayout)?.commit()
+        activity?.supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

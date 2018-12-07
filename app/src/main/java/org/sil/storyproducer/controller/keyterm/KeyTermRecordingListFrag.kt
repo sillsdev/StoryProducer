@@ -18,15 +18,11 @@ import org.sil.storyproducer.model.toJson
 
 class KeyTermRecordingListFrag : Fragment() {
 
-    private var keyterm : Keyterm? = null
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.fragment_keyterm_recording_list, container, false)
-
-        keyterm  = arguments?.getParcelable("Keyterm")!!
-        Workspace.activeKeyterm = keyterm!!
 
         val adapter = RecyclerDataAdapter(context, Workspace.activeKeyterm.backTranslations)
         val viewManager = LinearLayoutManager(context)
