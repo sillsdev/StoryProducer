@@ -54,8 +54,8 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     }
 
     protected var mSource: PipedMediaByteBufferSource? = null
-    private val mInfo = MediaCodec.BufferInfo()
-    protected val srcBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
+    protected val mInfo = MediaCodec.BufferInfo()
+    protected var srcBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
     protected var srcPos: Int = 0
     protected var srcEnd: Int = 0
     protected val srcSamplesAvailable: Int get() {return srcEnd - srcPos}

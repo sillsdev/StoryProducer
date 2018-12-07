@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.adapter
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Color
 import android.media.MediaPlayer
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
@@ -23,7 +22,6 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import kotlin.coroutines.experimental.coroutineContext
 
 class RecordingsListAdapter(private val values: MutableList<String>?) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
@@ -80,7 +78,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
         }
 
     }
-
 
     class RecordingsListModal(private val parentView: View?, private val context: Context, private val toolbar: RecordingToolbar?, private val adapter: RecyclerView? = null) : Modal {
         private var rootView: ViewGroup? = null
@@ -289,7 +286,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
                     }
                 }
-
             }
         }
 

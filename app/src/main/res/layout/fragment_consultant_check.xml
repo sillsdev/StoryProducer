@@ -18,34 +18,24 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:background="@drawable/circle_bottom_left"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_image_view"
-        app:layout_constraintLeft_toLeftOf="@+id/fragment_image_view"
-        app:srcCompat="@drawable/circle_bottom_left" />
-
     <ImageButton
         android:id="@+id/fragment_reference_audio_button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/reference_audio_button"
+        android:layout_height="@dimen/reference_audio_button"
+        android:layout_gravity="center"
         android:background="@drawable/ic_play_arrow_white_36dp"
         android:contentDescription="@string/draft_play_narration_audio"
-        android:src="@drawable/ic_play_arrow_white_36dp"
         app:layout_constraintBottom_toBottomOf="@+id/fragment_image_view"
-        app:layout_constraintLeft_toLeftOf="@+id/fragment_image_view" />
+        app:layout_constraintLeft_toLeftOf="@+id/fragment_image_view"/>
 
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="50dp"
-        android:layout_height="150dp"
-        android:background="@drawable/triangle_background"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toBottomOf="@+id/fragment_image_view"
-        app:layout_constraintEnd_toEndOf="@+id/fragment_image_view" />
+    <SeekBar
+        android:id="@+id/videoSeekBar"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="@dimen/nav_drawer_margin"
+        android:max="100" />
 
     <TextView
         android:id="@+id/slide_number_text"
