@@ -32,8 +32,6 @@ class StoryMaker
 (private val context: Context, private val mOutputFile: File, private val mOutputFormat: Int, private val mVideoFormat: MediaFormat?, private val mAudioFormat: MediaFormat,
  private val mPages: Array<StoryPage>, private val mAudioTransitionUs: Long, private val mSlideCrossFadeUs: Long) : Closeable {
 
-    private var mSoundtrackVolumeModifier = 0.25f
-
     private val mSampleRate: Int
     private val mChannelCount: Int
 
@@ -85,14 +83,6 @@ class StoryMaker
     }
 
     /**
-     * Set the relative volume of the soundtrack to the narration for the video.
-     * @param modifier between 0 (silent) and 1 (original volume)
-     */
-    fun setSoundtrackVolumeModifier(modifier: Float) {
-        mSoundtrackVolumeModifier = modifier
-    }
-
-    /**
      * Set StoryMaker in motion. It is advisable to run this method from a separate thread.
      * @return whether the video creation process finished.
      */
@@ -120,7 +110,9 @@ class StoryMaker
             mMuxer!!.addSource(audioEncoder)
 
             var soundtrackDuration: Long = 0
-            var lastSoundtrack: String = ""
+            var lastSoundtrack = ""
+            var soundtrackVolume = 1.0f
+            var lastSoundtrackVolume = 0.0f
             for (page in mPages) {
                 val narration = page.narrationAudioPath
                 val audioDuration = page.audioDuration
@@ -131,10 +123,11 @@ class StoryMaker
                 //If we encounter a new soundtrack, stop the current one and start the new one.
                 //Otherwise, continue playing last soundtrack.
                 if (soundtrack == "" || soundtrack != lastSoundtrack) {
+                    soundtrackVolume = page.soundtrackVolume
                     if (lastSoundtrack != "") {
-                        soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration)
+                        soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration, soundtrackVolume)
                     } else if (soundtrackDuration > 0) {
-                        soundtrackConcatenator.addSource(null, soundtrackDuration)
+                        soundtrackConcatenator.addSource(null, soundtrackDuration, soundtrackVolume)
                     }
 
                     lastSoundtrack = soundtrack
@@ -148,14 +141,14 @@ class StoryMaker
 
             //Add last soundtrack
             if (lastSoundtrack != "") {
-                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration)
+                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration, soundtrackVolume)
             }
 
             //Add soundtrack only if there is one!
             if(soundtrackConcatenator.anyNonNull()) {
                 audioEncoder.addSource(audioMixer)
                 audioMixer.addSource(narrationConcatenator)
-                audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier)
+                audioMixer.addSource(soundtrackConcatenator)
             } else {
                 //no mixing needed - bypass.
                 audioEncoder.addSource(narrationConcatenator)

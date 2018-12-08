@@ -26,24 +26,20 @@ class KeyTermActivity : AppCompatActivity() {
 
     private var viewPager: ViewPager? = null
     private var previousPhase : String? = null
-    private var keyterm : Keyterm? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
-        if(intent.hasExtra("Keyterm")) {
-            keyterm = intent.getParcelableExtra("Keyterm")
-            viewPager = findViewById(R.id.viewPager)
-            viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, keyterm!!)
-        }
+        viewPager = findViewById(R.id.viewPager)
+        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager)
         if(intent.hasExtra("Phase")) {
             previousPhase = intent.getStringExtra("Phase")
         }
 
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
-        toolbar.title = keyterm?.term
+        toolbar.title = Workspace.activeKeyterm.term
         setSupportActionBar(toolbar)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 Workspace.activePhase.getColor(), null)))
@@ -51,11 +47,15 @@ class KeyTermActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        //return the phase to what it was previously
         for(type in PhaseType.values()){
             if(type.name == previousPhase?.toUpperCase()){
                 Workspace.activePhase = Phase(type)
             }
         }
+        //save the current term to the workspace
+        Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+        Thread(Runnable{ this.let { Workspace.activeKeyterm.toJson(it) } }).start()
     }
 
     private fun setupStatusBar() {
@@ -95,8 +95,15 @@ class KeyTermActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if(supportFragmentManager.backStackEntryCount != 0){
+        //if there are two we are at the beginning and need to stop
+        if(supportFragmentManager.backStackEntryCount == 2){
+            this.finish()
+        }
+        //otherwise set the term to the term four earlier
+        else if(supportFragmentManager.backStackEntryCount >= 4){
+            val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount-4).name
+            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[keytermName?.toLowerCase()]?.term]!!
+            super.onBackPressed()
             supportFragmentManager.popBackStack()
         }
     }
@@ -108,23 +115,20 @@ class KeyTermActivity : AppCompatActivity() {
                 val clickableSpan = object : ClickableSpan() {
                     override fun onClick(textView: View) {
                         if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                            //bundle up the key term to update fragment if in keyterm view already
+                            //if we are in the key term phase, save the active term to the workspace before opening the new one
+                            Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+                            Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
                             val keyTermLayout = KeyTermMainFrag()
-                            val bundle = Bundle()
-                            val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
-                            bundle.putParcelable("Keyterm", keyterm)
-                            keyTermLayout.arguments = bundle
                             val keyTermAudioLayout = KeyTermRecordingListFrag()
-                            keyTermAudioLayout.arguments = bundle
-                            //KeyTermRecordingListFrag sets the active key term and KeyTermMainFrag does the saving to the json file (order here matters)
-                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack("")?.commit()
+                            //set the key term to be active
+                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
+                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
                             fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
                         }
                         else {
-                            //bundle up the key term to send to new keyterm activity
+                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
+                            //bundle up the key term to send to new key term activity
                             val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                            val keyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]
-                            intent.putExtra("Keyterm", keyterm)
                             intent.putExtra("Phase", Workspace.activePhase.getName())
                             fragmentActivity?.startActivity(intent)
                         }

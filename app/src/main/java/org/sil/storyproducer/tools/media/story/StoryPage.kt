@@ -21,7 +21,7 @@ class StoryPage
  * @param sType soundtrack for page
  */
 (val imRelPath: String = "", val narrationAudioPath: String = "", private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect? = null,
- val textOverlay: TextOverlay? = null, val soundtrackAudioPath: String = "", val sType: SlideType = SlideType.NONE) {
+ val textOverlay: TextOverlay? = null, val soundtrackAudioPath: String = "", val soundtrackVolume: Float = 0.25f, val sType: SlideType = SlideType.NONE) {
 
     /**
      * Get the audio duration without any transition time.

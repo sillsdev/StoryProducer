@@ -14,12 +14,8 @@ class KeyTermTextFrag : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val keyTerm = arguments?.getParcelable<Keyterm>("Keyterm")
-        val bundle = Bundle()
-        bundle.putParcelable("Keyterm", keyTerm)
         val keyTermLayout = KeyTermMainFrag()
-        keyTermLayout.arguments = bundle
-        activity?.supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info, keyTermLayout)?.commit()
+        activity?.supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

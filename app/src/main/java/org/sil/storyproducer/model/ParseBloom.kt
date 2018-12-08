@@ -78,7 +78,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mSoundTrack = reSoundTrack.matcher(t)
         if(mSoundTrack.find()) {slide.musicFile = "audio/${mSoundTrack.group(1)}"}
         val mSoundTrackV = reSoundTrackVolume.matcher(t)
-        if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1).toDouble()}
+        if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1).toFloat()}
 
         //image
         val mImage = reImage.matcher(t)
