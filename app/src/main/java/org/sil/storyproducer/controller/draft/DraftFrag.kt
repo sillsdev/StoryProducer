@@ -2,13 +2,16 @@ package org.sil.storyproducer.controller.draft
 
 import android.app.Activity
 import android.content.Intent
+import android.content.Intent.ACTION_CHOOSER
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.support.design.widget.FloatingActionButton
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 
 import org.sil.storyproducer.R
@@ -45,9 +48,14 @@ class DraftFrag : MultiRecordFrag() {
             imageFab.setImageResource(R.drawable.ic_insert_photo_white_24dp)
             imageFab.show()
             imageFab.setOnClickListener {
-                val imageIntent = Intent(Intent.ACTION_PICK)
-                imageIntent.type = "image/*"
-                startActivityForResult(imageIntent, ACTIVITY_SELECT_IMAGE)
+                val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+                galleryIntent.type = "image/*"
+                val cameraIntent = Intent(ACTION_IMAGE_CAPTURE)
+                val chooser = Intent(Intent.ACTION_CHOOSER)
+                chooser.putExtra(Intent.EXTRA_INTENT,galleryIntent)
+                chooser.putExtra(Intent.EXTRA_TITLE,"Select From:")
+                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS,arrayOf(cameraIntent))
+                startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
             }
         }
 
@@ -61,6 +69,7 @@ class DraftFrag : MultiRecordFrag() {
             Workspace.activeStory.slides[slideNum].imageFile = "TitlePicture.png"
             copyToWorkspacePath(context!!,uri,
                     "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
+            setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
         }
     }
 
