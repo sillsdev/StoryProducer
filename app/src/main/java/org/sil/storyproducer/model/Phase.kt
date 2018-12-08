@@ -179,8 +179,8 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.CONSULTANT_CHECK),
                     Phase(PhaseType.DRAMATIZATION),
                     Phase(PhaseType.CREATE),
-                    Phase(PhaseType.KEYTERM),
-                    Phase(PhaseType.SHARE))
+                    Phase(PhaseType.SHARE),
+                    Phase(PhaseType.KEYTERM))
         }
 
         fun getRemotePhases() : List<Phase> {
@@ -193,8 +193,8 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.REMOTE_CHECK),
                     Phase(PhaseType.DRAMATIZATION),
                     Phase(PhaseType.CREATE),
-                    Phase(PhaseType.KEYTERM),
-                    Phase(PhaseType.SHARE))
+                    Phase(PhaseType.SHARE),
+                    Phase(PhaseType.KEYTERM))
         }
 
         fun getHelpName(phase: PhaseType) : String {
