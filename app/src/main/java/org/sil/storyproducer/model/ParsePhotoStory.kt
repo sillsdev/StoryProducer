@@ -80,6 +80,9 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
             "Image" -> {
                 parseImage(slide, parser)
             }
+            "MusicTrack" -> {
+                parseMusicTrack(slide, parser)
+            }
             else -> {
                 skipToNextTag(parser)
             }
@@ -116,6 +119,17 @@ private fun parseImage(slide: Slide, parser: XmlPullParser) {
         parser.next()
     }
     parser.require(XmlPullParser.END_TAG, null, "Image")
+}
+
+private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
+  //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
+  //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
+  slide.volume = 0.25f
+
+  parser.nextTag()
+  parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
+
+  slide.musicFile = parser.getAttributeValue(null, "path")
 }
 
 private fun parseEdit(parser: XmlPullParser, slide: Slide) {

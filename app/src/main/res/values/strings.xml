@@ -221,10 +221,10 @@
     <!-- Export Phase -->
     <string name="export_custom_title">Short Story Name</string>
     <string name="export_options_header">Options</string>
-    <string name="export_include_soundtrack">Include Background Music</string>
-    <string name="export_include_pictures">Include Pictures</string>
-    <string name="export_include_text">Include Text</string>
-    <string name="export_include_KBFX">Enable Picture Movement</string>
+    <string name="export_include_soundtrack">Include Background Music/effects (Fx)</string>
+    <string name="export_include_pictures">Include Pictures (Px)</string>
+    <string name="export_include_text">Include Text (Tx)</string>
+    <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 

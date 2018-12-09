@@ -23,14 +23,19 @@ fun Story.toJson(context: Context){
 }
 
 fun storyFromJson(context: Context, storyTitle: String): Story?{
-    val moshi = Moshi
-            .Builder()
-            .add(RectAdapter())
-            .add(UriAdapter())
-            .build()
-    val adapter = Story.jsonAdapter(moshi)
-    val fileContents = getStoryText(context,"$PROJECT_DIR/$PROJECT_FILE",storyTitle) ?: return null
-    return adapter.fromJson(fileContents)
+    try {
+        val moshi = Moshi
+                .Builder()
+                .add(RectAdapter())
+                .add(UriAdapter())
+                .build()
+        val adapter = Story.jsonAdapter(moshi)
+        val fileContents = getStoryText(context, "$PROJECT_DIR/$PROJECT_FILE", storyTitle)
+                ?: return null
+        return adapter.fromJson(fileContents)
+    } catch (e: Exception) {
+        return null
+    }
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
@@ -40,7 +45,7 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     //make a project directory if there is none.
     if (storyRelPathExists(context,PROJECT_DIR,storyPath.name!!)) {
         //parse the project file, if there is one.
-        story = storyFromJson(context,storyPath.name!!)
+        story = storyFromJson(context, storyPath.name!!)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
