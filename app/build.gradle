@@ -9,7 +9,7 @@ android {
         TestSign {
             keyAlias '12345'
             keyPassword '12345'
-            storeFile file('C:/Users/Dell/Documents/StoryProducer/TestSign')
+            //storeFile file('C:/Users/Dell/Documents/StoryProducer/TestSign')
             storePassword '12345'
         }
     }

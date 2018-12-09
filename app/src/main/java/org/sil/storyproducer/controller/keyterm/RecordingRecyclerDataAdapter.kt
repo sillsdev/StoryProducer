@@ -72,6 +72,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             }
         }
         private fun initSubmit(){
+            linearLayoutChildItems.removeAllViews()
             linearLayoutChildItems.addView(childSubmit)
             linearLayoutChildItems.tag = "submit"
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
@@ -86,6 +87,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             }
         }
         private fun initComment(){
+            linearLayoutChildItems.removeAllViews()
             linearLayoutChildItems.addView(childComment)
             linearLayoutChildItems.tag = "comment"
             val currentTextView = linearLayoutChildItems.findViewById(R.id.backtranslation_comment_title) as TextView
