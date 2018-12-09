@@ -20,8 +20,8 @@ import static org.sil.storyproducer.model.ParsePhotoStoryKt.parsePhotoStoryXML;
 public class TestParsePhotoStory {
     @Test
     public void parsePhotoStoryXML_Should_ReturnAStory() {
+        System.out.println(System.getProperty("user.dir"));
         Story result = parseValidStory();
-
         Assert.assertEquals(Story.class, result.getClass());
     }
 

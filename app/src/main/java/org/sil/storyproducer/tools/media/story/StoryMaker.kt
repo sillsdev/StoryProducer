@@ -152,7 +152,7 @@ class StoryMaker
             }
 
             //Add soundtrack only if there is one!
-            if(soundtrackConcatenator.numOfSources() > 0) {
+            if(soundtrackConcatenator.anyNonNull()) {
                 audioEncoder.addSource(audioMixer)
                 audioMixer.addSource(narrationConcatenator)
                 audioMixer.addSource(soundtrackConcatenator, mSoundtrackVolumeModifier)

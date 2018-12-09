@@ -1,8 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
+import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -15,7 +14,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import android.widget.Toast
 
@@ -76,7 +74,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-            referenceAudioPlayer.currentPosition = 0
+            referenceAudioPlayer.stopAudio()
         })
     }
 
@@ -90,6 +88,18 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     */
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        referenceAudioPlayer.stopAudio()
+        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
+
+
+        /**
      * This function sets the first slide of each story to the blue color in order to prevent
      * clashing of the grey starting picture.
      */
@@ -115,6 +125,11 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setPic(slideImage: ImageView) {
         var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
+        slidePicture = slidePicture.copy(Bitmap.Config.ARGB_8888, true)
+        val canvas = Canvas(slidePicture)
+        val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText()
+        //if overlay is null, it will not write the text.
+        tOverlay?.draw(canvas)
 
         //Get the height of the phone.
         val phoneProperties = context!!.resources.displayMetrics

@@ -30,10 +30,10 @@
     <!-- Phases -->
     <string name="learn_title">Learn</string>
     <string name="draft_title">Translate</string>
-    <string name="community_check_title">Community Check</string>
+    <string name="community_check_title">Community Work</string>
     <string name="consultant_check_title">Accuracy Check</string>
-    <string name="dramatization_title">Voice Acting</string>
-    <string name="create_title">Make Video</string>
+    <string name="dramatization_title">Voice Studio</string>
+    <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
@@ -41,7 +41,7 @@
     <string name="title_activity_story_templates">Story Templates</string>
     <string name="title_activity_info_page">Information</string>
     <string name="title_fragment_translate">Translate</string>
-    <string name="title_fragment_community">Community Check</string>
+    <string name="title_fragment_community">Community Work</string>
     <string name="title_fragment_consultant">Accuracy Check</string>
 
     <!--String names for Info Page-->
@@ -165,7 +165,8 @@
     <string name="dramatization_draft_no_picture">Could not find picture</string>
     <string name="dramatization_no_draft_recording_available">Draft recording not available!</string>
     <string name="dramatization_playback_draft_recording">Playing back draft recording!</string>
-    <string name="dramatization_edit_text_hint">Story text</string>
+    <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>
+    <string name="dramatization_edit_title_text_hint">Write story title to show for all videos made.</string>
     <string name="dramatization_playing_dramatize">Playing dramatization</string>
     <string name="dramatization_no_drama_found">No dramatization found</string>
     <string name="dramatization_record_file_drama_name">Dramatization %1$d</string>
@@ -229,9 +230,18 @@
 
     <string name="export_resolution_label">Video Quality</string>
     <string-array name="export_resolution_options">
+        <item>VLow (176x144)</item>
         <item>Low (320x240)</item>
         <item>Medium (640x480)</item>
         <item>High (1280x720)</item>
+    </string-array>
+    <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
+    <string name = "smartphone_and_extension">Smartphone (MP4)</string>
+    <string name = "min_SDK_26">Need Oreo Phone</string>
+    <string name="export_format_label">File Format</string>
+    <string-array name="export_format_options">
+        <item>Smartphone</item>
+        <item>Dumb Phone</item>
     </string-array>
 
     <string name="export_location_header">Save To</string>
@@ -253,7 +263,15 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_splash_screen">Story Producer</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Local Credits -->
+    <string name="LC_translator_prefix">Translator:</string>
+    <string name="LC_consultant_prefix">Consultant:\</string>
+    <string name="LC_community_prefix">Community Workers:</string>
+    <string name="LC_dramatize_prefix">Voice Actors:\</string>
+    <string name="LC_no_translator_name">No translator name</string>
+    <string name="LC_no_consultant_name">No consultant name</string>
+
 
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>
@@ -264,28 +282,6 @@
     <string name="Parent_Dir_Label">Parent Directory</string>
     <string name="byte_unit_singular">" byte"</string>
     <string name="byte_unit_plural">" bytes"</string>
-
-    <!-- File Explorer -->
-    <string name="file_explorer_chars_error">Allowed: letters, digits, dash, underscore, space.</string>
-    <string name="file_explorer_emptyFolderName">Folder name cannot be empty.</string>
-    <string name="file_explorer_folder_creation_failure">Folder creation failed for unknown reason.</string>
-    <string name="file_explorer_folderNamePrompt">Please specify a name for your new folder:</string>
-    <string name="file_explorer_newFolder">New Folder</string>
-    <string name="file_explorer_emptyFileName">File name cannot be empty.</string>
-    <string name="file_explorer_fileAlreadyExists_1">File \"</string>
-    <string name="file_explorer_fileAlreadyExists_2">\" already exists.</string>
-    <string name="file_explorer_folderAlreadyExists_1">Folder \"</string>
-    <string name="file_explorer_folderAlreadyExists_2">\" already exists.</string>
-    <string name="file_explorer_hint">Enter filename&#8230;</string>
-    <plurals name="file_explorer_numItems">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
-    </plurals>
-
-    <plurals name="file_explorer_numBytes">
-        <item quantity="one">%d byte</item>
-        <item quantity="other">%d bytes</item>
-    </plurals>
 
     <string name="LWC_PLAYBACK">LWC Playback</string>
     <string name="DRAFT_RECORDING">Draft Recording</string>
@@ -326,17 +322,17 @@
                                 OR OTHER DEALINGS IN THE SOFTWARE.</string>
 
     <!-- Help -->
-    <string name="workspace_help">Workspace Help</string>
-    <string name="registration_help">Registration Help</string>
-    <string name="story_list_help">Story List Help</string>
-    <string name="template_list_help">Template List Help</string>
-    <string name="learn_help">Learn Help</string>
-    <string name="draft_help">Translate Help</string>
-    <string name="community_help">Community Help</string>
-    <string name="consulatant_help">Accuracy Help</string>
-    <string name="dramatize_help">Voice Acting Help</string>
-    <string name="create_help">Make Video Help</string>
-    <string name="share_help">Share Help</string>
+    <string name="workspace_help">See Help file</string>
+    <string name="registration_help">See Help file</string>
+    <string name="story_list_help">See Help file</string>
+    <string name="template_list_help">See Help file</string>
+    <string name="learn_help">See Help file</string>
+    <string name="draft_help">See Help file</string>
+    <string name="community_help">See Help file</string>
+    <string name="consultant_help">See Help file</string>
+    <string name="dramatize_help">See Help file</string>
+    <string name="create_help">See Help file</string>
+    <string name="share_help">See Help file</string>
 
 
     <!-- Logging -->

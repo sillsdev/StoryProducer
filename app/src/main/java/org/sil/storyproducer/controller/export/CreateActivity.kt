@@ -3,26 +3,18 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Spinner
-import android.widget.Toast
-
 import org.sil.storyproducer.R
+import android.widget.*
+
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
@@ -43,11 +35,11 @@ class CreateActivity : PhaseBaseActivity() {
     private var mResolutionAdapterAll: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterHigh: ArrayAdapter<CharSequence>? = null
     private var mResolutionAdapterLow: ArrayAdapter<CharSequence>? = null
+    private var mRadioButtonSmartPhone: RadioButton? = null
+    private var mRadioButtonDumbPhone: RadioButton? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
-
-    private var phaseUnlocked = false
 
     private var mOutputPath: String = ""
 
@@ -82,10 +74,18 @@ class CreateActivity : PhaseBaseActivity() {
         runOnUiThread {
             stopExport()
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle(mEditTextTitle!!.text.toString()))
         }
     }
 
-    private val formatExtension: String = ".mp4"
+    private val formatExtension: String
+        get() {
+            var ext = ".mp4"
+            if (mRadioButtonDumbPhone!!.isChecked) {
+                ext = ".3gp"
+            }
+            return ext
+        }
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -108,11 +108,10 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_create)
         setupViews()
         invalidateOptionsMenu()
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
@@ -199,12 +198,16 @@ class CreateActivity : PhaseBaseActivity() {
         mResolutionAdapterLow!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
         mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
         mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
+        mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
 
         mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
                 R.array.export_resolution_options, android.R.layout.simple_spinner_item)
         mResolutionAdapterAll!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         mSpinnerResolution!!.adapter = mResolutionAdapterAll
+
+        mRadioButtonSmartPhone = findViewById(R.id.radio_smartphone)
+        mRadioButtonDumbPhone = findViewById(R.id.radio_dumbphone)
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
@@ -276,6 +279,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
         } else {
             mSpinnerResolution!!.adapter = mResolutionAdapterAll
+            setSpinnerValue()
             //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true
         }
@@ -316,18 +320,48 @@ class CreateActivity : PhaseBaseActivity() {
         dialog.show()
     }
 
+    /*
+    **Method for handling the click event for the radio buttons
+     */
+    fun onRadioButtonClicked(view: View) {
+        // Is the button now checked?
+        val checked = (view as RadioButton).isChecked
+
+        // Check which radio button was clicked
+        when (view.getId()) {
+            R.id.radio_dumbphone -> {
+                if (Build.VERSION.SDK_INT < 26){
+                    Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
+                    view.isChecked = false
+                    findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
+                } else {
+                    if (checked)
+                    //Only low resolution on dumbphone and uncheck include text
+                        mSpinnerResolution!!.adapter = mResolutionAdapterLow
+                    mCheckboxText!!.isChecked = false
+                }
+            }
+            R.id.radio_smartphone -> {
+                if (checked) {
+                    //Default to medium resolution on smartphone
+                    mSpinnerResolution!!.adapter = mResolutionAdapterAll
+                    setSpinnerValue()
+                }
+            }
+        }
+    }
     /**
      * Save current configuration options to shared preferences.
      */
     private fun savePreferences() {
         val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
 
-        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX!!.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
 
-        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution!!.selectedItem.toString())
+        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
 
         editor.apply()
     }
@@ -343,7 +377,7 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
 
-        setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null))
+        setSpinnerValue()
     }
 
     /**
@@ -351,14 +385,12 @@ class CreateActivity : PhaseBaseActivity() {
      * @param spinner spinner to update value.
      * @param value new value of spinner.
      */
-    private fun setSpinnerValue(spinner: Spinner?, value: String?) {
-        if (value == null) {
-            return
-        }
-
-        for (i in 0 until spinner!!.count) {
-            if (value == spinner.getItemAtPosition(i).toString()) {
-                spinner.setSelection(i)
+    private fun setSpinnerValue() {
+        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val temp = prefs.getString(PREF_KEY_RESOLUTION, null)?.toIntOrNull()
+        if (temp != null) {
+            if (temp < mSpinnerResolution?.count ?: 0 && temp >= 0) {
+                mSpinnerResolution?.setSelection(temp,true)
             }
         }
     }
@@ -390,7 +422,7 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludePictures = mCheckboxPictures!!.isChecked
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
-
+            storyMaker!!.mDumbPhone = mRadioButtonDumbPhone!!.isChecked
 
             val resolutionStr = mSpinnerResolution!!.selectedItem.toString()
             //Parse resolution string of "[WIDTH]x[HEIGHT]"

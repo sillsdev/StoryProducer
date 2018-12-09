@@ -1,10 +1,8 @@
 package org.sil.storyproducer.controller
 
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
+import android.content.res.AssetManager
 import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
@@ -22,6 +20,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.ListView
@@ -96,11 +96,20 @@ class MainActivity : AppCompatActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage(Phase.getHelp(this, PhaseType.STORY_LIST))
-                        .create()
-                dialog.show()
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("Story List Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
+                val text = iStream.reader().use {
+                        it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -143,6 +152,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                     intent = Intent(this.applicationContext, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     this.startActivity(intent)
+                    this.finish()
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)

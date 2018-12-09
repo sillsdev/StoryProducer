@@ -4,14 +4,15 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.RelativeLayout
 import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
@@ -73,11 +74,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      * Stops the toolbar from recording or playing back media.
      * Used in [DraftListRecordingsModal]
      */
-    fun stopPlayBackAndRecording() {
+    open fun stopPlayBackAndRecording() {
         recordingToolbar?.stopToolbarMedia()
+        referenceAudioPlayer.stopAudio()
+        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
-
-
 
     override fun setReferenceAudioButton() {
         referncePlayButton!!.setOnClickListener {
@@ -90,7 +91,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
                     referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                 } else {
                     //stop other playback streams.
-                    recordingToolbar!!.stopToolbarMedia()
+                    stopPlayBackAndRecording()
                     referenceAudioPlayer.playAudio()
                     recordingToolbar?.onToolbarTouchStopAudio(referncePlayButton!!, R.drawable.ic_play_arrow_white_36dp, referenceAudioPlayer)
 

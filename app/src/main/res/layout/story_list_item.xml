@@ -10,7 +10,6 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:background="@color/white"
-        android:src="@drawable/ic_community"
         android:layout_centerVertical="true"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:contentDescription="@string/story_picture" />

@@ -15,7 +15,6 @@
         android:tint="@color/white"
         app:backgroundTint="@android:color/holo_blue_bright"
         app:layout_anchorGravity="center_vertical|center_horizontal"
-        app:srcCompat="@drawable/ic_add_white_48dp"
         app:useCompatPadding="true" />
 
     <LinearLayout

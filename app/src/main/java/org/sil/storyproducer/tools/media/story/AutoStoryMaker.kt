@@ -1,25 +1,26 @@
 package org.sil.storyproducer.tools.media.story
 
+import android.bluetooth.BluetoothClass
 import android.content.Context
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.VIDEO_DIR
 
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import org.sil.storyproducer.tools.media.graphics.overlayJPEG
 
 import java.io.Closeable
 import java.io.File
-import java.io.IOException
+import kotlin.math.sqrt
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -39,14 +40,19 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private val mVideoBitRate: Int
         get() {
-            return ((1280 * mHeight * VIDEO_FRAME_RATE).toFloat()
+            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
+        }
+    private val mVideoFrameRate: Int
+        get() {
+            return if(mDumbPhone) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
         }
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
+    var mDumbPhone = false
 
     private var mLogProgress = false
 
@@ -67,18 +73,16 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     override fun start() {
-        val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+        val outputFormat : Int
+        if(mDumbPhone && Build.VERSION.SDK_INT >= 26){
+            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
+        } else {
+            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
+        }
 
-        //TODO switch for smartphone and dumb phone.
-        //The dumbphone format is:
-        // video: H263, 176x144, frame rate = 15
-        // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
-
-        val audioFormat = generateAudioFormat()
         val videoFormat = generateVideoFormat()
+        val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
         val pages = generatePages() ?: return
-
-        //If pages weren't generated, exit.
 
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
@@ -97,6 +101,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         if (success) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
+            videoTempFile.delete()
             Workspace.activeStory.addVideo(videoRelPath)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
@@ -117,9 +122,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_MPEG4, mWidth, mHeight)
-        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 30)
-        //videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_FRAME_RATE)
+        val videoFormat =
+                if(mDumbPhone) MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_H263, mWidth, mHeight)
+                else MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
+
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
 
@@ -130,35 +137,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         //TODO: add hymn to count
         val pages: MutableList<StoryPage> = mutableListOf()
 
-        val widthToHeight = mWidth / mHeight.toDouble()
-
-        val tempTitle = "$PROJECT_DIR/temptitle.jpg"
-        //TODO enable better title selection.
-        val titleOverlay = TextOverlay(Workspace.activeStory.slides[0].translatedContent)
-        titleOverlay.setFontSize(TITLE_FONT_SIZE)
-
-        var titleRelPath = Workspace.activeStory.slides[0].imageFile
-
-        try {
-            overlayJPEG(context, Workspace.activeStory.slides[0].imageFile, tempTitle, titleOverlay)
-            titleRelPath = tempTitle
-        } catch (e: IOException) {
-            Log.w(TAG, "Failed to create overlayed title slide!")
-        }
-
         var lastSoundtrack = ""
         var iSlide = 0
-        var image: String = ""
-        //don't use the last image - it's the copyright.
-        while (iSlide < (Workspace.activeStory.slides.size - 1)) {
+        while (iSlide < (Workspace.activeStory.slides.size)) {
             val slide = Workspace.activeStory.slides[iSlide]
-            if (mIncludePictures) {
-                if (iSlide == 0) {
-                    image = titleRelPath
-                } else {
-                    image = slide.imageFile
-                }
-            }else image = ""
+            val image = if (mIncludePictures) slide.imageFile else ""
             var audio = slide.chosenDramatizationFile
             //fallback to draft audio
             if (audio == "") {
@@ -184,28 +167,21 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             var kbfx: KenBurnsEffect? = null
-            if (mIncludePictures && mIncludeKBFX && iSlide != 0) {
+            if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
 
-            var text = ""
-            if (mIncludeText) {
-                text = slide.translatedContent
-            }
+            val overlayText = slide.getOverlayText(mIncludeText)
 
             //error
-            var duration = 3000000L  // 3 seconds, microseconds.
+            var duration = 5000000L  // 3 seconds, microseconds.
             if (audio != "") {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
 
-            pages.add(StoryPage(image, audio, duration, kbfx, text, soundtrack))
+            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,slide.slideType))
             iSlide++
         }
-
-        pages.add(StoryPage(Workspace.activeStory.slides.last().imageFile,COPYRIGHT_SLIDE_US))
-
-        //TODO: add hymn
 
         return pages.toTypedArray()
     }
@@ -246,7 +222,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        private val TITLE_FONT_SIZE = 20
+        val TITLE_FONT_SIZE = 24
+        val BODY_FONT_SIZE = 26
 
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
@@ -255,10 +232,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
-        private val VIDEO_IFRAME_INTERVAL = 1           // 1 second between I-frames
+        private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
+        private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
 
         // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 4                   // 1, 2, or 4
+        private val MOTION_FACTOR = 1.5                  // 1, 2, or 4
         private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder
@@ -266,8 +244,19 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
+        private val AUDIO_BIT_RATE_AMR = 128000
+
+        fun generateDumbAudioFormat(): MediaFormat {
+            // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
+            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
+            return audioFormat
+        }
 
         fun generateAudioFormat(): MediaFormat {
+
             val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
             audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
