@@ -4,14 +4,14 @@ apply plugin: 'kotlin-kapt'
 
 
 android {
-    signingConfigs {
-        TestSign {
-            keyAlias '12345'
-            keyPassword '12345'
-            storeFile file('C:/Users/Dell/Documents/StoryProducer/TestSign')
-            storePassword '12345'
-        }
-    }
+//    signingConfigs {
+//        TestSign {
+//            keyAlias '12345'
+//            keyPassword '12345'
+//            storeFile file('C:/Users/Dell/Documents/StoryProducer/TestSign')
+//            storePassword '12345'
+//        }
+//    }
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
