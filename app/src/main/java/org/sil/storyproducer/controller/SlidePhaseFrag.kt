@@ -176,7 +176,7 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setPic(slideImage: ImageView) {
         var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
-        slidePicture = slidePicture.copy(Bitmap.Config.ARGB_8888, true)
+        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
         val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText()
         //if overlay is null, it will not write the text.
