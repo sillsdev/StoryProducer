@@ -17,6 +17,7 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.BitmapScaler
@@ -82,18 +83,24 @@ abstract class SlidePhaseFrag : Fragment() {
             referenceAudioPlayer.stopAudio()
         })
 
-        refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
-        mSeekBarTimer = Timer()
-        mSeekBarTimer.schedule(object : TimerTask() {
-            override fun run() {
-                activity!!.runOnUiThread{
-                    refPlaybackProgress = referenceAudioPlayer.currentPosition
-                    refPlaybackSeekBar?.progress = refPlaybackProgress
+        //If it is the local credits slide, do not show the audio stuff at all.
+        val refPlaybackHolder: LinearLayout = rootView!!.findViewById(R.id.reference_audio_holder)
+        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
+            refPlaybackHolder.visibility = View.GONE
+        }else{
+            refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+            mSeekBarTimer = Timer()
+            mSeekBarTimer.schedule(object : TimerTask() {
+                override fun run() {
+                    activity!!.runOnUiThread{
+                        refPlaybackProgress = referenceAudioPlayer.currentPosition
+                        refPlaybackSeekBar?.progress = refPlaybackProgress
+                    }
                 }
-            }
-        },0,33)
+            },0,33)
 
-        setSeekBarListener()
+            setSeekBarListener()
+        }
     }
 
     private fun setSeekBarListener() {
@@ -168,8 +175,9 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
-        slidePicture = slidePicture.copy(Bitmap.Config.ARGB_8888, true)
+        val downSample = 2
+        var slidePicture: Bitmap = getStoryImage(context!!,slideNum,downSample)
+        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
         val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText()
         //if overlay is null, it will not write the text.

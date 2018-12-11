@@ -34,6 +34,7 @@
                 android:layout_alignStart="@id/fragment_image_view" />
 
             <LinearLayout
+                android:id="@+id/reference_audio_holder"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/rect_height"
                 android:layout_alignBottom="@id/fragment_image_view"

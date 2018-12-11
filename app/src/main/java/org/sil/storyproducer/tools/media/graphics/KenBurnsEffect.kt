@@ -49,7 +49,7 @@ class KenBurnsEffect
      * where 0 corresponds to the starting crop.
      * @return stretch of original image over screen size to make crop
      */
-    fun revInterpolate(position: Float, scrWidth: Int, scrHeight: Int, imWidth: Int, imHeight: Int): RectF {
+    fun revInterpolate(position: Float, scrWidth: Int, scrHeight: Int, imWidth: Int, imHeight: Int, downSample: Float): RectF {
         var position = position
         //Clamp position to [0, 1]
         if (position < 0) {
@@ -60,10 +60,10 @@ class KenBurnsEffect
 
         //Start by calculating the "internal rectangle" that is stored in the Bloom file
         //This is where the screen is looking at the picture
-        val irL = mStart.left + position * dLeft
-        val irT = mStart.top + position * dTop
-        val irR = mStart.right + position * dRight
-        val irB = mStart.bottom + position * dBottom
+        val irL = (mStart.left + position * dLeft)/downSample
+        val irT = (mStart.top + position * dTop)/downSample
+        val irR = (mStart.right + position * dRight)/downSample
+        val irB = (mStart.bottom + position * dBottom)/downSample
         val irH = irB - irT
         val irW = irR - irL
 

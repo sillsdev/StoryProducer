@@ -6,7 +6,6 @@ import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
 import java.util.regex.Pattern
-import org.jsoup.Jsoup
 import org.sil.storyproducer.tools.file.getChildDocuments
 
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
@@ -119,7 +118,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
     //Add the Local credits slide
     slide = Slide()
-    slide.slideType = SlideType.CREDITS1
+    slide.slideType = SlideType.LOCALCREDITS
     slides.add(slide)
 
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.

@@ -1,18 +1,13 @@
 package org.sil.storyproducer.model
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.net.Uri
-import android.support.v4.provider.DocumentFile
 import android.text.Layout
 import com.squareup.moshi.*
 
-import java.io.File
 import com.squareup.moshi.ToJson
 import com.squareup.moshi.FromJson
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
 
 /**
@@ -62,14 +57,10 @@ class Slide{
         if(!dispStory){
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
-        val overlayText = when(slideType){
-            SlideType.CREDITS1 -> "$content\n$translatedContent"
-            else -> translatedContent
-        }
-        val tOverlay = TextOverlay(overlayText)
+        val tOverlay = TextOverlay(translatedContent)
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
-            SlideType.CREDITS1, SlideType.CREDITS2ATTRIBUTIONS -> 16
+            SlideType.LOCALCREDITS, SlideType.CREDITS2ATTRIBUTIONS -> 16
             SlideType.NUMBEREDPAGE, SlideType.NONE -> 16
         }
         tOverlay.setFontSize(fontSize)
@@ -82,7 +73,7 @@ class Slide{
 }
 
 enum class SlideType {
-    NONE, FRONTCOVER, NUMBEREDPAGE, CREDITS1, CREDITS2ATTRIBUTIONS, ENDPAGE
+    NONE, FRONTCOVER, NUMBEREDPAGE, LOCALCREDITS, CREDITS2ATTRIBUTIONS, ENDPAGE
 }
 
 @JsonClass(generateAdapter = true)

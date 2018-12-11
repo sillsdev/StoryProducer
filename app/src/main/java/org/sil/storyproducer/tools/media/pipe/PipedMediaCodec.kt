@@ -115,10 +115,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             }
             outputBufferId = mCodec!!.dequeueOutputBuffer(
                     info, MediaHelper.TIMEOUT_USEC)
-            if (outputBufferId == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: no output buffer")
-                //Do nothing.
-            } else if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+            if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: output format changed")
                 if (mOutputFormat != null) {
                     throw RuntimeException("changed output format again?")
@@ -127,32 +124,36 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 if (getFormat) {
                     return null
                 }
-            } else if (outputBufferId < 0) {
-                Log.w(TAG, "$componentName.pullBuffer: unrecognized pollCode")
-            } else if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
-                if (MediaHelper.DEBUG) Log.d(TAG, "$componentName.pullBuffer: codec config buffer")
-                //Note: Perhaps these buffers should not be ignored in the future.
-                // Simply ignore codec config buffers.
-                mCodec!!.releaseOutputBuffer(outputBufferId, true)
-            } else {
-                val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
-
-                if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                    if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: EOS")
-                    mIsDone = true
+            }
+            if (outputBufferId >= 0) {
+                if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
+                    // TODO: Perhaps these buffers should not be ignored in the future.
+                    // This indicated that the buffer marked as such contains codec initialization / codec specific data instead of media data.
+                    // This should actually never occur...
+                    // Simply ignore codec config buffers.
+                    mCodec!!.releaseOutputBuffer(outputBufferId, true)
                 } else {
-                    correctTime(info)
-                    buffer.position(info.offset)
-                    buffer.limit(info.offset + info.size)
-                }
+                    val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
 
-                //If trying to get the format, save the buffer for later and don't return it.
-                if (getFormat) {
-                    val tempInfo = MediaCodec.BufferInfo()
-                    MediaHelper.copyBufferInfo(info, tempInfo)
-                    mBuffersBeforeFormat.add(MediaBuffer(buffer, tempInfo))
-                } else {
-                    return buffer
+                    if (((info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) == 0) && (info.size != 0)) {
+                        correctTime(info)
+                        buffer.position(info.offset)
+                        buffer.limit(info.offset + info.size)
+                    }
+
+                    if ((info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                        if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: EOS")
+                        mIsDone = true
+                    }
+
+                    //If trying to get the format, save the buffer for later and don't return it.
+                    if (getFormat) {
+                        val tempInfo = MediaCodec.BufferInfo()
+                        MediaHelper.copyBufferInfo(info, tempInfo)
+                        mBuffersBeforeFormat.add(MediaBuffer(buffer, tempInfo))
+                    } else {
+                        return buffer
+                    }
                 }
             }
         }
