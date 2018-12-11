@@ -17,6 +17,7 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.BitmapScaler
@@ -82,18 +83,24 @@ abstract class SlidePhaseFrag : Fragment() {
             referenceAudioPlayer.stopAudio()
         })
 
-        refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
-        mSeekBarTimer = Timer()
-        mSeekBarTimer.schedule(object : TimerTask() {
-            override fun run() {
-                activity!!.runOnUiThread{
-                    refPlaybackProgress = referenceAudioPlayer.currentPosition
-                    refPlaybackSeekBar?.progress = refPlaybackProgress
+        //If it is the local credits slide, do not show the audio stuff at all.
+        val refPlaybackHolder: LinearLayout = rootView!!.findViewById(R.id.reference_audio_holder)
+        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
+            refPlaybackHolder.visibility = View.GONE
+        }else{
+            refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+            mSeekBarTimer = Timer()
+            mSeekBarTimer.schedule(object : TimerTask() {
+                override fun run() {
+                    activity!!.runOnUiThread{
+                        refPlaybackProgress = referenceAudioPlayer.currentPosition
+                        refPlaybackSeekBar?.progress = refPlaybackProgress
+                    }
                 }
-            }
-        },0,33)
+            },0,33)
 
-        setSeekBarListener()
+            setSeekBarListener()
+        }
     }
 
     private fun setSeekBarListener() {

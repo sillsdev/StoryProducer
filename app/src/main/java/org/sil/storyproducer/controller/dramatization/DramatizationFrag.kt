@@ -37,8 +37,10 @@ class DramatizationFrag : MultiRecordFrag() {
         slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
-            rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-            setToolbar(rootViewToolbar)
+            if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+                rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+                setToolbar(rootViewToolbar)
+            }
             closeKeyboardOnTouch(rootView)
             rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {

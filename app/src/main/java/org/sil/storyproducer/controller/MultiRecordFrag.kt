@@ -11,6 +11,7 @@ import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -29,8 +30,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-        setToolbar()
+        if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS){
+            rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+            setToolbar()
+        }
         return rootView
     }
 

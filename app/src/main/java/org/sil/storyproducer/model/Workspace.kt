@@ -3,7 +3,6 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import android.provider.DocumentsContract
 
 import java.io.File
 import java.util.*
@@ -105,7 +104,7 @@ object Workspace{
     fun updateStoryLocalCredits(context: Context) {
         for(story in Stories){
             for(slide in story.slides){
-                if(slide.slideType == SlideType.CREDITS1) { //local credits
+                if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
                     slide.content = getLocalCreditsStart(context)
                     if(slide.translatedContent == ""){
                         slide.translatedContent = getLocalCreditStart(context)
