@@ -17,6 +17,7 @@ import org.sil.storyproducer.model.*
 import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.math.max
 import kotlin.math.min
 
 
@@ -42,31 +43,33 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
     if(story.title == "") return genDefaultImage()
-    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,story)
+    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
 }
 
-fun getReducedStoryImage(context: Context, relPath: String,
-                         dstWidth: Int = 1500, dstHeight: Int = 1500,
-                         story: Story = Workspace.activeStory): Bitmap{
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
-    if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+fun getDownsample(context: Context, relPath: String,
+                         dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
+                         story: Story = Workspace.activeStory): Int{
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
+    if(iStream.available() == 0) return 1
     val options = BitmapFactory.Options()
     options.inJustDecodeBounds = true
     BitmapFactory.decodeStream(iStream, null, options)
-    val downSample: Int = min(options.outHeight/dstHeight,options.outWidth/dstWidth)
-    return getStoryImage(context, relPath, downSample, story)
+    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
 }
 
-fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
     val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
     if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
     val options = BitmapFactory.Options()
     options.inSampleSize = sampleSize
-    return BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
 }
 
 fun genDefaultImage(): Bitmap {
-    val pic = Bitmap.createBitmap(1500,1125,Bitmap.Config.ARGB_8888)
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
     pic!!.eraseColor(Color.DKGRAY)
     return pic
 }
@@ -229,3 +232,5 @@ fun renameStoryFile(context: Context, relPath: String, newFilename: String, stor
 }
 
 
+val DEFAULT_WIDTH: Int = 1500
+val DEFAULT_HEIGHT: Int = 1125
