@@ -157,16 +157,11 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         val bitmap = bitmaps[page.imRelPath]
 
         if (bitmap != null) {
-            val kbfx = page.kenBurnsEffect
-
             val position = (timeOffsetUs / imgDurationUs.toDouble()).toFloat()
 
-            val drawRect: RectF
-            if (kbfx != null) {
-                drawRect = kbfx.revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height)
-            } else {
-                drawRect = RectF(0f, 0f, mWidth*1f, mHeight*1f)
-            }
+            val drawRect = page.kenBurnsEffect?.
+                    revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height) ?:
+                RectF(0f, 0f, mWidth*1f, mHeight*1f)
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 
