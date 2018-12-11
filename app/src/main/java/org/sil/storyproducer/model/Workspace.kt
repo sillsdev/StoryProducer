@@ -105,25 +105,12 @@ object Workspace{
         for(story in Stories){
             for(slide in story.slides){
                 if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                    slide.content = getLocalCreditsStart(context)
                     if(slide.translatedContent == ""){
-                        slide.translatedContent = getLocalCreditStart(context)
+                        slide.translatedContent = context.getString(R.string.LC_starting_text)
                     }
                 }
             }
         }
-    }
-
-    fun getLocalCreditsStart(context: Context) : String {
-        var translatorName = registration.getString("translator_name","")
-        if(translatorName == "") translatorName = context.getString(R.string.LC_no_translator_name)
-        var consultantName = registration.getString("consultant_name","")
-        if(consultantName == "") consultantName = context.getString(R.string.LC_no_consultant_name)
-        return "${context.getString(R.string.LC_translator_prefix)} $translatorName\n${context.getString(R.string.LC_consultant_prefix)} $consultantName"
-    }
-
-    fun getLocalCreditStart(context: Context) : String {
-        return "${context.getString(R.string.LC_community_prefix)}\n${context.getString(R.string.LC_dramatize_prefix)}"
     }
 
     fun goToNextPhase() : Boolean {

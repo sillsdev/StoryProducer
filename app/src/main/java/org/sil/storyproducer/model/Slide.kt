@@ -57,11 +57,7 @@ class Slide{
         if(!dispStory){
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
-        val overlayText = when(slideType){
-            SlideType.LOCALCREDITS -> "$content\n$translatedContent"
-            else -> translatedContent
-        }
-        val tOverlay = TextOverlay(overlayText)
+        val tOverlay = TextOverlay(translatedContent)
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
             SlideType.LOCALCREDITS, SlideType.CREDITS2ATTRIBUTIONS -> 16

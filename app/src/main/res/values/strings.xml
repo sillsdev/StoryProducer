@@ -265,13 +265,7 @@
     <string name="title_activity_splash_screen">Story Producer</string>
 
     <!-- Local Credits -->
-    <string name="LC_translator_prefix">Translator:</string>
-    <string name="LC_consultant_prefix">Consultant:\</string>
-    <string name="LC_community_prefix">Community Workers:</string>
-    <string name="LC_dramatize_prefix">Voice Actors:\</string>
-    <string name="LC_no_translator_name">No translator name</string>
-    <string name="LC_no_consultant_name">No consultant name</string>
-
+    <string name="LC_starting_text">Translator:\nConsultant:\nCommunity Workers:\nVoice Actors:</string>
 
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>
