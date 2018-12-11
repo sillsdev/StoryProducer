@@ -175,7 +175,8 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        var slidePicture: Bitmap = getStoryImage(context!!,slideNum)
+        val downSample = 2
+        var slidePicture: Bitmap = getStoryImage(context!!,slideNum,downSample)
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
         val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText()
