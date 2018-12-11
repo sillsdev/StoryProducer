@@ -45,7 +45,6 @@ class DraftFrag : MultiRecordFrag() {
         // display the image selection button, if on the title slide
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
             val imageFab: FloatingActionButton = rootView!!.findViewById<View>(R.id.insert_image_fab) as FloatingActionButton
-            imageFab.setImageResource(R.drawable.ic_insert_photo_white_24dp)
             imageFab.show()
             imageFab.setOnClickListener {
                 val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
