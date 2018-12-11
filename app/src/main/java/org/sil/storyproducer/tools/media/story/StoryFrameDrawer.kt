@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.tools.file.getReducedStoryImage
 import org.sil.storyproducer.tools.file.getStoryImage
 
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -152,7 +153,8 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
         val page = mPages[pageIndex]
         if(!bitmaps.containsKey(page.imRelPath)){
-            bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath)
+            bitmaps[page.imRelPath] = getReducedStoryImage(context,page.imRelPath,
+                    (mWidth*1.5).toInt(),(mHeight*1.5).toInt())
         }
         val bitmap = bitmaps[page.imRelPath]
 

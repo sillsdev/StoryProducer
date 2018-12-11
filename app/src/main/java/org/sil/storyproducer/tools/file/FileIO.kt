@@ -17,6 +17,7 @@ import org.sil.storyproducer.model.*
 import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.math.min
 
 
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
@@ -42,6 +43,18 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
     if(story.title == "") return genDefaultImage()
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,story)
+}
+
+fun getReducedStoryImage(context: Context, relPath: String,
+                         dstWidth: Int = 1500, dstHeight: Int = 1500,
+                         story: Story = Workspace.activeStory): Bitmap{
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    val options = BitmapFactory.Options()
+    options.inJustDecodeBounds = true
+    BitmapFactory.decodeStream(iStream, null, options)
+    val downSample: Int = min(options.outHeight/dstHeight,options.outWidth/dstWidth)
+    return getStoryImage(context, relPath, downSample, story)
 }
 
 fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
