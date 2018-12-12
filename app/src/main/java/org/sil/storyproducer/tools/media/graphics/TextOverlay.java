@@ -110,7 +110,7 @@ public class TextOverlay {
         mTextOutlinePaint.setAlpha((int) (mAlpha * 255));
         mTextOutlinePaint.setTextSize(mTextPaint.getTextSize());
         mTextOutlinePaint.setStyle(Paint.Style.STROKE);
-        mTextOutlinePaint.setStrokeWidth(1.5f * fontSizeScale);
+        mTextOutlinePaint.setStrokeWidth(2f * fontSizeScale);
 
         mPaddingActual = (int) (mPadding * fontSizeScale);
 

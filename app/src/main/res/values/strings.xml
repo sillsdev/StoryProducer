@@ -224,6 +224,7 @@
     <string name="export_include_soundtrack">Include Background Music/effects (Fx)</string>
     <string name="export_include_pictures">Include Pictures (Px)</string>
     <string name="export_include_text">Include Text (Tx)</string>
+    <string name="export_include_song">Include Local Song/picture (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
@@ -266,6 +267,9 @@
 
     <!-- Local Credits -->
     <string name="LC_starting_text">Translator:\nConsultant:\nCommunity Workers:\nVoice Actors:</string>
+
+    <!-- Local Song -->
+    <string name="LS_prompt">Make a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>
 
     <string name="title_activity_learn">LearnActivity</string>
     <string name="dummy_button">Dummy Button</string>
