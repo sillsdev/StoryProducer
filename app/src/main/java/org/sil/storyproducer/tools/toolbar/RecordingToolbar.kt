@@ -277,6 +277,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                 }
             } else {
                 //Now we need to start recording!
+                recordingListener.onStartedRecordingOrPlayback(true)
                 val recordingRelPath = assignNewAudioRelPath()
                 if (storyRelPathExists(activity,recordingRelPath)) {
                     val dialog = AlertDialog.Builder(activity)

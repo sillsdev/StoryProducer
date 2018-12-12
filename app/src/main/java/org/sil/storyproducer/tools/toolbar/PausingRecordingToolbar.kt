@@ -195,12 +195,11 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     checkButton!!.visibility = View.VISIBLE
                 }
             } else {
-                stopToolbarMedia()
+                recordingListener.onStartedRecordingOrPlayback(true)
                 if (isAppendingOn) {
                     startRecording(AUDIO_TEMP_NAME)
                 }else{
                     startRecording(assignNewAudioRelPath())
-                    recordingListener.onStartedRecordingOrPlayback(true)
                 }
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                 //checkButton.setBackgroundResource(R.drawable.ic_stop_white_48dp);
@@ -226,13 +225,29 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         if (enableCheckButton) {
             val checkListener = View.OnClickListener {
                 //Delete the temp file wav file
-                stopToolbarMedia()
+                stopRecording()
+                if (isAppendingOn) {
+                    try {
+                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+                    } catch (e: FileNotFoundException) {
+                        Log.e(TAG, "Did not concatenate audio files", e);
+                    }
+                }
                 deleteStoryFile(appContext,AUDIO_TEMP_NAME)
                 recordingListener.onStoppedRecording()
                 //make the button invisible till after the next new recording
                 isAppendingOn = false
                 checkButton!!.visibility = View.INVISIBLE
                 micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+                if (enableDeleteButton) {
+                    deleteButton.visibility = View.VISIBLE
+                }
+                if (enablePlaybackButton) {
+                    playButton.visibility = View.VISIBLE
+                }
+                if (enableMultiRecordButton) {
+                    multiRecordButton.visibility = View.VISIBLE
+                }
                 if (enableSendAudioButton) {
                     sendAudioButton.visibility = View.VISIBLE
                 }
