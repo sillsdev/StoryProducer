@@ -179,7 +179,9 @@ abstract class SlidePhaseFrag : Fragment() {
         var slidePicture: Bitmap = getStoryImage(context!!,slideNum,downSample)
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
-        val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText()
+        val tOverlay = if(Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
+            Workspace.activeStory.slides[slideNum].getOverlayText(false,false)
+        else Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
         //if overlay is null, it will not write the text.
         tOverlay?.draw(canvas)
 
@@ -239,13 +241,12 @@ abstract class SlidePhaseFrag : Fragment() {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
+                //stop other playback streams.
+                stopPlayBackAndRecording()
                 if (referenceAudioPlayer.isAudioPlaying) {
-                    referenceAudioPlayer.pauseAudio()
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                     refPlaybackProgress = referenceAudioPlayer.currentPosition
                     refPlaybackSeekBar?.progress = refPlaybackProgress
                 } else {
-                    //stop other playback streams.
                     referenceAudioPlayer.currentPosition = refPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
@@ -260,6 +261,12 @@ abstract class SlidePhaseFrag : Fragment() {
             }
         }
     }
+
+    open fun stopPlayBackAndRecording() {
+        referenceAudioPlayer.pauseAudio()
+        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+    }
+
     companion object {
         const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
 

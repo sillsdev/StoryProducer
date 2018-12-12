@@ -71,15 +71,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         recordingToolbar?.hideButtons()
     }
 
-
     /**
      * Stops the toolbar from recording or playing back media.
      * Used in [DraftListRecordingsModal]
      */
-    open fun stopPlayBackAndRecording() {
+    override fun stopPlayBackAndRecording() {
+        super.stopPlayBackAndRecording()
         recordingToolbar?.stopToolbarMedia()
-        referenceAudioPlayer.stopAudio()
-        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
     /**
@@ -92,7 +90,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                //not used here
+                stopPlayBackAndRecording()
             }
         }
         val rList = RecordingsList(context!!, this)

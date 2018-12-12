@@ -195,7 +195,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                     checkButton!!.visibility = View.VISIBLE
                 }
             } else {
-                stopPlayBackAndRecording()
+                stopToolbarMedia()
                 if (isAppendingOn) {
                     startRecording(AUDIO_TEMP_NAME)
                 }else{
@@ -226,7 +226,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         if (enableCheckButton) {
             val checkListener = View.OnClickListener {
                 //Delete the temp file wav file
-                stopPlayBackAndRecording()
+                stopToolbarMedia()
                 deleteStoryFile(appContext,AUDIO_TEMP_NAME)
                 recordingListener.onStoppedRecording()
                 //make the button invisible till after the next new recording
