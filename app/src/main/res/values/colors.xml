@@ -15,8 +15,8 @@
     <color name="transparent">#00000000</color>
     <color name="green">#32CD32</color>
     <color name="yellow">#ffeb3b</color>
-    <color name="learn_phase">#DC322F</color>
-    <color name="draft_phase">#2AA198</color>
+    <color name="learn_phase">#2AA198</color>
+    <color name="draft_phase">#DC322F</color>
     <color name="comunity_check_phase">#859900</color>
     <color name="consultant_check_phase">#268DB2</color>
     <color name="dramatization_phase">#D33682</color>
