@@ -34,10 +34,6 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         when (tag) {
             "VisualUnit" -> {
                 val slide = parseSlideXML(parser)
-                if(firstSlide) {
-                    slide.slideType = SlideType.FRONTCOVER
-                    firstSlide = false
-                }
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
                 val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
@@ -46,6 +42,12 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                     if (textList.size > 1) slide.subtitle= textList[1]
                     if (textList.size > 2) slide.reference = textList[2]
                     if (textList.size > 3) slide.content = textList[3]
+                }
+                if(firstSlide) {
+                    slide.slideType = SlideType.FRONTCOVER
+                    //Use the folder name instead of the title to get the number showing up.
+                    slide.content = storyPath.name!!
+                    firstSlide = false
                 }
                 slides.add(slide)
             }
