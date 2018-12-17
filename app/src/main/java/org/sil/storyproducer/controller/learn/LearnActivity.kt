@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.learn
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -17,6 +18,7 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.BitmapScaler
@@ -361,6 +363,13 @@ class LearnActivity : PhaseBaseActivity() {
         if (slidePicture == null) {
             Snackbar.make(rootView!!, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show()
         }else{
+            //draw the text overlay
+            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+            val canvas = Canvas(slidePicture)
+            val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
+            //if overlay is null, it will not write the text.
+            tOverlay?.draw(canvas)
+
             //Get the height of the phone.
             val phoneProperties = resources.displayMetrics
             var height = phoneProperties.heightPixels

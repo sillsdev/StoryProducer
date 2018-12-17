@@ -242,11 +242,12 @@ abstract class SlidePhaseFrag : Fragment() {
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 //stop other playback streams.
-                stopPlayBackAndRecording()
                 if (referenceAudioPlayer.isAudioPlaying) {
+                    stopPlayBackAndRecording()
                     refPlaybackProgress = referenceAudioPlayer.currentPosition
                     refPlaybackSeekBar?.progress = refPlaybackProgress
                 } else {
+                    stopPlayBackAndRecording()
                     referenceAudioPlayer.currentPosition = refPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
