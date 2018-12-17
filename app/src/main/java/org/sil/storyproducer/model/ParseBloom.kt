@@ -126,6 +126,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //Add the Local credits slide
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
+    slide.content = context.getString(R.string.LC_prompt)
     slides.add(slide)
 
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.

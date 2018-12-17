@@ -266,7 +266,8 @@
     <string name="title_activity_splash_screen">Story Producer</string>
 
     <!-- Local Credits -->
-    <string name="LC_starting_text">Translator:\nConsultant:\nCommunity Workers:\nVoice Actors:</string>
+    <string name="LC_starting_text">Translated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_prompt">Local Credits will be added during voice acting.</string>
 
     <!-- Local Song -->
     <string name="LS_prompt">Make a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>

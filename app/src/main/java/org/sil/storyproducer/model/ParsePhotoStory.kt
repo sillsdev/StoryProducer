@@ -80,6 +80,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //Add the Local credits slide
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
+    slide.content = context.getString(R.string.LC_prompt)
     //add as second last slide
     slides.add(slides.size-1,slide)
 
