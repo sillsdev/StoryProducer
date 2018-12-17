@@ -25,6 +25,7 @@ import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import java.util.*
+import kotlin.math.max
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -177,13 +178,6 @@ abstract class SlidePhaseFrag : Fragment() {
     protected fun setPic(slideImage: ImageView) {
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(context!!,slideNum,downSample)
-        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
-        val canvas = Canvas(slidePicture)
-        val tOverlay = if(Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
-            Workspace.activeStory.slides[slideNum].getOverlayText(false,false)
-        else Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
-        //if overlay is null, it will not write the text.
-        tOverlay?.draw(canvas)
 
         //Get the height of the phone.
         val phoneProperties = context!!.resources.displayMetrics
@@ -193,6 +187,16 @@ abstract class SlidePhaseFrag : Fragment() {
 
         //scale bitmap
         slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+
+        //draw the text overlay
+        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+        val canvas = Canvas(slidePicture)
+        val tOverlay = if(Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
+            Workspace.activeStory.slides[slideNum].getOverlayText(false,false)
+        else Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
+        //if overlay is null, it will not write the text.
+        tOverlay?.setPadding(max(2,2 + (canvas.width - phoneProperties.widthPixels)/2))
+        tOverlay?.draw(canvas)
 
         //Set the height of the image view
         slideImage.layoutParams.height = height

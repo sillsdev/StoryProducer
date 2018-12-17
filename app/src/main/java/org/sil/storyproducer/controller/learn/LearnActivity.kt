@@ -28,6 +28,7 @@ import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 import java.util.ArrayList
+import kotlin.math.max
 
 class LearnActivity : PhaseBaseActivity() {
 
@@ -363,12 +364,6 @@ class LearnActivity : PhaseBaseActivity() {
         if (slidePicture == null) {
             Snackbar.make(rootView!!, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show()
         }else{
-            //draw the text overlay
-            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
-            val canvas = Canvas(slidePicture)
-            val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
-            //if overlay is null, it will not write the text.
-            tOverlay?.draw(canvas)
 
             //Get the height of the phone.
             val phoneProperties = resources.displayMetrics
@@ -378,6 +373,14 @@ class LearnActivity : PhaseBaseActivity() {
 
             //scale bitmap
             slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+
+            //draw the text overlay
+            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+            val canvas = Canvas(slidePicture)
+            val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
+            //if overlay is null, it will not write the text.
+            tOverlay?.setPadding(max(2,2 + (canvas.width - phoneProperties.widthPixels)/2))
+            tOverlay?.draw(canvas)
             //Set the height of the image view
             if(slideImage != null) {
                 slideImage.layoutParams.height = height
