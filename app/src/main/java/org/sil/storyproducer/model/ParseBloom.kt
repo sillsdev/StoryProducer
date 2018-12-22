@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.graphics.Rect
 import android.support.v4.provider.DocumentFile
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
 import java.util.regex.Pattern
@@ -116,9 +117,16 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         slides.add(slide)
     }
 
+    //Add the song slide
+    slide = Slide()
+    slide.slideType = SlideType.LOCALSONG
+    slide.content = context.getString(R.string.LS_prompt)
+    slides.add(slide)
+
     //Add the Local credits slide
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
+    slide.content = context.getString(R.string.LC_prompt)
     slides.add(slide)
 
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.
@@ -126,7 +134,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val mOrgOckn = reOrgAckn.matcher(pageTextList[0])
     if(mOrgOckn.find()){
         val slide = Slide()
-        slide.slideType = SlideType.CREDITS2ATTRIBUTIONS
+        slide.slideType = SlideType.COPYRIGHT
         val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1))
         slide.content = ""
         var firstLine = true

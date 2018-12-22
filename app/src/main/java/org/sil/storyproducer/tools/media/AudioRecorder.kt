@@ -125,6 +125,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
     }
 
     override fun stop() {
+        if(!isRecording) return
         try {
             mRecorder.stop()
             mRecorder.reset()

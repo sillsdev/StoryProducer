@@ -52,19 +52,21 @@ class Slide{
     //consultant approval
     var isChecked: Boolean = false
 
-    fun getOverlayText(dispStory: Boolean = false) : TextOverlay? {
+    fun getOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {
         //There is no text overlay on normal slides or "no slides"
         if(!dispStory){
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
-        val tOverlay = TextOverlay(translatedContent)
+        val tOverlay = if(origTitle && slideType == SlideType.FRONTCOVER)
+            TextOverlay(content) //show original title
+        else TextOverlay(translatedContent)
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
-            SlideType.LOCALCREDITS, SlideType.CREDITS2ATTRIBUTIONS -> 16
-            SlideType.NUMBEREDPAGE, SlideType.NONE -> 16
+            SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
+            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 16
         }
         tOverlay.setFontSize(fontSize)
-        if(slideType == SlideType.NUMBEREDPAGE)
+        if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
             tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
         return tOverlay
     }
@@ -73,7 +75,7 @@ class Slide{
 }
 
 enum class SlideType {
-    NONE, FRONTCOVER, NUMBEREDPAGE, LOCALCREDITS, CREDITS2ATTRIBUTIONS, ENDPAGE
+    NONE, FRONTCOVER, NUMBEREDPAGE, LOCALSONG, LOCALCREDITS, COPYRIGHT, ENDPAGE
 }
 
 @JsonClass(generateAdapter = true)

@@ -58,7 +58,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                //not used here
+                stopPlayBackAndRecording()
             }
         }
         val rList = RecordingsList(context!!, this)
@@ -77,5 +77,4 @@ class CommunityCheckFrag : MultiRecordFrag() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()
     }
-
 }

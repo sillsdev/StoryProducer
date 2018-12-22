@@ -344,9 +344,6 @@ public class BackTranslationFrag extends Fragment {
                     playPauseDraftButton.setBackgroundResource(R.drawable.ic_pause_circle_outline_white_36dp);
                     draftPlayer.playAudio();
 
-                    if(draftPlayer != null){ //if there is a draft available to play
-                        recordingToolbar.onToolbarTouchStopAudio(playPauseDraftButton, R.drawable.ic_play_circle_outline_white_36dp, draftPlayer);
-                    }
                     Toast.makeText(getContext(), R.string.backTranslation_playback_draft_recording, Toast.LENGTH_SHORT).show();
                 }
             }
