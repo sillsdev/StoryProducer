@@ -9,6 +9,8 @@ import android.widget.RelativeLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -23,8 +25,10 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
         setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-        setToolbar()
+        if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+            rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+            setToolbar()
+        }
         dispList = RecordingsList(context!!, this)
         dispList!!.embedList(rootView!! as ViewGroup)
         dispList!!.setSlideNum(slideNum)
@@ -54,7 +58,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                //not used here
+                stopPlayBackAndRecording()
             }
         }
         val rList = RecordingsList(context!!, this)
@@ -73,5 +77,4 @@ class CommunityCheckFrag : MultiRecordFrag() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()
     }
-
 }

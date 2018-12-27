@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.support.v4.provider.DocumentFile
 import android.util.Xml
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
@@ -33,10 +34,6 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         when (tag) {
             "VisualUnit" -> {
                 val slide = parseSlideXML(parser)
-                if(firstSlide) {
-                    slide.slideType = SlideType.FRONTCOVER
-                    firstSlide = false
-                }
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
                 val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
@@ -46,6 +43,12 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                     if (textList.size > 2) slide.reference = textList[2]
                     if (textList.size > 3) slide.content = textList[3].trim()
                 }
+                if(firstSlide) {
+                    slide.slideType = SlideType.FRONTCOVER
+                    //Use the folder name instead of the title to get the number showing up.
+                    slide.content = storyPath.name!!
+                    firstSlide = false
+                }
                 slides.add(slide)
             }
             else -> {
@@ -54,11 +57,31 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
         }
         parser.next()
     }
+
     if (slides.isEmpty()) {
         return null
     }
-    val story = Story(storyPath.name!!,slides)
-    return story
+
+    //Assume that the final slide is actually the copyright slide
+    slides.last().slideType = SlideType.COPYRIGHT
+    //The copyright slide should show the copyright in the LWC.
+    slides.last().translatedContent = slides.last().content
+
+    //Add the song slide
+    var slide = Slide()
+    slide.slideType = SlideType.LOCALSONG
+    slide.content = context.getString(R.string.LS_prompt)
+    //add as second last slide
+    slides.add(slides.size-1,slide)
+
+    //Add the Local credits slide
+    slide = Slide()
+    slide.slideType = SlideType.LOCALCREDITS
+    slide.content = context.getString(R.string.LC_prompt)
+    //add as second last slide
+    slides.add(slides.size-1,slide)
+
+    return Story(storyPath.name!!,slides)
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
@@ -79,9 +102,7 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
             }
             "Image" -> {
                 parseImage(slide, parser)
-            }
-            "MusicTrack" -> {
-                parseMusicTrack(slide, parser)
+
             }
             else -> {
                 skipToNextTag(parser)
@@ -130,6 +151,13 @@ private fun parseEdit(parser: XmlPullParser, slide: Slide) {
                 slide.crop = parseRect(parser, "Rectangle")
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
+            }
+            "TextOverlay" -> {
+                //This is only for first slides and credit slides, although the content of the
+                //first slide is overwritten by the text.
+                slide.content = parser.getAttributeValue(null, "text")
+                skipToNextTag(parser)
+                parser.require(XmlPullParser.END_TAG, null, "TextOverlay")
             }
         }
         parser.next()

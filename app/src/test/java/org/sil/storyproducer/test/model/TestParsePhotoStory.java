@@ -26,10 +26,10 @@ public class TestParsePhotoStory {
     }
 
     @Test
-    public void parsePhotoStoryXML_When_ThereAreTwoSlides_Should_ReturnAStoryWithTwoSlides() {
+    public void parsePhotoStoryXML_Should_ReturnAStoryWithProvidedSlidesPlusSongAndCreditSlides() {
         Story result = parseValidStory();
 
-        Assert.assertEquals(2, result.getSlides().size());
+        Assert.assertEquals(5, result.getSlides().size());
     }
 
     @Test
@@ -83,10 +83,17 @@ public class TestParsePhotoStory {
     }
 
     @Test
-    public void parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideContentFromCorrespondingTextFile() {
+    public void parsePhotoStoryXML_When_AnySlideAfterFirstSlideHasAnImage_Should_GetSlideContentFromCorrespondingTextFile() {
         Story result = parseValidStory();
 
-        Assert.assertEquals("Once there was a sample story template that was formatted correctly.", result.getSlides().get(0).getContent());
+        Assert.assertEquals("This is test content.", result.getSlides().get(1).getContent());
+    }
+
+    @Test
+    public void parsePhotoStoryXML_When_HasFirstSlide_Should_GetSlideContentFromFolderName() {
+        Story result = parseValidStory();
+
+        Assert.assertEquals("sampledata/ValidStory", result.getSlides().get(0).getContent());
     }
 
     @Test
@@ -139,7 +146,7 @@ public class TestParsePhotoStory {
     public void parsePhotoStoryXML_When_StoryHasExtraTagsInsideRoot_Should_IgnoreThem() {
         Story result = parseValidStory();
 
-        Assert.assertEquals(2, result.getSlides().size());
+        Assert.assertEquals(5, result.getSlides().size());
     }
 
     @Test

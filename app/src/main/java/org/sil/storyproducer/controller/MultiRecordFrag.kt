@@ -11,6 +11,7 @@ import android.widget.Toast
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -29,8 +30,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-        setToolbar()
+        if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS){
+            rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+            setToolbar()
+        }
         return rootView
     }
 
@@ -68,15 +71,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         recordingToolbar?.hideButtons()
     }
 
-
     /**
      * Stops the toolbar from recording or playing back media.
      * Used in [DraftListRecordingsModal]
      */
-    open fun stopPlayBackAndRecording() {
+    override fun stopPlayBackAndRecording() {
+        super.stopPlayBackAndRecording()
         recordingToolbar?.stopToolbarMedia()
-        referenceAudioPlayer.stopAudio()
-        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
     /**
@@ -89,7 +90,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                //not used here
+                stopPlayBackAndRecording()
             }
         }
         val rList = RecordingsList(context!!, this)

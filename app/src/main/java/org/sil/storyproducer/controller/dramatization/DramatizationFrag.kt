@@ -37,8 +37,10 @@ class DramatizationFrag : MultiRecordFrag() {
         slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
-            rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-            setToolbar(rootViewToolbar)
+            if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+                rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+                setToolbar(rootViewToolbar)
+            }
             closeKeyboardOnTouch(rootView)
             rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
@@ -92,7 +94,9 @@ class DramatizationFrag : MultiRecordFrag() {
         if (rootView is RelativeLayout) {
             val recordingListener = object : RecordingListener {
                 override fun onStoppedRecording() {}
-                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                    stopPlayBackAndRecording()
+                }
             }
 
             val rList = RecordingsList(context!!, this)
@@ -128,8 +132,11 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        Workspace.activeStory.slides[slideNum].translatedContent = slideText!!.text.toString()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        val newText = slideText!!.text.toString()
+        if(newText != Workspace.activeStory.slides[slideNum].translatedContent){
+            Workspace.activeStory.slides[slideNum].translatedContent = newText
+            setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        }
     }
 
 }

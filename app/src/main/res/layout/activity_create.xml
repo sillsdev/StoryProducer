@@ -62,6 +62,12 @@
                         android:text="@string/export_include_KBFX" />
 
                     <CheckBox
+                        android:id="@+id/checkbox_export_song"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/export_include_song" />
+
+                    <CheckBox
                         android:id="@+id/checkbox_export_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -52,6 +52,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
+    var mIncludeSong = false
     var mDumbPhone = false
 
     private var mLogProgress = false
@@ -141,7 +142,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var lastSoundtrackVolume = 0.0f
         var iSlide = 0
         while (iSlide < (Workspace.activeStory.slides.size)) {
-            val slide = Workspace.activeStory.slides[iSlide]
+            val slide = Workspace.activeStory.slides[iSlide++]
+
+            //Check if the song slide should be included
+            if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
+
             val image = if (mIncludePictures) slide.imageFile else ""
             var audio = slide.chosenDramatizationFile
             //fallback to draft audio
@@ -185,7 +190,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,slide.slideType))
-            iSlide++
         }
 
         return pages.toTypedArray()

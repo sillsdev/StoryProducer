@@ -83,6 +83,12 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
             //Note: This method of getting a canvas to draw to may be invalid
             //per documentation of MediaCodec.getInputSurface().
+
+            while(mPresentationTimeQueue.size > PipedAudioShortManipulator.BUFFER_COUNT-1){
+                //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
+                //just count the number of buffers used through looking at the time queue.
+                Thread.sleep(10)
+            }
             val canv = if (Build.VERSION.SDK_INT >= 23) {
                 mSurface!!.lockHardwareCanvas()
             } else {
