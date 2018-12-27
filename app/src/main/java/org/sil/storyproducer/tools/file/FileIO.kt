@@ -12,6 +12,7 @@ import android.provider.DocumentsProvider
 
 import java.io.File
 import android.support.v4.provider.DocumentFile
+import android.util.Log
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.*
 import java.io.FileDescriptor
@@ -113,6 +114,7 @@ fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspa
 
 fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : InputStream? {
     if (storyTitle == "") return null
+    Log.d("jonny", "story Title is $storyTitle. relPath is $relPath");
     return getChildInputStream(context, "$storyTitle/$relPath")
 }
 
