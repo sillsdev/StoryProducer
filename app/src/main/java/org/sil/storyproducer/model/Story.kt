@@ -5,10 +5,12 @@ import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.model.logging.LogEntry
 
 import java.util.*
+import java.util.regex.Pattern
 
 internal const val PROJECT_DIR = "project"
 internal const val VIDEO_DIR = "videos"
 internal const val PROJECT_FILE = "story.json"
+internal val RE_TITLE_NUMBER = "([0-9]+[A-Za-z]?)?[_ -]*(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
@@ -21,6 +23,24 @@ class Story(var title: String, val slides: List<Slide>){
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
+
+    val shortTitle: String get() {
+        val match = RE_TITLE_NUMBER.find(title)
+        return if(match != null){
+            match.groupValues[2]
+        } else {
+            title
+        }
+    }
+    val titleNumber: String get() {
+        val match = RE_TITLE_NUMBER.find(title)
+        return if(match != null){
+            match.groupValues[1]
+        } else {
+            ""
+        }
+    }
+
     companion object
 
     fun addVideo(video: String){

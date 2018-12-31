@@ -38,15 +38,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                 val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
                     val textList = textFile.split("~")
-                    if (textList.size > 0) slide.title = textList[0]
-                    if (textList.size > 1) slide.subtitle= textList[1]
-                    if (textList.size > 2) slide.reference = textList[2]
-                    if (textList.size > 3) slide.content = textList[3]
+                    if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 1) slide.subtitle= textList[1].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 2) slide.reference = textList[2].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 3) slide.content = textList[3].removePrefix(" ").removeSuffix(" ")
                 }
                 if(firstSlide) {
                     slide.slideType = SlideType.FRONTCOVER
-                    //Use the folder name instead of the title to get the number showing up.
-                    slide.content = storyPath.name!!
                     firstSlide = false
                 }
                 slides.add(slide)
