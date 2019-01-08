@@ -57,9 +57,11 @@ class Slide{
         if(!dispStory){
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
-        val tOverlay = if(origTitle && slideType == SlideType.FRONTCOVER)
-            TextOverlay(content) //show original title
-        else TextOverlay(translatedContent)
+        val tOverlay = when(slideType) {
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(content) else TextOverlay(translatedContent)
+            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\nCreative Commons")
+            else -> TextOverlay(translatedContent)
+        }
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
             SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
