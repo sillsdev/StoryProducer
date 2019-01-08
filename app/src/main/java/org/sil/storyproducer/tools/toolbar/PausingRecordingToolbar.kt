@@ -225,8 +225,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         if (enableCheckButton) {
             val checkListener = View.OnClickListener {
                 //Delete the temp file wav file
-                stopRecording()
-                if (isAppendingOn) {
+                if (voiceRecorder.isRecording) {
+                    stopRecording()
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
                     } catch (e: FileNotFoundException) {
