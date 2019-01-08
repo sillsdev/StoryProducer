@@ -231,13 +231,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        val TITLE_FONT_SIZE = 24
-        val BODY_FONT_SIZE = 26
-
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
-
-        private val COPYRIGHT_SLIDE_US: Long = 3000000
 
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
@@ -253,13 +248,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
-        private val AUDIO_BIT_RATE_AMR = 128000
+
+        private val AUDIO_SAMPLE_RATE_AMR = 8000
+        private val AUDIO_BIT_RATE_AMR = 16000
 
         fun generateDumbAudioFormat(): MediaFormat {
             // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
             val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
             audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
             return audioFormat
         }
