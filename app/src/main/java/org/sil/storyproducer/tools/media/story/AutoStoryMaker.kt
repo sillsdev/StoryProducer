@@ -9,11 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.model.*
 
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
@@ -164,12 +161,13 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
                 soundtrack = slide.musicFile
                 soundtrackVolume = slide.volume
-                if (soundtrack == "") {
+                if (soundtrack == MUSIC_CONTINUE) {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
                     soundtrackVolume = lastSoundtrackVolume
-                } else if (soundtrack == "") {
-                    error("Soundtrack missing from template: " + soundtrack)
+                } else if (soundtrack == MUSIC_NONE) {
+                    soundtrack = ""
+                    soundtrackVolume = 0f
                 }
 
                 lastSoundtrack = soundtrack

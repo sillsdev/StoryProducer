@@ -121,12 +121,14 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     slide = Slide()
     slide.slideType = SlideType.LOCALSONG
     slide.content = context.getString(R.string.LS_prompt)
+    slide.musicFile = MUSIC_NONE
     slides.add(slide)
 
     //Add the Local credits slide
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
     slide.content = context.getString(R.string.LC_prompt)
+    slide.musicFile = MUSIC_NONE
     slides.add(slide)
 
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.
@@ -145,6 +147,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         }
         slide.content
         slide.translatedContent = slide.content
+        slide.musicFile = MUSIC_NONE
         slides.add(slide)
     }
 

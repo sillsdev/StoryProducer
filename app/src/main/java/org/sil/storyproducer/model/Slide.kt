@@ -33,7 +33,7 @@ class Slide{
     var startMotion: Rect? = null
     var endMotion: Rect? = null
 
-    var musicFile = ""
+    var musicFile = MUSIC_CONTINUE
     var volume = 0.0f
 
     //translated text
@@ -79,6 +79,9 @@ class Slide{
 enum class SlideType {
     NONE, FRONTCOVER, NUMBEREDPAGE, LOCALSONG, LOCALCREDITS, COPYRIGHT, ENDPAGE
 }
+
+const val MUSIC_NONE = "noSoundtrack"
+const val MUSIC_CONTINUE = "continueSoundtrack"
 
 @JsonClass(generateAdapter = true)
 class RectJson(var left: Int = 0,

@@ -67,11 +67,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     slides.last().slideType = SlideType.COPYRIGHT
     //The copyright slide should show the copyright in the LWC.
     slides.last().translatedContent = slides.last().content
+    slides.last().musicFile = MUSIC_NONE
 
     //Add the song slide
     var slide = Slide()
     slide.slideType = SlideType.LOCALSONG
     slide.content = context.getString(R.string.LS_prompt)
+    slide.musicFile = MUSIC_NONE
     //add as second last slide
     slides.add(slides.size-1,slide)
 
@@ -79,6 +81,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
     slide.content = context.getString(R.string.LC_prompt)
+    slide.musicFile = MUSIC_NONE
     //add as second last slide
     slides.add(slides.size-1,slide)
 
