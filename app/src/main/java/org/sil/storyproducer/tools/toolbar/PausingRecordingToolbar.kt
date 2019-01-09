@@ -225,13 +225,15 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
         if (enableCheckButton) {
             val checkListener = View.OnClickListener {
                 //Delete the temp file wav file
-                if (voiceRecorder.isRecording) {
+                if (voiceRecorder.isRecording && isAppendingOn) {
                     stopRecording()
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
                     } catch (e: FileNotFoundException) {
                         Log.e(TAG, "Did not concatenate audio files", e);
                     }
+                } else {
+                    stopRecording()
                 }
                 deleteStoryFile(appContext,AUDIO_TEMP_NAME)
                 recordingListener.onStoppedRecording()
