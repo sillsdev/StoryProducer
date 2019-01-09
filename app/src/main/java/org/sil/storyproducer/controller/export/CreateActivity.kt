@@ -43,6 +43,7 @@ class CreateActivity : PhaseBaseActivity() {
     private var mProgressBar: ProgressBar? = null
 
     private val mOutputPath: String get() {
+        val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
         val name = mEditTextTitle!!.text.toString()
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
@@ -50,8 +51,7 @@ class CreateActivity : PhaseBaseActivity() {
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
         val ext = if (mRadioButtonDumbPhone!!.isChecked) {".3gp"} else {".mp4"}
-        return "${name}_$fx$px$mv$tx$sg$ext"
-
+        return "$num${name}_$fx$px$mv$tx$sg$ext"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -386,7 +386,7 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
-        mEditTextTitle!!.setText(prefs.getString(PREF_KEY_SHORT_NAME, Workspace.activeStory.title))
+        mEditTextTitle!!.setText(prefs.getString(PREF_KEY_SHORT_NAME, Workspace.activeStory.shortTitle))
 
         setSpinnerValue()
     }

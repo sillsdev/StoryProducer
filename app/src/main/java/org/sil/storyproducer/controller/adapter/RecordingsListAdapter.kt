@@ -31,7 +31,7 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
         fun onRowClick(name: String)
         fun onPlayClick(name: String, buttonClickedNow: ImageButton)
         fun onDeleteClick(name: String)
-        fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode
+        fun onRenameClick(name: String, newName: String): RenameCode
         fun onRenameSuccess()
     }
 
@@ -118,13 +118,13 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
                     val returnCode = listeners.onRenameClick(values[position], newName.text.toString())
                     when (returnCode) {
 
-                        AudioFiles.RenameCode.SUCCESS -> {
+                        RenameCode.SUCCESS -> {
                             listeners.onRenameSuccess()
                             Toast.makeText(getContext(), context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                         }
-                        AudioFiles.RenameCode.ERROR_LENGTH -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
-                        AudioFiles.RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
-                        AudioFiles.RenameCode.ERROR_UNDEFINED -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_LENGTH -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_UNDEFINED -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
                     }
                 }.create()
 
@@ -250,13 +250,13 @@ class RecordingsList(private val context: Context, private val parentFragment: M
         createRecordingList()
     }
 
-    override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
+    override fun onRenameClick(name: String, newName: String): RenameCode {
         lastOldName = name
         val tempName = newName + AUDIO_EXT
         lastNewName = tempName
         when(renameStoryFile(context,"$PROJECT_DIR/$name",tempName)){
-            true -> return AudioFiles.RenameCode.SUCCESS
-            false -> return AudioFiles.RenameCode.ERROR_UNDEFINED
+            true -> return RenameCode.SUCCESS
+            false -> return RenameCode.ERROR_UNDEFINED
         }
     }
 

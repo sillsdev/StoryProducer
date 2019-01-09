@@ -15,7 +15,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.Modal;
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter;
 import org.sil.storyproducer.tools.StorySharedPreferences;
-import org.sil.storyproducer.tools.file.AudioFiles;
+import org.sil.storyproducer.tools.file.RenameCode;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
@@ -152,13 +152,13 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
 
 
     @Override
-    public AudioFiles.RenameCode onRenameClick(String name, String newName) {
+    public RenameCode onRenameClick(String name, String newName) {
         /* FIXME
         lastOldName = name;
         lastNewName = newName;
         return AudioFiles.INSTANCE.renameBackTranslation(StoryState.getStoryName(), slidePosition, name, newName);
         */
-        return AudioFiles.RenameCode.SUCCESS;
+        return RenameCode.SUCCESS;
     }
 
     @Override

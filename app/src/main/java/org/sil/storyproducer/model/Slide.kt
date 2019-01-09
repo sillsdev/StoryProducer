@@ -33,7 +33,7 @@ class Slide{
     var startMotion: Rect? = null
     var endMotion: Rect? = null
 
-    var musicFile = ""
+    var musicFile = MUSIC_CONTINUE
     var volume = 0.0f
 
     //translated text
@@ -57,9 +57,11 @@ class Slide{
         if(!dispStory){
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
-        val tOverlay = if(origTitle && slideType == SlideType.FRONTCOVER)
-            TextOverlay(content) //show original title
-        else TextOverlay(translatedContent)
+        val tOverlay = when(slideType) {
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(content) else TextOverlay(translatedContent)
+            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\nCreative Commons")
+            else -> TextOverlay(translatedContent)
+        }
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
             SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
@@ -77,6 +79,9 @@ class Slide{
 enum class SlideType {
     NONE, FRONTCOVER, NUMBEREDPAGE, LOCALSONG, LOCALCREDITS, COPYRIGHT, ENDPAGE
 }
+
+const val MUSIC_NONE = "noSoundtrack"
+const val MUSIC_CONTINUE = "continueSoundtrack"
 
 @JsonClass(generateAdapter = true)
 class RectJson(var left: Int = 0,

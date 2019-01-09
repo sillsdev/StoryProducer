@@ -38,15 +38,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                 val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
                     val textList = textFile.split("~")
-                    if (textList.size > 0) slide.title = textList[0]
-                    if (textList.size > 1) slide.subtitle= textList[1]
-                    if (textList.size > 2) slide.reference = textList[2]
-                    if (textList.size > 3) slide.content = textList[3].trim()
+                    if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 1) slide.subtitle= textList[1].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 2) slide.reference = textList[2].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 3) slide.content = textList[3].removePrefix(" ").removeSuffix(" ")
                 }
                 if(firstSlide) {
                     slide.slideType = SlideType.FRONTCOVER
-                    //Use the folder name instead of the title to get the number showing up.
-                    slide.content = storyPath.name!!
                     firstSlide = false
                 }
                 slides.add(slide)
@@ -66,11 +64,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     slides.last().slideType = SlideType.COPYRIGHT
     //The copyright slide should show the copyright in the LWC.
     slides.last().translatedContent = slides.last().content
+    slides.last().musicFile = MUSIC_NONE
 
     //Add the song slide
     var slide = Slide()
     slide.slideType = SlideType.LOCALSONG
     slide.content = context.getString(R.string.LS_prompt)
+    slide.musicFile = MUSIC_NONE
     //add as second last slide
     slides.add(slides.size-1,slide)
 
@@ -78,6 +78,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     slide = Slide()
     slide.slideType = SlideType.LOCALCREDITS
     slide.content = context.getString(R.string.LC_prompt)
+    slide.musicFile = MUSIC_NONE
     //add as second last slide
     slides.add(slides.size-1,slide)
 
