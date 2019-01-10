@@ -10,7 +10,7 @@ import java.util.regex.Pattern
 internal const val PROJECT_DIR = "project"
 internal const val VIDEO_DIR = "videos"
 internal const val PROJECT_FILE = "story.json"
-internal val RE_TITLE_NUMBER = "([0-9]+[A-Za-z]?)?[_ -]*(.*)".toRegex()
+internal val RE_TITLE_NUMBER = "([0-9]+[A-Za-z]?)?[_ -]*(.+)".toRegex()
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
