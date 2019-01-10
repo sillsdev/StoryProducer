@@ -369,8 +369,7 @@ class CreateActivity : PhaseBaseActivity() {
         editor.putBoolean(PREF_KEY_INCLUDE_SONG, mCheckboxSong?.isChecked ?: true)
 
         editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
-        editor.putString(PREF_KEY_SHORT_NAME, mEditTextTitle!!.text.toString())
-
+        editor.putString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", mEditTextTitle!!.text.toString())
 
         editor.apply()
     }
@@ -386,7 +385,7 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
-        mEditTextTitle!!.setText(prefs.getString(PREF_KEY_SHORT_NAME, Workspace.activeStory.shortTitle))
+        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", Workspace.activeStory.shortTitle))
 
         setSpinnerValue()
     }
