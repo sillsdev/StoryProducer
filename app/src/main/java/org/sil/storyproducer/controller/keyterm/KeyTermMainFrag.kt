@@ -52,7 +52,7 @@ class KeyTermMainFrag : Fragment() {
         }
 
         recordingToolbar = RecordingToolbar(activity!!,
-                view!!, true, false, false, false,
+                view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}

@@ -95,16 +95,21 @@ class KeyTermActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        //if there are two we are at the beginning and need to stop
-        if(supportFragmentManager.backStackEntryCount == 2){
-            this.finish()
+        if(viewPager?.currentItem == 0) {
+            //if there are two we are at the beginning and need to stop
+            if (supportFragmentManager.backStackEntryCount == 2) {
+                this.finish()
+            }
+            //otherwise set the term to the term four earlier
+            else if (supportFragmentManager.backStackEntryCount >= 4) {
+                val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 4).name
+                Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[keytermName?.toLowerCase()]?.term]!!
+                super.onBackPressed()
+                supportFragmentManager.popBackStack()
+            }
         }
-        //otherwise set the term to the term four earlier
-        else if(supportFragmentManager.backStackEntryCount >= 4){
-            val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount-4).name
-            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[keytermName?.toLowerCase()]?.term]!!
-            super.onBackPressed()
-            supportFragmentManager.popBackStack()
+        else{
+            viewPager?.currentItem = 0
         }
     }
 

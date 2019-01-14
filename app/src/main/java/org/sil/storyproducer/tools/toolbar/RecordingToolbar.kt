@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Handler
+import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -378,7 +379,12 @@ constructor(activity: Activity, rootView: View,
         if (enableMultiRecordButton) {
             val multiRecordModalButtonListener = View.OnClickListener {
                 stopPlayBackAndRecording()
-                RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
+                if(PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
+                    RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
+                }
+                else{
+                    activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
+                }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
 
