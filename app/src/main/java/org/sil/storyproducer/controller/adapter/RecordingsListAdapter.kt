@@ -180,7 +180,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                             (recyclerView?.adapter as RecordingsListAdapter).notifyItemRemoved(position)
                         }
                         else{
-                            (adapter?.adapter as RecyclerDataAdapter).notifyItemRemoved(position)
+                            (adapter.adapter as RecyclerDataAdapter).notifyItemRemoved(position)
                         }
                     }
                     .create()

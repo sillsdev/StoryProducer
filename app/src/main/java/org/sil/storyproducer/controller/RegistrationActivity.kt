@@ -4,45 +4,29 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.provider.Settings.Secure
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.provider.DocumentFile
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.Spinner
-import android.widget.Toast
-
+import android.widget.*
 import com.android.volley.Request
-import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
-
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Registration
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
-
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.HashMap
-import java.util.Stack
-import android.provider.Settings.Secure
-import java.io.File
+import java.util.*
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -98,8 +82,9 @@ open class RegistrationActivity : AppCompatActivity() {
      * Checks the bundle variables to see if this activity was launched at the app's start.
      * @return true if this is opening registration, false if not
      */
-    private// Check to see if registration is first activity
-    val isFirstActivity: Boolean
+
+    // Check to see if registration is first activity
+    private val isFirstActivity: Boolean
         get() {
             val extras = intent.extras
             return extras != null && extras.getBoolean(FIRST_ACTIVITY_KEY)
@@ -137,7 +122,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data!!.data)
+            Workspace.setupWorkspacePath(this,data?.data!!)
             setupInputFields()
         }
     }
@@ -154,12 +139,8 @@ open class RegistrationActivity : AppCompatActivity() {
      * Initializes the inputFields to the inputs of this activity.
      */
     private fun setupInputFields() {
-        val view = findViewById<View>(R.id.scroll_view)
-
-        //Find the top level linear layout
-        if (view is ScrollView) {
-            inputFields = getInputFields(view)
-        }
+        val view = findViewById<ScrollView>(R.id.scroll_view)
+        inputFields = getInputFields(view)
     }
 
     /**
@@ -182,7 +163,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 databaseEmailField1.requestFocus()
                 for (sectionView in sectionViews) {
                     if (sectionView!!.findFocus() != null) {
-                        sectionView!!.setVisibility(View.VISIBLE)
+                        sectionView.visibility = View.VISIBLE
                         toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1)
                     }
                 }
@@ -235,7 +216,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         val inputFieldsList = ArrayList<View>()
         val viewStack = Stack<ViewGroup>()
-        val viewName: String
         var storedValue: String
         var storedSpinnerIndex: Int
         var textFieldView: EditText?
@@ -340,7 +320,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     field.requestFocus()
                     for (j in sectionViews.indices) {
                         if (sectionViews[j]!!.findFocus() != null) {
-                            sectionViews[j]!!.setVisibility(View.VISIBLE)
+                            sectionViews[j]!!.visibility = View.VISIBLE
                             headerViews[j]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                             toggleKeyboard(SHOW_KEYBOARD, field)
                             return false
@@ -403,11 +383,11 @@ open class RegistrationActivity : AppCompatActivity() {
      */
     private fun storeRegistrationInfo() {
         val reg = Workspace.registration
-        val calendar: Calendar
+        val calendar: Calendar = Calendar.getInstance()
         val date: String
-        val androidVersion: String
-        val manufacturer: String
-        val model: String
+        val androidVersion: String = Build.VERSION.RELEASE
+        val manufacturer: String = Build.MANUFACTURER
+        val model: String = Build.MODEL
         val day: String
         val month: String
         val year: String
@@ -439,7 +419,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         }
         // Create timestamp for when the data was submitted
-        calendar = Calendar.getInstance()
         day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH))
         month = Integer.toString(calendar.get(Calendar.MONTH) + 1)
         year = Integer.toString(calendar.get(Calendar.YEAR))
@@ -452,9 +431,6 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.putString("date", date)
 
         // Retrieve phone information
-        manufacturer = Build.MANUFACTURER
-        model = Build.MODEL
-        androidVersion = Build.VERSION.RELEASE
         reg.putString("manufacturer", manufacturer)
         reg.putString("model", model)
         reg.putString("android_version", androidVersion)
@@ -498,12 +474,13 @@ open class RegistrationActivity : AppCompatActivity() {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private fun showExitAlertDialog() {
-        val dialog = AlertDialog.Builder(this@RegistrationActivity)
+        val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_exit_title))
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
                 }.create()
 
         dialog.show()
@@ -514,15 +491,16 @@ open class RegistrationActivity : AppCompatActivity() {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private fun showSkipAlertDialog() {
-        val dialog = AlertDialog.Builder(this@RegistrationActivity)
+        val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_skip_title))
                 .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     storeRegistrationInfo()
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
                 }.create()
 
         dialog.show()
@@ -537,11 +515,11 @@ open class RegistrationActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this@RegistrationActivity)
                 .setTitle(getString(R.string.registration_error_title))
                 .setMessage(getString(R.string.registration_error_message))
-                .setPositiveButton(getString(R.string.ok)) { dialog, id ->
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     // The index here comes from the index of the archive section and header
                     // If another section is added or the sections are rearranged, this index
                     // will need to be changed
-                    sectionViews[4]!!.setVisibility(View.VISIBLE)
+                    sectionViews[4]!!.visibility = View.VISIBLE
                     headerViews[4]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                     emailTextField.requestFocus()
                 }.create()
@@ -564,7 +542,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_submit_title))
                 .setMessage(message)
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     Workspace.registration.complete = true
                     storeRegistrationInfo()
                     postRegistrationInfo()
@@ -639,7 +617,7 @@ open class RegistrationActivity : AppCompatActivity() {
             private set
 
         private fun hasPermissions(context: Context?, vararg permissions: String): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null) {
                 for (permission in permissions) {
                     if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                         return false

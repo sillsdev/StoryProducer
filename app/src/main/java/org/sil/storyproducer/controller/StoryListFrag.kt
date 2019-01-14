@@ -43,9 +43,7 @@ class StoryListFrag : Fragment() {
 
 }
 
-class ListAdapter(context: Context,
-                  val resourceId: Int,
-                  val stories: MutableList<Story>) : ArrayAdapter<Story>(context, resourceId, stories) {
+class ListAdapter(context: Context, private val resourceId: Int, private val stories: MutableList<Story>) : ArrayAdapter<Story>(context, resourceId, stories) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var row = convertView
@@ -74,14 +72,9 @@ class ListAdapter(context: Context,
     }
 
     internal class FileHolder(view : View){
-        var imgIcon: ImageView
-        var txtTitle: TextView
-        var txtSubTitle: TextView
-        init {
-            imgIcon = view.findViewById(R.id.story_list_image)
-            txtTitle = view.findViewById(R.id.story_list_title)
-            txtSubTitle = view.findViewById(R.id.story_list_subtitle)
-        }
+        var imgIcon: ImageView = view.findViewById(R.id.story_list_image)
+        var txtTitle: TextView = view.findViewById(R.id.story_list_title)
+        var txtSubTitle: TextView = view.findViewById(R.id.story_list_subtitle)
     }
 
 }
