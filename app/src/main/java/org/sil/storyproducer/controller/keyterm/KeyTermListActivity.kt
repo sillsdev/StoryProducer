@@ -13,6 +13,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 
 class KeyTermListActivity : AppCompatActivity() {
@@ -40,6 +42,13 @@ class KeyTermListActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar3))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Keyterm List"
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(intent.hasExtra("phase")) {
+            Workspace.activePhase = Phase(intent.getSerializableExtra("phase") as PhaseType)
+        }
     }
 }
 

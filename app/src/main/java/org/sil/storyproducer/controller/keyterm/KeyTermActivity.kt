@@ -25,7 +25,6 @@ import org.sil.storyproducer.model.*
 class KeyTermActivity : AppCompatActivity() {
 
     private var viewPager: ViewPager? = null
-    private var previousPhase : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +32,6 @@ class KeyTermActivity : AppCompatActivity() {
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
         viewPager = findViewById(R.id.viewPager)
         viewPager?.adapter = ViewPagerAdapter(supportFragmentManager)
-        if(intent.hasExtra("Phase")) {
-            previousPhase = intent.getStringExtra("Phase")
-        }
 
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
@@ -48,10 +44,8 @@ class KeyTermActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         //return the phase to what it was previously
-        for(type in PhaseType.values()){
-            if(type.name == previousPhase?.toUpperCase()){
-                Workspace.activePhase = Phase(type)
-            }
+        if(intent.hasExtra("Phase")) {
+            Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
         }
         //save the current term to the workspace
         Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
@@ -134,7 +128,7 @@ class KeyTermActivity : AppCompatActivity() {
                             Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
                             //bundle up the key term to send to new key term activity
                             val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                            intent.putExtra("Phase", Workspace.activePhase.getName())
+                            intent.putExtra("Phase", Workspace.activePhase.phaseType)
                             fragmentActivity?.startActivity(intent)
                         }
                     }
