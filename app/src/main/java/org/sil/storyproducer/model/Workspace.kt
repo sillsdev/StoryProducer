@@ -8,9 +8,11 @@ import com.opencsv.CSVReader
 import java.io.File
 import java.io.FileReader
 import java.util.*
+import org.sil.storyproducer.R
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
+internal const val KEYTERMS_JSON_FILE = "keyterms.json"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -43,6 +45,7 @@ object Workspace{
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
+    lateinit var activeKeyterm: Keyterm
     var activeSlideNum: Int = -1
     set(value){
         if(value >= 0 && value < activeStory.slides.size) field = value
@@ -53,7 +56,7 @@ object Workspace{
         return activeStory.slides[activeSlideNum]
     }
     var keyterms: List<Keyterm> = listOf()
-    var termsToKeyterms: Map<String, Keyterm> = mapOf()
+    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -103,7 +106,22 @@ object Workspace{
             else -> Phase.getLocalPhases()
         }
         activePhaseIndex = 0
+        updateStoryLocalCredits(context)
         storiesUpdated = true
+    }
+
+    fun updateKeyterms(context: Context){
+        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
+        if (keytermsDirectory != null) {
+            for (keytermItem in keytermsDirectory.listFiles()) {
+                if (keytermItem.isDirectory) {
+                    val keyterm = parseKeytermIfPresent(context,keytermItem)
+                    if (keyterm != null) {
+                        termsToKeyterms[keyterm.term] = keyterm
+                    }
+                }
+            }
+        }
     }
 
     fun importKeyterms(context: Context) {
@@ -120,6 +138,9 @@ object Workspace{
             val csvLines = readCsvDocumentFile(context, keytermsFile)
             keyterms = parseKeytermLines(csvLines)
             termsToKeyterms = mapTermsToKeyterms(keyterms)
+
+            //add json file information to keyterms
+            updateKeyterms(context)
         }
     }
 
@@ -150,13 +171,13 @@ object Workspace{
         return keyterms
     }
 
-    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): Map<String, Keyterm>{
+    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): MutableMap<String, Keyterm>{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
+            termsToKeyterms[keyterm.term] = keyterm
             for (termForm in keyterm.termForms) {
-                termsToKeyterms[termForm.toLowerCase()] = keyterm
+                termsToKeyterms[termForm] = keyterm
             }
         }
 
@@ -173,6 +194,31 @@ object Workspace{
         else{
             return listOf()
         }
+    }
+
+    fun updateStoryLocalCredits(context: Context) {
+        for(story in Stories){
+            for(slide in story.slides){
+                if(slide.slideType == SlideType.CREDITS1) { //local credits
+                    slide.content = getLocalCreditsStart(context)
+                    if(slide.translatedContent == ""){
+                        slide.translatedContent = getLocalCreditStart(context)
+                    }
+                }
+            }
+        }
+    }
+
+    fun getLocalCreditsStart(context: Context) : String {
+        var translatorName = registration.getString("translator_name","")
+        if(translatorName == "") translatorName = context.getString(R.string.LC_no_translator_name)
+        var consultantName = registration.getString("consultant_name","")
+        if(consultantName == "") consultantName = context.getString(R.string.LC_no_consultant_name)
+        return "${context.getString(R.string.LC_translator_prefix)} $translatorName\n${context.getString(R.string.LC_consultant_prefix)} $consultantName"
+    }
+
+    fun getLocalCreditStart(context: Context) : String {
+        return "${context.getString(R.string.LC_community_prefix)}\n${context.getString(R.string.LC_dramatize_prefix)}"
     }
 
     fun goToNextPhase() : Boolean {

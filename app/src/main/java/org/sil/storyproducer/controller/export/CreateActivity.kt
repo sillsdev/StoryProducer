@@ -6,7 +6,6 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -16,8 +15,6 @@ import android.widget.*
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.StorySharedPreferences
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
@@ -44,9 +41,16 @@ class CreateActivity : PhaseBaseActivity() {
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
 
-    private var phaseUnlocked = false
+    private val mOutputPath: String get() {
+        val name = mEditTextTitle!!.text.toString()
+        val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
+        val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
+        val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
+        val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
+        val ext = if (mRadioButtonDumbPhone!!.isChecked) {".3gp"} else {".mp4"}
+        return "${name}_$fx$px$mv$tx$ext"
 
-    private var mOutputPath: String = ""
+    }
 
     private var mTextConfirmationChecked: Boolean = false
 
@@ -79,7 +83,6 @@ class CreateActivity : PhaseBaseActivity() {
         runOnUiThread {
             stopExport()
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
-            mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle())
         }
     }
 
@@ -113,11 +116,10 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        phaseUnlocked = StorySharedPreferences.isApproved(Workspace.activeStory.title, this)
         setContentView(R.layout.activity_create)
         setupViews()
         invalidateOptionsMenu()
-        if (phaseUnlocked) {
+        if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
@@ -223,8 +225,6 @@ class CreateActivity : PhaseBaseActivity() {
         mProgressBar!!.max = PROGRESS_MAX
         mProgressBar!!.progress = 0
 
-        mEditTextTitle!!.setText(Workspace.activeStory.getVideoTitle())
-
     }
 
     /**
@@ -285,6 +285,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
         } else {
             mSpinnerResolution!!.adapter = mResolutionAdapterAll
+            setSpinnerValue()
             //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true
         }
@@ -347,10 +348,11 @@ class CreateActivity : PhaseBaseActivity() {
                 }
             }
             R.id.radio_smartphone -> {
-                if (checked)
-                //Default to medium resolution on smartphone
+                if (checked) {
+                    //Default to medium resolution on smartphone
                     mSpinnerResolution!!.adapter = mResolutionAdapterAll
-                mSpinnerResolution!!.setSelection(1, true)
+                    setSpinnerValue()
+                }
             }
         }
     }
@@ -360,12 +362,14 @@ class CreateActivity : PhaseBaseActivity() {
     private fun savePreferences() {
         val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
 
-        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText!!.isChecked)
-        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX!!.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
 
-        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution!!.selectedItem.toString())
+        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
+        editor.putString(PREF_KEY_SHORT_NAME, mEditTextTitle!!.text.toString())
+
 
         editor.apply()
     }
@@ -380,8 +384,9 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxPictures!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
+        mEditTextTitle!!.setText(prefs.getString(PREF_KEY_SHORT_NAME, Workspace.activeStory.title))
 
-        setSpinnerValue(mSpinnerResolution, prefs.getString(PREF_KEY_RESOLUTION, null))
+        setSpinnerValue()
     }
 
     /**
@@ -389,38 +394,31 @@ class CreateActivity : PhaseBaseActivity() {
      * @param spinner spinner to update value.
      * @param value new value of spinner.
      */
-    private fun setSpinnerValue(spinner: Spinner?, value: String?) {
-        if (value == null) {
-            return
-        }
-
-        for (i in 0 until spinner!!.count) {
-            if (value == spinner.getItemAtPosition(i).toString()) {
-                spinner.setSelection(i)
+    private fun setSpinnerValue() {
+        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val temp = prefs.getString(PREF_KEY_RESOLUTION, null)?.toIntOrNull()
+        if (temp != null) {
+            if (temp < mSpinnerResolution?.count ?: 0 && temp >= 0) {
+                mSpinnerResolution?.setSelection(temp,true)
             }
         }
     }
 
     private fun tryStartExport() {
-        val ext = formatExtension
-        mOutputPath = mEditTextTitle!!.text.toString()
-        val outputRelPath = mOutputPath + ext
-
-        if (workspaceRelPathExists(this,"$VIDEO_DIR/$outputRelPath")) {
+        if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
                     .setNegativeButton(getString(R.string.no), null)
-                    .setPositiveButton(getString(R.string.yes)) { dialog, id -> startExport(outputRelPath) }.create()
+                    .setPositiveButton(getString(R.string.yes)) { dialog, id -> startExport() }.create()
 
             dialog.show()
         } else {
-            //mStory = mOutputPath.split("/")[mOutputPath.split("/").length - 1];
-            startExport(outputRelPath)
+            startExport()
         }
     }
 
-    private fun startExport(outputRelPath: String) {
+    private fun startExport() {
         synchronized(storyMakerLock) {
             storyMaker = AutoStoryMaker(this)
 
@@ -443,7 +441,7 @@ class CreateActivity : PhaseBaseActivity() {
             }
 
 
-            storyMaker!!.setOutputFile(outputRelPath)
+            storyMaker!!.setOutputFile(mOutputPath)
         }
 
         storyMaker!!.start()
@@ -498,6 +496,7 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
         private val PREF_KEY_INCLUDE_TEXT = "include_text"
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
+        private val PREF_KEY_SHORT_NAME = "short_name"
         private val PREF_KEY_RESOLUTION = "resolution"
         private val PREF_KEY_FILE = "file"
 

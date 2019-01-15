@@ -8,15 +8,13 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Handler
-import android.support.v4.widget.Space
+import android.support.v4.view.ViewPager
+import android.util.Log
 import android.view.View
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.Toast
+import android.widget.*
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.Modal
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.*
@@ -26,12 +24,11 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.ArrayList
 
 private const val RECORDING_ANIMATION_DURATION = 1500
-private const val STOP_RECORDING_DELAY = 0
-private const val TAG = "AnimationToolbar"
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -48,52 +45,46 @@ private const val TAG = "AnimationToolbar"
 
 open class RecordingToolbar
 /**
- * The ctor.
  *
  * @param activity              The activity from the calling class.
- * @param rootViewToolbarLayout The viewToEmbedToolbarIn of the Toolbar layout called toolbar_for_recording.
- * must be of type LinearLayout so that buttons can be
- * evenly spaced.
- * @param rootView        The viewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
+ * @param rootView              The viewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
  * @param enablePlaybackButton  Enable playback of recording.
- * @param enableDeleteButton    Enable the delete button, does not work as of now.
+ * @param enableCheckButton     Enable the check button.
  * @param enableSendAudioButton Enable the sending of audio to the server
  */
 @Throws(ClassCastException::class)
-constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
-            protected var enablePlaybackButton: Boolean, protected var enableDeleteButton: Boolean,
-            protected var enableMultiRecordButton: Boolean, protected var enableSendAudioButton: Boolean,
-            private val multiRecordModal: Modal?, protected var recordingListener: RecordingListener,
-            protected val slideNum: Int) : AnimationToolbar(activity) {
+constructor(activity: Activity, rootView: View,
+            private var enablePlaybackButton: Boolean, private var enableCheckButton: Boolean,
+            private var enableMultiRecordButton: Boolean, private var enableSendAudioButton: Boolean,
+            private var recordingListener: RecordingListener, protected val slideNum: Int) : AnimationToolbar(activity) {
 
     //private FloatingActionButton fabPlus;
-    protected var toolbar: LinearLayout = rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_toolbar)
+    internal var toolbar: LinearLayout = rootView.findViewById(R.id.toolbar_for_recording_toolbar)
+    private var view = rootView
 
-    protected var rootViewToolbarLayout: LinearLayout = rootViewToolbarLayout as LinearLayout
-    private val viewToEmbedToolbarIn: LinearLayout = rootView.findViewById(R.id.fragment_envelope) as LinearLayout
-    protected var appContext: Context
+    private var appContext: Context = activity.applicationContext
 
-    protected var micButton: ImageButton = ImageButton(activity)
-    protected var playButton: ImageButton = ImageButton(activity)
-    protected var deleteButton: ImageButton = ImageButton(activity)
-    protected var multiRecordButton: ImageButton = ImageButton(activity)
-    protected var sendAudioButton: ImageButton = ImageButton(activity)
+    private var micButton: ImageButton = ImageButton(activity)
+    private var playButton: ImageButton = ImageButton(activity)
+    private var checkButton: ImageButton = ImageButton(activity)
+    private var multiRecordButton: ImageButton = ImageButton(activity)
+    private var sendAudioButton: ImageButton = ImageButton(activity)
     private val auxiliaryMediaList: MutableList<AuxiliaryMedia> = ArrayList()
 
     private var transitionDrawable: TransitionDrawable? = null
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
-    protected var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
-    protected var audioPlayer: AudioPlayer = AudioPlayer()
+    private var isAppendingOn = false
+    private val audioTempName = getTempAppendAudioRelPath()
+    private var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
+    private var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording : Boolean
         get() {return voiceRecorder.isRecording}
 
     init {
-        super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), toolbar)
-
         this.activity = activity
-        this.appContext = activity.applicationContext //This is calling getApplicationContext because activity.getContext() cannot be accessed publicly.
+        this.appContext = activity.applicationContext
         createToolbar()
         setupRecordingAnimationHandler()
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
@@ -122,11 +113,14 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
      */
     open fun stopToolbarMedia() {
         if (voiceRecorder.isRecording) {
+            if(enableCheckButton){
+                multiRecordButton.visibility = View.VISIBLE
+            }
             stopRecording()
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
             //set playback button visible
-            if (enableDeleteButton) {
-                deleteButton.visibility = View.VISIBLE
+            if (enableCheckButton) {
+                checkButton.visibility = View.VISIBLE
             }
             if (enablePlaybackButton) {
                 playButton.visibility = View.VISIBLE
@@ -178,8 +172,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         if (enableMultiRecordButton) {
             multiRecordButton.visibility = View.INVISIBLE
         }
-        if (enableDeleteButton) {
-            deleteButton.visibility = View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton.visibility = View.INVISIBLE
         }
         if (enableSendAudioButton) {
             sendAudioButton.visibility = View.INVISIBLE
@@ -200,54 +194,59 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     }
 
     private fun createToolbar() {
-        setupToolbar()
         setupToolbarButtons()
     }
 
     /**
      * This function formats and aligns the buttons to the toolbar.
      */
-    protected open fun setupToolbarButtons() {
-        rootViewToolbarLayout.removeAllViews()
+    fun setupToolbarButtons() {
+        toolbar.removeAllViews()
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
-        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_delete_forever_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_send_audio_48dp)
+        val drawables = intArrayOf(R.drawable.ic_mic_white_48dp, R.drawable.ic_play_arrow_white_48dp, R.drawable.ic_playlist_play_white_48dp, R.drawable.ic_stop_white_48dp, R.drawable.ic_send_audio_48dp)
         val imageButtons = arrayOf(ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext), ImageButton(appContext))
-        val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableDeleteButton, enableMultiRecordButton, enableSendAudioButton)
+        val buttonToDisplay = booleanArrayOf(true/*enable mic*/, enablePlaybackButton, enableMultiRecordButton, enableCheckButton, enableSendAudioButton)
 
-        var buttonSpacing = Space(appContext)
+        var buttonSpacing = android.widget.Space(appContext)
         buttonSpacing.layoutParams = spaceLayoutParams
         toolbar.addView(buttonSpacing) //Add a space to the left of the first button.
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
+                imageButtons[i].tag = "tag"
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
                 toolbar.addView(imageButtons[i])
 
-                buttonSpacing = Space(appContext)
+                buttonSpacing = android.widget.Space(appContext)
                 buttonSpacing.layoutParams = spaceLayoutParams
                 toolbar.addView(buttonSpacing)
                 when (i) {
                     0 -> micButton = imageButtons[i]
                     1 -> playButton = imageButtons[i]
-                    2 -> deleteButton = imageButtons[i]
-                    3 -> multiRecordButton = imageButtons[i]
+                    2 -> multiRecordButton = imageButtons[i]
+                    3 -> checkButton = imageButtons[i]
                     4 -> sendAudioButton = imageButtons[i]
                 }
             }
         }
 
-        val playBackFileExist = storyRelPathExists(activity,Workspace.activePhase.getChosenFilename(slideNum))
+        val playBackFileExist : Boolean = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum), "keyterms")
+        }
+        else {
+            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        }
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
         if (enableMultiRecordButton) {
             multiRecordButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
-        if (enableDeleteButton) {
-            deleteButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton.visibility = if (playBackFileExist && isAppendingOn) View.VISIBLE else View.INVISIBLE
         }
         if (enableSendAudioButton) {
             sendAudioButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
@@ -255,67 +254,87 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         setOnClickListeners()
     }
 
-    /**
-     * This function formats and aligns the toolbar and floating action button to the bottom of the relative layout of the
-     * calling class.
-     */
-    protected fun setupToolbar() {
-        val myParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT)
-        val myRules = intArrayOf(RelativeLayout.ALIGN_PARENT_BOTTOM,RelativeLayout.ALIGN_END)
-
-        //Must remove all children of the layout, before appending them to the new rootView
-        for (myRule in myRules) {
-            myParams.addRule(myRule, viewToEmbedToolbarIn.id)
-        }
-        toolbar.layoutParams = myParams
-        rootViewToolbarLayout.removeAllViews()
-        viewToEmbedToolbarIn.addView(toolbar)
-    }
-
-    /**
-     * Enables the buttons to have the appropriate onClick listeners.
-     */
-    protected open fun setOnClickListeners() {
-        val micListener = View.OnClickListener {
+    fun setMicListener(){
+        if(enableCheckButton){
             if (voiceRecorder.isRecording) {
                 stopRecording()
-                micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
-                if (enableDeleteButton) {
-                    deleteButton.visibility = View.VISIBLE
+                if (isAppendingOn) {
+                    try {
+                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                    } catch (e: FileNotFoundException) {
+                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                    }
+                } else {
+                    isAppendingOn = true
+                    checkButton.visibility = View.VISIBLE
                 }
+                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
                 if (enablePlaybackButton) {
                     playButton.visibility = View.VISIBLE
                 }
                 if (enableMultiRecordButton) {
                     multiRecordButton.visibility = View.VISIBLE
                 }
-                if (enableSendAudioButton) {
-                    sendAudioButton.visibility = View.VISIBLE
-
+                if (enableCheckButton) {
+                    checkButton.visibility = View.VISIBLE
                 }
             } else {
-                //Now we need to start recording!
-                val recordingRelPath = assignNewAudioRelPath()
-                if (storyRelPathExists(activity,recordingRelPath)) {
-                    val dialog = AlertDialog.Builder(activity)
-                            .setTitle(activity.getString(R.string.overwrite))
-                            .setMessage(activity.getString(R.string.learn_phase_overwrite))
-                            .setNegativeButton(activity.getString(R.string.no)) { dialog, id ->
-                                //do nothing
-                            }
-                            .setPositiveButton(activity.getString(R.string.yes)) { dialog, id ->
-                                //overwrite audio
-                                recordAudio(recordingRelPath)
-                            }.create()
-
-                    dialog.show()
-                } else {
-                    recordAudio(recordingRelPath)
+                stopToolbarMedia()
+                if (isAppendingOn) {
+                    startRecording(audioTempName)
+                }else{
+                    startRecording(assignNewAudioRelPath())
+                }
+                micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                if (enablePlaybackButton) {
+                    playButton.visibility = View.INVISIBLE
+                }
+                if (enableMultiRecordButton) {
+                    multiRecordButton.visibility = View.INVISIBLE
+                }
+                if (enableSendAudioButton) {
+                    sendAudioButton.visibility = View.INVISIBLE
                 }
             }
         }
-        micButton.setOnClickListener(micListener)
+        else {
+            if (voiceRecorder.isRecording) {
+                stopToolbarMedia()
+            } else {
+                //Now we need to start recording!
+                val recordingRelPath = assignNewAudioRelPath()
+                val dialog = AlertDialog.Builder(activity!!)
+                        .setTitle(activity!!.getString(R.string.overwrite))
+                        .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
+                        .setNegativeButton(activity!!.getString(R.string.no)) { _, _ ->
+                            //do nothing
+                        }
+                        .setPositiveButton(activity!!.getString(R.string.yes)) { _, _ ->
+                            //overwrite audio
+                            recordAudio(recordingRelPath)
+                        }.create()
+                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                    if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
+                        dialog.show()
+                    } else {
+                        recordAudio(recordingRelPath)
+                    }
+                } else {
+                    if (storyRelPathExists(activity!!, recordingRelPath)) {
+                        dialog.show()
+                    } else {
+                        recordAudio(recordingRelPath)
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Enables the buttons to have the appropriate onClick listeners.
+     */
+    private fun setOnClickListeners() {
+
+        micButton.setOnClickListener { setMicListener() }
 
         if (enablePlaybackButton) {
             val playListener = View.OnClickListener {
@@ -324,7 +343,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                 } else {
                     stopPlayBackAndRecording()
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
+                    if (audioPlayer.setStorySource(appContext,Workspace.activePhase.getChosenFilename())) {
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
@@ -343,19 +362,31 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
 
             playButton.setOnClickListener(playListener)
         }
-        if (enableDeleteButton) {
-            val deleteListener = View.OnClickListener { stopPlayBackAndRecording() }
-            deleteButton.setOnClickListener(deleteListener)
+        if (enableCheckButton) {
+            checkButton.setOnClickListener {
+                //Delete the temp file wav file
+                stopToolbarMedia()
+                deleteStoryFile(appContext, audioTempName)
+                //make the button invisible till after the next new recording
+                isAppendingOn = false
+                checkButton.visibility = View.INVISIBLE
+                micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+                if (enableSendAudioButton) {
+                    sendAudioButton.visibility = View.VISIBLE
+                }
+            }
         }
         if (enableMultiRecordButton) {
-            if (multiRecordModal != null) {
-                val multiRecordModalButtonListener = View.OnClickListener {
-                    stopPlayBackAndRecording()
-                    multiRecordModal.show()
+            val multiRecordModalButtonListener = View.OnClickListener {
+                stopPlayBackAndRecording()
+                if(PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
+                    RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
                 }
-
-                multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
+                else{
+                    activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
+                }
             }
+            multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
 
         }
         if (enableSendAudioButton) {
@@ -368,8 +399,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     }
 
     /*
-        *Send single audio file to remote consultant
-         */
+    * Send single audio file to remote consultant
+     */
     private fun sendAudio() {
 /*
         Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show()
@@ -526,8 +557,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
             else -> {}
         }
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-        if (enableDeleteButton) {
-            deleteButton.visibility = View.INVISIBLE
+        if (enableCheckButton) {
+            checkButton.visibility = View.INVISIBLE
         }
         if (enablePlaybackButton) {
             playButton.visibility = View.INVISIBLE
@@ -541,32 +572,11 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     }
 
     /**
-     * [See for handler](https://developer.android.com/reference/android/os/Handler.html)
-     * <br></br>
-     * [See for runnable](https://developer.android.com/reference/java/lang/Runnable.html)
-     * <br></br>
-     * [See for transition Drawable](https://developer.android.com/reference/android/graphics/drawable/TransitionDrawable.html)
-     * <br></br>
-     * <br></br>
-     * Call this function prior to calling the function to start the animation.  E.g.: <br></br>
-     * [.setupRecordingAnimationHandler], should be called once<br></br>
-     * [.startRecordingAnimation]{}
-     * <br></br><br></br>
-     * Essentially the function utilizes a Transition Drawable to interpolate between the red and
-     * the toolbar color. (The colors are defined in an array and used in the transition drawable)
-     * To schedule the running of the transition drawable a handler and runnable are used.<br></br><br></br>
-     * The handler takes a runnable which schedules the transitionDrawable. The handler function
-     * called postDelayed will delay the running of the next Runnable by the passed in value e.g.:
-     * colorHandler.postDelayed(runnable goes here, time delay in MS). Make sure that isToolbarRed is set
-     * to false initially.
-     * <br></br><br></br>
-     * Still confused about handlers, runnables, and the MessageQueue?
-     * <br></br>
-     * [See this excellent SO post for more info.](http://stackoverflow.com/questions/12877944/what-is-the-relationship-between-looper-handler-and-messagequeue-in-android)
+     *
      */
     private fun setupRecordingAnimationHandler() {
         val red = Color.rgb(255, 0, 0)
-        var colorOfToolbar = Color.rgb(0, 0, 255) /*Arbitrary color value of blue used initially*/
+        var colorOfToolbar = Color.rgb(67, 179, 230)
 
         val relBackgroundColor = toolbar.background
         if (relBackgroundColor is ColorDrawable) {
@@ -578,12 +588,12 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         colorHandler = Handler()
         colorHandlerRunnable = Runnable {
             //Animation to change the toolbar's color while recording
-            if (isToolbarRed) {
+            isToolbarRed = if (isToolbarRed) {
                 transitionDrawable!!.reverseTransition(RECORDING_ANIMATION_DURATION)
-                isToolbarRed = false
+                false
             } else {
                 transitionDrawable!!.startTransition(RECORDING_ANIMATION_DURATION)
-                isToolbarRed = true
+                true
             }
             startRecordingAnimation(true, RECORDING_ANIMATION_DURATION)
         }
@@ -597,7 +607,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
      * @param isDelayed Used to signify that the runnable will be delayed in running.
      * @param delay     The time that will be delayed in ms if isDelayed is true.
      */
-    protected fun startRecordingAnimation(isDelayed: Boolean, delay: Int) {
+    private fun startRecordingAnimation(isDelayed: Boolean, delay: Int) {
         if (colorHandler != null && colorHandlerRunnable != null) {
             if (isDelayed) {
                 colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
@@ -612,7 +622,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
      * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
      * (transitionDrawable.resetTransition();)
      */
-    protected fun stopRecordingAnimation() {
+    private fun stopRecordingAnimation() {
         if (colorHandler != null && colorHandlerRunnable != null) {
             colorHandler!!.removeCallbacks(colorHandlerRunnable)
         }
@@ -621,11 +631,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         }
     }
 
-    //TODO The arraylist is being populated by null objects. This is because the other classes are releasing too much. Will be taken care of once lockeridge's branch Audio Player fix is merged into dev
     /**
      * This function stops all playback and all auxiliary media.
      */
-    protected fun stopPlayBackAndRecording() {
+    private fun stopPlayBackAndRecording() {
         stopToolbarMedia()
         for (am in auxiliaryMediaList) {
             am.stopPlaying()
@@ -644,16 +653,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         internal fun stopPlaying() {
             if (playingAudio != null && playingAudio!!.isAudioPlaying) {
                 playingAudio!!.stopAudio()
-                //playingAudio.releaseAudio();
                 if (viewThatIsPlayingButton != null) {
                     viewThatIsPlayingButton!!.setBackgroundResource(setButtonToDrawableOnStop)
                 }
             }
         }
-    }
-
-    companion object {
-        val R_CONSULTANT_PREFS = "Consultant_Checks"
-        private val TRANSCRIPTION_TEXT = "TranscriptionText"
     }
 }

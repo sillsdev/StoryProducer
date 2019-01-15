@@ -10,13 +10,12 @@ import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.provider.DocumentsProvider
 
-import java.io.File
 import android.support.v4.provider.DocumentFile
+import android.widget.Toast
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.*
-import java.io.FileDescriptor
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
+import java.net.URI
 
 
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
@@ -62,9 +61,13 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
     return getChildOutputStream(context, "$storyTitle/$relPath", mimeType)
 }
 
+fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: String = "", keytermName: String = Workspace.activeKeyterm.term) : OutputStream? {
+    if (keytermName == "") return null
+    return getChildOutputStream(context, "keyterms/$keytermName/$relPath", mimeType)
+}
+
 fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
     if(relPath == "") return false
-    //if we can get the type, it exists.
     val uri = getStoryUri(relPath,storyTitle) ?: return false
     context.contentResolver.getType(uri) ?: return false
     return true
@@ -80,7 +83,7 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
     if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
-            Uri.encode("/$storyTitle/$relPath"))
+                Uri.encode("/$storyTitle/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
@@ -114,7 +117,11 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
 }
 
 fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
-    return getStoryPFD(context,relPath,mimeType,mode,storyTitle)?.fileDescriptor
+    return if (Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+        getStoryPFD(context,relPath,mimeType,mode,"keyterms")?.fileDescriptor
+    } else{
+        getStoryPFD(context,relPath,mimeType,mode,storyTitle)?.fileDescriptor
+    }
 }
 
 fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : ParcelFileDescriptor? {
@@ -209,8 +216,12 @@ fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Work
 fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
     if(storyRelPathExists(context, relPath, storyTitle)){
         val uri = getStoryUri(relPath,storyTitle)
-        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
-        if(newUri != null) return true
+        try {
+            val newUri = DocumentsContract.renameDocument(context.contentResolver, uri, newFilename)
+            if(newUri != null) return true
+        }
+        catch (e : IOException){
+        }
     }
     return false
 }

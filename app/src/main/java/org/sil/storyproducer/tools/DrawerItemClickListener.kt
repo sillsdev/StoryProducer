@@ -10,6 +10,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
 
@@ -35,11 +36,16 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             2 -> {
+                intent = Intent(activity.applicationContext, KeyTermListActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+            }
+            3 -> {
                 intent = Intent(activity, RegistrationActivity::class.java)
                 activity.startActivity(intent)
                 activity.finish()
             }
-            3 -> {
+            4 -> {
                 val dialog = AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.license_title))
                         .setMessage(activity.getString(R.string.license_body))

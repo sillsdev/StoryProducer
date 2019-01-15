@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -11,10 +11,15 @@
     tools:context=".controller.keyterm.KeyTermMainFrag">
 
     <ScrollView
-        android:layout_width="fill_parent"
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_margin="0dp"
         android:layout_weight="1"
-        android:layout_margin="0dp">
+        app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -30,7 +35,7 @@
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/alternate_renderings_text"
@@ -43,7 +48,7 @@
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/related_terms_text"/>
+                app:layout_constraintTop_toBottomOf="@+id/related_terms_text" />
 
             <TextView
                 android:id="@+id/explanation_text"
@@ -55,23 +60,19 @@
                 android:textSize="@dimen/text_body"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/alternate_renderings_text"/>
+                app:layout_constraintTop_toBottomOf="@+id/alternate_renderings_text" />
 
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/to_be_replaced_with_audio_recording_toolbar"
+    <include
+        android:id="@+id/toolbar_for_recording_toolbar"
+        layout="@layout/toolbar_for_recording"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/scrollView2"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

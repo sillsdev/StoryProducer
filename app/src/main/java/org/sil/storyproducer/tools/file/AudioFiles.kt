@@ -43,7 +43,8 @@ fun assignNewAudioRelPath() : String {
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             //find the next number that is available for saving files at.
-            val rFileNum = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
+            //deleted $PROJECT_DIR/ from rFileNum might need to restore
+            val rFileNum = "$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)
@@ -51,6 +52,17 @@ fun assignNewAudioRelPath() : String {
                     maxNum = max(maxNum,num.groupValues[1].toInt())
             }
             relPath = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_${maxNum+1}" + AUDIO_EXT
+        }
+        PhaseType.KEYTERM -> {
+            //find the next number that is available for saving files at.
+            val rFileNum = "${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
+            var maxNum = 0
+            for (f in files!!){
+                val num = rFileNum.find(f)
+                if(num != null)
+                    maxNum = max(maxNum,num.groupValues[1].toInt())
+            }
+            relPath = "${Workspace.activeKeyterm.term}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
         }
         else -> {}
     }
@@ -73,6 +85,10 @@ fun assignNewAudioRelPath() : String {
         PhaseType.DRAMATIZATION -> {
             Workspace.activeSlide!!.dramatizationAudioFiles.add(relPath)
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
+        }
+        PhaseType.KEYTERM -> {
+            Workspace.activeKeyterm.backTranslations.add(BackTranslation("", relPath))
+            Workspace.activeKeyterm.chosenKeytermFile = relPath
         }
         else -> relPath = ""
     }

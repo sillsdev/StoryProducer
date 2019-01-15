@@ -4,11 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.RelativeLayout
+import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -16,19 +15,20 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityCheckFrag : MultiRecordFrag() {
-    private var dispList : RecordingsList? = null
+    private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false)
 
-        setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
+        setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsList(context!!, this)
-        dispList!!.embedList(rootView!! as ViewGroup)
-        dispList!!.setSlideNum(slideNum)
-        dispList!!.show()
+        recordingToolbar?.toolbar?.findViewWithTag<ImageButton>("tag")?.setOnClickListener {
+            recordingToolbar?.setMicListener()
+            (dispList?.recyclerView?.adapter)?.notifyDataSetChanged()
+        }
+        dispList = RecordingsListAdapter.RecordingsListModal(rootView, context!!, recordingToolbar!!)
+        dispList?.embedList(rootView!! as ViewGroup)
+        dispList?.show()
         return rootView
     }
 
@@ -50,19 +50,16 @@ class CommunityCheckFrag : MultiRecordFrag() {
     override fun setToolbar() {
         val recordingListener = object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                dispList!!.createRecordingList()
+                dispList?.updateRecordingList()
             }
 
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                //not used here
-            }
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
         }
-        val rList = RecordingsList(context!!, this)
 
-        recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as RelativeLayout,
-                false, false, false, false,  rList , recordingListener, slideNum);
-        recordingToolbar!!.keepToolbarVisible()
-        recordingToolbar!!.stopToolbarMedia()
+        recordingToolbar = RecordingToolbar(activity!!, rootView!!,
+                false, false, false, false, recordingListener, slideNum)
+        recordingToolbar?.keepToolbarVisible()
+        recordingToolbar?.stopToolbarMedia()
     }
 
     /**

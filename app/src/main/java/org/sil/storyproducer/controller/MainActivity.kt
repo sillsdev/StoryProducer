@@ -5,39 +5,27 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
-import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
-import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ImageButton
-import android.widget.ListView
-
+import android.webkit.WebView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
-
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.DrawerItemClickListener
-
-
 import java.io.Serializable
 
 
@@ -95,11 +83,20 @@ class MainActivity : AppCompatActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage(Phase.getHelp(this, PhaseType.STORY_LIST))
-                        .create()
-                dialog.show()
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("Story List Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
+                val text = iStream.reader().use {
+                        it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -131,7 +128,6 @@ class MainActivity : AppCompatActivity(), Serializable {
             // Add code here to update the UI based on the item selected
             // For example, swap UI fragments here
             val intent: Intent
-            //TODO add more options
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
                     intent = Intent(this, WorkspaceAndRegistrationActivity::class.java)
@@ -139,10 +135,14 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_stories -> {
-                    intent = Intent(this.applicationContext, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    intent = Intent(this.applicationContext, MainActivity::class.java)
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    this.startActivity(intent)
+//                    this.finish()
+                }
+                R.id.nav_keyterm_list -> {
+                    intent = Intent(this, KeyTermListActivity::class.java)
                     this.startActivity(intent)
-                    this.finish()
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
@@ -160,6 +160,20 @@ class MainActivity : AppCompatActivity(), Serializable {
 
             true
         }
+    }
+
+    override fun onBackPressed() {
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Exit Application?")
+                .setMessage("Are you sure you want to quit?")
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    val homeIntent = Intent(Intent.ACTION_MAIN)
+                    homeIntent.addCategory(Intent.CATEGORY_HOME)
+                    homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(homeIntent)
+                }.create()
+        dialog.show()
     }
 }
 

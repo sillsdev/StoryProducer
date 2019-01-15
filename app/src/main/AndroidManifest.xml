@@ -66,13 +66,17 @@
             android:name=".controller.export.ShareActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
-        <!--Keyterm -->
+        <!-- Keyterm -->
         <activity
             android:name=".controller.keyterm.KeyTermActivity"
-            android:screenOrientation="portrait"
             android:label="Keyterm"
-            android:parentActivityName=".controller.pager.PagerBaseActivity"/>
-
+            android:screenOrientation="portrait"
+            android:parentActivityName=".controller.pager.PagerBaseActivity" />
+        <!-- Keyterm List -->
+        <activity
+            android:name=".controller.keyterm.KeyTermListActivity"
+            android:label="Keyterm List"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

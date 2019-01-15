@@ -3,8 +3,11 @@ package org.sil.storyproducer.controller.phase
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.GravityCompat
@@ -14,6 +17,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
+import android.webkit.WebView
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -34,7 +38,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(R.layout.phase_frame)
@@ -44,13 +47,14 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(mActionBarToolbar)
-        supportActionBar!!.title = ""
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+        supportActionBar?.title = ""
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 phase.getColor(), null)))
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
 
         setupDrawer()
+        setupStatusBar()
     }
 
     override fun onPause(){
@@ -144,11 +148,20 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 mDrawerToggle!!.onOptionsItemSelected(item)
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage(Phase.getHelp(this, phase.phaseType))
-                        .create()
-                dialog.show()
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)
@@ -223,8 +236,16 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         }
     }
 
-    companion object {
+    private fun setupStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
+            Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
+            hsv[2] *= 0.8f
+            window.statusBarColor = Color.HSVToColor(hsv)
+        }
+    }
 
+    companion object {
         fun disableViewAndChildren(view: View) {
             view.isEnabled = false
             if (view is ViewGroup) {
@@ -235,5 +256,4 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             }
         }
     }
-
 }
