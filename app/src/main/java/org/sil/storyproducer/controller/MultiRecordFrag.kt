@@ -6,6 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 
@@ -19,7 +23,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        setToolbar()
+        if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS){
+            setToolbar()
+        }
         return rootView
     }
 
@@ -57,15 +63,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         recordingToolbar?.hideButtons()
     }
 
-
     /**
      * Stops the toolbar from recording or playing back media.
      * Used in [DraftListRecordingsModal]
      */
-    open fun stopPlayBackAndRecording() {
+    override fun stopPlayBackAndRecording() {
+        super.stopPlayBackAndRecording()
         recordingToolbar?.stopToolbarMedia()
-        referenceAudioPlayer.stopAudio()
-        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
     /**
@@ -73,8 +77,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      */
     protected open fun setToolbar() {
         val recordingListener = object : RecordingListener {
-            override fun onStoppedRecording() {}
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+            override fun onStoppedRecording() {
+                //updatePlayBackPath()
+            }
+
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                stopPlayBackAndRecording()
+            }
         }
 
         recordingToolbar = RecordingToolbar(this.activity!!, rootView!!,

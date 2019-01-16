@@ -14,7 +14,6 @@ import android.view.View
 import android.widget.*
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.*
@@ -26,7 +25,6 @@ import org.sil.storyproducer.tools.media.AudioRecorderMP4
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
-import java.util.ArrayList
 
 private const val RECORDING_ANIMATION_DURATION = 1500
 
@@ -69,7 +67,6 @@ constructor(activity: Activity, rootView: View,
     private var checkButton: ImageButton = ImageButton(activity)
     private var multiRecordButton: ImageButton = ImageButton(activity)
     private var sendAudioButton: ImageButton = ImageButton(activity)
-    private val auxiliaryMediaList: MutableList<AuxiliaryMedia> = ArrayList()
 
     private var transitionDrawable: TransitionDrawable? = null
     private var colorHandler: Handler? = null
@@ -139,24 +136,6 @@ constructor(activity: Activity, rootView: View,
     }
 
     /**
-     * This function is used so that other potential media sources outside the toolbar can be
-     * stopped if the toolbar is pressed.
-     *
-     * @param viewThatIsPlayingButton The button that is pressed to activate the media playback.
-     * @param setButtonToDrawable     The drawable to set the trigger button to a different drawable
-     * when the toolbar is touched and the media is stopped.
-     * (The reset drawable for the button) Like pause to play button.
-     * @param playingAudio            The audio source of playback.
-     */
-    fun onToolbarTouchStopAudio(viewThatIsPlayingButton: View, setButtonToDrawable: Int, playingAudio: AudioPlayer) {
-        val auxiliaryMedia = AuxiliaryMedia()
-        auxiliaryMedia.playingAudio = playingAudio
-        auxiliaryMedia.setButtonToDrawableOnStop = setButtonToDrawable
-        auxiliaryMedia.viewThatIsPlayingButton = viewThatIsPlayingButton
-        auxiliaryMediaList.add(auxiliaryMedia)
-    }
-
-    /**
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
@@ -182,9 +161,9 @@ constructor(activity: Activity, rootView: View,
 
     protected open fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
+        recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder.startNewRecording(recordingRelPath)
         startRecordingAnimation(false, 0)
-        recordingListener.onStartedRecordingOrPlayback(true)
     }
 
     protected open fun stopRecording() {
@@ -302,6 +281,7 @@ constructor(activity: Activity, rootView: View,
                 stopToolbarMedia()
             } else {
                 //Now we need to start recording!
+                recordingListener.onStartedRecordingOrPlayback(true)
                 val recordingRelPath = assignNewAudioRelPath()
                 val dialog = AlertDialog.Builder(activity!!)
                         .setTitle(activity!!.getString(R.string.overwrite))
@@ -342,12 +322,12 @@ constructor(activity: Activity, rootView: View,
                     audioPlayer.stopAudio()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                 } else {
-                    stopPlayBackAndRecording()
-                    if (audioPlayer.setStorySource(appContext,Workspace.activePhase.getChosenFilename())) {
+                    stopToolbarMedia()
+                    recordingListener.onStartedRecordingOrPlayback(false)
+                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-                        recordingListener.onStartedRecordingOrPlayback(false)
                         //TODO: make this logging more robust and encapsulated
                         when (Workspace.activePhase.phaseType){
                                 PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
@@ -377,21 +357,22 @@ constructor(activity: Activity, rootView: View,
             }
         }
         if (enableMultiRecordButton) {
-            val multiRecordModalButtonListener = View.OnClickListener {
-                stopPlayBackAndRecording()
-                if(PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
-                    RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
+            if(multiRecordButton != null) {
+                val multiRecordModalButtonListener = View.OnClickListener {
+                    stopToolbarMedia()
+                    if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
+                        recordingListener.onStartedRecordingOrPlayback(false)
+                    } else {
+                        activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
+                    }
                 }
-                else{
-                    activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
-                }
+                multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
             }
-            multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
 
         }
         if (enableSendAudioButton) {
             val sendAudioListener = View.OnClickListener {
-                stopPlayBackAndRecording()
+                stopToolbarMedia()
                 sendAudio()
             }
             sendAudioButton.setOnClickListener(sendAudioListener)
@@ -549,7 +530,7 @@ constructor(activity: Activity, rootView: View,
     * Start recording audio and hide buttons
      */
     private fun recordAudio(recordingRelPath: String) {
-        stopPlayBackAndRecording()
+        stopToolbarMedia()
         startRecording(recordingRelPath)
         when(Workspace.activePhase.phaseType){
             PhaseType.DRAFT -> saveLog(activity.getString(R.string.DRAFT_RECORDING))
@@ -628,35 +609,6 @@ constructor(activity: Activity, rootView: View,
         }
         if (transitionDrawable != null) {
             transitionDrawable!!.resetTransition()
-        }
-    }
-
-    /**
-     * This function stops all playback and all auxiliary media.
-     */
-    private fun stopPlayBackAndRecording() {
-        stopToolbarMedia()
-        for (am in auxiliaryMediaList) {
-            am.stopPlaying()
-        }
-    }
-
-    /**
-     * Use this class to hold media that should be stopped when a toolbar button is pressed.
-     * <br></br>Refer to function [.onToolbarTouchStopAudio] for more information.
-     */
-    protected inner class AuxiliaryMedia {
-        internal var viewThatIsPlayingButton: View? = null
-        internal var setButtonToDrawableOnStop: Int = 0
-        internal var playingAudio: AudioPlayer? = null
-
-        internal fun stopPlaying() {
-            if (playingAudio != null && playingAudio!!.isAudioPlaying) {
-                playingAudio!!.stopAudio()
-                if (viewThatIsPlayingButton != null) {
-                    viewThatIsPlayingButton!!.setBackgroundResource(setButtonToDrawableOnStop)
-                }
-            }
         }
     }
 }

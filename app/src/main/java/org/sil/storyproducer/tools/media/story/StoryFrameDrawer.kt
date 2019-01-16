@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.tools.file.getDownsample
 import org.sil.storyproducer.tools.file.getStoryImage
 
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -44,6 +45,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
     private var mIsVideoDone = false
 
     private var bitmaps: MutableMap<String,Bitmap?> = mutableMapOf()
+    private var downsamples: MutableMap<String,Int> = mutableMapOf()
 
     init {
 
@@ -152,21 +154,19 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
 
         val page = mPages[pageIndex]
         if(!bitmaps.containsKey(page.imRelPath)){
-            bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath)
+            val ds = getDownsample(context,page.imRelPath,mWidth*2, mHeight*2)
+            downsamples[page.imRelPath] = ds
+            bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath,ds,true)
         }
         val bitmap = bitmaps[page.imRelPath]
+        val downSample = downsamples[page.imRelPath]!!
 
         if (bitmap != null) {
-            val kbfx = page.kenBurnsEffect
-
             val position = (timeOffsetUs / imgDurationUs.toDouble()).toFloat()
 
-            val drawRect: RectF
-            if (kbfx != null) {
-                drawRect = kbfx.revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height)
-            } else {
-                drawRect = RectF(0f, 0f, mWidth*1f, mHeight*1f)
-            }
+            val drawRect = page.kenBurnsEffect?.
+                    revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height,downSample*1f) ?:
+                RectF(0f, 0f, mWidth*1f, mHeight*1f)
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 

@@ -324,7 +324,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
+        override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
             lastOldName = name
             val tempName = newName + AUDIO_EXT
             lastNewName = tempName
@@ -334,7 +334,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        fun onRenameSuccess() {
+        override fun onRenameSuccess() {
             val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
             filenames.removeAt(index)
             filenames.add(index, "$PROJECT_DIR/$lastNewName")
@@ -342,11 +342,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             updateRecordingList()
         }
 
-        fun stopAudio() {
-            if (audioPlayer.isAudioPlaying) {
-                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
-            }
+    fun stopAudio() {
+        if (audioPlayer.isAudioPlaying) {
+            currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+            audioPlayer.stopAudio()
         }
     }
 }

@@ -9,11 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.model.*
 
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
@@ -52,6 +49,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
+    var mIncludeSong = false
     var mDumbPhone = false
 
     private var mLogProgress = false
@@ -141,7 +139,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var lastSoundtrackVolume = 0.0f
         var iSlide = 0
         while (iSlide < (Workspace.activeStory.slides.size)) {
-            val slide = Workspace.activeStory.slides[iSlide]
+            val slide = Workspace.activeStory.slides[iSlide++]
+
+            //Check if the song slide should be included
+            if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
+
             val image = if (mIncludePictures) slide.imageFile else ""
             var audio = slide.chosenDramatizationFile
             //fallback to draft audio
@@ -159,12 +161,13 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
                 soundtrack = slide.musicFile
                 soundtrackVolume = slide.volume
-                if (soundtrack == "") {
+                if (soundtrack == MUSIC_CONTINUE) {
                     //Try not to leave nulls in so null may be reserved for no soundtrack.
                     soundtrack = lastSoundtrack
                     soundtrackVolume = lastSoundtrackVolume
-                } else if (soundtrack == "") {
-                    error("Soundtrack missing from template: " + soundtrack)
+                } else if (soundtrack == MUSIC_NONE) {
+                    soundtrack = ""
+                    soundtrackVolume = 0f
                 }
 
                 lastSoundtrack = soundtrack
@@ -185,7 +188,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             }
 
             pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,slide.slideType))
-            iSlide++
         }
 
         return pages.toTypedArray()
@@ -227,13 +229,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        val TITLE_FONT_SIZE = 24
-        val BODY_FONT_SIZE = 26
-
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
-
-        private val COPYRIGHT_SLIDE_US: Long = 3000000
 
         // parameters for the video encoder
         private val VIDEO_FRAME_RATE = 30               // 30fps
@@ -249,13 +246,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
-        private val AUDIO_BIT_RATE_AMR = 128000
+
+        private val AUDIO_SAMPLE_RATE_AMR = 8000
+        private val AUDIO_BIT_RATE_AMR = 16000
 
         fun generateDumbAudioFormat(): MediaFormat {
             // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
             val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
             audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
             return audioFormat
         }

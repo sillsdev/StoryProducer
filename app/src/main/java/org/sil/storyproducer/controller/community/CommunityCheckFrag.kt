@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.adapter.RecordingsList
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -53,7 +56,9 @@ class CommunityCheckFrag : MultiRecordFrag() {
                 dispList?.updateRecordingList()
             }
 
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                stopPlayBackAndRecording()
+            }
         }
 
         recordingToolbar = RecordingToolbar(activity!!, rootView!!,
@@ -70,5 +75,4 @@ class CommunityCheckFrag : MultiRecordFrag() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()
     }
-
 }

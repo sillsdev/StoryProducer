@@ -272,7 +272,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     companion object {
         private val TAG = "PipedAudioShortMan"
 
-        private val BUFFER_COUNT = 8
+        val BUFFER_COUNT = 8
 
         private val MAX_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE
     }

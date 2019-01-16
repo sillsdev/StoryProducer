@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<MSPhotoStoryProject
+    xmlns="MSPhotoStory" schemaVersion="2.0" appVersion="3.0.1115.0" linkOnly="0" defaultImageDuration="5" visualUnitCount="7" codecVersion="{50564D57-0000-0010-8000-00AA00389B71}" sessionSeed="360658477">
+    <VisualUnit duration="5" type="1">
+        <Transition duration="0.5" withPrevImage="0" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
+        <Narration path="firstSlideNarration.wav"/>
+        <Image path="0.jpg" comments="0.jpg" lastModified="9/29/2009 12:50:48 PM" width="720" height="540" noNarration="0" useManualDuration="0" narrationTips="">
+            <Edit>
+                <TextOverlay text="God is happy when a person repents." verticalAlignment="4" horizontalAlignment="1" fontReferenceWidth="312" fontReferenceHeight="234">
+                    <Font faceName="Microsoft Sans Serif" width="0" height="-21" weight="400" strikeout="0" italic="0" underline="0" charset="0" clipprecision="2" escapement="0" orientation="0" outprecision="3" pitchandfamily="34" quality="1" color="16777215"/>
+                </TextOverlay>
+                <RotateAndCrop rotateType="0">
+                    <Rectangle upperLeftX="20" upperLeftY="40" width="700" height="500"/>
+                </RotateAndCrop>
+            </Edit>
+            <Motion manual="0" workingImageWidth="720" workingImageHeight="540">
+                <Rect upperLeftX="0" upperLeftY="0" width="540" height="405" weight="100"/>
+                <Rect upperLeftX="100" upperLeftY="50" width="620" height="490" weight="100"/>
+            </Motion>
+            <Motion2 manual="0">
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+            </Motion2>
+            <Transition2 type="1" useManualDuration="0" duration="1"/>
+            <MusicTrack type="1" volume="9" colorIndex="0">
+                <SoundTrack comments="Roll it Up.mp3" path="firstSlideMusicTrack.mp3"/>
+            </MusicTrack>
+        </Image>
+    </VisualUnit>
+    <ExtraTagThatTheParserShouldIgnore>
+        <DummyTag />
+    </ExtraTagThatTheParserShouldIgnore>
+    <VisualUnit duration="12.989" type="1">
+        <Transition duration="0.5" withPrevImage="-1" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
+        <Transition duration="0.5" withPrevImage="0" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
+        <Narration path="secondSlideNarration.wav"/>
+        <Image path="1.jpg" comments="1.jpg" lastModified="5/16/2016 4:22:04 PM" width="1185" height="1005" noNarration="0" useManualDuration="0" narrationTips="">
+            <Motion manual="-1" workingImageWidth="1340" workingImageHeight="1005">
+                <Rect upperLeftX="277" upperLeftY="0" width="877" height="658" weight="100"/>
+                <Rect upperLeftX="80" upperLeftY="0" width="1178" height="883" weight="100"/>
+            </Motion>
+            <Motion2 manual="-1">
+                <RelativeRect left="0.206896551724138" top="0" width="0.655172413793103" height="0.655172413793103"/>
+                <RelativeRect left="6.03448275862069E-02" top="0" width="0.879310344827586" height="0.879310344827586"/>
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+                <RelativeRect left="0.124626865671642" top="0.248756218905473" width="0.75" height="0.749253731343284"/>
+            </Motion2>
+            <Transition2 type="1" useManualDuration="0" duration="1"/>
+        </Image>
+    </VisualUnit>
+    <VisualUnit duration="12.989" type="1">
+        <Transition duration="0.5" withPrevImage="-1" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
+        <Transition duration="0.5" withPrevImage="0" type="{829BBF89-7707-4567-A0B8-9BF9631C79AD}"/>
+        <Narration path="thirdSlideNarration.wav"/>
+        <Image path="2.jpg" comments="2.jpg" lastModified="5/16/2016 4:22:04 PM" width="1185" height="1005" noNarration="0" useManualDuration="0" narrationTips="">
+            <Motion manual="-1" workingImageWidth="1340" workingImageHeight="1005">
+                <Rect upperLeftX="277" upperLeftY="0" width="877" height="658" weight="100"/>
+                <Rect upperLeftX="80" upperLeftY="0" width="1178" height="883" weight="100"/>
+            </Motion>
+            <Motion2 manual="-1">
+                <RelativeRect left="0.206896551724138" top="0" width="0.655172413793103" height="0.655172413793103"/>
+                <RelativeRect left="6.03448275862069E-02" top="0" width="0.879310344827586" height="0.879310344827586"/>
+                <RelativeRect left="0" top="0" width="1" height="1"/>
+                <RelativeRect left="0.124626865671642" top="0.248756218905473" width="0.75" height="0.749253731343284"/>
+            </Motion2>
+            <Transition2 type="1" useManualDuration="0" duration="1"/>
+        </Image>
+    </VisualUnit>
+</MSPhotoStoryProject>

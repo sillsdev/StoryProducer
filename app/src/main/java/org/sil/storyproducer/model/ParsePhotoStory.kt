@@ -4,11 +4,11 @@ import android.content.Context
 import android.graphics.Rect
 import android.support.v4.provider.DocumentFile
 import android.util.Xml
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
-import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 
@@ -30,39 +30,59 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
             continue
         }
         val tag = parser.name
+
         when (tag) {
             "VisualUnit" -> {
                 val slide = parseSlideXML(parser)
-                if(firstSlide) {
-                    slide.slideType = SlideType.FRONTCOVER
-                    firstSlide = false
-                }
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
                 val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
                 if(textFile != null){
                     val textList = textFile.split("~")
-                    if (textList.size > 0) slide.title = textList[0]
-                    if (textList.size > 1) slide.subtitle= textList[1]
-                    if (textList.size > 2) slide.reference = textList[2]
-                    if (textList.size > 3) slide.content = textList[3]
+                    if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 1) slide.subtitle= textList[1].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 2) slide.reference = textList[2].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 3) slide.content = textList[3].removePrefix(" ").removeSuffix(" ")
+                }
+                if(firstSlide) {
+                    slide.slideType = SlideType.FRONTCOVER
+                    firstSlide = false
                 }
                 slides.add(slide)
             }
             else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
+                skipToNextTag(parser)
             }
         }
         parser.next()
     }
-    val story = Story(storyPath.name!!,slides)
-    return story
+
+    if (slides.isEmpty()) {
+        return null
+    }
+
+    //Assume that the final slide is actually the copyright slide
+    slides.last().slideType = SlideType.COPYRIGHT
+    //The copyright slide should show the copyright in the LWC.
+    slides.last().translatedContent = slides.last().content
+    slides.last().musicFile = MUSIC_NONE
+
+    //Add the song slide
+    var slide = Slide()
+    slide.slideType = SlideType.LOCALSONG
+    slide.content = context.getString(R.string.LS_prompt)
+    slide.musicFile = MUSIC_NONE
+    //add as second last slide
+    slides.add(slides.size-1,slide)
+
+    //Add the Local credits slide
+    slide = Slide()
+    slide.slideType = SlideType.LOCALCREDITS
+    slide.content = context.getString(R.string.LC_prompt)
+    slide.musicFile = MUSIC_NONE
+    //add as second last slide
+    slides.add(slides.size-1,slide)
+
+    return Story(storyPath.name!!,slides)
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
@@ -79,65 +99,99 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
         val tag = parser.name
         when (tag) {
             "Narration" -> {
-                slide.narrationFile = parser.getAttributeValue(null, "path")
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Narration")
+                parseNarration(slide, parser)
             }
             "Image" -> {
-                slide.imageFile = parser.getAttributeValue(null, "path")
-                val noExtRange = 0..(slide.imageFile.length
-                        - File(slide.imageFile).extension.length-2)
-                slide.textFile = slide.imageFile.slice(noExtRange) + ".txt"
-                slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
-                slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+                parseImage(slide, parser)
+
             }
+            else -> {
+                skipToNextTag(parser)
+            }
+        }
+        parser.next()
+    }
+    return slide
+}
+
+private fun parseNarration(slide: Slide, parser: XmlPullParser) {
+    slide.narrationFile = parser.getAttributeValue(null, "path")
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "Narration")
+}
+
+private fun parseImage(slide: Slide, parser: XmlPullParser) {
+    slide.imageFile = parser.getAttributeValue(null, "path")
+    slide.textFile = slide.imageFile.replace(Regex("""\..+$"""), ".txt")
+    slide.width = Integer.parseInt(parser.getAttributeValue(null, "width"))
+    slide.height = Integer.parseInt(parser.getAttributeValue(null, "height"))
+    parser.nextTag()
+    while (parser.name != "Image") {
+        when (parser.name) {
+            "Edit" -> {
+                parseEdit(parser, slide)
+            }
+            "MusicTrack" -> {
+                parseMusicTrack(slide, parser)
+            }
+            "Motion" -> {
+                parseMotion(parser, slide)
+            }
+        }
+        parser.next()
+    }
+    parser.require(XmlPullParser.END_TAG, null, "Image")
+}
+
+private fun parseEdit(parser: XmlPullParser, slide: Slide) {
+    parser.nextTag()
+    while (parser.name != "Edit") {
+        when (parser.name) {
             "RotateAndCrop" -> {
                 parser.nextTag()
                 slide.crop = parseRect(parser, "Rectangle")
                 parser.nextTag()
                 parser.require(XmlPullParser.END_TAG, null, "RotateAndCrop")
             }
-            "MusicTrack" -> {
-                //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
-                //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
-                slide.volume = 0.25f
-
-                parser.nextTag()
-                parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
-
-                slide.musicFile = parser.getAttributeValue(null, "path")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
-            }
-            "Motion" -> {
-                val rectTag = "Rect"
-                parser.nextTag()
-                slide.startMotion = parseRect(parser, rectTag)
-                parser.nextTag()
-                slide.endMotion = parseRect(parser, rectTag)
-
-                parser.nextTag()
-                parser.require(XmlPullParser.END_TAG, null, "Motion")
-            }
-        //ignore
-            else -> {
-                //skip the tag
-                var depth: Int = 1
-                while (depth != 0) {
-                    when (parser.next()) {
-                        XmlPullParser.END_TAG -> depth--
-                        XmlPullParser.START_TAG -> depth++
-                    }
-                }
+            "TextOverlay" -> {
+                //This is only for first slides and credit slides, although the content of the
+                //first slide is overwritten by the text.
+                slide.content = parser.getAttributeValue(null, "text")
+                skipToNextTag(parser)
+                parser.require(XmlPullParser.END_TAG, null, "TextOverlay")
             }
         }
         parser.next()
     }
-    return slide
+    parser.require(XmlPullParser.END_TAG, null, "Edit")
+}
+
+private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
+    //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
+    //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
+    slide.volume = 0.25f
+
+    parser.nextTag()
+    parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
+
+    slide.musicFile = parser.getAttributeValue(null, "path")
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
+}
+
+private fun parseMotion(parser: XmlPullParser, slide: Slide) {
+    val rectTag = "Rect"
+    parser.nextTag()
+    slide.startMotion = parseRect(parser, rectTag)
+    parser.nextTag()
+    slide.endMotion = parseRect(parser, rectTag)
+
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "Motion")
 }
 
 @Throws(IOException::class, XmlPullParserException::class)
@@ -156,4 +210,14 @@ private fun parseRect(parser: XmlPullParser, rectangleTag: String): Rect {
     parser.require(XmlPullParser.END_TAG, null, rectangleTag)
 
     return Rect(left, top, right, bottom)
+}
+
+private fun skipToNextTag(parser: XmlPullParser) {
+    var depth: Int = 1
+    while (depth != 0) {
+        when (parser.next()) {
+            XmlPullParser.END_TAG -> depth--
+            XmlPullParser.START_TAG -> depth++
+        }
+    }
 }

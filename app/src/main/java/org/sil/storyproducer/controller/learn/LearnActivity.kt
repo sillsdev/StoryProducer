@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.learn
 
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -17,6 +18,7 @@ import android.widget.TextView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.BitmapScaler
@@ -26,6 +28,7 @@ import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 import java.util.ArrayList
+import kotlin.math.max
 
 class LearnActivity : PhaseBaseActivity() {
 
@@ -152,11 +155,12 @@ class LearnActivity : PhaseBaseActivity() {
         super.onPause()
         pauseVideo()
         recordingToolbar!!.onPause()
-        //recordingToolbar!!.close()
+        recordingToolbar!!.close()
     }
 
     public override fun onResume() {
         super.onResume()
+        //recordingToolbar.hideFloatingActionButton();
     }
 
     public override fun onStop() {
@@ -164,7 +168,7 @@ class LearnActivity : PhaseBaseActivity() {
         narrationPlayer.release()
         backgroundPlayer.release()
         recordingToolbar!!.onPause()
-        //recordingToolbar!!.close()
+        recordingToolbar!!.close()
     }
 
     /**
@@ -350,8 +354,8 @@ class LearnActivity : PhaseBaseActivity() {
         var slidePicture: Bitmap? = null
         if (videoSeekBar!!.progress == story.slides.size) {
             //gets the end image if we are at the end of the story
-        }
-        else {
+            //TODO what image are we actually getting?  -3.png?  this doesn't make sense.
+        } else {
             //Get a normal story image.
             slidePicture = getStoryImage(this,slideNum)
         }

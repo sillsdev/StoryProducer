@@ -111,7 +111,7 @@ class StoryMaker
 
             var soundtrackDuration: Long = 0
             var lastSoundtrack = ""
-            var soundtrackVolume = 1.0f
+            var soundtrackVolume = 0.0f
             var lastSoundtrackVolume = 0.0f
             for (page in mPages) {
                 val narration = page.narrationAudioPath
@@ -119,20 +119,26 @@ class StoryMaker
 
                 val soundtrack = page.soundtrackAudioPath
                 val pageDuration = page.getDuration(mAudioTransitionUs)
+                soundtrackVolume = page.soundtrackVolume
 
                 //If we encounter a new soundtrack, stop the current one and start the new one.
                 //Otherwise, continue playing last soundtrack.
-                if (soundtrack == "" || soundtrack != lastSoundtrack) {
-                    soundtrackVolume = page.soundtrackVolume
+                if (soundtrack != lastSoundtrack) {
+                    //add the accumulated "last soundtrack" to the concatenator
                     if (lastSoundtrack != "") {
-                        soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration, soundtrackVolume)
+                        soundtrackConcatenator.addSourcePath(lastSoundtrack, soundtrackDuration, lastSoundtrackVolume)
                     } else if (soundtrackDuration > 0) {
-                        soundtrackConcatenator.addSource(null, soundtrackDuration, soundtrackVolume)
+                        //Else, we need to add blank time.
+                        soundtrackConcatenator.addSource(null, soundtrackDuration, lastSoundtrackVolume)
                     }
 
+                    //Start the next soundtrack accumulator
                     lastSoundtrack = soundtrack
+                    lastSoundtrackVolume = soundtrackVolume
+                    //The next soundtrack will at least play for "page duration"
                     soundtrackDuration = pageDuration
                 } else {
+                    //each slide, add the narration length + transition time to the soundtrack audio.
                     soundtrackDuration += pageDuration
                 }
 
@@ -141,7 +147,7 @@ class StoryMaker
 
             //Add last soundtrack
             if (lastSoundtrack != "") {
-                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration, soundtrackVolume)
+                soundtrackConcatenator.addLoopingSourcePath(lastSoundtrack, soundtrackDuration, lastSoundtrackVolume)
             }
 
             //Add soundtrack only if there is one!

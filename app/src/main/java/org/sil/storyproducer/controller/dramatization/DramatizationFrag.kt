@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.dramatization
 import android.app.Activity
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
-import android.support.design.widget.Snackbar
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
@@ -16,10 +15,8 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-import java.util.*
 
 
 class DramatizationFrag : MultiRecordFrag() {
@@ -35,7 +32,9 @@ class DramatizationFrag : MultiRecordFrag() {
         slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
-            setToolbar(null)
+            if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+                setToolbar(rootViewToolbar)
+            }
             closeKeyboardOnTouch(rootView)
             rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
@@ -89,7 +88,9 @@ class DramatizationFrag : MultiRecordFrag() {
         if (rootView is ConstraintLayout) {
             val recordingListener = object : RecordingListener {
                 override fun onStoppedRecording() {}
-                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                    stopPlayBackAndRecording()
+                }
             }
 
             recordingToolbar = RecordingToolbar(activity!!, rootView!!,
@@ -122,8 +123,11 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        Workspace.activeStory.slides[slideNum].translatedContent = slideText!!.text.toString()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        val newText = slideText!!.text.toString()
+        if(newText != Workspace.activeStory.slides[slideNum].translatedContent){
+            Workspace.activeStory.slides[slideNum].translatedContent = newText
+            setPic(rootView!!.findViewById(R.id.fragment_image_view))
+        }
     }
 
 }

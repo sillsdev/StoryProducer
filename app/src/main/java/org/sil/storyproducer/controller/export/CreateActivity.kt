@@ -30,6 +30,7 @@ class CreateActivity : PhaseBaseActivity() {
     private var mCheckboxPictures: CheckBox? = null
     private var mCheckboxText: CheckBox? = null
     private var mCheckboxKBFX: CheckBox? = null
+    private var mCheckboxSong: CheckBox? = null
     private var mLayoutResolution: View? = null
     private var mSpinnerResolution: Spinner? = null
     private var mResolutionAdapterAll: ArrayAdapter<CharSequence>? = null
@@ -42,14 +43,15 @@ class CreateActivity : PhaseBaseActivity() {
     private var mProgressBar: ProgressBar? = null
 
     private val mOutputPath: String get() {
+        val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
         val name = mEditTextTitle!!.text.toString()
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
+        val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
         val ext = if (mRadioButtonDumbPhone!!.isChecked) {".3gp"} else {".mp4"}
-        return "${name}_$fx$px$mv$tx$ext"
-
+        return "$num${name}_$fx$px$mv$tx$sg$ext"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -130,6 +132,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        loadPreferences()
         toggleVisibleElements()
 
         watchProgress()
@@ -137,14 +140,9 @@ class CreateActivity : PhaseBaseActivity() {
 
     override fun onPause() {
         mProgressUpdater!!.interrupt()
-
-        super.onPause()
-    }
-
-    override fun onDestroy() {
         savePreferences()
 
-        super.onDestroy()
+        super.onPause()
     }
 
     /**
@@ -186,6 +184,8 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX!!.setOnCheckedChangeListener { compoundButton, newState -> toggleVisibleElements() }
         mCheckboxText = findViewById(R.id.checkbox_export_text)
         mCheckboxText!!.setOnCheckedChangeListener { compoundButton, newState -> toggleVisibleElements() }
+        mCheckboxSong = findViewById(R.id.checkbox_export_song)
+        mCheckboxSong!!.setOnCheckedChangeListener { compoundButton, newState -> toggleVisibleElements() }
 
         val resolutionArray = resources.getStringArray(R.array.export_resolution_options)
         val immutableList = Arrays.asList(*resolutionArray)
@@ -366,10 +366,10 @@ class CreateActivity : PhaseBaseActivity() {
         editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures?.isChecked ?: true)
         editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText?.isChecked ?: true)
         editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_SONG, mCheckboxSong?.isChecked ?: true)
 
         editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
-        editor.putString(PREF_KEY_SHORT_NAME, mEditTextTitle!!.text.toString())
-
+        editor.putString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", mEditTextTitle!!.text.toString())
 
         editor.apply()
     }
@@ -384,7 +384,8 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxPictures!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
-        mEditTextTitle!!.setText(prefs.getString(PREF_KEY_SHORT_NAME, Workspace.activeStory.title))
+        mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
+        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", Workspace.activeStory.shortTitle))
 
         setSpinnerValue()
     }
@@ -419,6 +420,7 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun startExport() {
+        savePreferences()
         synchronized(storyMakerLock) {
             storyMaker = AutoStoryMaker(this)
 
@@ -426,6 +428,7 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludePictures = mCheckboxPictures!!.isChecked
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
+            storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
             storyMaker!!.mDumbPhone = mRadioButtonDumbPhone!!.isChecked
 
             val resolutionStr = mSpinnerResolution!!.selectedItem.toString()
@@ -496,6 +499,7 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
         private val PREF_KEY_INCLUDE_TEXT = "include_text"
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
+        private val PREF_KEY_INCLUDE_SONG = "include_song"
         private val PREF_KEY_SHORT_NAME = "short_name"
         private val PREF_KEY_RESOLUTION = "resolution"
         private val PREF_KEY_FILE = "file"

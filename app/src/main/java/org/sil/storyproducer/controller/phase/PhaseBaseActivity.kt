@@ -177,6 +177,8 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         mDrawerList = findViewById(R.id.navList)
         mDrawerList!!.bringToFront()
         mDrawerLayout = findViewById(R.id.drawer_layout)
+        //Lock from opening with left swipe
+        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         addDrawerItems()
         mDrawerList!!.onItemClickListener = DrawerItemClickListener(this)
         mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout,

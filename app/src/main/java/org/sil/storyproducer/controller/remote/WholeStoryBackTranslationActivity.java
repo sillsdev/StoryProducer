@@ -14,7 +14,6 @@ import android.widget.Switch;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
-import org.sil.storyproducer.tools.file.AudioFiles;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
@@ -204,14 +203,15 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      */
     void playVideo() {
         setPic(wStoryImageView);                                                             //set the next image
-        File audioFile = AudioFiles.INSTANCE.getDraft(storyName, slideNumber);
-        //set the next audio
-        if (audioFile.exists()) {
-            narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
-            //FIXME
-            //narrationPlayer.setSource(audioFile.getPath());
-            narrationPlayer.playAudio();
-        }
+        //Fixme get draft audio
+//        File audioFile = AudioFiles.INSTANCE.getDraft(storyName, slideNumber);
+//        //set the next audio
+//        if (audioFile.exists()) {
+//            narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
+//            //FIXME
+//            //narrationPlayer.setSource(audioFile.getPath());
+//            narrationPlayer.playAudio();
+//        }
 
         videoSeekBar.setProgress(slideNumber);
     }

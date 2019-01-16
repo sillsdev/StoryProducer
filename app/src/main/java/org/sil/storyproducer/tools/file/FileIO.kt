@@ -8,14 +8,16 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
-import android.provider.DocumentsProvider
 
-import android.support.v4.provider.DocumentFile
-import android.widget.Toast
+import android.util.Log
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.*
+import java.io.FileDescriptor
+import java.io.InputStream
+import java.io.OutputStream
+import kotlin.math.max
+import kotlin.math.min
 import java.io.*
-import java.net.URI
 
 
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
@@ -40,19 +42,33 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
     if(story.title == "") return genDefaultImage()
-    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,story)
+    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
 }
 
-fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+fun getDownsample(context: Context, relPath: String,
+                         dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
+                         story: Story = Workspace.activeStory): Int{
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
+    if(iStream.available() == 0) return 1
+    val options = BitmapFactory.Options()
+    options.inJustDecodeBounds = true
+    BitmapFactory.decodeStream(iStream, null, options)
+    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
+}
+
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
     val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
     if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
     val options = BitmapFactory.Options()
     options.inSampleSize = sampleSize
-    return BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
 }
 
 fun genDefaultImage(): Bitmap {
-    val pic = Bitmap.createBitmap(1500,1125,Bitmap.Config.ARGB_8888)
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
     pic!!.eraseColor(Color.DKGRAY)
     return pic
 }
@@ -83,7 +99,7 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
     if (storyTitle == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
-                Uri.encode("/$storyTitle/$relPath"))
+            Uri.encode("/$storyTitle/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
@@ -100,6 +116,7 @@ fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspa
 
 fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : InputStream? {
     if (storyTitle == "") return null
+    Log.d("jonny", "story Title is $storyTitle. relPath is $relPath");
     return getChildInputStream(context, "$storyTitle/$relPath")
 }
 
@@ -216,14 +233,12 @@ fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Work
 fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
     if(storyRelPathExists(context, relPath, storyTitle)){
         val uri = getStoryUri(relPath,storyTitle)
-        try {
-            val newUri = DocumentsContract.renameDocument(context.contentResolver, uri, newFilename)
-            if(newUri != null) return true
-        }
-        catch (e : IOException){
-        }
+        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
+        if(newUri != null) return true
     }
     return false
 }
 
 
+val DEFAULT_WIDTH: Int = 1500
+val DEFAULT_HEIGHT: Int = 1125
