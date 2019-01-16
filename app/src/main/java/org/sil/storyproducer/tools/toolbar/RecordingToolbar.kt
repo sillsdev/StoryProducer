@@ -14,6 +14,7 @@ import android.view.View
 import android.widget.*
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.*
@@ -357,18 +358,16 @@ constructor(activity: Activity, rootView: View,
             }
         }
         if (enableMultiRecordButton) {
-            if(multiRecordButton != null) {
-                val multiRecordModalButtonListener = View.OnClickListener {
-                    stopToolbarMedia()
-                    if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
-                        recordingListener.onStartedRecordingOrPlayback(false)
-                    } else {
-                        activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
-                    }
+            val multiRecordModalButtonListener = View.OnClickListener {
+                stopToolbarMedia()
+                if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
+                    recordingListener.onStartedRecordingOrPlayback(false)
+                    RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
+                } else {
+                    activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
                 }
-                multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
             }
-
+            multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
         }
         if (enableSendAudioButton) {
             val sendAudioListener = View.OnClickListener {

@@ -7,9 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.adapter.RecordingsList
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 

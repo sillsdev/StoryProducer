@@ -33,7 +33,7 @@ class DramatizationFrag : MultiRecordFrag() {
 
         if (Workspace.activeStory.isApproved) {
             if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-                setToolbar(rootViewToolbar)
+                setToolbar(null)
             }
             closeKeyboardOnTouch(rootView)
             rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE

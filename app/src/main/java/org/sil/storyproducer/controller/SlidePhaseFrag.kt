@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.text.SpannableStringBuilder
@@ -84,7 +85,7 @@ abstract class SlidePhaseFrag : Fragment() {
         })
 
         //If it is the local credits slide, do not show the audio stuff at all.
-        val refPlaybackHolder: LinearLayout = rootView!!.findViewById(R.id.reference_audio_holder)
+        val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
             refPlaybackHolder.visibility = View.GONE
         }else{
@@ -166,8 +167,9 @@ abstract class SlidePhaseFrag : Fragment() {
             Workspace.activeStory.slides[slideNum].getOverlayText(false,false)
         else Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
         //if overlay is null, it will not write the text.
-        tOverlay?.setPadding(max(2,2 + (canvas.width - phoneProperties.widthPixels)/2))
         tOverlay?.draw(canvas)
+
+        slideImage.setImageBitmap(slidePicture)
 
         //Set up the reference audio and slide number overlays
         referncePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)

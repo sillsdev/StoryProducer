@@ -362,7 +362,14 @@ class LearnActivity : PhaseBaseActivity() {
 
         if (slidePicture == null) {
             Snackbar.make(rootView!!, "Could Not Find Picture", Snackbar.LENGTH_SHORT).show()
-        }else{
+        }
+        else{
+            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+            val canvas = Canvas(slidePicture)
+            val tOverlay = Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
+            //if overlay is null, it will not write the text.
+            tOverlay?.draw(canvas)
+
             slideImage?.setImageBitmap(slidePicture)
         }
     }

@@ -93,7 +93,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
 
         private val slideNum: Int = Workspace.activeSlideNum
 
-        fun embedList(view: ViewGroup){
+        fun embedList(view: ViewGroup) {
             rootView = view
             embedded = true
         }
@@ -101,13 +101,14 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
         override fun show() {
             val inflater = LayoutInflater.from(parentView?.context)
 
-            if(!embedded) {
+            if (!embedded) {
                 rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
             filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
 
-            if(adapter!= null){
+            updateRecordingList()
+            if (adapter != null) {
                 (adapter.adapter as RecyclerDataAdapter).onItemClick = { value ->
                     onRowClick(value)
                 }
@@ -120,9 +121,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                 (adapter.adapter as RecyclerDataAdapter).onDeleteClick = { name, pos ->
                     showDeleteItemDialog(name, pos)
                 }
-            }
-            else{
-                updateRecordingList()
+            } else {
 
                 val viewManager = LinearLayoutManager(context)
                 val viewAdapter = RecordingsListAdapter(strippedFilenames)
@@ -147,7 +146,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                 }
             }
 
-            if(!embedded) {
+            if (!embedded) {
                 val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)
                 tb?.setTitle(R.string.recordings_title)
 
@@ -176,10 +175,9 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                     .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
                         onDeleteClick(name)
                         updateRecordingList()
-                        if(adapter == null) {
+                        if (adapter == null) {
                             (recyclerView?.adapter as RecordingsListAdapter).notifyItemRemoved(position)
-                        }
-                        else{
+                        } else {
                             (adapter.adapter as RecyclerDataAdapter).notifyItemRemoved(position)
                         }
                     }
@@ -210,13 +208,13 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                     .setPositiveButton(context.getString(R.string.save)) { _, _ ->
                         val returnCode = onRenameClick(filenames[position], newName.text.toString())
                         when (returnCode) {
-                            AudioFiles.RenameCode.SUCCESS -> {
+                            RenameCode.SUCCESS -> {
                                 onRenameSuccess()
                                 Toast.makeText(context, context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                             }
-                            AudioFiles.RenameCode.ERROR_LENGTH -> Toast.makeText(context, context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
-                            AudioFiles.RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(context, context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
-                            AudioFiles.RenameCode.ERROR_UNDEFINED -> Toast.makeText(context, context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
+                            RenameCode.ERROR_LENGTH -> Toast.makeText(context, context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
+                            RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(context, context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
+                            RenameCode.ERROR_UNDEFINED -> Toast.makeText(context, context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
                         }
                     }.create()
 
@@ -242,7 +240,11 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             } else {
                 Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
             }
-            dialog?.dismiss()
+            if (adapter == null) {
+                (recyclerView?.adapter as RecordingsListAdapter).notifyDataSetChanged()
+            } else {
+                (adapter.adapter as RecyclerDataAdapter).notifyDataSetChanged()
+            }
         }
 
         fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
@@ -324,17 +326,17 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        override fun onRenameClick(name: String, newName: String): AudioFiles.RenameCode {
+        fun onRenameClick(name: String, newName: String): RenameCode {
             lastOldName = name
             val tempName = newName + AUDIO_EXT
             lastNewName = tempName
             return when (renameStoryFile(context, "$PROJECT_DIR/$name", tempName)) {
-                true -> AudioFiles.RenameCode.SUCCESS
-                false -> AudioFiles.RenameCode.ERROR_UNDEFINED
+                true -> RenameCode.SUCCESS
+                false -> RenameCode.ERROR_UNDEFINED
             }
         }
 
-        override fun onRenameSuccess() {
+        fun onRenameSuccess() {
             val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
             filenames.removeAt(index)
             filenames.add(index, "$PROJECT_DIR/$lastNewName")
@@ -342,10 +344,11 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             updateRecordingList()
         }
 
-    fun stopAudio() {
-        if (audioPlayer.isAudioPlaying) {
-            currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-            audioPlayer.stopAudio()
+        fun stopAudio() {
+            if (audioPlayer.isAudioPlaying) {
+                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                audioPlayer.stopAudio()
+            }
         }
     }
 }
