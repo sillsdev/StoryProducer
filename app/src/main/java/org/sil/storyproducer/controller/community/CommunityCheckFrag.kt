@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
@@ -22,10 +21,6 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        recordingToolbar?.toolbar?.findViewWithTag<ImageButton>("tag")?.setOnClickListener {
-            recordingToolbar?.setMicListener()
-            (dispList?.recyclerView?.adapter)?.notifyDataSetChanged()
-        }
         dispList = RecordingsListAdapter.RecordingsListModal(rootView, context!!, recordingToolbar!!)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.show()
@@ -50,6 +45,8 @@ class CommunityCheckFrag : MultiRecordFrag() {
     override fun setToolbar() {
         val recordingListener = object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
+                dispList?.updateRecordingList()
+                dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {

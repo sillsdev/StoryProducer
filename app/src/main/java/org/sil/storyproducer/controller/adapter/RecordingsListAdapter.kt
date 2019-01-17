@@ -226,7 +226,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
         /**
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
-        private fun updateRecordingList() {
+        fun updateRecordingList() {
             strippedFilenames = filenames
             if (strippedFilenames != null) {
                 for (i in 0 until strippedFilenames!!.size) {

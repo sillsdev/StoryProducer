@@ -51,21 +51,18 @@ class KeyTermMainFrag : Fragment() {
             explanationView.visibility = View.GONE
         }
 
-        recordingToolbar = RecordingToolbar(activity!!,
-                view!!, true, false, true, false,
-                object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
-        }, 0)
-
         //Probably not the best way to find the recording list on the other fragment but it will be there
         //TODO change this to make it nicer
         val recyclerView = (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.keyterm_info_audio)?.view?.findViewById<RecyclerView>(R.id.recording_list)
 
-        recordingToolbar?.toolbar?.findViewWithTag<ImageButton>("tag")?.setOnClickListener {
-            recordingToolbar?.setMicListener()
-            (recyclerView?.adapter)?.notifyDataSetChanged()
-        }
+        recordingToolbar = RecordingToolbar(activity!!,
+                view!!, true, false, true, false,
+                object : RecordingToolbar.RecordingListener {
+            override fun onStoppedRecording() {
+                recyclerView?.adapter?.notifyItemInserted(recyclerView?.adapter?.itemCount!!-1)
+            }
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+        }, 0)
 
         return view
     }
