@@ -50,7 +50,6 @@ class CommunityCheckFrag : MultiRecordFrag() {
     override fun setToolbar() {
         val recordingListener = object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                dispList?.updateRecordingList()
             }
 
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {

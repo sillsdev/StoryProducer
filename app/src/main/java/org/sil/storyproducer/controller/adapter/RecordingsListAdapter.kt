@@ -15,6 +15,7 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
+import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -99,9 +100,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
         }
 
         override fun show() {
-            val inflater = LayoutInflater.from(parentView?.context)
-
             if (!embedded) {
+                val inflater = LayoutInflater.from(parentView?.context)
                 rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
@@ -206,10 +206,11 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                     .setView(newName)
                     .setNegativeButton(context.getString(R.string.cancel), null)
                     .setPositiveButton(context.getString(R.string.save)) { _, _ ->
+                        filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
                         val returnCode = onRenameClick(filenames[position], newName.text.toString())
                         when (returnCode) {
                             RenameCode.SUCCESS -> {
-                                onRenameSuccess()
+                                onRenameSuccess(position)
                                 Toast.makeText(context, context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                             }
                             RenameCode.ERROR_LENGTH -> Toast.makeText(context, context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
@@ -225,7 +226,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
         /**
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
-        fun updateRecordingList() {
+        private fun updateRecordingList() {
             strippedFilenames = filenames
             if (strippedFilenames != null) {
                 for (i in 0 until strippedFilenames!!.size) {
@@ -247,7 +248,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
+        private fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
             if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
                 currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()
@@ -264,12 +265,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         audioPlayer.setStorySource(context, name, "keyterms")
                         audioPlayer.playAudio()
                         Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
-                        when (Workspace.activePhase.phaseType) {
-                            PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
-                            PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
-                            else -> {
-                            }
-                        }
                     } else {
                         Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
                     }
@@ -326,20 +321,23 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        fun onRenameClick(name: String, newName: String): RenameCode {
+        private fun onRenameClick(name: String, newName: String): RenameCode {
             lastOldName = name
             val tempName = newName + AUDIO_EXT
             lastNewName = tempName
-            return when (renameStoryFile(context, "$PROJECT_DIR/$name", tempName)) {
+            return when (renameStoryFile(name, tempName)) {
                 true -> RenameCode.SUCCESS
                 false -> RenameCode.ERROR_UNDEFINED
             }
         }
 
-        fun onRenameSuccess() {
-            val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
+        private fun onRenameSuccess(index: Int) {
+            //val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
             filenames.removeAt(index)
-            filenames.add(index, "$PROJECT_DIR/$lastNewName")
+            filenames.add(index, "$lastNewName")
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                Workspace.activeKeyterm.backTranslations[index] = BackTranslation(Workspace.activeKeyterm.backTranslations[index].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
+            }
             onRowClick(lastNewName.toString())
             updateRecordingList()
         }

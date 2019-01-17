@@ -1,7 +1,5 @@
 package org.sil.storyproducer.model
 
-import android.content.Context
-import android.net.Uri
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -11,7 +9,6 @@ import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
-import java.io.File
 
 
 enum class PhaseType {
@@ -57,7 +54,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.KEYTERM -> {
                 val audioFiles : MutableList<String> = mutableListOf()
                 for(audioFile in Workspace.activeKeyterm.backTranslations){
-                    audioFiles.add(audioFile.audioBackTranslation)
+                    audioFiles.add(audioFile.audioBackTranslation.substringAfterLast("/"))
                 }
                 audioFiles
             }

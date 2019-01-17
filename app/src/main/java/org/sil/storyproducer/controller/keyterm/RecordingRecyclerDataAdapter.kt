@@ -48,7 +48,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
 
         fun bindView(text : BackTranslation){
-            parentTextView.text = text.audioBackTranslation
+            parentTextView.text = text.audioBackTranslation.substringAfterLast("/")
             parentPlayButton.setOnClickListener {
                 onPlayClick?.invoke(text.audioBackTranslation, parentPlayButton)
             }

@@ -7,14 +7,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.Keyterm
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.toJson
 
 class KeyTermRecordingListFrag : Fragment() {
 

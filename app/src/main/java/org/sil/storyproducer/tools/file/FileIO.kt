@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 
@@ -230,15 +231,21 @@ fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Work
     return false
 }
 
-fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
-    if(storyRelPathExists(context, relPath, storyTitle)){
-        val uri = getStoryUri(relPath,storyTitle)
-        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
-        if(newUri != null) return true
+fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
+    val dir = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+        File(Environment.getExternalStoragePublicDirectory("${Workspace.workspace.name}"),"keyterms/${Workspace.activeKeyterm.term}")
+    } else {
+        File(Environment.getExternalStoragePublicDirectory("${Workspace.workspace.name}"),"${Workspace.activeStory.title}/project")
     }
-    return false
-}
 
+    return if(dir.exists()) {
+        val oldFile = File(dir, oldFilename)
+        val newFile = File(dir, newFilename)
+        oldFile.renameTo(newFile)
+    } else{
+        false
+    }
+}
 
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125
