@@ -6,11 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
@@ -28,7 +26,7 @@ class KeyTermListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_key_term_list)
 
         val keytermList = Array(Workspace.keyterms.size){i -> Workspace.keyterms[i].term}
-        keytermList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it })
+        keytermList.sortWith(String.CASE_INSENSITIVE_ORDER)
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = MyAdapter(keytermList, this)
