@@ -41,3 +41,26 @@ Translate and produce stories (starting with templates in a major language made 
     * Copy the unzipped templates folder to your usb card.  A good directory would be **\[thumb drive\]/SPWorkspace**
     * Open Story Producer and select the "workspace" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
     * Continue with registration and use the app!
+
+## Unit Tests
+#### Organization
+* All unit tests are located in the `app\src\test\java\org\sil\storyproducer\test` directory.
+* Test files are named for the class that they test, plus the word "Test" prepended.
+    * >**Example:** `TestRegistrationActivity` contains tests for the `RegistrationActivity` class.
+* Folders in the unit test directory correspond to folders in the source directory.
+    * >**Example:** `org.sil.storyproducer.test/controller/` contains tests for code that lives in `org.sil.storyproducer/controller/`
+* Individual tests are named according to the following format: `FunctionName_When_[Condition]_Should_[DoExpectedBehavior]`
+    * >**Example:** `OnCreate_When_WorkspaceDirectoryIsAlreadySet_Should_NotStartFileTreeActivity`
+
+#### Running the Tests
+##### From the command line:
+1. Navigate to the root directory of the repository.
+2. Run `./gradlew test` (on Linux) or `gradlew.bat test`(on Windows).
+*Note:* You may need to run the gradle wrapper with sudo or make the gradle wrapper executable with `sudo chmod +x ./gradlew`
+##### From Android Studio:
+1. Open the Story Producer project (StoryProducer.iml) in Android Studio.
+2. Set the "Project" tool window to show "Local Unit Tests" (or just navigate a the folder containing unit tests).
+3. Right click on one of the files or directories that contains some unit tests (this can be the "app" directory, a specific folder, or a single test file.).
+4. Click "Run 'All Tests'" (or a more specific option if you chose a folder or file).
+5. The "Run" tool window shows the results of the tests.
+*Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
