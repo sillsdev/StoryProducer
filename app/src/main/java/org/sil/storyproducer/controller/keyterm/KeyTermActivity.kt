@@ -47,7 +47,7 @@ class KeyTermActivity : AppCompatActivity() {
             Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
         }
         //save the current term to the workspace
-        Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
         Thread(Runnable{ this.let { Workspace.activeKeyterm.toJson(it) } }).start()
     }
 
@@ -96,7 +96,7 @@ class KeyTermActivity : AppCompatActivity() {
             //otherwise set the term to the term four earlier
             else if (supportFragmentManager.backStackEntryCount >= 4) {
                 val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 4).name
-                Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[keytermName?.toLowerCase()]?.term]!!
+                Workspace.activeKeyterm = Workspace.termToKeyterm[keytermName]!!
                 super.onBackPressed()
                 supportFragmentManager.popBackStack()
             }
@@ -106,45 +106,55 @@ class KeyTermActivity : AppCompatActivity() {
         }
     }
 
+    //TODO Put this in a better/more accessible place
     companion object {
         fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
             val spannableString = SpannableString(string)
-            if (Workspace.termsToKeyterms.containsKey(string.toLowerCase())) {
-                val clickableSpan = object : ClickableSpan() {
-                    override fun onClick(textView: View) {
-                        if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                            //if we are in the key term phase, save the active term to the workspace before opening the new one
-                            Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-                            Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
-                            val keyTermLayout = KeyTermMainFrag()
-                            val bundle = Bundle()
-                            bundle.putString("ClickedTerm", string.toLowerCase())
-                            keyTermLayout.arguments = bundle
-                            val keyTermAudioLayout = KeyTermRecordingListFrag()
-                            //set the key term to be active
-                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
-                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
-                            fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
-                        }
-                        else {
-                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
-                            //bundle up the key term to send to new key term activity
-                            val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                            intent.putExtra("Phase", Workspace.activePhase.phaseType)
-                            intent.putExtra("ClickedTerm", string.toLowerCase())
-                            fragmentActivity?.startActivity(intent)
-                        }
-                    }
-
-                    /* TODO If keyterm has a recording, make text stand out less (ex. set text color to white)
-                    override fun updateDrawState(ds: TextPaint) {
-                        ds.linkColor = Color.WHITE
-                        super.updateDrawState(ds)
-                    }*/
-                }
+            if (Workspace.termFormToTerm.containsKey(string.toLowerCase())) {
+                val clickableSpan = createKeytermClickableSpan(string, fragmentActivity)
                 spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             return spannableString
+        }
+
+        private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
+            return object : ClickableSpan() {
+                override fun onClick(textView: View) {
+                    if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+                        //Save the active keyterm to the workspace
+                        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+                        //Save the active keyterm to a json file
+                        Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
+                        //Set keyterm from link as active keyterm
+                        Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
+                        //Create new fragments
+                        val keyTermAudioLayout = KeyTermRecordingListFrag()
+                        val keyTermLayout = KeyTermMainFrag()
+                        //Add clicked term to keyTermLayout for titleBar
+                        val bundle = Bundle()
+                        bundle.putString("ClickedTerm", term.toLowerCase())
+                        keyTermLayout.arguments = bundle
+                        //Add new keyterm fragments to stack
+                        fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
+                        fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
+                    }
+                    else {
+                        //Set keyterm from link as active keyterm
+                        Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
+                        //Start a new keyterm activity and keep a reference to the parent phase
+                        val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
+                        intent.putExtra("Phase", Workspace.activePhase.phaseType)
+                        intent.putExtra("ClickedTerm", term.toLowerCase())
+                        fragmentActivity?.startActivity(intent)
+                    }
+                }
+
+                /* TODO If keyterm has a recording, make text stand out less (ex. set text color to white)
+                override fun updateDrawState(ds: TextPaint) {
+                    ds.linkColor = Color.WHITE
+                    super.updateDrawState(ds)
+                }*/
+            }
         }
     }
 }

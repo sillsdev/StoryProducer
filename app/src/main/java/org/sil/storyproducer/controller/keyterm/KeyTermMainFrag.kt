@@ -9,7 +9,6 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink

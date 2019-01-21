@@ -9,13 +9,8 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.PhaseType
@@ -27,7 +22,6 @@ import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import java.util.*
-import kotlin.math.max
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -185,11 +179,15 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        val words = slide.content.split(" ")
+        val words = splitBeforeAndAfterAnyNonLetters(slide.content)
         textView.text = words.fold(SpannableStringBuilder()){
-            result, word -> result.append(stringToKeytermLink(word, activity)).append(" ")
+            result, word -> result.append(stringToKeytermLink(word, activity))
         }
         textView.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    private fun splitBeforeAndAfterAnyNonLetters(text: String): List<String>{
+        return text.split(Regex("(?![a-zA-Z])|(?<![a-zA-Z])"))
     }
 
     /**

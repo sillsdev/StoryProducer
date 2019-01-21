@@ -6,16 +6,15 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.Workspace.termToKeyterm
 
 class KeyTermListActivity : AppCompatActivity() {
 
@@ -27,8 +26,8 @@ class KeyTermListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term_list)
 
-        val keytermList = Array(Workspace.keyterms.size){i -> Workspace.keyterms[i].term}
-        keytermList.sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER) { it })
+        val keytermList = termToKeyterm.keys.toTypedArray()
+        keytermList.sortWith(String.CASE_INSENSITIVE_ORDER)
 
         viewManager = LinearLayoutManager(this)
         viewAdapter = MyAdapter(keytermList, this)
@@ -67,7 +66,7 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
 
         holder.item.findViewById<TextView>(android.R.id.text1).text = myDataset[position]
         holder.item.setOnClickListener {
-            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[myDataset[position]]?.term]!!
+            Workspace.activeKeyterm = Workspace.termToKeyterm[myDataset[position]]!!
             val intent = Intent(context , KeyTermActivity::class.java)
             context.startActivity(intent)
         }

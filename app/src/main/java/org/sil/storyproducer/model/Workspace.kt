@@ -5,11 +5,11 @@ import android.content.SharedPreferences
 import android.net.Uri
 
 import android.support.v4.provider.DocumentFile
-import com.opencsv.CSVReader
 import java.io.File
 import java.io.FileReader
 import java.util.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
@@ -56,8 +56,8 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
-    var keyterms: List<Keyterm> = listOf()
-    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
+    var termToKeyterm: MutableMap<String, Keyterm> = mutableMapOf()
+    var termFormToTerm: MutableMap<String, String> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -111,89 +111,54 @@ object Workspace{
         storiesUpdated = true
     }
 
-    fun updateKeyterms(context: Context){
+    fun importKeyterms(context: Context) {
         val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
-        if (keytermsDirectory != null) {
-            for (keytermItem in keytermsDirectory.listFiles()) {
-                if (keytermItem.isDirectory) {
-                    val keyterm = parseKeytermIfPresent(context,keytermItem)
-                    if (keyterm != null) {
-                        termsToKeyterms[keyterm.term] = keyterm
+
+        if(keytermsDirectory != null) {
+            importKeytermsFromCsvFile(context, keytermsDirectory)
+            importKeytermsFromJsonFiles(context, keytermsDirectory)
+            mapTermFormsToTerms()
+        }
+    }
+
+    private fun importKeytermsFromCsvFile(context: Context, keytermsDirectory: DocumentFile){
+        val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
+        if(keytermsFile != null) {
+            val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")?.fileDescriptor
+            val fileReader = FileReader(fileDescriptor)
+            val keytermCsvReader = KeytermCsvReader(fileReader)
+
+            val keyterms = keytermCsvReader.readAll()
+            for(keyterm in keyterms){
+               termToKeyterm[keyterm.term] = keyterm
+            }
+
+        }
+    }
+
+    private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
+        for (keytermFile in keytermsDirectory.listFiles()) {
+            if (keytermFile.isDirectory && storyRelPathExists(context, keytermFile.name!!,"keyterms")) {
+                val keyterm = keytermFromJson(context, keytermFile.name!!)
+                if(keyterm != null) {
+                    if (termToKeyterm.containsKey(keyterm.term)) {
+                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                        termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                    } else {
+                        termToKeyterm[keyterm.term] = keyterm
                     }
                 }
             }
         }
     }
 
-    fun importKeyterms(context: Context) {
-        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
-
-        if(keytermsDirectory != null) {
-            importKeytermsFile(context, keytermsDirectory)
-        }
-    }
-
-    private fun importKeytermsFile(context: Context, keytermsDirectory: DocumentFile){
-        val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
-        if(keytermsFile != null) {
-            val csvLines = readCsvDocumentFile(context, keytermsFile)
-            keyterms = parseKeytermLines(csvLines)
-            termsToKeyterms = mapTermsToKeyterms(keyterms)
-
-            //add json file information to keyterms
-            updateKeyterms(context)
-        }
-    }
-
-    private fun readCsvDocumentFile(context: Context, file: DocumentFile): List<Array<String>>{
-        val parcelFileDescriptor = context.contentResolver.openFileDescriptor(file.uri, "r")
-        val fileReader = FileReader(parcelFileDescriptor?.fileDescriptor)
-        val csvReader = CSVReader(fileReader)
-
-        return csvReader.readAll()
-    }
-
-    private fun parseKeytermLines(csvLines: List<Array<String>>): List<Keyterm>{
-        val keyterms: MutableList<Keyterm> = mutableListOf()
-
-        val headers = csvLines.firstOrNull()
-        if (headers != null && headers.size == 5) {
-            for (line in csvLines.drop(1)) {
-                val keyterm = Keyterm(
-                        line[0],
-                        stringToList(line[1], ","),
-                        stringToList(line[2], ";"),
-                        line[3],
-                        stringToList(line[4], ","))
-                keyterms.add(keyterm)
+    private fun mapTermFormsToTerms(){
+        for(keyterm in termToKeyterm.values){
+            val term = keyterm.term
+            termFormToTerm[term.toLowerCase()] = term
+            for(termForm in keyterm.termForms){
+                termFormToTerm[termForm.toLowerCase()] = term
             }
-        }
-
-        return keyterms
-    }
-
-    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): MutableMap<String, Keyterm>{
-        val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
-
-        for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms[keyterm.term] = keyterm
-            for (termForm in keyterm.termForms) {
-                termsToKeyterms[termForm] = keyterm
-            }
-        }
-
-        return termsToKeyterms
-    }
-
-    private fun stringToList(field: String, separator: String): List<String>{
-        if(field.isNotEmpty()) {
-            val list = field.split(separator)
-            val trimmedList = list.asSequence().map { it.trim() }.toMutableList()
-            trimmedList.remove("")
-            return trimmedList
-        }
-        else{
-            return listOf()
         }
     }
 

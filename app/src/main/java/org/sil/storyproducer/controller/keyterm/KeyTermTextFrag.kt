@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Keyterm
 
 class KeyTermTextFrag : Fragment() {
 
