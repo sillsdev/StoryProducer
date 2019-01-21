@@ -135,9 +135,9 @@ object Workspace{
         val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
 
         for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms[keyterm.term] = keyterm
+            termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
             for (termForm in keyterm.termForms) {
-                termsToKeyterms[termForm] = keyterm
+                termsToKeyterms[termForm.toLowerCase()] = keyterm
             }
         }
 
@@ -149,14 +149,14 @@ object Workspace{
             val keyterm = parseKeytermIfPresent(context, keytermItem)
             if (keyterm != null) {
                 if(termsToKeyterms.containsKey(keyterm.term)) {
-                    termsToKeyterms[keyterm.term]?.backTranslations = keyterm.backTranslations
-                    termsToKeyterms[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                    termsToKeyterms[keyterm.term.toLowerCase()]?.backTranslations = keyterm.backTranslations
+                    termsToKeyterms[keyterm.term.toLowerCase()]?.chosenKeytermFile = keyterm.chosenKeytermFile
                 }
                 else{
                     keyterms.add(keyterm)
-                    termsToKeyterms[keyterm.term] = keyterm
+                    termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
                     for (termForm in keyterm.termForms) {
-                        termsToKeyterms[termForm] = keyterm
+                        termsToKeyterms[termForm.toLowerCase()] = keyterm
                     }
                 }
             }

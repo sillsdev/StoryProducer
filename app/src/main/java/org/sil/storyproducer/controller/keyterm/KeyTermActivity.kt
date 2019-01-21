@@ -97,7 +97,7 @@ class KeyTermActivity : AppCompatActivity() {
             //otherwise set the term to the term four earlier
             else if (supportFragmentManager.backStackEntryCount >= 4) {
                 val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 4).name
-                Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[keytermName?.toLowerCase()]?.term]!!
+                Workspace.activeKeyterm = Workspace.termsToKeyterms[keytermName?.toLowerCase()]!!
                 super.onBackPressed()
                 supportFragmentManager.popBackStack()
             }
@@ -115,17 +115,17 @@ class KeyTermActivity : AppCompatActivity() {
                     override fun onClick(textView: View) {
                         if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                             //if we are in the key term phase, save the active term to the workspace before opening the new one
-                            Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+                            Workspace.termsToKeyterms[Workspace.activeKeyterm.term.toLowerCase()] = Workspace.activeKeyterm
                             Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
                             val keyTermLayout = KeyTermMainFrag()
                             val keyTermAudioLayout = KeyTermRecordingListFrag()
                             //set the key term to be active
-                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
+                            Workspace.activeKeyterm = Workspace.termsToKeyterms[string.toLowerCase()]!!
                             fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
                             fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
                         }
                         else {
-                            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
+                            Workspace.activeKeyterm = Workspace.termsToKeyterms[string.toLowerCase()]!!
                             //bundle up the key term to send to new key term activity
                             val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
                             intent.putExtra("Phase", Workspace.activePhase.phaseType)

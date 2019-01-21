@@ -65,7 +65,7 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
 
         holder.item.findViewById<TextView>(android.R.id.text1).text = myDataset[position]
         holder.item.setOnClickListener {
-            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[myDataset[position]]?.term]!!
+            Workspace.activeKeyterm = Workspace.termsToKeyterms[myDataset[position]]!!
             val intent = Intent(context , KeyTermActivity::class.java)
             context.startActivity(intent)
         }
