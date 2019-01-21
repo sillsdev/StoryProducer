@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.support.v4.provider.DocumentFile
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.*
 
@@ -26,14 +25,4 @@ fun keytermFromJson(context: Context, keytermName: String): Keyterm?{
     val adapter = Keyterm.jsonAdapter(moshi)
     val fileContents = getStoryText(context,"$keytermName/${keytermName.substringBefore('_')}.json", "keyterms") ?: return null
     return adapter.fromJson(fileContents)
-}
-
-fun parseKeytermIfPresent(context: Context, keytermPath: DocumentFile): Keyterm? {
-    var keyterm: Keyterm? = null
-
-    if (keytermPath.isDirectory && storyRelPathExists(context, keytermPath.name!!,"keyterms")) {
-        keyterm = keytermFromJson(context, keytermPath.name!!)
-    }
-
-    return keyterm
 }

@@ -9,6 +9,7 @@ import java.io.File
 import java.io.FileReader
 import java.util.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
@@ -55,8 +56,8 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
-    var keyterms: MutableList<Keyterm> = mutableListOf()
-    var termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
+    var termToKeyterm: MutableMap<String, Keyterm> = mutableMapOf()
+    var termFormToTerm: MutableMap<String, String> = mutableMapOf()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -116,6 +117,7 @@ object Workspace{
         if(keytermsDirectory != null) {
             importKeytermsFromCsvFile(context, keytermsDirectory)
             importKeytermsFromJsonFiles(context, keytermsDirectory)
+            mapTermFormsToTerms()
         }
     }
 
@@ -126,39 +128,36 @@ object Workspace{
             val fileReader = FileReader(fileDescriptor)
             val keytermCsvReader = KeytermCsvReader(fileReader)
 
-            keyterms = keytermCsvReader.readAll().toMutableList()
-            termsToKeyterms = mapTermsToKeyterms(keyterms)
-        }
-    }
-
-    private fun mapTermsToKeyterms(keyterms: List<Keyterm>): MutableMap<String, Keyterm>{
-        val termsToKeyterms: MutableMap<String, Keyterm> = mutableMapOf()
-
-        for(keyterm: Keyterm in keyterms) {
-            termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
-            for (termForm in keyterm.termForms) {
-                termsToKeyterms[termForm.toLowerCase()] = keyterm
+            val keyterms = keytermCsvReader.readAll()
+            for(keyterm in keyterms){
+               termToKeyterm[keyterm.term] = keyterm
             }
+
         }
-
-        return termsToKeyterms
     }
-
+    //TODO Refactor
     private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
         for (keytermItem in keytermsDirectory.listFiles()) {
-            val keyterm = parseKeytermIfPresent(context, keytermItem)
-            if (keyterm != null) {
-                if(termsToKeyterms.containsKey(keyterm.term)) {
-                    termsToKeyterms[keyterm.term.toLowerCase()]?.backTranslations = keyterm.backTranslations
-                    termsToKeyterms[keyterm.term.toLowerCase()]?.chosenKeytermFile = keyterm.chosenKeytermFile
-                }
-                else{
-                    keyterms.add(keyterm)
-                    termsToKeyterms[keyterm.term.toLowerCase()] = keyterm
-                    for (termForm in keyterm.termForms) {
-                        termsToKeyterms[termForm.toLowerCase()] = keyterm
+            if (keytermItem.isDirectory && storyRelPathExists(context, keytermItem.name!!,"keyterms")) {
+                val keyterm: Keyterm? = keytermFromJson(context, keytermItem.name!!)
+                if(keyterm != null) {
+                    if (termToKeyterm.containsKey(keyterm.term)) {
+                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                        termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                    } else {
+                        termToKeyterm[keyterm.term] = keyterm
                     }
                 }
+            }
+        }
+    }
+
+    private fun mapTermFormsToTerms(){
+        for(keyterm in termToKeyterm.values){
+            val term = keyterm.term
+            termFormToTerm[term.toLowerCase()] = term
+            for(termForm in keyterm.termForms){
+                termFormToTerm[termForm.toLowerCase()] = term
             }
         }
     }
