@@ -26,14 +26,37 @@ class KeyTermMainFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_keyterm_main, container, false)
 
         val actionBar = (activity as AppCompatActivity).supportActionBar
-        actionBar?.title = "Keyterm Tracker"
+
+        val title = arguments?.getString("ClickedTerm")
+        if(title != null) {
+            actionBar?.title = title
+        }
+        else{
+            actionBar?.title = Workspace.activeKeyterm.term
+        }
 
         val keyTermTitleView = view.findViewById<TextView>(R.id.keytermTitle)
-        var titleText = Workspace.activeKeyterm.term
-        for (termForm in Workspace.activeKeyterm.termForms){
-            titleText += "/$termForm"
+        var titleText = ""
+        if(Workspace.activeKeyterm.term.toLowerCase() != title) {
+            titleText = Workspace.activeKeyterm.term
         }
-        keyTermTitleView.text = titleText
+        for (termForm in Workspace.activeKeyterm.termForms){
+            if(termForm != title) {
+                if (titleText.isNotEmpty()) {
+                    titleText += " / $termForm"
+                }
+                else{
+                    titleText = termForm
+                }
+            }
+        }
+        if(titleText == ""){
+            keyTermTitleView.visibility = View.GONE
+        }
+        else {
+            keyTermTitleView.text = titleText
+        }
+
 
         val relatedTermsView = view.findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){

@@ -17,9 +17,21 @@
         android:textSize="@dimen/header_text"
         android:textStyle="bold"
         android:padding="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/notesLayout"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notes"
+        android:textSize="@dimen/large_text"
+        android:textStyle="bold"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/keytermTitle" />
 
     <ScrollView
         android:id="@+id/notesLayout"
@@ -28,28 +40,13 @@
         app:layout_constraintBottom_toTopOf="@id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/keytermTitle">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/notes"
-                android:textSize="@dimen/large_text"
-                android:textStyle="bold" />
-
+        app:layout_constraintTop_toBottomOf="@id/textView">
             <TextView
                 android:id="@+id/explanation_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="8dp"
                 android:textSize="@dimen/text_body" />
-        </LinearLayout>
     </ScrollView>
 
 
@@ -64,7 +61,7 @@
         android:id="@+id/relatedLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/darkGray"
+        android:background="@color/lightDarkGrey"
         android:orientation="vertical"
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,27 +84,26 @@
     </LinearLayout>
 
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/other_langauge_examples"
+        android:textSize="@dimen/large_text"
+        android:textStyle="bold"
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/relatedLayout" />
+
     <ScrollView
         android:id="@+id/exampleLayouts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="8dp"
         app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/relatedLayout">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/example_translations_from_other_languages"
-                android:textStyle="bold" />
+        app:layout_constraintTop_toBottomOf="@id/textView3">
 
             <TextView
                 android:id="@+id/alternate_renderings_text"
@@ -116,7 +112,6 @@
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:textSize="@dimen/text_body" />
-        </LinearLayout>
     </ScrollView>
 
 

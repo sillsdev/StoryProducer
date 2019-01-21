@@ -26,7 +26,8 @@
     <color name="whole_story_phase">#811000</color>
     <color name="backT_phase">#a41e8c</color>
     <color name="remote_check_phase">#551a8b</color>
-    <color name="keyterm_phase">#3f00ff</color>
+    <color name="keyterm_phase">#ef5350</color>
     <color name="messagingBkrd">#8e8e93</color>
     <color name="messagingSecondary">#ceced2</color>
+    <color name="lightDarkGrey">#616161</color>
 </resources>

@@ -31,11 +31,10 @@ class KeyTermActivity : AppCompatActivity() {
         setContentView(R.layout.activity_key_term)
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
         viewPager = findViewById(R.id.viewPager)
-        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager)
+        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, intent.getStringExtra("ClickedTerm"))
 
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
-        toolbar.title = Workspace.activeKeyterm.term
         setSupportActionBar(toolbar)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 Workspace.activePhase.getColor(), null)))
@@ -118,6 +117,9 @@ class KeyTermActivity : AppCompatActivity() {
                             Workspace.termsToKeyterms[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
                             Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
                             val keyTermLayout = KeyTermMainFrag()
+                            val bundle = Bundle()
+                            bundle.putString("ClickedTerm", string.toLowerCase())
+                            keyTermLayout.arguments = bundle
                             val keyTermAudioLayout = KeyTermRecordingListFrag()
                             //set the key term to be active
                             Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[string.toLowerCase()]?.term]!!
@@ -129,6 +131,7 @@ class KeyTermActivity : AppCompatActivity() {
                             //bundle up the key term to send to new key term activity
                             val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
                             intent.putExtra("Phase", Workspace.activePhase.phaseType)
+                            intent.putExtra("ClickedTerm", string.toLowerCase())
                             fragmentActivity?.startActivity(intent)
                         }
                     }
