@@ -107,6 +107,7 @@ class KeyTermActivity : AppCompatActivity() {
         }
     }
 
+    //TODO Put this in a better/more accessible place
     companion object {
         fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
             val spannableString = SpannableString(string)

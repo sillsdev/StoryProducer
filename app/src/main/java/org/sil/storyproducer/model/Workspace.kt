@@ -135,11 +135,11 @@ object Workspace{
 
         }
     }
-    //TODO Refactor
+
     private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
         for (keytermFile in keytermsDirectory.listFiles()) {
             if (keytermFile.isDirectory && storyRelPathExists(context, keytermFile.name!!,"keyterms")) {
-                val keyterm: Keyterm? = keytermFromJson(context, keytermFile.name!!)
+                val keyterm = keytermFromJson(context, keytermFile.name!!)
                 if(keyterm != null) {
                     if (termToKeyterm.containsKey(keyterm.term)) {
                         termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
