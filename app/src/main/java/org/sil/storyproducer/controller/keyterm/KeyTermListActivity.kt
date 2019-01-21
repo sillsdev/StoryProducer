@@ -14,6 +14,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.Workspace.termToKeyterm
 
 class KeyTermListActivity : AppCompatActivity() {
 
@@ -25,7 +26,7 @@ class KeyTermListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term_list)
 
-        val keytermList = Array(Workspace.keyterms.size){i -> Workspace.keyterms[i].term}
+        val keytermList = termToKeyterm.keys.toTypedArray()
         keytermList.sortWith(String.CASE_INSENSITIVE_ORDER)
 
         viewManager = LinearLayoutManager(this)
@@ -65,7 +66,7 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
 
         holder.item.findViewById<TextView>(android.R.id.text1).text = myDataset[position]
         holder.item.setOnClickListener {
-            Workspace.activeKeyterm = Workspace.termsToKeyterms[Workspace.termsToKeyterms[myDataset[position]]?.term]!!
+            Workspace.activeKeyterm = Workspace.termToKeyterm[myDataset[position]]!!
             val intent = Intent(context , KeyTermActivity::class.java)
             context.startActivity(intent)
         }
