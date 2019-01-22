@@ -58,6 +58,7 @@ object Workspace{
     }
     var termToKeyterm: MutableMap<String, Keyterm> = mutableMapOf()
     var termFormToTerm: MutableMap<String, String> = mutableMapOf()
+    var keytermSearchTree = TermTree()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -118,6 +119,7 @@ object Workspace{
             importKeytermsFromCsvFile(context, keytermsDirectory)
             importKeytermsFromJsonFiles(context, keytermsDirectory)
             mapTermFormsToTerms()
+            buildKeytermSearchTree()
         }
     }
 
@@ -159,6 +161,12 @@ object Workspace{
             for(termForm in keyterm.termForms){
                 termFormToTerm[termForm.toLowerCase()] = term
             }
+        }
+    }
+
+    private fun buildKeytermSearchTree(){
+        for(termForm in termFormToTerm.keys){
+            keytermSearchTree.insertTerm(termForm)
         }
     }
 

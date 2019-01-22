@@ -179,15 +179,11 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        val words = splitBeforeAndAfterAnyNonLetters(slide.content)
+        val words = Workspace.keytermSearchTree.splitBeforeAndAfterAnyNonLetters(slide.content)
         textView.text = words.fold(SpannableStringBuilder()){
             result, word -> result.append(stringToKeytermLink(word, activity))
         }
         textView.movementMethod = LinkMovementMethod.getInstance()
-    }
-
-    private fun splitBeforeAndAfterAnyNonLetters(text: String): List<String>{
-        return text.split(Regex("(?![a-zA-Z])|(?<![a-zA-Z])"))
     }
 
     /**
