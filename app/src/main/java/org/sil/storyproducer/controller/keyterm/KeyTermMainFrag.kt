@@ -27,16 +27,11 @@ class KeyTermMainFrag : Fragment() {
         val actionBar = (activity as AppCompatActivity).supportActionBar
 
         val title = arguments?.getString("ClickedTerm")
-        if(title != null) {
-            actionBar?.title = title
-        }
-        else{
-            actionBar?.title = Workspace.activeKeyterm.term
-        }
+        actionBar?.title = title ?: Workspace.activeKeyterm.term
 
-        val keyTermTitleView = view.findViewById<TextView>(R.id.keytermTitle)
+        val keyTermTitleView = view.findViewById<TextView>(R.id.keyterm_title)
         var titleText = ""
-        if(Workspace.activeKeyterm.term.toLowerCase() != title) {
+        if(Workspace.activeKeyterm.term.toLowerCase() != title?.toLowerCase()) {
             titleText = Workspace.activeKeyterm.term
         }
         for (termForm in Workspace.activeKeyterm.termForms){
@@ -88,7 +83,7 @@ class KeyTermMainFrag : Fragment() {
                 view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                recyclerView?.adapter?.notifyItemInserted(recyclerView?.adapter?.itemCount!!-1)
+                recyclerView?.adapter?.notifyItemInserted(recyclerView.adapter?.itemCount!!-1)
             }
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
         }, 0)
