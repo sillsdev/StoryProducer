@@ -5,55 +5,51 @@ class TermTree {
 
     fun insertTerm(term: String){
         val words = splitBeforeAndAfterAnyNonLetters(term)
-        insertTerm(words, root)
+        var currentNode = root
+        for(word in words){
+            val nextNode = currentNode.childWords[word] ?: WordNode()
+            currentNode.childWords[word] = nextNode
+            currentNode = nextNode
+        }
     }
 
     //TODO Refactor
-    fun searchParseKeytermThingy(text: String): List<String>{
+    fun splitOnKeyterms(text: String): List<String>{
         val words = splitBeforeAndAfterAnyNonLetters(text)
-        val things: MutableList<String> = mutableListOf()
-
+        val resultPhrases: MutableList<String> = mutableListOf()
         var currentNode = root
-        var thing: MutableList<String> = mutableListOf()
+        var currentPhrase: MutableList<String> = mutableListOf()
+
         while(words.size > 0) {
             val word = words.removeAt(0)
             if(currentNode.childWords.containsKey(word.toLowerCase())){
-                thing.add(word)
+                currentPhrase.add(word)
                 currentNode = currentNode.childWords[word.toLowerCase()]!!
             }
             else if(currentNode.childWords.isEmpty()){
-                things.add(thing.fold(""){
+                resultPhrases.add(currentPhrase.fold(""){
                     result, word -> result + word
                 })
                 words.add(0, word)
-                thing = mutableListOf()
+                currentPhrase = mutableListOf()
                 currentNode = root
             }
             else{
-                thing.add(word)
-                things.add(thing.removeAt(0))
-                words.addAll(0, thing)
-                thing = mutableListOf()
+                currentPhrase.add(word)
+                resultPhrases.add(currentPhrase.removeAt(0))
+                words.addAll(0, currentPhrase)
+                currentPhrase = mutableListOf()
                 currentNode = root
             }
         }
 
-        return things
+        return resultPhrases
     }
 
     private fun splitBeforeAndAfterAnyNonLetters(text: String): MutableList<String>{
         val words = text.split(Regex("(?![a-zA-Z])|(?<![a-zA-Z])")).toMutableList()
         words.removeAll { it == "" }
         return words
-    }
-
-    private fun insertTerm(words: MutableList<String>, currentNode: WordNode){
-        if(words.size > 0) {
-            val word = words.removeAt(0)
-            val nextNode = currentNode.childWords[word] ?: WordNode()
-            currentNode.childWords[word] = nextNode
-            insertTerm(words, nextNode)
-        }
     }
 
     private class WordNode {
