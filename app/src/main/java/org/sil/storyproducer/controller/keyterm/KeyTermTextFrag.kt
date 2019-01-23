@@ -14,6 +14,7 @@ class KeyTermTextFrag : Fragment() {
         super.onCreate(savedInstanceState)
 
         val keyTermLayout = KeyTermMainFrag()
+        keyTermLayout.arguments = arguments
         activity?.supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
     }
 

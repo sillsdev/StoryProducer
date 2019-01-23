@@ -150,6 +150,9 @@
     <!-- Keyterm Tool -->
     <string name="keyterm_submit_backTranslation_hint">Word for word backtranslation</string>
     <string name="keyterm_close">Close</string>
+    <string name="notes">MEANING NOTES. DEFINITIONS:</string>
+    <string name="related_terms">RELATED (BUT DIFFERENT) TERMS:</string>
+    <string name="other_langauge_examples">OTHER LANGUAGE EXAMPLES:</string>
 
     <!-- Learn Phase -->
     <string name="learn_phase_practice">Retell the whole story in your language!</string>

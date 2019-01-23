@@ -25,7 +25,32 @@ class KeyTermMainFrag : Fragment() {
         val view = inflater.inflate(R.layout.fragment_keyterm_main, container, false)
 
         val actionBar = (activity as AppCompatActivity).supportActionBar
-        actionBar?.title = Workspace.activeKeyterm.term
+
+        val title = arguments?.getString("ClickedTerm")
+        actionBar?.title = title ?: Workspace.activeKeyterm.term
+
+        val keyTermTitleView = view.findViewById<TextView>(R.id.keyterm_title)
+        var titleText = ""
+        if(Workspace.activeKeyterm.term.toLowerCase() != title?.toLowerCase()) {
+            titleText = Workspace.activeKeyterm.term
+        }
+        for (termForm in Workspace.activeKeyterm.termForms){
+            if(termForm != title) {
+                if (titleText.isNotEmpty()) {
+                    titleText += " / $termForm"
+                }
+                else{
+                    titleText = termForm
+                }
+            }
+        }
+        if(titleText == ""){
+            keyTermTitleView.visibility = View.GONE
+        }
+        else {
+            keyTermTitleView.text = titleText
+        }
+
 
         val relatedTermsView = view.findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){
@@ -58,7 +83,7 @@ class KeyTermMainFrag : Fragment() {
                 view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                recyclerView?.adapter?.notifyItemInserted(recyclerView?.adapter?.itemCount!!-1)
+                recyclerView?.adapter?.notifyItemInserted(recyclerView.adapter?.itemCount!!-1)
             }
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
         }, 0)
