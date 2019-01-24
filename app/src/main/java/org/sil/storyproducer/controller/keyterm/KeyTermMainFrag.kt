@@ -9,7 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.Workspace
@@ -80,17 +80,30 @@ class KeyTermMainFrag : Fragment() {
             explanationView.visibility = View.GONE
         }
 
-        //Probably not the best way to find the recording list on the other fragment but it will be there
-        //TODO change this to make it nicer
         val recyclerView = (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.keyterm_info_audio)?.view?.findViewById<RecyclerView>(R.id.recording_list)
-
+        val backTranslationLayout = view.findViewById<FrameLayout>(R.id.backtranslation_comment)
         recordingToolbar = RecordingToolbar(activity!!,
                 view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                recyclerView?.adapter?.notifyItemInserted(recyclerView?.adapter?.itemCount!!-1)
+                recyclerView?.adapter?.notifyItemInserted(recyclerView.adapter?.itemCount!!-1)
+                //show must recent recording and backtranslation below the toolbar
+                val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, container, false)
+                val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
+                val backTranslationButton = recentRecording.findViewById<ImageButton>(R.id.submit_backtranslation_button)
+                backTranslationButton.setOnClickListener {
+                    if(editText.text.toString() != ""){
+                        Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
+                        recyclerView?.adapter?.notifyItemChanged(recyclerView.adapter?.itemCount!!-1)
+                        backTranslationLayout.removeAllViews()
+                    }
+                }
+                backTranslationLayout.addView(recentRecording)
+
             }
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+                backTranslationLayout.removeAllViews()
+            }
         }, 0)
 
         return view

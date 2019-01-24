@@ -5,10 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.Workspace
@@ -41,7 +38,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private var parentTextView: TextView = itemView.findViewById(R.id.audio_comment_title)
         private var parentPlayButton: ImageButton = itemView.findViewById(R.id.audio_comment_play_button)
         private var parentDeleteButton: ImageButton = itemView.findViewById(R.id.audio_comment_delete_button)
-        private var linearLayoutChildItems: LinearLayout = itemView.findViewById(R.id.child_holder)
+        private var frameLayoutChildItem: FrameLayout = itemView.findViewById(R.id.child_holder)
         val inflater: LayoutInflater = LayoutInflater.from(itemView.context)
 
         private val childComment = inflater.inflate(R.layout.backtranslation_comment_list_item, null, false)
@@ -67,35 +64,35 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 initComment()
             }
 
-            if(linearLayoutChildItems.tag == null){
+            if(frameLayoutChildItem.tag == null){
                 initSubmit()
             }
         }
         private fun initSubmit(){
-            linearLayoutChildItems.removeAllViews()
-            linearLayoutChildItems.addView(childSubmit)
-            linearLayoutChildItems.tag = "submit"
+            frameLayoutChildItem.removeAllViews()
+            frameLayoutChildItem.addView(childSubmit)
+            frameLayoutChildItem.tag = "submit"
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
             val editText = itemView.findViewById<EditText>(R.id.backtranslation_edit_text)
             addBacktranslation.setOnClickListener {
                 if(editText.text.toString() != ""){
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
-                    linearLayoutChildItems.removeAllViews()
+                    frameLayoutChildItem.removeAllViews()
                     initComment()
                 }
             }
         }
         private fun initComment(){
-            linearLayoutChildItems.removeAllViews()
-            linearLayoutChildItems.addView(childComment)
-            linearLayoutChildItems.tag = "comment"
-            val currentTextView = linearLayoutChildItems.findViewById(R.id.backtranslation_comment_title) as TextView
+            frameLayoutChildItem.removeAllViews()
+            frameLayoutChildItem.addView(childComment)
+            frameLayoutChildItem.tag = "comment"
+            val currentTextView = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_title) as TextView
             currentTextView.text = recordings[adapterPosition].textBackTranslation
-            val currentDeleteButton = linearLayoutChildItems.findViewById(R.id.backtranslation_comment_delete_button) as ImageButton
+            val currentDeleteButton = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_delete_button) as ImageButton
             currentDeleteButton.setOnClickListener {
                 recordings[adapterPosition].textBackTranslation = ""
-                linearLayoutChildItems.removeAllViews()
+                frameLayoutChildItem.removeAllViews()
                 initSubmit()
             }
         }
