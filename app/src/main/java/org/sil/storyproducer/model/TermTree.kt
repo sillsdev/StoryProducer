@@ -30,7 +30,6 @@ class TermTree {
                 resultPhrases.add(keytermPhrase)
                 nonKeytermPhrase = ""
             }
-
         }
         resultPhrases.add(nonKeytermPhrase)
 
