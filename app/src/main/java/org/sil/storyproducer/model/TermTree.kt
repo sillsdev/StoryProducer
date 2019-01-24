@@ -12,45 +12,48 @@ class TermTree {
             currentNode.childWords[word] = nextNode
             currentNode = nextNode
         }
+        currentNode.isKeyterm = true
     }
 
-    //TODO Refactor
     fun splitOnKeyterms(text: String): List<String>{
         val words = splitBeforeAndAfterAnyNonLetters(text)
         val resultPhrases: MutableList<String> = mutableListOf()
-        var currentNode = root
-        var currentPhrase: MutableList<String> = mutableListOf()
+        var nonKeytermPhrase = ""
 
         while(words.size > 0) {
-            val word = words.removeAt(0)
-            if(currentNode.childWords.containsKey(word.toLowerCase())){
-                currentPhrase.add(word)
-
-                currentNode = currentNode.childWords[word.toLowerCase()]!!
-            }
-            else if(currentNode.childWords.isEmpty()){
-                resultPhrases.add(currentPhrase.fold(""){
-                    result, word -> result + word
-                })
-
-                words.add(0, word)
-
-                currentPhrase = mutableListOf()
-                currentNode = root
+            val keytermPhrase = getIfKeyterm(words, root)
+            if(keytermPhrase == ""){
+                nonKeytermPhrase += words.removeAt(0)
             }
             else{
-                currentPhrase.add(word)
-
-                resultPhrases.add(currentPhrase.removeAt(0))
-
-                words.addAll(0, currentPhrase)
-
-                currentPhrase = mutableListOf()
-                currentNode = root
+                resultPhrases.add(nonKeytermPhrase)
+                resultPhrases.add(keytermPhrase)
+                nonKeytermPhrase = ""
             }
+
         }
+        resultPhrases.add(nonKeytermPhrase)
 
         return resultPhrases
+    }
+
+    private fun getIfKeyterm(words: MutableList<String>, currentNode: WordNode): String{
+        if(words.isNotEmpty()){
+            val word = words.removeAt(0)
+
+            if(currentNode.childWords.containsKey(word.toLowerCase())){
+                val nextNode = currentNode.childWords[word.toLowerCase()]!!
+                val keyterm = getIfKeyterm(words, nextNode)
+
+                if(nextNode.isKeyterm || keyterm != ""){
+                    return word + keyterm
+                }
+            }
+
+            words.add(0, word)
+        }
+
+        return ""
     }
 
     private fun splitBeforeAndAfterAnyNonLetters(text: String): MutableList<String>{
@@ -61,6 +64,7 @@ class TermTree {
     }
 
     private class WordNode {
+        var isKeyterm: Boolean = false
         var childWords: MutableMap<String, WordNode> = mutableMapOf()
     }
 }

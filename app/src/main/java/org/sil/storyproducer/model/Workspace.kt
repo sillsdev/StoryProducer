@@ -117,6 +117,14 @@ object Workspace{
 
         if(keytermsDirectory != null) {
             importKeytermsFromCsvFile(context, keytermsDirectory)
+
+            val test = Keyterm()
+            test.term = "partial term"
+            val test2 = Keyterm()
+            test2.term = "partial term is not"
+            termToKeyterm.put(test.term, test)
+            termToKeyterm.put(test2.term, test2)
+
             importKeytermsFromJsonFiles(context, keytermsDirectory)
             mapTermFormsToTerms()
             buildKeytermSearchTree()
