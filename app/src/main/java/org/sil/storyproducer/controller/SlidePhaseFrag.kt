@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -15,17 +13,15 @@ import android.view.ViewGroup
 import android.widget.*
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import java.util.*
-import kotlin.math.max
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -35,7 +31,7 @@ abstract class SlidePhaseFrag : Fragment() {
     protected var rootViewToolbar: View? = null
 
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
-    protected var referncePlayButton: ImageButton? = null
+    protected var referencePlayButton: ImageButton? = null
     protected var refPlaybackSeekBar: SeekBar? = null
     private var mSeekBarTimer = Timer()
 
@@ -80,7 +76,7 @@ abstract class SlidePhaseFrag : Fragment() {
         referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+            referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             referenceAudioPlayer.stopAudio()
         })
 
@@ -119,7 +115,7 @@ abstract class SlidePhaseFrag : Fragment() {
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
-                referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -147,7 +143,7 @@ abstract class SlidePhaseFrag : Fragment() {
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         referenceAudioPlayer.stopAudio()
-        referncePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+        referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
 
@@ -176,36 +172,10 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
-        val downSample = 2
-        var slidePicture: Bitmap = getStoryImage(context!!,slideNum,downSample)
 
-        //Get the height of the phone.
-        val phoneProperties = context!!.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
-
-        //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
-
-        //draw the text overlay
-        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
-        val canvas = Canvas(slidePicture)
-        val tOverlay = if(Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
-            Workspace.activeStory.slides[slideNum].getOverlayText(false,false)
-        else Workspace.activeStory.slides[slideNum].getOverlayText(false,true)
-        //if overlay is null, it will not write the text.
-        tOverlay?.setPadding(max(2,2 + (canvas.width - phoneProperties.widthPixels)/2))
-        tOverlay?.draw(canvas)
-
-        //Set the height of the image view
-        slideImage.layoutParams.height = height
-        slideImage.requestLayout()
-
-        slideImage.setImageBitmap(slidePicture)
-
+        (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
         //Set up the reference audio and slide number overlays
-        referncePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
+        referencePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
         setReferenceAudioButton()
 
         val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
@@ -240,7 +210,7 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     protected fun setReferenceAudioButton() {
-        referncePlayButton!!.setOnClickListener {
+        referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
@@ -255,7 +225,7 @@ abstract class SlidePhaseFrag : Fragment() {
                     referenceAudioPlayer.currentPosition = refPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
-                    referncePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                    referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
                         PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
@@ -269,7 +239,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
     open fun stopPlayBackAndRecording() {
         referenceAudioPlayer.pauseAudio()
-        referncePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+        referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
     companion object {

@@ -122,7 +122,7 @@ public class BackTranslationListRecordingsModal implements RecordingsListAdapter
             if (backT_file.exists()) {
                 //FIXME
                 //audioPlayer.setSource(backT_file.getPath());
-                audioPlayer.playAudio();
+                audioPlayer.playStoryAudio();
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.backTranslation_playing_backT), Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(parentFragment.getContext(), context.getString(R.string.backTranslation_no_backT_found), Toast.LENGTH_SHORT).show();
