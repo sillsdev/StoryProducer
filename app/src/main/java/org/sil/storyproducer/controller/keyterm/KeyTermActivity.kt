@@ -132,7 +132,7 @@ class KeyTermActivity : AppCompatActivity() {
                         val keyTermLayout = KeyTermMainFrag()
                         //Add clicked term to keyTermLayout for titleBar
                         val bundle = Bundle()
-                        bundle.putString("ClickedTerm", term.toLowerCase())
+                        bundle.putString("ClickedTerm", term)
                         keyTermLayout.arguments = bundle
                         //Add new keyterm fragments to stack
                         fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
@@ -144,7 +144,7 @@ class KeyTermActivity : AppCompatActivity() {
                         //Start a new keyterm activity and keep a reference to the parent phase
                         val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
                         intent.putExtra("Phase", Workspace.activePhase.phaseType)
-                        intent.putExtra("ClickedTerm", term.toLowerCase())
+                        intent.putExtra("ClickedTerm", term)
                         fragmentActivity?.startActivity(intent)
                     }
                 }

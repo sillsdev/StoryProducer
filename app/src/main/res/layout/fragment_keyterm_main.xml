@@ -11,7 +11,7 @@
 
 
     <TextView
-        android:id="@+id/keytermTitle"
+        android:id="@+id/keyterm_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="@dimen/header_text"
@@ -21,7 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/meaning_notes_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/notes"
@@ -30,22 +30,23 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/keytermTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/keyterm_title" />
 
     <ScrollView
-        android:id="@+id/notesLayout"
+        android:id="@+id/notes_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/guideline1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView">
-            <TextView
-                android:id="@+id/explanation_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:textSize="@dimen/text_body" />
+        app:layout_constraintTop_toBottomOf="@id/meaning_notes_label">
+
+        <TextView
+            android:id="@+id/explanation_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:textSize="@dimen/text_body" />
     </ScrollView>
 
 
@@ -57,7 +58,7 @@
         app:layout_constraintGuide_percent=".4" />
 
     <LinearLayout
-        android:id="@+id/relatedLayout"
+        android:id="@+id/related_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/lightDarkGrey"
@@ -68,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@id/guideline1">
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/related_terms_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/related_terms"
@@ -84,7 +85,7 @@
 
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/other_languages_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/other_langauge_examples"
@@ -93,24 +94,24 @@
         android:padding="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/relatedLayout" />
+        app:layout_constraintTop_toBottomOf="@id/related_layout" />
 
     <ScrollView
-        android:id="@+id/exampleLayouts"
+        android:id="@+id/example_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textView3">
+        app:layout_constraintTop_toBottomOf="@id/other_languages_label">
 
-            <TextView
-                android:id="@+id/alternate_renderings_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:textSize="@dimen/text_body" />
+        <TextView
+            android:id="@+id/alternate_renderings_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textSize="@dimen/text_body" />
     </ScrollView>
 
 

@@ -9,6 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
@@ -27,16 +28,11 @@ class KeyTermMainFrag : Fragment() {
         val actionBar = (activity as AppCompatActivity).supportActionBar
 
         val title = arguments?.getString("ClickedTerm")
-        if(title != null) {
-            actionBar?.title = title
-        }
-        else{
-            actionBar?.title = Workspace.activeKeyterm.term
-        }
+        actionBar?.title = title ?: Workspace.activeKeyterm.term
 
-        val keyTermTitleView = view.findViewById<TextView>(R.id.keytermTitle)
+        val keyTermTitleView = view.findViewById<TextView>(R.id.keyterm_title)
         var titleText = ""
-        if(Workspace.activeKeyterm.term.toLowerCase() != title) {
+        if(Workspace.activeKeyterm.term.toLowerCase() != title?.toLowerCase()) {
             titleText = Workspace.activeKeyterm.term
         }
         for (termForm in Workspace.activeKeyterm.termForms){
@@ -99,7 +95,6 @@ class KeyTermMainFrag : Fragment() {
                     }
                 }
                 backTranslationLayout.addView(recentRecording)
-
             }
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
                 backTranslationLayout.removeAllViews()
