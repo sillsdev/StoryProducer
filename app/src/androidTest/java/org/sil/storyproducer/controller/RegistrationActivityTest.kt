@@ -1,7 +1,10 @@
 package org.sil.storyproducer.controller
 
+import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
+import android.net.Uri
+import android.os.Environment
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
@@ -18,6 +21,7 @@ import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
 import java.util.regex.Pattern
 
 @LargeTest
@@ -39,7 +43,10 @@ class RegistrationActivityTest {
     fun should_beAbleToSkipRegistration() {
         Intents.init()
         val expectedIntent = hasAction(Intent.ACTION_OPEN_DOCUMENT_TREE)
-        intending(expectedIntent).respondWith(Instrumentation.ActivityResult(0, null))
+        val workspaceFolderUri = Uri.parse(File(Environment.getExternalStorageDirectory().absolutePath, "SPWorkspace").toString())
+        val returnedIntent = Intent("idk", workspaceFolderUri)
+        Instrumentation.ActivityResult(Activity.RESULT_OK, returnedIntent)
+        intending(expectedIntent).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, returnedIntent))
         mActivityTestRule.launchActivity(null)
 
         onView(withText("Skip Registration")).perform(click())
