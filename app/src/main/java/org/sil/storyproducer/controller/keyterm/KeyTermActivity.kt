@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -7,13 +8,14 @@ import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.app.NavUtils
+import android.support.v4.content.res.ResourcesCompat.getColor
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.Menu
 import android.view.MenuItem
@@ -36,7 +38,7 @@ class KeyTermActivity : AppCompatActivity() {
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         setSupportActionBar(toolbar)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(getColor(resources,
                 Workspace.activePhase.getColor(), null)))
     }
 
@@ -108,16 +110,16 @@ class KeyTermActivity : AppCompatActivity() {
 
     //TODO Put this in a better/more accessible place
     companion object {
-        fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
+        fun stringToKeytermLink(context: Context, string: String, fragmentActivity: FragmentActivity?): SpannableString {
             val spannableString = SpannableString(string)
             if (Workspace.termFormToTerm.containsKey(string.toLowerCase())) {
-                val clickableSpan = createKeytermClickableSpan(string, fragmentActivity)
+                val clickableSpan = createKeytermClickableSpan(context, string, fragmentActivity)
                 spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             }
             return spannableString
         }
 
-        private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
+        private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
             return object : ClickableSpan() {
                 override fun onClick(textView: View) {
                     if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
@@ -149,11 +151,19 @@ class KeyTermActivity : AppCompatActivity() {
                     }
                 }
 
-                /* TODO If keyterm has a recording, make text stand out less (ex. set text color to white)
-                override fun updateDrawState(ds: TextPaint) {
-                    ds.linkColor = Color.WHITE
-                    super.updateDrawState(ds)
-                }*/
+                override fun updateDrawState(drawState: TextPaint) {
+                    val keyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]
+
+                    val backTranslationWithRecording = keyterm?.backTranslations?.find {
+                        it.audioBackTranslation != ""
+                    }
+
+                    if(backTranslationWithRecording != null){
+                        drawState.linkColor = ContextCompat.getColor(context, R.color.lightGray)
+                    }
+
+                    super.updateDrawState(drawState)
+                }
             }
         }
     }

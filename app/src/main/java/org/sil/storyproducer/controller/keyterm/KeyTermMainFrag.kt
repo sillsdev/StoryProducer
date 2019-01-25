@@ -54,7 +54,7 @@ class KeyTermMainFrag : Fragment() {
 
         val relatedTermsView = view.findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){
-            result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, activity)).append("   ")
+            result, relatedTerm -> result.append(stringToKeytermLink(context!!, relatedTerm, activity)).append("   ")
         }
         relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
         if(Workspace.activeKeyterm.relatedTerms.isEmpty()){
