@@ -12,7 +12,7 @@ import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
+import org.sil.storyproducer.controller.keyterm.stringToKeytermLink
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
