@@ -14,7 +14,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.Workspace
 
 class KeyTermRecordingListFrag : Fragment() {
-    
+
     private val adapter = RecyclerDataAdapter(context, Workspace.activeKeyterm.backTranslations)
     private var rootView: View? = null
 
@@ -33,21 +33,21 @@ class KeyTermRecordingListFrag : Fragment() {
         dispList.embedList(rootView as ViewGroup)
         dispList.show()
 
-        noRecordings(Workspace.activeKeyterm.backTranslations.size != 0)
+        showRecordings(Workspace.activeKeyterm.backTranslations.size != 0)
 
         return rootView
     }
 
     fun updateListsInsert(pos: Int){
         adapter.notifyItemInserted(pos)
-        noRecordings(true)
+        showRecordings(true)
     }
 
     fun updateListsModified(pos: Int){
         adapter.notifyItemChanged(pos)
     }
 
-    private fun noRecordings(isVisible: Boolean) {
+    private fun showRecordings(isVisible: Boolean) {
         if(!isVisible) {
             rootView?.findViewById<TextView>(R.id.no_recordings_title)?.visibility = View.VISIBLE
             rootView?.findViewById<TextView>(R.id.no_recordings_message)?.visibility = View.VISIBLE

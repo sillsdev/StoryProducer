@@ -20,7 +20,7 @@ class KeyTermMainFrag : Fragment() {
 
     private var recordingToolbar: RecordingToolbar? = null
 
-    private lateinit var mCallback: RecordClicked
+    private lateinit var tellAudioListFragment: RecordClicked
 
     interface RecordClicked{
         fun audioListInserted(pos: Int)
@@ -88,7 +88,7 @@ class KeyTermMainFrag : Fragment() {
                 view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                mCallback.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
+                tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
                 //show must recent recording and backtranslation below the toolbar
                 val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, container, false)
                 val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
@@ -96,7 +96,7 @@ class KeyTermMainFrag : Fragment() {
                 backTranslationButton.setOnClickListener {
                     if(editText.text.toString() != ""){
                         Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
-                        mCallback.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
+                        tellAudioListFragment.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
                         backTranslationLayout.removeAllViews()
                     }
                 }
@@ -115,7 +115,7 @@ class KeyTermMainFrag : Fragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         try {
-            mCallback = context as RecordClicked
+            tellAudioListFragment = context as RecordClicked
         } catch (e: ClassCastException) {
             throw ClassCastException(activity.toString()
                     + " must implement OnHeadlineSelectedListener")
