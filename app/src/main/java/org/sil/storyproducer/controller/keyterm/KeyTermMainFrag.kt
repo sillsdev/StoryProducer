@@ -1,9 +1,9 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -19,6 +19,13 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 class KeyTermMainFrag : Fragment() {
 
     private var recordingToolbar: RecordingToolbar? = null
+
+    private lateinit var mCallback: RecordClicked
+
+    interface RecordClicked{
+        fun audioListInserted(pos: Int)
+        fun audioListChanged(pos: Int)
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -76,13 +83,12 @@ class KeyTermMainFrag : Fragment() {
             explanationView.visibility = View.GONE
         }
 
-        val recyclerView = (activity as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.keyterm_info_audio)?.view?.findViewById<RecyclerView>(R.id.recording_list)
         val backTranslationLayout = view.findViewById<FrameLayout>(R.id.backtranslation_comment)
         recordingToolbar = RecordingToolbar(activity!!,
                 view!!, true, false, true, false,
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
-                recyclerView?.adapter?.notifyItemInserted(recyclerView.adapter?.itemCount!!-1)
+                mCallback.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
                 //show must recent recording and backtranslation below the toolbar
                 val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, container, false)
                 val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
@@ -90,17 +96,29 @@ class KeyTermMainFrag : Fragment() {
                 backTranslationButton.setOnClickListener {
                     if(editText.text.toString() != ""){
                         Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
-                        recyclerView?.adapter?.notifyItemChanged(recyclerView.adapter?.itemCount!!-1)
+                        mCallback.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
                         backTranslationLayout.removeAllViews()
                     }
                 }
                 backTranslationLayout.addView(recentRecording)
             }
             override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                backTranslationLayout.removeAllViews()
+                if(isRecording){
+                    backTranslationLayout.removeAllViews()
+                }
             }
         }, 0)
 
         return view
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        try {
+            mCallback = context as RecordClicked
+        } catch (e: ClassCastException) {
+            throw ClassCastException(activity.toString()
+                    + " must implement OnHeadlineSelectedListener")
+        }
     }
 }

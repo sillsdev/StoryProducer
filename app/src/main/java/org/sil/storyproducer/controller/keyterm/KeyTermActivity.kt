@@ -22,7 +22,16 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 
 
-class KeyTermActivity : AppCompatActivity() {
+class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
+    override fun audioListChanged(pos: Int) {
+        val otherFrag: KeyTermRecordingListFrag = supportFragmentManager.findFragmentById(R.id.keyterm_info_audio) as KeyTermRecordingListFrag
+        otherFrag.updateListsModified(pos)
+    }
+
+    override fun audioListInserted(pos: Int) {
+        val otherFrag: KeyTermRecordingListFrag = supportFragmentManager.findFragmentById(R.id.keyterm_info_audio) as KeyTermRecordingListFrag
+        otherFrag.updateListsInsert(pos)
+    }
 
     private var viewPager: ViewPager? = null
 

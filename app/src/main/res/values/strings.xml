@@ -105,6 +105,9 @@
     <string name="stories_not_found_body">The worskpace folder does not contain story template folders.
         For example, the template folder for the English story \"Lost Coin\" should be stored in the
         workspace folder.  Afterwards, restart the app to load the story templates.</string>
+    <string name="recordings_not_found_title">No recordings found!</string>
+    <string name="recordings_not_found_body">No recordings have been found for the current keyterm.
+        Hit the back button or swipe to the left and hit the mic button and start recording!</string>
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
