@@ -24,7 +24,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 
 
-class KeyTermActivity : AppCompatActivity() {
+class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
 
     private var viewPager: ViewPager? = null
 
@@ -108,6 +108,16 @@ class KeyTermActivity : AppCompatActivity() {
             viewPager?.currentItem = 0
         }
     }
+
+    override fun audioListChanged(pos: Int) {
+        val otherFrag: KeyTermRecordingListFrag = supportFragmentManager.findFragmentById(R.id.keyterm_info_audio) as KeyTermRecordingListFrag
+        otherFrag.updateListsModified(pos)
+    }
+
+    override fun audioListInserted(pos: Int) {
+        val otherFrag: KeyTermRecordingListFrag = supportFragmentManager.findFragmentById(R.id.keyterm_info_audio) as KeyTermRecordingListFrag
+        otherFrag.updateListsInsert(pos)
+    }
 }
 
 fun stringToKeytermLink(context: Context, string: String, fragmentActivity: FragmentActivity?): SpannableString {
@@ -118,6 +128,9 @@ fun stringToKeytermLink(context: Context, string: String, fragmentActivity: Frag
     }
     return spannableString
 }
+
+
+
 
 private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
     return object : ClickableSpan() {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,44 +11,31 @@
         android:id="@+id/audio_comment_play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
         android:layout_gravity="center_vertical"
         android:background="@color/transparent"
         android:contentDescription="@string/play"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/audio_comment_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_play_arrow_white_36dp" />
+        android:layout_margin="12dp"
+        app:srcCompat="@drawable/ic_play_arrow_white_36dp"  />
 
     <TextView
         android:id="@+id/audio_comment_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|start"
+        android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:maxLines="2"
-        android:text="Fill with Audio Comment"
+        android:text="@string/fill_with_audio_comment"
         android:textColor="@color/white"
-        android:textSize="@dimen/text_body"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/audio_comment_delete_button"
-        app:layout_constraintStart_toEndOf="@+id/audio_comment_play_button"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
+        android:textSize="@dimen/text_body" />
 
     <ImageButton
         android:id="@+id/audio_comment_delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
         android:layout_gravity="center_vertical"
         android:background="@color/transparent"
         android:contentDescription="@string/delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/audio_comment_title"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="12dp"
         app:srcCompat="@drawable/ic_delete_forever_white_36dp" />
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

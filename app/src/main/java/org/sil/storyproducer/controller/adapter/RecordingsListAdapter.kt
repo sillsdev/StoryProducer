@@ -105,8 +105,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                 rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
-            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
-
             updateRecordingList()
             if (adapter != null) {
                 (adapter.adapter as RecyclerDataAdapter).onItemClick = { value ->
@@ -173,7 +171,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                     .setMessage("Are you sure you want to delete recording: $name?")
                     .setNegativeButton(context.getString(R.string.no), null)
                     .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
-                        onDeleteClick(name)
+                        onDeleteClick(name, position)
                         updateRecordingList()
                         if (adapter == null) {
                             (recyclerView?.adapter as RecordingsListAdapter).notifyItemRemoved(position)
@@ -227,6 +225,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
         fun updateRecordingList() {
+            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
             strippedFilenames = filenames
             if (strippedFilenames != null) {
                 for (i in 0 until strippedFilenames!!.size) {
@@ -286,15 +285,11 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
             }
         }
 
-        private fun onDeleteClick(name: String) {
-            filenames.remove(name)
+        private fun onDeleteClick(name: String, position: Int) {
+            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
+            filenames.removeAt(position)
             if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                for ((i, audioFile) in Workspace.activeKeyterm.backTranslations.withIndex()) {
-                    if (audioFile.audioBackTranslation == name) {
-                        Workspace.activeKeyterm.backTranslations.removeAt(i)
-                        break
-                    }
-                }
+                Workspace.activeKeyterm.backTranslations.removeAt(position)
                 deleteStoryFile(context, name, "keyterms")
                 if (name == Workspace.activePhase.getChosenFilename()) {
                     if (filenames.size > 0)

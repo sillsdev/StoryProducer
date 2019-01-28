@@ -12,9 +12,6 @@ import org.sil.storyproducer.model.Workspace;
  */
 public class PagerBaseActivity extends PhaseBaseActivity {
 
-    private PagerAdapter mPagerAdapter;
-    private ViewPager mViewPager;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,14 +19,14 @@ public class PagerBaseActivity extends PhaseBaseActivity {
 
         // ViewPager and its adapters use support library
         // fragments, so use getSupportFragmentManager.
-        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        mViewPager = findViewById(R.id.pager);
+        PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        ViewPager mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
         //If a slide other than 0 is chosen, use it.  This is to help recalling the last active slide.
         int slideNum = Workspace.INSTANCE.getActiveSlideNum();
         if(slideNum > 0) mViewPager.setCurrentItem(slideNum);
 
-        mViewPager.setOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler
+        mViewPager.addOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler
     }
 
     @Override

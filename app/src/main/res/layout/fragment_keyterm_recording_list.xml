@@ -8,6 +8,25 @@
     android:background="@color/gray"
     tools:context=".controller.keyterm.KeyTermRecordingListFrag">
 
+    <TextView
+        android:id="@+id/no_recordings_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="@string/recordings_not_found_title"
+        android:textSize="@dimen/text_title"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/no_recordings_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp"
+        android:text="@string/recordings_not_found_body"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_title"
+        android:visibility="gone" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recording_list"
         android:layout_width="match_parent"
