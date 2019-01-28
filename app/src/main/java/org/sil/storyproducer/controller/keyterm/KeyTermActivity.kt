@@ -33,7 +33,8 @@ class KeyTermActivity : AppCompatActivity() {
         setContentView(R.layout.activity_key_term)
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
         viewPager = findViewById(R.id.viewPager)
-        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, intent.getStringExtra("ClickedTerm"))
+        val clickedTerm = intent.getStringExtra("ClickedTerm")
+        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, clickedTerm ?: Workspace.activeKeyterm.term)
 
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
