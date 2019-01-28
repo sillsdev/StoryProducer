@@ -58,7 +58,7 @@ object Workspace{
     }
     var termToKeyterm: MutableMap<String, Keyterm> = mutableMapOf()
     var termFormToTerm: MutableMap<String, String> = mutableMapOf()
-    var keytermSearchTree = TermTree()
+    var keytermSearchTree = KeytermSearchTree()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 

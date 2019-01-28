@@ -1,6 +1,6 @@
 package org.sil.storyproducer.model
 
-class TermTree {
+class KeytermSearchTree {
     private val root: WordNode = WordNode()
 
     fun insertTerm(term: String){

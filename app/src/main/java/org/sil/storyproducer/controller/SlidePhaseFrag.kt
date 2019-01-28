@@ -12,7 +12,7 @@ import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
+import org.sil.storyproducer.controller.keyterm.stringToKeytermLink
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
@@ -181,7 +181,7 @@ abstract class SlidePhaseFrag : Fragment() {
     protected fun setScriptureText(textView: TextView) {
         val phrases = Workspace.keytermSearchTree.splitOnKeyterms(slide.content)
         textView.text = phrases.fold(SpannableStringBuilder()){
-            result, phrase -> result.append(stringToKeytermLink(phrase, activity))
+            result, phrase -> result.append(stringToKeytermLink(context!!, phrase, activity))
         }
         textView.movementMethod = LinkMovementMethod.getInstance()
     }

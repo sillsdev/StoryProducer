@@ -45,7 +45,8 @@
             android:id="@+id/explanation_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
             android:textSize="@dimen/text_body" />
     </ScrollView>
 
