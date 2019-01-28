@@ -153,11 +153,9 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
         override fun updateDrawState(drawState: TextPaint) {
             val keyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]
 
-            val backTranslationWithRecording = keyterm?.backTranslations?.find {
-                it.audioBackTranslation != ""
-            }
+            val hasRecording = keyterm?.backTranslations?.isNotEmpty()
 
-            if(backTranslationWithRecording != null){
+            if(hasRecording != null && hasRecording){
                 drawState.linkColor = ContextCompat.getColor(context, R.color.lightGray)
             }
 
