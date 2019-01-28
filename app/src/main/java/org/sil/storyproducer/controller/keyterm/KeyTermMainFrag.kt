@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.KeyTermActivity.Companion.stringToKeytermLink
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -59,29 +58,19 @@ class KeyTermMainFrag : Fragment() {
             keyTermTitleView.text = titleText
         }
 
+        val explanationView = view.findViewById<TextView>(R.id.explanation_text)
+        explanationView.text = Workspace.activeKeyterm.explanation
 
         val relatedTermsView = view.findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){
-            result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, activity)).append("   ")
+            result, relatedTerm -> result.append(stringToKeytermLink(context!!, relatedTerm, activity)).append("   ")
         }
         relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
-        if(Workspace.activeKeyterm.relatedTerms.isEmpty()){
-            relatedTermsView.visibility = View.GONE
-        }
 
         val alternateRenderingsView = view.findViewById<TextView>(R.id.alternate_renderings_text)
         alternateRenderingsView.text = Workspace.activeKeyterm.alternateRenderings.fold(""){
             result, alternateRendering -> "$result\u2022 $alternateRendering\n"
         }.removeSuffix("\n")
-        if(Workspace.activeKeyterm.alternateRenderings.isEmpty()){
-            alternateRenderingsView.visibility = View.GONE
-        }
-
-        val explanationView = view.findViewById<TextView>(R.id.explanation_text)
-        explanationView.text = Workspace.activeKeyterm.explanation
-        if(Workspace.activeKeyterm.explanation == ""){
-            explanationView.visibility = View.GONE
-        }
 
         val backTranslationLayout = view.findViewById<FrameLayout>(R.id.backtranslation_comment)
         recordingToolbar = RecordingToolbar(activity!!,
