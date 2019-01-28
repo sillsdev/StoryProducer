@@ -89,7 +89,7 @@ class KeyTermMainFrag : Fragment() {
                 object : RecordingToolbar.RecordingListener {
             override fun onStoppedRecording() {
                 tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
-                //show must recent recording and backtranslation below the toolbar
+                //show most recent recording and backtranslation below the toolbar
                 val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, container, false)
                 val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
                 val backTranslationButton = recentRecording.findViewById<ImageButton>(R.id.submit_backtranslation_button)
