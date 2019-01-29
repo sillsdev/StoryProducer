@@ -141,7 +141,11 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                    mDrawerLayout!!.closeDrawer(GravityCompat.START)
+                }else{
+                    mDrawerLayout!!.openDrawer(GravityCompat.START)
+                }
                 true
             }
             R.id.spinner -> {

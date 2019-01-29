@@ -2,29 +2,18 @@ package org.sil.storyproducer.controller
 
 import android.app.AlertDialog
 import android.content.*
-import android.content.res.AssetManager
-import android.content.res.Configuration
-import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
-import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.util.AttributeSet
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.ArrayAdapter
-import android.widget.ImageButton
-import android.widget.ListView
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
@@ -35,7 +24,6 @@ import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
 
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.DrawerItemClickListener
 
 
 import java.io.Serializable
