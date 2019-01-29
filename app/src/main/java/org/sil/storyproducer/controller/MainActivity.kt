@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_story_templates, menu)
+        menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
     }
 
@@ -102,6 +102,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     /**
      * initializes the items that the drawer needs
      */

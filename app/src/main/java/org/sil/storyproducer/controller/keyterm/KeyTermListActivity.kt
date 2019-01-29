@@ -12,11 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
+import android.view.*
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
@@ -63,6 +59,12 @@ class KeyTermListActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_with_help, menu)
+
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
@@ -71,24 +73,16 @@ class KeyTermListActivity : AppCompatActivity() {
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("Story List Help")
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
-                val text = iStream.reader().use {
-                    it.readText() }
-
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
+                        .setTitle(getString(R.string.help))
+                        .setMessage(R.string.keyterm_help)
+                        .create()
                 alert.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     /**
      * initializes the items that the drawer needs
      */
