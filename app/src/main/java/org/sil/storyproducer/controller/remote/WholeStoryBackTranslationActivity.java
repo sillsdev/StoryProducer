@@ -418,7 +418,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 /*
         recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, true, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
-            public void onStoppedRecording() {
+            public void onStoppedRecordingOrPlayback() {
 
             }
             @Override

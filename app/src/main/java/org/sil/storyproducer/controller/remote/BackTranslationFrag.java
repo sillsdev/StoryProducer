@@ -371,7 +371,7 @@ public class BackTranslationFrag extends Fragment {
             String playBackFilePath = AudioFiles.INSTANCE.getBackTranslation(StoryState.getStoryName(), slideNumber).getPath();
             RecordingToolbar.RecordingListener recordingListener = new RecordingToolbar.RecordingListener() {
                 @Override
-                public void onStoppedRecording() {
+                public void onStoppedRecordingOrPlayback() {
                     //update to new recording path
                     setRecordFilePath();
                 }

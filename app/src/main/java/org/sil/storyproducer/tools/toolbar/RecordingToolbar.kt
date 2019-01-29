@@ -27,7 +27,6 @@ import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 import java.io.File
 import java.io.IOException
-import java.util.ArrayList
 
 private const val RECORDING_ANIMATION_DURATION = 1500
 private const val STOP_RECORDING_DELAY = 0
@@ -85,8 +84,8 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     private var isToolbarRed = false
     protected var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
     protected var audioPlayer: AudioPlayer = AudioPlayer()
-    val isRecording : Boolean
-        get() {return voiceRecorder.isRecording}
+    val isRecordingOrPlaying : Boolean
+        get() {return voiceRecorder.isRecording || audioPlayer.isAudioPlaying}
 
     init {
         super.initializeToolbar(rootViewToolbarLayout.findViewById(R.id.toolbar_for_recording_fab), toolbar)
@@ -97,11 +96,13 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         setupRecordingAnimationHandler()
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-            audioPlayer.stopAudio()})
+            audioPlayer.stopAudio()
+            recordingListener.onStoppedRecordingOrPlayback()
+        })
     }
 
     interface RecordingListener {
-        fun onStoppedRecording()
+        fun onStoppedRecordingOrPlayback()
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -140,6 +141,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         if (audioPlayer.isAudioPlaying) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
+            recordingListener.onStoppedRecordingOrPlayback()
         }
     }
 
@@ -177,7 +179,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     protected open fun stopRecording() {
         voiceRecorder.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecording()
+        recordingListener.onStoppedRecordingOrPlayback()
     }
 
     private fun createToolbar() {
@@ -304,6 +306,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                 if (audioPlayer.isAudioPlaying) {
                     audioPlayer.stopAudio()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+                    recordingListener.onStoppedRecordingOrPlayback()
                 } else {
                     stopToolbarMedia()
                     recordingListener.onStartedRecordingOrPlayback(false)
