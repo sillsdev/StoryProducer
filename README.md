@@ -68,7 +68,7 @@ Translate and produce stories (starting with templates in a major language made 
 ## Espresso Tests (UI Tests)
 #### Organization
 * All Espresso tests are located in the `app\src\androidTest\java\org\sil\storyproducer` directory.
-* Folders in the espresso test directory should roughly correspond to the screen and/or features they exercise.
+* Folders in the Espresso test directory should roughly correspond to the screen and/or features they exercise.
 
 #### Before You Run the Espresso Tests:
 The Espresso tests make a couple of assumptions about the state of the emulator/device that they run on. In order for the tests to pass, you must do the following:
