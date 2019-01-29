@@ -5,13 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,21 +24,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
-import org.sil.storyproducer.tools.Network.VolleySingleton;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -449,7 +438,7 @@ public class BackTranslationFrag extends Fragment {
                 break;
             case -1:
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_red, null));
+                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_gray, null));
                 break;
             default:
                 button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
