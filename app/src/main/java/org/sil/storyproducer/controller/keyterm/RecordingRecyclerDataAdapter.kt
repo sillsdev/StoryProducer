@@ -10,7 +10,6 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.Workspace
 
-
 class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
@@ -26,20 +25,18 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val audioText = recordings[position]
-        holder.bindView(audioText)
+        holder.bindView(recordings[position])
     }
 
     override fun getItemCount(): Int = recordings.size
 
     inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        var context: Context = itemView.context
         private var parentTextView: TextView = itemView.findViewById(R.id.audio_comment_title)
         private var parentPlayButton: ImageButton = itemView.findViewById(R.id.audio_comment_play_button)
         private var parentDeleteButton: ImageButton = itemView.findViewById(R.id.audio_comment_delete_button)
         private var frameLayoutChildItem: FrameLayout = itemView.findViewById(R.id.child_holder)
-        val inflater: LayoutInflater = LayoutInflater.from(itemView.context)
+        private val inflater: LayoutInflater = LayoutInflater.from(itemView.context)
 
         private val childComment = inflater.inflate(R.layout.backtranslation_comment_list_item, null, false)
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
@@ -63,8 +60,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             if(recordings[adapterPosition].textBackTranslation != ""){
                 initComment()
             }
-
-            if(frameLayoutChildItem.tag == null){
+            else if(frameLayoutChildItem.tag == null || frameLayoutChildItem.tag == "comment"){
                 initSubmit()
             }
         }
@@ -74,6 +70,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             frameLayoutChildItem.tag = "submit"
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
             val editText = itemView.findViewById<EditText>(R.id.backtranslation_edit_text)
+            editText.setText("")
             addBacktranslation.setOnClickListener {
                 if(editText.text.toString() != ""){
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()

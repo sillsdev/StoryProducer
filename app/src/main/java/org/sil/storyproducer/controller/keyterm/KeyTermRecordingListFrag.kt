@@ -29,8 +29,8 @@ class KeyTermRecordingListFrag : Fragment() {
         recordingExpandableListView?.adapter = adapter
         recordingExpandableListView?.layoutManager = viewManager
 
-        val recordingToolbar = (activity?.supportFragmentManager?.findFragmentById(R.id.keyterm_info) as KeyTermMainFrag).getToolbar()
-        val dispList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar, recordingExpandableListView)
+        val otherFragment = fragmentManager?.findFragmentById(R.id.keyterm_info)
+        val dispList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(otherFragment?.view, context!!, null, recordingExpandableListView)
         dispList.embedList(rootView as ViewGroup)
         dispList.show()
 

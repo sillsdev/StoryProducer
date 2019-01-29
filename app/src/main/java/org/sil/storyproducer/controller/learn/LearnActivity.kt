@@ -35,8 +35,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private var isWatchedOnce = false
     private val backgroundAudioJumps: MutableList<Int> = ArrayList()
 
-    //recording toolbar vars
-    private lateinit var recordingToolbar: RecordingToolbar
+    private var recordingToolbar: RecordingToolbar = RecordingToolbar()
 
     private var isFirstTime = true         //used to know if it is the first time the activity is started up for playing the vid
     private var startPos = -1
@@ -147,7 +146,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     public override fun onPause() {
         super.onPause()
         pauseVideo()
-        recordingToolbar.onPause()
+        //recordingToolbar.onPause()
         //recordingToolbar!!.close()
     }
 
@@ -160,7 +159,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         super.onStop()
         narrationPlayer.release()
         backgroundPlayer.release()
-        recordingToolbar.onPause()
+        //recordingToolbar.onPause()
         //recordingToolbar!!.close()
     }
 
@@ -367,15 +366,12 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         }
     }
 
-    fun setToolbar(){
-
+    private fun setToolbar(){
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,false,false))
-        //bundle.putParcelable("recordingListener", recordingListener)
         bundle.putInt("slideNum", 0)
-        recordingToolbar = RecordingToolbar()
         recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.add(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
 
         recordingToolbar.keepToolbarVisible()
     }

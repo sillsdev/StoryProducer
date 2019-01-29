@@ -18,7 +18,9 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -76,6 +78,16 @@ class RecordingToolbar : Fragment(){
     val isRecording : Boolean
         get() {return voiceRecorder.isRecording}
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        recordingListener = try {
+            context as RecordingListener
+        }
+        catch (e : ClassCastException){
+            parentFragment as RecordingListener
+        }
+
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,14 +97,11 @@ class RecordingToolbar : Fragment(){
         if (mArguments != null) {
             val buttons = mArguments.get("buttonEnabled") as BooleanArray
             enablePlaybackButton = buttons[0]
-            enablePlaybackButton = buttons[1]
-            enablePlaybackButton = buttons[2]
-            enablePlaybackButton = buttons[3]
-            //recordingListener = mArguments.get("recordingListener") as RecordingListener
+            enableCheckButton = buttons[1]
+            enableMultiRecordButton = buttons[2]
+            enableSendAudioButton = buttons[3]
             slideNum = mArguments.get("slideNum") as Int
         }
-        setupRecordingAnimationHandler()
-        stopToolbarMedia()
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
@@ -103,6 +112,8 @@ class RecordingToolbar : Fragment(){
                               savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false)
         setupToolbarButtons(rootView as LinearLayout)
+        setupRecordingAnimationHandler()
+        stopToolbarMedia()
         return rootView
     }
 
@@ -125,7 +136,7 @@ class RecordingToolbar : Fragment(){
      * The auxiliary medias are not stopped because the calling class should be responsible for
      * those.
      */
-    open fun stopToolbarMedia() {
+    fun stopToolbarMedia() {
         if (voiceRecorder.isRecording) {
             if(enableCheckButton){
                 multiRecordButton.visibility = View.VISIBLE
@@ -157,13 +168,12 @@ class RecordingToolbar : Fragment(){
      * so [.stopPlayBackAndRecording] is not being used here.
      */
     override fun onPause() {
-
+        super.onPause()
         stopToolbarMedia()
         audioPlayer.release()
-        super.onPause()
     }
     
-    open fun hideButtons() {
+    fun hideButtons() {
         if (enablePlaybackButton) {
             playButton.visibility = View.INVISIBLE
         }
@@ -178,14 +188,14 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    protected open fun startRecording(recordingRelPath: String) {
+    private fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
         recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder.startNewRecording(recordingRelPath)
         startRecordingAnimation(false, 0)
     }
 
-    protected open fun stopRecording() {
+    private fun stopRecording() {
         voiceRecorder.stop()
         stopRecordingAnimation()
         recordingListener.onStoppedRecording()
@@ -373,7 +383,7 @@ class RecordingToolbar : Fragment(){
                 stopToolbarMedia()
                 if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
                     recordingListener.onStartedRecordingOrPlayback(false)
-                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
+                    RecordingsListAdapter.RecordingsListModal(rootView, activity!!, this).show()
                 } else {
                     activity?.findViewById<ViewPager>(R.id.viewPager)?.currentItem = 1
                 }

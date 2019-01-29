@@ -21,7 +21,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar!!)
+        dispList = RecordingsListAdapter.RecordingsListModal(rootView, context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.show()
         return rootView
@@ -42,23 +42,21 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         dispList?.stopAudio()
     }
 
-    override fun setToolbar() {
-        val recordingListener = object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {
-                dispList?.updateRecordingList()
-                dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
-            }
+    override fun onStoppedRecording() {
+        dispList?.updateRecordingList()
+        dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
+    }
 
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                stopPlayBackAndRecording()
-            }
-        }
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
+    override fun setToolbar() {
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
         bundle.putInt("slideNum", slideNum)
-        recordingToolbar = RecordingToolbar()
         recordingToolbar.arguments = bundle
-        fragmentManager?.beginTransaction()?.add(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
     }

@@ -19,7 +19,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
 
-    private var recordingToolbar: RecordingToolbar? = null
+    private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     private lateinit var backTranslationLayout : FrameLayout
 
     private lateinit var tellAudioListFragment: RecordClicked
@@ -75,13 +75,13 @@ class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
             result, alternateRendering -> "$result\u2022 $alternateRendering\n"
         }.removeSuffix("\n")
 
-        backTranslationLayout = view.findViewById<FrameLayout>(R.id.backtranslation_comment)
+        backTranslationLayout = view.findViewById(R.id.backtranslation_comment)
 
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
-        //bundle.putParcelable("recordingListener", recordingListener)
         bundle.putInt("slideNum", 0)
-        recordingToolbar?.arguments = bundle
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         return view
     }
@@ -109,17 +109,8 @@ class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
         backTranslationLayout.addView(recentRecording)
     }
 
-    fun getToolbar() : RecordingToolbar{
-        return recordingToolbar!!
-    }
-
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        try {
-            tellAudioListFragment = context as RecordClicked
-        } catch (e: ClassCastException) {
-            throw ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener")
-        }
+        tellAudioListFragment = context as RecordClicked
     }
 }

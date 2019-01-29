@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                recordingToolbar.onPause()
+                //recordingToolbar.onPause()
             }
         }
     }
@@ -51,7 +52,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
      */
     override fun onPause() {
         super.onPause()
-        recordingToolbar.onPause()
+        //recordingToolbar.onPause()
     }
 
     /**
@@ -82,7 +83,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
 
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
-        //bundle.putParcelable("recordingListener", recordingListener)
         bundle.putInt("slideNum", slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
