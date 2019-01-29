@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
-    <!--&lt;!&ndash; Tool Bar &ndash;&gt;-->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,7 +18,6 @@
             android:maxHeight="?android:attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
-        <!-- content -->
        <RelativeLayout
            android:id="@+id/fragment_container"
            android:clickable="true"
@@ -36,8 +35,5 @@
         android:background="@color/darkGray"
         android:fitsSystemWindows="true"
         app:menu="@menu/drawer_view"/>
-
-    <!-- Child views will be inserted here. -->
-
 
 </android.support.v4.widget.DrawerLayout>

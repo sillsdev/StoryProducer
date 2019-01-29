@@ -1,16 +1,27 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.NavigationView
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBar
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.TextView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -21,6 +32,8 @@ class KeyTermListActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+
+    private var mDrawerLayout: DrawerLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +51,8 @@ class KeyTermListActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
 
-        setSupportActionBar(findViewById(R.id.toolbar3))
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        setupDrawer()
+
         supportActionBar?.title = "Keyterm List"
     }
 
@@ -47,6 +60,91 @@ class KeyTermListActivity : AppCompatActivity() {
         super.onPause()
         if(intent.hasExtra("phase")) {
             Workspace.activePhase = Phase(intent.getSerializableExtra("phase") as PhaseType)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                true
+            }
+            R.id.helpButton -> {
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("Story List Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+    /**
+     * initializes the items that the drawer needs
+     */
+    private fun setupDrawer() {
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        val actionbar: ActionBar? = supportActionBar
+        actionbar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
+        }
+
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setHomeButtonEnabled(true)
+
+        mDrawerLayout = findViewById(R.id.drawer_layout)
+        //Lock from opening with left swipe
+        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            // set item as selected to persist highlight
+            menuItem.isChecked = true
+            // close drawer when item is tapped
+            mDrawerLayout!!.closeDrawers()
+
+            // Add code here to update the UI based on the item selected
+            // For example, swap UI fragments here
+            val intent: Intent
+            when (menuItem.itemId) {
+                R.id.nav_workspace -> {
+                    intent = Intent(this, WorkspaceAndRegistrationActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_stories -> {
+                    intent = Intent(this, MainActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_keyterm_list -> {
+                    // Current fragment
+                }
+                R.id.nav_registration -> {
+                    intent = Intent(this, RegistrationActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_license -> {
+                    val dialog = AlertDialog.Builder(this)
+                            .setTitle(this.getString(R.string.license_title))
+                            .setMessage(this.getString(R.string.license_body))
+                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
+                    dialog.show()
+                }
+            }
+            true
         }
     }
 }
