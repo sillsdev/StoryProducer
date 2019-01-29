@@ -28,7 +28,6 @@ import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
 import java.io.Serializable
 
-
 class MainActivity : AppCompatActivity(), Serializable {
     private var mDrawerLayout: DrawerLayout? = null
 
@@ -143,7 +142,6 @@ class MainActivity : AppCompatActivity(), Serializable {
                 R.id.nav_keyterm_list -> {
                     intent = Intent(this, KeyTermListActivity::class.java)
                     this.startActivity(intent)
-                    this.finish()
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
