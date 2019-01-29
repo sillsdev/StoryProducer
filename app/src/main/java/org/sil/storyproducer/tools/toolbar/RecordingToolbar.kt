@@ -281,7 +281,9 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                 //Now we need to start recording!
                 recordingListener.onStartedRecordingOrPlayback(true)
                 val recordingRelPath = assignNewAudioRelPath()
-                if (storyRelPathExists(activity,recordingRelPath)) {
+                if (storyRelPathExists(activity,recordingRelPath) &&
+                        //we may be overwriting things in other phases, but we do not care.
+                        Workspace.activePhase.phaseType == PhaseType.LEARN) {
                     val dialog = AlertDialog.Builder(activity)
                             .setTitle(activity.getString(R.string.overwrite))
                             .setMessage(activity.getString(R.string.learn_phase_overwrite))
