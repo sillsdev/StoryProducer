@@ -93,7 +93,7 @@ class DramatizationFrag : MultiRecordFrag() {
     private fun setToolbar(toolbar: View?) {
         if (rootView is RelativeLayout) {
             val recordingListener = object : RecordingListener {
-                override fun onStoppedRecording() {}
+                override fun onStoppedRecordingOrPlayback() {}
                 override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
                     stopPlayBackAndRecording()
                 }

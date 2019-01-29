@@ -211,7 +211,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 //            narrationPlayer.setVolume((isVolumeOn)? 1.0f : 0.0f); //set the volume on or off based on the boolean
 //            //FIXME
 //            //narrationPlayer.setSource(audioFile.getPath());
-//            narrationPlayer.playAudio();
+//            narrationPlayer.playStoryAudio();
 //        }
 
         videoSeekBar.setProgress(slideNumber);
@@ -247,7 +247,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 videoSeekBar.setProgress(0);
                 slideNumber = 0;
                 playBackgroundMusic();
-                playVideo();
+                playStoryAudio();
             } else {
                 resumeVideo();
             }
@@ -269,7 +269,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
      * helper function for resuming the video
      */
     private void resumeVideo() {
-        if(isFirstTime) {           //actually start playing the video if playVideo() has never been called
+        if(isFirstTime) {           //actually start playing the video if playStoryAudio() has never been called
             playVideo();
             isFirstTime = false;
         } else {
@@ -338,7 +338,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
        //markLogStart();
         if(AudioFiles.INSTANCE.allDraftsComplete(storyName,FileSystem.getContentSlideAmount(storyName))){
             playButton.setImageResource(R.drawable.ic_pause_gray);
-            playVideo();
+            playStoryAudio();
         }
         */
     }
@@ -418,7 +418,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 /*
         recordingToolbar = new RecordingToolbar(this, toolbar, rootView, true, false, false, true, recordFilePath, recordFilePath, null, new RecordingToolbar.RecordingListener() {
             @Override
-            public void onStoppedRecording() {
+            public void onStoppedRecordingOrPlayback() {
 
             }
             @Override

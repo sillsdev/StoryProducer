@@ -8,6 +8,8 @@ import com.squareup.moshi.*
 import com.squareup.moshi.ToJson
 import com.squareup.moshi.FromJson
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -59,7 +61,9 @@ class Slide{
         }
         val tOverlay = when(slideType) {
             SlideType.FRONTCOVER -> if (origTitle) TextOverlay(content) else TextOverlay(translatedContent)
-            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\nCreative Commons")
+            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
+                    "(c) ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}" +
+                    " Creative Commons")
             else -> TextOverlay(translatedContent)
         }
         val fontSize : Int = when(slideType){

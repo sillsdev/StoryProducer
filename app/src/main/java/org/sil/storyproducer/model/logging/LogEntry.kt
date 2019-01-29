@@ -14,12 +14,15 @@ import java.util.Locale
 
 @JsonClass(generateAdapter = true)
 class LogEntry(var dateTimeString: String,
-               var description: String, var phase: Phase, var slideNum: Int = -1) {
+               var description: String, var phase: Phase,
+               var startSlideNum: Int = -1, var endSlideNum: Int = -1) {
 
     fun appliesToSlideNum(compareNum: Int): Boolean {
         if (phase.phaseType == PhaseType.LEARN)
-            return true
-        if (slideNum == compareNum) return true
+            if(compareNum in startSlideNum..endSlideNum ||
+               compareNum in endSlideNum..startSlideNum)
+                return true
+        if (startSlideNum == compareNum) return true
         return false
     }
 
@@ -47,15 +50,14 @@ fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Lon
         }
         ret += " (" + minString + roundedSecs % 60 + " " + secUnit + ")"
     }
-    saveLog(ret)
+    saveLog(ret,startSlide,endSlide)
 }
 
-fun saveLog(description: String) {
+fun saveLog(description: String,startSlideNum: Int = Workspace.activeSlideNum, endSlideNum: Int = Workspace.activeSlideNum) {
     val dateTimeString = SimpleDateFormat("EEE MMM dd yyyy h:mm a", Locale.US).format(GregorianCalendar().time)
     val phase = Workspace.activePhase
-    val slideNum = Workspace.activeSlideNum
 
     val le = LogEntry(dateTimeString,
-            description, phase, slideNum)
+            description, phase, startSlideNum,endSlideNum)
     Workspace.activeStory.activityLogs.add(le)
 }

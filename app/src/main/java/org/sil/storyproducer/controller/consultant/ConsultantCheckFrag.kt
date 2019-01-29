@@ -75,7 +75,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
         } else {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
+            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null))
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -84,7 +84,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_red, null))
+                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null))
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
                 //TODO: use non-deprecated method; currently used to support older devices
