@@ -85,14 +85,14 @@
         app:layout_constraintTop_toBottomOf="@id/videoSeekBar"
         app:srcCompat="@drawable/ic_volume_up_white_36dp" />
 
-    <include
+    <FrameLayout
         android:id="@+id/toolbar_for_recording_toolbar"
-        layout="@layout/toolbar_for_recording"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

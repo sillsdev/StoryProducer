@@ -80,7 +80,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
 
     }
 
-    class RecordingsListModal(private val parentView: View?, private val context: Context, private val toolbar: RecordingToolbar?, private val adapter: RecyclerView? = null) : Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?, private val adapter: RecyclerView? = null) : Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -101,7 +101,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
 
         override fun show() {
             if (!embedded) {
-                val inflater = LayoutInflater.from(parentView?.context)
+                val inflater = LayoutInflater.from(context)
                 rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
@@ -296,8 +296,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         Workspace.activePhase.setChosenFilename(filenames.last())
                     else {
                         Workspace.activePhase.setChosenFilename("")
-                        rootView?.findViewById<LinearLayout>(R.id.toolbar_for_recording_toolbar)?.removeAllViews()
-                        toolbar?.setupToolbarButtons()
+                        val toolbarView = rootView?.findViewById<LinearLayout>(R.id.toolbar_for_recording_toolbar)
+                        toolbar?.setupToolbarButtons(toolbarView!!)
                         dialog?.dismiss()
                     }
                 }
@@ -308,8 +308,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
                     else {
                         Workspace.activePhase.setChosenFilename("")
-                        rootView?.findViewById<LinearLayout>(R.id.toolbar_for_recording_toolbar)?.removeAllViews()
-                        toolbar?.setupToolbarButtons()
+                        val toolbarView = rootView?.findViewById<LinearLayout>(R.id.toolbar_for_recording_toolbar)
+                        toolbar?.setupToolbarButtons(toolbarView!!)
                         dialog?.dismiss()
                     }
                 }

@@ -93,8 +93,12 @@ class DramatizationFrag : MultiRecordFrag() {
                 }
             }
 
-            recordingToolbar = RecordingToolbar(activity!!, rootView!!,
-                    true, true, true, false, recordingListener, slideNum)
+            val bundle = Bundle()
+            bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
+            //bundle.putParcelable("recordingListener", recordingListener)
+            bundle.putInt("slideNum", slideNum)
+            recordingToolbar?.arguments = bundle
+
             recordingToolbar!!.keepToolbarVisible()
         }
     }

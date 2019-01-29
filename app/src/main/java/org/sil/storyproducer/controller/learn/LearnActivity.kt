@@ -8,29 +8,21 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.content.res.ResourcesCompat
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.SeekBar
+import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import android.widget.Switch
-import android.widget.TextView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import java.util.*
 
-import java.util.ArrayList
-import kotlin.math.max
-
-class LearnActivity : PhaseBaseActivity() {
+class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
     private var rootView: RelativeLayout? = null
     private var learnImageView: ImageView? = null
@@ -44,7 +36,7 @@ class LearnActivity : PhaseBaseActivity() {
     private val backgroundAudioJumps: MutableList<Int> = ArrayList()
 
     //recording toolbar vars
-    private var recordingToolbar: RecordingToolbar? = null
+    private lateinit var recordingToolbar: RecordingToolbar
 
     private var isFirstTime = true         //used to know if it is the first time the activity is started up for playing the vid
     private var startPos = -1
@@ -54,16 +46,12 @@ class LearnActivity : PhaseBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
 
+        setToolbar()
+
         rootView = findViewById(R.id.phase_frame)
         learnImageView = findViewById(R.id.fragment_image_view)
         playButton = findViewById(R.id.fragment_reference_audio_button)
         videoSeekBar = findViewById(R.id.videoSeekBar)
-        recordingToolbar = RecordingToolbar(this,
-                rootView?.findViewById(R.id.activity_learn)!!, true, false, false, false,
-                object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {}//empty because the learn phase doesn't use this
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {resetVideoWithSoundOff()}
-        }, 0)
 
         setBackgroundAudioJumps()
 
@@ -73,17 +61,22 @@ class LearnActivity : PhaseBaseActivity() {
 
         //set the recording toolbar stuffs
         invalidateOptionsMenu()
-        recordingToolbar!!.keepToolbarVisible()
 
         //The following allows for a touch from user to close the toolbar and make the fab visible.
         //This does not stop the recording
         val dummyView = rootView!!.findViewById<ConstraintLayout>(R.id.activity_learn)
         dummyView.setOnClickListener {
-            if (/*recordingToolbar!!.isOpen && */!recordingToolbar!!.isRecording) {
-                recordingToolbar!!.keepToolbarVisible()
+            if (/*recordingToolbar!!.isOpen && */!recordingToolbar.isRecording) {
+                recordingToolbar.keepToolbarVisible()
                 //recordingToolbar.hideFloatingActionButton();
             }
         }
+    }
+
+    override fun onStoppedRecording() {}
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        resetVideoWithSoundOff()
     }
 
     /**
@@ -154,8 +147,8 @@ class LearnActivity : PhaseBaseActivity() {
     public override fun onPause() {
         super.onPause()
         pauseVideo()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.close()
+        recordingToolbar.onPause()
+        //recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -167,8 +160,8 @@ class LearnActivity : PhaseBaseActivity() {
         super.onStop()
         narrationPlayer.release()
         backgroundPlayer.release()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.close()
+        recordingToolbar.onPause()
+        //recordingToolbar!!.close()
     }
 
     /**
@@ -309,7 +302,7 @@ class LearnActivity : PhaseBaseActivity() {
                 //reset the story with the volume off
                 resetVideoWithSoundOff()
                 setVolumeSwitchAndFloatingButtonVisible()
-                recordingToolbar!!.keepToolbarVisible()
+                recordingToolbar.keepToolbarVisible()
                 //recordingToolbar.hideFloatingActionButton();
             }
             snackbar.show()
@@ -372,6 +365,19 @@ class LearnActivity : PhaseBaseActivity() {
 
             slideImage?.setImageBitmap(slidePicture)
         }
+    }
+
+    fun setToolbar(){
+
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,false,false))
+        //bundle.putParcelable("recordingListener", recordingListener)
+        bundle.putInt("slideNum", 0)
+        recordingToolbar = RecordingToolbar()
+        recordingToolbar.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.add(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+
+        recordingToolbar.keepToolbarVisible()
     }
 
     companion object {
