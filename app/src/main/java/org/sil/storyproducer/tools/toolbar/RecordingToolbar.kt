@@ -73,10 +73,10 @@ class RecordingToolbar : Fragment(){
     private var isToolbarRed = false
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
-    private lateinit var voiceRecorder: AudioRecorder
+    private var voiceRecorder: AudioRecorder? = null
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording : Boolean
-        get() {return voiceRecorder.isRecording}
+        get() {return voiceRecorder?.isRecording == true}
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -137,7 +137,7 @@ class RecordingToolbar : Fragment(){
      * those.
      */
     fun stopToolbarMedia() {
-        if (voiceRecorder.isRecording) {
+        if (voiceRecorder?.isRecording == true) {
             if(enableCheckButton){
                 multiRecordButton.visibility = View.VISIBLE
             }
@@ -167,8 +167,7 @@ class RecordingToolbar : Fragment(){
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
-    override fun onPause() {
-        super.onPause()
+    fun pause() {
         stopToolbarMedia()
         audioPlayer.release()
     }
@@ -191,12 +190,12 @@ class RecordingToolbar : Fragment(){
     private fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
         recordingListener.onStartedRecordingOrPlayback(true)
-        voiceRecorder.startNewRecording(recordingRelPath)
+        voiceRecorder?.startNewRecording(recordingRelPath)
         startRecordingAnimation(false, 0)
     }
 
     private fun stopRecording() {
-        voiceRecorder.stop()
+        voiceRecorder?.stop()
         stopRecordingAnimation()
         recordingListener.onStoppedRecording()
     }
@@ -260,10 +259,9 @@ class RecordingToolbar : Fragment(){
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-
         micButton.setOnClickListener {
             if(enableCheckButton){
-                if (voiceRecorder.isRecording) {
+                if (voiceRecorder?.isRecording == true) {
                     stopRecording()
                     if (isAppendingOn) {
                         try {
@@ -305,7 +303,7 @@ class RecordingToolbar : Fragment(){
                 }
             }
             else {
-                if (voiceRecorder.isRecording) {
+                if (voiceRecorder?.isRecording == true) {
                     stopToolbarMedia()
                 } else {
                     //Now we need to start recording!
@@ -361,7 +359,6 @@ class RecordingToolbar : Fragment(){
                     }
                 }
             }
-
             playButton.setOnClickListener(playListener)
         }
         if (enableCheckButton) {
