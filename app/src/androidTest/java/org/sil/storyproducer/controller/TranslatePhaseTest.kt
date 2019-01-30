@@ -5,8 +5,6 @@ import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
@@ -19,11 +17,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.espresso.Espresso.onData
-
+import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import org.junit.Before
+import org.junit.FixMethodOrder
+import org.junit.runners.MethodSorters
 
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class TranslatePhaseTest {
 
     @Rule
@@ -37,12 +40,32 @@ class TranslatePhaseTest {
             "android.permission.READ_EXTERNAL_STORAGE",
             "android.permission.WRITE_EXTERNAL_STORAGE")
 
-    @Test
-    fun should_DoStuffInTheTranslatePhase() {
+    @Before
+    fun setUp() {
         navigateToTranslatePhase()
+    }
 
-        // TODO: Actually test the translate phase, duh!
-        Thread.sleep(10000)
+    @Test
+    fun A_should_BeAbleToSwipeBetweenSlides() {
+        // TODO: Make the test not depend on the story being at the first slide.
+        Thread.sleep(50)
+        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("0"))).check(matches(isDisplayed()))
+        onView(allOf(withId(org.sil.storyproducer.R.id.phase_frame))).perform(swipeLeft())
+        Thread.sleep(50)
+        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("1"))).check(matches(isDisplayed()))
+        onView(allOf(withId(org.sil.storyproducer.R.id.phase_frame))).perform(swipeRight())
+        Thread.sleep(50)
+        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("0"))).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun B_should_BeAbleToPlayNarrationOfASlide() {
+
+    }
+
+    @Test
+    fun C_should_BeAbleToRecordTranslationForASlide() {
+
     }
 
     private fun navigateToTranslatePhase() {
@@ -54,6 +77,8 @@ class TranslatePhaseTest {
         onView(withText(containsString("Lost Coin"))).perform(scrollTo(), click())
         onView(withId(org.sil.storyproducer.R.id.toolbar)).perform(click())
         onData(allOf(`is`(instanceOf(String::class.java)), `is`("Translate"))).perform(click())
+
+        Intents.release()
     }
 
     private fun setUpDummyWorkspacePickerIntent() {
