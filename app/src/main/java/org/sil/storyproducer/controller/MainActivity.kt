@@ -28,7 +28,6 @@ import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
 import java.io.Serializable
 
-
 class MainActivity : AppCompatActivity(), Serializable {
     private var mDrawerLayout: DrawerLayout? = null
 
@@ -63,7 +62,7 @@ class MainActivity : AppCompatActivity(), Serializable {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_story_templates, menu)
+        menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
     }
 
@@ -102,6 +101,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     /**
      * initializes the items that the drawer needs
      */
@@ -137,10 +137,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_stories -> {
-//                    intent = Intent(this.applicationContext, MainActivity::class.java)
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                    this.startActivity(intent)
-//                    this.finish()
+                    // Current fragment
                 }
                 R.id.nav_keyterm_list -> {
                     intent = Intent(this, KeyTermListActivity::class.java)
