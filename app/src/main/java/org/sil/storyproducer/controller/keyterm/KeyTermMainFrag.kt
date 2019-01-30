@@ -9,10 +9,7 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.ImageButton
-import android.widget.TextView
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -20,6 +17,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
 
     private lateinit var backTranslationLayout : FrameLayout
+    var recordingToolbar : RecordingToolbar = RecordingToolbar()
 
     private lateinit var tellAudioListFragment: RecordClicked
 
@@ -77,10 +75,10 @@ class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
         backTranslationLayout = view.findViewById(R.id.backtranslation_comment)
 
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
         bundle.putInt("slideNum", 0)
-        (activity as KeyTermActivity).recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, (activity as KeyTermActivity).recordingToolbar).commit()
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).addToBackStack("").commit()
 
         return view
     }

@@ -297,7 +297,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         Workspace.activePhase.setChosenFilename(filenames.last())
                     else {
                         Workspace.activePhase.setChosenFilename("")
-                        toolbar?.setupToolbarButtons(toolbar.rootView as LinearLayout)
+                        toolbar?.setupToolbarButtons()
                         dialog?.dismiss()
                     }
                     (toolbar?.parentFragment as KeyTermMainFrag).view?.findViewById<FrameLayout>(R.id.backtranslation_comment)?.removeAllViews()
@@ -309,7 +309,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
                     else {
                         Workspace.activePhase.setChosenFilename("")
-                        toolbar?.setupToolbarButtons(toolbar.rootView as LinearLayout)
+                        toolbar?.setupToolbarButtons()
                         dialog?.dismiss()
                     }
                 }

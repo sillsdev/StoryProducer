@@ -52,7 +52,7 @@ private const val RECORDING_ANIMATION_DURATION = 1500
 
 class RecordingToolbar : Fragment(){
 
-    var rootView: View? = null
+    var rootView: LinearLayout? = null
     private var enablePlaybackButton : Boolean = false
     private var enableCheckButton : Boolean = false
     private var enableMultiRecordButton : Boolean = false
@@ -110,8 +110,8 @@ class RecordingToolbar : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-        setupToolbarButtons(rootView as LinearLayout)
+        rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false) as LinearLayout
+        setupToolbarButtons()
         setupRecordingAnimationHandler()
         stopToolbarMedia()
         return rootView
@@ -203,8 +203,8 @@ class RecordingToolbar : Fragment(){
     /**
      * This function formats and aligns the buttons to the toolbar.
      */
-    fun setupToolbarButtons(toolbar: LinearLayout) {
-        toolbar.removeAllViews()
+    fun setupToolbarButtons() {
+        rootView?.removeAllViews()
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
@@ -214,17 +214,17 @@ class RecordingToolbar : Fragment(){
 
         var buttonSpacing = android.widget.Space(appContext)
         buttonSpacing.layoutParams = spaceLayoutParams
-        toolbar.addView(buttonSpacing) //Add a space to the left of the first button.
+        rootView?.addView(buttonSpacing) //Add a space to the left of the first button.
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
-                toolbar.addView(imageButtons[i])
+                rootView?.addView(imageButtons[i])
 
                 buttonSpacing = android.widget.Space(appContext)
                 buttonSpacing.layoutParams = spaceLayoutParams
-                toolbar.addView(buttonSpacing)
+                rootView?.addView(buttonSpacing)
                 when (i) {
                     0 -> micButton = imageButtons[i]
                     1 -> playButton = imageButtons[i]
