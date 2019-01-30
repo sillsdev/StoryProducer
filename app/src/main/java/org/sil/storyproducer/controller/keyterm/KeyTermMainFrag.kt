@@ -9,15 +9,15 @@ import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class KeyTermMainFrag : Fragment() {
+class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
 
-    private var recordingToolbar: RecordingToolbar? = null
+    private lateinit var backTranslationLayout : FrameLayout
+    var recordingToolbar : RecordingToolbar = RecordingToolbar()
 
     private lateinit var tellAudioListFragment: RecordClicked
 
@@ -72,42 +72,42 @@ class KeyTermMainFrag : Fragment() {
             result, alternateRendering -> "$result\u2022 $alternateRendering\n"
         }.removeSuffix("\n")
 
-        val backTranslationLayout = view.findViewById<FrameLayout>(R.id.backtranslation_comment)
-        recordingToolbar = RecordingToolbar(activity!!,
-                view!!, true, false, true, false,
-                object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {
-                tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
-                //show most recent recording and backtranslation below the toolbar
-                val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, container, false)
-                val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
-                val backTranslationButton = recentRecording.findViewById<ImageButton>(R.id.submit_backtranslation_button)
-                backTranslationButton.setOnClickListener {
-                    if(editText.text.toString() != ""){
-                        Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
-                        tellAudioListFragment.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
-                        backTranslationLayout.removeAllViews()
-                    }
-                }
-                backTranslationLayout.addView(recentRecording)
-            }
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                if(isRecording){
-                    backTranslationLayout.removeAllViews()
-                }
-            }
-        }, 0)
+        backTranslationLayout = view.findViewById(R.id.backtranslation_comment)
+
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
+        bundle.putInt("slideNum", 0)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).addToBackStack("").commit()
 
         return view
     }
 
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        if(isRecording){
+            backTranslationLayout.removeAllViews()
+        }
+    }
+
+    override fun onStoppedRecording() {
+        tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
+        //show most recent recording and backtranslation below the toolbar
+        val inflater = LayoutInflater.from(context)
+        val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
+        val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
+        val backTranslationButton = recentRecording.findViewById<ImageButton>(R.id.submit_backtranslation_button)
+        backTranslationButton.setOnClickListener {
+            if(editText.text.toString() != ""){
+                Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
+                tellAudioListFragment.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
+                backTranslationLayout.removeAllViews()
+            }
+        }
+        backTranslationLayout.addView(recentRecording)
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        try {
-            tellAudioListFragment = context as RecordClicked
-        } catch (e: ClassCastException) {
-            throw ClassCastException(activity.toString()
-                    + " must implement OnHeadlineSelectedListener")
-        }
+        tellAudioListFragment = context as RecordClicked
     }
 }

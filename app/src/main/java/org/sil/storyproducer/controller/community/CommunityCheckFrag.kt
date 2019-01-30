@@ -13,7 +13,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : MultiRecordFrag() {
+class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener {
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -21,7 +21,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsListAdapter.RecordingsListModal(rootView, context!!, recordingToolbar!!)
+        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.show()
         return rootView
@@ -42,22 +42,23 @@ class CommunityCheckFrag : MultiRecordFrag() {
         dispList?.stopAudio()
     }
 
+    override fun onStoppedRecording() {
+        dispList?.updateRecordingList()
+        dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
+    }
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
     override fun setToolbar() {
-        val recordingListener = object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecording() {
-                dispList?.updateRecordingList()
-                dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
-            }
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
+        bundle.putInt("slideNum", slideNum)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                stopPlayBackAndRecording()
-            }
-        }
-
-        recordingToolbar = RecordingToolbar(activity!!, rootView!!,
-                false, false, false, false, recordingListener, slideNum)
-        recordingToolbar?.keepToolbarVisible()
-        recordingToolbar?.stopToolbarMedia()
+        recordingToolbar.keepToolbarVisible()
     }
 
     /**

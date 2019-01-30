@@ -1,9 +1,11 @@
 package org.sil.storyproducer.controller
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import org.sil.storyproducer.R
 
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
@@ -13,9 +15,9 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class MultiRecordFrag : SlidePhaseFrag() {
+abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
 
-    protected var recordingToolbar: RecordingToolbar? = null
+    protected var recordingToolbar: RecordingToolbar = RecordingToolbar()
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -39,7 +41,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                recordingToolbar?.onPause()
+                recordingToolbar.pause()
             }
         }
     }
@@ -50,14 +52,14 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      */
     override fun onPause() {
         super.onPause()
-        recordingToolbar?.onPause()
+        recordingToolbar.pause()
     }
 
     /**
      * Used to hide the play and multiple recordings button.
      */
     fun hideButtonsToolbar() {
-        recordingToolbar?.hideButtons()
+        recordingToolbar.hideButtons()
     }
 
     /**
@@ -66,26 +68,24 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      */
     override fun stopPlayBackAndRecording() {
         super.stopPlayBackAndRecording()
-        recordingToolbar?.stopToolbarMedia()
+        recordingToolbar.stopToolbarMedia()
     }
 
-    /**
-     * Initializes the toolbar and toolbar buttons.
-     */
+    override fun onStoppedRecording() {
+        //updatePlayBackPath()
+    }
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
     protected open fun setToolbar() {
-        val recordingListener = object : RecordingListener {
-            override fun onStoppedRecording() {
-                //updatePlayBackPath()
-            }
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
+        bundle.putInt("slideNum", slideNum)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                stopPlayBackAndRecording()
-            }
-        }
-
-        recordingToolbar = RecordingToolbar(this.activity!!, rootView!!,
-                true, false, true, false, recordingListener, slideNum)
-        recordingToolbar!!.keepToolbarVisible()
-        recordingToolbar!!.stopToolbarMedia()
+        recordingToolbar.keepToolbarVisible()
     }
 }

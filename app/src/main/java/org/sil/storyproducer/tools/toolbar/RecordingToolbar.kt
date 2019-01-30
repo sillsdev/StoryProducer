@@ -1,28 +1,36 @@
 package org.sil.storyproducer.tools.toolbar
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
+import android.os.Bundle
 import android.os.Handler
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.*
-
+import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.*
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.file.assignNewAudioRelPath
+import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -42,32 +50,22 @@ private const val RECORDING_ANIMATION_DURATION = 1500
  * <br></br><br></br>
  */
 
-open class RecordingToolbar
-/**
- *
- * @param activity              The activity from the calling class.
- * @param rootView              The viewToEmbedToolbarIn of the layout that you want to embed the toolbar in.
- * @param enablePlaybackButton  Enable playback of recording.
- * @param enableCheckButton     Enable the check button.
- * @param enableSendAudioButton Enable the sending of audio to the server
- */
-@Throws(ClassCastException::class)
-constructor(activity: Activity, rootView: View,
-            private var enablePlaybackButton: Boolean, private var enableCheckButton: Boolean,
-            private var enableMultiRecordButton: Boolean, private var enableSendAudioButton: Boolean,
-            private var recordingListener: RecordingListener, protected val slideNum: Int) : AnimationToolbar(activity) {
+class RecordingToolbar : Fragment(){
 
-    //private FloatingActionButton fabPlus;
-    internal var toolbar: LinearLayout = rootView.findViewById(R.id.toolbar_for_recording_toolbar)
-    private var view = rootView
+    var rootView: LinearLayout? = null
+    private var enablePlaybackButton : Boolean = false
+    private var enableCheckButton : Boolean = false
+    private var enableMultiRecordButton : Boolean = false
+    private var enableSendAudioButton : Boolean = false
+    private lateinit var recordingListener : RecordingListener
+    private var slideNum : Int = 0
 
-    private var appContext: Context = activity.applicationContext
-
-    private var micButton: ImageButton = ImageButton(activity)
-    private var playButton: ImageButton = ImageButton(activity)
-    private var checkButton: ImageButton = ImageButton(activity)
-    private var multiRecordButton: ImageButton = ImageButton(activity)
-    private var sendAudioButton: ImageButton = ImageButton(activity)
+    private lateinit var appContext: Context
+    private lateinit var micButton: ImageButton
+    private lateinit var playButton: ImageButton
+    private lateinit var checkButton: ImageButton
+    private lateinit var multiRecordButton: ImageButton
+    private lateinit var sendAudioButton: ImageButton
 
     private var transitionDrawable: TransitionDrawable? = null
     private var colorHandler: Handler? = null
@@ -75,19 +73,48 @@ constructor(activity: Activity, rootView: View,
     private var isToolbarRed = false
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
-    private var voiceRecorder: AudioRecorder = AudioRecorderMP4(activity)
+    private var voiceRecorder: AudioRecorder? = null
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecording : Boolean
-        get() {return voiceRecorder.isRecording}
+        get() {return voiceRecorder?.isRecording == true}
 
-    init {
-        this.activity = activity
-        this.appContext = activity.applicationContext
-        createToolbar()
-        setupRecordingAnimationHandler()
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        recordingListener = try {
+            context as RecordingListener
+        }
+        catch (e : ClassCastException){
+            parentFragment as RecordingListener
+        }
+
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        appContext = activity?.applicationContext!!
+        voiceRecorder = AudioRecorderMP4(activity!!)
+        val mArguments = arguments
+        if (mArguments != null) {
+            val buttons = mArguments.get("buttonEnabled") as BooleanArray
+            enablePlaybackButton = buttons[0]
+            enableCheckButton = buttons[1]
+            enableMultiRecordButton = buttons[2]
+            enableSendAudioButton = buttons[3]
+            slideNum = mArguments.get("slideNum") as Int
+        }
+
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()})
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false) as LinearLayout
+        setupToolbarButtons()
+        setupRecordingAnimationHandler()
+        stopToolbarMedia()
+        return rootView
     }
 
     interface RecordingListener {
@@ -101,7 +128,7 @@ constructor(activity: Activity, rootView: View,
      */
     fun keepToolbarVisible() {
         //hideFloatingActionButton();
-        toolbar.visibility = View.VISIBLE
+        rootView?.visibility = View.VISIBLE
     }
 
     /**
@@ -109,8 +136,8 @@ constructor(activity: Activity, rootView: View,
      * The auxiliary medias are not stopped because the calling class should be responsible for
      * those.
      */
-    open fun stopToolbarMedia() {
-        if (voiceRecorder.isRecording) {
+    fun stopToolbarMedia() {
+        if (voiceRecorder?.isRecording == true) {
             if(enableCheckButton){
                 multiRecordButton.visibility = View.VISIBLE
             }
@@ -140,12 +167,12 @@ constructor(activity: Activity, rootView: View,
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
-    open fun onPause() {
+    fun pause() {
         stopToolbarMedia()
         audioPlayer.release()
     }
     
-    open fun hideButtons() {
+    fun hideButtons() {
         if (enablePlaybackButton) {
             playButton.visibility = View.INVISIBLE
         }
@@ -160,28 +187,24 @@ constructor(activity: Activity, rootView: View,
         }
     }
 
-    protected open fun startRecording(recordingRelPath: String) {
+    private fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
         recordingListener.onStartedRecordingOrPlayback(true)
-        voiceRecorder.startNewRecording(recordingRelPath)
+        voiceRecorder?.startNewRecording(recordingRelPath)
         startRecordingAnimation(false, 0)
     }
 
-    protected open fun stopRecording() {
-        voiceRecorder.stop()
+    private fun stopRecording() {
+        voiceRecorder?.stop()
         stopRecordingAnimation()
         recordingListener.onStoppedRecording()
-    }
-
-    private fun createToolbar() {
-        setupToolbarButtons()
     }
 
     /**
      * This function formats and aligns the buttons to the toolbar.
      */
     fun setupToolbarButtons() {
-        toolbar.removeAllViews()
+        rootView?.removeAllViews()
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
         val spaceLayoutParams = LinearLayout.LayoutParams(0, 0, 1f)
         spaceLayoutParams.width = 0
@@ -191,17 +214,17 @@ constructor(activity: Activity, rootView: View,
 
         var buttonSpacing = android.widget.Space(appContext)
         buttonSpacing.layoutParams = spaceLayoutParams
-        toolbar.addView(buttonSpacing) //Add a space to the left of the first button.
+        rootView?.addView(buttonSpacing) //Add a space to the left of the first button.
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
-                toolbar.addView(imageButtons[i])
+                rootView?.addView(imageButtons[i])
 
                 buttonSpacing = android.widget.Space(appContext)
                 buttonSpacing.layoutParams = spaceLayoutParams
-                toolbar.addView(buttonSpacing)
+                rootView?.addView(buttonSpacing)
                 when (i) {
                     0 -> micButton = imageButtons[i]
                     1 -> playButton = imageButtons[i]
@@ -236,10 +259,9 @@ constructor(activity: Activity, rootView: View,
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-
         micButton.setOnClickListener {
             if(enableCheckButton){
-                if (voiceRecorder.isRecording) {
+                if (voiceRecorder?.isRecording == true) {
                     stopRecording()
                     if (isAppendingOn) {
                         try {
@@ -281,7 +303,7 @@ constructor(activity: Activity, rootView: View,
                 }
             }
             else {
-                if (voiceRecorder.isRecording) {
+                if (voiceRecorder?.isRecording == true) {
                     stopToolbarMedia()
                 } else {
                     //Now we need to start recording!
@@ -337,7 +359,6 @@ constructor(activity: Activity, rootView: View,
                     }
                 }
             }
-
             playButton.setOnClickListener(playListener)
         }
         if (enableCheckButton) {
@@ -359,9 +380,9 @@ constructor(activity: Activity, rootView: View,
                 stopToolbarMedia()
                 if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
                     recordingListener.onStartedRecordingOrPlayback(false)
-                    RecordingsListAdapter.RecordingsListModal(view, activity!!, this).show()
+                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 } else {
-                    activity.findViewById<ViewPager>(R.id.viewPager).currentItem = 1
+                    activity?.findViewById<ViewPager>(R.id.viewPager)?.currentItem = 1
                 }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
@@ -529,8 +550,8 @@ constructor(activity: Activity, rootView: View,
         stopToolbarMedia()
         startRecording(recordingRelPath)
         when(Workspace.activePhase.phaseType){
-            PhaseType.DRAFT -> saveLog(activity.getString(R.string.DRAFT_RECORDING))
-            PhaseType.COMMUNITY_CHECK -> saveLog(activity.getString(R.string.COMMENT_RECORDING))
+            PhaseType.DRAFT -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
+            PhaseType.COMMUNITY_CHECK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
             else -> {}
         }
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
@@ -555,12 +576,12 @@ constructor(activity: Activity, rootView: View,
         val red = Color.rgb(255, 0, 0)
         var colorOfToolbar = Color.rgb(67, 179, 230)
 
-        val relBackgroundColor = toolbar.background
+        val relBackgroundColor = rootView?.background
         if (relBackgroundColor is ColorDrawable) {
             colorOfToolbar = relBackgroundColor.color
         }
         transitionDrawable = TransitionDrawable(arrayOf(ColorDrawable(colorOfToolbar), ColorDrawable(red)))
-        toolbar.background = transitionDrawable
+        rootView?.background = transitionDrawable
 
         colorHandler = Handler()
         colorHandlerRunnable = Runnable {

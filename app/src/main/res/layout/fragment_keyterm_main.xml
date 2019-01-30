@@ -115,15 +115,15 @@
             android:textSize="@dimen/text_body" />
     </ScrollView>
 
-
-    <include
+    <FrameLayout
         android:id="@+id/toolbar_for_recording_toolbar"
-        layout="@layout/toolbar_for_recording"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/backtranslation_comment"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/backtranslation_comment"

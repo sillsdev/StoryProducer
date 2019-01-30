@@ -21,11 +21,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.toJson
-
+import org.sil.storyproducer.model.*
 
 class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
 
@@ -38,6 +34,7 @@ class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
         viewPager = findViewById(R.id.viewPager)
         val clickedTerm = intent.getStringExtra("ClickedTerm")
         viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, clickedTerm ?: Workspace.activeKeyterm.term)
+        viewPager?.offscreenPageLimit = 1
 
         setupStatusBar()
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
@@ -101,7 +98,7 @@ class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
             }
             //otherwise set the term to the term four earlier
             else if (supportFragmentManager.backStackEntryCount >= 4) {
-                val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 4).name
+                val keytermName = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 3).name
                 Workspace.activeKeyterm = Workspace.termToKeyterm[keytermName]!!
                 super.onBackPressed()
                 supportFragmentManager.popBackStack()
@@ -150,8 +147,9 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
                 bundle.putString("ClickedTerm", term)
                 keyTermLayout.arguments = bundle
                 //Add new keyterm fragments to stack
-                fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
                 fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info, keyTermLayout)?.addToBackStack("")?.commit()
+                fragmentActivity?.supportFragmentManager?.beginTransaction()?.replace(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
+
             }
             else {
                 //Set keyterm from link as active keyterm
