@@ -22,11 +22,13 @@ import android.view.MenuItem
 import android.view.View
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 
 class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
 
     private var viewPager: ViewPager? = null
+    var recordingToolbar : RecordingToolbar = RecordingToolbar()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

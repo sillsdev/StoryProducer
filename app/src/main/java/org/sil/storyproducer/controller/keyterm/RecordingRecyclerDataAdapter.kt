@@ -60,17 +60,15 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             if(recordings[adapterPosition].textBackTranslation != ""){
                 initComment()
             }
-            else if(frameLayoutChildItem.tag == null || frameLayoutChildItem.tag == "comment"){
+            else{
                 initSubmit()
             }
         }
         private fun initSubmit(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childSubmit)
-            frameLayoutChildItem.tag = "submit"
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
             val editText = itemView.findViewById<EditText>(R.id.backtranslation_edit_text)
-            editText.setText("")
             addBacktranslation.setOnClickListener {
                 if(editText.text.toString() != ""){
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
@@ -83,7 +81,6 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private fun initComment(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childComment)
-            frameLayoutChildItem.tag = "comment"
             val currentTextView = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_title) as TextView
             currentTextView.text = recordings[adapterPosition].textBackTranslation
             val currentDeleteButton = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_delete_button) as ImageButton

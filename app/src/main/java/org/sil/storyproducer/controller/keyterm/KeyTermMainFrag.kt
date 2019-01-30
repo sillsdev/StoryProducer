@@ -19,7 +19,6 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
 
-    private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     private lateinit var backTranslationLayout : FrameLayout
 
     private lateinit var tellAudioListFragment: RecordClicked
@@ -80,8 +79,8 @@ class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
         bundle.putInt("slideNum", 0)
-        recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
+        (activity as KeyTermActivity).recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, (activity as KeyTermActivity).recordingToolbar).commit()
 
         return view
     }

@@ -52,7 +52,7 @@ private const val RECORDING_ANIMATION_DURATION = 1500
 
 class RecordingToolbar : Fragment(){
 
-    private var rootView: View? = null
+    var rootView: View? = null
     private var enablePlaybackButton : Boolean = false
     private var enableCheckButton : Boolean = false
     private var enableMultiRecordButton : Boolean = false
@@ -383,7 +383,7 @@ class RecordingToolbar : Fragment(){
                 stopToolbarMedia()
                 if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
                     recordingListener.onStartedRecordingOrPlayback(false)
-                    RecordingsListAdapter.RecordingsListModal(rootView, activity!!, this).show()
+                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 } else {
                     activity?.findViewById<ViewPager>(R.id.viewPager)?.currentItem = 1
                 }

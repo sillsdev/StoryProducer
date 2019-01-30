@@ -21,7 +21,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsListAdapter.RecordingsListModal(rootView, context!!, recordingToolbar)
+        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.show()
         return rootView
