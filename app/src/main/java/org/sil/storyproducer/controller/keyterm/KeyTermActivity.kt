@@ -7,8 +7,8 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import android.support.v4.content.ContextCompat
 import android.support.v4.app.NavUtils
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -130,9 +130,6 @@ fun stringToKeytermLink(context: Context, string: String, fragmentActivity: Frag
     }
     return spannableString
 }
-
-
-
 
 private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
     return object : ClickableSpan() {
