@@ -29,33 +29,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
     }
 
     /**
-     * This function serves to handle page changes and stops the audio streams from
-     * continuing.
-     *
-     * @param isVisibleToUser whether fragment is currently visible to user
-     */
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        // Make sure that we are currently visible
-        if (this.isVisible) {
-            // If we are becoming invisible, then...
-            if (!isVisibleToUser) {
-                //recordingToolbar.onPause()
-            }
-        }
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on pause.
-     */
-    override fun onPause() {
-        super.onPause()
-        //recordingToolbar.onPause()
-    }
-
-    /**
      * Used to hide the play and multiple recordings button.
      */
     fun hideButtonsToolbar() {
@@ -80,7 +53,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
     }
 
     protected open fun setToolbar() {
-
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
         bundle.putInt("slideNum", slideNum)

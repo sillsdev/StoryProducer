@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
@@ -15,41 +14,35 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-
 
 class DramatizationFrag : MultiRecordFrag() {
 
     private var slideText: EditText? = null
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        slideText = rootView!!.findViewById(R.id.fragment_dramatization_edit_text)
-        slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+        setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
+        slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
             if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-                setToolbar(null)
+                setToolbar()
             }
             closeKeyboardOnTouch(rootView)
-            rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
+            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
-
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
-            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
         return rootView
     }
-
 
     /**
      * This function serves to stop the audio streams from continuing after dramatization has been
@@ -68,39 +61,31 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-
         // Make sure that we are currently visible
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if (recordingToolbar != null) {
-                    recordingToolbar!!.onPause()
-                }
                 closeKeyboard(rootView)
             }
         }
     }
 
+    override fun onStoppedRecording() {}
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private fun setToolbar(toolbar: View?) {
-        if (rootView is ConstraintLayout) {
-            val recordingListener = object : RecordingListener {
-                override fun onStoppedRecording() {}
-                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                    stopPlayBackAndRecording()
-                }
-            }
+    override fun setToolbar() {
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
+        bundle.putInt("slideNum", slideNum)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
-            val bundle = Bundle()
-            bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
-            //bundle.putParcelable("recordingListener", recordingListener)
-            bundle.putInt("slideNum", slideNum)
-            recordingToolbar?.arguments = bundle
-
-            recordingToolbar!!.keepToolbarVisible()
-        }
+        recordingToolbar.keepToolbarVisible()
     }
 
     /**
