@@ -52,7 +52,7 @@ Translate and produce stories (starting with templates in a major language made 
 * Individual tests are named according to the following format: `FunctionName_When_[Condition]_Should_[DoExpectedBehavior]`
     * >**Example:** `OnCreate_When_WorkspaceDirectoryIsAlreadySet_Should_NotStartFileTreeActivity`
 
-#### Running the Tests
+#### Running the Unit Tests
 ##### From the command line:
 1. Navigate to the root directory of the repository.
 2. Run `./gradlew test` (on Linux) or `gradlew.bat test`(on Windows).
@@ -63,4 +63,35 @@ Translate and produce stories (starting with templates in a major language made 
 3. Right click on one of the files or directories that contains some unit tests (this can be the "app" directory, a specific folder, or a single test file.).
 4. Click "Run 'All Tests'" (or a more specific option if you chose a folder or file).
 5. The "Run" tool window shows the results of the tests.
+*Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
+
+## Espresso Tests (UI Tests)
+#### Organization
+* All Espresso tests are located in the `app\src\androidTest\java\org\sil\storyproducer` directory.
+* Folders in the Espresso test directory should roughly correspond to the screen and/or features they exercise.
+
+#### Before You Run the Espresso Tests:
+The Espresso tests make a couple of assumptions about the state of the emulator/device that they run on. In order for the tests to pass, you must do the following:
+1. Create a directory on the phone to act as the Story Producer workspace.
+2. Copy the "Lost Coin" story template into the workspace directory you created in step #1.
+3. Launch the Story Producer app.
+4. Use the file picker that appears to select the workspace directory you created in step #1.
+5. Close the Story Producer app.
+
+> **Why is this necessary?** The Espresso tests rely on the presence of the "Lost Coin" template as a sample with which to exercise the features of the app. Setting the workspace manually is a work-around for an unsolved technical challenge related to simulating the workspace picker.
+
+#### Running the Espresso Tests
+##### From the command line:
+1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."** (The device/emulator should be running.)
+2. Navigate to the root directory of the repository.
+3. Run `./gradlew connectedAndroidTest` (on Linux) or `gradlew.bat connectedAndroidTest`(on Windows).
+*Note:* You may need to run the gradle wrapper with sudo or make the gradle wrapper executable with `sudo chmod +x ./gradlew`
+##### From Android Studio:
+1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."**
+2. Open the Story Producer project (StoryProducer.iml) in Android Studio.
+3. Set the "Project" tool window to show "Android Instrumented Tests" (or just navigate to a directory containing Espresso tests).
+4. Right click on one of the directories that contains some Espresso tests (this can be the "app" directory, a specific folder, or a single test file.).
+5. Click "Run 'Tests in org.sil.storyproducer...'".
+*Note:* Be sure you've Right-clicked on the directory, not the test file itself. If you try to run a test by right-clicking the file itself, you may receive an initialization error.
+6. The "Run" tool window shows the results of the tests.
 *Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
