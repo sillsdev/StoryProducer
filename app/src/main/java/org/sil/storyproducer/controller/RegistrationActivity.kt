@@ -142,7 +142,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data!!.data)
+            Workspace.setupWorkspacePath(this,data!!.data!!)
             setupInputFields()
         }
     }
@@ -240,7 +240,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         val inputFieldsList = ArrayList<View>()
         val viewStack = Stack<ViewGroup>()
-        val viewName: String
         var storedValue: String
         var storedSpinnerIndex: Int
         var textFieldView: EditText?
@@ -507,7 +506,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_exit_title))
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
+                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                 }.create()
 
@@ -523,7 +522,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_skip_title))
                 .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
+                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     storeRegistrationInfo()
@@ -542,7 +541,7 @@ open class RegistrationActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this@RegistrationActivity)
                 .setTitle(getString(R.string.registration_error_title))
                 .setMessage(getString(R.string.registration_error_message))
-                .setPositiveButton(getString(R.string.ok)) { dialog, id ->
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
                     // The index here comes from the index of the archive section and header
                     // If another section is added or the sections are rearranged, this index
                     // will need to be changed
@@ -569,7 +568,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_submit_title))
                 .setMessage(message)
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, id ->
+                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
                     Workspace.registration.complete = true
                     storeRegistrationInfo()
                     postRegistrationInfo()
