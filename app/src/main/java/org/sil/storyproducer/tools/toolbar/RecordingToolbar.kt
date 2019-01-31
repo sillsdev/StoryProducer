@@ -75,8 +75,8 @@ class RecordingToolbar : Fragment(){
     private val audioTempName = getTempAppendAudioRelPath()
     private var voiceRecorder: AudioRecorder? = null
     private var audioPlayer: AudioPlayer = AudioPlayer()
-    val isRecording : Boolean
-        get() {return voiceRecorder?.isRecording == true}
+    val isRecordingOrPlaying : Boolean
+        get() {return voiceRecorder?.isRecording == true  || audioPlayer.isAudioPlaying}
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -105,7 +105,9 @@ class RecordingToolbar : Fragment(){
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-            audioPlayer.stopAudio()})
+            audioPlayer.stopAudio()
+            recordingListener.onStoppedRecordingOrPlayback()
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +120,7 @@ class RecordingToolbar : Fragment(){
     }
 
     interface RecordingListener {
-        fun onStoppedRecording()
+        fun onStoppedRecordingOrPlayback()
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -160,6 +162,7 @@ class RecordingToolbar : Fragment(){
         if (audioPlayer.isAudioPlaying) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
+            recordingListener.onStoppedRecordingOrPlayback()
         }
     }
 
@@ -197,7 +200,7 @@ class RecordingToolbar : Fragment(){
     private fun stopRecording() {
         voiceRecorder?.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecording()
+        recordingListener.onStoppedRecordingOrPlayback()
     }
 
     /**
@@ -326,7 +329,9 @@ class RecordingToolbar : Fragment(){
                             recordAudio(recordingRelPath)
                         }
                     } else {
-                        if (storyRelPathExists(activity!!, recordingRelPath)) {
+                        if (storyRelPathExists(activity!!, recordingRelPath) &&
+                                //we may be overwriting things in other phases, but we do not care.
+                                Workspace.activePhase.phaseType == PhaseType.LEARN) {
                             dialog.show()
                         } else {
                             recordAudio(recordingRelPath)
@@ -341,6 +346,7 @@ class RecordingToolbar : Fragment(){
                 if (audioPlayer.isAudioPlaying) {
                     audioPlayer.stopAudio()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+                    recordingListener.onStoppedRecordingOrPlayback()
                 } else {
                     stopToolbarMedia()
                     recordingListener.onStartedRecordingOrPlayback(false)

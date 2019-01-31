@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -18,15 +20,16 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.webkit.WebView
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import android.widget.Spinner
+import android.webkit.WebViewClient
+import android.widget.*
 
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
+import org.sil.storyproducer.tools.file.getStoryImage
+import kotlin.math.max
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
@@ -141,7 +144,11 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                    mDrawerLayout!!.closeDrawer(GravityCompat.START)
+                }else{
+                    mDrawerLayout!!.openDrawer(GravityCompat.START)
+                }
                 true
             }
             R.id.spinner -> {
@@ -245,6 +252,42 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             hsv[2] *= 0.8f
             window.statusBarColor = Color.HSVToColor(hsv)
         }
+    }
+
+    /**
+     * This function allows the picture to scale with the phone's screen size.
+     *
+     * @param slideImage    The ImageView that will contain the picture.
+     * @param slideNum The slide number to grab the picture from the files.
+     */
+    fun setPic(slideImage: ImageView, slideNum: Int) {
+        val downSample = 2
+        var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
+
+        //Get the height of the phone.
+        val phoneProperties = this.resources.displayMetrics
+        var height = phoneProperties.heightPixels
+        val scalingFactor = 0.4
+        height = (height * scalingFactor).toInt()
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+
+        //draw the text overlay
+        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+        val canvas = Canvas(slidePicture)
+        val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
+            Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
+        else Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
+        //if overlay is null, it will not write the text.
+        tOverlay?.setPadding(max(2, 2 + (canvas.width - phoneProperties.widthPixels) / 2))
+        tOverlay?.draw(canvas)
+
+        //Set the height of the image view
+        slideImage.layoutParams.height = height
+        slideImage.requestLayout()
+
+        slideImage.setImageBitmap(slidePicture)
     }
 
     companion object {

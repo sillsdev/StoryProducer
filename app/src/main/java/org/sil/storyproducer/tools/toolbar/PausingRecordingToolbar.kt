@@ -236,7 +236,7 @@
 //                    stopRecording()
 //                }
 //                deleteStoryFile(appContext,AUDIO_TEMP_NAME)
-//                recordingListener.onStoppedRecording()
+//                recordingListener.onStoppedRecordingOrPlayback()
 //                //make the button invisible till after the next new recording
 //                isAppendingOn = false
 //                checkButton!!.visibility = View.INVISIBLE

@@ -73,7 +73,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             button.setBackgroundResource(R.drawable.ic_checkmark_green)
         } else {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundResource(R.drawable.ic_checkmark_red)
+            button.setBackgroundResource(R.drawable.ic_checkmark_gray)
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -82,7 +82,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundResource(R.drawable.ic_checkmark_red)
+                button.setBackgroundResource(R.drawable.ic_checkmark_gray)
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
                 //TODO: use non-deprecated method; currently used to support older devices
@@ -201,7 +201,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         val CONSULTANT_PREFS = "Consultant_Checks"
         val IS_CONSULTANT_APPROVED = "isApproved"
         private val IS_CHECKED = "isChecked"
-        private val PASSWORD = "password" //"appr00ved"
+        private val PASSWORD = "appr00ved"
     }
 
 }

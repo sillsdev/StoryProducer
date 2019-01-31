@@ -42,7 +42,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         dispList?.stopAudio()
     }
 
-    override fun onStoppedRecording() {
+    override fun onStoppedRecordingOrPlayback() {
         dispList?.updateRecordingList()
         dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
     }

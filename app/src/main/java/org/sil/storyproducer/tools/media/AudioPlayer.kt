@@ -48,7 +48,6 @@ class AudioPlayer {
             try {
                 return mPlayer.isPlaying
             } catch (e: IllegalStateException) {
-                Log.w(TAG, "Failing silently", e)
                 return false
             }
 
@@ -74,6 +73,7 @@ class AudioPlayer {
             mPlayer.setDataSource(context, uri)
             fileExists = true
             mPlayer.prepare()
+            currentPosition = 0
         } catch (e: Exception) {
             //TODO maybe do something with this exception
             fileExists = false

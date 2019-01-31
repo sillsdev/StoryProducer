@@ -1,10 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -17,6 +14,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
+
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 import org.sil.storyproducer.model.Phase

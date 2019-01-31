@@ -120,6 +120,11 @@ open class RegistrationActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause(){
+        super.onPause()
+        storeRegistrationInfo()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
             Workspace.setupWorkspacePath(this,data?.data!!)
