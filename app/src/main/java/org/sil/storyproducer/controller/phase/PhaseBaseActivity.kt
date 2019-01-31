@@ -90,15 +90,14 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         menuInflater.inflate(R.menu.menu_phases, menu)
 
         val item = menu.findItem(R.id.spinner)
-        val spinner = MenuItemCompat.getActionView(item) as Spinner
-        val adapter: ArrayAdapter<CharSequence>
-        if (Workspace.registration.getBoolean("isRemote",false)) {
+        val spinner = item.actionView as Spinner
+        val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
-            adapter = ArrayAdapter.createFromResource(this,
+            ArrayAdapter.createFromResource(this,
                     R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item)
         } else {
             //local
-            adapter = ArrayAdapter.createFromResource(this,
+            ArrayAdapter.createFromResource(this,
                     R.array.local_phases_menu_array, android.R.layout.simple_spinner_item)
         }
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
@@ -264,15 +263,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
 
-        //Get the height of the phone.
-        val phoneProperties = this.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
-
-        //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
-
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
@@ -280,12 +270,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
         else Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
         //if overlay is null, it will not write the text.
-        tOverlay?.setPadding(max(2, 2 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
-
-        //Set the height of the image view
-        slideImage.layoutParams.height = height
-        slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
     }

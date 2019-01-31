@@ -190,7 +190,7 @@ abstract class SlidePhaseFrag : Fragment() {
         textView.text = ""
     }
 
-    protected fun setReferenceAudioButton() {
+    private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases

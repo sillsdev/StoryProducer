@@ -1,10 +1,7 @@
 package org.sil.storyproducer.controller.learn
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.content.res.ResourcesCompat
 import android.view.View
@@ -12,15 +9,16 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
+import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
@@ -63,7 +61,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             override fun onStartTrackingTouch(sBar: SeekBar) {}
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    if (recordingToolbar!!.isRecordingOrPlaying) {
+                    if (recordingToolbar.isRecordingOrPlaying) {
                         //When recording, update the picture to the accurate location, preserving
                         //startTime as the "effective" beginning of recording.
                         startTime = System.currentTimeMillis() - videoSeekBar!!.progress
@@ -87,13 +85,13 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         //set the volume switch change listener
         volumeSwitch.isChecked = true
-        volumeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+        volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isVolumeOn = if (isChecked) {
                 narrationPlayer.setVolume(1.0f)
-                isVolumeOn = true
+                true
             } else {
                 narrationPlayer.setVolume(0.0f)
-                isVolumeOn = false
+                false
             }
         }
 
@@ -145,8 +143,8 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
-        recordingToolbar!!.pause()
-        recordingToolbar!!.close()
+        recordingToolbar.pause()
+        //recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -169,7 +167,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread{
-                    if(recordingToolbar!!.isRecordingOrPlaying){
+                    if(recordingToolbar.isRecordingOrPlaying){
                         videoSeekBar?.progress = min((System.currentTimeMillis() - startTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
@@ -240,7 +238,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
      * Plays the audio
      */
     internal fun playStoryAudio() {
-        recordingToolbar!!.onPause()
+        recordingToolbar.onPause()
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()
