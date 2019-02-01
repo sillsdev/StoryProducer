@@ -22,7 +22,6 @@ import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
-    private var rootView: RelativeLayout? = null
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -50,7 +49,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
         setToolbar()
 
-        rootView = findViewById(R.id.phase_frame)
         learnImageView = findViewById(R.id.fragment_image_view)
         playButton = findViewById(R.id.fragment_reference_audio_button)
 
@@ -126,7 +124,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
         recordingToolbar.keepToolbarVisible()
     }
-    override fun onStoppedRecordingOrPlayback() {
+    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         videoSeekBar!!.progress = 0
         setSlideFromSeekbar()
     }

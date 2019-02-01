@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -89,21 +90,36 @@ class KeyTermMainFrag : Fragment(), RecordingToolbar.RecordingListener {
         }
     }
 
-    override fun onStoppedRecordingOrPlayback() {
-        tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size-1)
-        //show most recent recording and backtranslation below the toolbar
-        val inflater = LayoutInflater.from(context)
-        val recentRecording = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
-        val editText = recentRecording.findViewById<EditText>(R.id.backtranslation_edit_text)
-        val backTranslationButton = recentRecording.findViewById<ImageButton>(R.id.submit_backtranslation_button)
-        backTranslationButton.setOnClickListener {
-            if(editText.text.toString() != ""){
-                Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].textBackTranslation = editText.text.toString()
-                tellAudioListFragment.audioListChanged(Workspace.activeKeyterm.backTranslations.size-1)
-                backTranslationLayout.removeAllViews()
+    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
+        if(isRecordingFinished) {
+            tellAudioListFragment.audioListInserted(Workspace.activeKeyterm.backTranslations.size - 1)
+            //show most recent recording and backtranslation below the toolbar
+            val inflater = LayoutInflater.from(context)
+            //create parent title view
+            val recentRecordingTitleView = inflater.inflate(R.layout.keyterm_audio_comment_list_item, null, false)
+            val titleText = recentRecordingTitleView.findViewById<TextView>(R.id.audio_comment_title)
+            titleText.text = Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size-1].audioBackTranslation.substringAfterLast('/')
+            val deleteButton = recentRecordingTitleView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
+            deleteButton.setOnClickListener {
+
             }
+            //create child submit view
+            val recentRecordingSubmitView = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
+            val editText = recentRecordingSubmitView.findViewById<EditText>(R.id.backtranslation_edit_text)
+            val backTranslationButton = recentRecordingSubmitView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
+            backTranslationButton.setOnClickListener {
+                if (editText.text.toString() != "") {
+                    Workspace.activeKeyterm.backTranslations[Workspace.activeKeyterm.backTranslations.size - 1].textBackTranslation = editText.text.toString()
+                    tellAudioListFragment.audioListChanged(Workspace.activeKeyterm.backTranslations.size - 1)
+                    backTranslationLayout.removeAllViews()
+                }
+            }
+            //attach child to parent
+            val recentRecording = recentRecordingTitleView.findViewById<FrameLayout>(R.id.child_holder)
+            recentRecording.addView(recentRecordingSubmitView)
+            //add to main view
+            backTranslationLayout.addView(recentRecordingTitleView)
         }
-        backTranslationLayout.addView(recentRecording)
     }
 
     override fun onAttach(context: Context?) {

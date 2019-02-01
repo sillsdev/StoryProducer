@@ -106,7 +106,7 @@ class RecordingToolbar : Fragment(){
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
-            recordingListener.onStoppedRecordingOrPlayback()
+            recordingListener.onStoppedRecordingOrPlayback(false)
         })
     }
 
@@ -120,7 +120,7 @@ class RecordingToolbar : Fragment(){
     }
 
     interface RecordingListener {
-        fun onStoppedRecordingOrPlayback()
+        fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean)
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -162,7 +162,7 @@ class RecordingToolbar : Fragment(){
         if (audioPlayer.isAudioPlaying) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
-            recordingListener.onStoppedRecordingOrPlayback()
+            recordingListener.onStoppedRecordingOrPlayback(false)
         }
     }
 
@@ -200,7 +200,7 @@ class RecordingToolbar : Fragment(){
     private fun stopRecording() {
         voiceRecorder?.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecordingOrPlayback()
+        recordingListener.onStoppedRecordingOrPlayback(true)
     }
 
     /**
@@ -346,7 +346,7 @@ class RecordingToolbar : Fragment(){
                 if (audioPlayer.isAudioPlaying) {
                     audioPlayer.stopAudio()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-                    recordingListener.onStoppedRecordingOrPlayback()
+                    recordingListener.onStoppedRecordingOrPlayback(false)
                 } else {
                     stopToolbarMedia()
                     recordingListener.onStartedRecordingOrPlayback(false)

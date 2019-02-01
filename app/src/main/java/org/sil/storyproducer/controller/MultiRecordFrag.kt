@@ -71,7 +71,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
         recordingToolbar.stopToolbarMedia()
     }
 
-    override fun onStoppedRecordingOrPlayback() {
+    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         //updatePlayBackPath()
     }
 
