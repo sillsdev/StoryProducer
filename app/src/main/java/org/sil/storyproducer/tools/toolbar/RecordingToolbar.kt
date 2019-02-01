@@ -9,18 +9,17 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -388,7 +387,11 @@ class RecordingToolbar : Fragment(){
                     recordingListener.onStartedRecordingOrPlayback(false)
                     RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 } else {
-                    activity?.findViewById<ViewPager>(R.id.viewPager)?.currentItem = 1
+                    (activity as KeyTermActivity).layoutState = KeyTermActivity.State.RecordingView
+                    val recordingList = activity?.findViewById<FrameLayout>(R.id.keyterm_info_audio)
+                    recordingList?.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    val notes = activity?.findViewById<FrameLayout>(R.id.keyterm_info)
+                    notes?.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
                 }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)

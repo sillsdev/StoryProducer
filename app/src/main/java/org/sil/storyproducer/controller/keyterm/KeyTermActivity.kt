@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentActivity
 import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
-import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.text.Spannable
@@ -20,23 +19,43 @@ import android.text.style.ClickableSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.toJson
 
 class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
 
-    private var viewPager: ViewPager? = null
+    enum class State {NoteView, RecordingView, MixedView}
+    var layoutState: State = State.NoteView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
-        viewPager = findViewById(R.id.viewPager)
+
         val clickedTerm = intent.getStringExtra("ClickedTerm")
-        viewPager?.adapter = ViewPagerAdapter(supportFragmentManager, clickedTerm ?: Workspace.activeKeyterm.term)
-        viewPager?.offscreenPageLimit = 1
 
         setupStatusBar()
+
+        //make note section
+        val keytermNotes = KeyTermMainFrag()
+        val bundle = Bundle()
+        bundle.putString("ClickedTerm", clickedTerm)
+        keytermNotes.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info, keytermNotes)?.addToBackStack("")?.commit()
+
+        //make audio recording section
+        val keyTermAudioLayout = KeyTermRecordingListFrag()
+        supportFragmentManager?.beginTransaction()?.add(R.id.keyterm_info_audio, keyTermAudioLayout)?.addToBackStack(Workspace.activeKeyterm.term)?.commit()
+        if(Workspace.activeKeyterm.backTranslations.isEmpty()){
+            findViewById<FrameLayout>(R.id.keyterm_info_audio).layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+        }
+
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(getColor(resources,
@@ -91,7 +110,7 @@ class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
     }
 
     override fun onBackPressed() {
-        if(viewPager?.currentItem == 0) {
+        if(layoutState == State.NoteView) {
             //if there are two we are at the beginning and need to stop
             if (supportFragmentManager.backStackEntryCount == 2) {
                 this.finish()
@@ -105,7 +124,9 @@ class KeyTermActivity : AppCompatActivity(), KeyTermMainFrag.RecordClicked {
             }
         }
         else{
-            viewPager?.currentItem = 0
+            layoutState = State.NoteView
+            findViewById<FrameLayout>(R.id.keyterm_info_audio).layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+            findViewById<FrameLayout>(R.id.keyterm_info).layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 
