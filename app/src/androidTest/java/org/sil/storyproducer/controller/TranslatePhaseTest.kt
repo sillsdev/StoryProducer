@@ -4,6 +4,10 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
+import android.support.v7.widget.AppCompatSeekBar
+import android.support.v7.widget.AppCompatTextView
+import android.util.Log
+import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
@@ -13,15 +17,18 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers.*
-import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import org.junit.Before
-import org.junit.FixMethodOrder
 import org.junit.runners.MethodSorters
+import java.lang.Integer.parseInt
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.UiController
+import org.hamcrest.Matcher
+import org.junit.*
+import org.sil.storyproducer.R
 
 
 @LargeTest
@@ -47,38 +54,82 @@ class TranslatePhaseTest {
 
     @Test
     fun A_should_BeAbleToSwipeBetweenSlides() {
-        // TODO: Make the test not depend on the story being at the first slide.
-        Thread.sleep(50)
-        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("0"))).check(matches(isDisplayed()))
-        onView(allOf(withId(org.sil.storyproducer.R.id.phase_frame))).perform(swipeLeft())
-        Thread.sleep(50)
-        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("1"))).check(matches(isDisplayed()))
-        onView(allOf(withId(org.sil.storyproducer.R.id.phase_frame))).perform(swipeRight())
-        Thread.sleep(50)
-        onView(allOf(withId(org.sil.storyproducer.R.id.slide_number_text), withText("0"))).check(matches(isDisplayed()))
+        val originalSlideNumber = findCurrentSlideNumber()
+        var nextSlideNumber = originalSlideNumber + 1
+        expectToBeOnSlide(originalSlideNumber)
+        swipeLeftOnSlide()
+        giveUiTimeToChangeSlides()
+        expectToBeOnSlide(nextSlideNumber)
+        swipeRightOnSlide()
+        giveUiTimeToChangeSlides()
+        expectToBeOnSlide(originalSlideNumber)
     }
 
     @Test
     fun B_should_BeAbleToPlayNarrationOfASlide() {
-
+        val originalProgress = getCurrentSlideAudioProgress()
+        pressPlayPauseButton()
+        giveAppTimeToPlayAudio()
+        pressPlayPauseButton()
+        val endingProgress = getCurrentSlideAudioProgress()
+        Assert.assertNotEquals(endingProgress, originalProgress)
     }
 
     @Test
     fun C_should_BeAbleToRecordTranslationForASlide() {
+        // press record button
+        // expect toast notification and/or color change
+        // wait a little bit
+        // press stop button
+        // expect recordings menu to be visible
+        // press recordings menu
+        // expect an entry to exist
+    }
 
+    private fun expectToBeOnSlide(originalSlideNumber: Int) {
+        onView(allOf(withId(R.id.slide_number_text), withText(originalSlideNumber.toString()))).check(matches(isDisplayed()))
+    }
+
+    private fun findCurrentSlideNumber(): Int {
+        val slideNumberTextView = getActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
+        return parseInt(slideNumberTextView!!.text.toString())
+    }
+
+    private fun swipeRightOnSlide() {
+        onView(allOf(withId(R.id.phase_frame))).perform(swipeRight())
+    }
+
+    private fun swipeLeftOnSlide() {
+        onView(allOf(withId(R.id.phase_frame))).perform(swipeLeft())
+    }
+
+    private fun giveUiTimeToChangeSlides() {
+        Thread.sleep(50)
+    }
+
+    private fun getCurrentSlideAudioProgress(): Int {
+        val progressBar = getActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
+        return progressBar!!.progress
+    }
+
+    private fun pressPlayPauseButton() {
+        onView(allOf(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
+    }
+
+    private fun giveAppTimeToPlayAudio() {
+        Thread.sleep(250)
     }
 
     private fun navigateToTranslatePhase() {
         setUpDummyWorkspacePickerIntent()
         mActivityTestRule.launchActivity(null)
+        tearDownDummyWorkspacePickerIntent()
 
         onView(withText("Skip Registration")).perform(click())
         onView(withId(android.R.id.button1)).perform(scrollTo(), click())
         onView(withText(containsString("Lost Coin"))).perform(scrollTo(), click())
         onView(withId(org.sil.storyproducer.R.id.toolbar)).perform(click())
         onData(allOf(`is`(instanceOf(String::class.java)), `is`("Translate"))).perform(click())
-
-        Intents.release()
     }
 
     private fun setUpDummyWorkspacePickerIntent() {
@@ -89,5 +140,31 @@ class TranslatePhaseTest {
         // This allows the test to proceed with a manually set workspace directory.
         returnedIntent.setData(Uri.EMPTY)
         intending(expectedIntent).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, returnedIntent))
+    }
+
+    private fun tearDownDummyWorkspacePickerIntent() {
+        Intents.release()
+    }
+
+    // See https://stackoverflow.com/questions/24517291/get-current-activity-in-espresso-android
+    private fun getActivity(): Activity? {
+        val currentActivity = arrayOfNulls<Activity>(1)
+        onView(allOf(withId(android.R.id.content), isDisplayed())).perform(object : ViewAction {
+            override fun getConstraints(): Matcher<View> {
+                return isAssignableFrom(View::class.java)
+            }
+
+            override fun getDescription(): String {
+                return "getting text from a TextView"
+            }
+
+            override fun perform(uiController: UiController, view: View) {
+                if (view.context is Activity) {
+                    val activity1 = view.context as Activity
+                    currentActivity[0] = activity1
+                }
+            }
+        })
+        return currentActivity[0]
     }
 }

@@ -39,6 +39,7 @@ class RegistrationActivityTest {
     fun should_beAbleToSkipRegistration() {
         setUpDummyWorkspacePickerIntent()
         mActivityTestRule.launchActivity(null)
+        tearDownDummyWorkspacePickerIntent()
 
         onView(withText("Skip Registration")).perform(click())
         onView(withId(android.R.id.button1)).perform(scrollTo(), click())
@@ -54,4 +55,8 @@ class RegistrationActivityTest {
         returnedIntent.setData(Uri.EMPTY)
         intending(expectedIntent).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, returnedIntent))
     }
+    private fun tearDownDummyWorkspacePickerIntent() {
+        Intents.release()
+    }
+
 }
