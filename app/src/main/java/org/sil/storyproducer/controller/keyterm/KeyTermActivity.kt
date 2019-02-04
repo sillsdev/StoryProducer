@@ -21,6 +21,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -152,7 +153,11 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         if(isRecordingFinished) {
             recordingExpandableListView.adapter?.notifyItemInserted(Workspace.activeKeyterm.backTranslations.size - 1)
-            //BottomSheetBehavior.from(bottomSheet).peekHeight = 650
+            val metrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(metrics)
+            val logicalDensity = metrics.density
+            val px = 220 * logicalDensity
+            BottomSheetBehavior.from(bottomSheet).peekHeight = px.toInt()
         }
     }
 
