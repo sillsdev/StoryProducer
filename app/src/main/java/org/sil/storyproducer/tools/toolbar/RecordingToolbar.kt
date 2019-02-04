@@ -14,13 +14,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity
+import org.sil.storyproducer.controller.keyterm.dpToPx
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -393,6 +393,7 @@ class RecordingToolbar : Fragment(){
                     }
                     else{
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).peekHeight = dpToPx(48, activity!!)
                     }
                 }
             }

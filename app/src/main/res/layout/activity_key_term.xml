@@ -1,63 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/keyterm_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    android:orientation="vertical"
-    tools:context=".controller.keyterm.KeyTermActivity">
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/linearLayout3"
+    tools:context=".controller.keyterm.KeyTermActivity"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/keyterm_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_anchorGravity="top"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/keyterm_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/keyterm_toolbar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <TextView
-            android:id="@+id/keyterm_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:elevation="2dp"
-            android:textSize="@dimen/text_title"
-            android:background="@color/keyterm_phase_related"
-            app:layout_constraintBottom_toTopOf="@+id/notes_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/keyterm_toolbar" />
 
         <ScrollView
-            android:id="@+id/notes_layout"
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="4dp"
-            android:fadeScrollbars="false"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/keyterm_title">
+            android:layout_height="wrap_content"
+            app:layout_anchorGravity="bottom">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/keyterm_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/keyterm_phase_related"
+                    android:elevation="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="4dp"
+                    android:textSize="@dimen/text_title" />
 
                 <TextView
                     android:id="@+id/meaning_notes_label"
@@ -67,10 +57,7 @@
                     android:paddingRight="8dp"
                     android:text="@string/notes"
                     android:textSize="@dimen/large_text"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/keyterm_title" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/explanation_text"
@@ -79,61 +66,32 @@
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     android:textSize="@dimen/text_body" />
-            </LinearLayout>
-        </ScrollView>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent=".5" />
+                <LinearLayout
+                    android:id="@+id/related_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/lightDarkGrey"
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
-        <LinearLayout
-            android:id="@+id/related_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="4dp"
-            android:background="@color/lightDarkGrey"
-            android:orientation="vertical"
-            android:padding="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/example_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline2">
+                    <TextView
+                        android:id="@+id/related_terms_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/related_terms"
+                        android:textSize="@dimen/large_text"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/related_terms_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/related_terms"
-                android:textSize="@dimen/large_text"
-                android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/related_terms_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_body" />
+                </LinearLayout>
 
-            <TextView
-                android:id="@+id/related_terms_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_body" />
-        </LinearLayout>
-
-
-        <ScrollView
-            android:id="@+id/example_layout"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
-            android:fadeScrollbars="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/related_layout">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/other_languages_label"
@@ -143,10 +101,7 @@
                     android:paddingRight="8dp"
                     android:text="@string/other_langauge_examples"
                     android:textSize="@dimen/large_text"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/related_layout" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/alternate_renderings_text"
@@ -157,8 +112,7 @@
                     android:textSize="@dimen/text_body" />
             </LinearLayout>
         </ScrollView>
-    </android.support.constraint.ConstraintLayout>
 
-    <include layout="@layout/fragment_keyterm_recording_list" />
-
-</android.support.design.widget.CoordinatorLayout>
+        <include layout="@layout/fragment_keyterm_recording_list" />
+    </android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

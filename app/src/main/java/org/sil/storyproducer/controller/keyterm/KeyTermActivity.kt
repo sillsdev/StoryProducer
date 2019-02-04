@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -42,6 +43,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     var bottomSheet: LinearLayout? = null
     val keytermHistory: Stack<String> = Stack()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
@@ -55,12 +57,13 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         supportActionBar?.setBackgroundDrawable(ColorDrawable(getColor(resources,
                 Workspace.activePhase.getColor(), null)))
 
+        bottomSheet = findViewById(R.id.bottom_sheet)
+        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
+
         setupNoteView()
 
         setupRecordingList()
-
-        bottomSheet = findViewById(R.id.bottom_sheet)
-        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     override fun onPause() {
@@ -87,7 +90,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         val viewManager = LinearLayoutManager(this)
 
         recordingExpandableListView = findViewById(R.id.recording_list)
-        recordingExpandableListView.adapter = RecyclerDataAdapter(this, Workspace.activeKeyterm.backTranslations)
+        recordingExpandableListView.adapter = RecyclerDataAdapter(this, Workspace.activeKeyterm.backTranslations, bottomSheet!!)
         recordingExpandableListView.layoutManager = viewManager
         val dispList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
         dispList.embedList(findViewById(android.R.id.content))
@@ -153,11 +156,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         if(isRecordingFinished) {
             recordingExpandableListView.adapter?.notifyItemInserted(Workspace.activeKeyterm.backTranslations.size - 1)
-            val metrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(metrics)
-            val logicalDensity = metrics.density
-            val px = 220 * logicalDensity
-            BottomSheetBehavior.from(bottomSheet).peekHeight = px.toInt()
+            BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(220, this)
         }
     }
 
@@ -203,6 +202,13 @@ fun stringToKeytermLink(context: Context, string: String, fragmentActivity: Frag
         spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
     return spannableString
+}
+
+fun dpToPx(dp: Int, activity: Activity): Int{
+    val metrics = DisplayMetrics()
+    activity.windowManager.defaultDisplay.getMetrics(metrics)
+    val logicalDensity = metrics.density
+    return (dp * logicalDensity).toInt()
 }
 
 private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
