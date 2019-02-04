@@ -8,6 +8,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -387,11 +388,12 @@ class RecordingToolbar : Fragment(){
                     recordingListener.onStartedRecordingOrPlayback(false)
                     RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 } else {
-                    (activity as KeyTermActivity).layoutState = KeyTermActivity.State.RecordingView
-                    val recordingList = activity?.findViewById<FrameLayout>(R.id.keyterm_info_audio)
-                    recordingList?.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-                    val notes = activity?.findViewById<FrameLayout>(R.id.keyterm_info)
-                    notes?.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+                    if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                    else{
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                    }
                 }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)

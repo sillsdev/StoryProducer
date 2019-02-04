@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
 import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -300,7 +299,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         toolbar?.setupToolbarButtons()
                         dialog?.dismiss()
                     }
-                    (toolbar?.parentFragment as KeyTermMainFrag).view?.findViewById<FrameLayout>(R.id.backtranslation_comment)?.removeAllViews()
                 }
             } else {
                 deleteStoryFile(context, "$PROJECT_DIR/$name")
