@@ -26,6 +26,7 @@ import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager.LayoutParams
 import android.widget.LinearLayout
 import android.widget.TextView
 import org.sil.storyproducer.R
@@ -64,6 +65,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         setupNoteView()
 
         setupRecordingList()
+
+        // Keeps keyboard from automatically popping up on opening activity
+        this.window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
     override fun onPause() {
