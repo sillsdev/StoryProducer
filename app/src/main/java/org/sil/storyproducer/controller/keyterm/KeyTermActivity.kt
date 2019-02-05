@@ -101,9 +101,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         recordingExpandableListView = findViewById(R.id.recording_list)
         recordingExpandableListView.adapter = RecyclerDataAdapter(this, Workspace.activeKeyterm.backTranslations, bottomSheet!!)
         recordingExpandableListView.layoutManager = viewManager
-        val dispList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
-        dispList.embedList(findViewById(android.R.id.content))
-        dispList.show()
+        val displayList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
+        displayList.embedList(findViewById(android.R.id.content))
+        displayList.show()
     }
 
     fun setupNoteView(){
