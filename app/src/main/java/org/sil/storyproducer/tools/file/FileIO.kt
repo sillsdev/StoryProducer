@@ -202,7 +202,11 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         }
         DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
     }
-    return context.contentResolver.openFileDescriptor(newUri,mode)
+    var pfd: ParcelFileDescriptor? = null
+    try{
+        pfd = context.contentResolver.openFileDescriptor(newUri,mode)
+    }catch(e:java.lang.Exception){}
+    return pfd
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
