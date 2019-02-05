@@ -189,6 +189,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
                 BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
             }
+            recordingExpandableListView.smoothScrollToPosition(0)
         }
     }
 
