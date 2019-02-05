@@ -6,19 +6,19 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
-import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
-
 import android.util.Log
+import org.sil.storyproducer.model.KEYTERMS_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.*
+import java.io.File
 import java.io.FileDescriptor
 import java.io.InputStream
 import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
-import java.io.*
 
 
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
@@ -233,15 +233,13 @@ fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Work
 
 fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
     val dir = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-        File(Environment.getExternalStoragePublicDirectory("${Workspace.workspace.name}"),"keyterms/${Workspace.activeKeyterm.term}")
+        Workspace.workspace.findFile(KEYTERMS_DIR)?.findFile(Workspace.activeKeyterm.term)
     } else {
-        File(Environment.getExternalStoragePublicDirectory("${Workspace.workspace.name}"),"${Workspace.activeStory.title}/project")
+        Workspace.workspace.findFile(Workspace.activeStory.title)?.findFile("project")
     }
 
-    return if(dir.exists()) {
-        val oldFile = File(dir, oldFilename)
-        val newFile = File(dir, newFilename)
-        oldFile.renameTo(newFile)
+    return if(dir?.exists() == true) {
+        dir.findFile(oldFilename)?.renameTo(newFilename) == true
     } else{
         false
     }
