@@ -221,6 +221,9 @@ class RecordingToolbar : Fragment(){
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
+                if(i==2 && Workspace.activePhase.phaseType == PhaseType.KEYTERM && BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
+                    imageButtons[i].setBackgroundResource(R.drawable.ic_close_white_48dp)
+                }
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
                 rootView?.addView(imageButtons[i])
@@ -322,20 +325,12 @@ class RecordingToolbar : Fragment(){
                                 //overwrite audio
                                 recordAudio(recordingRelPath)
                             }.create()
-                    if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                        if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
-                            dialog.show()
-                        } else {
-                            recordAudio(recordingRelPath)
-                        }
+                    if (storyRelPathExists(activity!!, recordingRelPath) &&
+                            //we may be overwriting things in other phases, but we do not care.
+                            Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                        dialog.show()
                     } else {
-                        if (storyRelPathExists(activity!!, recordingRelPath) &&
-                                //we may be overwriting things in other phases, but we do not care.
-                                Workspace.activePhase.phaseType == PhaseType.LEARN) {
-                            dialog.show()
-                        } else {
-                            recordAudio(recordingRelPath)
-                        }
+                        recordAudio(recordingRelPath)
                     }
                 }
             }
@@ -390,9 +385,11 @@ class RecordingToolbar : Fragment(){
                 } else {
                     if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                        multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
                     }
                     else{
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                        multiRecordButton.setBackgroundResource(R.drawable.ic_close_white_48dp)
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).peekHeight = dpToPx(48, activity!!)
                     }
                 }

@@ -1,12 +1,10 @@
 package org.sil.storyproducer.tools.file
 
-import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.StorySharedPreferences
 
-
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
+import org.sil.storyproducer.model.BackTranslation
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Workspace
 import kotlin.math.max
 
 /**
@@ -85,7 +83,7 @@ fun assignNewAudioRelPath() : String {
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
         }
         PhaseType.KEYTERM -> {
-            Workspace.activeKeyterm.backTranslations.add(BackTranslation("", relPath))
+            Workspace.activeKeyterm.backTranslations.add(0, BackTranslation("", relPath))
             Workspace.activeKeyterm.chosenKeytermFile = relPath
         }
         else -> relPath = ""

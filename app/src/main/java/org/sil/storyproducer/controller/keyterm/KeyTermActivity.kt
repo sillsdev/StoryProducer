@@ -59,7 +59,13 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 Workspace.activePhase.getColor(), null)))
 
         bottomSheet = findViewById(R.id.bottom_sheet)
-        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+
+        if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+        }
+        else {
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+        }
         BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
 
         setupNoteView()
@@ -159,7 +165,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         if(isRecordingFinished) {
-            recordingExpandableListView.adapter?.notifyItemInserted(Workspace.activeKeyterm.backTranslations.size - 1)
+            recordingExpandableListView.adapter?.notifyItemInserted(0)
             BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(220, this)
         }
     }
@@ -186,15 +192,19 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     override fun onBackPressed() {
-        keytermHistory.pop()
-        if(keytermHistory.isEmpty()){
-            super.onBackPressed()
-            finish()
+        if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED){
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
         }
         else {
-            Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[keytermHistory.peek().toLowerCase()]]!!
-            setupNoteView()
-            setupRecordingList()
+            keytermHistory.pop()
+            if (keytermHistory.isEmpty()) {
+                super.onBackPressed()
+                finish()
+            } else {
+                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[keytermHistory.peek().toLowerCase()]]!!
+                setupNoteView()
+                setupRecordingList()
+            }
         }
     }
 }
