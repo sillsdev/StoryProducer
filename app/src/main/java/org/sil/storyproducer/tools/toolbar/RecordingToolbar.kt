@@ -378,26 +378,32 @@ class RecordingToolbar : Fragment(){
             }
         }
         if (enableMultiRecordButton) {
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+                val bottomSheetBehavior = BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet)
+
+                bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
+                    override fun onStateChanged(view: View, newState: Int) {
+                        setKeytermMultiRecordIcon(newState)
+                    }
+                    override fun onSlide(view: View, newState: Float) {}
+                })
+                setKeytermMultiRecordIcon(bottomSheetBehavior.state)
+            }
+
             val multiRecordModalButtonListener = View.OnClickListener {
                 stopToolbarMedia()
-                if (PhaseType.KEYTERM != Workspace.activePhase.phaseType) {
-                    recordingListener.onStartedRecordingOrPlayback(false)
-                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
-                } else {
-                    if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
-                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
-                        multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
-                    }
-                    else if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED){
-                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                    val bottomSheetBehavior = BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet)
+
+                    if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                     else{
-                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
-                        /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
-                           A down arrow might be clearer
-                        multiRecordButton.setBackgroundResource(R.drawable.ic_close_white_48dp)
-                        */
+                        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                     }
+                } else {
+                    recordingListener.onStartedRecordingOrPlayback(false)
+                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)
@@ -408,6 +414,15 @@ class RecordingToolbar : Fragment(){
                 sendAudio()
             }
             sendAudioButton.setOnClickListener(sendAudioListener)
+        }
+    }
+
+    private fun setKeytermMultiRecordIcon(state: Int){
+        if(state == BottomSheetBehavior.STATE_EXPANDED || state == BottomSheetBehavior.STATE_HALF_EXPANDED){
+            multiRecordButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_white_48dp)
+        }
+        else if(state == BottomSheetBehavior.STATE_COLLAPSED){
+            multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
         }
     }
 
