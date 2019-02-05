@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.keyterm
 
-import android.app.Activity
 import android.content.Context
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v7.widget.RecyclerView
@@ -79,7 +78,9 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
                     frameLayoutChildItem.removeAllViews()
-                    BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, context as Activity)
+                    if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
                     initComment()
                 }
             }

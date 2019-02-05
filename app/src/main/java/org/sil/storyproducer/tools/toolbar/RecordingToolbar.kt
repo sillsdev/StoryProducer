@@ -20,7 +20,6 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity
-import org.sil.storyproducer.controller.keyterm.dpToPx
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -389,13 +388,15 @@ class RecordingToolbar : Fragment(){
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
                         multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
                     }
+                    else if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED){
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
                     else{
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
                         /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
                            A down arrow might be clearer
                         multiRecordButton.setBackgroundResource(R.drawable.ic_close_white_48dp)
                         */
-                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).peekHeight = dpToPx(48, activity!!)
                     }
                 }
             }

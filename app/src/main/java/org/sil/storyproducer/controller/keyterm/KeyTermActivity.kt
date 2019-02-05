@@ -60,13 +60,14 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         bottomSheet = findViewById(R.id.bottom_sheet)
 
+        BottomSheetBehavior.from(bottomSheet).isFitToContents = false
+        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
         if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
             BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
         }
         else {
             BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
 
         setupNoteView()
 
@@ -166,7 +167,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
         if(isRecordingFinished) {
             recordingExpandableListView.adapter?.notifyItemInserted(0)
-            BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(220, this)
+            if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
+                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            }
         }
     }
 
@@ -192,7 +195,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     override fun onBackPressed() {
-        if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED){
+        if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED ||
+                BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED){
             BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
         }
         else {
