@@ -221,9 +221,11 @@ class RecordingToolbar : Fragment(){
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
+                /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
+                   A down arrow might be clearer
                 if(i==2 && Workspace.activePhase.phaseType == PhaseType.KEYTERM && BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
                     imageButtons[i].setBackgroundResource(R.drawable.ic_close_white_48dp)
-                }
+                }*/
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
                 rootView?.addView(imageButtons[i])
@@ -389,7 +391,10 @@ class RecordingToolbar : Fragment(){
                     }
                     else{
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                        /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
+                           A down arrow might be clearer
                         multiRecordButton.setBackgroundResource(R.drawable.ic_close_white_48dp)
+                        */
                         BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).peekHeight = dpToPx(48, activity!!)
                     }
                 }
