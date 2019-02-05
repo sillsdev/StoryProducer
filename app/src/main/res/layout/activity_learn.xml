@@ -27,6 +27,7 @@
 
             <ImageView
                 android:layout_width="match_parent"
+                android:contentDescription="@string/story_picture"
                 android:layout_height="@dimen/rect_height"
                 android:layout_alignBottom="@id/fragment_image_view"
                 android:layout_alignStart="@id/fragment_image_view" />

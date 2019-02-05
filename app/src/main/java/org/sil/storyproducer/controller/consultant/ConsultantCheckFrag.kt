@@ -101,7 +101,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      */
     private fun setLogsButton(button: ImageButton) {
         //TODO: use non-deprecated method; currently used to support older devices
-        button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_logs_blue, null))
+        button.background = VectorDrawableCompat.create(resources, R.drawable.ic_logs_blue, null)
         button.setOnClickListener { LogView.makeModal(context) }
     }
 

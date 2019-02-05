@@ -2,19 +2,15 @@
 <resources>
     <color name="primary">#43b3e6</color>
     <color name="primaryDark">#2c97d4</color>
-    <color name="setupBG">#43b3e6</color>
     <color name="white">#ffffff</color>
     <color name="lightBlue">#bde5f2</color>
     <color name="lightGray">#d3d3d3</color>
     <color name="lightWhite">#fafafa</color>
-    <color name="navBar">#d1d2d4</color>
     <color name="darkGray">#404041</color>
     <color name="gray">#757575</color>
     <color name="black">#111111</color>
     <color name="black_semi_transparent">#80000000</color>
     <color name="transparent">#00000000</color>
-    <color name="green">#32CD32</color>
-    <color name="yellow">#ffeb3b</color>
     <color name="learn_phase">#2AA198</color>
     <color name="draft_phase">#DC322F</color>
     <color name="comunity_check_phase">#859900</color>

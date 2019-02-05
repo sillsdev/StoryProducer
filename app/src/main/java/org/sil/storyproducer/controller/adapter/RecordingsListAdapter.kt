@@ -198,8 +198,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
             strippedFilenames[i] = strippedFilenames[i].split("/").last()
         }
         val adapter = RecordingsListAdapter(context, strippedFilenames.toTypedArray(), this)
-        adapter.setDeleteTitle(context.resources.getString(R.string.delete_draft_title))
-        adapter.setDeleteMessage(context.resources.getString(R.string.delete_draft_message))
+        adapter.setDeleteTitle(context.resources.getString(R.string.delete_audio_title))
+        adapter.setDeleteMessage(context.resources.getString(R.string.delete_audio_message))
         listView.adapter = adapter
 
     }

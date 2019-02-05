@@ -350,6 +350,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         //make the floating button visible
         //recordingToolbar.showFloatingActionButton();
         //make the sounds stuff visible
+        /*
         ImageView soundOff = findViewById(R.id.soundOff);
         ImageView soundOn = findViewById(R.id.soundOn);
         Switch volumeSwitch = findViewById(R.id.volumeSwitch);
@@ -370,6 +371,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
                 }
             }
         });
+        */
     }
 
     /**

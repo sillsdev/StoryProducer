@@ -541,11 +541,11 @@ open class RegistrationActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this@RegistrationActivity)
                 .setTitle(getString(R.string.registration_error_title))
                 .setMessage(getString(R.string.registration_error_message))
-                .setPositiveButton(getString(R.string.ok)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     // The index here comes from the index of the archive section and header
                     // If another section is added or the sections are rearranged, this index
                     // will need to be changed
-                    sectionViews[4]!!.setVisibility(View.VISIBLE)
+                    sectionViews[4]!!.visibility = View.VISIBLE
                     headerViews[4]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                     emailTextField.requestFocus()
                 }.create()
