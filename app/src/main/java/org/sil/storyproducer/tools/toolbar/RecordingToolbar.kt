@@ -1,5 +1,6 @@
 package org.sil.storyproducer.tools.toolbar
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -14,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
@@ -384,6 +386,9 @@ class RecordingToolbar : Fragment(){
                 bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
                     override fun onStateChanged(view: View, newState: Int) {
                         setKeytermMultiRecordIcon(newState)
+                        if(newState == BottomSheetBehavior.STATE_COLLAPSED){
+                            view.let { activity?.hideKeyboard(it) }
+                        }
                     }
                     override fun onSlide(view: View, newState: Float) {}
                 })
@@ -424,6 +429,11 @@ class RecordingToolbar : Fragment(){
         else if(state == BottomSheetBehavior.STATE_COLLAPSED){
             multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
         }
+    }
+
+    private fun Context.hideKeyboard(view: View) {
+        val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     /*
