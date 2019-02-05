@@ -4,6 +4,7 @@
     android:id="@+id/fragment_dramatization_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
     <LinearLayout
