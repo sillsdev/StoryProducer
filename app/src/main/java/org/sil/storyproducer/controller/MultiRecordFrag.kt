@@ -75,7 +75,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag() {
      */
     protected open fun setToolbar() {
         val recordingListener = object : RecordingListener {
-            override fun onStoppedRecordingOrPlayback() {
+            override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
                 //updatePlayBackPath()
             }
 

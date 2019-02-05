@@ -100,7 +100,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     }
 
     interface RecordingListener {
-        fun onStoppedRecordingOrPlayback()
+        fun onStoppedRecordingOrPlayback(isRecording: Boolean = false)
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -177,7 +177,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     protected open fun stopRecording() {
         voiceRecorder.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecordingOrPlayback()
+        recordingListener.onStoppedRecordingOrPlayback(true)
     }
 
     private fun createToolbar() {
