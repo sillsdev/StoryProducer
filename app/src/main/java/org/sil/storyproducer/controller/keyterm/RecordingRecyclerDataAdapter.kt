@@ -27,9 +27,6 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindView(recordings[position])
-        if(position == 0){
-            holder.itemView.requestFocus()
-        }
     }
 
     override fun getItemCount(): Int = recordings.size
