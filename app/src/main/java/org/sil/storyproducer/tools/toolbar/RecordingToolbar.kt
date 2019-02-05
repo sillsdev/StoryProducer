@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.support.v4.widget.Space
 import android.view.View
 import android.widget.ImageButton
@@ -219,6 +220,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                 }
             }
         }
+        setToolbarButtonIds()
 
         val playBackFileExist = storyRelPathExists(activity,Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
@@ -234,6 +236,12 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
             sendAudioButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
         setOnClickListeners()
+    }
+
+    private fun setToolbarButtonIds() {
+        micButton.id = org.sil.storyproducer.R.id.start_recording_button
+        playButton.id = org.sil.storyproducer.R.id.play_recording_button
+        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
     }
 
     /**
@@ -581,13 +589,20 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
      * @param delay     The time that will be delayed in ms if isDelayed is true.
      */
     protected fun startRecordingAnimation(isDelayed: Boolean, delay: Int) {
-        if (colorHandler != null && colorHandlerRunnable != null) {
-            if (isDelayed) {
-                colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
-            } else {
-                colorHandler!!.post(colorHandlerRunnable)
+        if (isRecordingAnimationEnabled())
+        {
+            if (colorHandler != null && colorHandlerRunnable != null) {
+                if (isDelayed) {
+                    colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
+                } else {
+                    colorHandler!!.post(colorHandlerRunnable)
+                }
             }
         }
+    }
+
+    private fun isRecordingAnimationEnabled(): Boolean {
+        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
     }
 
     /**

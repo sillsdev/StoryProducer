@@ -4,9 +4,9 @@ import android.app.Activity
 import android.app.Instrumentation
 import android.content.Intent
 import android.net.Uri
+import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
-import android.util.Log
 import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.intent.Intents
@@ -77,13 +77,32 @@ class TranslatePhaseTest {
 
     @Test
     fun C_should_BeAbleToRecordTranslationForASlide() {
-        // press record button
-        // expect toast notification and/or color change
-        // wait a little bit
-        // press stop button
-        // expect recordings menu to be visible
-        // press recordings menu
-        // expect an entry to exist
+        // The "pulsing" animation on the recording toolbar causes the
+        // Espresso click to hang, so we disable it for the test.
+        disableCustomAnimations()
+        pressMicButton()
+        giveAppTimeToRecordAudio()
+        pressMicButton()
+        enableCustomAnimations()
+    }
+
+    private fun enableCustomAnimations() {
+        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation))
+    }
+
+    private fun disableCustomAnimations() {
+        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit()
+        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
+        preferencesEditor.commit()
+    }
+
+    private fun pressMicButton() {
+        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+    }
+
+    private fun giveAppTimeToRecordAudio() {
+        Thread.sleep(200)
     }
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
