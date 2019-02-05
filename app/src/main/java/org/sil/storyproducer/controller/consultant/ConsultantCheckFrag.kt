@@ -1,24 +1,19 @@
 package org.sil.storyproducer.controller.consultant
 
-import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v7.app.AlertDialog
+import android.support.v7.widget.Toolbar
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
-
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
-import org.sil.storyproducer.controller.logging.LogView
+import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -28,6 +23,8 @@ import org.sil.storyproducer.model.Workspace
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
 class ConsultantCheckFrag : SlidePhaseFrag() {
+
+    var logDialog: AlertDialog? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -102,10 +99,39 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun setLogsButton(button: ImageButton) {
         //TODO: use non-deprecated method; currently used to support older devices
         button.background = VectorDrawableCompat.create(resources, R.drawable.ic_logs_blue, null)
-        button.setOnClickListener { LogView.makeModal(context) }
+        button.setOnClickListener {
+            makeLogView()
+            logDialog?.show()
+        }
     }
 
-    /**
+    private fun makeLogView() {
+        val alertDialog = android.support.v7.app.AlertDialog.Builder(context!!)
+        val linf = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
+
+        val listView = dialogLayout!!.findViewById<ListView>(R.id.log_list_view)
+        val lla = LogListAdapter(context!!, slideNum)
+        listView.adapter = lla
+        val tb = dialogLayout.findViewById<Toolbar>(R.id.toolbar2)
+        //Note that user-facing slide number is 1-based while it is 0-based in code.
+        tb.title = context!!.getString(R.string.logging_slide_log_view_title, slideNum)
+        val exit = dialogLayout.findViewById<ImageButton>(R.id.exitButton)
+        val learnCB = dialogLayout.findViewById<CheckBox>(R.id.LearnCheckBox)
+        val draftCB = dialogLayout.findViewById<CheckBox>(R.id.DraftCheckBox)
+        val comChkCB = dialogLayout.findViewById<CheckBox>(R.id.CommunityCheckCheckBox)
+        learnCB.setOnCheckedChangeListener { _, checked -> lla.updateList(checked, draftCB.isChecked, comChkCB.isChecked) }
+        draftCB.setOnCheckedChangeListener { _, checked -> lla.updateList(learnCB.isChecked, checked, comChkCB.isChecked) }
+        comChkCB.setOnCheckedChangeListener { _, checked -> lla.updateList(learnCB.isChecked, draftCB.isChecked, checked) }
+        alertDialog.setView(dialogLayout)
+        logDialog = alertDialog.create()
+        exit.setOnClickListener {
+            logDialog?.dismiss()
+        }
+    }
+
+
+        /**
      * Checks each slide of the story to see if all slides have been approved
      * @return true if all approved, otherwise false
      */
@@ -133,7 +159,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 LinearLayout.LayoutParams.MATCH_PARENT)
         // Apply layout properties
         password.layoutParams = params
-        val passwordDialog = AlertDialog.Builder(context)
+        val passwordDialog = AlertDialog.Builder(context!!)
                 .setTitle(getString(R.string.consultant_password_title))
                 .setMessage(getString(R.string.consultant_password_message))
                 .setView(password)
