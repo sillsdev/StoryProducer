@@ -60,10 +60,6 @@ class AudioPlayer {
         fileExists = false
     }
 
-    /**
-     * Only sets the path for the audio to
-     * @param path String path for the audio
-     */
     fun setSource(context: Context, uri: Uri) : Boolean {
         try {
             mPlayer.release()

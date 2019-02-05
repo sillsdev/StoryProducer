@@ -434,14 +434,14 @@ public class BackTranslationFrag extends Fragment {
         switch (isChecked) {
             case 1:
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
+                button.setBackground(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_green, null));
                 break;
             case -1:
                 //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_gray, null));
+                button.setBackground(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_gray, null));
                 break;
             default:
-                button.setBackgroundDrawable(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
+                button.setBackground(VectorDrawableCompat.create(getResources(), R.drawable.ic_checkmark_yellow, null));
                 break;
         }
     }

@@ -69,10 +69,6 @@ class CommunityCheckFrag : MultiRecordFrag() {
         recordingToolbar!!.stopToolbarMedia()
     }
 
-    /**
-     * Stops the toolbar from recording or playing back media.
-     * Used in [DraftListRecordingsModal]
-     */
     override fun stopPlayBackAndRecording() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()

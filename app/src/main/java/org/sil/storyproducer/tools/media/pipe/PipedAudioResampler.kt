@@ -229,7 +229,3 @@ class PipedAudioResampler
         }
     }
 }
-/**
- * Create resampler, maintaining channel count from source audio stream.
- * @param sampleRate sample rate of the new, resampled audio stream.
- */

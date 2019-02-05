@@ -390,11 +390,6 @@ class CreateActivity : PhaseBaseActivity() {
         setSpinnerValue()
     }
 
-    /**
-     * Attempt to set the value of the spinner to the given string value based on options available.
-     * @param spinner spinner to update value.
-     * @param value new value of spinner.
-     */
     private fun setSpinnerValue() {
         val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
         val temp = prefs.getString(PREF_KEY_RESOLUTION, null)?.toIntOrNull()

@@ -16,11 +16,11 @@ import java.io.IOException
 class PipedAudioLooper
 /**
  * Create looper from an audio file with specified duration, resampling the audio stream.
- * @param path path of the audio file.
- * @param durationUs desired duration in microseconds.
+ * @param mPath path of the audio file.
+ * @param mDurationUs desired duration in microseconds.
  * @param sampleRate desired sample rate.
  * @param channelCount desired channel count.
- * @param volumeModifier volume scaling factor.
+ * @param mVolumeModifier volume scaling factor.
  */
 @JvmOverloads constructor(private val context: Context, private val mPath: String, private val mDurationUs: Long, sampleRate: Int = 0, channelCount: Int = 0, private val mVolumeModifier: Float = 1f) : PipedAudioShortManipulator() {
 
@@ -108,15 +108,3 @@ class PipedAudioLooper
         private val TAG = "PipedAudioLooper"
     }
 }
-/**
- * Create looper from an audio file with specified duration, using the file's format.
- * @param path path of the audio file.
- * @param durationUs desired duration in microseconds.
- */
-/**
- * Create looper from an audio file with specified duration, resampling the audio stream.
- * @param path path of the audio file.
- * @param durationUs desired duration in microseconds.
- * @param sampleRate desired sample rate.
- * @param channelCount desired channel count.
- */

@@ -23,7 +23,7 @@ import kotlin.math.min
 class PipedAudioConcatenator
 /**
  * Create concatenator with specified transition time, resampling the audio stream.
- * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
+ * @param mTransitionUs length of audio transitions (dead space between audio sources) in microseconds.
  * @param sampleRate desired sample rate.
  * @param channelCount desired channel count.
  */
@@ -386,9 +386,3 @@ class PipedAudioConcatenator
         private val TAG = "PipedAudioConcatenator"
     }
 }
-/**
- *
- * Add a source without an expected duration. The audio stream will be used in its entirety.
- *
- * @param sourcePath source audio path.
- */
