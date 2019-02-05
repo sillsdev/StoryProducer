@@ -8,8 +8,8 @@ import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
-import android.support.v4.view.ViewPager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +18,9 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity
+import org.sil.storyproducer.controller.keyterm.dpToPx
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -106,7 +106,7 @@ class RecordingToolbar : Fragment(){
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
-            recordingListener.onStoppedRecordingOrPlayback()
+            recordingListener.onStoppedRecordingOrPlayback(false)
         })
     }
 
@@ -120,7 +120,7 @@ class RecordingToolbar : Fragment(){
     }
 
     interface RecordingListener {
-        fun onStoppedRecordingOrPlayback()
+        fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean)
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -162,7 +162,7 @@ class RecordingToolbar : Fragment(){
         if (audioPlayer.isAudioPlaying) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
-            recordingListener.onStoppedRecordingOrPlayback()
+            recordingListener.onStoppedRecordingOrPlayback(false)
         }
     }
 
@@ -200,7 +200,7 @@ class RecordingToolbar : Fragment(){
     private fun stopRecording() {
         voiceRecorder?.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecordingOrPlayback()
+        recordingListener.onStoppedRecordingOrPlayback(true)
     }
 
     /**
@@ -221,6 +221,11 @@ class RecordingToolbar : Fragment(){
         for (i in drawables.indices) {
             if (buttonToDisplay[i]) {
                 imageButtons[i].setBackgroundResource(drawables[i])
+                /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
+                   A down arrow might be clearer
+                if(i==2 && Workspace.activePhase.phaseType == PhaseType.KEYTERM && BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
+                    imageButtons[i].setBackgroundResource(R.drawable.ic_close_white_48dp)
+                }*/
                 imageButtons[i].visibility = View.VISIBLE
                 imageButtons[i].layoutParams = layoutParams
                 rootView?.addView(imageButtons[i])
@@ -322,20 +327,12 @@ class RecordingToolbar : Fragment(){
                                 //overwrite audio
                                 recordAudio(recordingRelPath)
                             }.create()
-                    if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                        if (storyRelPathExists(activity!!, recordingRelPath, "keyterms")) {
-                            dialog.show()
-                        } else {
-                            recordAudio(recordingRelPath)
-                        }
+                    if (storyRelPathExists(activity!!, recordingRelPath) &&
+                            //we may be overwriting things in other phases, but we do not care.
+                            Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                        dialog.show()
                     } else {
-                        if (storyRelPathExists(activity!!, recordingRelPath) &&
-                                //we may be overwriting things in other phases, but we do not care.
-                                Workspace.activePhase.phaseType == PhaseType.LEARN) {
-                            dialog.show()
-                        } else {
-                            recordAudio(recordingRelPath)
-                        }
+                        recordAudio(recordingRelPath)
                     }
                 }
             }
@@ -346,7 +343,7 @@ class RecordingToolbar : Fragment(){
                 if (audioPlayer.isAudioPlaying) {
                     audioPlayer.stopAudio()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-                    recordingListener.onStoppedRecordingOrPlayback()
+                    recordingListener.onStoppedRecordingOrPlayback(false)
                 } else {
                     stopToolbarMedia()
                     recordingListener.onStartedRecordingOrPlayback(false)
@@ -388,7 +385,18 @@ class RecordingToolbar : Fragment(){
                     recordingListener.onStartedRecordingOrPlayback(false)
                     RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 } else {
-                    activity?.findViewById<ViewPager>(R.id.viewPager)?.currentItem = 1
+                    if(BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                        multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
+                    }
+                    else{
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+                        /* TODO Disabled temporarily because buttons don't get updated every time the toolbar gets moved/scrolled (when not using button to scroll)
+                           A down arrow might be clearer
+                        multiRecordButton.setBackgroundResource(R.drawable.ic_close_white_48dp)
+                        */
+                        BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet).peekHeight = dpToPx(48, activity!!)
+                    }
                 }
             }
             multiRecordButton.setOnClickListener(multiRecordModalButtonListener)

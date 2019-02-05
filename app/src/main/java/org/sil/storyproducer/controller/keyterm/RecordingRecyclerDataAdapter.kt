@@ -1,6 +1,8 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.app.Activity
 import android.content.Context
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +12,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.Workspace
 
-class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
+class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: LinearLayout) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
 
     var onItemClick: ((String) -> Unit)? = null
     var onItemLongClick: ((Int) -> Unit)? = null
@@ -74,6 +76,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
                     frameLayoutChildItem.removeAllViews()
+                    BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, context as Activity)
                     initComment()
                 }
             }

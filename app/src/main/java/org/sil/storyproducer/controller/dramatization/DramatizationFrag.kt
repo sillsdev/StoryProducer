@@ -70,7 +70,7 @@ class DramatizationFrag : MultiRecordFrag() {
         }
     }
 
-    override fun onStoppedRecordingOrPlayback() {}
+    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {}
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
         stopPlayBackAndRecording()
     }

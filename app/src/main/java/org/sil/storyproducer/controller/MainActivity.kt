@@ -54,9 +54,6 @@ class MainActivity : AppCompatActivity(), Serializable {
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
 
         this.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-
-        Workspace.updateStories(this)
-        Workspace.importKeyterms(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -11,10 +11,12 @@ import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.TextView
+import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.keyterm.KeyTermMainFrag
 import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -293,20 +295,21 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                 Workspace.activeKeyterm.backTranslations.removeAt(position)
                 deleteStoryFile(context, name, "keyterms")
                 if (name == Workspace.activePhase.getChosenFilename()) {
-                    if (filenames.size > 0)
+                    if (filenames.size > 0) {
                         Workspace.activePhase.setChosenFilename(filenames.last())
+                    }
                     else {
                         Workspace.activePhase.setChosenFilename("")
                         toolbar?.setupToolbarButtons()
                         dialog?.dismiss()
                     }
-                    (toolbar?.parentFragment as KeyTermMainFrag).view?.findViewById<FrameLayout>(R.id.backtranslation_comment)?.removeAllViews()
                 }
             } else {
                 deleteStoryFile(context, "$PROJECT_DIR/$name")
                 if ("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()) {
-                    if (filenames.size > 0)
+                    if (filenames.size > 0) {
                         Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
+                    }
                     else {
                         Workspace.activePhase.setChosenFilename("")
                         toolbar?.setupToolbarButtons()

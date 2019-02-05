@@ -15,8 +15,6 @@ import org.sil.storyproducer.tools.file.getStoryImage
 
 class StoryListFrag : Fragment() {
 
-    private var listView: ListView? = null
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
@@ -26,17 +24,14 @@ class StoryListFrag : Fragment() {
 
         val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 
-        // Get ListView object from xml
-        listView = activity!!.findViewById(R.id.story_list_view)
-
         val adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
 
-        listView = lfview.findViewById(R.id.story_list_view)
+        val listView = lfview.findViewById<ListView>(R.id.story_list_view)
         // Assign adapter to ListView
-        listView!!.adapter = adapter
+        listView.adapter = adapter
 
         //TODO remove "switchtostory" call.  That is still from the old template way.
-        listView!!.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
+        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
 
         return lfview
     }
