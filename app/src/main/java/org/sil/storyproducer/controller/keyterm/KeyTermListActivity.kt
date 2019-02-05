@@ -160,6 +160,7 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
         holder.item.setOnClickListener {
             Workspace.activeKeyterm = Workspace.termToKeyterm[myDataset[position]]!!
             val intent = Intent(context , KeyTermActivity::class.java)
+            intent.putExtra("ClickedTerm", Workspace.activeKeyterm.term)
             context.startActivity(intent)
         }
     }

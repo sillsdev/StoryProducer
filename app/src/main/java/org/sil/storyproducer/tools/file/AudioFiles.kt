@@ -11,7 +11,7 @@ import kotlin.math.max
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
  */
 
-internal val AUDIO_EXT = ".m4a"
+internal const val AUDIO_EXT = ".m4a"
 
 /**
  * Creates a relative path for recorded audio based upon the phase, slide number and timestamp.
@@ -20,12 +20,12 @@ internal val AUDIO_EXT = ".m4a"
  * @return the path generated, or an empty string if there is a failure.
  */
 fun assignNewAudioRelPath() : String {
-    if(Workspace.activeStory.title == "") return ""
     val phase = Workspace.activePhase
     val phaseName = phase.getShortName()
+    if(Workspace.activeStory.title == "" && phase.phaseType != PhaseType.KEYTERM) return ""
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
-    var relPath: String = ""
+    var relPath = ""
     val files = Workspace.activePhase.getRecordedAudioFiles()
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so
@@ -33,7 +33,7 @@ fun assignNewAudioRelPath() : String {
     when(phase.phaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
-            relPath = "$PROJECT_DIR/$phaseName" + AUDIO_EXT
+            relPath = "$PROJECT_DIR/$phaseName$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
