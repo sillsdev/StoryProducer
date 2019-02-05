@@ -124,7 +124,12 @@ fun getText(context: Context, relPath: String) : String? {
 
 fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
     val pfd = getPFD(context, relPath, mimeType,"w")
-    return ParcelFileDescriptor.AutoCloseOutputStream(pfd)
+    var oStream: OutputStream? = null
+    try {
+        oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
+    } catch (e:java.lang.Exception) {}
+
+    return oStream
 }
 
 fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {

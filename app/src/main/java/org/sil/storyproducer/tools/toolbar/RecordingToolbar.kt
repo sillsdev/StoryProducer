@@ -285,10 +285,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                     val dialog = AlertDialog.Builder(activity)
                             .setTitle(activity.getString(R.string.overwrite))
                             .setMessage(activity.getString(R.string.learn_phase_overwrite))
-                            .setNegativeButton(activity.getString(R.string.no)) { dialog, id ->
+                            .setNegativeButton(activity.getString(R.string.no)) { _, _ ->
                                 //do nothing
                             }
-                            .setPositiveButton(activity.getString(R.string.yes)) { dialog, id ->
+                            .setPositiveButton(activity.getString(R.string.yes)) { _, _ ->
                                 //overwrite audio
                                 recordAudio(recordingRelPath)
                             }.create()
