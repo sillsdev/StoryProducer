@@ -3,8 +3,8 @@ package org.sil.storyproducer.model
 import android.content.Context
 import org.json.JSONException
 import org.json.JSONObject
-import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getChildOutputStream
+import org.sil.storyproducer.tools.file.getText
 
 val REGISTRATION_FILENAME = "registration.json"
 

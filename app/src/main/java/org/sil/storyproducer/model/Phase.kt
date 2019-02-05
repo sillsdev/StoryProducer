@@ -1,7 +1,5 @@
 package org.sil.storyproducer.model
 
-import android.content.Context
-import android.net.Uri
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -10,7 +8,6 @@ import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
-import java.io.File
 
 
 enum class PhaseType {
@@ -85,11 +82,6 @@ class Phase(val phaseType: PhaseType) {
         }
 
     }
-    /**
-     * get the title for the phase
-     * @return return the title
-     */
-    fun getName() : String {return phaseType.toString().toLowerCase()}
 
     fun getPrettyName() : String {
         return when (phaseType) {

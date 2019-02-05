@@ -1,15 +1,12 @@
 package org.sil.storyproducer.tools.media.pipe
 
 import android.content.Context
-import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import org.sil.storyproducer.tools.file.getStoryUri
-
 import org.sil.storyproducer.tools.media.MediaHelper
-
 import java.io.IOException
-import java.util.LinkedList
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -274,7 +271,7 @@ class PipedAudioConcatenator
                     isDone = true
                     mCurrentState = ConcatState.DONE
                 } else {
-                    mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs
+                    mSourceStart += mSourceExpectedDuration + transitionUs
 
                     mSource = nextSource
                     mSourceExpectedDuration = catExpectedDurations.remove()

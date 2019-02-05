@@ -51,7 +51,7 @@ class RegistrationActivityTest {
         val returnedIntent = Intent()
         // An empty Uri will cause Workspace.setupWorkspacePass to silently fail.
         // This allows the test to proceed with a manually set workspace directory.
-        returnedIntent.setData(Uri.EMPTY)
+        returnedIntent.data = Uri.EMPTY
         intending(expectedIntent).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, returnedIntent))
     }
 }

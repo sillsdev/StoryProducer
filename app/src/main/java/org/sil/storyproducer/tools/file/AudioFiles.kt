@@ -1,12 +1,6 @@
 package org.sil.storyproducer.tools.file
 
 import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.StorySharedPreferences
-
-
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.math.max
 
 /**
@@ -27,7 +21,7 @@ fun assignNewAudioRelPath() : String {
     val phaseName = phase.getShortName()
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
-    var relPath: String = ""
+    var relPath = ""
     val files = Workspace.activePhase.getRecordedAudioFiles()
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so

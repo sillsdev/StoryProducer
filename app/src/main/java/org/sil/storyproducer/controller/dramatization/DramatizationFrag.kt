@@ -2,25 +2,23 @@ package org.sil.storyproducer.controller.dramatization
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.TEXT_ALIGNMENT_CENTER
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
-
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-import java.util.*
 
 
 class DramatizationFrag : MultiRecordFrag() {

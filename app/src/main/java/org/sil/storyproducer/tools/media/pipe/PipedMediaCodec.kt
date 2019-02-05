@@ -3,12 +3,9 @@ package org.sil.storyproducer.tools.media.pipe
 import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
-
 import org.sil.storyproducer.tools.media.MediaHelper
-
 import java.nio.ByteBuffer
-import java.util.LinkedList
-import java.util.Queue
+import java.util.*
 
 /**
  *

@@ -2,22 +2,18 @@ package org.sil.storyproducer.controller.draft
 
 import android.app.Activity
 import android.content.Intent
-import android.media.browse.MediaBrowser
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.FileProvider
-import android.support.v4.media.MediaBrowserCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.BuildConfig.APPLICATION_ID
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.model.SlideType

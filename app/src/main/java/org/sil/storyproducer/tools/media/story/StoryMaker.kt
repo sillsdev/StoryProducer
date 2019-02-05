@@ -19,15 +19,15 @@ import java.io.File
 class StoryMaker
 /**
  * Create StoryMaker.
- * @param output output video file.
- * @param outputFormat the format of the output media file
+ * @param mOutputFile output video file.
+ * @param mOutputFormat the format of the output media file
  * (from [android.media.MediaMuxer.OutputFormat]).
- * @param videoFormat desired output video format.
- * @param audioFormat desired output audio format.
- * @param pages pages of this story.
- * @param audioTransitionUs transition duration, in microseconds, between narration segments.
+ * @param mVideoFormat desired output video format.
+ * @param mAudioFormat desired output audio format.
+ * @param mPages pages of this story.
+ * @param mAudioTransitionUs transition duration, in microseconds, between narration segments.
  * Note: this helps drive length of video.
- * @param slideCrossFadeUs cross-fade duration, in microseconds, between page images.
+ * @param mSlideCrossFadeUs cross-fade duration, in microseconds, between page images.
  */
 (private val context: Context, private val mOutputFile: File, private val mOutputFormat: Int, private val mVideoFormat: MediaFormat?, private val mAudioFormat: MediaFormat,
  private val mPages: Array<StoryPage>, private val mAudioTransitionUs: Long, private val mSlideCrossFadeUs: Long) : Closeable {

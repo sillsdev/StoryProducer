@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller.learn
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -9,20 +7,17 @@ import android.support.v4.content.res.ResourcesCompat
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
-
-import kotlin.math.max
 import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity() {

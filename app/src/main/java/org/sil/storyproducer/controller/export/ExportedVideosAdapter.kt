@@ -8,13 +8,10 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
-import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.getWorkspaceUri
-
-import java.util.ArrayList
+import java.util.*
 
 class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
 

@@ -68,20 +68,8 @@ class TextOverlay(private val mText: String) {
         }
     }
 
-    fun setTextColor(color: Int) {
-        mTextColor = color
-        if (mTextPaint != null) {
-            mTextPaint!!.color = mTextColor
-        }
-    }
-
     fun setPadding(padding: Int) {
         mPadding = padding
-        mIsDirty = true
-    }
-
-    fun setHorizontalAlign(align: Layout.Alignment) {
-        mHorizontalAlign = align
         mIsDirty = true
     }
 

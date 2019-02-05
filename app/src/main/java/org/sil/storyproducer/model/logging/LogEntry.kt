@@ -6,11 +6,8 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import java.util.GregorianCalendar
-
-import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 @JsonClass(generateAdapter = true)
 class LogEntry(var dateTimeString: String,

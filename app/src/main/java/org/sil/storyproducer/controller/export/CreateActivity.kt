@@ -9,16 +9,14 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import org.sil.storyproducer.R
 import android.widget.*
-
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import java.util.*
-
 import java.util.regex.Pattern
 
 class CreateActivity : PhaseBaseActivity() {
@@ -68,7 +66,7 @@ class CreateActivity : PhaseBaseActivity() {
                 return@Runnable
             }
 
-            var progress: Double = 0.0
+            var progress = 0.0
             synchronized(storyMakerLock) {
                 //Stop if storyMaker was cancelled by someone else.
                 if (storyMaker == null) {
@@ -87,15 +85,6 @@ class CreateActivity : PhaseBaseActivity() {
             Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
         }
     }
-
-    private val formatExtension: String
-        get() {
-            var ext = ".mp4"
-            if (mRadioButtonDumbPhone!!.isChecked) {
-                ext = ".3gp"
-            }
-            return ext
-        }
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -482,14 +471,11 @@ class CreateActivity : PhaseBaseActivity() {
     companion object {
         private val TAG = "CreateActivity"
 
-        private val LOCATION_MAX_CHAR_DISPLAY = 25
-
         private val BUTTON_LOCK_DURATION_MS: Long = 1000
         private val PROGRESS_MAX = 1000
 
         private val PREF_FILE = "Export_Config"
 
-        private val PREF_KEY_TITLE = "title"
         private val PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music"
         private val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
         private val PREF_KEY_INCLUDE_TEXT = "include_text"
@@ -497,7 +483,6 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_SONG = "include_song"
         private val PREF_KEY_SHORT_NAME = "short_name"
         private val PREF_KEY_RESOLUTION = "resolution"
-        private val PREF_KEY_FILE = "file"
 
         @Volatile
         private var buttonLocked = false

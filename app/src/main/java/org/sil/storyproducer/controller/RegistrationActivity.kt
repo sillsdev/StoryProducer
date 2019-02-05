@@ -4,45 +4,29 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.provider.Settings.Secure
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.provider.DocumentFile
 import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ScrollView
-import android.widget.Spinner
-import android.widget.Toast
-
+import android.widget.*
 import com.android.volley.Request
-import com.android.volley.RequestQueue
 import com.android.volley.Response
-import com.android.volley.VolleyError
 import com.android.volley.toolbox.StringRequest
-
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Registration
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
-
-import java.util.ArrayList
-import java.util.Calendar
-import java.util.HashMap
-import java.util.Stack
-import android.provider.Settings.Secure
-import java.io.File
+import java.util.*
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -93,18 +77,6 @@ open class RegistrationActivity : AppCompatActivity() {
     var js: MutableMap<String, String> = hashMapOf()
 
     private var inputFields: List<View>? = null
-
-    /**
-     * Checks the bundle variables to see if this activity was launched at the app's start.
-     * @return true if this is opening registration, false if not
-     */
-    private// Check to see if registration is first activity
-    val isFirstActivity: Boolean
-        get() {
-            val extras = intent.extras
-            return extras != null && extras.getBoolean(FIRST_ACTIVITY_KEY)
-        }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -187,7 +159,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 databaseEmailField1.requestFocus()
                 for (sectionView in sectionViews) {
                     if (sectionView!!.findFocus() != null) {
-                        sectionView.setVisibility(View.VISIBLE)
+                        sectionView.visibility = View.VISIBLE
                         toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1)
                     }
                 }
@@ -344,7 +316,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     field.requestFocus()
                     for (j in sectionViews.indices) {
                         if (sectionViews[j]!!.findFocus() != null) {
-                            sectionViews[j]!!.setVisibility(View.VISIBLE)
+                            sectionViews[j]!!.visibility = View.VISIBLE
                             headerViews[j]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                             toggleKeyboard(SHOW_KEYBOARD, field)
                             return false
