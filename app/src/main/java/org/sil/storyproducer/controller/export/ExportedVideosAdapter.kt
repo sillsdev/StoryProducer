@@ -77,7 +77,7 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
         val uri = getWorkspaceUri("$VIDEO_DIR/$path")
         //TODO fix this so it actually plays.  Why not?
-        videoIntent.setDataAndNormalize(uri)
+        videoIntent.setDataAndNormalize(uri!!)
         videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
         videoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))

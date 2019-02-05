@@ -111,6 +111,7 @@ class TextOverlay(private val mText: String) {
         mTextWidth = mCanvasWidth - 2 * mPaddingActual
 
         //text
+        //TODO switch to StaticLayout.Builder.obtain when switching to API23.
         mTextLayout = StaticLayout(mText, mTextPaint, mTextWidth,
                 mHorizontalAlign, 1.0f, 0.0f, false)
         //text outline

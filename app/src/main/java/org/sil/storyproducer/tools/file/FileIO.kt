@@ -2,6 +2,7 @@
 package org.sil.storyproducer.tools.file
 
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -143,9 +144,10 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     //build a query to look for the child documents
     //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
-    val childDocs: MutableList<String> = ArrayList()
+    var childDocs: MutableList<String> = ArrayList()
+    val cursor: Cursor
     try {
-        val cursor = context.contentResolver.query(
+        cursor = context.contentResolver.query(
                 DocumentsContract.buildChildDocumentsUriUsingTree(
                         Workspace.workspace.uri,
                         DocumentsContract.getDocumentId(
@@ -153,14 +155,16 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
                                         Uri.encode("/$relPath"))
                         ))
                 , arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
-                null, null, null)
+                null, null, null)!!
         //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
         cursor.moveToFirst()
         do {
             childDocs.add(cursor.getString(0))
             cursor.moveToNext()
         } while ((!cursor.isAfterLast))
-    } catch (e: Exception) { return ArrayList() }
+        cursor.close()
+    } catch (e: Exception) { childDocs = ArrayList() }
+
     return childDocs
 }
 

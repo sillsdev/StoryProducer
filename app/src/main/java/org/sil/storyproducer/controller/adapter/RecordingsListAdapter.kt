@@ -66,8 +66,10 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
     }
 
     private fun setUiForSelectedView(rowView: View, deleteButton: ImageButton, playButton: ImageButton) {
+        //TODO switch to "getColor" with theme when switching to API23.
         rowView.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_light))
-        deleteButton.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_light))      //have to set the background here as well so the corners are the right color
+        //have to set the background here as well so the corners are the right color
+        deleteButton.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_light))
         playButton.setBackgroundColor(context.resources.getColor(android.R.color.holo_blue_light))
     }
 
@@ -113,18 +115,17 @@ class RecordingsListAdapter(context: Context, private val values: Array<String>,
                 .setTitle(context.getString(R.string.rename_title))
                 .setView(newName)
                 .setNegativeButton(context.getString(R.string.cancel), null)
-                .setPositiveButton(context.getString(R.string.save)) { dialog, id ->
-                    val newNameText = newName.text.toString()
+                .setPositiveButton(context.getString(R.string.save)) { _, _ ->
                     val returnCode = listeners.onRenameClick(values[position], newName.text.toString())
                     when (returnCode) {
 
                         RenameCode.SUCCESS -> {
                             listeners.onRenameSuccess()
-                            Toast.makeText(getContext(), context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                         }
-                        RenameCode.ERROR_LENGTH -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
-                        RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
-                        RenameCode.ERROR_UNDEFINED -> Toast.makeText(getContext(), context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_LENGTH -> Toast.makeText(context, context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(context, context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
+                        RenameCode.ERROR_UNDEFINED -> Toast.makeText(context, context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
                     }
                 }.create()
 
@@ -203,8 +204,8 @@ class RecordingsList(private val context: Context, private val parentFragment: M
 
     }
 
-    override fun onRowClick(recordingTitle: String) {
-        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$recordingTitle")
+    override fun onRowClick(name: String) {
+        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
         createRecordingList()
     }
 

@@ -25,7 +25,6 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val slides: MutableList<Slide> = ArrayList()
 
     //Image and transition pattern
-    val reTitle = Pattern.compile("<title>([^<]+)<")
     val reSlideType = Pattern.compile("(^[^\"]+)")
     val reNarration = Pattern.compile("id=\"narration([0-9]+)[^>]+>([^<]+)")
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
@@ -43,7 +42,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
     //add the title slide
     var slide = Slide()
-    val mNarration = reNarration.matcher(pageTextList[0])
+    var mNarration = reNarration.matcher(pageTextList[0])
     if(mNarration.find()) {
         slide.slideType = SlideType.FRONTCOVER
         slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
@@ -67,7 +66,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         }
 
         //narration
-        val mNarration = reNarration.matcher(t)
+        mNarration = reNarration.matcher(t)
         if(mNarration.find()){
             slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
             slide.content = mNarration.group(2)
@@ -135,7 +134,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //If they are there, append to the end of the slides.
     val mOrgOckn = reOrgAckn.matcher(pageTextList[0])
     if(mOrgOckn.find()){
-        val slide = Slide()
+        slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
         val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1))
         slide.content = ""

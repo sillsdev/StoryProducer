@@ -72,10 +72,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
+            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         } else {
             //TODO: use non-deprecated method; currently used to support older devices
-            button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null))
+            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -83,12 +83,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
-                //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null))
+                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
-                //TODO: use non-deprecated method; currently used to support older devices
-                button.setBackgroundDrawable(VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null))
+                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
@@ -135,7 +133,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 LinearLayout.LayoutParams.MATCH_PARENT)
         // Apply layout properties
         password.layoutParams = params
-        val dialog = AlertDialog.Builder(context)
+        val passwordDialog = AlertDialog.Builder(context)
                 .setTitle(getString(R.string.consultant_password_title))
                 .setMessage(getString(R.string.consultant_password_message))
                 .setView(password)
@@ -143,11 +141,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 .setPositiveButton(getString(R.string.submit), null)
                 .create()
         // This is set to dismiss the keyboard manually on dialog dismiss
-        dialog.setOnDismissListener { toggleKeyboard(false, view) }
+        passwordDialog.setOnDismissListener { toggleKeyboard(false, view) }
 
         // This manually sets the submit button listener so that the dialog doesn't always submit
         // If the password is incorrect, we want to stay on the dialog and give an error message
-        dialog.setOnShowListener { dialog ->
+        passwordDialog.setOnShowListener { dialog ->
             val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
                 val passwordText = password.text.toString()
@@ -161,7 +159,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             }
         }
 
-        dialog.show()
+        passwordDialog.show()
         toggleKeyboard(true, password)
     }
 

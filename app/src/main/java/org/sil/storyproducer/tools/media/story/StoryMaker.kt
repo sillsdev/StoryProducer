@@ -111,7 +111,7 @@ class StoryMaker
 
             var soundtrackDuration: Long = 0
             var lastSoundtrack = ""
-            var soundtrackVolume = 0.0f
+            var soundtrackVolume: Float
             var lastSoundtrackVolume = 0.0f
             for (page in mPages) {
                 val narration = page.narrationAudioPath

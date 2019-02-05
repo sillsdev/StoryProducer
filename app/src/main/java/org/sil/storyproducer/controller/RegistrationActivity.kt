@@ -187,7 +187,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 databaseEmailField1.requestFocus()
                 for (sectionView in sectionViews) {
                     if (sectionView!!.findFocus() != null) {
-                        sectionView!!.setVisibility(View.VISIBLE)
+                        sectionView.setVisibility(View.VISIBLE)
                         toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1)
                     }
                 }
@@ -506,7 +506,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_exit_title))
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                 }.create()
 
@@ -522,7 +522,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_skip_title))
                 .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     storeRegistrationInfo()
@@ -568,7 +568,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setTitle(getString(R.string.registration_submit_title))
                 .setMessage(message)
                 .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     Workspace.registration.complete = true
                     storeRegistrationInfo()
                     postRegistrationInfo()
@@ -643,7 +643,7 @@ open class RegistrationActivity : AppCompatActivity() {
             private set
 
         private fun hasPermissions(context: Context?, vararg permissions: String): Boolean {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null) {
                 for (permission in permissions) {
                     if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                         return false
