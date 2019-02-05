@@ -17,10 +17,10 @@ import java.nio.ByteBuffer
 class PipedAudioDecoderMaverick
 /**
  * Create maverick from a file, resampling the audio stream.
- * @param path path of the audio file.
- * @param sampleRate desired sample rate.
- * @param channelCount desired channel count.
- * @param volumeModifier volume scaling factor.
+ * @param mPath path of the audio file.
+ * @param mSampleRate desired sample rate.
+ * @param mChannelCount desired channel count.
+ * @param mVolumeModifier volume scaling factor.
  */
 @JvmOverloads constructor(private val context: Context, private val mPath: String, private val mSampleRate: Int = 0, private val mChannelCount: Int = 0, private val mVolumeModifier: Float = 1f) : PipedMediaByteBufferSource {
 
@@ -91,13 +91,3 @@ class PipedAudioDecoderMaverick
         private val TAG = "PipedAudioMaverick"
     }
 }
-/**
- * Create maverick from a file, using the file's format.
- * @param path The path of the audio file.
- */
-/**
- * Create maverick from a file, resampling the audio stream.
- * @param path path of the audio file.
- * @param sampleRate desired sample rate.
- * @param channelCount desired channel count.
- */

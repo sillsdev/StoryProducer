@@ -53,7 +53,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
     override fun setToolbar() {
         val recordingListener = object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecordingOrPlayback() {
+            override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
                 dispList!!.createRecordingList()
             }
 
@@ -64,15 +64,11 @@ class CommunityCheckFrag : MultiRecordFrag() {
         val rList = RecordingsList(context!!, this)
 
         recordingToolbar = RecordingToolbar(this.activity!!, rootViewToolbar!!, rootView as RelativeLayout,
-                false, false, false, false,  rList , recordingListener, slideNum);
+                false, false, false, false,  rList , recordingListener, slideNum)
         recordingToolbar!!.keepToolbarVisible()
         recordingToolbar!!.stopToolbarMedia()
     }
 
-    /**
-     * Stops the toolbar from recording or playing back media.
-     * Used in [DraftListRecordingsModal]
-     */
     override fun stopPlayBackAndRecording() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()

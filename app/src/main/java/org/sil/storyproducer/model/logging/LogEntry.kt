@@ -6,11 +6,8 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import java.util.GregorianCalendar
-
-import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 
 @JsonClass(generateAdapter = true)
 class LogEntry(var dateTimeString: String,
@@ -28,13 +25,14 @@ class LogEntry(var dateTimeString: String,
 
 }
 
-fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Long){
+fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Long, isRecording: Boolean = false){
     val mResources = context.resources
-    var ret: String
-    if (startSlide == endSlide) {
-        ret = mResources.getQuantityString(R.plurals.logging_numSlides, 1) + " " + (startSlide + 1)
+    var ret = if(isRecording){"Record "}else{"Playback "}
+
+    ret += if (startSlide == endSlide) {
+        mResources.getQuantityString(R.plurals.logging_numSlides, 1) + " " + (startSlide)
     } else {
-        ret = mResources.getQuantityString(R.plurals.logging_numSlides, 2) + " " + (startSlide + 1) + "-" + (endSlide + 1)
+        mResources.getQuantityString(R.plurals.logging_numSlides, 2) + " " + (startSlide) + "-" + (endSlide)
     }
     //format duration:
     val secUnit = mResources.getString(R.string.SECONDS_ABBREVIATION)

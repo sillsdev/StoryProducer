@@ -1,15 +1,12 @@
 package org.sil.storyproducer.tools.media.pipe
 
 import android.content.Context
-import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import org.sil.storyproducer.tools.file.getStoryUri
-
 import org.sil.storyproducer.tools.media.MediaHelper
-
 import java.io.IOException
-import java.util.LinkedList
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,7 +20,7 @@ import kotlin.math.min
 class PipedAudioConcatenator
 /**
  * Create concatenator with specified transition time, resampling the audio stream.
- * @param transitionUs length of audio transitions (dead space between audio sources) in microseconds.
+ * @param mTransitionUs length of audio transitions (dead space between audio sources) in microseconds.
  * @param sampleRate desired sample rate.
  * @param channelCount desired channel count.
  */
@@ -274,7 +271,7 @@ class PipedAudioConcatenator
                     isDone = true
                     mCurrentState = ConcatState.DONE
                 } else {
-                    mSourceStart = mSourceStart + mSourceExpectedDuration + transitionUs
+                    mSourceStart += mSourceExpectedDuration + transitionUs
 
                     mSource = nextSource
                     mSourceExpectedDuration = catExpectedDurations.remove()
@@ -386,9 +383,3 @@ class PipedAudioConcatenator
         private val TAG = "PipedAudioConcatenator"
     }
 }
-/**
- *
- * Add a source without an expected duration. The audio stream will be used in its entirety.
- *
- * @param sourcePath source audio path.
- */

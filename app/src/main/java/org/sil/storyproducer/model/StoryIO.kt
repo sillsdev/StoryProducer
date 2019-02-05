@@ -2,7 +2,9 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.support.v4.provider.DocumentFile
+import android.support.v7.app.AlertDialog
 import com.squareup.moshi.Moshi
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildOutputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.sil.storyproducer.tools.file.storyRelPathExists
@@ -17,8 +19,10 @@ fun Story.toJson(context: Context){
     val oStream = getStoryChildOutputStream(context,
             PROJECT_DIR + "/" + PROJECT_FILE,"",this.title)
     if(oStream != null) {
-        oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
-        oStream.close()
+        try {
+            oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
+            oStream.close()
+        }catch(e:java.lang.Exception){}
     }
 }
 

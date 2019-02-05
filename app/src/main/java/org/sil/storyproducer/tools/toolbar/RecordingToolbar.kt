@@ -14,22 +14,20 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.Toast
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.*
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.file.assignNewAudioRelPath
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-
 import java.io.File
 import java.io.IOException
 
 private const val RECORDING_ANIMATION_DURATION = 1500
-private const val STOP_RECORDING_DELAY = 0
 private const val TAG = "AnimationToolbar"
 
 /**
@@ -102,7 +100,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     }
 
     interface RecordingListener {
-        fun onStoppedRecordingOrPlayback()
+        fun onStoppedRecordingOrPlayback(isRecording: Boolean = false)
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 
@@ -179,7 +177,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
     protected open fun stopRecording() {
         voiceRecorder.stop()
         stopRecordingAnimation()
-        recordingListener.onStoppedRecordingOrPlayback()
+        recordingListener.onStoppedRecordingOrPlayback(true)
     }
 
     private fun createToolbar() {
@@ -287,10 +285,10 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                     val dialog = AlertDialog.Builder(activity)
                             .setTitle(activity.getString(R.string.overwrite))
                             .setMessage(activity.getString(R.string.learn_phase_overwrite))
-                            .setNegativeButton(activity.getString(R.string.no)) { dialog, id ->
+                            .setNegativeButton(activity.getString(R.string.no)) { _, _ ->
                                 //do nothing
                             }
-                            .setPositiveButton(activity.getString(R.string.yes)) { dialog, id ->
+                            .setPositiveButton(activity.getString(R.string.yes)) { _, _ ->
                                 //overwrite audio
                                 recordAudio(recordingRelPath)
                             }.create()

@@ -6,15 +6,11 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getChildDocuments
-import android.support.v4.os.HandlerCompat.postDelayed
-
-
 
 
 /**

@@ -3,8 +3,8 @@ package org.sil.storyproducer.model
 import android.content.Context
 import org.json.JSONException
 import org.json.JSONObject
-import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getChildOutputStream
+import org.sil.storyproducer.tools.file.getText
 
 val REGISTRATION_FILENAME = "registration.json"
 
@@ -28,8 +28,10 @@ class Registration{
     fun save(context: Context){
         val oStream = getChildOutputStream(context,REGISTRATION_FILENAME,"")
         if(oStream != null) {
-            oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
-            oStream.close()
+            try {
+                oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
+                oStream.close()
+            }catch(e:Exception){}
         }
     }
 

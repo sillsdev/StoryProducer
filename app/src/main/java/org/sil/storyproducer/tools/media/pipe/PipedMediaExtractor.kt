@@ -21,8 +21,8 @@ import java.nio.ByteBuffer
 class PipedMediaExtractor
 /**
  * Create extractor from specified file.
- * @param path path of the media file.
- * @param type (audio/video) track to select from file.
+ * @param mPath path of the media file.
+ * @param mType (audio/video) track to select from file.
  */
 (private val context: Context, private val mPath: String, private val mType: MediaHelper.MediaType) : PipedMediaByteBufferSource {
 

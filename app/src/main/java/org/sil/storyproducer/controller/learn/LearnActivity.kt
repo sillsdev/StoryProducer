@@ -1,7 +1,5 @@
 package org.sil.storyproducer.controller.learn
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -9,20 +7,17 @@ import android.support.v4.content.res.ResourcesCompat
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.BitmapScaler
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
-
-import kotlin.math.max
 import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity() {
@@ -42,7 +37,8 @@ class LearnActivity : PhaseBaseActivity() {
     private var recordingToolbar: RecordingToolbar? = null
 
     private var numOfSlides: Int = 0
-    private var startTime: Long = -1
+    private var seekbarStartTime: Long = -1
+    private var logStartTime: Long = -1
     private var curPos: Int = -1 //set to -1 so that the first slide will register as "different"
     private val slideDurations: MutableList<Int> = ArrayList()
     private val slideStartTimes: MutableList<Int> = ArrayList()
@@ -67,8 +63,7 @@ class LearnActivity : PhaseBaseActivity() {
                 if (fromUser) {
                     if(recordingToolbar!!.isRecordingOrPlaying){
                         //When recording, update the picture to the accurate location, preserving
-                        //startTime as the "effective" beginning of recording.
-                        startTime = System.currentTimeMillis() - videoSeekBar!!.progress
+                        seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
                         setSlideFromSeekbar()
                     }else {
                         if (narrationPlayer.isAudioPlaying) {
@@ -90,7 +85,10 @@ class LearnActivity : PhaseBaseActivity() {
                 layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
                 rootView!!, true, false, false, false,
                 null, object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecordingOrPlayback() {
+            override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+                if(isRecording){
+                    makeLogIfNecessary(true)
+                }
                 videoSeekBar!!.progress = 0
                 setSlideFromSeekbar()
             }
@@ -99,7 +97,10 @@ class LearnActivity : PhaseBaseActivity() {
                 videoSeekBar!!.progress = 0
                 curPos = 0
                 //This gets the progress bar to show the right time.
-                startTime = System.currentTimeMillis()
+                seekbarStartTime = System.currentTimeMillis()
+                if(isRecording){
+                    markLogStart()
+                }
             }
         }, 0)
         recordingToolbar!!.keepToolbarVisible()
@@ -170,7 +171,7 @@ class LearnActivity : PhaseBaseActivity() {
             override fun run() {
                 runOnUiThread{
                     if(recordingToolbar!!.isRecordingOrPlaying){
-                        videoSeekBar?.progress = min((System.currentTimeMillis() - startTime).toInt(),videoSeekBar!!.max)
+                        videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
                         videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
@@ -202,17 +203,17 @@ class LearnActivity : PhaseBaseActivity() {
     private fun markLogStart() {
         if(!isLogging) {
             startPos = curPos
-            startTime = System.currentTimeMillis()
+            logStartTime = System.currentTimeMillis()
         }
         isLogging = true
     }
 
-    private fun makeLogIfNecessary(request: Boolean = false) {
-        if ((narrationPlayer.isAudioPlaying || request) && isLogging) {
+    private fun makeLogIfNecessary(isRecording: Boolean = false) {
+        if (isLogging) {
             if (startPos != -1) {
-                val duration = System.currentTimeMillis() - startTime
-                if(duration > 5000){ //you need 5 soconds to listen to anything
-                    saveLearnLog(this, startPos,curPos, duration)
+                val duration: Long = System.currentTimeMillis() - logStartTime
+                if(duration > 2000){ //you need 2 seconds to listen to anything
+                    saveLearnLog(this, startPos,curPos, duration, isRecording)
                 }
                 startPos = -1
             }
@@ -244,6 +245,7 @@ class LearnActivity : PhaseBaseActivity() {
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()
+        seekbarStartTime = System.currentTimeMillis()
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
         narrationPlayer.playAudio()
         playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)

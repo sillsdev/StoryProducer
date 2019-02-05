@@ -29,7 +29,7 @@ public class PagerBaseActivity extends PhaseBaseActivity {
         int slideNum = Workspace.INSTANCE.getActiveSlideNum();
         if(slideNum > 0) mViewPager.setCurrentItem(slideNum);
 
-        mViewPager.setOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler
+        mViewPager.addOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler
     }
 
     @Override

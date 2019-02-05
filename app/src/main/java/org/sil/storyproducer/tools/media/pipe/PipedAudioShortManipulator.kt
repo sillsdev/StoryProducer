@@ -277,8 +277,3 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
         private val MAX_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE
     }
 }
-/**
- * Validate the source as raw audio against channel count and sample rate of this component.
- * @param source to be validated
- * @throws SourceUnacceptableException if source is not raw audio or doesn't match specs
- */

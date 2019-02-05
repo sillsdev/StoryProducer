@@ -17,8 +17,6 @@ import org.sil.storyproducer.model.Workspace
 
 class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
-    private val numOfSlides = 0
-
     /**
      * getItem is called every time the user moves on to the next page to get the next fragment
      *

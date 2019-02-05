@@ -1,12 +1,10 @@
 package org.sil.storyproducer.tools.media
 
-import org.sil.storyproducer.tools.file.getStoryUri
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import org.sil.storyproducer.model.Workspace
-
+import org.sil.storyproducer.tools.file.getStoryUri
 import java.io.IOException
 
 class AudioPlayer {
@@ -14,13 +12,6 @@ class AudioPlayer {
     private var mPlayer: MediaPlayer
     private var fileExists: Boolean = false
     private var onCompletionListenerPersist: MediaPlayer.OnCompletionListener? = null
-
-    /**
-     * returns the duration of the audio as an int
-     * @return the duration of the audio as an int
-     */
-    val audioDurationInSeconds: Int
-        get() = (mPlayer.duration * 0.001).toInt()
 
     var currentPosition: Int
         get() =
@@ -60,10 +51,6 @@ class AudioPlayer {
         fileExists = false
     }
 
-    /**
-     * Only sets the path for the audio to
-     * @param path String path for the audio
-     */
     fun setSource(context: Context, uri: Uri) : Boolean {
         try {
             mPlayer.release()
