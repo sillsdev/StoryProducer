@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -181,10 +183,20 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                         } else {
                             (adapter.adapter as RecyclerDataAdapter).notifyItemRemoved(position)
                         }
+                        if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+                            updateBottomSheetState(context)
+                        }
                     }
                     .create()
 
             dialog.show()
+        }
+
+        private fun updateBottomSheetState(context: Context){
+            val bottomSheetBehavior = BottomSheetBehavior.from((context as KeyTermActivity).bottomSheet)
+            if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
 
         /**

@@ -65,6 +65,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 initSubmit()
             }
         }
+
         private fun initSubmit(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childSubmit)
@@ -82,6 +83,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 }
             }
         }
+
         private fun initComment(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childComment)
