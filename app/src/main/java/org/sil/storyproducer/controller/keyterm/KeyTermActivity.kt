@@ -169,7 +169,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             R.id.helpButton -> {
                 val dialog = AlertDialog.Builder(this)
                         .setTitle(getString(R.string.help))
-                        .setMessage(R.string.keyterm_help)
+                        .setMessage("${Workspace.activePhase.getPrettyName()} Help")
                         .create()
                 dialog.show()
                 true

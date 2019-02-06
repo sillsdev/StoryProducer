@@ -74,7 +74,7 @@ class KeyTermListActivity : AppCompatActivity() {
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
                         .setTitle(getString(R.string.help))
-                        .setMessage(R.string.keyterm_help)
+                        .setMessage("Keyterm List Help")
                         .create()
                 alert.show()
                 true

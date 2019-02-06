@@ -35,6 +35,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
     var onItemLongClick: ((Int) -> Unit)? = null
     var onPlayClick: ((String, ImageButton) -> Unit)? = null
     var onDeleteClick: ((String, Int) -> Unit)? = null
+    private var selectedPos = RecyclerView.NO_POSITION
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
@@ -48,26 +49,31 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioText = values?.get(position)
         if (audioText != null) {
+            if (Workspace.activePhase.getChosenFilename().contains(audioText)) {
+                val color = ContextCompat.getColor(holder.itemView.context, R.color.primary)
+                holder.itemView.setBackgroundColor(color)
+                selectedPos = position
+            }
+            else{
+                val color = ContextCompat.getColor(holder.itemView.context, R.color.black)
+                holder.itemView.setBackgroundColor(color)
+            }
             holder.bindView(audioText)
         }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        init {
+        fun bindView(text: String) {
             itemView.setOnClickListener {
+                notifyItemChanged(selectedPos)
+                selectedPos = adapterPosition
+                notifyItemChanged(selectedPos)
                 onItemClick?.invoke(values?.get(adapterPosition).toString())
             }
             itemView.setOnLongClickListener {
                 onItemLongClick?.invoke(adapterPosition)
                 return@setOnLongClickListener true
-            }
-        }
-
-        fun bindView(text: String) {
-            if (Workspace.activePhase.getChosenFilename().contains(text)) {
-                val color = ContextCompat.getColor(itemView.context, R.color.primary)
-                itemView.setBackgroundColor(color)
             }
             val messageButton = itemView.findViewById<TextView>(R.id.audio_comment_title)
             messageButton.text = text
