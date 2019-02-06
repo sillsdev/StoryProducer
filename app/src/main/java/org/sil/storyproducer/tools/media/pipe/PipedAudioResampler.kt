@@ -1,15 +1,11 @@
 package org.sil.storyproducer.tools.media.pipe
 
-import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
-
 import org.sil.storyproducer.tools.media.MediaHelper
-
 import java.io.IOException
 import kotlin.math.floor
 import kotlin.math.max
-import kotlin.math.min
 
 /**
  *
@@ -203,8 +199,6 @@ class PipedAudioResampler
     companion object {
         private val TAG = "PipedAudioResampler"
 
-        private val SOURCE_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE
-
         /**
          *
          * Gets a [PipedMediaByteBufferSource] with the correct sampling.
@@ -229,7 +223,3 @@ class PipedAudioResampler
         }
     }
 }
-/**
- * Create resampler, maintaining channel count from source audio stream.
- * @param sampleRate sample rate of the new, resampled audio stream.
- */

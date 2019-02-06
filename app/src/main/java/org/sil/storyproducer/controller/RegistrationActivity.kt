@@ -78,19 +78,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
     private var inputFields: List<View>? = null
 
-    /**
-     * Checks the bundle variables to see if this activity was launched at the app's start.
-     * @return true if this is opening registration, false if not
-     */
-
-    // Check to see if registration is first activity
-    private val isFirstActivity: Boolean
-        get() {
-            val extras = intent.extras
-            return extras != null && extras.getBoolean(FIRST_ACTIVITY_KEY)
-        }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -484,7 +471,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
 
@@ -504,7 +491,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     storeRegistrationInfo()
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
 

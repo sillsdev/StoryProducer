@@ -20,9 +20,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.*
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.BitmapScaler

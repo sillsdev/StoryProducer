@@ -92,11 +92,6 @@ class Phase(val phaseType: PhaseType) {
         }
 
     }
-    /**
-     * get the title for the phase
-     * @return return the title
-     */
-    fun getName() : String {return phaseType.toString().toLowerCase()}
 
     fun getPrettyName() : String {
         return when (phaseType) {

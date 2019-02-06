@@ -62,16 +62,12 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
         recordingToolbar.hideButtons()
     }
 
-    /**
-     * Stops the toolbar from recording or playing back media.
-     * Used in [DraftListRecordingsModal]
-     */
     override fun stopPlayBackAndRecording() {
         super.stopPlayBackAndRecording()
         recordingToolbar.stopToolbarMedia()
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         //updatePlayBackPath()
     }
 

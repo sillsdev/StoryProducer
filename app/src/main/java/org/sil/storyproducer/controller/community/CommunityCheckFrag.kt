@@ -42,7 +42,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         dispList?.stopAudio()
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         dispList?.updateRecordingList()
         dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
     }
@@ -59,12 +59,9 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
+        recordingToolbar.stopToolbarMedia()
     }
 
-    /**
-     * Stops the toolbar from recording or playing back media.
-     * Used in [DraftListRecordingsModal]
-     */
     override fun stopPlayBackAndRecording() {
         super.stopPlayBackAndRecording()
         dispList!!.stopAudio()

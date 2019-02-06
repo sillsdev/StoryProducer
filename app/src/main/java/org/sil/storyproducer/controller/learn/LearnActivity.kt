@@ -35,7 +35,8 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private var recordingToolbar: RecordingToolbar = RecordingToolbar()
 
     private var numOfSlides: Int = 0
-    private var startTime: Long = -1
+    private var seekbarStartTime: Long = -1
+    private var logStartTime: Long = -1
     private var curPos: Int = -1 //set to -1 so that the first slide will register as "different"
     private val slideDurations: MutableList<Int> = ArrayList()
     private val slideStartTimes: MutableList<Int> = ArrayList()
@@ -61,8 +62,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
                 if (fromUser) {
                     if (recordingToolbar.isRecordingOrPlaying) {
                         //When recording, update the picture to the accurate location, preserving
-                        //startTime as the "effective" beginning of recording.
-                        startTime = System.currentTimeMillis() - videoSeekBar!!.progress
+                        seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
                         setSlideFromSeekbar()
                     } else {
                         if (narrationPlayer.isAudioPlaying) {
@@ -125,6 +125,9 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         recordingToolbar.keepToolbarVisible()
     }
     override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
+        if(isRecording){
+            makeLogIfNecessary(true)
+        }
         videoSeekBar!!.progress = 0
         setSlideFromSeekbar()
     }
@@ -134,7 +137,10 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         videoSeekBar!!.progress = 0
         curPos = 0
         //This gets the progress bar to show the right time.
-        startTime = System.currentTimeMillis()
+        seekbarStartTime = System.currentTimeMillis()
+        if(isRecording){
+            markLogStart()
+        }
     }
 
     public override fun onPause() {
@@ -166,7 +172,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             override fun run() {
                 runOnUiThread{
                     if(recordingToolbar.isRecordingOrPlaying){
-                        videoSeekBar?.progress = min((System.currentTimeMillis() - startTime).toInt(),videoSeekBar!!.max)
+                        videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
                         videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
@@ -198,17 +204,17 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private fun markLogStart() {
         if(!isLogging) {
             startPos = curPos
-            startTime = System.currentTimeMillis()
+            logStartTime = System.currentTimeMillis()
         }
         isLogging = true
     }
 
-    private fun makeLogIfNecessary(request: Boolean = false) {
-        if ((narrationPlayer.isAudioPlaying || request) && isLogging) {
+    private fun makeLogIfNecessary(isRecording: Boolean = false) {
+        if (isLogging) {
             if (startPos != -1) {
-                val duration = System.currentTimeMillis() - startTime
-                if(duration > 5000){ //you need 5 soconds to listen to anything
-                    saveLearnLog(this, startPos,curPos, duration)
+                val duration: Long = System.currentTimeMillis() - logStartTime
+                if(duration > 2000){ //you need 2 seconds to listen to anything
+                    saveLearnLog(this, startPos,curPos, duration, isRecording)
                 }
                 startPos = -1
             }
@@ -240,6 +246,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()
+        seekbarStartTime = System.currentTimeMillis()
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
         narrationPlayer.playAudio()
         playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)

@@ -33,6 +33,7 @@
 
         <LinearLayout
             android:orientation="horizontal"
+            android:baselineAligned="false"
             android:layout_width="match_parent"
             android:layout_height="55dp">
 

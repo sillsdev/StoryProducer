@@ -5,12 +5,10 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.ShortBuffer
 import java.text.DecimalFormat
-import java.text.NumberFormat
 
 /**
  * Provides static methods for miscellaneous low-level media tasks.
@@ -124,18 +122,6 @@ object MediaHelper {
     fun copyFormatIntKey(srcFormat: MediaFormat, destFormat: MediaFormat, key: String) {
         if (srcFormat.containsKey(key)) {
             destFormat.setInteger(key, srcFormat.getInteger(key))
-        }
-    }
-
-    /**
-     * Copy the value of the given (string) attribute from one format to another.
-     * @param srcFormat
-     * @param destFormat
-     * @param key
-     */
-    fun copyMediaFormatStringKey(srcFormat: MediaFormat, destFormat: MediaFormat, key: String) {
-        if (srcFormat.containsKey(key)) {
-            destFormat.setString(key, srcFormat.getString(key))
         }
     }
 

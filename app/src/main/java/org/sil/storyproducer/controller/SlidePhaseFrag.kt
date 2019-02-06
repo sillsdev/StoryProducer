@@ -146,7 +146,6 @@ abstract class SlidePhaseFrag : Fragment() {
      * This function allows the picture to scale with the phone's screen size.
      *
      * @param slideImage    The ImageView that will contain the picture.
-     * @param slideNum The slide number to grab the picture from the files.
      */
     protected fun setPic(slideImage: ImageView) {
 

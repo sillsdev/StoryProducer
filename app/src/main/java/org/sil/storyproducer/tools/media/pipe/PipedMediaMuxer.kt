@@ -24,8 +24,8 @@ import java.nio.ByteBuffer
 class PipedMediaMuxer
 /**
  * Create a muxer.
- * @param relPath the output media file.
- * @param format the format of the output media file
+ * @param mPath the output media file.
+ * @param mFormat the format of the output media file
  * (from [android.media.MediaMuxer.OutputFormat]).
  */
 (private val mPath: String, private val mFormat: Int) : Closeable, PipedMediaByteBufferDest {

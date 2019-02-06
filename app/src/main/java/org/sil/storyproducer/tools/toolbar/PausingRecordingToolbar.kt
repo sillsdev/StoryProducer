@@ -173,9 +173,9 @@
 //                stopRecording()
 //                if (isAppendingOn) {
 //                    try {
-//                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+//                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME)
 //                    } catch (e: FileNotFoundException) {
-//                        Log.e(TAG, "Did not concatenate audio files", e);
+//                        Log.e(TAG, "Did not concatenate audio files", e)
 //                    }
 //                } else {
 //                    isAppendingOn = true
@@ -228,9 +228,9 @@
 //                if (voiceRecorder.isRecording && isAppendingOn) {
 //                    stopRecording()
 //                    try {
-//                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME);
+//                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), AUDIO_TEMP_NAME)
 //                    } catch (e: FileNotFoundException) {
-//                        Log.e(TAG, "Did not concatenate audio files", e);
+//                        Log.e(TAG, "Did not concatenate audio files", e)
 //                    }
 //                } else {
 //                    stopRecording()

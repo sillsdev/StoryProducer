@@ -3,9 +3,7 @@ package org.sil.storyproducer.model
 
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.model.logging.LogEntry
-
 import java.util.*
-import java.util.regex.Pattern
 
 internal const val PROJECT_DIR = "project"
 internal const val VIDEO_DIR = "videos"
@@ -50,19 +48,6 @@ class Story(var title: String, val slides: List<Slide>){
         }
     }
 
-    fun getVideoTitle(existingTitle : String = "") : String {
-        val ovNoPath : MutableList<String> = ArrayList()
-        ovNoPath.add(existingTitle)
-        for (ov in outputVideos){
-            ovNoPath.add(ov.split(".")[0])
-        }
-        if(title !in ovNoPath) return title
-        for(i in 1..100){
-            val temp = "${title}_$i"
-            if(!((temp) in ovNoPath)) return temp
-        }
-        return ""
-    }
 }
 
 fun emptyStory() : Story {return Story("",ArrayList())}

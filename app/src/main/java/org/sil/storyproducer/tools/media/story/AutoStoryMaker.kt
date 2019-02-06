@@ -1,6 +1,5 @@
 package org.sil.storyproducer.tools.media.story
 
-import android.bluetooth.BluetoothClass
 import android.content.Context
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
@@ -10,11 +9,10 @@ import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.*
-
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.copyToWorkspacePath
+import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-
 import java.io.Closeable
 import java.io.File
 import kotlin.math.sqrt

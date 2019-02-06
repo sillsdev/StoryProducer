@@ -6,14 +6,10 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.view.Surface
-
 import org.sil.storyproducer.tools.media.MediaHelper
-
+import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
 import java.io.IOException
-import java.nio.ByteBuffer
-import java.util.LinkedList
-import java.util.NoSuchElementException
-import java.util.Queue
+import java.util.*
 
 /**
  *

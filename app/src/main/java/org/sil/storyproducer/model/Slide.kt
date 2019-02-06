@@ -3,10 +3,9 @@ package org.sil.storyproducer.model
 import android.graphics.Rect
 import android.net.Uri
 import android.text.Layout
-import com.squareup.moshi.*
-
-import com.squareup.moshi.ToJson
 import com.squareup.moshi.FromJson
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.ToJson
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.text.SimpleDateFormat
 import java.util.*
@@ -62,8 +61,9 @@ class Slide{
         val tOverlay = when(slideType) {
             SlideType.FRONTCOVER -> if (origTitle) TextOverlay(content) else TextOverlay(translatedContent)
             SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
-                    "(c) ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}" +
-                    " Creative Commons")
+                    "This video is licensed under a Creative Commons Attribution" +
+                    "-NonCommercial-ShareAlike 4.0 International License " +
+                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}")
             else -> TextOverlay(translatedContent)
         }
         val fontSize : Int = when(slideType){

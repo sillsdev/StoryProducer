@@ -121,7 +121,7 @@ class RecordingToolbar : Fragment(){
     }
 
     interface RecordingListener {
-        fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean)
+        fun onStoppedRecordingOrPlayback(isRecording: Boolean)
         fun onStartedRecordingOrPlayback(isRecording: Boolean)
     }
 

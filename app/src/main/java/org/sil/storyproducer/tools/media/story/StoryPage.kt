@@ -10,16 +10,7 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlay
  * of the page in the video, and the image and Ken Burns effect follow its queues.
  */
 class StoryPage
-/**
- * Create page.
- * @param image picture for the video.
- * @param narrationAudioPath narration for the background of the video.
- * @param duration length of page in microseconds.
- * @param kbfx Ken Burns effect for the image.
- * @param text text for overlaying page.
- * @param soundtrackAudioPath soundtrack for page
- * @param sType soundtrack for page
- */
+
 (val imRelPath: String = "", val narrationAudioPath: String = "", private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect? = null,
  val textOverlay: TextOverlay? = null, val soundtrackAudioPath: String = "", val soundtrackVolume: Float = 0.25f, val sType: SlideType = SlideType.NONE) {
 

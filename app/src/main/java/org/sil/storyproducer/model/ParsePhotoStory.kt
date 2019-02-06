@@ -213,7 +213,7 @@ private fun parseRect(parser: XmlPullParser, rectangleTag: String): Rect {
 }
 
 private fun skipToNextTag(parser: XmlPullParser) {
-    var depth: Int = 1
+    var depth = 1
     while (depth != 0) {
         when (parser.next()) {
             XmlPullParser.END_TAG -> depth--
