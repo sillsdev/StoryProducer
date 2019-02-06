@@ -24,8 +24,6 @@
         android:background="@color/gray"
         android:orientation="vertical">
 
-
-
         <ScrollView
             android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
@@ -91,7 +89,6 @@
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/text_body" />
                 </LinearLayout>
-
 
                 <TextView
                     android:id="@+id/other_languages_label"
