@@ -125,6 +125,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> "BackTrans"
             PhaseType.DRAMATIZATION -> "VStudio"
             PhaseType.CREATE -> "Finalize"
+            PhaseType.KEYTERM -> "Keyterm"
             else -> phaseType.toString().toLowerCase()
         }
     }

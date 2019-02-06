@@ -53,20 +53,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         setupStatusBar()
 
-        val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(getColor(resources,
-                Workspace.activePhase.getColor(), null)))
+        setupToolbar()
 
-        bottomSheet = findViewById(R.id.bottom_sheet)
-
-        if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
-        }
-        else {
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
-        }
-        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
+        setupBottomSheet()
 
         setupNoteView()
 
@@ -74,17 +63,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         // Keeps keyboard from automatically popping up on opening activity
         this.window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //return the phase to what it was previously
-        if(intent.hasExtra("Phase")) {
-            Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
-        }
-        //save the current term to the workspace
-        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-        Thread(Runnable{ this.let { Workspace.activeKeyterm.toJson(it) } }).start()
     }
 
     private fun setupStatusBar() {
@@ -96,15 +74,36 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    private fun setupToolbar(){
+        val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(getColor(resources,
+                Workspace.activePhase.getColor(), null)))
+    }
+
+    private fun setupBottomSheet(){
+        bottomSheet = findViewById(R.id.bottom_sheet)
+
+        BottomSheetBehavior.from(bottomSheet).isFitToContents = false
+        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
+
+        if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+        }
+        else {
+            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+    }
+
     fun setupRecordingList(){
         val viewManager = LinearLayoutManager(this)
 
         recordingExpandableListView = findViewById(R.id.recording_list)
         recordingExpandableListView.adapter = RecyclerDataAdapter(this, Workspace.activeKeyterm.backTranslations, bottomSheet!!)
         recordingExpandableListView.layoutManager = viewManager
-        val dispList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
-        dispList.embedList(findViewById(android.R.id.content))
-        dispList.show()
+        val displayList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
+        displayList.embedList(findViewById(android.R.id.content))
+        displayList.show()
     }
 
     fun setupNoteView(){
@@ -161,15 +160,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         return true
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
-
-    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
-        if(isRecordingFinished) {
-            recordingExpandableListView.adapter?.notifyItemInserted(0)
-            BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(220, this)
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeKeyterm -> {
@@ -191,9 +181,33 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+
+    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
+        if(isRecordingFinished) {
+            recordingExpandableListView.adapter?.notifyItemInserted(0)
+            if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
+                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
+            }
+            recordingExpandableListView.smoothScrollToPosition(0)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        //return the phase to what it was previously
+        if(intent.hasExtra("Phase")) {
+            Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
+        }
+        //save the current term to the workspace
+        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+        Thread(Runnable{ this.let { Workspace.activeKeyterm.toJson(it) } }).start()
+    }
+
     override fun onBackPressed() {
-        if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED){
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        if( bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED){
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
         else {
             keytermHistory.pop()
@@ -207,6 +221,13 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             }
         }
     }
+
+    private fun dpToPx(dp: Int, activity: Activity): Int{
+        val metrics = DisplayMetrics()
+        activity.windowManager.defaultDisplay.getMetrics(metrics)
+        val logicalDensity = metrics.density
+        return (dp * logicalDensity).toInt()
+    }
 }
 
 fun stringToKeytermLink(context: Context, string: String, fragmentActivity: FragmentActivity?): SpannableString {
@@ -216,13 +237,6 @@ fun stringToKeytermLink(context: Context, string: String, fragmentActivity: Frag
         spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
     return spannableString
-}
-
-fun dpToPx(dp: Int, activity: Activity): Int{
-    val metrics = DisplayMetrics()
-    activity.windowManager.defaultDisplay.getMetrics(metrics)
-    val logicalDensity = metrics.density
-    return (dp * logicalDensity).toInt()
 }
 
 private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
@@ -237,9 +251,9 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
                 Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Add new keyterm fragments to stack
                 (fragmentActivity as KeyTermActivity).keytermHistory.push(term)
-                (fragmentActivity as KeyTermActivity).setupNoteView()
-                (fragmentActivity as KeyTermActivity).setupRecordingList()
-
+                (fragmentActivity).setupNoteView()
+                (fragmentActivity).setupRecordingList()
+                BottomSheetBehavior.from((fragmentActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
             }
             else {
                 //Set keyterm from link as active keyterm
