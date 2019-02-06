@@ -219,6 +219,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
                 }
             }
         }
+        setToolbarButtonIds()
 
         val playBackFileExist = storyRelPathExists(activity,Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
@@ -234,6 +235,12 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
             sendAudioButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
         setOnClickListeners()
+    }
+
+    private fun setToolbarButtonIds() {
+        micButton.id = org.sil.storyproducer.R.id.start_recording_button
+        playButton.id = org.sil.storyproducer.R.id.play_recording_button
+        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
     }
 
     /**
