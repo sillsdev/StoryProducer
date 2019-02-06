@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller
+package org.sil.storyproducer.androidtest.happypath
 
 import android.app.Activity
 import android.app.Instrumentation
@@ -29,6 +29,7 @@ import androidx.test.espresso.UiController
 import org.hamcrest.Matcher
 import org.junit.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.RegistrationActivity
 
 
 @LargeTest

@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller
+package org.sil.storyproducer.androidtest.happypath
 
 import android.app.Activity
 import android.app.Instrumentation
@@ -19,6 +19,7 @@ import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.sil.storyproducer.controller.RegistrationActivity
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
