@@ -3,13 +3,12 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-
 import android.support.v4.provider.DocumentFile
+import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import java.io.File
 import java.io.FileReader
 import java.util.*
-import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.storyRelPathExists
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
@@ -83,7 +82,7 @@ object Workspace{
 
     }
 
-    fun updateStories(context: Context) {
+    private fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         if(storiesUpdated) return
@@ -112,7 +111,7 @@ object Workspace{
         storiesUpdated = true
     }
 
-    fun importKeyterms(context: Context) {
+    private fun importKeyterms(context: Context) {
         val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
 
         if(keytermsDirectory != null) {
