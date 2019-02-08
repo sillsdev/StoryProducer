@@ -130,6 +130,7 @@ object Workspace{
             val keytermCsvReader = KeytermCsvReader(fileReader)
 
             val keyterms = keytermCsvReader.readAll()
+            fileReader.close()
             for(keyterm in keyterms){
                termToKeyterm[keyterm.term] = keyterm
             }
