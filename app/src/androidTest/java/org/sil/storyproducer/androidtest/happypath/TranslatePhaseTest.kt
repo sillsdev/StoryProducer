@@ -22,9 +22,9 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.UiController
 import org.hamcrest.Matcher
 import org.junit.*
-import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.IntentMocker.setUpDummyWorkspacePickerIntent
 import org.sil.storyproducer.androidtest.utilities.IntentMocker.tearDownDummyWorkspacePickerIntent
+import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.controller.RegistrationActivity
 
 
@@ -39,10 +39,7 @@ class TranslatePhaseTest {
 
     @Rule
     @JvmField
-    var mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-            "android.permission.RECORD_AUDIO",
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE")
+    var mGrantPermissionRule: GrantPermissionRule = PermissionsGranter.grantStoryProducerPermissions()
 
     @Before
     fun setUp() {

@@ -14,6 +14,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.androidtest.utilities.IntentMocker.setUpDummyWorkspacePickerIntent
 import org.sil.storyproducer.androidtest.utilities.IntentMocker.tearDownDummyWorkspacePickerIntent
+import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.controller.RegistrationActivity
 
 @LargeTest
@@ -26,10 +27,7 @@ class RegistrationActivityTest {
 
     @Rule
     @JvmField
-    var mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-            "android.permission.RECORD_AUDIO",
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE")
+    var mGrantPermissionRule: GrantPermissionRule = PermissionsGranter.grantStoryProducerPermissions()
 
     @Test
     fun should_beAbleToSkipRegistration() {
