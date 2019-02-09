@@ -5,13 +5,14 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
+import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
-    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
+    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK, KEYTERM
 }
 
 /**
@@ -31,6 +32,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+            PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile
             else -> ""
         }
     }
@@ -40,6 +42,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = filename
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = filename
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = filename
+            PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile = filename
             else -> return
         }
         return
@@ -48,6 +51,13 @@ class Phase(val phaseType: PhaseType) {
     fun getRecordedAudioFiles(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>? {
         return when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
+            PhaseType.KEYTERM -> {
+                val audioFiles : MutableList<String> = mutableListOf()
+                for(audioFile in Workspace.activeKeyterm.backTranslations){
+                    audioFiles.add(audioFile.audioBackTranslation.substringAfterLast("/"))
+                }
+                audioFiles
+            }
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
@@ -95,6 +105,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
             PhaseType.DRAMATIZATION -> "Voice Studio"
+            PhaseType.KEYTERM -> "Keyterm"
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -109,6 +120,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> "BackTrans"
             PhaseType.DRAMATIZATION -> "VStudio"
             PhaseType.CREATE -> "Finalize"
+            PhaseType.KEYTERM -> "Keyterm"
             else -> phaseType.toString().toLowerCase()
         }
     }
@@ -128,6 +140,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> R.color.backT_phase
             PhaseType.WHOLE_STORY -> R.color.whole_story_phase
             PhaseType.REMOTE_CHECK -> R.color.remote_check_phase
+            PhaseType.KEYTERM -> R.color.keyterm_phase
             else -> R.color.black
         }
     }
@@ -147,6 +160,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> PagerBaseActivity::class.java
             PhaseType.WHOLE_STORY -> WholeStoryBackTranslationActivity::class.java
             PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
+            PhaseType.KEYTERM -> KeyTermActivity::class.java
         }
     }
     companion object {

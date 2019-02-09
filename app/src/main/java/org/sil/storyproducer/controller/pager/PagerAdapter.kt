@@ -11,7 +11,7 @@ import org.sil.storyproducer.controller.community.CommunityCheckFrag
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag
-import org.sil.storyproducer.controller.remote.BackTranslationFrag
+//import org.sil.storyproducer.controller.remote.BackTranslationFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 
@@ -43,10 +43,10 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
                 fragment = DramatizationFrag()
                 passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
-            PhaseType.BACKT -> {
-                fragment = BackTranslationFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
-            }
+//            PhaseType.BACKT -> {
+//                fragment = BackTranslationFrag()
+//                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
+//            }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
                 passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.sil.storyproducer">
 
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -39,8 +40,8 @@
         <activity
             android:name=".controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
-            android:screenOrientation="portrait"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -53,9 +54,11 @@
             android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait" />
         <!-- Registration -->
-        <activity android:name=".controller.RegistrationActivity"
+        <activity
+            android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".controller.WorkspaceAndRegistrationActivity"
+        <activity
+            android:name=".controller.WorkspaceAndRegistrationActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
@@ -65,12 +68,25 @@
             android:name=".controller.remote.WholeStoryBackTranslationActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
-        <activity android:name=".controller.export.CreateActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.export.CreateActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <!-- Share -->
-        <activity android:name=".controller.export.ShareActivity"
-            android:windowSoftInputMode="stateHidden"
+        <activity
+            android:name=".controller.export.ShareActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <!-- Keyterm -->
+        <activity
+            android:name=".controller.keyterm.KeyTermActivity"
+            android:label="Keyterm"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".controller.pager.PagerBaseActivity" />
+        <!-- Keyterm List -->
+        <activity
+            android:name=".controller.keyterm.KeyTermListActivity"
+            android:label="Keyterm List"
             android:screenOrientation="portrait" />
     </application>
 
