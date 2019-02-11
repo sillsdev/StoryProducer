@@ -10,6 +10,7 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.hideKeyboard
 
 class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: LinearLayout) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
 
@@ -75,6 +76,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 if(editText.text.toString() != ""){
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
+                    context?.hideKeyboard(it)
                     frameLayoutChildItem.removeAllViews()
                     if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
                         BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED

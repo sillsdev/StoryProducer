@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.keyterm
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -9,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.FragmentActivity
-import android.support.v4.app.NavUtils
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
 import android.support.v7.app.AlertDialog
@@ -22,7 +20,6 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
-import android.util.DisplayMetrics
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -35,6 +32,7 @@ import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.toJson
+import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
@@ -130,6 +128,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             keyTermTitleView.visibility = View.GONE
         }
         else {
+            keyTermTitleView.visibility = View.VISIBLE
             keyTermTitleView.text = titleText
         }
 
@@ -163,7 +162,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeKeyterm -> {
-                NavUtils.navigateUpFromSameTask(this)
+                onBackPressed()
                 true
             }
             R.id.helpButton -> {
@@ -175,7 +174,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 true
             }
             else -> {
-                NavUtils.navigateUpFromSameTask(this)
+                onBackPressed()
                 true
             }
         }
@@ -183,8 +182,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
 
-    override fun onStoppedRecordingOrPlayback(isRecordingFinished: Boolean) {
-        if(isRecordingFinished) {
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+        if(isRecording) {
             recordingExpandableListView.adapter?.notifyItemInserted(0)
             if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
                 BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
@@ -220,13 +219,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 setupRecordingList()
             }
         }
-    }
-
-    private fun dpToPx(dp: Int, activity: Activity): Int{
-        val metrics = DisplayMetrics()
-        activity.windowManager.defaultDisplay.getMetrics(metrics)
-        val logicalDensity = metrics.density
-        return (dp * logicalDensity).toInt()
     }
 }
 
