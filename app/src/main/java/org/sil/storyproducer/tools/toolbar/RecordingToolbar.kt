@@ -172,11 +172,12 @@ class RecordingToolbar : Fragment(){
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
-    fun pause() {
+    override fun onPause() {
         stopToolbarMedia()
         audioPlayer.release()
+        super.onPause()
     }
-    
+
     fun hideButtons() {
         if (enablePlaybackButton) {
             playButton.visibility = View.INVISIBLE
@@ -231,15 +232,23 @@ class RecordingToolbar : Fragment(){
                 buttonSpacing.layoutParams = spaceLayoutParams
                 rootView?.addView(buttonSpacing)
                 when (i) {
-                    0 -> micButton = imageButtons[i]
-                    1 -> playButton = imageButtons[i]
-                    2 -> multiRecordButton = imageButtons[i]
+                    0 -> {
+                        micButton = imageButtons[i]
+                        micButton.id = org.sil.storyproducer.R.id.start_recording_button
+                    }
+                    1 -> {
+                        playButton = imageButtons[i]
+                        playButton.id = org.sil.storyproducer.R.id.play_recording_button
+                    }
+                    2 -> {
+                        multiRecordButton = imageButtons[i]
+                        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
+                    }
                     3 -> checkButton = imageButtons[i]
                     4 -> sendAudioButton = imageButtons[i]
                 }
             }
         }
-        setToolbarButtonIds()
 
         val playBackFileExist : Boolean = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
             storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum), "keyterms")
@@ -260,11 +269,6 @@ class RecordingToolbar : Fragment(){
             sendAudioButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
         setOnClickListeners()
-    }
-    private fun setToolbarButtonIds() {
-        micButton.id = org.sil.storyproducer.R.id.start_recording_button
-        playButton.id = org.sil.storyproducer.R.id.play_recording_button
-        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
     }
 
     /**
@@ -319,7 +323,6 @@ class RecordingToolbar : Fragment(){
                     stopToolbarMedia()
                 } else {
                     //Now we need to start recording!
-                    recordingListener.onStartedRecordingOrPlayback(true)
                     val recordingRelPath = assignNewAudioRelPath()
                     val dialog = AlertDialog.Builder(activity!!)
                             .setTitle(activity!!.getString(R.string.overwrite))
