@@ -2,17 +2,15 @@ package org.sil.storyproducer.controller
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
+import android.view.*
 import android.widget.*
-
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.stringToKeytermLink
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
@@ -28,7 +26,6 @@ import java.util.*
  */
 abstract class SlidePhaseFrag : Fragment() {
     protected var rootView: View? = null
-    protected var rootViewToolbar: View? = null
 
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
     protected var referencePlayButton: ImageButton? = null
@@ -56,7 +53,6 @@ abstract class SlidePhaseFrag : Fragment() {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
-        setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         return rootView
@@ -81,7 +77,7 @@ abstract class SlidePhaseFrag : Fragment() {
         })
 
         //If it is the local credits slide, do not show the audio stuff at all.
-        val refPlaybackHolder: LinearLayout = rootView!!.findViewById(R.id.reference_audio_holder)
+        val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
             refPlaybackHolder.visibility = View.GONE
         }else{
@@ -146,25 +142,6 @@ abstract class SlidePhaseFrag : Fragment() {
         referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
-
-        /**
-     * This function sets the first slide of each story to the blue color in order to prevent
-     * clashing of the grey starting picture.
-     */
-    protected open fun setUiColors() {
-        if (slideNum == 0) {
-            var rl = rootView!!.findViewById<ViewGroup>(R.id.fragment_envelope)
-            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-            rl = rootView!!.findViewById(R.id.fragment_text_envelope)
-            rl?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-
-            var tv = rootView!!.findViewById<TextView>(R.id.fragment_scripture_text)
-            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-            tv = rootView!!.findViewById(R.id.fragment_reference_text)
-            tv?.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryDark))
-        }
-    }
-
     /**
      * This function allows the picture to scale with the phone's screen size.
      *
@@ -174,11 +151,11 @@ abstract class SlidePhaseFrag : Fragment() {
 
         (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
         //Set up the reference audio and slide number overlays
-        referencePlayButton = rootView!!.findViewById(R.id.fragment_reference_audio_button)
+        referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
         setReferenceAudioButton()
 
-        val slideNumberText = rootView!!.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slideNum.toString()
+        val slideNumberText = rootView?.findViewById<TextView>(R.id.slide_number_text)
+        slideNumberText?.text = slideNum.toString()
     }
 
     /**
@@ -187,7 +164,11 @@ abstract class SlidePhaseFrag : Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        val phrases = Workspace.keytermSearchTree.splitOnKeyterms(slide.content)
+        textView.text = phrases.fold(SpannableStringBuilder()){
+            result, phrase -> result.append(stringToKeytermLink(context!!, phrase, activity))
+        }
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     /**
@@ -208,7 +189,7 @@ abstract class SlidePhaseFrag : Fragment() {
         textView.text = ""
     }
 
-    protected fun setReferenceAudioButton() {
+    private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
@@ -243,6 +224,5 @@ abstract class SlidePhaseFrag : Fragment() {
 
     companion object {
         const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
-
     }
 }

@@ -16,18 +16,15 @@ import android.view.MenuItem
 import android.webkit.WebView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
-
-import org.sil.storyproducer.model.Workspace
-
-
 import java.io.Serializable
-
 
 class MainActivity : AppCompatActivity(), Serializable {
     private var mDrawerLayout: DrawerLayout? = null
@@ -57,14 +54,10 @@ class MainActivity : AppCompatActivity(), Serializable {
         supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
 
         this.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-
-
-
-        Workspace.updateStories(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_story_templates, menu)
+        menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
     }
 
@@ -103,6 +96,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     /**
      * initializes the items that the drawer needs
      */
@@ -131,7 +125,6 @@ class MainActivity : AppCompatActivity(), Serializable {
             // Add code here to update the UI based on the item selected
             // For example, swap UI fragments here
             val intent: Intent
-            //TODO add more options
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
                     intent = Intent(this, WorkspaceAndRegistrationActivity::class.java)
@@ -139,10 +132,11 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_stories -> {
-                    intent = Intent(this.applicationContext, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    // Current fragment
+                }
+                R.id.nav_keyterm_list -> {
+                    intent = Intent(this, KeyTermListActivity::class.java)
                     this.startActivity(intent)
-                    this.finish()
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
@@ -160,6 +154,20 @@ class MainActivity : AppCompatActivity(), Serializable {
 
             true
         }
+    }
+
+    override fun onBackPressed() {
+        val dialog = AlertDialog.Builder(this)
+                .setTitle("Exit Application?")
+                .setMessage("Are you sure you want to quit?")
+                .setNegativeButton(getString(R.string.no), null)
+                .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                    val homeIntent = Intent(Intent.ACTION_MAIN)
+                    homeIntent.addCategory(Intent.CATEGORY_HOME)
+                    homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(homeIntent)
+                }.create()
+        dialog.show()
     }
 }
 

@@ -79,31 +79,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             }
         })
 
-        //setup recording toolbar callbacks
-        recordingToolbar = RecordingToolbar(this,
-                layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
-                rootView!!, true, false, false, false,
-                null, object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-                if(isRecording){
-                    makeLogIfNecessary(true)
-                }
-                videoSeekBar!!.progress = 0
-                setSlideFromSeekbar()
-            }
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                pauseStoryAudio()
-                videoSeekBar!!.progress = 0
-                curPos = 0
-                //This gets the progress bar to show the right time.
-                seekbarStartTime = System.currentTimeMillis()
-                if(isRecording){
-                    markLogStart()
-                }
-            }
-        }, 0)
-        recordingToolbar!!.keepToolbarVisible()
-
         //setup volume switch callbacks
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         //set the volume switch change listener
@@ -172,8 +147,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
-        recordingToolbar.pause()
-        //recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -267,7 +240,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
      * Plays the audio
      */
     internal fun playStoryAudio() {
-        recordingToolbar.onPause()
+        recordingToolbar.stopToolbarMedia()
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()
