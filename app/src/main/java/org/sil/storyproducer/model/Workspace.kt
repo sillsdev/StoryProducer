@@ -3,11 +3,16 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-
-import java.io.File
-import java.util.*
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.storyRelPathExists
+import java.io.File
+import java.io.FileReader
+import java.util.*
+
+internal const val KEYTERMS_DIR = "keyterms"
+internal const val KEYTERMS_FILE = "keyterms.csv"
+internal const val KEYTERMS_JSON_FILE = "keyterms.json"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -40,6 +45,7 @@ object Workspace{
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
+    lateinit var activeKeyterm: Keyterm
     var activeSlideNum: Int = -1
     set(value){
         if(value >= 0 && value < activeStory.slides.size) field = value
@@ -49,6 +55,9 @@ object Workspace{
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
+    var termToKeyterm: MutableMap<String, Keyterm> = mutableMapOf()
+    var termFormToTerm: MutableMap<String, String> = mutableMapOf()
+    var keytermSearchTree = KeytermSearchTree()
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
@@ -65,6 +74,7 @@ object Workspace{
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)
+        importKeyterms(context)
     }
 
     fun clearWorkspace(){
@@ -72,7 +82,7 @@ object Workspace{
 
     }
 
-    fun updateStories(context: Context) {
+    private fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         if(storiesUpdated) return
@@ -99,6 +109,64 @@ object Workspace{
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
+    }
+
+    private fun importKeyterms(context: Context) {
+        val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)
+
+        if(keytermsDirectory != null) {
+            importKeytermsFromCsvFile(context, keytermsDirectory)
+            importKeytermsFromJsonFiles(context, keytermsDirectory)
+            mapTermFormsToTerms()
+            buildKeytermSearchTree()
+        }
+    }
+
+    private fun importKeytermsFromCsvFile(context: Context, keytermsDirectory: DocumentFile){
+        val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
+        if(keytermsFile != null) {
+            val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")?.fileDescriptor
+            val fileReader = FileReader(fileDescriptor)
+            val keytermCsvReader = KeytermCsvReader(fileReader)
+
+            val keyterms = keytermCsvReader.readAll()
+            for(keyterm in keyterms){
+               termToKeyterm[keyterm.term] = keyterm
+            }
+
+        }
+    }
+
+    private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
+        for (keytermFile in keytermsDirectory.listFiles()) {
+            if (keytermFile.isDirectory && storyRelPathExists(context, keytermFile.name!!,"keyterms")) {
+                val keyterm = keytermFromJson(context, keytermFile.name!!)
+                if(keyterm != null) {
+                    if (termToKeyterm.containsKey(keyterm.term)) {
+                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                        termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                    } else {
+                        termToKeyterm[keyterm.term] = keyterm
+                    }
+                }
+            }
+        }
+    }
+
+    private fun mapTermFormsToTerms(){
+        for(keyterm in termToKeyterm.values){
+            val term = keyterm.term
+            termFormToTerm[term.toLowerCase()] = term
+            for(termForm in keyterm.termForms){
+                termFormToTerm[termForm.toLowerCase()] = term
+            }
+        }
+    }
+
+    private fun buildKeytermSearchTree(){
+        for(termForm in termFormToTerm.keys){
+            keytermSearchTree.insertTerm(termForm)
+        }
     }
 
     fun updateStoryLocalCredits(context: Context) {

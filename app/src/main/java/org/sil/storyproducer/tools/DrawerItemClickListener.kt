@@ -10,6 +10,8 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
+import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
 
@@ -19,9 +21,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
 
     /** Swaps fragments in the main content view  */
     private fun selectItem(position: Int) {
-        println("the position is $position")
         val intent: Intent
-        //TODO add more options
         when (position) {
             0 -> {
                 intent = Intent(activity, WorkspaceAndRegistrationActivity::class.java)
@@ -35,11 +35,17 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             2 -> {
+                intent = Intent(activity.applicationContext, KeyTermListActivity::class.java)
+                intent.putExtra("phase", Workspace.activePhase.phaseType)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity.startActivity(intent)
+            }
+            3 -> {
                 intent = Intent(activity, RegistrationActivity::class.java)
                 activity.startActivity(intent)
                 activity.finish()
             }
-            3 -> {
+            4 -> {
                 val dialog = AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.license_title))
                         .setMessage(activity.getString(R.string.license_body))

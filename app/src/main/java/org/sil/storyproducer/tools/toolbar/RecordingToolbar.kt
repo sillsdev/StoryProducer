@@ -178,21 +178,6 @@ class RecordingToolbar : Fragment(){
         super.onPause()
     }
 
-    fun hideButtons() {
-        if (enablePlaybackButton) {
-            playButton.visibility = View.INVISIBLE
-        }
-        if (enableMultiRecordButton) {
-            multiRecordButton.visibility = View.INVISIBLE
-        }
-        if (enableCheckButton) {
-            checkButton.visibility = View.INVISIBLE
-        }
-        if (enableSendAudioButton) {
-            sendAudioButton.visibility = View.INVISIBLE
-        }
-    }
-
     private fun startRecording(recordingRelPath: String) {
         //TODO: make this logging more robust and encapsulated
         recordingListener.onStartedRecordingOrPlayback(true)
