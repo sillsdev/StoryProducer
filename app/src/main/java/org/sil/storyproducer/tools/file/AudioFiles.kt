@@ -22,7 +22,7 @@ internal const val AUDIO_EXT = ".m4a"
 fun assignNewAudioRelPath() : String {
     val phase = Workspace.activePhase
     val phaseName = phase.getShortName()
-    if(Workspace.activeStory.title == "" && phase.phaseType != PhaseType.KEYTERM) return ""
+    if(Workspace.activeDirRoot == "") return ""
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
     var relPath = ""
@@ -37,28 +37,16 @@ fun assignNewAudioRelPath() : String {
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
-        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK, PhaseType.KEYTERM -> {
             //find the next number that is available for saving files at.
-            //deleted $PROJECT_DIR/ from rFileNum might need to restore
-            val rFileNum = "$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
+            val rFileNum = "${Workspace.activeFilenameRoot}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)
                 if(num != null)
                     maxNum = max(maxNum,num.groupValues[1].toInt())
             }
-            relPath = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_${maxNum+1}" + AUDIO_EXT
-        }
-        PhaseType.KEYTERM -> {
-            //find the next number that is available for saving files at.
-            val rFileNum = "${Workspace.activeKeyterm.term}_([0-9]+)".toRegex()
-            var maxNum = 0
-            for (f in files!!){
-                val num = rFileNum.find(f)
-                if(num != null)
-                    maxNum = max(maxNum,num.groupValues[1].toInt())
-            }
-            relPath = "${Workspace.activeKeyterm.term}/${Workspace.activeKeyterm.term}_${maxNum+1}" + AUDIO_EXT
+            relPath = "${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${maxNum+1}" + AUDIO_EXT
         }
         else -> {}
     }
