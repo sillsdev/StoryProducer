@@ -19,7 +19,6 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class LearnPhaseTest : PhaseTestBase() {
 
     override fun navigateToPhase() {
@@ -27,14 +26,14 @@ class LearnPhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun A_should_BeAbleToUsePlayButton() {
+    fun should_BeAbleToUsePlayButton() {
         val learnPhaseVideoSeekBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
         // check progress of seek bar
         val firstProgress = learnPhaseVideoSeekBar!!.progress
         // click play button
         onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
         // wait a few seconds for narration to play and story to move to next slide
-        Thread.sleep(6000)
+        Thread.sleep(500)
         // click pause button
         onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
         // check progress of seek bar
@@ -44,7 +43,7 @@ class LearnPhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun B_should_BeAbleToRecordAudioClip() {
+    fun should_BeAbleToRecordAudioClip() {
         // disable the color-changing recording toolbar because it trips up Espresso
         disableCustomAnimations()
         // check whether the triangle Play button exists. If so, there is a previous recording.
@@ -56,7 +55,7 @@ class LearnPhaseTest : PhaseTestBase() {
             onView(withText("YES")).perform(click())
         }
         // wait a few seconds
-        Thread.sleep(1000)
+        Thread.sleep(500)
         // click button to stop recording
         onView(allOf(isDisplayed(), withId(org.sil.storyproducer.R.id.start_recording_button))).perform(click())
         // re-enable the color-changing recording toolbar
