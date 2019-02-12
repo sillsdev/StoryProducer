@@ -87,21 +87,16 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
     }
 
     override fun onQueryTextChange(p0: String?): Boolean {
-        return if(p0?.isNotEmpty() == true) {
-            val newList = ArrayList<String>()
-            for (keyterm in termToKeyterm.keys) {
-                if (keyterm.toLowerCase().contains(p0.toLowerCase())) {
-                    newList.add(keyterm)
-                }
+        val newList = ArrayList<String>()
+        for (keyterm in termToKeyterm.keys) {
+            if (keyterm.toLowerCase().contains(p0.toLowerCase())) {
+                newList.add(keyterm)
             }
-            newList.sortWith(String.CASE_INSENSITIVE_ORDER)
-            recyclerView.swapAdapter(MyAdapter(newList.toTypedArray(), this), true)
-            recyclerView.scrollToPosition(0)
-            true
         }
-        else{
-            false
-        }
+        newList.sortWith(String.CASE_INSENSITIVE_ORDER)
+        recyclerView.swapAdapter(MyAdapter(newList.toTypedArray(), this), true)
+        recyclerView.scrollToPosition(0)
+        return true
     }
 
     /**
