@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.TextView
@@ -23,11 +24,8 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToKeyterm
 
-class KeyTermListActivity : AppCompatActivity() {
-
+class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var viewAdapter: RecyclerView.Adapter<*>
-    private lateinit var viewManager: RecyclerView.LayoutManager
 
     private var mDrawerLayout: DrawerLayout? = null
 
@@ -38,8 +36,8 @@ class KeyTermListActivity : AppCompatActivity() {
         val keytermList = termToKeyterm.keys.toTypedArray()
         keytermList.sortWith(String.CASE_INSENSITIVE_ORDER)
 
-        viewManager = LinearLayoutManager(this)
-        viewAdapter = MyAdapter(keytermList, this)
+        val viewManager = LinearLayoutManager(this)
+        val viewAdapter = MyAdapter(keytermList, this)
 
         recyclerView = findViewById<RecyclerView>(R.id.keyterm_list).apply {
             setHasFixedSize(true)
@@ -60,7 +58,9 @@ class KeyTermListActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_with_help, menu)
+        menuInflater.inflate(R.menu.menu_keyterm_list_view, menu)
+        val searchItem = menu.findItem(R.id.search_button)
+        (searchItem.actionView as SearchView).setOnQueryTextListener(this)
 
         return true
     }
@@ -81,6 +81,22 @@ class KeyTermListActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+    override fun onQueryTextSubmit(p0: String?): Boolean {
+        return false
+    }
+
+    override fun onQueryTextChange(p0: String?): Boolean {
+        val newList = ArrayList<String>()
+        for (keyterm in termToKeyterm.keys) {
+            if (keyterm.toLowerCase().contains(p0?.toLowerCase() ?: "")) {
+                newList.add(keyterm)
+            }
+        }
+        newList.sortWith(String.CASE_INSENSITIVE_ORDER)
+        recyclerView.swapAdapter(MyAdapter(newList.toTypedArray(), this), true)
+        recyclerView.scrollToPosition(0)
+        return true
     }
 
     /**
