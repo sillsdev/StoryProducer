@@ -89,7 +89,7 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
     override fun onQueryTextChange(p0: String?): Boolean {
         val newList = ArrayList<String>()
         for (keyterm in termToKeyterm.keys) {
-            if (keyterm.toLowerCase().contains(p0.toLowerCase())) {
+            if (keyterm.toLowerCase().contains(p0?.toLowerCase() ?: "")) {
                 newList.add(keyterm)
             }
         }
