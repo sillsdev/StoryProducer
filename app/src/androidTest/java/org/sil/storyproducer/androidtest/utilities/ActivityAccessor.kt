@@ -2,6 +2,7 @@ package org.sil.storyproducer.androidtest.utilities
 
 import android.R
 import android.app.Activity
+import android.content.Context
 import android.view.View
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController

@@ -1,9 +1,15 @@
 package org.sil.storyproducer.androidtest.happypath
 
+import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
+import android.view.View.INVISIBLE
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ListView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -37,13 +43,50 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_BeAbleToPlayNarrationOfASlide() {
-        // TODO: Make this test useful by copying a known-length audio clip to directory.
-        // TODO: Also, ensure that we are actually on the slide that has the audio clip.
+        selectPhase("Translate")
+        if (!areThereAnyRecordings()) {
+            prepareForTestByCreatingATranslationClip()
+        }
+        selectPhase("Community Work")
+
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
-        giveAppTimeToPlayAudio()
         val endingProgress = getCurrentSlideAudioProgress()
+        pressPlayPauseButton()
         Assert.assertTrue("Expected progress bar to increase in position.", endingProgress > originalProgress)
+    }
+
+    private fun areThereAnyRecordings(): Boolean {
+        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
+        return showRecordingsListButton?.visibility != INVISIBLE
+    }
+
+    private fun prepareForTestByCreatingATranslationClip() {
+        disableCustomAnimations()
+        pressMicButton()
+        Thread.sleep(5000)
+        pressMicButton()
+        enableCustomAnimations()
+    }
+
+    private fun selectPhase(phaseTitle: String) {
+        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
+        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+    }
+
+    private fun enableCustomAnimations() {
+        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
+        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation))
+    }
+
+    private fun disableCustomAnimations() {
+        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
+        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
+        preferencesEditor.commit()
+    }
+
+    private fun pressMicButton() {
+        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
     }
 
     @Test

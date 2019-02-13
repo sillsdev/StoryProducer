@@ -30,7 +30,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun A_should_BeAbleToSwipeBetweenSlides() {
+     fun A_should_BeAbleToSwipeBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
         var nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
