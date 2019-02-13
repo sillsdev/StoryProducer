@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.keyterm
 
+import android.app.AlertDialog
 import android.content.Context
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v7.widget.RecyclerView
@@ -10,14 +11,18 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
-class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: LinearLayout) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
+class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: LinearLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
 
-    var onItemClick: ((String) -> Unit)? = null
-    var onItemLongClick: ((Int) -> Unit)? = null
-    var onPlayClick: ((String, ImageButton) -> Unit)? = null
-    var onDeleteClick: ((String, Int) -> Unit)? = null
+    interface ClickListeners {
+        fun onRowClick(name: String)
+        fun onPlayClick(name: String, buttonClickedNow: ImageButton)
+        fun onDeleteClick(name: String, pos: Int)
+        fun onRenameClick(name: String, newName: String): RenameCode
+        fun onRenameSuccess(position: Int)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
@@ -46,16 +51,16 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         fun bindView(text : BackTranslation){
             parentTextView.text = text.audioBackTranslation.substringAfterLast("/")
             parentPlayButton.setOnClickListener {
-                onPlayClick?.invoke(text.audioBackTranslation, parentPlayButton)
+                listeners.onPlayClick(text.audioBackTranslation, parentPlayButton)
             }
             parentDeleteButton.setOnClickListener {
-                onDeleteClick?.invoke(text.audioBackTranslation, adapterPosition)
+                showDeleteItemDialog(adapterPosition, text.audioBackTranslation)
             }
             parentTextView.setOnClickListener {
-                onItemClick?.invoke(text.audioBackTranslation)
+                listeners.onRowClick(text.audioBackTranslation)
             }
             parentTextView.setOnLongClickListener {
-                onItemLongClick?.invoke(adapterPosition)
+                showItemRenameDialog(adapterPosition)
                 return@setOnLongClickListener true
             }
 
@@ -98,5 +103,63 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 initSubmit()
             }
         }
+
+        private fun showDeleteItemDialog(position: Int, text: String) {
+            val dialog = AlertDialog.Builder(itemView.context)
+                    .setTitle(itemView.context.getString(R.string.delete_audio_title))
+                    .setMessage(itemView.context.getString(R.string.delete_audio_message))
+                    .setNegativeButton(itemView.context.getString(R.string.no), null)
+                    .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
+                        listeners.onDeleteClick(text, position)
+                            updateBottomSheetState(itemView.context)
+                    }
+                    .create()
+
+            dialog.show()
+        }
+
+        private fun updateBottomSheetState(context: Context){
+            val bottomSheetBehavior = BottomSheetBehavior.from((context as KeyTermActivity).bottomSheet)
+            if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+        }
+
+        /**
+         * Show to the user a dialog to rename the audio comment
+         *
+         * @param position the integer position of the comment the user "long-clicked"
+         */
+        private fun showItemRenameDialog(position: Int) {
+            val newName = EditText(itemView.context)
+
+            // Programmatically set layout properties for edit text field
+            val params = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT)
+            // Apply layout properties
+            newName.layoutParams = params
+
+            val dialog = AlertDialog.Builder(itemView.context)
+                    .setTitle(itemView.context.getString(R.string.rename_title))
+                    .setView(newName)
+                    .setNegativeButton(itemView.context.getString(R.string.cancel), null)
+                    .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
+                        val returnCode = listeners.onRenameClick(recordings[position].audioBackTranslation, newName.text.toString())
+                        when (returnCode) {
+                            RenameCode.SUCCESS -> {
+                                listeners.onRenameSuccess(position)
+                                Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
+                            }
+                            RenameCode.ERROR_LENGTH -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
+                            RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
+                            RenameCode.ERROR_UNDEFINED -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
+                        }
+                    }.create()
+
+            dialog.show()
+            //TODO make keyboard show at once, but right now there are too many issues with it.
+        }
+
     }
 }
