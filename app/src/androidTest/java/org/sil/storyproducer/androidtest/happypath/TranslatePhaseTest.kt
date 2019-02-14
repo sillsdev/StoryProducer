@@ -1,6 +1,5 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
 import androidx.test.espresso.Espresso.onView
@@ -17,6 +16,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import org.junit.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
+import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 
@@ -56,22 +56,11 @@ class TranslatePhaseTest : PhaseTestBase() {
     fun C_should_BeAbleToRecordTranslationForASlide() {
         // The "pulsing" animation on the recording toolbar causes the
         // Espresso click to hang, so we disable it for the test.
-        disableCustomAnimations()
+        AnimationsToggler.disableCustomAnimations()
         pressMicButton()
         giveAppTimeToRecordAudio()
         pressMicButton()
-        enableCustomAnimations()
-    }
-
-    private fun enableCustomAnimations() {
-        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation))
-    }
-
-    private fun disableCustomAnimations() {
-        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
-        preferencesEditor.commit()
+        AnimationsToggler.enableCustomAnimations()
     }
 
     private fun pressMicButton() {

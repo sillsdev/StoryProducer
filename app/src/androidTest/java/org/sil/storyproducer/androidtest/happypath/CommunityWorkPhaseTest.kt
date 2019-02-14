@@ -5,7 +5,6 @@ import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
 import android.view.View.INVISIBLE
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.ListView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
@@ -21,9 +20,14 @@ import org.junit.Assert
 import org.junit.Test
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
+import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 class CommunityWorkPhaseTest : PhaseTestBase() {
+    val durationToPlayTranslatedClip: Long = 100
+    val durationToRecordTranslatedClip: Long = 1000
+    val durationToRecordFeedbackClip: Long = 250
+
     override fun navigateToPhase() {
         PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
     }
@@ -43,64 +47,28 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_BeAbleToPlayNarrationOfASlide() {
-        selectPhase("Translate")
-        if (!areThereAnyRecordings()) {
-            prepareForTestByCreatingATranslationClip()
-        }
-        selectPhase("Community Work")
+        makeSureAnAudioClipIsAvailable()
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
-        val endingProgress = getCurrentSlideAudioProgress()
+        Thread.sleep(durationToPlayTranslatedClip)
         pressPlayPauseButton()
-        Assert.assertTrue("Expected progress bar to increase in position.", endingProgress > originalProgress)
-    }
-
-    private fun areThereAnyRecordings(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
-        return showRecordingsListButton?.visibility != INVISIBLE
-    }
-
-    private fun prepareForTestByCreatingATranslationClip() {
-        disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(5000)
-        pressMicButton()
-        enableCustomAnimations()
-    }
-
-    private fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
-    }
-
-    private fun enableCustomAnimations() {
-        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation))
-    }
-
-    private fun disableCustomAnimations() {
-        val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
-        preferencesEditor.commit()
-    }
-
-    private fun pressMicButton() {
-        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+        val progressAfterPausing = getCurrentSlideAudioProgress()
+        Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
     }
 
     @Test
     fun should_BeAbleToRecordFeedback() {
-        // Get number of recordings (if any)
-        var originalNumberOfRecordings = ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(org.sil.storyproducer.R.id.recordings_list)!!.childCount
-        // Record a feedback clip
-        Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-        Thread.sleep(250)
-        Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-        // Get number of recordings
-        var finalNumberOfRecordings = ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(org.sil.storyproducer.R.id.recordings_list)!!.childCount
-        // expect it to be n + 1
-        Assert.assertEquals(originalNumberOfRecordings + 1, finalNumberOfRecordings)
+        var originalNumberOfRecordings = getCurrentNumberOfRecordings()
+
+        AnimationsToggler.disableCustomAnimations()
+        pressMicButton()
+        Thread.sleep(durationToRecordFeedbackClip)
+        pressMicButton()
+        AnimationsToggler.disableCustomAnimations()
+
+        var finalNumberOfRecordings = getCurrentNumberOfRecordings()
+        Assert.assertEquals("Expected an additional feedback recording to exist", originalNumberOfRecordings + 1, finalNumberOfRecordings)
     }
 
     @Test
@@ -109,17 +77,13 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
         expectToBeOnAccuracyCheckPhase()
     }
 
-    private fun expectToBeOnAccuracyCheckPhase() {
-        Espresso.onView(withText("Accuracy Check")).check(matches(isDisplayed()))
+    private fun findCurrentSlideNumber(): Int {
+        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
+        return Integer.parseInt(slideNumberTextView!!.text.toString())
     }
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    private fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
-        return Integer.parseInt(slideNumberTextView!!.text.toString())
     }
 
     private fun swipeRightOnSlide() {
@@ -134,6 +98,35 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
         Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeUp())
     }
 
+    private fun makeSureAnAudioClipIsAvailable() {
+        selectPhase("Translate")
+        if (!areThereAnyAudioClipsOnThisSlide()) {
+            recordAnAudioTranslationClip()
+        }
+        selectPhase("Community Work")
+    }
+
+    private fun selectPhase(phaseTitle: String) {
+        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
+        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+    }
+
+    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
+        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
+        return showRecordingsListButton?.visibility != INVISIBLE
+    }
+
+    private fun recordAnAudioTranslationClip() {
+        AnimationsToggler.disableCustomAnimations()
+        pressMicButton()
+        Thread.sleep(durationToRecordTranslatedClip)
+        pressMicButton()
+        AnimationsToggler.enableCustomAnimations()
+    }
+
+    private fun getCurrentNumberOfRecordings() =
+            ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(R.id.recordings_list)!!.childCount
+
     private fun giveUiTimeToChangeSlides() {
         Thread.sleep(50)
     }
@@ -143,11 +136,15 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
         return progressBar!!.progress
     }
 
+    private fun pressMicButton() {
+        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+    }
+
     private fun pressPlayPauseButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
     }
 
-    private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(2000)
+    private fun expectToBeOnAccuracyCheckPhase() {
+        Espresso.onView(withText("Accuracy Check")).check(matches(isDisplayed()))
     }
 }
