@@ -291,8 +291,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?) : Recycler
                     currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                     audioPlayer.stopAudio()
                 })
-                if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
-                    audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
+                if (storyRelPathExists(context, name)) {
+                    audioPlayer.setStorySource(context, name)
                     audioPlayer.playAudio()
                     Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
                     when (Workspace.activePhase.phaseType) {
