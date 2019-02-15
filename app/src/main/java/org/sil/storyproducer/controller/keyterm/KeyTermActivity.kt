@@ -40,6 +40,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
+    var manuallyOpened = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,7 +181,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
             recordingExpandableListView.adapter?.notifyItemInserted(0)
             if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
-                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
+                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }
@@ -199,7 +200,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     override fun onBackPressed() {
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        if( bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED){
+        if( bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
         else {

@@ -82,7 +82,7 @@
             android:name=".controller.keyterm.KeyTermActivity"
             android:label="Keyterm"
             android:screenOrientation="portrait"
-            android:parentActivityName=".controller.pager.PagerBaseActivity" />
+            android:windowSoftInputMode="adjustResize" />
         <!-- Keyterm List -->
         <activity
             android:name=".controller.keyterm.KeyTermListActivity"

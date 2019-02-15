@@ -394,11 +394,12 @@ class RecordingToolbar : Fragment(){
                 if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
                     val bottomSheetBehavior = BottomSheetBehavior.from((activity as KeyTermActivity).bottomSheet)
 
-                    if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED || bottomSheetBehavior.state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
+                    if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                     else{
                         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        (activity as KeyTermActivity).manuallyOpened = true
                     }
                 } else {
                     recordingListener.onStartedRecordingOrPlayback(false)
