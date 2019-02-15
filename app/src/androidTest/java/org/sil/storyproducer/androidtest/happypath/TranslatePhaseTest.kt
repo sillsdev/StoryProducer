@@ -22,7 +22,6 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class TranslatePhaseTest : PhaseTestBase() {
 
     override fun navigateToPhase() {
@@ -30,7 +29,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     @Test
-     fun A_should_BeAbleToSwipeBetweenSlides() {
+    fun should_BeAbleToSwipeBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
         var nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
@@ -43,7 +42,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun B_should_BeAbleToPlayNarrationOfASlide() {
+    fun should_BeAbleToPlayNarrationOfASlide() {
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
         giveAppTimeToPlayAudio()
@@ -53,7 +52,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun C_should_BeAbleToRecordTranslationForASlide() {
+    fun should_BeAbleToRecordTranslationForASlide() {
         // The "pulsing" animation on the recording toolbar causes the
         // Espresso click to hang, so we disable it for the test.
         AnimationsToggler.disableCustomAnimations()
