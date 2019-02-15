@@ -12,7 +12,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableString
@@ -38,9 +37,8 @@ import java.util.*
 
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
-    private lateinit var recordingExpandableListView: RecyclerView
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
-    var bottomSheet: LinearLayout? = null
+    lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,12 +92,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     fun setupRecordingList(){
-        val viewManager = LinearLayoutManager(this)
-
-        recordingExpandableListView = findViewById(R.id.recording_list)
-        recordingExpandableListView.adapter = RecyclerDataAdapter(this, Workspace.activeKeyterm.backTranslations, bottomSheet!!)
-        recordingExpandableListView.layoutManager = viewManager
-        val displayList : RecordingsListAdapter.RecordingsListModal = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar, recordingExpandableListView)
+        val displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
         displayList.embedList(findViewById(android.R.id.content))
         displayList.show()
     }
@@ -184,6 +177,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         if(isRecording) {
+            val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
             recordingExpandableListView.adapter?.notifyItemInserted(0)
             if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
                 BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HALF_EXPANDED
