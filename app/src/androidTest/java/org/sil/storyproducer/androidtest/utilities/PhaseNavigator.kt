@@ -21,9 +21,14 @@ object PhaseNavigator {
 
     fun navigateFromRegistrationScreenToLearnPhase() {
         skipRegistration()
-        Espresso.onView(ViewMatchers.withText(CoreMatchers.containsString("Lost Coin"))).perform(ViewActions.scrollTo(), ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`("Learn"))).perform(ViewActions.click())
+        clickOnStory("Lost Coin")
+        selectPhase("Learn")
+    }
+
+    fun navigateFromRegistrationScreenToVoiceStudioPhase() {
+        skipRegistration()
+        clickOnStory("Lost Coin")
+        selectPhase("Voice Studio")
     }
 
     private fun skipRegistration() {
