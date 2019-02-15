@@ -155,7 +155,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeKeyterm -> {
-                onBackPressed()
+                finish()
                 true
             }
             R.id.helpButton -> {
