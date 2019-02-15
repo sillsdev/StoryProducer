@@ -76,11 +76,11 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                 if(editText.text.toString() != ""){
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
-                    context?.hideKeyboard(it)
                     frameLayoutChildItem.removeAllViews()
                     if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
                         BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
                     }
+                    context?.hideKeyboard(it)
                     initComment()
                 }
             }
