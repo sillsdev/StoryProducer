@@ -287,7 +287,8 @@ class RecordingToolbar : Fragment(){
                     stopToolbarMedia()
                     if (isAppendingOn) {
                         startRecording(audioTempName)
-                    }else{
+                    }
+                    else {
                         startRecording(assignNewAudioRelPath())
                     }
                     micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
@@ -414,7 +415,7 @@ class RecordingToolbar : Fragment(){
     }
 
     private fun setKeytermMultiRecordIcon(state: Int){
-        if(state == BottomSheetBehavior.STATE_EXPANDED || state == BottomSheetBehavior.STATE_HALF_EXPANDED){
+        if(state == BottomSheetBehavior.STATE_EXPANDED){
             multiRecordButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_white_48dp)
         }
         else if(state == BottomSheetBehavior.STATE_COLLAPSED){

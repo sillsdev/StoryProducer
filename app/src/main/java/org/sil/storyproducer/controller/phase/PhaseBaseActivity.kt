@@ -263,12 +263,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
-
-        //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
 
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
@@ -280,8 +274,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         tOverlay?.setPadding(max(2, 2 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
 
-        //Set the height of the image view
-        slideImage.layoutParams.height = height
         slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)

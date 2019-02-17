@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
-import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
@@ -58,7 +57,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             if (Workspace.activePhase.getChosenFilename().contains(audioText)) {
                 val color = ContextCompat.getColor(holder.itemView.context, R.color.primary)
                 holder.itemView.setBackgroundColor(color)
-                selectedPos = position
+                selectedPos = holder.adapterPosition
             }
             else{
                 val color = ContextCompat.getColor(holder.itemView.context, R.color.black)
@@ -102,6 +101,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     .setNegativeButton(itemView.context.getString(R.string.no), null)
                     .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
                         listeners.onDeleteClick(text, position)
+                        notifyItemRemoved(position)
                     }
                     .create()
 
@@ -157,9 +157,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         private var currentPlayingButton: ImageButton? = null
         private var embedded = false
         private var playbackListener: RecordingToolbar.RecordingListener? = null
-
         private var slideNum: Int = Workspace.activeSlideNum
-
 
         fun setSlideNum(mSlideNum:Int){
             slideNum = mSlideNum
@@ -168,7 +166,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         fun setParentFragment(parentFragment: Fragment){
             try{
                 playbackListener = parentFragment as RecordingToolbar.RecordingListener
-            }catch (e:Exception){}
+            }
+            catch (e:Exception){}
         }
 
         fun embedList(view: ViewGroup) {
@@ -182,14 +181,13 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
-            updateRecordingList()
-
             recyclerView = rootView?.findViewById(R.id.recordings_list)
 
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                 recyclerView?.adapter = RecyclerDataAdapter(context, Workspace.activeKeyterm.backTranslations, rootView?.findViewById(R.id.bottom_sheet)!!, this)
             }
             else{
+                updateRecordingList()
                 recyclerView?.adapter = RecordingsListAdapter(strippedFilenames, this)
                 recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             }
@@ -224,18 +222,13 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             strippedFilenames = filenames
             if (strippedFilenames != null) {
                 for (i in 0 until strippedFilenames!!.size) {
-                    strippedFilenames!![i] = strippedFilenames!![i].split("/").last()
+                    strippedFilenames!![i] = strippedFilenames!![i].substringAfterLast('/')
                 }
             }
         }
 
         override fun onRowClick(name: String) {
             Workspace.activePhase.setChosenFilename("${Workspace.activeDir}/$name")
-            if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                (recyclerView?.adapter as RecyclerDataAdapter).notifyDataSetChanged()
-            } else {
-                (recyclerView?.adapter as RecordingsListAdapter).notifyDataSetChanged()
-            }
         }
 
         override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
@@ -251,8 +244,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                     audioPlayer.stopAudio()
                 })
-                if (storyRelPathExists(context, name)) {
-                    audioPlayer.setStorySource(context, name)
+                if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
+                    audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
                     audioPlayer.playAudio()
                     Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
                     when (Workspace.activePhase.phaseType) {
@@ -272,14 +265,13 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
             if ("${Workspace.activeDir}/$name" == Workspace.activePhase.getChosenFilename()) {
                 if (filenames.size > 0) {
-                    Workspace.activePhase.setChosenFilename(filenames.last())
+                    onRowClick(filenames.last())
                 }
                 else {
                     Workspace.activePhase.setChosenFilename("")
                     toolbar?.setupToolbarButtons()
                     dialog?.dismiss()
                 }
-                (recyclerView?.adapter as RecordingsListAdapter).notifyItemRemoved(pos)
             }
         }
 
@@ -293,12 +285,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             }
         }
 
-        override fun onRenameSuccess(index: Int) {
-            //val index = filenames.indexOf("$PROJECT_DIR/$lastOldName")
-            filenames.removeAt(index)
-            filenames.add(index, "$lastNewName")
+        override fun onRenameSuccess(pos: Int) {
+            filenames[pos] = lastNewName!!
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activeKeyterm.backTranslations[index] = BackTranslation(Workspace.activeKeyterm.backTranslations[index].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
+                Workspace.activeKeyterm.backTranslations[pos] = BackTranslation(Workspace.activeKeyterm.backTranslations[pos].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
             }
             onRowClick(lastNewName.toString())
             updateRecordingList()

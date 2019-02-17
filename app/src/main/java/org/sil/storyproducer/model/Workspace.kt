@@ -137,12 +137,12 @@ object Workspace{
     }
 
     fun deleteAudioFileFromList(context: Context, name: String, position: Int) {
-        val filenames = Workspace.activePhase.getRecordedAudioFiles(activeSlideNum)!!
+        val filenames = activePhase.getRecordedAudioFiles(activeSlideNum)!!
         filenames.removeAt(position)
-        if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-            Workspace.activeKeyterm.backTranslations.removeAt(position)
+        if (activePhase.phaseType == PhaseType.KEYTERM) {
+            activeKeyterm.backTranslations.removeAt(position)
         }
-        deleteStoryFile(context, "${Workspace.activeDir}/$name")
+        deleteStoryFile(context, "$activeDir/$name")
     }
 
     private fun importKeyterms(context: Context) {

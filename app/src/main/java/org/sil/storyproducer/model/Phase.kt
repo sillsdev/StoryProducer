@@ -48,7 +48,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.KEYTERM -> {
                 val audioFiles : MutableList<String> = mutableListOf()
                 for(audioFile in Workspace.activeKeyterm.backTranslations){
-                    audioFiles.add(audioFile.audioBackTranslation.substringAfterLast("/"))
+                    audioFiles.add(audioFile.audioBackTranslation)
                 }
                 audioFiles
             }
