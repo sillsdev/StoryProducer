@@ -7,36 +7,21 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers.containsString
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.sil.storyproducer.androidtest.utilities.IntentMocker.setUpDummyWorkspacePickerIntent
-import org.sil.storyproducer.androidtest.utilities.IntentMocker.tearDownDummyWorkspacePickerIntent
-import org.sil.storyproducer.controller.RegistrationActivity
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class RegistrationActivityTest {
-
-    @Rule
-    @JvmField
-    val mActivityTestRule = androidx.test.rule.ActivityTestRule(RegistrationActivity::class.java, false, false)
-
-    @Rule
-    @JvmField
-    var mGrantPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(
-            "android.permission.RECORD_AUDIO",
-            "android.permission.READ_EXTERNAL_STORAGE",
-            "android.permission.WRITE_EXTERNAL_STORAGE")
+class RegistrationActivityTest : PhaseTestBase() {
+    override fun navigateToPhase() {
+        // This function is intentionally empty, since
+        // this test verifies the registration screen, which
+        // appears prior to any phase.
+    }
 
     @Test
     fun should_beAbleToSkipRegistration() {
-        setUpDummyWorkspacePickerIntent()
-        mActivityTestRule.launchActivity(null)
-        tearDownDummyWorkspacePickerIntent()
-
         onView(withText("Skip Registration")).perform(click())
         onView(withId(android.R.id.button1)).perform(scrollTo(), click())
         onView(withText(containsString("Lost Coin"))).check(matches(isDisplayed()))
