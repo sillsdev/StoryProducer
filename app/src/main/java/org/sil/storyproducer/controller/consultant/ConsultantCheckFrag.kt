@@ -2,6 +2,7 @@ package org.sil.storyproducer.controller.consultant
 
 import android.content.Context
 import android.os.Bundle
+import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.text.InputType
@@ -66,9 +67,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun setCheckmarkButton(button: ImageButton) {
         //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
-            button.setBackgroundResource(R.drawable.ic_checkmark_green)
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         } else {
-            button.setBackgroundResource(R.drawable.ic_checkmark_gray)
+            //TODO: use non-deprecated method; currently used to support older devices
+            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -76,10 +79,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
-                button.setBackgroundResource(R.drawable.ic_checkmark_gray)
+                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
-                button.setBackgroundResource(R.drawable.ic_checkmark_green)
+                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
@@ -93,7 +96,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the logs button
      */
     private fun setLogsButton(button: ImageButton) {
-        button.setBackgroundResource(R.drawable.ic_logs_blue)
+        //TODO: use non-deprecated method; currently used to support older devices
+        button.background = VectorDrawableCompat.create(resources, R.drawable.ic_logs_blue, null)
         button.setOnClickListener {
             makeLogView()
             logDialog?.show()

@@ -20,12 +20,6 @@ enum class PhaseType {
  */
 class Phase(val phaseType: PhaseType) {
 
-
-    /**
-     * Return chosen file.  Null if the current phase has no chosen file.
-     */
-    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
-
     fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){
             PhaseType.LEARN -> Workspace.activeStory.learnAudioFile

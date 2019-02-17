@@ -3,6 +3,8 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
+import android.support.design.widget.BottomSheetBehavior
+import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -19,11 +21,13 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
 import org.sil.storyproducer.model.BackTranslation
-import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.AUDIO_EXT
+import org.sil.storyproducer.tools.file.RenameCode
+import org.sil.storyproducer.tools.file.renameStoryFile
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -152,8 +156,20 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var embedded = false
+        private var playbackListener: RecordingToolbar.RecordingListener? = null
 
-        private val slideNum: Int = Workspace.activeSlideNum
+        private var slideNum: Int = Workspace.activeSlideNum
+
+
+        fun setSlideNum(mSlideNum:Int){
+            slideNum = mSlideNum
+        }
+
+        fun setParentFragment(parentFragment: Fragment){
+            try{
+                playbackListener = parentFragment as RecordingToolbar.RecordingListener
+            }catch (e:Exception){}
+        }
 
         fun embedList(view: ViewGroup) {
             rootView = view
@@ -163,7 +179,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         override fun show() {
             if (!embedded) {
                 val inflater = LayoutInflater.from(context)
-                rootView = inflater?.inflate(R.layout.recordings_list, null) as ViewGroup
+                rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
             }
 
             updateRecordingList()
@@ -214,11 +230,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         override fun onRowClick(name: String) {
+            Workspace.activePhase.setChosenFilename("${Workspace.activeDir}/$name")
             if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activePhase.setChosenFilename("${Workspace.activeKeyterm.term}/$name")
                 (recyclerView?.adapter as RecyclerDataAdapter).notifyDataSetChanged()
             } else {
-                Workspace.activePhase.setChosenFilename("$PROJECT_DIR/$name")
                 (recyclerView?.adapter as RecordingsListAdapter).notifyDataSetChanged()
             }
         }
@@ -229,68 +244,40 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 audioPlayer.stopAudio()
             } else {
                 stopAudio()
+                playbackListener?.onStartedRecordingOrPlayback(false)
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
                 audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
                     currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                     audioPlayer.stopAudio()
                 })
-                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                    if (storyRelPathExists(context, name, "keyterms")) {
-                        audioPlayer.setStorySource(context, name, "keyterms")
-                        audioPlayer.playAudio()
-                        Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
+                if (storyRelPathExists(context, name)) {
+                    audioPlayer.setStorySource(context, name)
+                    audioPlayer.playAudio()
+                    Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
+                    when (Workspace.activePhase.phaseType) {
+                        PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
+                        else -> {
+                        }
                     }
                 } else {
-                    if (storyRelPathExists(context, "$PROJECT_DIR/$name")) {
-                        audioPlayer.setStorySource(context, "$PROJECT_DIR/$name")
-                        audioPlayer.playAudio()
-                        Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
-                        when (Workspace.activePhase.phaseType) {
-                            PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
-                            PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
-                            else -> {
-                            }
-                        }
-                    } else {
-                        Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
-                    }
+                    Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        override fun onDeleteClick(name: String, pos: Int) {
-            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
-            filenames.removeAt(pos)
-
-            if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activeKeyterm.backTranslations.removeAt(pos)
-                deleteStoryFile(context, name, "keyterms")
-                if (name == Workspace.activePhase.getChosenFilename()) {
-                    if (filenames.size > 0) {
-                        Workspace.activePhase.setChosenFilename(filenames.last())
-                    }
-                    else {
-                        Workspace.activePhase.setChosenFilename("")
-                        toolbar?.setupToolbarButtons()
-                        dialog?.dismiss()
-                    }
+        override fun onDeleteClick(name: String, pos: Int){
+            Workspace.deleteAudioFileFromList(context,name,pos)
+            updateRecordingList()
+            if ("${Workspace.activeDir}/$name" == Workspace.activePhase.getChosenFilename()) {
+                if (filenames.size > 0) {
+                    Workspace.activePhase.setChosenFilename(filenames.last())
                 }
-                (recyclerView?.adapter as RecyclerDataAdapter).notifyItemRemoved(pos)
-            }
-            else {
-                deleteStoryFile(context, "$PROJECT_DIR/$name")
-                if ("$PROJECT_DIR/$name" == Workspace.activePhase.getChosenFilename()) {
-                    if (filenames.size > 0) {
-                        Workspace.activePhase.setChosenFilename("$PROJECT_DIR/" + filenames.last())
-                    }
-                    else {
-                        Workspace.activePhase.setChosenFilename("")
-                        toolbar?.setupToolbarButtons()
-                        dialog?.dismiss()
-                    }
+                else {
+                    Workspace.activePhase.setChosenFilename("")
+                    toolbar?.setupToolbarButtons()
+                    dialog?.dismiss()
                 }
                 (recyclerView?.adapter as RecordingsListAdapter).notifyItemRemoved(pos)
             }

@@ -1,12 +1,10 @@
 package org.sil.storyproducer.controller
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
-
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
@@ -41,25 +39,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener{
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                recordingToolbar.pause()
+                recordingToolbar.stopToolbarMedia()
             }
         }
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on pause.
-     */
-    override fun onPause() {
-        super.onPause()
-        recordingToolbar.pause()
-    }
-
-    /**
-     * Used to hide the play and multiple recordings button.
-     */
-    fun hideButtonsToolbar() {
-        recordingToolbar.hideButtons()
     }
 
     override fun stopPlayBackAndRecording() {

@@ -8,6 +8,7 @@ import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
+import android.preference.PreferenceManager
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -170,24 +171,10 @@ class RecordingToolbar : Fragment(){
      * Calling class should be responsible for all other media
      * so [.stopPlayBackAndRecording] is not being used here.
      */
-    fun pause() {
+    override fun onPause() {
         stopToolbarMedia()
         audioPlayer.release()
-    }
-    
-    fun hideButtons() {
-        if (enablePlaybackButton) {
-            playButton.visibility = View.INVISIBLE
-        }
-        if (enableMultiRecordButton) {
-            multiRecordButton.visibility = View.INVISIBLE
-        }
-        if (enableCheckButton) {
-            checkButton.visibility = View.INVISIBLE
-        }
-        if (enableSendAudioButton) {
-            sendAudioButton.visibility = View.INVISIBLE
-        }
+        super.onPause()
     }
 
     private fun startRecording(recordingRelPath: String) {
@@ -229,9 +216,18 @@ class RecordingToolbar : Fragment(){
                 buttonSpacing.layoutParams = spaceLayoutParams
                 rootView?.addView(buttonSpacing)
                 when (i) {
-                    0 -> micButton = imageButtons[i]
-                    1 -> playButton = imageButtons[i]
-                    2 -> multiRecordButton = imageButtons[i]
+                    0 -> {
+                        micButton = imageButtons[i]
+                        micButton.id = org.sil.storyproducer.R.id.start_recording_button
+                    }
+                    1 -> {
+                        playButton = imageButtons[i]
+                        playButton.id = org.sil.storyproducer.R.id.play_recording_button
+                    }
+                    2 -> {
+                        multiRecordButton = imageButtons[i]
+                        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
+                    }
                     3 -> checkButton = imageButtons[i]
                     4 -> sendAudioButton = imageButtons[i]
                 }
@@ -258,6 +254,7 @@ class RecordingToolbar : Fragment(){
         }
         setOnClickListeners()
     }
+
     /**
      * Enables the buttons to have the appropriate onClick listeners.
      */
@@ -310,7 +307,6 @@ class RecordingToolbar : Fragment(){
                     stopToolbarMedia()
                 } else {
                     //Now we need to start recording!
-                    recordingListener.onStartedRecordingOrPlayback(true)
                     val recordingRelPath = assignNewAudioRelPath()
                     val dialog = AlertDialog.Builder(activity!!)
                             .setTitle(activity!!.getString(R.string.overwrite))
@@ -636,13 +632,20 @@ class RecordingToolbar : Fragment(){
      * @param delay     The time that will be delayed in ms if isDelayed is true.
      */
     private fun startRecordingAnimation(isDelayed: Boolean, delay: Int) {
-        if (colorHandler != null && colorHandlerRunnable != null) {
-            if (isDelayed) {
-                colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
-            } else {
-                colorHandler!!.post(colorHandlerRunnable)
+        if (isRecordingAnimationEnabled())
+        {
+            if (colorHandler != null && colorHandlerRunnable != null) {
+                if (isDelayed) {
+                    colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
+                } else {
+                    colorHandler!!.post(colorHandlerRunnable)
+                }
             }
         }
+    }
+
+    private fun isRecordingAnimationEnabled(): Boolean {
+        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
     }
 
     /**

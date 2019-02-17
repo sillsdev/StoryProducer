@@ -3,9 +3,9 @@ package org.sil.storyproducer.controller.phase
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +13,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -261,6 +260,16 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
 
+        //scale down image to not crash phone from memory error from displaying too large an image
+        //Get the height of the phone.
+        val phoneProperties = this.resources.displayMetrics
+        var height = phoneProperties.heightPixels
+        val scalingFactor = 0.4
+        height = (height * scalingFactor).toInt()
+
+        //scale bitmap
+        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
@@ -268,12 +277,18 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
         else Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
         //if overlay is null, it will not write the text.
+        tOverlay?.setPadding(max(2, 2 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
+
+        //Set the height of the image view
+        slideImage.layoutParams.height = height
+        slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
     }
 
     companion object {
+
         fun disableViewAndChildren(view: View) {
             view.isEnabled = false
             if (view is ViewGroup) {

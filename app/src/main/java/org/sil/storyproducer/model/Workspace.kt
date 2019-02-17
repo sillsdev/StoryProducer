@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import java.io.File
 import java.io.FileReader
@@ -45,6 +46,30 @@ object Workspace{
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
+    val activeDirRoot: String
+    get(){
+        return if(activePhase.phaseType == PhaseType.KEYTERM)
+            KEYTERMS_DIR
+        else
+            activeStory.title
+    }
+
+    val activeDir: String
+    get(){
+        return if(activePhase.phaseType == PhaseType.KEYTERM)
+            activeKeyterm.term
+        else
+            PROJECT_DIR
+    }
+    val activeFilenameRoot: String
+    get() {
+        return if(activePhase.phaseType == PhaseType.KEYTERM){
+            Workspace.activeKeyterm.term
+        }else {
+            "${activePhase.getShortName()}${ Workspace.activeSlideNum }"
+        }
+    }
+
     lateinit var activeKeyterm: Keyterm
     var activeSlideNum: Int = -1
     set(value){
@@ -109,6 +134,15 @@ object Workspace{
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
+    }
+
+    fun deleteAudioFileFromList(context: Context, name: String, position: Int) {
+        val filenames = Workspace.activePhase.getRecordedAudioFiles(activeSlideNum)!!
+        filenames.removeAt(position)
+        if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+            Workspace.activeKeyterm.backTranslations.removeAt(position)
+        }
+        deleteStoryFile(context, "${Workspace.activeDir}/$name")
     }
 
     private fun importKeyterms(context: Context) {

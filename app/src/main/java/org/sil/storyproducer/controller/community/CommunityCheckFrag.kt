@@ -23,6 +23,9 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         setToolbar()
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
+        dispList?.setSlideNum(slideNum)
+        //This enables the "onStartedPlaybackOrRecording" to be invoked.
+        dispList?.setParentFragment(this)
         dispList?.show()
         return rootView
     }
