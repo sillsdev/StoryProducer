@@ -7,7 +7,6 @@ class KeytermList (val keyterms: List<Keyterm>) {
     companion object
 }
 
-
 @JsonClass(generateAdapter = true)
 class Keyterm (var term: String = "",
                var termForms: List<String> = listOf(),

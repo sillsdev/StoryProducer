@@ -11,7 +11,7 @@ fun KeytermList.toJson(context: Context){
             .build()
     val adapter = KeytermList.jsonAdapter(moshi)
     val oStream = getKeytermChildOutputStream(context,
-            "keyterms.json","")
+            KEYTERMS_JSON_FILE,"")
     if(oStream != null) {
         oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
         oStream.close()
@@ -24,6 +24,6 @@ fun keytermListFromJson(context: Context): KeytermList?{
             .add(UriAdapter())
             .build()
     val adapter = KeytermList.jsonAdapter(moshi)
-    val fileContents = getStoryText(context,"keyterms.json", "keyterms") ?: return null
+    val fileContents = getStoryText(context, KEYTERMS_JSON_FILE, KEYTERMS_DIR) ?: return null
     return adapter.fromJson(fileContents)
 }

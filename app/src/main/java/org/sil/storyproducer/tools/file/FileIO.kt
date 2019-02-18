@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import org.sil.storyproducer.model.KEYTERMS_DIR
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -77,7 +78,7 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 }
 
 fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-    return getChildOutputStream(context, "keyterms/$relPath", mimeType)
+    return getChildOutputStream(context, "$KEYTERMS_DIR/$relPath", mimeType)
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
