@@ -20,12 +20,6 @@ enum class PhaseType {
  */
 class Phase(val phaseType: PhaseType) {
 
-
-    /**
-     * Return chosen file.  Null if the current phase has no chosen file.
-     */
-    fun hasChosenFilename(): Boolean {return phaseType in listOf(PhaseType.DRAFT,PhaseType.DRAMATIZATION,PhaseType.BACKT)}
-
     fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String {
         return when(phaseType){
             PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
@@ -54,7 +48,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.KEYTERM -> {
                 val audioFiles : MutableList<String> = mutableListOf()
                 for(audioFile in Workspace.activeKeyterm.backTranslations){
-                    audioFiles.add(audioFile.audioBackTranslation.substringAfterLast("/"))
+                    audioFiles.add(audioFile.audioBackTranslation)
                 }
                 audioFiles
             }

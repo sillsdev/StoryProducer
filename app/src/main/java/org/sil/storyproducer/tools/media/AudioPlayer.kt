@@ -3,7 +3,6 @@ package org.sil.storyproducer.tools.media
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import android.util.Log
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri

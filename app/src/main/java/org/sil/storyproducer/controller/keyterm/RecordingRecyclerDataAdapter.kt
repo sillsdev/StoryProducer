@@ -2,7 +2,8 @@ package org.sil.storyproducer.controller.keyterm
 
 import android.app.AlertDialog
 import android.content.Context
-import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED
+import android.support.design.widget.BottomSheetBehavior.from
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +22,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         fun onPlayClick(name: String, buttonClickedNow: ImageButton)
         fun onDeleteClick(name: String, pos: Int)
         fun onRenameClick(name: String, newName: String): RenameCode
-        fun onRenameSuccess(position: Int)
+        fun onRenameSuccess(pos: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -49,15 +50,16 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
 
         fun bindView(text : BackTranslation){
-            parentTextView.text = text.audioBackTranslation.substringAfterLast("/")
+            val audioFilename = text.audioBackTranslation.substringAfterLast('/')
+            parentTextView.text = audioFilename
             parentPlayButton.setOnClickListener {
-                listeners.onPlayClick(text.audioBackTranslation, parentPlayButton)
+                listeners.onPlayClick(audioFilename, parentPlayButton)
             }
             parentDeleteButton.setOnClickListener {
-                showDeleteItemDialog(adapterPosition, text.audioBackTranslation)
+                showDeleteItemDialog(adapterPosition, audioFilename)
             }
             parentTextView.setOnClickListener {
-                listeners.onRowClick(text.audioBackTranslation)
+                listeners.onRowClick(audioFilename)
             }
             parentTextView.setOnLongClickListener {
                 showItemRenameDialog(adapterPosition)
@@ -82,9 +84,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
                     frameLayoutChildItem.removeAllViews()
-                    if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_HALF_EXPANDED) {
-                        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
-                    }
+                    updateBottomSheetState(itemView.context)
                     context?.hideKeyboard(it)
                     initComment()
                 }
@@ -94,9 +94,9 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private fun initComment(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childComment)
-            val currentTextView = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_title) as TextView
+            val currentTextView = frameLayoutChildItem.findViewById<TextView>(R.id.backtranslation_comment_title)
             currentTextView.text = recordings[adapterPosition].textBackTranslation
-            val currentDeleteButton = frameLayoutChildItem.findViewById(R.id.backtranslation_comment_delete_button) as ImageButton
+            val currentDeleteButton = frameLayoutChildItem.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
             currentDeleteButton.setOnClickListener {
                 recordings[adapterPosition].textBackTranslation = ""
                 frameLayoutChildItem.removeAllViews()
@@ -111,7 +111,8 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     .setNegativeButton(itemView.context.getString(R.string.no), null)
                     .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
                         listeners.onDeleteClick(text, position)
-                            updateBottomSheetState(itemView.context)
+                        notifyItemRemoved(position)
+                        updateBottomSheetState(itemView.context)
                     }
                     .create()
 
@@ -119,9 +120,10 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         }
 
         private fun updateBottomSheetState(context: Context){
-            val bottomSheetBehavior = BottomSheetBehavior.from((context as KeyTermActivity).bottomSheet)
-            if(!(context).manuallyOpened) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            context as KeyTermActivity
+            if((context).isFinishedRecordingFromCollapsedState || recordings.isEmpty()) {
+                from(bottomSheet).state = STATE_COLLAPSED
+                (context).isFinishedRecordingFromCollapsedState = false
             }
         }
 

@@ -147,8 +147,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
-        recordingToolbar.pause()
-        //recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -242,7 +240,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
      * Plays the audio
      */
     internal fun playStoryAudio() {
-        recordingToolbar.onPause()
+        recordingToolbar.stopToolbarMedia()
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()

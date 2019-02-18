@@ -166,7 +166,7 @@ abstract class SlidePhaseFrag : Fragment() {
     protected fun setScriptureText(textView: TextView) {
         val phrases = Workspace.keytermSearchTree.splitOnKeyterms(slide.content)
         textView.text = phrases.fold(SpannableStringBuilder()){
-            result, phrase -> result.append(stringToKeytermLink(context!!, phrase, activity))
+            result, phrase -> result.append(stringToKeytermLink(phrase, activity))
         }
         textView.movementMethod = LinkMovementMethod.getInstance()
     }

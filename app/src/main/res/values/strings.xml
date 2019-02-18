@@ -178,6 +178,7 @@
     <string name="recording_toolbar_recording_voice">Recording voice!</string>
     <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
     <string name="recording_toolbar_error_recording">Error recording, record again!</string>
+    <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>
 
     <!-- Multiple Recording Dialog -->
     <string name="delete_audio_title">Delete Audio file?</string>

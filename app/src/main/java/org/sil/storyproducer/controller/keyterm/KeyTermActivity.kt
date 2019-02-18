@@ -1,12 +1,11 @@
 package org.sil.storyproducer.controller.keyterm
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
@@ -40,7 +39,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
-    var manuallyOpened = false
+    var isFinishedRecordingFromCollapsedState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,14 +80,14 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private fun setupBottomSheet(){
         bottomSheet = findViewById(R.id.bottom_sheet)
 
-        BottomSheetBehavior.from(bottomSheet).isFitToContents = false
-        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
+        from(bottomSheet).isFitToContents = false
+        from(bottomSheet).peekHeight = dpToPx(48, this)
 
         if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            from(bottomSheet).state = STATE_EXPANDED
         }
         else {
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+            from(bottomSheet).state = STATE_COLLAPSED
         }
     }
 
@@ -131,7 +130,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         val relatedTermsView = findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){
-            result, relatedTerm -> result.append(stringToKeytermLink(this, relatedTerm, this)).append("   ")
+            result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, this)).append("   ")
         }
         relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
 
@@ -180,8 +179,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         if(isRecording) {
             val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
             recordingExpandableListView.adapter?.notifyItemInserted(0)
-            if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
-                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            if(from(bottomSheet).state == STATE_COLLAPSED) {
+                from(bottomSheet).state = STATE_EXPANDED
+                isFinishedRecordingFromCollapsedState = true
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }
@@ -199,9 +199,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     override fun onBackPressed() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        if( bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        if( from(bottomSheet).state == STATE_EXPANDED){
+            from(bottomSheet).state = STATE_COLLAPSED
         }
         else {
             keytermHistory.pop()
@@ -217,16 +216,16 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 }
 
-fun stringToKeytermLink(context: Context, string: String, fragmentActivity: FragmentActivity?): SpannableString {
+fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
     val spannableString = SpannableString(string)
     if (Workspace.termFormToTerm.containsKey(string.toLowerCase())) {
-        val clickableSpan = createKeytermClickableSpan(context, string, fragmentActivity)
+        val clickableSpan = createKeytermClickableSpan(string, fragmentActivity)
         spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
     return spannableString
 }
 
-private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
+private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
     return object : ClickableSpan() {
         override fun onClick(textView: View) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
@@ -240,7 +239,7 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
                 (fragmentActivity as KeyTermActivity).keytermHistory.push(term)
                 (fragmentActivity).setupNoteView()
                 (fragmentActivity).setupRecordingList()
-                BottomSheetBehavior.from((fragmentActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                from((fragmentActivity).bottomSheet).state = STATE_COLLAPSED
             }
             else {
                 //Set keyterm from link as active keyterm
@@ -259,7 +258,7 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
             val hasRecording = keyterm?.backTranslations?.isNotEmpty()
 
             if(hasRecording != null && hasRecording){
-                drawState.linkColor = ContextCompat.getColor(context, R.color.lightGray)
+                drawState.linkColor = ContextCompat.getColor(fragmentActivity!!.applicationContext, R.color.lightGray)
             }
 
             super.updateDrawState(drawState)
