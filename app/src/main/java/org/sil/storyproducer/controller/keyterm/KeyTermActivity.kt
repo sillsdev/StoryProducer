@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
@@ -81,14 +81,14 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private fun setupBottomSheet(){
         bottomSheet = findViewById(R.id.bottom_sheet)
 
-        BottomSheetBehavior.from(bottomSheet).isFitToContents = false
-        BottomSheetBehavior.from(bottomSheet).peekHeight = dpToPx(48, this)
+        from(bottomSheet).isFitToContents = false
+        from(bottomSheet).peekHeight = dpToPx(48, this)
 
         if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            from(bottomSheet).state = STATE_EXPANDED
         }
         else {
-            BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+            from(bottomSheet).state = STATE_COLLAPSED
         }
     }
 
@@ -180,8 +180,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         if(isRecording) {
             val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
             recordingExpandableListView.adapter?.notifyItemInserted(0)
-            if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_COLLAPSED) {
-                BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            if(from(bottomSheet).state == STATE_COLLAPSED) {
+                from(bottomSheet).state = STATE_EXPANDED
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }
@@ -199,9 +199,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     override fun onBackPressed() {
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        if( bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED){
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        if( from(bottomSheet).state == STATE_EXPANDED){
+            from(bottomSheet).state = STATE_COLLAPSED
         }
         else {
             keytermHistory.pop()
@@ -240,7 +239,7 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
                 (fragmentActivity as KeyTermActivity).keytermHistory.push(term)
                 (fragmentActivity).setupNoteView()
                 (fragmentActivity).setupRecordingList()
-                BottomSheetBehavior.from((fragmentActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                from((fragmentActivity).bottomSheet).state = STATE_COLLAPSED
             }
             else {
                 //Set keyterm from link as active keyterm

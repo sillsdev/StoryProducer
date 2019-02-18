@@ -2,7 +2,7 @@ package org.sil.storyproducer.controller.keyterm
 
 import android.app.AlertDialog
 import android.content.Context
-import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -83,8 +83,8 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
                     frameLayoutChildItem.removeAllViews()
-                    if(BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
-                        BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                    if(from(bottomSheet).state == STATE_EXPANDED) {
+                        from(bottomSheet).state = STATE_COLLAPSED
                     }
                     context?.hideKeyboard(it)
                     initComment()
@@ -121,9 +121,9 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         }
 
         private fun updateBottomSheetState(context: Context){
-            val bottomSheetBehavior = BottomSheetBehavior.from((context as KeyTermActivity).bottomSheet)
+            context as KeyTermActivity
             if(!(context).manuallyOpened) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                from(bottomSheet).state = STATE_COLLAPSED
                 (context).manuallyOpened = false
             }
         }
