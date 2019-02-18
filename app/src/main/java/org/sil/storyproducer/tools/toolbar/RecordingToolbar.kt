@@ -379,6 +379,10 @@ class RecordingToolbar : Fragment(){
                         if(newState == STATE_COLLAPSED){
                             view.let { activity?.hideKeyboard(it) }
                         }
+                        // Disables opening recording list when no recordings are available
+                        if(Workspace.activeKeyterm.backTranslations.isEmpty()){
+                            from(bottomSheet).state = STATE_COLLAPSED
+                        }
                     }
                     override fun onSlide(view: View, newState: Float) {}
                 })

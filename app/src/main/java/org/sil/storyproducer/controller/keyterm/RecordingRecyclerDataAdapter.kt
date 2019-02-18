@@ -122,7 +122,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
 
         private fun updateBottomSheetState(context: Context){
             context as KeyTermActivity
-            if(!(context).manuallyOpened) {
+            if(!(context).manuallyOpened || recordings.isEmpty()) {
                 from(bottomSheet).state = STATE_COLLAPSED
                 (context).manuallyOpened = false
             }
