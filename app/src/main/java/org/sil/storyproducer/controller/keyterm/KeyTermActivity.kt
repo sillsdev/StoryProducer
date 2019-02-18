@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.keyterm
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -40,7 +39,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
     lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
-    var manuallyOpened = false
+    var isFinishedRecordingFromCollapsedState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -182,6 +181,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             recordingExpandableListView.adapter?.notifyItemInserted(0)
             if(from(bottomSheet).state == STATE_COLLAPSED) {
                 from(bottomSheet).state = STATE_EXPANDED
+                isFinishedRecordingFromCollapsedState = true
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }

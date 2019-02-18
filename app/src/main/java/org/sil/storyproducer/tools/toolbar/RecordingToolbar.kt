@@ -378,6 +378,7 @@ class RecordingToolbar : Fragment(){
                         setKeytermMultiRecordIcon(newState)
                         if(newState == STATE_COLLAPSED){
                             view.let { activity?.hideKeyboard(it) }
+                            (activity as KeyTermActivity).isFinishedRecordingFromCollapsedState = false
                         }
                         // Disables opening recording list when no recordings are available
                         if(Workspace.activeKeyterm.backTranslations.isEmpty()){
@@ -399,7 +400,6 @@ class RecordingToolbar : Fragment(){
                     }
                     else{
                         from(bottomSheet).state = STATE_EXPANDED
-                        (activity as KeyTermActivity).manuallyOpened = true
                     }
                 } else {
                     recordingListener.onStartedRecordingOrPlayback(false)
