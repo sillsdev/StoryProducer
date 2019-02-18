@@ -281,7 +281,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         tOverlay?.draw(canvas)
 
         //Set the height of the image view
-        slideImage.layoutParams.height = height
         slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
