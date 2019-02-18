@@ -49,15 +49,16 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
 
         fun bindView(text : BackTranslation){
-            parentTextView.text = text.audioBackTranslation.substringAfterLast('/')
+            val audioFilename = text.audioBackTranslation.substringAfterLast('/')
+            parentTextView.text = audioFilename
             parentPlayButton.setOnClickListener {
-                listeners.onPlayClick(text.audioBackTranslation.substringAfterLast('/'), parentPlayButton)
+                listeners.onPlayClick(audioFilename, parentPlayButton)
             }
             parentDeleteButton.setOnClickListener {
-                showDeleteItemDialog(adapterPosition, text.audioBackTranslation.substringAfterLast('/'))
+                showDeleteItemDialog(adapterPosition, audioFilename)
             }
             parentTextView.setOnClickListener {
-                listeners.onRowClick(text.audioBackTranslation.substringAfterLast('/'))
+                listeners.onRowClick(audioFilename)
             }
             parentTextView.setOnLongClickListener {
                 showItemRenameDialog(adapterPosition)
