@@ -76,9 +76,8 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
     return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
 }
 
-fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: String = "", keytermName: String = Workspace.activeKeyterm.term) : OutputStream? {
-    if (keytermName == "") return null
-    return getChildOutputStream(context, "keyterms/$keytermName/$relPath", mimeType)
+fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
+    return getChildOutputStream(context, "keyterms/$relPath", mimeType)
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{

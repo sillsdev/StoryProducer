@@ -2,27 +2,28 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import com.squareup.moshi.Moshi
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getKeytermChildOutputStream
+import org.sil.storyproducer.tools.file.getStoryText
 
-fun Keyterm.toJson(context: Context){
+fun KeytermList.toJson(context: Context){
     val moshi = Moshi
             .Builder()
             .build()
-    val adapter = Keyterm.jsonAdapter(moshi)
+    val adapter = KeytermList.jsonAdapter(moshi)
     val oStream = getKeytermChildOutputStream(context,
-            "${this.term}.json","",this.term)
+            "keyterms.json","")
     if(oStream != null) {
         oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
         oStream.close()
     }
 }
 
-fun keytermFromJson(context: Context, keytermName: String): Keyterm?{
+fun keytermListFromJson(context: Context): KeytermList?{
     val moshi = Moshi
             .Builder()
             .add(UriAdapter())
             .build()
-    val adapter = Keyterm.jsonAdapter(moshi)
-    val fileContents = getStoryText(context,"$keytermName/${keytermName.substringBefore('_')}.json", "keyterms") ?: return null
+    val adapter = KeytermList.jsonAdapter(moshi)
+    val fileContents = getStoryText(context,"keyterms.json", "keyterms") ?: return null
     return adapter.fromJson(fileContents)
 }
