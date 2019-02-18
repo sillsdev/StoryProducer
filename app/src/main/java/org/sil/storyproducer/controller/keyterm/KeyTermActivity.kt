@@ -130,7 +130,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         val relatedTermsView = findViewById<TextView>(R.id.related_terms_text)
         relatedTermsView.text = Workspace.activeKeyterm.relatedTerms.fold(SpannableStringBuilder()){
-            result, relatedTerm -> result.append(stringToKeytermLink(this, relatedTerm, this)).append("   ")
+            result, relatedTerm -> result.append(stringToKeytermLink(relatedTerm, this)).append("   ")
         }
         relatedTermsView.movementMethod = LinkMovementMethod.getInstance()
 
@@ -216,16 +216,16 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 }
 
-fun stringToKeytermLink(context: Context, string: String, fragmentActivity: FragmentActivity?): SpannableString {
+fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
     val spannableString = SpannableString(string)
     if (Workspace.termFormToTerm.containsKey(string.toLowerCase())) {
-        val clickableSpan = createKeytermClickableSpan(context, string, fragmentActivity)
+        val clickableSpan = createKeytermClickableSpan(string, fragmentActivity)
         spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
     return spannableString
 }
 
-private fun createKeytermClickableSpan(context: Context, term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
+private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
     return object : ClickableSpan() {
         override fun onClick(textView: View) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
@@ -258,7 +258,7 @@ private fun createKeytermClickableSpan(context: Context, term: String, fragmentA
             val hasRecording = keyterm?.backTranslations?.isNotEmpty()
 
             if(hasRecording != null && hasRecording){
-                drawState.linkColor = ContextCompat.getColor(context, R.color.lightGray)
+                drawState.linkColor = ContextCompat.getColor(fragmentActivity!!.applicationContext, R.color.lightGray)
             }
 
             super.updateDrawState(drawState)
