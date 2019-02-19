@@ -3,6 +3,11 @@ package org.sil.storyproducer.model
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
+class KeytermList (val keyterms: List<Keyterm>) {
+    companion object
+}
+
+@JsonClass(generateAdapter = true)
 class Keyterm (var term: String = "",
                var termForms: List<String> = listOf(),
                var alternateRenderings: List<String> = listOf(),

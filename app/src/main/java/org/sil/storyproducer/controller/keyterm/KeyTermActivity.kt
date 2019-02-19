@@ -26,10 +26,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.toJson
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
@@ -195,7 +192,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
         //save the current term to the workspace
         Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-        Thread(Runnable{ this.let { Workspace.activeKeyterm.toJson(it) } }).start()
+        val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
+        Thread(Runnable{ this.let { keytermList.toJson(it) } }).start()
     }
 
     override fun onBackPressed() {
@@ -232,7 +230,8 @@ private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentA
                 //Save the active keyterm to the workspace
                 Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
                 //Save the active keyterm to a json file
-                Thread(Runnable{ fragmentActivity?.let { Workspace.activeKeyterm.toJson(it) } }).start()
+                val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
+                Thread(Runnable{ fragmentActivity?.let { keytermList.toJson(it) } }).start()
                 //Set keyterm from link as active keyterm
                 Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Add new keyterm fragments to stack
