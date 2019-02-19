@@ -149,7 +149,7 @@ object Workspace{
 
         if(keytermsDirectory != null) {
             importKeytermsFromCsvFile(context, keytermsDirectory)
-            importKeytermsFromJsonFiles(context)
+            importKeytermsFromJsonFiles(context, keytermsDirectory)
             mapTermFormsToTerms()
             buildKeytermSearchTree()
         }
@@ -171,8 +171,8 @@ object Workspace{
         }
     }
 
-    private fun importKeytermsFromJsonFiles(context: Context){
-        if(workspace.findFile(KEYTERMS_JSON_FILE) != null) {
+    private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
+        if(keytermsDirectory.findFile(KEYTERMS_JSON_FILE) != null) {
             val keytermList = keytermListFromJson(context)
             keytermList?.keyterms?.forEach { keyterm ->
                 if (termToKeyterm.containsKey(keyterm.term)) {
