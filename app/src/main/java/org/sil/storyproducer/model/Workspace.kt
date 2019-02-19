@@ -172,13 +172,15 @@ object Workspace{
     }
 
     private fun importKeytermsFromJsonFiles(context: Context){
-        val keytermList = keytermListFromJson(context)
-        keytermList?.keyterms?.forEach { keyterm ->
-            if (termToKeyterm.containsKey(keyterm.term)) {
-                termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
-                termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
-            } else {
-                termToKeyterm[keyterm.term] = keyterm
+        if(workspace.findFile(KEYTERMS_JSON_FILE) != null) {
+            val keytermList = keytermListFromJson(context)
+            keytermList?.keyterms?.forEach { keyterm ->
+                if (termToKeyterm.containsKey(keyterm.term)) {
+                    termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                    termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                } else {
+                    termToKeyterm[keyterm.term] = keyterm
+                }
             }
         }
     }
