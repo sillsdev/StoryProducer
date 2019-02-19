@@ -10,25 +10,25 @@ object PhaseNavigator {
     fun navigateFromRegistrationScreenToTranslatePhase() {
         skipRegistration()
         clickOnStory("Lost Coin")
-        selectPhase("Translate")
+        selectPhase(Constants.Phase.translate)
     }
 
     fun navigateFromRegistrationScreenToCommunityWorkPhase() {
         skipRegistration()
         clickOnStory("Lost Coin")
-        selectPhase("Community Work")
+        selectPhase(Constants.Phase.communityWork)
     }
 
     fun navigateFromRegistrationScreenToLearnPhase() {
         skipRegistration()
         clickOnStory("Lost Coin")
-        selectPhase("Learn")
+        selectPhase(Constants.Phase.learn)
     }
 
     fun navigateFromRegistrationScreenToVoiceStudioPhase() {
         skipRegistration()
         clickOnStory("Lost Coin")
-        selectPhase("Voice Studio")
+        selectPhase(Constants.Phase.voiceStudio)
     }
 
     private fun skipRegistration() {

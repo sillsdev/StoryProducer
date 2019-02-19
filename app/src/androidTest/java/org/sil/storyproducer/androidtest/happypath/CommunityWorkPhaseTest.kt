@@ -1,6 +1,5 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
 import android.view.View.INVISIBLE
@@ -21,12 +20,10 @@ import org.junit.Test
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 class CommunityWorkPhaseTest : PhaseTestBase() {
-    val durationToPlayTranslatedClip: Long = 100
-    val durationToRecordTranslatedClip: Long = 1000
-    val durationToRecordFeedbackClip: Long = 250
 
     override fun navigateToPhase() {
         PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
@@ -46,12 +43,12 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun should_BeAbleToPlayNarrationOfASlide() {
+    fun should_BeAbleToPlayTranslationOfASlide() {
         makeSureAnAudioClipIsAvailable()
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
-        Thread.sleep(durationToPlayTranslatedClip)
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
         pressPlayPauseButton()
         val progressAfterPausing = getCurrentSlideAudioProgress()
         Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
@@ -63,7 +60,7 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
         AnimationsToggler.disableCustomAnimations()
         pressMicButton()
-        Thread.sleep(durationToRecordFeedbackClip)
+        Thread.sleep(Constants.durationToRecordFeedbackClip)
         pressMicButton()
         AnimationsToggler.disableCustomAnimations()
 
@@ -99,11 +96,11 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase("Translate")
+        selectPhase(Constants.Phase.translate)
         if (!areThereAnyAudioClipsOnThisSlide()) {
             recordAnAudioTranslationClip()
         }
-        selectPhase("Community Work")
+        selectPhase(Constants.Phase.communityWork)
     }
 
     private fun selectPhase(phaseTitle: String) {
@@ -119,7 +116,7 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     private fun recordAnAudioTranslationClip() {
         AnimationsToggler.disableCustomAnimations()
         pressMicButton()
-        Thread.sleep(durationToRecordTranslatedClip)
+        Thread.sleep(Constants.durationToRecordTranslatedClip)
         pressMicButton()
         AnimationsToggler.enableCustomAnimations()
     }
@@ -128,7 +125,7 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
             ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(R.id.recordings_list)!!.childCount
 
     private fun giveUiTimeToChangeSlides() {
-        Thread.sleep(50)
+        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
     private fun getCurrentSlideAudioProgress(): Int {
@@ -145,6 +142,6 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     private fun expectToBeOnAccuracyCheckPhase() {
-        Espresso.onView(withText("Accuracy Check")).check(matches(isDisplayed()))
+        Espresso.onView(withText(Constants.Phase.accuracyCheck)).check(matches(isDisplayed()))
     }
 }

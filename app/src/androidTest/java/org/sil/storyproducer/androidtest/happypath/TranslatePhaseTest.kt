@@ -17,6 +17,7 @@ import org.junit.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 
@@ -67,7 +68,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     private fun giveAppTimeToRecordAudio() {
-        Thread.sleep(200)
+        Thread.sleep(Constants.durationToRecordTranslatedClip)
     }
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
@@ -88,7 +89,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     private fun giveUiTimeToChangeSlides() {
-        Thread.sleep(50)
+        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
     private fun getCurrentSlideAudioProgress(): Int {
@@ -101,7 +102,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(250)
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
     }
 
 }
