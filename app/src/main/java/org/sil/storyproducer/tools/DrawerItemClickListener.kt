@@ -11,6 +11,7 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
 import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
+import org.sil.storyproducer.controller.keyterm.PHASE
 import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
@@ -36,7 +37,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
             }
             2 -> {
                 intent = Intent(activity.applicationContext, KeyTermListActivity::class.java)
-                intent.putExtra("Phase", Workspace.activePhase.phaseType)
+                intent.putExtra(PHASE, Workspace.activePhase.phaseType)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity.startActivity(intent)
             }

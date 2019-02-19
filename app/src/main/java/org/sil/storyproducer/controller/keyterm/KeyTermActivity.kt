@@ -1,23 +1,17 @@
 package org.sil.storyproducer.controller.keyterm
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior.*
-import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import android.text.TextPaint
 import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,6 +24,8 @@ import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
+
+internal const val PHASE = "phase"
 
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
@@ -187,8 +183,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onPause() {
         super.onPause()
         //return the phase to what it was previously
-        if(intent.hasExtra("Phase")) {
-            Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
+        if(intent.hasExtra(PHASE)) {
+            Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
         }
         //save the current term to the workspace
         Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
@@ -210,57 +206,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 setupNoteView()
                 setupRecordingList()
             }
-        }
-    }
-}
-
-fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
-    val spannableString = SpannableString(string)
-    if (Workspace.termFormToTerm.containsKey(string.toLowerCase())) {
-        val clickableSpan = createKeytermClickableSpan(string, fragmentActivity)
-        spannableString.setSpan(clickableSpan, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-    }
-    return spannableString
-}
-
-private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan{
-    return object : ClickableSpan() {
-        override fun onClick(textView: View) {
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                //Save the active keyterm to the workspace
-                Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-                //Save the active keyterm to a json file
-                val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
-                Thread(Runnable{ fragmentActivity?.let { keytermList.toJson(it) } }).start()
-                //Set keyterm from link as active keyterm
-                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
-                //Add new keyterm fragments to stack
-                (fragmentActivity as KeyTermActivity).keytermHistory.push(term)
-                (fragmentActivity).setupNoteView()
-                (fragmentActivity).setupRecordingList()
-                from((fragmentActivity).bottomSheet).state = STATE_COLLAPSED
-            }
-            else {
-                //Set keyterm from link as active keyterm
-                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
-                //Start a new keyterm activity and keep a reference to the parent phase
-                val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
-                intent.putExtra("Phase", Workspace.activePhase.phaseType)
-                intent.putExtra("ClickedTerm", term)
-                fragmentActivity?.startActivity(intent)
-            }
-        }
-
-        override fun updateDrawState(drawState: TextPaint) {
-            val keyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]
-
-            val hasRecording = keyterm?.backTranslations?.isNotEmpty()
-
-            if(hasRecording != null && hasRecording){
-                drawState.linkColor = ContextCompat.getColor(fragmentActivity!!.applicationContext, R.color.lightGray)
-            }
-
-            super.updateDrawState(drawState)
         }
     }
 }

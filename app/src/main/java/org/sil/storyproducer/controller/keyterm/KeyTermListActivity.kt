@@ -52,8 +52,8 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
 
     override fun onPause() {
         super.onPause()
-        if(intent.hasExtra("Phase")) {
-            Workspace.activePhase = Phase(intent.getSerializableExtra("Phase") as PhaseType)
+        if(intent.hasExtra(PHASE)) {
+            Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
         }
     }
 
