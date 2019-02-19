@@ -1,5 +1,6 @@
 package org.sil.storyproducer.model
 
+import android.content.Context
 import android.content.Intent
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.FragmentActivity
@@ -37,6 +38,12 @@ class BackTranslation (var textBackTranslation : String = "",
     companion object
 }
 
+fun saveKeyterm(context: Context){
+    //save the current term to the workspace
+    Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+    val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
+    Thread(Runnable{ context.let { keytermList.toJson(it) } }).start()
+}
 
 fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): SpannableString {
     val spannableString = SpannableString(string)
@@ -51,11 +58,8 @@ private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentA
     return object : ClickableSpan() {
         override fun onClick(textView: View) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                //Save the active keyterm to the workspace
-                Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-                //Save the active keyterm to a json file
-                val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
-                Thread(Runnable{ fragmentActivity?.let { keytermList.toJson(it) } }).start()
+                //Save the active keyterm
+                saveKeyterm(fragmentActivity?.applicationContext!!)
                 //Set keyterm from link as active keyterm
                 Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Add new keyterm fragments to stack

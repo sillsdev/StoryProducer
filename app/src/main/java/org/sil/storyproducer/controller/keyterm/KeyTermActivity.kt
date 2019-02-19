@@ -141,13 +141,13 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_keyterm_view, menu)
-
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeKeyterm -> {
+                saveKeyterm(this)
                 finish()
                 true
             }
@@ -186,10 +186,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         if(intent.hasExtra(PHASE)) {
             Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
         }
-        //save the current term to the workspace
-        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-        val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
-        Thread(Runnable{ this.let { keytermList.toJson(it) } }).start()
     }
 
     override fun onBackPressed() {
@@ -197,6 +193,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             from(bottomSheet).state = STATE_COLLAPSED
         }
         else {
+            saveKeyterm(this)
             keytermHistory.pop()
             if (keytermHistory.isEmpty()) {
                 super.onBackPressed()
