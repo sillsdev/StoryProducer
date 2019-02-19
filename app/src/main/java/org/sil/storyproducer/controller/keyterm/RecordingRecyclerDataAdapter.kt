@@ -147,7 +147,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                     .setView(newName)
                     .setNegativeButton(itemView.context.getString(R.string.cancel), null)
                     .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
-                        val returnCode = listeners.onRenameClick(recordings[position].audioBackTranslation, newName.text.toString())
+                        val returnCode = listeners.onRenameClick(recordings[position].audioBackTranslation.substringAfterLast('/'), newName.text.toString())
                         when (returnCode) {
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
@@ -162,6 +162,5 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
             dialog.show()
             //TODO make keyboard show at once, but right now there are too many issues with it.
         }
-
     }
 }

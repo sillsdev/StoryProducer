@@ -240,7 +240,13 @@ fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
     val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
 
     return if(dir?.exists() == true) {
-        dir.findFile(oldFilename)?.renameTo(newFilename) == true
+        if(dir.findFile(newFilename) == null) {
+            dir.findFile(oldFilename)?.renameTo(newFilename)
+            dir.findFile(newFilename) != null
+            true
+        } else{
+            false
+        }
     } else{
         false
     }
