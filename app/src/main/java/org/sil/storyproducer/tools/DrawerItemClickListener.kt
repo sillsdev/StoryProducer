@@ -11,7 +11,7 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
 import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
-import org.sil.storyproducer.controller.keyterm.PHASE
+import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {

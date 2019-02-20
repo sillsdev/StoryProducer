@@ -13,7 +13,6 @@ import android.view.View
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermActivity
-import org.sil.storyproducer.controller.keyterm.PHASE
 
 @JsonClass(generateAdapter = true)
 class KeytermList (val keyterms: List<Keyterm>) {

@@ -19,8 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToKeyterm
 
@@ -48,13 +47,6 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
         setupDrawer()
 
         supportActionBar?.title = "Keyterm List"
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if(intent.hasExtra(PHASE)) {
-            Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -176,6 +168,7 @@ class MyAdapter(private val myDataset: Array<String>, private val context: Conte
         holder.item.setOnClickListener {
             Workspace.activeKeyterm = Workspace.termToKeyterm[myDataset[position]]!!
             val intent = Intent(context , KeyTermActivity::class.java)
+            intent.putExtra(PHASE, Workspace.activePhase.phaseType)
             intent.putExtra("ClickedTerm", Workspace.activeKeyterm.term)
             context.startActivity(intent)
         }
