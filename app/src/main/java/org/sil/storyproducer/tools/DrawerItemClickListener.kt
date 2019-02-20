@@ -37,7 +37,6 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
             }
             2 -> {
                 intent = Intent(activity.applicationContext, KeyTermListActivity::class.java)
-                intent.putExtra(PHASE, Workspace.activePhase.phaseType)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity.startActivity(intent)
             }
