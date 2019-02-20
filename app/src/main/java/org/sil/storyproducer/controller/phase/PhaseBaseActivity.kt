@@ -22,11 +22,9 @@ import android.webkit.WebView
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.tools.file.getStoryImage
-import kotlin.math.max
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
@@ -260,16 +258,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
 
-        //scale down image to not crash phone from memory error from displaying too large an image
-        //Get the height of the phone.
-        val phoneProperties = this.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
-
-        //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
-
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
@@ -277,7 +265,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
         else Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
         //if overlay is null, it will not write the text.
-        tOverlay?.setPadding(max(2, 2 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
 
         //Set the height of the image view
