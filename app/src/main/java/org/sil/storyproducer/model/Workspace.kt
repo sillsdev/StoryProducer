@@ -13,6 +13,7 @@ import java.util.*
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
 internal const val KEYTERMS_JSON_FILE = "keyterms.json"
+internal const val PHASE = "phase"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))

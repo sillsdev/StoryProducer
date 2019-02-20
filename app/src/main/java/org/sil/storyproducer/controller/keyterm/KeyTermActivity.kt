@@ -25,8 +25,6 @@ import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
-internal const val PHASE = "phase"
-
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
     private var recordingToolbar : RecordingToolbar = RecordingToolbar()
@@ -148,6 +146,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         return when (item.itemId) {
             R.id.closeKeyterm -> {
                 saveKeyterm(this)
+                if(intent.hasExtra(PHASE)) {
+                    Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
+                }
                 finish()
                 true
             }
@@ -180,14 +181,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        //return the phase to what it was previously
-        if(intent.hasExtra(PHASE)) {
-            Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
-        }
-    }
-
     override fun onBackPressed() {
         if( from(bottomSheet).state == STATE_EXPANDED){
             from(bottomSheet).state = STATE_COLLAPSED
@@ -196,6 +189,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             saveKeyterm(this)
             keytermHistory.pop()
             if (keytermHistory.isEmpty()) {
+                if(intent.hasExtra(PHASE)) {
+                    Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
+                }
                 super.onBackPressed()
                 finish()
             } else {
