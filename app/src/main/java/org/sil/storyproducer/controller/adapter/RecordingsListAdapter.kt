@@ -182,12 +182,12 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             }
 
             recyclerView = rootView?.findViewById(R.id.recordings_list)
+            updateRecordingList()
 
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
                 recyclerView?.adapter = RecyclerDataAdapter(context, Workspace.activeKeyterm.backTranslations, rootView?.findViewById(R.id.bottom_sheet)!!, this)
             }
             else{
-                updateRecordingList()
                 recyclerView?.adapter = RecordingsListAdapter(strippedFilenames, this)
                 recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             }
@@ -286,12 +286,13 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         override fun onRenameSuccess(pos: Int) {
+            updateRecordingList()
             filenames[pos] = lastNewName!!
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
                 Workspace.activeKeyterm.backTranslations[pos] = BackTranslation(Workspace.activeKeyterm.backTranslations[pos].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
             }
-            onRowClick(lastNewName.toString())
             updateRecordingList()
+            recyclerView?.adapter?.notifyItemChanged(pos)
         }
 
         fun stopAudio() {

@@ -6,7 +6,6 @@ import android.net.Uri
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import java.io.File
 import java.io.FileReader
 import java.util.*
@@ -14,6 +13,7 @@ import java.util.*
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_FILE = "keyterms.csv"
 internal const val KEYTERMS_JSON_FILE = "keyterms.json"
+internal const val PHASE = "phase"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -173,16 +173,14 @@ object Workspace{
     }
 
     private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
-        for (keytermFile in keytermsDirectory.listFiles()) {
-            if (keytermFile.isDirectory && storyRelPathExists(context, keytermFile.name!!,"keyterms")) {
-                val keyterm = keytermFromJson(context, keytermFile.name!!)
-                if(keyterm != null) {
-                    if (termToKeyterm.containsKey(keyterm.term)) {
-                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
-                        termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
-                    } else {
-                        termToKeyterm[keyterm.term] = keyterm
-                    }
+        if(keytermsDirectory.findFile(KEYTERMS_JSON_FILE) != null) {
+            val keytermList = keytermListFromJson(context)
+            keytermList?.keyterms?.forEach { keyterm ->
+                if (termToKeyterm.containsKey(keyterm.term)) {
+                    termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                    termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                } else {
+                    termToKeyterm[keyterm.term] = keyterm
                 }
             }
         }

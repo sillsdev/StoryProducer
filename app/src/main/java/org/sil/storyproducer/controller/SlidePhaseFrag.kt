@@ -10,12 +10,8 @@ import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.keyterm.stringToKeytermLink
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
