@@ -238,7 +238,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootView: View,
         setOnClickListeners()
     }
 
-    private fun setToolbarButtonIds() {
+    protected open fun setToolbarButtonIds() {
         micButton.id = org.sil.storyproducer.R.id.start_recording_button
         playButton.id = org.sil.storyproducer.R.id.play_recording_button
         multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button

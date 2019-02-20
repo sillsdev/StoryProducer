@@ -4,7 +4,10 @@ import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
 import android.view.View
 import android.widget.ImageButton
+import android.widget.ListView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.swipeUp
@@ -15,6 +18,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.Matcher
 import org.junit.Assert
 import org.junit.Test
 import org.sil.storyproducer.R
@@ -47,12 +51,66 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
         pressPlayPauseButton()
 
         val endingProgress = getCurrentSlideAudioProgress()
-        Assert.assertTrue("Expected ending progress to be greate than original progress.", endingProgress > originalProgress)
+        Assert.assertTrue("Expected ending progress to be greater than original progress.", endingProgress > originalProgress)
     }
 
     @Test
-    fun should_beAbleToRecordAudio() {
-        Assert.fail("Need to write a test for recording clips in the voice studio phase.")
+    fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
+        AnimationsToggler.withoutCustomAnimations {
+            // record a snippet with the mic button
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            // pause the recording
+            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            // Check the number of clips present in the list. n
+            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
+            val numberOfClipsAfterRecordingFirstSnippet = getCurrentNumberOfClips()
+            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
+
+            // record another snippet to the clip
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            // pause the recording
+            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            // stop/finalize the attempt
+            Espresso.onView(allOf(withId(R.id.finish_recording_button), isDisplayed())).perform(click())
+            // check the number of recordings present in the list. Should be n
+            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
+            val numberOfClipsAfterRecordingSecondSnippet = getCurrentNumberOfClips()
+            Assert.assertEquals(numberOfClipsAfterRecordingFirstSnippet, numberOfClipsAfterRecordingSecondSnippet)
+            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
+
+            // record a clip with the mic button
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
+            // pause the recording
+            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
+            // stop/finalize the attempt
+            Espresso.onView(allOf(withId(R.id.finish_recording_button), isDisplayed())).perform(click())
+            // check the number of recordings present in the list. Should n + 1
+            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
+            val numberOfClipsAfterRecordingASnippetForANewClip = getCurrentNumberOfClips()
+            Assert.assertEquals(numberOfClipsAfterRecordingSecondSnippet!! + 1, numberOfClipsAfterRecordingASnippetForANewClip)
+            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
+        }
+    }
+
+    private fun getCurrentNumberOfClips(): Int? {
+        val numberOfClips = arrayOfNulls<Int>(1)
+        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.recordings_list), ViewMatchers.isDisplayed())).perform(object : ViewAction {
+            override fun getConstraints(): Matcher<View> {
+                return ViewMatchers.isAssignableFrom(View::class.java)
+            }
+
+            override fun getDescription(): String {
+                return "Gets the currently displayed activity so that Espresso tests can reach 'under the hood' and reference actual Views."
+            }
+
+            override fun perform(uiController: UiController, view: View) {
+                numberOfClips[0] = (view as ListView).childCount
+            }
+        })
+        return numberOfClips[0]
     }
 
     @Test

@@ -1,5 +1,4 @@
 package org.sil.storyproducer.androidtest.utilities
-
 object Constants {
     // The duration for which a clip  gets played should be shorter than the
     // corresponding duration for which a clip gets recorded.
@@ -9,6 +8,7 @@ object Constants {
     const val durationToRecordLearnClip: Long = 1000
     const val durationToRecordTranslatedClip: Long = durationToRecordLearnClip
     const val durationToRecordFeedbackClip: Long = 250
+    const val durationToRecordVoiceStudioClip: Long = 250
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
@@ -21,3 +21,4 @@ object Constants {
         const val finalize = "Finalize"
     }
 }
+

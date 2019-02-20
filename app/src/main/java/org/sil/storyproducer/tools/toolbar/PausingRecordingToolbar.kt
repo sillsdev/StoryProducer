@@ -144,6 +144,7 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
                 }
             }
         }
+        setToolbarButtonIds()
 
         val playBackFileExist = storyRelPathExists(activity, Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
@@ -159,6 +160,11 @@ constructor(activity: Activity, rootViewToolbarLayout: View, rootViewLayout: Rel
             sendAudioButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
         setOnClickListeners()
+    }
+
+    override fun setToolbarButtonIds() {
+        super.setToolbarButtonIds()
+        checkButton?.id = org.sil.storyproducer.R.id.finish_recording_button
     }
 
     /**

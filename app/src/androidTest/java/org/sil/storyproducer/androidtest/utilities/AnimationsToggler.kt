@@ -18,4 +18,14 @@ object AnimationsToggler {
         preferencesEditor.putBoolean(activity!!.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
         preferencesEditor.commit()
     }
+
+    fun withoutCustomAnimations(function: () -> Unit) {
+        try {
+            disableCustomAnimations()
+            function()
+        }
+        finally {
+            enableCustomAnimations()
+        }
+    }
 }
