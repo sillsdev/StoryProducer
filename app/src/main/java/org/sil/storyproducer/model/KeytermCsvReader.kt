@@ -3,6 +3,12 @@ package org.sil.storyproducer.model
 import com.opencsv.CSVReader
 import java.io.FileReader
 
+/**
+ * DESCRIPTION
+ *
+ * @since 2.6 Keyterm
+ * @author Aaron Cannon
+ */
 class KeytermCsvReader(fileReader: FileReader){
     private val csvReader = CSVReader(fileReader)
 

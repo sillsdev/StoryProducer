@@ -155,7 +155,9 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
-     * Sets the main text of the layout.
+     * Sets the main text of the layout.  The text will be ran through and checked if any of the
+     * words are a keyterm and will turn them that string into a link that can be clicked and will
+     * open KeyTermActivity to show the user more about the keyterm
      *
      * @param textView The text view that will be filled with the verse's text.
      */

@@ -40,15 +40,16 @@ private const val RECORDING_ANIMATION_DURATION = 1500
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
- * to the toolbar. <br></br><br></br>
- * This class utilizes an empty layout for the toolbar and floating action button found in this layout:
- * (toolbar_for_recording.xml). <br></br>
- * The toolbar is where buttons are added to.<br></br> The toolbar is then placed at the
- * bottom of the rootView that is passed in to the this class' constructor. So, the rootView
- * must be of type RelativeLayout because the code related to placing the toolbar in the
- * rootView requires the rootView to be of type RelativeLayout. See: [.setupToolbar]<br></br><br></br>
- * This class also saves the recording and allows playback <br></br> from the toolbar. see: [.createToolbar]
- * <br></br><br></br>
+ * to the toolbar.  This class utilizes an empty layout for the toolbar and floating action button
+ * found in this layout: (toolbar_for_recording.xml).
+ *
+ * The toolbar will be added to a frame layout that will typically be placed at the bottom of a
+ * layout.  See fragment_slide.xml for an example.  Arguments will be passed to the fragment
+ * containing a boolean array of what buttons are used for the phase and the current slide number.
+ *
+ * @sample org.sil.storyproducer.controller.MultiRecordFrag.setToolbar
+ *
+ * This class also saves the recording and allows playback from the toolbar. see: [.createToolbar]
  */
 
 class RecordingToolbar : Fragment(){
@@ -417,6 +418,9 @@ class RecordingToolbar : Fragment(){
         }
     }
 
+    /**
+     * depending on the state of the bottom sheet will determine the icon used.
+     */
     private fun setKeytermMultiRecordIcon(state: Int){
         if(state == STATE_EXPANDED){
             multiRecordButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_white_48dp)
