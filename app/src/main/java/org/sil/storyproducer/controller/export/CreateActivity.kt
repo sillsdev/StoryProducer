@@ -43,13 +43,15 @@ class CreateActivity : PhaseBaseActivity() {
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
         val name = mEditTextTitle!!.text.toString()
+        var ethno = Workspace.registration.getString("ethnologue", "")
+        if(ethno != "") ethno = "${ethno}_"
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
         val ext = if (mRadioButtonDumbPhone!!.isChecked) {".3gp"} else {".mp4"}
-        return "$num${name}_$fx$px$mv$tx$sg$ext"
+        return "$num${name}_$ethno$fx$px$mv$tx$sg$ext"
     }
 
     private var mTextConfirmationChecked: Boolean = false
