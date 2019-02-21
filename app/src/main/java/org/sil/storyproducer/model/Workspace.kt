@@ -3,11 +3,11 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-
-import java.io.File
-import java.util.*
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.file.deleteStoryFile
+import java.io.File
+import java.util.*
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -40,6 +40,15 @@ object Workspace{
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
+    val activeDirRoot: String
+    get(){return activeStory.title }
+
+    val activeDir: String = PROJECT_DIR
+    val activeFilenameRoot: String
+    get() {
+        return "${activePhase.getShortName()}${ Workspace.activeSlideNum }"
+    }
+
     var activeSlideNum: Int = -1
     set(value){
         if(value >= 0 && value < activeStory.slides.size) field = value
@@ -72,7 +81,7 @@ object Workspace{
 
     }
 
-    fun updateStories(context: Context) {
+    private fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         if(storiesUpdated) return
@@ -100,6 +109,13 @@ object Workspace{
         updateStoryLocalCredits(context)
         storiesUpdated = true
     }
+
+    fun deleteAudioFileFromList(context: Context, name: String, position: Int) {
+        val filenames = activePhase.getRecordedAudioFiles(activeSlideNum)!!
+        filenames.removeAt(position)
+        deleteStoryFile(context, "$activeDir/$name")
+    }
+
 
     fun updateStoryLocalCredits(context: Context) {
         for(story in Stories){

@@ -1,13 +1,16 @@
 package org.sil.storyproducer.tools.file
 
-import org.sil.storyproducer.model.*
+
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Workspace
 import kotlin.math.max
 
 /**
  * AudioFiles represents an abstraction of the audio resources for story templates and project files.
  */
 
-internal val AUDIO_EXT = ".m4a"
+internal const val AUDIO_EXT = ".m4a"
 
 /**
  * Creates a relative path for recorded audio based upon the phase, slide number and timestamp.
@@ -16,9 +19,9 @@ internal val AUDIO_EXT = ".m4a"
  * @return the path generated, or an empty string if there is a failure.
  */
 fun assignNewAudioRelPath() : String {
-    if(Workspace.activeStory.title == "") return ""
     val phase = Workspace.activePhase
     val phaseName = phase.getShortName()
+    if(Workspace.activeDirRoot == "") return ""
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
     var relPath = ""
@@ -29,20 +32,20 @@ fun assignNewAudioRelPath() : String {
     when(phase.phaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
-            relPath = "$PROJECT_DIR/$phaseName" + AUDIO_EXT
+            relPath = "$PROJECT_DIR/$phaseName$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             //find the next number that is available for saving files at.
-            val rFileNum = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_([0-9]+)".toRegex()
+            val rFileNum = "${Workspace.activeFilenameRoot}_([0-9]+)".toRegex()
             var maxNum = 0
             for (f in files!!){
                 val num = rFileNum.find(f)
                 if(num != null)
                     maxNum = max(maxNum,num.groupValues[1].toInt())
             }
-            relPath = "$PROJECT_DIR/$phaseName${Workspace.activeSlideNum}_${maxNum+1}" + AUDIO_EXT
+            relPath = "${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${maxNum+1}" + AUDIO_EXT
         }
         else -> {}
     }

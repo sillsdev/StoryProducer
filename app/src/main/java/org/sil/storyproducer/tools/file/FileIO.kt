@@ -71,15 +71,14 @@ fun genDefaultImage(): Bitmap {
     pic!!.eraseColor(Color.DKGRAY)
     return pic
 }
-fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", storyTitle: String = Workspace.activeStory.title) : OutputStream? {
-    if (storyTitle == "") return null
-    return getChildOutputStream(context, "$storyTitle/$relPath", mimeType)
+fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
+    if (dirRoot == "") return null
+    return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
 }
 
-fun storyRelPathExists(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean{
+fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
-    //if we can get the type, it exists.
-    val uri = getStoryUri(relPath,storyTitle) ?: return false
+    val uri = getStoryUri(relPath,dirRoot) ?: return false
     context.contentResolver.getType(uri) ?: return false
     return true
 }
@@ -91,27 +90,27 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     return true
 }
 
-fun getStoryUri(relPath: String, storyTitle: String = Workspace.activeStory.title) : Uri? {
-    if (storyTitle == "") return null
+fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
+    if (dirRoot == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
-            Uri.encode("/$storyTitle/$relPath"))
+            Uri.encode("/$dirRoot/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
     return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
 }
 
-fun getStoryText(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : String? {
-    val iStream = getStoryChildInputStream(context, relPath, storyTitle)
+fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : String? {
+    val iStream = getStoryChildInputStream(context, relPath, dirRoot)
     if (iStream != null)
         return iStream.reader().use {
             it.readText() }
     return null
 }
 
-fun getStoryChildInputStream(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : InputStream? {
-    if (storyTitle == "") return null
-    return getChildInputStream(context, "$storyTitle/$relPath")
+fun getStoryChildInputStream(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : InputStream? {
+    if (dirRoot == "") return null
+    return getChildInputStream(context, "$dirRoot/$relPath")
 }
 
 fun getText(context: Context, relPath: String) : String? {
@@ -132,13 +131,13 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
     return oStream
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : FileDescriptor? {
-    return getStoryPFD(context,relPath,mimeType,mode,storyTitle)?.fileDescriptor
+fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : FileDescriptor? {
+    return getStoryPFD(context,relPath,mimeType,mode,dirRoot)?.fileDescriptor
 }
 
-fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", storyTitle: String = Workspace.activeStory.title) : ParcelFileDescriptor? {
-    if (storyTitle == "") return null
-    return getPFD(context, "$storyTitle/$relPath", mimeType, mode)
+fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
+    if (dirRoot == "") return null
+    return getPFD(context, "$dirRoot/$relPath", mimeType, mode)
 }
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
@@ -224,23 +223,23 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
     }
 }
 
-fun deleteStoryFile(context: Context, relPath: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
-    if(storyRelPathExists(context, relPath, storyTitle)){
-        val uri = getStoryUri(relPath,storyTitle)
+fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean {
+    if(storyRelPathExists(context, relPath, dirRoot)){
+        val uri = getStoryUri(relPath,dirRoot)
         return DocumentsContract.deleteDocument(context.contentResolver,uri)
     }
     return false
 }
 
-fun renameStoryFile(context: Context, relPath: String, newFilename: String, storyTitle: String = Workspace.activeStory.title) : Boolean {
-    if(storyRelPathExists(context, relPath, storyTitle)){
-        val uri = getStoryUri(relPath,storyTitle)
-        val newUri = DocumentsContract.renameDocument(context.contentResolver,uri,newFilename)
-        if(newUri != null) return true
-    }
-    return false
-}
+fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
+    val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
 
+    return if(dir?.exists() == true) {
+        dir.findFile(oldFilename)?.renameTo(newFilename) == true
+    } else{
+        false
+    }
+}
 
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125

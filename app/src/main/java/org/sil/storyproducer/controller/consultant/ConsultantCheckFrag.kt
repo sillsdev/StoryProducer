@@ -32,7 +32,6 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
 
-        setUiColors()
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
@@ -223,10 +222,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     }
 
     companion object {
-
         val CONSULTANT_PREFS = "Consultant_Checks"
         val IS_CONSULTANT_APPROVED = "isApproved"
         private val PASSWORD = "appr00ved"
     }
-
 }

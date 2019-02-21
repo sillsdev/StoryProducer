@@ -20,9 +20,8 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.math.min
 
-class LearnActivity : PhaseBaseActivity() {
+class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
-    private var rootView: RelativeLayout? = null
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -33,8 +32,7 @@ class LearnActivity : PhaseBaseActivity() {
     private var isVolumeOn = true
     private var isWatchedOnce = false
 
-    //recording toolbar vars
-    private var recordingToolbar: RecordingToolbar? = null
+    private var recordingToolbar: RecordingToolbar = RecordingToolbar()
 
     private var numOfSlides: Int = 0
     private var seekbarStartTime: Long = -1
@@ -50,7 +48,8 @@ class LearnActivity : PhaseBaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
 
-        rootView = findViewById(R.id.phase_frame)
+        setToolbar()
+
         learnImageView = findViewById(R.id.fragment_image_view)
         playButton = findViewById(R.id.fragment_reference_audio_button)
 
@@ -61,11 +60,11 @@ class LearnActivity : PhaseBaseActivity() {
             override fun onStartTrackingTouch(sBar: SeekBar) {}
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    if(recordingToolbar!!.isRecordingOrPlaying){
+                    if (recordingToolbar.isRecordingOrPlaying) {
                         //When recording, update the picture to the accurate location, preserving
                         seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
                         setSlideFromSeekbar()
-                    }else {
+                    } else {
                         if (narrationPlayer.isAudioPlaying) {
                             pauseStoryAudio()
                             playStoryAudio()
@@ -73,49 +72,24 @@ class LearnActivity : PhaseBaseActivity() {
                             setSlideFromSeekbar()
                         }
                         //always start at the beginning of the slide.
-                        if(slideStartTimes.size > curPos)
+                        if (slideStartTimes.size > curPos)
                             videoSeekBar!!.progress = slideStartTimes[curPos]
                     }
                 }
             }
         })
 
-        //setup recording toolbar callbacks
-        recordingToolbar = RecordingToolbar(this,
-                layoutInflater.inflate(R.layout.toolbar_for_recording, rootView, false),
-                rootView!!, true, false, false, false,
-                null, object : RecordingToolbar.RecordingListener {
-            override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-                if(isRecording){
-                    makeLogIfNecessary(true)
-                }
-                videoSeekBar!!.progress = 0
-                setSlideFromSeekbar()
-            }
-            override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                pauseStoryAudio()
-                videoSeekBar!!.progress = 0
-                curPos = 0
-                //This gets the progress bar to show the right time.
-                seekbarStartTime = System.currentTimeMillis()
-                if(isRecording){
-                    markLogStart()
-                }
-            }
-        }, 0)
-        recordingToolbar!!.keepToolbarVisible()
-
         //setup volume switch callbacks
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
         //set the volume switch change listener
         volumeSwitch.isChecked = true
-        volumeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
+        volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            isVolumeOn = if (isChecked) {
                 narrationPlayer.setVolume(1.0f)
-                isVolumeOn = true
+                true
             } else {
                 narrationPlayer.setVolume(0.0f)
-                isVolumeOn = false
+                false
             }
         }
 
@@ -141,13 +115,38 @@ class LearnActivity : PhaseBaseActivity() {
         invalidateOptionsMenu()
     }
 
+    private fun setToolbar(){
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,false,false))
+        bundle.putInt("slideNum", 0)
+        recordingToolbar.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+
+        recordingToolbar.keepToolbarVisible()
+    }
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+        if(isRecording){
+            makeLogIfNecessary(true)
+        }
+        videoSeekBar!!.progress = 0
+        setSlideFromSeekbar()
+    }
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        pauseStoryAudio()
+        videoSeekBar!!.progress = 0
+        curPos = 0
+        //This gets the progress bar to show the right time.
+        seekbarStartTime = System.currentTimeMillis()
+        if(isRecording){
+            markLogStart()
+        }
+    }
 
     public override fun onPause() {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
-        recordingToolbar!!.onPause()
-        recordingToolbar!!.close()
     }
 
     public override fun onResume() {
@@ -170,7 +169,7 @@ class LearnActivity : PhaseBaseActivity() {
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread{
-                    if(recordingToolbar!!.isRecordingOrPlaying){
+                    if(recordingToolbar.isRecordingOrPlaying){
                         videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
@@ -241,7 +240,7 @@ class LearnActivity : PhaseBaseActivity() {
      * Plays the audio
      */
     internal fun playStoryAudio() {
-        recordingToolbar!!.onPause()
+        recordingToolbar.stopToolbarMedia()
         setSlideFromSeekbar()
         narrationPlayer.pauseAudio()
         markLogStart()
