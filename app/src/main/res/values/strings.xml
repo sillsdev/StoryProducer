@@ -7,6 +7,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="help">Help</string>
+    <string name="search">Search</string>
 
     <string name="submit">Submit</string>
     <string name="save">Save</string>
@@ -24,7 +25,6 @@
 
     <string name="story_picture">story picture</string>
     <string name="stage_locked">stage locked</string>
-
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
@@ -125,6 +125,8 @@
     <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
     <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
+    <string name="fill_with_audio_comment">Fill with Audio Comment</string>
+
     <!-- Learn Phase -->
     <string name="learn_phase_practice">Retell the whole story in your language!</string>
     <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
@@ -133,7 +135,6 @@
     <string name="draft_playback_no_lwc_audio">Could not find narration audio</string>
     <string name="draft_playback_lwc_audio">Playing narration audio</string>
     <string name="draft_play_narration_audio">Play narration audio</string>
-
 
     <!-- Dramatization phase -->
     <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>

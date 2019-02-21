@@ -5,7 +5,6 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -19,9 +18,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
 
     /** Swaps fragments in the main content view  */
     private fun selectItem(position: Int) {
-        println("the position is $position")
         val intent: Intent
-        //TODO add more options
         when (position) {
             0 -> {
                 intent = Intent(activity, WorkspaceAndRegistrationActivity::class.java)

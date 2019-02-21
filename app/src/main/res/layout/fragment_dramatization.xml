@@ -1,102 +1,68 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_dramatization_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.dramatization.DramatizationFrag">
 
-    <LinearLayout
-        android:id="@+id/fragment_envelope"
+
+    <ImageView
+        android:id="@+id/fragment_image_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/story_picture"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <include
+        android:id="@+id/seek_bar"
+        layout="@layout/play_seek_number_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <RelativeLayout
-            android:id="@+id/fragment_image_envelope"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
 
-            <ImageView
-                android:id="@+id/fragment_image_view"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_gravity="center"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/story_picture" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:contentDescription="@string/story_picture"
-                android:layout_height="@dimen/rect_height"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:layout_alignStart="@id/fragment_image_view" />
-
-            <LinearLayout
-                android:id="@+id/reference_audio_holder"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/rect_height"
-                android:layout_alignBottom="@id/fragment_image_view"
-                android:background="@color/black_semi_transparent"
-                android:orientation="horizontal">
-                <ImageButton
-                    android:id="@+id/fragment_reference_audio_button"
-                    android:layout_width="@dimen/reference_audio_button"
-                    android:layout_height="@dimen/reference_audio_button"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ic_play_arrow_white_36dp"
-                    android:contentDescription="@string/draft_play_narration_audio" />
-
-                <SeekBar
-                    android:id="@+id/videoSeekBar"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="@dimen/nav_drawer_margin"
-                    android:max="100" />
-
-                <TextView
-                    android:id="@+id/slide_number_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:paddingStart="7dp"
-                    android:paddingEnd="7dp"
-                    android:text=""
-                    android:textSize="@dimen/text_body" />
-            </LinearLayout>
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:id="@+id/fragment_dramatization_edit_text_envelope"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-            <EditText
-                android:id="@+id/fragment_dramatization_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/dramatization_edit_text_hint"
-                android:inputType="textCapSentences|textMultiLine"
-                android:textSize="@dimen/text_body"
-                android:maxLength="20000"
-                android:maxLines="10" />
-        </RelativeLayout>
-    </LinearLayout>
+    <EditText
+        android:id="@+id/fragment_dramatization_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="@string/dramatization_edit_text_hint"
+        android:inputType="textCapSentences|textMultiLine"
+        android:maxLength="20000"
+        android:maxLines="10"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guideline" />
 
     <RelativeLayout
         android:id="@+id/lock_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/black_semi_transparent"
+        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:background="@color/black_semi_transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
@@ -106,4 +72,13 @@
             android:contentDescription="@string/stage_locked" />
     </RelativeLayout>
 
-</RelativeLayout>
+    <include
+        android:id="@+id/toolbar_for_recording_toolbar"
+        layout="@layout/toolbar_for_recording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/fragment_image_view"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

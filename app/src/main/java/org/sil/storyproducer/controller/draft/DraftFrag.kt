@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import org.sil.storyproducer.BuildConfig.APPLICATION_ID
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
@@ -38,8 +37,8 @@ class DraftFrag : MultiRecordFrag() {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         super.onCreateView(inflater, container, savedInstanceState)
-        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
-        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
+        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
+        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
 
         // display the image selection button, if on the title slide
         if(Workspace.activeStory.slides[slideNum].slideType in
@@ -77,10 +76,12 @@ class DraftFrag : MultiRecordFrag() {
             copyToWorkspacePath(context!!,uri!!,
                     "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
             tempPicFile?.delete()
-            setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
         }
     }
 
-    private val ACTIVITY_SELECT_IMAGE = 53
-
+    companion object {
+        private const val ACTIVITY_SELECT_IMAGE = 53
     }
+
+}
