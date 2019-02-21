@@ -42,6 +42,9 @@ class DramatizationFrag : MultiRecordFrag() {
             slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
             slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
+
+        setupCameraButton()
+
         return rootView
     }
 
