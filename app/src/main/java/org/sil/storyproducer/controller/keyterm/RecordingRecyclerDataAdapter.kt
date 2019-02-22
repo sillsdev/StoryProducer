@@ -151,6 +151,7 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
                         when (returnCode) {
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
+                                notifyItemChanged(position)
                                 Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                             }
                             RenameCode.ERROR_LENGTH -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
