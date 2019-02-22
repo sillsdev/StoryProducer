@@ -2,9 +2,9 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.RecyclerView
 import android.view.View.INVISIBLE
 import android.widget.ImageButton
-import android.widget.ListView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
@@ -122,7 +122,7 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     private fun getCurrentNumberOfRecordings() =
-            ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(R.id.recordings_list)!!.childCount
+            ActivityAccessor.getCurrentActivity()!!.findViewById<RecyclerView>(R.id.recordings_list)!!.childCount
 
     private fun giveUiTimeToChangeSlides() {
         Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)

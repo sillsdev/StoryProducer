@@ -2,9 +2,9 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
-import android.widget.ListView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -72,6 +72,8 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
+        approveSlides()
+
         verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips()
 
         openRecordingsListDialog()
@@ -135,7 +137,7 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
             }
 
             override fun perform(uiController: UiController, view: View) {
-                numberOfClips[0] = (view as ListView).childCount
+                numberOfClips[0] = (view as RecyclerView).childCount
             }
         })
         return numberOfClips[0]

@@ -5,7 +5,7 @@ object Constants {
     // Durations are in milliseconds
     const val durationToPlayNarration: Long = 100
     const val durationToPlayTranslatedClip: Long = 100
-    const val durationToRecordLearnClip: Long = 1000
+    const val durationToRecordLearnClip: Long = 1500
     const val durationToRecordTranslatedClip: Long = durationToRecordLearnClip
     const val durationToRecordFeedbackClip: Long = 250
     const val durationToRecordVoiceStudioClip: Long = 250

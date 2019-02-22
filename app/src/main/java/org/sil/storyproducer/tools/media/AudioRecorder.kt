@@ -13,7 +13,9 @@ import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.copyToWorkspacePath
+import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
@@ -83,7 +85,7 @@ abstract class AudioRecorder(val activity: Activity) {
             mStoryMaker.close()
 
             copyToWorkspacePath(context, Uri.fromFile(File(tempDestPath)),
-                    "${Workspace.activeStory.title}/$orgAudioRelPath")
+                    "${Workspace.activeDirRoot}/$orgAudioRelPath")
             File(tempDestPath).delete()
         }
     }

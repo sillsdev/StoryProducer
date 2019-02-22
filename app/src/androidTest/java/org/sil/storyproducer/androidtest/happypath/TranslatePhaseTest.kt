@@ -49,7 +49,7 @@ class TranslatePhaseTest : PhaseTestBase() {
         giveAppTimeToPlayAudio()
         pressPlayPauseButton()
         val endingProgress = getCurrentSlideAudioProgress()
-        Assert.assertNotEquals(endingProgress, originalProgress)
+        Assert.assertTrue("Expected playback progress to increase with time.", endingProgress > originalProgress)
     }
 
     @Test
