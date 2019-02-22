@@ -1,15 +1,12 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
 import android.support.v7.widget.RecyclerView
 import android.view.View.INVISIBLE
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -23,7 +20,7 @@ import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
-class CommunityWorkPhaseTest : PhaseTestBase() {
+class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
         PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
@@ -31,15 +28,7 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_BeAbleToSwipeBetweenSlides() {
-        val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
-        expectToBeOnSlide(originalSlideNumber)
-        swipeLeftOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(nextSlideNumber)
-        swipeRightOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(originalSlideNumber)
+        testSwipingBetweenSlides()
     }
 
     @Test
@@ -74,38 +63,12 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
         expectToBeOnAccuracyCheckPhase()
     }
 
-    private fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
-        return Integer.parseInt(slideNumberTextView!!.text.toString())
-    }
-
-    private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    private fun swipeRightOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeRight())
-    }
-
-    private fun swipeLeftOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeLeft())
-    }
-
-    private fun swipeUpOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeUp())
-    }
-
     private fun makeSureAnAudioClipIsAvailable() {
         selectPhase(Constants.Phase.translate)
         if (!areThereAnyAudioClipsOnThisSlide()) {
             recordAnAudioTranslationClip()
         }
         selectPhase(Constants.Phase.communityWork)
-    }
-
-    private fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
@@ -123,10 +86,6 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
     private fun getCurrentNumberOfRecordings() =
             ActivityAccessor.getCurrentActivity()!!.findViewById<RecyclerView>(R.id.recordings_list)!!.childCount
-
-    private fun giveUiTimeToChangeSlides() {
-        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
-    }
 
     private fun getCurrentSlideAudioProgress(): Int {
         val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
