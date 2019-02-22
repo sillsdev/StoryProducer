@@ -56,11 +56,11 @@ class TranslatePhaseTest : PhaseTestBase() {
     fun should_BeAbleToRecordTranslationForASlide() {
         // The "pulsing" animation on the recording toolbar causes the
         // Espresso click to hang, so we disable it for the test.
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        giveAppTimeToRecordAudio()
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            giveAppTimeToRecordAudio()
+            pressMicButton()
+        }
     }
 
     private fun pressMicButton() {

@@ -58,11 +58,11 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     fun should_BeAbleToRecordFeedback() {
         var originalNumberOfRecordings = getCurrentNumberOfRecordings()
 
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(Constants.durationToRecordFeedbackClip)
-        pressMicButton()
-        AnimationsToggler.disableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordFeedbackClip)
+            pressMicButton()
+        }
 
         var finalNumberOfRecordings = getCurrentNumberOfRecordings()
         Assert.assertEquals("Expected an additional feedback recording to exist", originalNumberOfRecordings + 1, finalNumberOfRecordings)
@@ -114,11 +114,11 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(Constants.durationToRecordTranslatedClip)
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordTranslatedClip)
+            pressMicButton()
+        }
     }
 
     private fun getCurrentNumberOfRecordings() =

@@ -42,60 +42,88 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_beAbleToPlaySlideAudio() {
+        // Arrange
         makeSureAnAudioClipIsAvailable()
         approveSlides()
         val originalProgress = getCurrentSlideAudioProgress()
 
+        // Act
         pressPlayPauseButton()
         giveAppTimeToPlayAudio()
         pressPlayPauseButton()
 
+        // Assert
         val endingProgress = getCurrentSlideAudioProgress()
         Assert.assertTrue("Expected ending progress to be greater than original progress.", endingProgress > originalProgress)
     }
 
     @Test
-    fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
-        AnimationsToggler.withoutCustomAnimations {
-            // record a snippet with the mic button
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            // pause the recording
-            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            // Check the number of clips present in the list. n
-            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
-            val numberOfClipsAfterRecordingFirstSnippet = getCurrentNumberOfClips()
-            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
-
-            // record another snippet to the clip
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            // pause the recording
-            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            // stop/finalize the attempt
-            Espresso.onView(allOf(withId(R.id.finish_recording_button), isDisplayed())).perform(click())
-            // check the number of recordings present in the list. Should be n
-            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
-            val numberOfClipsAfterRecordingSecondSnippet = getCurrentNumberOfClips()
-            Assert.assertEquals(numberOfClipsAfterRecordingFirstSnippet, numberOfClipsAfterRecordingSecondSnippet)
-            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
-
-            // record a clip with the mic button
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
-            // pause the recording
-            Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-            // stop/finalize the attempt
-            Espresso.onView(allOf(withId(R.id.finish_recording_button), isDisplayed())).perform(click())
-            // check the number of recordings present in the list. Should n + 1
-            Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
-            val numberOfClipsAfterRecordingASnippetForANewClip = getCurrentNumberOfClips()
-            Assert.assertEquals(numberOfClipsAfterRecordingSecondSnippet!! + 1, numberOfClipsAfterRecordingASnippetForANewClip)
-            Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
-        }
+    fun should_beAbleToSwipeBetweenSlides() {
+        val originalSlideNumber = findCurrentSlideNumber()
+        var nextSlideNumber = originalSlideNumber + 1
+        expectToBeOnSlide(originalSlideNumber)
+        swipeLeftOnSlide()
+        giveUiTimeToChangeSlides()
+        expectToBeOnSlide(nextSlideNumber)
+        swipeRightOnSlide()
+        giveUiTimeToChangeSlides()
+        expectToBeOnSlide(originalSlideNumber)
     }
 
-    private fun getCurrentNumberOfClips(): Int? {
+    @Test
+    fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
+        verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips()
+
+        openRecordingsListDialog()
+        val countOfClipsAfterRecordingSecondSnippet = getCurrentCountOfClips()
+        closeRecordingsListDialog()
+
+        verifyThatFinalizingOneClipThenRecordingANewSnippetCreatesANewClip(countOfClipsAfterRecordingSecondSnippet)
+    }
+
+    private fun verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips(): Int? {
+        // record a snippet of audio to the clip
+        recordAVoiceStudioTranslationSnippet()
+        openRecordingsListDialog()
+        val countOfClipsAfterRecordingFirstSnippet = getCurrentCountOfClips()
+        closeRecordingsListDialog()
+        // record another snippet to the clip
+        recordAVoiceStudioTranslationSnippet()
+        // 'finalize' the clip, which should prevent additional snippets from being appended to it.
+        clickStopClipButton()
+        openRecordingsListDialog()
+        val countOfClipsAfterRecordingSecondSnippet = getCurrentCountOfClips()
+        closeRecordingsListDialog()
+
+        Assert.assertEquals(countOfClipsAfterRecordingFirstSnippet, countOfClipsAfterRecordingSecondSnippet)
+        return countOfClipsAfterRecordingSecondSnippet
+    }
+
+    private fun verifyThatFinalizingOneClipThenRecordingANewSnippetCreatesANewClip(countOfClipsAfterRecordingSecondSnippet: Int?) {
+        // record a snippet of audio to the clip
+        recordAVoiceStudioTranslationSnippet()
+        // 'finalize' the clip, which should prevent additional snippets from being appended to it.
+        clickStopClipButton()
+        openRecordingsListDialog()
+        val numberOfClipsAfterRecordingASnippetForANewClip = getCurrentCountOfClips()
+        closeRecordingsListDialog()
+
+        Assert.assertEquals(countOfClipsAfterRecordingSecondSnippet!! + 1, numberOfClipsAfterRecordingASnippetForANewClip)
+    }
+
+    private fun clickStopClipButton() {
+        Espresso.onView(allOf(withId(R.id.finish_recording_button), isDisplayed())).perform(click())
+    }
+
+    private fun openRecordingsListDialog() {
+        Espresso.onView(allOf(withId(R.id.list_recordings_button), isDisplayed())).perform(click())
+    }
+
+    private fun closeRecordingsListDialog() {
+        Espresso.onView(allOf(withId(R.id.exitButton), isDisplayed())).perform(click())
+    }
+
+    private fun getCurrentCountOfClips(): Int? {
         val numberOfClips = arrayOfNulls<Int>(1)
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.recordings_list), ViewMatchers.isDisplayed())).perform(object : ViewAction {
             override fun getConstraints(): Matcher<View> {
@@ -111,19 +139,6 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
             }
         })
         return numberOfClips[0]
-    }
-
-    @Test
-    fun should_beAbleToSwipeBetweenSlides() {
-        val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
-        expectToBeOnSlide(originalSlideNumber)
-        swipeLeftOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(nextSlideNumber)
-        swipeRightOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(originalSlideNumber)
     }
 
     private fun findCurrentSlideNumber(): Int {
@@ -161,11 +176,19 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
     }
 
     private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(Constants.durationToRecordTranslatedClip)
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordTranslatedClip)
+            pressMicButton()
+        }
+    }
+
+    private fun recordAVoiceStudioTranslationSnippet() {
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordVoiceStudioClip)
+            pressMicButton()
+        }
     }
 
     private fun pressMicButton() {
@@ -177,12 +200,12 @@ class VoiceStudioPhaseTest : PhaseTestBase() {
         return progressBar!!.progress
     }
 
-    private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(Constants.durationToPlayTranslatedClip)
-    }
-
     private fun pressPlayPauseButton() {
         Espresso.onView(allOf(withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
+    }
+
+    private fun giveAppTimeToPlayAudio() {
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
     }
 
     private fun approveSlides() {
