@@ -12,8 +12,6 @@ import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.FixMethodOrder
-import org.junit.runners.MethodSorters
 import junit.framework.Assert.assertTrue
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.Constants

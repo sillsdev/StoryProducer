@@ -7,19 +7,23 @@ import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
+@LargeTest
+@RunWith(AndroidJUnit4::class)
 class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
@@ -58,9 +62,8 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
     }
 
     @Test
-    fun should_BeAbleToSwipeToNextPhase() {
-        swipeUpOnSlide()
-        expectToBeOnAccuracyCheckPhase()
+    fun should_beAbleToSwipeToNextPhase() {
+        testSwipingToNextPhase(Constants.Phase.accuracyCheck)
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
@@ -98,9 +101,5 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     private fun pressPlayPauseButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
-    }
-
-    private fun expectToBeOnAccuracyCheckPhase() {
-        Espresso.onView(withText(Constants.Phase.accuracyCheck)).check(matches(isDisplayed()))
     }
 }

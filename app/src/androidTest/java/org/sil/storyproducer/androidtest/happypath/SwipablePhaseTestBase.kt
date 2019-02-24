@@ -23,6 +23,11 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
         expectToBeOnSlide(originalSlideNumber)
     }
 
+    protected fun testSwipingToNextPhase(nameOfNextPhase: String) {
+        swipeUpOnSlide()
+        expectToBeOnPhase(nameOfNextPhase)
+    }
+
     protected fun swipeRightOnSlide() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.phase_frame))).perform(ViewActions.swipeRight())
     }
@@ -31,7 +36,7 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.phase_frame))).perform(ViewActions.swipeLeft())
     }
 
-    protected fun swipeUpOnSlide() {
+    private fun swipeUpOnSlide() {
         Espresso.onView(ViewMatchers.withId(R.id.phase_frame)).perform(ViewActions.swipeUp())
     }
 
@@ -46,5 +51,9 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    }
+
+    private fun expectToBeOnPhase(phase: String) {
+        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withText(phase))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 }

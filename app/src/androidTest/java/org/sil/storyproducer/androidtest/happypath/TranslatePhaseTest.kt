@@ -16,7 +16,6 @@ import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
-
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class TranslatePhaseTest : SwipablePhaseTestBase() {
@@ -28,6 +27,11 @@ class TranslatePhaseTest : SwipablePhaseTestBase() {
     @Test
     fun should_BeAbleToSwipeBetweenSlides() {
         testSwipingBetweenSlides()
+    }
+
+    @Test
+    fun should_beAbleToSwipeToNextPhase() {
+        testSwipingToNextPhase(Constants.Phase.communityWork)
     }
 
     @Test

@@ -8,15 +8,17 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
@@ -24,6 +26,8 @@ import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 
+@LargeTest
+@RunWith(AndroidJUnit4::class)
 class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
@@ -32,8 +36,7 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun should_beAbleToSwipeToNextPhase() {
-        swipeUpOnSlide()
-        expectToBeOnPhase(Constants.Phase.finalize)
+        testSwipingToNextPhase(Constants.Phase.finalize)
     }
 
     @Test
@@ -184,9 +187,5 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
         }
         Workspace.activeStory.isApproved = true
         selectPhase(Constants.Phase.voiceStudio)
-    }
-
-    private fun expectToBeOnPhase(phase: String) {
-        Espresso.onView(allOf(ViewMatchers.withText(phase))).check(matches(isDisplayed()))
     }
 }

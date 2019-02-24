@@ -8,7 +8,6 @@ import org.hamcrest.CoreMatchers
 import org.junit.Before
 import org.junit.Rule
 import org.sil.storyproducer.R
-import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -27,8 +26,7 @@ open abstract class PhaseTestBase {
         launchActivityAndBypassWorkspacePicker()
         navigateToPhase()
     }
-
-    open abstract fun navigateToPhase()
+    abstract fun navigateToPhase()
 
     private fun launchActivityAndBypassWorkspacePicker() {
         IntentMocker.setUpDummyWorkspacePickerIntent()
