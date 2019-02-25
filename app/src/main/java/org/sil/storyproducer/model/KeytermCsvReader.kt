@@ -3,9 +3,19 @@ package org.sil.storyproducer.model
 import com.opencsv.CSVReader
 import java.io.FileReader
 
+/**
+ * The purpose of this class is to parse keyterm data from a csv file and load into a list of Keyterm objects
+ *
+ * @since 2.6 Keyterm
+ * @author Aaron Cannon
+ */
 class KeytermCsvReader(fileReader: FileReader){
     private val csvReader = CSVReader(fileReader)
 
+    /*
+     * This is a simple check to determine if the csv file has the minimum correct format to not crash.
+     * The format may change as the parsing is based on csv column numbers.
+     */
     init {
         val headers = csvReader.readNext()
         if(headers != null && headers.size < 6){
@@ -33,10 +43,14 @@ class KeytermCsvReader(fileReader: FileReader){
         return keyterm
     }
 
+    /*
+     * The purpose of this method is to split a string based on a give separator.
+     */
     private fun stringToList(field: String, separator: String): List<String>{
         if(field.isNotEmpty()) {
             val list = field.split(separator)
             val trimmedList = list.asSequence().map { it.trim() }.toMutableList()
+            //Trim any empty string elements
             trimmedList.remove("")
             return trimmedList
         }
