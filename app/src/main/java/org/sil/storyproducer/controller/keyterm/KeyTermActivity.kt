@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
@@ -16,6 +15,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager.LayoutParams
+import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.TextView
 import org.sil.storyproducer.R
@@ -154,11 +154,20 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 true
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage("${Workspace.activePhase.getPrettyName()} Help")
-                        .create()
-                dialog.show()
+                val alert = android.app.AlertDialog.Builder(this)
+                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> {
