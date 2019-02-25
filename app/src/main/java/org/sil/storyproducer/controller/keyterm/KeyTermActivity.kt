@@ -25,6 +25,14 @@ import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
+/**
+ * This activity shows information about the  active keyterm to the user where theycan learn more
+ * about the keyterm as well as record an audio backtranslation and give a text backtranslation
+ *
+ * @since 2.6 Keyterm
+ * @author Aaron Cannon and Justin Stallard
+ */
+
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
     private lateinit var recordingToolbar : RecordingToolbar
@@ -52,6 +60,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         this.window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
+    /**
+     * Sets the status bar color
+     */
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
@@ -61,6 +72,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    /**
+     * Sets the toolbar color
+     */
     private fun setupToolbar(){
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         setSupportActionBar(toolbar)
@@ -88,6 +102,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         displayList.show()
     }
 
+    /**
+     * Updates the textViews with the current keyterm information
+     */
     fun setupNoteView(){
         val actionBar = supportActionBar
 
@@ -191,6 +208,10 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    /**
+     * When the back button is pressed, the bottom sheet will close if currently opened or return to
+     * the previous keyterm or close the activity if there is no previous keyterm to return to
+     */
     override fun onBackPressed() {
         if( from(bottomSheet).state == STATE_EXPANDED){
             from(bottomSheet).state = STATE_COLLAPSED

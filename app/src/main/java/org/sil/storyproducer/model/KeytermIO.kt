@@ -5,6 +5,12 @@ import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.getKeytermChildOutputStream
 import org.sil.storyproducer.tools.file.getStoryText
 
+/**
+ * Writes to keyterm.json a list of all the keyterms in the CSV file
+ *
+ * @since 2.6 Keyterm
+ * @author Justin Stallard
+ */
 fun KeytermList.toJson(context: Context){
     val moshi = Moshi
             .Builder()
@@ -18,6 +24,9 @@ fun KeytermList.toJson(context: Context){
     }
 }
 
+/**
+ * Retrieves the list of all the keyterms from keyterm.json
+ */
 fun keytermListFromJson(context: Context): KeytermList?{
     val moshi = Moshi
             .Builder()
