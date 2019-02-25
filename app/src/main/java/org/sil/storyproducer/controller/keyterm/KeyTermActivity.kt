@@ -103,7 +103,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     /**
-     * updates the textViews with the current keyterm information
+     * Updates the textViews with the current keyterm information
      */
     fun setupNoteView(){
         val actionBar = supportActionBar
@@ -199,7 +199,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     /**
-     * when the back button is pressed, the bottom sheet will close if currently opened or return to
+     * When the back button is pressed, the bottom sheet will close if currently opened or return to
      * the previous keyterm or close the activity if there is no previous keyterm to return to
      */
     override fun onBackPressed() {

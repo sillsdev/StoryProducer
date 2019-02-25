@@ -419,7 +419,7 @@ class RecordingToolbar : Fragment(){
     }
 
     /**
-     * depending on the state of the bottom sheet will determine the icon used.
+     * Depending on the state of the bottom sheet will determine the icon used.
      */
     private fun setKeytermMultiRecordIcon(state: Int){
         if(state == STATE_EXPANDED){
