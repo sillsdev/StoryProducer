@@ -12,6 +12,8 @@ object Constants {
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
+    const val nameOfTestStory = "Lost Coin"
+
     object Phase {
         const val learn = "Learn"
         const val translate = "Translate"
