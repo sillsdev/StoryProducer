@@ -27,7 +27,7 @@ import java.util.*
 
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
-    private var recordingToolbar : RecordingToolbar = RecordingToolbar()
+    private lateinit var recordingToolbar : RecordingToolbar
     lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
     var isFinishedRecordingFromCollapsedState = false
@@ -133,6 +133,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
         bundle.putInt("slideNum", 0)
+        recordingToolbar = RecordingToolbar()
         recordingToolbar.arguments = bundle
         supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
     }
