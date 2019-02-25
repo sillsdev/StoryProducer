@@ -15,7 +15,6 @@ import android.widget.Switch;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.tools.media.AudioPlayer;
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
 
     //recording toolbar vars
     private String recordFilePath;
-    private RecordingToolbar recordingToolbar;
+    //private RecordingToolbar recordingToolbar;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
     private int startPos = -1;
@@ -174,11 +173,11 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     public void onPause() {
         super.onPause();
         pauseVideo();
-        if (recordingToolbar != null) {
-            recordingToolbar.onPause();
-            //FIXME
-            //recordingToolbar.closeToolbar();
-        }
+//        if (recordingToolbar != null) {
+//            recordingToolbar.onPause();
+//            //FIXME
+//            //recordingToolbar.closeToolbar();
+//        }
     }
 
     @Override
@@ -192,10 +191,10 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         super.onStop();
         narrationPlayer.release();
         backgroundPlayer.release();
-        if (recordingToolbar != null) {
-            recordingToolbar.onPause();
-            recordingToolbar.close();
-        }
+//        if (recordingToolbar != null) {
+//            recordingToolbar.onPause();
+//            recordingToolbar.close();
+//        }
 
     }
 

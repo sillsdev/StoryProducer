@@ -74,8 +74,7 @@ class AudioPlayer {
 
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
-        val uri: Uri? = getStoryUri(relPath,storyName)
-        if(uri == null) return false
+        val uri: Uri = getStoryUri(relPath,storyName) ?: return false
         return setSource(context, uri)
     }
 

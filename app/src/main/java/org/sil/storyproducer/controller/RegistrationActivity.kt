@@ -114,7 +114,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data!!.data!!)
+            Workspace.setupWorkspacePath(this,data?.data!!)
             setupInputFields()
         }
     }
@@ -131,12 +131,8 @@ open class RegistrationActivity : AppCompatActivity() {
      * Initializes the inputFields to the inputs of this activity.
      */
     private fun setupInputFields() {
-        val view = findViewById<View>(R.id.scroll_view)
-
-        //Find the top level linear layout
-        if (view is ScrollView) {
-            inputFields = getInputFields(view)
-        }
+        val view = findViewById<ScrollView>(R.id.scroll_view)
+        inputFields = getInputFields(view)
     }
 
     /**
@@ -379,11 +375,11 @@ open class RegistrationActivity : AppCompatActivity() {
      */
     private fun storeRegistrationInfo() {
         val reg = Workspace.registration
-        val calendar: Calendar
+        val calendar: Calendar = Calendar.getInstance()
         val date: String
-        val androidVersion: String
-        val manufacturer: String
-        val model: String
+        val androidVersion: String = Build.VERSION.RELEASE
+        val manufacturer: String = Build.MANUFACTURER
+        val model: String = Build.MODEL
         val day: String
         val month: String
         val year: String
@@ -415,7 +411,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         }
         // Create timestamp for when the data was submitted
-        calendar = Calendar.getInstance()
         day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH))
         month = Integer.toString(calendar.get(Calendar.MONTH) + 1)
         year = Integer.toString(calendar.get(Calendar.YEAR))
@@ -428,9 +423,6 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.putString("date", date)
 
         // Retrieve phone information
-        manufacturer = Build.MANUFACTURER
-        model = Build.MODEL
-        androidVersion = Build.VERSION.RELEASE
         reg.putString("manufacturer", manufacturer)
         reg.putString("model", model)
         reg.putString("android_version", androidVersion)
@@ -474,12 +466,13 @@ open class RegistrationActivity : AppCompatActivity() {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private fun showExitAlertDialog() {
-        val dialog = AlertDialog.Builder(this@RegistrationActivity)
+        val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_exit_title))
                 .setMessage(getString(R.string.registration_exit_message))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    finish()
                 }.create()
 
         dialog.show()
@@ -490,7 +483,7 @@ open class RegistrationActivity : AppCompatActivity() {
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private fun showSkipAlertDialog() {
-        val dialog = AlertDialog.Builder(this@RegistrationActivity)
+        val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_skip_title))
                 .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
@@ -498,6 +491,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    finish()
                 }.create()
 
         dialog.show()

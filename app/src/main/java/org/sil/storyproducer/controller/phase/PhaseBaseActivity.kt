@@ -5,12 +5,14 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.GravityCompat
-import android.support.v4.view.MenuItemCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
@@ -36,7 +38,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(R.layout.phase_frame)
@@ -46,13 +47,14 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(mActionBarToolbar)
-        supportActionBar!!.title = ""
-        supportActionBar!!.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+        supportActionBar?.title = ""
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 phase.getColor(), null)))
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
 
         setupDrawer()
+        setupStatusBar()
     }
 
     override fun onPause(){
@@ -85,15 +87,14 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         menuInflater.inflate(R.menu.menu_phases, menu)
 
         val item = menu.findItem(R.id.spinner)
-        val spinner = MenuItemCompat.getActionView(item) as Spinner
-        val adapter: ArrayAdapter<CharSequence>
-        if (Workspace.registration.getBoolean("isRemote",false)) {
+        val spinner = item.actionView as Spinner
+        val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
-            adapter = ArrayAdapter.createFromResource(this,
+            ArrayAdapter.createFromResource(this,
                     R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item)
         } else {
             //local
-            adapter = ArrayAdapter.createFromResource(this,
+            ArrayAdapter.createFromResource(this,
                     R.array.local_phases_menu_array, android.R.layout.simple_spinner_item)
         }
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
@@ -240,6 +241,15 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         }
     }
 
+    private fun setupStatusBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
+            Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
+            hsv[2] *= 0.8f
+            window.statusBarColor = Color.HSVToColor(hsv)
+        }
+    }
+
     /**
      * This function allows the picture to scale with the phone's screen size.
      *
@@ -250,6 +260,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
 
+        //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
         var height = phoneProperties.heightPixels
@@ -270,7 +281,6 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         tOverlay?.draw(canvas)
 
         //Set the height of the image view
-        slideImage.layoutParams.height = height
         slideImage.requestLayout()
 
         slideImage.setImageBitmap(slidePicture)
@@ -288,5 +298,4 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
             }
         }
     }
-
 }

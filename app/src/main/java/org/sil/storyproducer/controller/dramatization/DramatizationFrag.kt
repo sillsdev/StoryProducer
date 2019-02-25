@@ -9,51 +9,44 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.adapter.RecordingsList
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.toolbar.PausingRecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
-
 
 class DramatizationFrag : MultiRecordFrag() {
 
     private var slideText: EditText? = null
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
-        setUiColors()
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        slideText = rootView!!.findViewById(R.id.fragment_dramatization_edit_text)
-        slideText!!.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+        setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
+        slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
             if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-                rootViewToolbar = inflater.inflate(R.layout.toolbar_for_recording, container, false)
-                setToolbar(rootViewToolbar)
+                setToolbar()
             }
             closeKeyboardOnTouch(rootView)
-            rootView!!.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
+            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
             PhaseBaseActivity.disableViewAndChildren(rootView!!)
         }
 
-
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
-            slideText!!.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText!!.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
+
+        setupCameraButton()
+
         return rootView
     }
-
 
     /**
      * This function serves to stop the audio streams from continuing after dramatization has been
@@ -72,38 +65,31 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-
         // Make sure that we are currently visible
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                if (recordingToolbar != null) {
-                    recordingToolbar!!.onPause()
-                }
                 closeKeyboard(rootView)
             }
         }
     }
 
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
     /**
      * Initializes the toolbar and toolbar buttons.
      */
-    private fun setToolbar(toolbar: View?) {
-        if (rootView is RelativeLayout) {
-            val recordingListener = object : RecordingListener {
-                override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
-                override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-                    stopPlayBackAndRecording()
-                }
-            }
+    override fun setToolbar() {
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
+        bundle.putInt("slideNum", slideNum)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
-            val rList = RecordingsList(context!!, this)
-
-            //TODO re-enable the pausing recording toolbar when wav saving and concatentation are working again.
-            recordingToolbar = PausingRecordingToolbar(activity!!, toolbar!!, rootView as RelativeLayout,
-                    true, false, true, false, rList, recordingListener, slideNum)
-            recordingToolbar!!.keepToolbarVisible()
-        }
+        recordingToolbar.keepToolbarVisible()
     }
 
     /**
@@ -133,7 +119,7 @@ class DramatizationFrag : MultiRecordFrag() {
         val newText = slideText!!.text.toString()
         if(newText != Workspace.activeStory.slides[slideNum].translatedContent){
             Workspace.activeStory.slides[slideNum].translatedContent = newText
-            setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+            setPic(rootView!!.findViewById(R.id.fragment_image_view))
         }
     }
 

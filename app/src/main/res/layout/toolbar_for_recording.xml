@@ -1,31 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar_for_recording_root_view"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/toolbar_for_recording_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:tint="@color/white"
-        app:backgroundTint="@android:color/holo_blue_bright"
-        app:layout_anchorGravity="center_vertical|center_horizontal"
-        app:useCompatPadding="true" />
-
-    <LinearLayout
-        android:id="@+id/toolbar_for_recording_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_gravity="bottom|end"
-        android:background="@android:color/holo_blue_bright"
-        android:orientation="horizontal"
-        android:visibility="invisible">
-
-    </LinearLayout>
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/toolbar_for_recording_toolbar"
+    android:orientation="horizontal">
 </LinearLayout>
