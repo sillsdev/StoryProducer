@@ -73,7 +73,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     /**
-     * sets the toolbar color
+     * Sets the toolbar color
      */
     private fun setupToolbar(){
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
