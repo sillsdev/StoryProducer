@@ -3,11 +3,12 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
 import java.io.File
-import java.io.FileReader
+import java.io.InputStreamReader
 import java.util.*
 
 internal const val KEYTERMS_DIR = "keyterms"
@@ -159,16 +160,15 @@ object Workspace{
     private fun importKeytermsFromCsvFile(context: Context, keytermsDirectory: DocumentFile){
         val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
         if(keytermsFile != null) {
-            val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")?.fileDescriptor
-            val fileReader = FileReader(fileDescriptor)
+            val pfd = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")
+            val inputStream = ParcelFileDescriptor.AutoCloseInputStream(pfd)
+            val fileReader = InputStreamReader(inputStream)
             val keytermCsvReader = KeytermCsvReader(fileReader)
 
             val keyterms = keytermCsvReader.readAll()
-            fileReader.close()
             for(keyterm in keyterms){
                termToKeyterm[keyterm.term] = keyterm
             }
-
         }
     }
 
