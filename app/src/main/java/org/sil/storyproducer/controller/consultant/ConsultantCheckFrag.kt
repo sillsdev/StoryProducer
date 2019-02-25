@@ -25,8 +25,13 @@ import org.sil.storyproducer.model.Workspace
 class ConsultantCheckFrag : SlidePhaseFrag() {
 
     var logDialog: AlertDialog? = null
+    var greenCheckmark: VectorDrawableCompat ?= null
+    var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
         // The last two arguments ensure LayoutParams are inflated
         // properly.
@@ -66,13 +71,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the check button
      */
     private fun setCheckmarkButton(button: ImageButton) {
-        //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+            button.background = greenCheckmark
         } else {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+            button.background = grayCheckmark
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -80,10 +82,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
-                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+                button.background = grayCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
-                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+                button.background = greenCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
