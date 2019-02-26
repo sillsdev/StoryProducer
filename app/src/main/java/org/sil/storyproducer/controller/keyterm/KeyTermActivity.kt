@@ -36,6 +36,7 @@ import java.util.*
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
     private lateinit var recordingToolbar : RecordingToolbar
+    private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: LinearLayout
     val keytermHistory: Stack<String> = Stack()
     var isFinishedRecordingFromCollapsedState = false
@@ -97,8 +98,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     fun setupRecordingList(){
-        val displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
+        displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
         displayList.embedList(findViewById(android.R.id.content))
+        displayList.setParentFragment(null)
         displayList.show()
     }
 
@@ -194,7 +196,10 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        recordingToolbar.stopToolbarMedia()
+        displayList.stopAudio()
+    }
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         if(isRecording) {

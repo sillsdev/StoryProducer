@@ -166,9 +166,12 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             slideNum = mSlideNum
         }
 
-        fun setParentFragment(parentFragment: Fragment){
+        fun setParentFragment(parentFragment: Fragment?){
             try{
                 playbackListener = parentFragment as RecordingToolbar.RecordingListener
+            }
+            catch (e : ClassCastException){
+                playbackListener = context as RecordingToolbar.RecordingListener
             }
             catch (e:Exception){}
         }
