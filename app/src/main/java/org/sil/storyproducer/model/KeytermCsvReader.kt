@@ -1,28 +1,35 @@
 package org.sil.storyproducer.model
 
 import com.opencsv.CSVReader
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException
 import java.io.Reader
 
-class KeytermCsvReader(val reader: Reader){
+private const val NUMBER_OF_COLUMNS_REQUIRED = 6
+
+class KeytermCsvReader(reader: Reader): AutoCloseable{
     private val csvReader = CSVReader(reader)
 
     init {
-        val headers = csvReader.readNext()
-        if(headers != null && headers.size < 6){
-            csvReader.readAll()
+        val header = csvReader.readNext()
+        if(header != null && header.size < NUMBER_OF_COLUMNS_REQUIRED){
+            throw CsvRequiredFieldEmptyException()
         }
     }
 
     fun readAll(): List<Keyterm>{
         val keyterms: MutableList<Keyterm> = mutableListOf()
-        
+
         val lines = csvReader.readAll()
-        for(line in lines){
+        for (line in lines) {
             val keyterm = lineToKeyterm(line)
             keyterms.add(keyterm)
         }
 
         return keyterms
+    }
+
+    override fun close() {
+        csvReader.close()
     }
 
     private fun lineToKeyterm(line: Array<String>): Keyterm{
