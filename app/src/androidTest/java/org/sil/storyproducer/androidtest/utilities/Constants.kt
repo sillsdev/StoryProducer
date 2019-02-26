@@ -13,6 +13,9 @@ object Constants {
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
     const val nameOfTestStory = "Lost Coin"
+    const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
+    const val pathToWorkspaceDirectory = "/mnt/sdcard/SPWorkspace"
+    const val pathToEspressoResourceDirectory = "/mnt/sdcard/EspressoResources"
 
     object Phase {
         const val learn = "Learn"
