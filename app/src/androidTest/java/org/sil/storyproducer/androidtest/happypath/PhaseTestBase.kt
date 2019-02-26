@@ -5,12 +5,19 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers
+import org.junit.Assert
 import org.junit.Before
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.controller.SplashScreenActivity
+import org.sil.storyproducer.model.Registration
+import java.io.File
 
 open abstract class PhaseTestBase {
     @Rule
@@ -21,11 +28,37 @@ open abstract class PhaseTestBase {
     @JvmField
     var mGrantPermissionRule: GrantPermissionRule = PermissionsGranter.grantStoryProducerPermissions()
 
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun copyFreshTestStoryToWorkspace() {
+            try {
+                val source = File(concatenateSourcePath())
+                val destination = File(concatenateDestinationPath())
+                if (destination.exists()) {
+                    destination.deleteRecursively()
+                }
+                source.copyRecursively(destination, true)
+            } catch (e: Exception){
+                Assert.fail("Failed to copy pristine story template from test resources folder to workspace folder.")
+            }
+        }
+
+        private fun concatenateSourcePath(): String {
+            return Constants.pathToEspressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+        }
+
+        private fun concatenateDestinationPath(): String {
+            return Constants.pathToWorkspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+        }
+    }
+
     @Before
     fun setUp() {
         launchActivityAndBypassWorkspacePicker()
         navigateToPhase()
     }
+
     abstract fun navigateToPhase()
 
     private fun launchActivityAndBypassWorkspacePicker() {
