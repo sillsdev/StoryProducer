@@ -198,6 +198,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             }
             recyclerView?.layoutManager = LinearLayoutManager(context)
+            recyclerView?.setHasFixedSize(true)
 
             if (!embedded) {
                 val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)

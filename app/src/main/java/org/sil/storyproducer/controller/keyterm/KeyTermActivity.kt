@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
@@ -16,7 +17,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager.LayoutParams
 import android.webkit.WebView
-import android.widget.LinearLayout
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
@@ -37,7 +37,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
     private lateinit var recordingToolbar : RecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
-    lateinit var bottomSheet: LinearLayout
+    lateinit var bottomSheet: ConstraintLayout
     val keytermHistory: Stack<String> = Stack()
     var isFinishedRecordingFromCollapsedState = false
 
