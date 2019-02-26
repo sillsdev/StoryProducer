@@ -4,10 +4,10 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.res.ResourcesCompat.getColor
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableStringBuilder
@@ -16,7 +16,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager.LayoutParams
-import android.widget.LinearLayout
+import android.webkit.WebView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
@@ -25,10 +25,19 @@ import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
+/**
+ * This activity shows information about the  active keyterm to the user where theycan learn more
+ * about the keyterm as well as record an audio backtranslation and give a text backtranslation
+ *
+ * @since 2.6 Keyterm
+ * @author Aaron Cannon and Justin Stallard
+ */
+
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
 
-    private var recordingToolbar : RecordingToolbar = RecordingToolbar()
-    lateinit var bottomSheet: LinearLayout
+    private lateinit var recordingToolbar : RecordingToolbar
+    private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
+    lateinit var bottomSheet: ConstraintLayout
     val keytermHistory: Stack<String> = Stack()
     var isFinishedRecordingFromCollapsedState = false
 
@@ -52,6 +61,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         this.window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
+    /**
+     * Sets the status bar color
+     */
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
@@ -61,6 +73,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    /**
+     * Sets the toolbar color
+     */
     private fun setupToolbar(){
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         setSupportActionBar(toolbar)
@@ -83,11 +98,15 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     }
 
     fun setupRecordingList(){
-        val displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
+        displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
         displayList.embedList(findViewById(android.R.id.content))
+        displayList.setParentFragment(null)
         displayList.show()
     }
 
+    /**
+     * Updates the textViews with the current keyterm information
+     */
     fun setupNoteView(){
         val actionBar = supportActionBar
 
@@ -133,6 +152,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
         bundle.putInt("slideNum", 0)
+        recordingToolbar = RecordingToolbar()
         recordingToolbar.arguments = bundle
         supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
     }
@@ -153,11 +173,20 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 true
             }
             R.id.helpButton -> {
-                val dialog = AlertDialog.Builder(this)
-                        .setTitle(getString(R.string.help))
-                        .setMessage("${Workspace.activePhase.getPrettyName()} Help")
-                        .create()
-                dialog.show()
+                val alert = android.app.AlertDialog.Builder(this)
+                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadData(text,"text/html",null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
                 true
             }
             else -> {
@@ -167,7 +196,10 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {}
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        recordingToolbar.stopToolbarMedia()
+        displayList.stopAudio()
+    }
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         if(isRecording) {
@@ -181,6 +213,10 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
+    /**
+     * When the back button is pressed, the bottom sheet will close if currently opened or return to
+     * the previous keyterm or close the activity if there is no previous keyterm to return to
+     */
     override fun onBackPressed() {
         if( from(bottomSheet).state == STATE_EXPANDED){
             from(bottomSheet).state = STATE_COLLAPSED

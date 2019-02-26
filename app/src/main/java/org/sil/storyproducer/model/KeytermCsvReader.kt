@@ -6,9 +6,19 @@ import java.io.Reader
 
 private const val NUMBER_OF_COLUMNS_REQUIRED = 6
 
+/**
+ * The purpose of this class is to parse keyterm data from a csv file and load into a list of Keyterm objects
+ *
+ * @since 2.6 Keyterm
+ * @author Aaron Cannon
+ */
 class KeytermCsvReader(reader: Reader): AutoCloseable{
     private val csvReader = CSVReader(reader)
 
+    /*
+     * This is a simple check to determine if the csv file has the minimum correct format to not crash.
+     * The format may change as the parsing is based on csv column numbers.
+     */
     init {
         val header = csvReader.readNext()
         if(header != null && header.size < NUMBER_OF_COLUMNS_REQUIRED){
@@ -44,10 +54,14 @@ class KeytermCsvReader(reader: Reader): AutoCloseable{
         return keyterm
     }
 
+    /*
+     * The purpose of this method is to split a string based on a give separator.
+     */
     private fun stringToList(field: String, separator: String): List<String>{
         if(field.isNotEmpty()) {
             val list = field.split(separator)
             val trimmedList = list.asSequence().map { it.trim() }.toMutableList()
+            //Trim any empty string elements
             trimmedList.remove("")
             return trimmedList
         }

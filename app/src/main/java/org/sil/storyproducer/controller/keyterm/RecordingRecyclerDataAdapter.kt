@@ -2,6 +2,7 @@ package org.sil.storyproducer.controller.keyterm
 
 import android.app.AlertDialog
 import android.content.Context
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED
 import android.support.design.widget.BottomSheetBehavior.from
 import android.support.v7.widget.RecyclerView
@@ -15,7 +16,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
-class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: LinearLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
+class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(name: String)
