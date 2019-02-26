@@ -4,6 +4,7 @@ import com.opencsv.CSVReader
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException
 import java.io.Reader
 
+// Should correspond to the highest index accessed when parsing each line
 private const val NUMBER_OF_COLUMNS_REQUIRED = 6
 
 /**
