@@ -1,11 +1,7 @@
 package org.sil.storyproducer.model
 
 import com.opencsv.CSVReader
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException
 import java.io.Reader
-
-// Should correspond to the highest index accessed when parsing each line
-private const val NUMBER_OF_COLUMNS_REQUIRED = 6
 
 /**
  * The purpose of this class is to parse keyterm data from a csv file and load into a list of Keyterm objects
@@ -15,16 +11,10 @@ private const val NUMBER_OF_COLUMNS_REQUIRED = 6
  */
 class KeytermCsvReader(reader: Reader): AutoCloseable{
     private val csvReader = CSVReader(reader)
-
-    /*
-     * This is a simple check to determine if the csv file has the minimum correct format to not crash.
-     * The format may change as the parsing is based on csv column numbers.
-     */
+    
     init {
-        val header = csvReader.readNext()
-        if(header != null && header.size < NUMBER_OF_COLUMNS_REQUIRED){
-            throw CsvRequiredFieldEmptyException()
-        }
+        val numberOfHeaderRows = 1
+        csvReader.skip(numberOfHeaderRows)
     }
 
     fun readAll(): List<Keyterm>{
