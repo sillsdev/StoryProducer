@@ -3,11 +3,13 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import android.support.v4.provider.DocumentFile
+import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
 import java.io.File
-import java.io.FileReader
+import java.io.InputStreamReader
 import java.util.*
 
 internal const val KEYTERMS_DIR = "keyterms"
@@ -159,16 +161,23 @@ object Workspace{
     private fun importKeytermsFromCsvFile(context: Context, keytermsDirectory: DocumentFile){
         val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
         if(keytermsFile != null) {
-            val fileDescriptor = context.contentResolver.openFileDescriptor(keytermsFile.uri, "r")?.fileDescriptor
-            val fileReader = FileReader(fileDescriptor)
-            val keytermCsvReader = KeytermCsvReader(fileReader)
-
-            val keyterms = keytermCsvReader.readAll()
-            fileReader.close()
-            for(keyterm in keyterms){
-               termToKeyterm[keyterm.term] = keyterm
+            try {
+                context.contentResolver.openFileDescriptor(keytermsFile.uri, "r").use{ pfd ->
+                    ParcelFileDescriptor.AutoCloseInputStream(pfd).use{ inputStream ->
+                        InputStreamReader(inputStream).use{ streamReader ->
+                            KeytermCsvReader(streamReader).use { keytermCsvReader ->
+                                val keyterms = keytermCsvReader.readAll()
+                                for (keyterm in keyterms) {
+                                    termToKeyterm[keyterm.term] = keyterm
+                                }
+                            }
+                        }
+                    }
+                }
             }
-
+            catch(exception: Exception) {
+                Toast.makeText(context, "Parsing keyterm CSV file failed", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
