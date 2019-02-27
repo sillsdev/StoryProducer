@@ -1,7 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -9,36 +8,30 @@ import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers.*
 import org.junit.runner.RunWith
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import org.junit.runners.MethodSorters
-import java.lang.Integer.parseInt
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import org.junit.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class TranslatePhaseTest : PhaseTestBase() {
+class TranslatePhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToTranslatePhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.translate)
     }
 
     @Test
     fun should_BeAbleToSwipeBetweenSlides() {
-        val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
-        expectToBeOnSlide(originalSlideNumber)
-        swipeLeftOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(nextSlideNumber)
-        swipeRightOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(originalSlideNumber)
+        testSwipingBetweenSlides()
+    }
+
+    @Test
+    fun should_beAbleToSwipeToNextPhase() {
+        testSwipingToNextPhase(Constants.Phase.communityWork)
     }
 
     @Test
@@ -48,18 +41,18 @@ class TranslatePhaseTest : PhaseTestBase() {
         giveAppTimeToPlayAudio()
         pressPlayPauseButton()
         val endingProgress = getCurrentSlideAudioProgress()
-        Assert.assertNotEquals(endingProgress, originalProgress)
+        Assert.assertTrue("Expected playback progress to increase with time.", endingProgress > originalProgress)
     }
 
     @Test
     fun should_BeAbleToRecordTranslationForASlide() {
         // The "pulsing" animation on the recording toolbar causes the
         // Espresso click to hang, so we disable it for the test.
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        giveAppTimeToRecordAudio()
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            giveAppTimeToRecordAudio()
+            pressMicButton()
+        }
     }
 
     private fun pressMicButton() {
@@ -67,28 +60,7 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     private fun giveAppTimeToRecordAudio() {
-        Thread.sleep(200)
-    }
-
-    private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        onView(allOf(withId(R.id.slide_number_text), withText(originalSlideNumber.toString()))).check(matches(isDisplayed()))
-    }
-
-    private fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
-        return parseInt(slideNumberTextView!!.text.toString())
-    }
-
-    private fun swipeRightOnSlide() {
-        onView(allOf(withId(R.id.phase_frame))).perform(swipeRight())
-    }
-
-    private fun swipeLeftOnSlide() {
-        onView(allOf(withId(R.id.phase_frame))).perform(swipeLeft())
-    }
-
-    private fun giveUiTimeToChangeSlides() {
-        Thread.sleep(50)
+        Thread.sleep(Constants.durationToRecordTranslatedClip)
     }
 
     private fun getCurrentSlideAudioProgress(): Int {
@@ -101,7 +73,6 @@ class TranslatePhaseTest : PhaseTestBase() {
     }
 
     private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(250)
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
     }
-
 }

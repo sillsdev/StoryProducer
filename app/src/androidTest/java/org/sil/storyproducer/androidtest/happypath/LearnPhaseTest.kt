@@ -2,6 +2,7 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
+import android.view.View.VISIBLE
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -11,10 +12,9 @@ import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.FixMethodOrder
-import org.junit.runners.MethodSorters
 import junit.framework.Assert.assertTrue
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 @LargeTest
@@ -22,7 +22,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 class LearnPhaseTest : PhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToLearnPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.learn)
     }
 
     @Test
@@ -33,7 +33,7 @@ class LearnPhaseTest : PhaseTestBase() {
         // click play button
         onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
         // wait a few seconds for narration to play and story to move to next slide
-        Thread.sleep(500)
+        Thread.sleep(Constants.durationToPlayNarration)
         // click pause button
         onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
         // check progress of seek bar
@@ -48,14 +48,15 @@ class LearnPhaseTest : PhaseTestBase() {
         disableCustomAnimations()
         // check whether the triangle Play button exists. If so, there is a previous recording.
         val trianglePlayButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.play_recording_button)
+
         // click 'mic' button to start recording
         onView(allOf(isDisplayed(), withId(org.sil.storyproducer.R.id.start_recording_button))).perform(click())
         // if 'Overwrite' dialog box pops up, click 'YES'
-        if (trianglePlayButton != null) {
+        if (trianglePlayButton?.visibility == VISIBLE) {
             onView(withText("YES")).perform(click())
         }
         // wait a few seconds
-        Thread.sleep(500)
+        Thread.sleep(Constants.durationToRecordLearnClip)
         // click button to stop recording
         onView(allOf(isDisplayed(), withId(org.sil.storyproducer.R.id.start_recording_button))).perform(click())
         // re-enable the color-changing recording toolbar

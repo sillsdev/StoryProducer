@@ -1,57 +1,47 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.RecyclerView
 import android.view.View.INVISIBLE
 import android.widget.ImageButton
-import android.widget.ListView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
-class CommunityWorkPhaseTest : PhaseTestBase() {
-    val durationToPlayTranslatedClip: Long = 100
-    val durationToRecordTranslatedClip: Long = 1000
-    val durationToRecordFeedbackClip: Long = 250
+@LargeTest
+@RunWith(AndroidJUnit4::class)
+class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.communityWork)
     }
 
     @Test
     fun should_BeAbleToSwipeBetweenSlides() {
-        val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
-        expectToBeOnSlide(originalSlideNumber)
-        swipeLeftOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(nextSlideNumber)
-        swipeRightOnSlide()
-        giveUiTimeToChangeSlides()
-        expectToBeOnSlide(originalSlideNumber)
+        testSwipingBetweenSlides()
     }
 
     @Test
-    fun should_BeAbleToPlayNarrationOfASlide() {
+    fun should_BeAbleToPlayTranslationOfASlide() {
         makeSureAnAudioClipIsAvailable()
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
-        Thread.sleep(durationToPlayTranslatedClip)
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
         pressPlayPauseButton()
         val progressAfterPausing = getCurrentSlideAudioProgress()
         Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
@@ -61,54 +51,27 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     fun should_BeAbleToRecordFeedback() {
         var originalNumberOfRecordings = getCurrentNumberOfRecordings()
 
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(durationToRecordFeedbackClip)
-        pressMicButton()
-        AnimationsToggler.disableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordFeedbackClip)
+            pressMicButton()
+        }
 
         var finalNumberOfRecordings = getCurrentNumberOfRecordings()
         Assert.assertEquals("Expected an additional feedback recording to exist", originalNumberOfRecordings + 1, finalNumberOfRecordings)
     }
 
     @Test
-    fun should_BeAbleToSwipeToNextPhase() {
-        swipeUpOnSlide()
-        expectToBeOnAccuracyCheckPhase()
-    }
-
-    private fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
-        return Integer.parseInt(slideNumberTextView!!.text.toString())
-    }
-
-    private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-    }
-
-    private fun swipeRightOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeRight())
-    }
-
-    private fun swipeLeftOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeLeft())
-    }
-
-    private fun swipeUpOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeUp())
+    fun should_beAbleToSwipeToNextPhase() {
+        testSwipingToNextPhase(Constants.Phase.accuracyCheck)
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase("Translate")
+        selectPhase(Constants.Phase.translate)
         if (!areThereAnyAudioClipsOnThisSlide()) {
             recordAnAudioTranslationClip()
         }
-        selectPhase("Community Work")
-    }
-
-    private fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+        selectPhase(Constants.Phase.communityWork)
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
@@ -117,19 +80,15 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
     }
 
     private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(durationToRecordTranslatedClip)
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordTranslatedClip)
+            pressMicButton()
+        }
     }
 
     private fun getCurrentNumberOfRecordings() =
-            ActivityAccessor.getCurrentActivity()!!.findViewById<ListView>(R.id.recordings_list)!!.childCount
-
-    private fun giveUiTimeToChangeSlides() {
-        Thread.sleep(50)
-    }
+            ActivityAccessor.getCurrentActivity()!!.findViewById<RecyclerView>(R.id.recordings_list)!!.childCount
 
     private fun getCurrentSlideAudioProgress(): Int {
         val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
@@ -142,9 +101,5 @@ class CommunityWorkPhaseTest : PhaseTestBase() {
 
     private fun pressPlayPauseButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
-    }
-
-    private fun expectToBeOnAccuracyCheckPhase() {
-        Espresso.onView(withText("Accuracy Check")).check(matches(isDisplayed()))
     }
 }

@@ -229,8 +229,13 @@ class RecordingToolbar : Fragment(){
                         multiRecordButton = imageButtons[i]
                         multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
                     }
-                    3 -> checkButton = imageButtons[i]
-                    4 -> sendAudioButton = imageButtons[i]
+                    3 -> {
+                        checkButton = imageButtons[i]
+                        checkButton.id = org.sil.storyproducer.R.id.finish_recording_button
+                    }
+                    4 -> {
+                        sendAudioButton = imageButtons[i]
+                    }
                 }
             }
         }
