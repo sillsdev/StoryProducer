@@ -28,7 +28,12 @@ open abstract class PhaseTestBase {
     companion object {
         @JvmStatic
         @BeforeClass
-        fun copyFreshTestStoryToWorkspace() {
+        fun revertWorkspaceToCleanState() {
+            copyFreshTestStoryToWorkspace()
+            deleteExportedVideos()
+        }
+
+        private fun copyFreshTestStoryToWorkspace() {
             try {
                 val source = File(concatenateSourcePath())
                 val destination = File(concatenateDestinationPath())
@@ -38,6 +43,17 @@ open abstract class PhaseTestBase {
                 source.copyRecursively(destination, true)
             } catch (e: Exception){
                 Assert.fail("Failed to copy pristine story template from test resources folder to workspace folder.")
+            }
+        }
+
+        private fun deleteExportedVideos() {
+            try {
+                val exportedVideosDirectory = File(Constants.exportedVideosDirectory)
+                if (exportedVideosDirectory.exists()) {
+                    exportedVideosDirectory.deleteRecursively()
+                }
+            } catch (e: Exception) {
+                Assert.fail("Failed to find or to delete video export directory.")
             }
         }
 

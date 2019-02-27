@@ -19,6 +19,7 @@ object Constants {
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val workspaceDirectory = "/mnt/sdcard/SPWorkspace"
     const val espressoResourceDirectory = "/mnt/sdcard/EspressoResources"
+    const val nameOfSampleExportVideo = "LostCoinSample.mp4"
     const val exportedVideosDirectory = "/mnt/sdcard/SPWorkspace/videos"
 
     object Phase {
@@ -28,6 +29,7 @@ object Constants {
         const val accuracyCheck = "Accuracy Check"
         const val voiceStudio = "Voice Studio"
         const val finalize = "Finalize"
+        const val share = "Share"
     }
 }
 
