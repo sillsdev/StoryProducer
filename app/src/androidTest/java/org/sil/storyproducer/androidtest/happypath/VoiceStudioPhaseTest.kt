@@ -31,7 +31,7 @@ import org.sil.storyproducer.model.Workspace
 class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToVoiceStudioPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.voiceStudio)
     }
 
     @Test

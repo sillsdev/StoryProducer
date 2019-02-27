@@ -27,7 +27,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.communityWork)
     }
 
     @Test
