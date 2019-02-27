@@ -153,6 +153,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        password.id = org.sil.storyproducer.R.id.password_text_field;
 
         // Programmatically set layout properties for edit text field
         val params = LinearLayout.LayoutParams(

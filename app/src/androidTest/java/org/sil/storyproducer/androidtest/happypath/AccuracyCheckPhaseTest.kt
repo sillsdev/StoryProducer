@@ -3,6 +3,7 @@ package org.sil.storyproducer.androidtest.happypath
 import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.AppCompatTextView
+import android.support.v7.widget.DialogTitle
 import android.view.View
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso
@@ -25,16 +26,21 @@ import org.junit.Assert
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
+import org.sil.storyproducer.model.Workspace
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
-class AccuracyCheckPhaseTest : PhaseTestBase() {
-    val durationToRecordTranslatedClip: Long = 1000
-    val durationToPlayTranslatedClip: Long = 100
+class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
         PhaseNavigator.navigateFromRegistrationScreenToAccuracyCheckPhase()
+    }
+
+    @Test
+    fun shouldBeAbleToSwipeBetweenSlides() {
+        testSwipingBetweenSlides()
     }
 
     @Test
@@ -43,7 +49,7 @@ class AccuracyCheckPhaseTest : PhaseTestBase() {
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
-        Thread.sleep(durationToPlayTranslatedClip)
+        Thread.sleep(Constants.durationToPlayTranslatedClip)
         pressPlayPauseButton()
         val progressAfterPausing = getCurrentSlideAudioProgress()
         Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
@@ -51,36 +57,25 @@ class AccuracyCheckPhaseTest : PhaseTestBase() {
 
     @Test
     fun shouldBeAbleToToggleApprovedState() {
-        Thread.sleep(1000)
-        pressCheckmarkButton()
-        Thread.sleep(1000)
-        pressCheckmarkButton()
-        Thread.sleep(1000)
-        pressCheckmarkButton()
-        Thread.sleep(1000)
-        pressCheckmarkButton()
-        Thread.sleep(1000)
-        //TODO
-    }
+        val currentSlideNum = findCurrentSlideNumber();
+        val originalApprovalState = Workspace.activeStory.slides[currentSlideNum].isChecked
 
-    @Test
-    fun shouldBeAbleToSwipeBetweenSlides() {
-        val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
-        expectToBeOnSlide(originalSlideNumber)
-        // swipe to the left
-        swipeLeftOnSlide()
-        Thread.sleep(50)
-        expectToBeOnSlide(nextSlideNumber)
-        // swipe to the right
-        swipeRightOnSlide()
-        Thread.sleep(50)
-        expectToBeOnSlide(originalSlideNumber)
+        pressCheckmarkButton()
+
+        val approvalStateAfterClickingCheckmark = Workspace.activeStory.slides[currentSlideNum].isChecked
+        Assert.assertNotEquals(originalApprovalState, approvalStateAfterClickingCheckmark)
+
+        pressCheckmarkButton()
+
+        val approvalStateAfterSecondClickOnCheckmark = Workspace.activeStory.slides[currentSlideNum].isChecked
+        Assert.assertEquals(originalApprovalState, approvalStateAfterSecondClickOnCheckmark)
     }
 
     @Test
     fun passwordConfirmationPopupShouldBehaveCorrectly() {
-        //TODO
+        swipeThroughAndApproveAllSlides()
+        typePasswordAndClickSubmit()
+        shouldNowBeOnVoiceStudioPhase()
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
@@ -91,22 +86,17 @@ class AccuracyCheckPhaseTest : PhaseTestBase() {
         selectPhase("Accuracy Check")
     }
 
-    private fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(org.sil.storyproducer.R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
-    }
-
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
         val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
         return showRecordingsListButton?.visibility != View.INVISIBLE
     }
 
     private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.disableCustomAnimations()
-        pressMicButton()
-        Thread.sleep(durationToRecordTranslatedClip)
-        pressMicButton()
-        AnimationsToggler.enableCustomAnimations()
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordTranslatedClip)
+            pressMicButton()
+        }
     }
 
     private fun pressMicButton() {
@@ -126,21 +116,21 @@ class AccuracyCheckPhaseTest : PhaseTestBase() {
         onView(allOf(withId(R.id.concheck_checkmark_button), isDisplayed())).perform(click())
     }
 
-    private fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
-        return Integer.parseInt(slideNumberTextView!!.text.toString())
+    private fun swipeThroughAndApproveAllSlides() {
+        for (i in 1..7) {
+            pressCheckmarkButton()
+            swipeLeftOnSlide()
+        }
+        pressCheckmarkButton()
     }
 
-    private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+    private fun typePasswordAndClickSubmit() {
+        onView(allOf(withId(R.id.password_text_field), isDisplayed())).perform(clearText()).perform(typeText("appr00ved"))
+        onView(withText("SUBMIT")).perform(click())
     }
 
-    private fun swipeLeftOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeLeft())
-    }
-
-    private fun swipeRightOnSlide() {
-        Espresso.onView(allOf(ViewMatchers.withId(R.id.phase_frame))).perform(swipeRight())
+    private fun shouldNowBeOnVoiceStudioPhase() {
+        onView(withText(containsString("Voice Studio"))).check(ViewAssertions.matches(isDisplayed()))
     }
 
 }
