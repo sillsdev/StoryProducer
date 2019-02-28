@@ -90,18 +90,18 @@ fun stringToKeytermLink(string: String, fragmentActivity: FragmentActivity?): Sp
 private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentActivity?): ClickableSpan {
     return object : ClickableSpan() {
         override fun onClick(textView: View) {
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && fragmentActivity is KeyTermActivity){
                 //Save the active keyterm
-                saveKeyterm(fragmentActivity?.applicationContext!!)
+                saveKeyterm(fragmentActivity.applicationContext)
                 //Set keyterm from link as active keyterm
                 Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Add new keyterm fragments to stack
-                (fragmentActivity as KeyTermActivity).keytermHistory.push(term)
-                (fragmentActivity).setupNoteView()
-                (fragmentActivity).setupRecordingList()
-                BottomSheetBehavior.from((fragmentActivity).bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                fragmentActivity.keytermHistory.push(term)
+                fragmentActivity.setupNoteView()
+                fragmentActivity.setupRecordingList()
+                BottomSheetBehavior.from(fragmentActivity.bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
             }
-            else {
+            else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM){
                 //Set keyterm from link as active keyterm
                 Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Start a new keyterm activity and keep a reference to the parent phase
