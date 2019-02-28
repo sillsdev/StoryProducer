@@ -19,6 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.model.CLICKED_TERM
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToKeyterm
@@ -166,10 +167,9 @@ class KeytermListAdapter(private val keytermTerms: Array<String>, private val co
         val term = keytermTerms[position]
         keytermListViewHolder.item.findViewById<TextView>(android.R.id.text1).text = term
         keytermListViewHolder.item.setOnClickListener {
-            Workspace.activeKeyterm = Workspace.termToKeyterm[term]!!
             val intent = Intent(context , KeyTermActivity::class.java)
             intent.putExtra(PHASE, Workspace.activePhase.phaseType)
-            intent.putExtra("ClickedTerm", term)
+            intent.putExtra(CLICKED_TERM, term)
             context.startActivity(intent)
         }
     }

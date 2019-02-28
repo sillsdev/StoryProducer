@@ -1,8 +1,6 @@
 package org.sil.storyproducer.model
 
-import android.content.Context
 import android.content.Intent
-import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.text.Spannable
@@ -54,17 +52,6 @@ class BackTranslation (var textBackTranslation : String = "",
 }
 
 /**
- * Saves the active keyterm to the workspace and exports an up-to-date json file for all keyterms
- *
- * @param context Activity's contexts
- **/
-fun saveKeyterm(context: Context){
-    Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-    val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
-    Thread(Runnable{ context.let { keytermList.toJson(it) } }).start()
-}
-
-/**
  * Takes a string and returns a spannable string with links to open keyterm Activity
  *
  * @param string The string that contains keyterms
@@ -91,23 +78,13 @@ private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentA
     return object : ClickableSpan() {
         override fun onClick(textView: View) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && fragmentActivity is KeyTermActivity){
-                //Save the active keyterm
-                saveKeyterm(fragmentActivity.applicationContext)
-                //Set keyterm from link as active keyterm
-                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
-                //Add new keyterm fragments to stack
-                fragmentActivity.keytermHistory.push(term)
-                fragmentActivity.setupNoteView()
-                fragmentActivity.setupRecordingList()
-                BottomSheetBehavior.from(fragmentActivity.bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
+                fragmentActivity.replaceActivityKeyterm(term)
             }
             else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM){
-                //Set keyterm from link as active keyterm
-                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
                 //Start a new keyterm activity and keep a reference to the parent phase
                 val intent = Intent(fragmentActivity, KeyTermActivity::class.java)
                 intent.putExtra(PHASE, Workspace.activePhase.phaseType)
-                intent.putExtra("ClickedTerm", term)
+                intent.putExtra(CLICKED_TERM, term)
                 fragmentActivity?.startActivity(intent)
             }
         }
