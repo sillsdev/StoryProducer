@@ -79,7 +79,7 @@ class TextOverlay(private val mText: String) {
     }
 
     private fun setup() {
-        val fontSizeScale = mCanvasWidth / FONT_SIZE_SCALE_FACTOR.toFloat()
+        val fontSizeScale = mCanvasHeight / FONT_SIZE_SCALE_FACTOR.toFloat()
 
         mTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
         mTextPaint!!.color = mTextColor
@@ -128,7 +128,7 @@ class TextOverlay(private val mText: String) {
     }
 
     companion object {
-        private val FONT_SIZE_SCALE_FACTOR = 320
+        private val FONT_SIZE_SCALE_FACTOR = 240
     }
 }
 
