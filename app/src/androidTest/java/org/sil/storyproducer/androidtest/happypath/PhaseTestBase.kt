@@ -13,7 +13,9 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
+import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.model.Workspace
 import java.io.File
 
 open abstract class PhaseTestBase {
@@ -80,8 +82,10 @@ open abstract class PhaseTestBase {
         IntentMocker.tearDownDummyWorkspacePickerIntent()
     }
 
-    protected fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+    protected fun approveSlides() {
+        for (item in Workspace.activeStory.slides) {
+            item.isChecked = true
+        }
+        Workspace.activeStory.isApproved = true
     }
 }

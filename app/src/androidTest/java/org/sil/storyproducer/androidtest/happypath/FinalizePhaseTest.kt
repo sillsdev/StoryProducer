@@ -26,7 +26,9 @@ class FinalizePhaseTest : PhaseTestBase() {
 
     @Test
     fun when_createVideoButtonPressedWithDefaultOptions_should_produceVideoFileWithMp4Extension() {
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.finalize)
 
         val videoTitle = generateUniqueVideoTitle()
         Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
@@ -35,15 +37,6 @@ class FinalizePhaseTest : PhaseTestBase() {
         Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
         // verify that the expected video file exists on disk
         waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
-    }
-
-    private fun approveSlides() {
-        selectPhase(Constants.Phase.accuracyCheck)
-        for (item in Workspace.activeStory.slides) {
-            item.isChecked = true;
-        }
-        Workspace.activeStory.isApproved = true
-        selectPhase(Constants.Phase.finalize)
     }
 
     private fun generateUniqueVideoTitle(): String {

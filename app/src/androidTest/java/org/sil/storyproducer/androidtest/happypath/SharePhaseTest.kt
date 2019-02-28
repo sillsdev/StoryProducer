@@ -24,19 +24,22 @@ class SharePhaseTest : PhaseTestBase() {
 
     @Test
     fun when_thereAreNoExportedVideos_should_showNoVideosMessage() {
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.share)
 
         Espresso.onView(withText(org.sil.storyproducer.R.string.no_videos)).check(matches(isDisplayed()))
     }
 
     @Test
     fun when_aVideoHasBeenExported_should_showItInTheList() {
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.finalize)
         val videoFilename = Constants.nameOfSampleExportVideo
-        selectPhase(Constants.Phase.finalize)
         copySampleVideoToExportDirectory(videoFilename)
         Workspace.activeStory.addVideo(videoFilename)
-        selectPhase(Constants.Phase.share)
+        PhaseNavigator.selectPhase(Constants.Phase.share)
 
         Espresso.onView(withText(CoreMatchers.containsString(videoFilename))).check(matches(isDisplayed()))
     }
@@ -49,15 +52,5 @@ class SharePhaseTest : PhaseTestBase() {
         } catch (e: Exception){
             Assert.fail("Failed to copy sample video to exported videos directory for test.")
         }
-    }
-
-    //TODO: Move this functionality to a base class for all phases that require consultant authorization
-    private fun approveSlides() {
-        selectPhase(Constants.Phase.accuracyCheck)
-        for (item in Workspace.activeStory.slides) {
-            item.isChecked = true
-        }
-        Workspace.activeStory.isApproved = true
-        selectPhase(Constants.Phase.share)
     }
 }
