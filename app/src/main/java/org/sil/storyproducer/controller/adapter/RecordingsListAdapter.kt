@@ -18,7 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.keyterm.RecyclerDataAdapter
+import org.sil.storyproducer.controller.keyterm.RecordingListAdapter
 import org.sil.storyproducer.model.BackTranslation
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -148,7 +148,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, RecyclerDataAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, RecordingListAdapter.ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -191,7 +191,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
 
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                recyclerView?.adapter = RecyclerDataAdapter(context, Workspace.activeKeyterm.backTranslations, rootView?.findViewById(R.id.bottom_sheet)!!, this)
+                recyclerView?.adapter = RecordingListAdapter(context, Workspace.activeKeyterm.backTranslations, rootView?.findViewById(R.id.bottom_sheet)!!, this)
             }
             else{
                 recyclerView?.adapter = RecordingsListAdapter(strippedFilenames, this)

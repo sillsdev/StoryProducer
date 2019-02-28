@@ -26,8 +26,8 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
 /**
- * This activity shows information about the  active keyterm to the user where theycan learn more
- * about the keyterm as well as record an audio backtranslation and give a text backtranslation
+ * This activity shows information about the  active keyterm to the user where they can learn more
+ * about the keyterm as well as record an audio translation and give a text backtranslation
  *
  * @since 2.6 Keyterm
  * @author Aaron Cannon and Justin Stallard
@@ -38,14 +38,16 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private lateinit var recordingToolbar : RecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
-    val keytermHistory: Stack<String> = Stack()
+    private val keytermHistory: Stack<String> = Stack()
     var isFinishedRecordingFromCollapsedState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
         Workspace.activePhase = Phase(PhaseType.KEYTERM)
-        keytermHistory.push(intent?.getStringExtra("ClickedTerm"))
+        val term = intent.getStringExtra("ClickedTerm")
+        Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
+        keytermHistory.push(term)
 
         setupStatusBar()
 
@@ -61,9 +63,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         this.window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
     }
 
-    /**
-     * Sets the status bar color
-     */
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
@@ -73,9 +72,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    /**
-     * Sets the toolbar color
-     */
     private fun setupToolbar(){
         val toolbar: android.support.v7.widget.Toolbar = findViewById(R.id.keyterm_toolbar)
         setSupportActionBar(toolbar)
@@ -97,7 +93,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    fun setupRecordingList(){
+    private fun setupRecordingList(){
         displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
         displayList.embedList(findViewById(android.R.id.content))
         displayList.setParentFragment(null)
@@ -107,7 +103,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     /**
      * Updates the textViews with the current keyterm information
      */
-    fun setupNoteView(){
+    private fun setupNoteView(){
         val actionBar = supportActionBar
 
         actionBar?.title = keytermHistory.peek()
@@ -165,7 +161,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeKeyterm -> {
-                saveKeyterm(this)
+                saveKeyterm()
                 if(intent.hasExtra(PHASE)) {
                     Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
                 }
@@ -222,7 +218,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             from(bottomSheet).state = STATE_COLLAPSED
         }
         else {
-            saveKeyterm(this)
+            saveKeyterm()
             keytermHistory.pop()
             if (keytermHistory.isEmpty()) {
                 if(intent.hasExtra(PHASE)) {
@@ -236,5 +232,25 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 setupRecordingList()
             }
         }
+    }
+    
+    fun replaceActivityKeyterm(term: String){
+        saveKeyterm()
+        //Set keyterm from link as active keyterm
+        Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]!!
+        //Add new keyterm fragments to stack
+        keytermHistory.push(term)
+        setupNoteView()
+        setupRecordingList()
+        from(bottomSheet).state = STATE_COLLAPSED
+    }
+
+    /**
+     * Saves the active keyterm to the workspace and exports an up-to-date json file for all keyterms
+     **/
+    private fun saveKeyterm(){
+        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
+        val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
+        Thread(Runnable{ let { keytermList.toJson(it) } }).start()
     }
 }

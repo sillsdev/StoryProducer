@@ -19,6 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.model.CLICKED_TERM
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToKeyterm
@@ -36,7 +37,7 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
         keytermList.sortWith(String.CASE_INSENSITIVE_ORDER)
 
         val viewManager = LinearLayoutManager(this)
-        val viewAdapter = MyAdapter(keytermList, this)
+        val viewAdapter = KeytermListAdapter(keytermList, this)
 
         recyclerView = findViewById<RecyclerView>(R.id.keyterm_list).apply {
             setHasFixedSize(true)
@@ -86,7 +87,7 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
             }
         }
         newList.sortWith(String.CASE_INSENSITIVE_ORDER)
-        recyclerView.swapAdapter(MyAdapter(newList.toTypedArray(), this), true)
+        recyclerView.swapAdapter(KeytermListAdapter(newList.toTypedArray(), this), true)
         recyclerView.scrollToPosition(0)
         return true
     }
@@ -151,30 +152,29 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
     }
 }
 
-class MyAdapter(private val myDataset: Array<String>, private val context: Context) : RecyclerView.Adapter<MyAdapter.MyViewHolder>() {
+class KeytermListAdapter(private val keytermTerms: Array<String>, private val context: Context) : RecyclerView.Adapter<KeytermListAdapter.KeytermListViewHolder>() {
 
-    class MyViewHolder(val item: View) : RecyclerView.ViewHolder(item)
+    class KeytermListViewHolder(val item: View) : RecyclerView.ViewHolder(item)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyAdapter.MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KeytermListAdapter.KeytermListViewHolder {
 
         val rootView = LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
 
-        return MyViewHolder(rootView)
+        return KeytermListViewHolder(rootView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-
-        holder.item.findViewById<TextView>(android.R.id.text1).text = myDataset[position]
-        holder.item.setOnClickListener {
-            Workspace.activeKeyterm = Workspace.termToKeyterm[myDataset[position]]!!
+    override fun onBindViewHolder(keytermListViewHolder: KeytermListViewHolder, position: Int) {
+        val term = keytermTerms[position]
+        keytermListViewHolder.item.findViewById<TextView>(android.R.id.text1).text = term
+        keytermListViewHolder.item.setOnClickListener {
             val intent = Intent(context , KeyTermActivity::class.java)
             intent.putExtra(PHASE, Workspace.activePhase.phaseType)
-            intent.putExtra("ClickedTerm", Workspace.activeKeyterm.term)
+            intent.putExtra(CLICKED_TERM, term)
             context.startActivity(intent)
         }
     }
 
-    override fun getItemCount() = myDataset.size
+    override fun getItemCount() = keytermTerms.size
 }
 
 

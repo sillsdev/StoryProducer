@@ -13,9 +13,10 @@ import java.io.InputStreamReader
 import java.util.*
 
 internal const val KEYTERMS_DIR = "keyterms"
-internal const val KEYTERMS_FILE = "keyterms.csv"
+internal const val KEYTERMS_CSV_FILE = "keyterms.csv"
 internal const val KEYTERMS_JSON_FILE = "keyterms.json"
-internal const val PHASE = "phase"
+internal const val PHASE = "Phase"
+internal const val CLICKED_TERM = "ClickedTerm"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -159,7 +160,7 @@ object Workspace{
     }
 
     private fun importKeytermsFromCsvFile(context: Context, keytermsDirectory: DocumentFile){
-        val keytermsFile = keytermsDirectory.findFile(KEYTERMS_FILE)
+        val keytermsFile = keytermsDirectory.findFile(KEYTERMS_CSV_FILE)
         if(keytermsFile != null) {
             try {
                 context.contentResolver.openFileDescriptor(keytermsFile.uri, "r").use{ pfd ->
@@ -167,7 +168,7 @@ object Workspace{
                         InputStreamReader(inputStream).use{ streamReader ->
                             KeytermCsvReader(streamReader).use { keytermCsvReader ->
                                 val keyterms = keytermCsvReader.readAll()
-                                for (keyterm in keyterms) {
+                                keyterms.forEach { keyterm ->
                                     termToKeyterm[keyterm.term] = keyterm
                                 }
                             }
@@ -183,14 +184,19 @@ object Workspace{
 
     private fun importKeytermsFromJsonFiles(context: Context, keytermsDirectory: DocumentFile){
         if(keytermsDirectory.findFile(KEYTERMS_JSON_FILE) != null) {
-            val keytermList = keytermListFromJson(context)
-            keytermList?.keyterms?.forEach { keyterm ->
-                if (termToKeyterm.containsKey(keyterm.term)) {
-                    termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
-                    termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
-                } else {
-                    termToKeyterm[keyterm.term] = keyterm
+            try {
+                val keytermList = keytermListFromJson(context)
+                keytermList?.keyterms?.forEach { keyterm ->
+                    if (termToKeyterm.containsKey(keyterm.term)) {
+                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                        termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
+                    } else {
+                        termToKeyterm[keyterm.term] = keyterm
+                    }
                 }
+            }
+            catch(exception: Exception) {
+                Toast.makeText(context, "Parsing keyterm JSON file failed", Toast.LENGTH_SHORT).show()
             }
         }
     }

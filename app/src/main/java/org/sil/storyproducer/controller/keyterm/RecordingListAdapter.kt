@@ -16,7 +16,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
-class RecyclerDataAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecyclerDataAdapter.MyViewHolder>() {
+class RecordingListAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingListAdapter.RecordingListViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(name: String)
@@ -26,20 +26,20 @@ class RecyclerDataAdapter(val context: Context?, private val recordings: Mutable
         fun onRenameSuccess(pos: Int)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingListViewHolder {
         val inflater: LayoutInflater = LayoutInflater.from(parent.context)
         val itemView = inflater.inflate(R.layout.keyterm_audio_comment_list_item, parent, false)
 
-        return MyViewHolder(itemView)
+        return RecordingListViewHolder(itemView)
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecordingListViewHolder, position: Int) {
         holder.bindView(recordings[position])
     }
 
     override fun getItemCount(): Int = recordings.size
 
-    inner class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class RecordingListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private var parentTextView: TextView = itemView.findViewById(R.id.audio_comment_title)
         private var parentPlayButton: ImageButton = itemView.findViewById(R.id.audio_comment_play_button)
