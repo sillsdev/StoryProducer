@@ -168,7 +168,7 @@ object Workspace{
                         InputStreamReader(inputStream).use{ streamReader ->
                             KeytermCsvReader(streamReader).use { keytermCsvReader ->
                                 val keyterms = keytermCsvReader.readAll()
-                                for (keyterm in keyterms) {
+                                keyterms.forEach { keyterm ->
                                     termToKeyterm[keyterm.term] = keyterm
                                 }
                             }

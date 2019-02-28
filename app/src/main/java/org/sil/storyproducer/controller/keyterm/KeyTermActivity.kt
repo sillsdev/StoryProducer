@@ -26,8 +26,8 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
 /**
- * This activity shows information about the  active keyterm to the user where theycan learn more
- * about the keyterm as well as record an audio backtranslation and give a text backtranslation
+ * This activity shows information about the  active keyterm to the user where they can learn more
+ * about the keyterm as well as record an audio translation and give a text backtranslation
  *
  * @since 2.6 Keyterm
  * @author Aaron Cannon and Justin Stallard

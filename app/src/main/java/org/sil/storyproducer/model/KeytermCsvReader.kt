@@ -25,6 +25,7 @@ class KeytermCsvReader(reader: Reader): AutoCloseable{
             val keyterm = lineToKeyterm(line)
             keyterms.add(keyterm)
         }
+        keyterms.removeAll{ keyterm -> keyterm.term == ""}
 
         return keyterms
     }
