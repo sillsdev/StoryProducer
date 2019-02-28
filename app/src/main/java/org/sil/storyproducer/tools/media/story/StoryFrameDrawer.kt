@@ -1,12 +1,14 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.RectF
 import android.media.MediaFormat
 import android.util.Log
 import org.sil.storyproducer.tools.file.getDownsample
 import org.sil.storyproducer.tools.file.getStoryImage
-
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder
 
@@ -157,6 +159,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             val ds = getDownsample(context,page.imRelPath,mWidth*2, mHeight*2)
             downsamples[page.imRelPath] = ds
             bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath,ds,true)
+            bitmaps[page.imRelPath]
         }
         val bitmap = bitmaps[page.imRelPath]
         val downSample = downsamples[page.imRelPath]!!
@@ -164,9 +167,11 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         if (bitmap != null) {
             val position = (timeOffsetUs / imgDurationUs.toDouble()).toFloat()
 
+            //If ken burns, then interpolate
             val drawRect = page.kenBurnsEffect?.
                     revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height,downSample*1f) ?:
-                RectF(0f, 0f, mWidth*1f, mHeight*1f)
+                //else, fit to height and scale the width proportionally.
+                RectF(0f, 0f, mHeight*bitmap.width/bitmap.height*1f, mHeight*1f)
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 
