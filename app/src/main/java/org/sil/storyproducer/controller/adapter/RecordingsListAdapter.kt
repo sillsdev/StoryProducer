@@ -81,7 +81,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 return@setOnLongClickListener true
             }
             val messageButton = itemView.findViewById<TextView>(R.id.audio_comment_title)
-            messageButton.text = text
+            messageButton.text = text.substringBeforeLast('.')
 
             val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
             playButton.setOnClickListener {
