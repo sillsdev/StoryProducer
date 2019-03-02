@@ -69,14 +69,14 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
             }
 
             if(recordings[adapterPosition].isTextBackTranslationSubmitted){
-                initComment()
+                initCommentState()
             }
             else{
-                initSubmit()
+                initSubmitState()
             }
         }
 
-        private fun initSubmit(){
+        private fun initSubmitState(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childSubmit)
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
@@ -84,11 +84,8 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
             editText.setText(recordings[adapterPosition].textBackTranslation)
 
             editText.addTextChangedListener(object : TextWatcher {
-
                 override fun afterTextChanged(s: Editable) {}
-
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                     recordings[adapterPosition].textBackTranslation = s.toString()
                 }
@@ -101,22 +98,23 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
                     frameLayoutChildItem.removeAllViews()
                     updateBottomSheetState(itemView.context)
                     context?.hideKeyboard(it)
-                    initComment()
+                    initCommentState()
                 }
             }
         }
 
-        private fun initComment(){
+        private fun initCommentState(){
             frameLayoutChildItem.removeAllViews()
             frameLayoutChildItem.addView(childComment)
-            val currentTextView = frameLayoutChildItem.findViewById<TextView>(R.id.backtranslation_comment_title)
-            currentTextView.text = recordings[adapterPosition].textBackTranslation
-            val currentDeleteButton = frameLayoutChildItem.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
+            val currentDeleteButton = itemView.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
+            val textView = itemView.findViewById<TextView>(R.id.backtranslation_comment_title)
+            textView.text = recordings[adapterPosition].textBackTranslation
+
             currentDeleteButton.setOnClickListener {
                 recordings[adapterPosition].textBackTranslation = ""
                 recordings[adapterPosition].isTextBackTranslationSubmitted = false
                 frameLayoutChildItem.removeAllViews()
-                initSubmit()
+                initSubmitState()
             }
         }
 
