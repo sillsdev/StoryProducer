@@ -71,7 +71,7 @@ fun assignNewAudioRelPath() : String {
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
         }
         PhaseType.KEYTERM -> {
-            Workspace.activeKeyterm.keytermRecordings.add(0, KeytermRecording("", relPath))
+            Workspace.activeKeyterm.keytermRecordings.add(0, KeytermRecording(relPath,""))
             Workspace.activeKeyterm.chosenKeytermFile = relPath
         }
         else -> relPath = ""

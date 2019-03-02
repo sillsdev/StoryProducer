@@ -296,7 +296,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
             filenames[pos] = lastNewName!!
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activeKeyterm.keytermRecordings[pos] = KeytermRecording(Workspace.activeKeyterm.keytermRecordings[pos].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
+                Workspace.activeKeyterm.keytermRecordings[pos] = KeytermRecording("${Workspace.activeKeyterm.term}/$lastNewName", Workspace.activeKeyterm.keytermRecordings[pos].textBackTranslation )
             }
             updateRecordingList()
             onRowClick(lastNewName!!)
