@@ -16,12 +16,12 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager.LayoutParams
-import android.webkit.WebView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
+import org.sil.storyproducer.tools.helpDialog
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
@@ -169,20 +169,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
                 true
             }
             R.id.helpButton -> {
-                val alert = android.app.AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
-                val text = iStream.reader().use {
-                    it.readText() }
-
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                helpDialog(this, "${Workspace.activePhase.getPrettyName()} Help").show()
                 true
             }
             else -> {

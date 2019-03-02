@@ -1,7 +1,10 @@
 package org.sil.storyproducer.controller
 
 import android.app.AlertDialog
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -13,17 +16,14 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.webkit.WebView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.StorySharedPreferences
+import org.sil.storyproducer.tools.helpDialog
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity(), Serializable {
@@ -77,20 +77,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-                val alert = AlertDialog.Builder(this)
-                alert.setTitle("Story List Help")
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
-                val text = iStream.reader().use {
-                        it.readText() }
-
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                helpDialog(this, "Story List Help").show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
