@@ -384,7 +384,6 @@ class RecordingToolbar : Fragment(){
                         setKeytermMultiRecordIcon(newState)
                         if(newState == STATE_COLLAPSED){
                             view.let { activity?.hideKeyboard(it) }
-                            (activity as KeyTermActivity).isFinishedRecordingFromCollapsedState = false
                         }
                         // Disables opening recording list when no recordings are available
                         if(Workspace.activeKeyterm.backTranslations.isEmpty()){

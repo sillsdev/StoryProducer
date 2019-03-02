@@ -85,7 +85,6 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
                     Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
                     editText.setText("")
                     frameLayoutChildItem.removeAllViews()
-                    updateBottomSheetState(itemView.context)
                     context?.hideKeyboard(it)
                     initComment()
                 }
@@ -113,19 +112,13 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
                     .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
                         listeners.onDeleteClick(text, position)
                         notifyItemRemoved(position)
-                        updateBottomSheetState(itemView.context)
+                        if(recordings.isEmpty()) {
+                            from(bottomSheet).state = STATE_COLLAPSED
+                        }
                     }
                     .create()
 
             dialog.show()
-        }
-
-        private fun updateBottomSheetState(context: Context){
-            context as KeyTermActivity
-            if((context).isFinishedRecordingFromCollapsedState || recordings.isEmpty()) {
-                from(bottomSheet).state = STATE_COLLAPSED
-                (context).isFinishedRecordingFromCollapsedState = false
-            }
         }
 
         /**
