@@ -17,7 +17,7 @@ import org.sil.storyproducer.model.KeytermRecording
 import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
-class RecordingListAdapter(val context: Context?, private val recordings: MutableList<KeytermRecording>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingListAdapter.RecordingListViewHolder>() {
+class KeytermRecordingListAdapter(val context: Context?, private val recordings: MutableList<KeytermRecording>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<KeytermRecordingListAdapter.RecordingListViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(name: String)
