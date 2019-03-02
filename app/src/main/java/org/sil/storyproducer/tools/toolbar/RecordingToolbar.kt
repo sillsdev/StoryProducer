@@ -387,7 +387,7 @@ class RecordingToolbar : Fragment(){
                             (activity as KeyTermActivity).isFinishedRecordingFromCollapsedState = false
                         }
                         // Disables opening recording list when no recordings are available
-                        if(Workspace.activeKeyterm.backTranslations.isEmpty()){
+                        if(Workspace.activeKeyterm.keytermRecordings.isEmpty()){
                             from(bottomSheet).state = STATE_COLLAPSED
                         }
                     }

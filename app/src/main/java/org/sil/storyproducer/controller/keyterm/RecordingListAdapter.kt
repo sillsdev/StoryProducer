@@ -6,17 +6,18 @@ import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomSheetBehavior.STATE_COLLAPSED
 import android.support.design.widget.BottomSheetBehavior.from
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.BackTranslation
-import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.KeytermRecording
 import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
-class RecordingListAdapter(val context: Context?, private val recordings: MutableList<BackTranslation>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingListAdapter.RecordingListViewHolder>() {
+class RecordingListAdapter(val context: Context?, private val recordings: MutableList<KeytermRecording>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingListAdapter.RecordingListViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(name: String)
@@ -50,8 +51,8 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
         private val childComment = inflater.inflate(R.layout.backtranslation_comment_list_item, null, false)
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
 
-        fun bindView(text : BackTranslation){
-            val audioFilename = text.audioBackTranslation.substringAfterLast('/')
+        fun bindView(keytermRecording : KeytermRecording){
+            val audioFilename = keytermRecording.audioRecordingFilename.substringAfterLast('/')
             parentTextView.text = audioFilename
             parentPlayButton.setOnClickListener {
                 listeners.onPlayClick(audioFilename, parentPlayButton)
@@ -67,7 +68,7 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
                 return@setOnLongClickListener true
             }
 
-            if(recordings[adapterPosition].textBackTranslation != ""){
+            if(recordings[adapterPosition].isTextBackTranslationSubmitted){
                 initComment()
             }
             else{
@@ -80,10 +81,23 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
             frameLayoutChildItem.addView(childSubmit)
             val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
             val editText = itemView.findViewById<EditText>(R.id.backtranslation_edit_text)
+            editText.setText(recordings[adapterPosition].textBackTranslation)
+
+            editText.addTextChangedListener(object : TextWatcher {
+
+                override fun afterTextChanged(s: Editable) {}
+
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    recordings[adapterPosition].textBackTranslation = s.toString()
+                }
+            })
+
             addBacktranslation.setOnClickListener {
                 if(editText.text.toString() != ""){
-                    Workspace.activeKeyterm.backTranslations[adapterPosition].textBackTranslation = editText.text.toString()
-                    editText.setText("")
+                    recordings[adapterPosition].textBackTranslation = editText.text.toString()
+                    recordings[adapterPosition].isTextBackTranslationSubmitted = true
                     frameLayoutChildItem.removeAllViews()
                     updateBottomSheetState(itemView.context)
                     context?.hideKeyboard(it)
@@ -100,6 +114,7 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
             val currentDeleteButton = frameLayoutChildItem.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
             currentDeleteButton.setOnClickListener {
                 recordings[adapterPosition].textBackTranslation = ""
+                recordings[adapterPosition].isTextBackTranslationSubmitted = false
                 frameLayoutChildItem.removeAllViews()
                 initSubmit()
             }
@@ -148,7 +163,7 @@ class RecordingListAdapter(val context: Context?, private val recordings: Mutabl
                     .setView(newName)
                     .setNegativeButton(itemView.context.getString(R.string.cancel), null)
                     .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
-                        val returnCode = listeners.onRenameClick(recordings[position].audioBackTranslation.substringAfterLast('/'), newName.text.toString())
+                        val returnCode = listeners.onRenameClick(recordings[position].audioRecordingFilename.substringAfterLast('/'), newName.text.toString())
                         when (returnCode) {
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)

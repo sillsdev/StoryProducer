@@ -85,7 +85,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         from(bottomSheet).isFitToContents = false
         from(bottomSheet).peekHeight = dpToPx(48, this)
 
-        if(Workspace.activeKeyterm.backTranslations.isNotEmpty()){
+        if(Workspace.activeKeyterm.keytermRecordings.isNotEmpty()){
             from(bottomSheet).state = STATE_EXPANDED
         }
         else {

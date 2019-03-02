@@ -143,7 +143,7 @@ object Workspace{
         val filenames = activePhase.getRecordedAudioFiles(activeSlideNum)!!
         filenames.removeAt(position)
         if (activePhase.phaseType == PhaseType.KEYTERM) {
-            activeKeyterm.backTranslations.removeAt(position)
+            activeKeyterm.keytermRecordings.removeAt(position)
         }
         deleteStoryFile(context, "$activeDir/$name")
     }
@@ -188,7 +188,7 @@ object Workspace{
                 val keytermList = keytermListFromJson(context)
                 keytermList?.keyterms?.forEach { keyterm ->
                     if (termToKeyterm.containsKey(keyterm.term)) {
-                        termToKeyterm[keyterm.term]?.backTranslations = keyterm.backTranslations
+                        termToKeyterm[keyterm.term]?.keytermRecordings = keyterm.keytermRecordings
                         termToKeyterm[keyterm.term]?.chosenKeytermFile = keyterm.chosenKeytermFile
                     } else {
                         termToKeyterm[keyterm.term] = keyterm
