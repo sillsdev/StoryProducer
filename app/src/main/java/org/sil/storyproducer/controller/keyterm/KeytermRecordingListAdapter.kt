@@ -78,9 +78,8 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
 
         private fun initSubmitState(){
             frameLayoutChildItem.removeAllViews()
-            frameLayoutChildItem.addView(childSubmit)
-            val addBacktranslation = itemView.findViewById<ImageButton>(R.id.submit_backtranslation_button)
-            val editText = itemView.findViewById<EditText>(R.id.backtranslation_edit_text)
+            val addBacktranslation = childSubmit.findViewById<ImageButton>(R.id.submit_backtranslation_button)
+            val editText = childSubmit.findViewById<EditText>(R.id.backtranslation_edit_text)
             editText.setText(recordings[adapterPosition].textBackTranslation)
 
             editText.addTextChangedListener(object : TextWatcher {
@@ -101,13 +100,13 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
                     initCommentState()
                 }
             }
+            frameLayoutChildItem.addView(childSubmit)
         }
 
         private fun initCommentState(){
             frameLayoutChildItem.removeAllViews()
-            frameLayoutChildItem.addView(childComment)
-            val currentDeleteButton = itemView.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
-            val textView = itemView.findViewById<TextView>(R.id.backtranslation_comment_title)
+            val currentDeleteButton = childComment.findViewById<ImageButton>(R.id.backtranslation_comment_delete_button)
+            val textView = childComment.findViewById<TextView>(R.id.backtranslation_comment_title)
             textView.text = recordings[adapterPosition].textBackTranslation
 
             currentDeleteButton.setOnClickListener {
@@ -116,6 +115,7 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
                 frameLayoutChildItem.removeAllViews()
                 initSubmitState()
             }
+        frameLayoutChildItem.addView(childComment)
         }
 
         private fun showDeleteItemDialog(position: Int, text: String) {
