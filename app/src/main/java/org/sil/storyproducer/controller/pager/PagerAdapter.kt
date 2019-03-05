@@ -1,17 +1,16 @@
 package org.sil.storyproducer.controller.pager
 
+//import org.sil.storyproducer.controller.remote.BackTranslationFrag
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import org.sil.storyproducer.controller.SlidePhaseFrag
-
-import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag
-//import org.sil.storyproducer.controller.remote.BackTranslationFrag
+import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 
@@ -67,9 +66,7 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
      * @return page count
      */
     override fun getCount(): Int {
-        //Don't show the last page, because that is the credits. (size - 1)
-        //TODO make the last page visible during draft to edit the credits.
-        return Workspace.activeStory.slides.size - 1
+        return Workspace.activePhase.getPhaseDisplaySlideCount()
     }
 
     /**
