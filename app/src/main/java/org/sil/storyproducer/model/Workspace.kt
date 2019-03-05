@@ -76,7 +76,11 @@ object Workspace{
     lateinit var activeKeyterm: Keyterm
     var activeSlideNum: Int = -1
     set(value){
-        if(value >= 0 && value < activeStory.slides.size) field = value
+        field = 0
+        if(value >= 0 && value < activeStory.slides.size){
+            if(activePhase.checkValidDisplaySlideNum(value))
+                field = value
+        }
     }
     val activeSlide: Slide?
     get(){
