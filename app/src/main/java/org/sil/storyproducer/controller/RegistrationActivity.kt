@@ -9,8 +9,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.provider.DocumentsContract
 import android.provider.Settings.Secure
 import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
@@ -97,13 +95,6 @@ open class RegistrationActivity : AppCompatActivity() {
         Workspace.initializeWorskpace(this)
         if (!Workspace.workspace.exists()) {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            try{
-                //Start with SD card
-                if(Build.VERSION.SDK_INT >= 26){
-                    intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI,
-                            Uri.fromFile(Environment.getExternalStorageDirectory()))
-                }
-            }catch(e:Exception){}
             startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
         }
 
