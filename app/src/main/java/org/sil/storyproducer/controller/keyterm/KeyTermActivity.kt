@@ -39,7 +39,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
     private val keytermHistory: Stack<String> = Stack()
-    var isFinishedRecordingFromCollapsedState = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -190,7 +189,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             recordingExpandableListView.adapter?.notifyItemInserted(0)
             if(from(bottomSheet).state == STATE_COLLAPSED) {
                 from(bottomSheet).state = STATE_EXPANDED
-                isFinishedRecordingFromCollapsedState = true
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }
