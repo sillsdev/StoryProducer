@@ -377,7 +377,7 @@ class RecordingToolbar : Fragment(){
             }
         }
         if (enableMultiRecordButton) {
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
                 val bottomSheet = (activity as KeyTermActivity).bottomSheet
                 from(bottomSheet).setBottomSheetCallback(object : BottomSheetCallback(){
                     override fun onStateChanged(view: View, newState: Int) {
