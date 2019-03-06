@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.phase
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -18,13 +17,13 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.*
-import android.webkit.WebView
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.tools.helpDialog
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private var mDetector: GestureDetectorCompat? = null
@@ -149,20 +148,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 mDrawerToggle!!.onOptionsItemSelected(item)
             }
             R.id.helpButton -> {
-                val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
-
-                val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
-                val text = iStream.reader().use {
-                    it.readText() }
-
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                helpDialog(this, "${Workspace.activePhase.getPrettyName()} Help").show()
                 true
             }
             else -> mDrawerToggle!!.onOptionsItemSelected(item)

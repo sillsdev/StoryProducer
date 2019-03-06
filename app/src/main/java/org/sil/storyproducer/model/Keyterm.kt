@@ -40,14 +40,15 @@ class Keyterm (var term: String = "",
                var explanation: String = "",
                var relatedTerms: List<String> = listOf(),
 
-               var backTranslations: MutableList<BackTranslation> = mutableListOf(),
+               var keytermRecordings: MutableList<KeytermRecording> = mutableListOf(),
                var chosenKeytermFile: String = "") {
     companion object
 }
 
 @JsonClass(generateAdapter = true)
-class BackTranslation (var textBackTranslation : String = "",
-                       var audioBackTranslation : String = "") {
+class KeytermRecording (var audioRecordingFilename : String = "",
+                        var textBackTranslation : String = "",
+                        var isTextBackTranslationSubmitted: Boolean = false) {
     companion object
 }
 
@@ -92,7 +93,7 @@ private fun createKeytermClickableSpan(term: String, fragmentActivity: FragmentA
         override fun updateDrawState(drawState: TextPaint) {
             val keyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[term.toLowerCase()]]
 
-            val hasRecording = keyterm?.backTranslations?.isNotEmpty()
+            val hasRecording = keyterm?.keytermRecordings?.isNotEmpty()
 
             if(hasRecording != null && hasRecording){
                 drawState.linkColor = ContextCompat.getColor(fragmentActivity!!.applicationContext, R.color.lightGray)

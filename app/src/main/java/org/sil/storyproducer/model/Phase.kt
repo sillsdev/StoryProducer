@@ -47,8 +47,8 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
             PhaseType.KEYTERM -> {
                 val audioFiles : MutableList<String> = mutableListOf()
-                for(audioFile in Workspace.activeKeyterm.backTranslations){
-                    audioFiles.add(audioFile.audioBackTranslation)
+                for(audioFile in Workspace.activeKeyterm.keytermRecordings){
+                    audioFiles.add(audioFile.audioRecordingFilename)
                 }
                 audioFiles
             }

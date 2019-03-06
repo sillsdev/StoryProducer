@@ -18,8 +18,8 @@ import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
-import org.sil.storyproducer.controller.keyterm.RecordingListAdapter
-import org.sil.storyproducer.model.BackTranslation
+import org.sil.storyproducer.controller.keyterm.KeytermRecordingListAdapter
+import org.sil.storyproducer.model.KeytermRecording
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -81,7 +81,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 return@setOnLongClickListener true
             }
             val messageButton = itemView.findViewById<TextView>(R.id.audio_comment_title)
-            messageButton.text = text
+            messageButton.text = text.substringBeforeLast('.')
 
             val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
             playButton.setOnClickListener {
@@ -148,7 +148,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, RecordingListAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, KeytermRecordingListAdapter.ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -191,7 +191,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
 
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-                recyclerView?.adapter = RecordingListAdapter(context, Workspace.activeKeyterm.backTranslations, rootView?.findViewById(R.id.bottom_sheet)!!, this)
+                recyclerView?.adapter = KeytermRecordingListAdapter(context, Workspace.activeKeyterm.keytermRecordings, rootView?.findViewById(R.id.bottom_sheet)!!, this)
             }
             else{
                 recyclerView?.adapter = RecordingsListAdapter(strippedFilenames, this)
@@ -296,7 +296,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
             filenames[pos] = lastNewName!!
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
-                Workspace.activeKeyterm.backTranslations[pos] = BackTranslation(Workspace.activeKeyterm.backTranslations[pos].textBackTranslation, "${Workspace.activeKeyterm.term}/$lastNewName")
+                Workspace.activeKeyterm.keytermRecordings[pos] = KeytermRecording("${Workspace.activeKeyterm.term}/$lastNewName", Workspace.activeKeyterm.keytermRecordings[pos].textBackTranslation )
             }
             updateRecordingList()
             onRowClick(lastNewName!!)

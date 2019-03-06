@@ -1,7 +1,7 @@
 package org.sil.storyproducer.tools.file
 
 
-import org.sil.storyproducer.model.BackTranslation
+import org.sil.storyproducer.model.KeytermRecording
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -71,7 +71,7 @@ fun assignNewAudioRelPath() : String {
             Workspace.activeSlide!!.chosenDramatizationFile = relPath
         }
         PhaseType.KEYTERM -> {
-            Workspace.activeKeyterm.backTranslations.add(0, BackTranslation("", relPath))
+            Workspace.activeKeyterm.keytermRecordings.add(0, KeytermRecording(relPath,""))
             Workspace.activeKeyterm.chosenKeytermFile = relPath
         }
         else -> relPath = ""

@@ -377,7 +377,7 @@ class RecordingToolbar : Fragment(){
             }
         }
         if (enableMultiRecordButton) {
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
                 val bottomSheet = (activity as KeyTermActivity).bottomSheet
                 from(bottomSheet).setBottomSheetCallback(object : BottomSheetCallback(){
                     override fun onStateChanged(view: View, newState: Int) {
@@ -386,7 +386,7 @@ class RecordingToolbar : Fragment(){
                             view.let { activity?.hideKeyboard(it) }
                         }
                         // Disables opening recording list when no recordings are available
-                        if(Workspace.activeKeyterm.backTranslations.isEmpty()){
+                        if(Workspace.activeKeyterm.keytermRecordings.isEmpty()){
                             from(bottomSheet).state = STATE_COLLAPSED
                         }
                     }
@@ -397,7 +397,7 @@ class RecordingToolbar : Fragment(){
 
             val multiRecordModalButtonListener = View.OnClickListener {
                 stopToolbarMedia()
-                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM) {
+                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity) {
                     val bottomSheet = (activity as KeyTermActivity).bottomSheet
 
                     if(from(bottomSheet).state == STATE_EXPANDED) {
@@ -406,7 +406,7 @@ class RecordingToolbar : Fragment(){
                     else{
                         from(bottomSheet).state = STATE_EXPANDED
                     }
-                } else {
+                } else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM) {
                     recordingListener.onStartedRecordingOrPlayback(false)
                     RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
                 }
