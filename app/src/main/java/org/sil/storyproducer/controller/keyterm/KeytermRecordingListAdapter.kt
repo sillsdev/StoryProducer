@@ -52,8 +52,8 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
         private val childSubmit = inflater.inflate(R.layout.submit_backtranslation_item, null, false)
 
         fun bindView(keytermRecording : KeytermRecording){
-            val audioFilename = keytermRecording.audioRecordingFilename.substringAfterLast('/').substringBeforeLast('.')
-            parentTextView.text = audioFilename
+            val audioFilename = keytermRecording.audioRecordingFilename.substringAfterLast('/')
+            parentTextView.text = audioFilename.substringBeforeLast('.')
             parentPlayButton.setOnClickListener {
                 listeners.onPlayClick(audioFilename, parentPlayButton)
             }
