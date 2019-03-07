@@ -13,7 +13,10 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
+import org.sil.storyproducer.controller.SplashScreenActivity
+import org.sil.storyproducer.model.Registration
 import java.io.File
 
 open abstract class PhaseTestBase {
@@ -42,11 +45,11 @@ open abstract class PhaseTestBase {
         }
 
         private fun concatenateSourcePath(): String {
-            return Constants.espressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.pathToEspressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
         }
 
         private fun concatenateDestinationPath(): String {
-            return Constants.workspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.pathToWorkspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
         }
     }
 

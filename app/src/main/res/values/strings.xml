@@ -204,6 +204,8 @@
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
     <string name="export_format_label">File Format</string>
 
+    <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
+
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
 

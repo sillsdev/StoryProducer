@@ -7,10 +7,28 @@ import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.CoreMatchers
 
 object PhaseNavigator {
-    fun navigateFromRegistrationScreenToPhase(phaseName: String) {
+    fun navigateFromRegistrationScreenToTranslatePhase() {
         skipRegistration()
-        clickOnStory(Constants.nameOfTestStory)
-        selectPhase(phaseName)
+        clickOnStory("Lost Coin")
+        selectPhase(Constants.Phase.translate)
+    }
+
+    fun navigateFromRegistrationScreenToCommunityWorkPhase() {
+        skipRegistration()
+        clickOnStory("Lost Coin")
+        selectPhase(Constants.Phase.communityWork)
+    }
+
+    fun navigateFromRegistrationScreenToLearnPhase() {
+        skipRegistration()
+        clickOnStory("Lost Coin")
+        selectPhase(Constants.Phase.learn)
+    }
+
+    fun navigateFromRegistrationScreenToVoiceStudioPhase() {
+        skipRegistration()
+        clickOnStory("Lost Coin")
+        selectPhase(Constants.Phase.voiceStudio)
     }
 
     private fun skipRegistration() {

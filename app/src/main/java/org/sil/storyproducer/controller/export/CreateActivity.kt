@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,6 +18,7 @@ import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import org.sil.storyproducer.tools.stripForFilename
 import java.util.*
 import java.util.regex.Pattern
 
@@ -164,6 +167,16 @@ class CreateActivity : PhaseBaseActivity() {
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
+        mEditTextTitle!!.addTextChangedListener( object: TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val temp = s.toString().stripForFilename()
+                if(temp != s.toString()){
+                    s!!.replace(0,s.length,temp)
+                }
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
 
         mLayoutConfiguration = findViewById(R.id.layout_export_configuration)
         mLayoutCancel = findViewById(R.id.layout_cancel)
@@ -392,6 +405,14 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun tryStartExport() {
+        //If the credits are unchanged, don't make the video.
+        if(!Workspace.isLocalCreditsChanged(this)){
+            Toast.makeText(this,this.resources.getText(
+                    R.string.export_local_credits_unchanges),Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //Else, check if the file already exists...
         if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))

@@ -173,8 +173,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
                         videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
-                        videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
-
+                        if(curPos >= 0) videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
                     }
                 }
             }
