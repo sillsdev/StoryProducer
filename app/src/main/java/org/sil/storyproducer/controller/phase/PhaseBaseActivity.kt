@@ -266,9 +266,10 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         var height = phoneProperties.heightPixels
         val scalingFactor = 0.4
         height = (height * scalingFactor).toInt()
+        val width = phoneProperties.widthPixels
 
         //scale bitmap
-        slidePicture = BitmapScaler.scaleToFitHeight(slidePicture, height)
+        slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
 
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
