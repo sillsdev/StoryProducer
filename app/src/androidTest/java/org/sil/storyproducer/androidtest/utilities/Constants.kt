@@ -1,7 +1,7 @@
 package org.sil.storyproducer.androidtest.utilities
 object Constants {
-    // The duration for which a clip gets recorded should be longer than the
-    // corresponding duration for which a clip gets played.
+    // The duration for which a clip  gets played should be shorter than the
+    // corresponding duration for which a clip gets recorded.
     // Durations are in milliseconds
     const val durationToPlayNarration: Long = 100
     const val durationToPlayTranslatedClip: Long = 100
@@ -12,14 +12,10 @@ object Constants {
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
-    const val durationToWaitForVideoExport: Long = 60000
-    const val intervalToWaitBetweenCheckingForVideoExport: Long = 500
-
     const val nameOfTestStory = "Lost Coin"
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
-    const val workspaceDirectory = "/mnt/sdcard/SPWorkspace"
-    const val espressoResourceDirectory = "/mnt/sdcard/EspressoResources"
-    const val exportedVideosDirectory = "/mnt/sdcard/SPWorkspace/videos"
+    const val pathToWorkspaceDirectory = "/mnt/sdcard/SPWorkspace"
+    const val pathToEspressoResourceDirectory = "/mnt/sdcard/EspressoResources"
 
     object Phase {
         const val learn = "Learn"
