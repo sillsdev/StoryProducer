@@ -133,6 +133,19 @@ object Workspace{
         }
     }
 
+    fun isLocalCreditsChanged(context: Context) : Boolean {
+        var isChanged = false
+        val orgLCText = context.getString(R.string.LC_starting_text)
+        for(slide in activeStory.slides){
+            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
+                if(slide.translatedContent != orgLCText){
+                    isChanged = true
+                }
+            }
+        }
+        return isChanged
+    }
+
     fun goToNextPhase() : Boolean {
         if(activePhaseIndex == -1) return false //phases not initizialized
         if(activePhaseIndex >= phases.size - 1) {

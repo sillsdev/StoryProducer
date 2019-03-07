@@ -392,6 +392,14 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun tryStartExport() {
+        //If the credits are unchanged, don't make the video.
+        if(!Workspace.isLocalCreditsChanged(this)){
+            Toast.makeText(this,this.resources.getText(
+                    R.string.export_local_credits_unchanges),Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //Else, check if the file already exists...
         if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
