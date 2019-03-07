@@ -51,7 +51,7 @@ class Phase(val phaseType: PhaseType) {
 
     fun getIcon(phase: PhaseType = phaseType) : Int {
         return when (phase){
-            PhaseType.LEARN -> R.drawable.ic_ear_white_48dp
+            PhaseType.LEARN -> R.drawable.ic_listen_ear
             PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
             PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
             PhaseType.SHARE -> R.drawable.ic_share_white_48dp
