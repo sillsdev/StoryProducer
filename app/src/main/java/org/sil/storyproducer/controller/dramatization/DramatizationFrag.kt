@@ -43,7 +43,7 @@ class DramatizationFrag : MultiRecordFrag() {
             slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
 
-        setupCameraButton()
+        setupCameraAndEditButton()
 
         return rootView
     }
@@ -116,10 +116,13 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        val newText = slideText!!.text.toString()
-        if(newText != Workspace.activeStory.slides[slideNum].translatedContent){
-            Workspace.activeStory.slides[slideNum].translatedContent = newText
-            setPic(rootView!!.findViewById(R.id.fragment_image_view))
+        if(slideText!!.visibility == android.view.View.VISIBLE) {
+            //Don't update with a press when in title and local credits slides.
+            val newText = slideText!!.text.toString()
+            if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
+                Workspace.activeStory.slides[slideNum].translatedContent = newText
+                setPic(rootView!!.findViewById(R.id.fragment_image_view))
+            }
         }
     }
 
