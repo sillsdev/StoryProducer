@@ -28,7 +28,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         dispList?.setParentFragment(this)
         dispList?.show()
 
-        setupCameraButton()
+        setupCameraAndEditButton()
 
         return rootView
     }
