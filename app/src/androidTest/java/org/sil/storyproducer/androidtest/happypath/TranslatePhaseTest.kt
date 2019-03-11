@@ -21,7 +21,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 class TranslatePhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToTranslatePhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.translate)
     }
 
     @Test
