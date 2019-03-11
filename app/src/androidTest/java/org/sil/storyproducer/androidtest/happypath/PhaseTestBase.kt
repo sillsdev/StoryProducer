@@ -1,22 +1,15 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
-import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
-import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
-import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.SplashScreenActivity
-import org.sil.storyproducer.model.Registration
+import org.sil.storyproducer.model.Workspace
 import java.io.File
 
 open abstract class PhaseTestBase {
@@ -31,7 +24,12 @@ open abstract class PhaseTestBase {
     companion object {
         @JvmStatic
         @BeforeClass
-        fun copyFreshTestStoryToWorkspace() {
+        fun revertWorkspaceToCleanState() {
+            copyFreshTestStoryToWorkspace()
+            deleteExportedVideos()
+        }
+
+        private fun copyFreshTestStoryToWorkspace() {
             try {
                 val source = File(concatenateSourcePath())
                 val destination = File(concatenateDestinationPath())
@@ -44,12 +42,23 @@ open abstract class PhaseTestBase {
             }
         }
 
+        private fun deleteExportedVideos() {
+            try {
+                val exportedVideosDirectory = File(Constants.exportedVideosDirectory)
+                if (exportedVideosDirectory.exists()) {
+                    exportedVideosDirectory.deleteRecursively()
+                }
+            } catch (e: Exception) {
+                Assert.fail("Failed to find or to delete video export directory.")
+            }
+        }
+
         private fun concatenateSourcePath(): String {
-            return Constants.pathToEspressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.espressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
         }
 
         private fun concatenateDestinationPath(): String {
-            return Constants.pathToWorkspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.workspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
         }
     }
 
@@ -67,8 +76,10 @@ open abstract class PhaseTestBase {
         IntentMocker.tearDownDummyWorkspacePickerIntent()
     }
 
-    protected fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(R.id.toolbar)).perform(ViewActions.click())
-        Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+    protected fun approveSlides() {
+        for (item in Workspace.activeStory.slides) {
+            item.isChecked = true
+        }
+        Workspace.activeStory.isApproved = true
     }
 }

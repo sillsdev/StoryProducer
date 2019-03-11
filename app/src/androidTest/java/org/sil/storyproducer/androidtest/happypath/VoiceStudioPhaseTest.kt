@@ -31,7 +31,7 @@ import org.sil.storyproducer.model.Workspace
 class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToVoiceStudioPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.voiceStudio)
     }
 
     @Test
@@ -43,7 +43,9 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
     fun should_beAbleToPlaySlideAudio() {
         // Arrange
         makeSureAnAudioClipIsAvailable()
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.voiceStudio)
         val originalProgress = getCurrentSlideAudioProgress()
 
         // Act
@@ -63,7 +65,9 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.voiceStudio)
 
         verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips()
 
@@ -135,11 +139,11 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase(Constants.Phase.translate)
-        if (!areThereAnyAudioClipsOnThisSlide()) {
-            recordAnAudioTranslationClip()
-        }
-        selectPhase(Constants.Phase.voiceStudio)
+        PhaseNavigator.doInPhase(Constants.Phase.translate, {
+            if (!areThereAnyAudioClipsOnThisSlide()) {
+                recordAnAudioTranslationClip()
+            }
+        }, Constants.Phase.voiceStudio)
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
@@ -178,14 +182,5 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     private fun giveAppTimeToPlayAudio() {
         Thread.sleep(Constants.durationToPlayTranslatedClip)
-    }
-
-    private fun approveSlides() {
-        selectPhase(Constants.Phase.accuracyCheck)
-        for (item in Workspace.activeStory.slides) {
-            item.isChecked = true;
-        }
-        Workspace.activeStory.isApproved = true
-        selectPhase(Constants.Phase.voiceStudio)
     }
 }
