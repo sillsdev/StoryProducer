@@ -51,7 +51,11 @@ object Workspace{
 
     var activeSlideNum: Int = -1
     set(value){
-        if(value >= 0 && value < activeStory.slides.size) field = value
+        field = 0
+        if(value >= 0 && value < activeStory.slides.size){
+            if(activePhase.checkValidDisplaySlideNum(value))
+                field = value
+        }
     }
     val activeSlide: Slide?
     get(){
@@ -127,6 +131,19 @@ object Workspace{
                 }
             }
         }
+    }
+
+    fun isLocalCreditsChanged(context: Context) : Boolean {
+        var isChanged = false
+        val orgLCText = context.getString(R.string.LC_starting_text)
+        for(slide in activeStory.slides){
+            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
+                if(slide.translatedContent != orgLCText){
+                    isChanged = true
+                }
+            }
+        }
+        return isChanged
     }
 
     fun goToNextPhase() : Boolean {

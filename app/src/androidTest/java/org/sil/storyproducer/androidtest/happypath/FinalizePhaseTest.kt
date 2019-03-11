@@ -13,7 +13,6 @@ import org.junit.runner.RunWith
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-import org.sil.storyproducer.model.Workspace
 import java.io.File
 import java.util.*
 

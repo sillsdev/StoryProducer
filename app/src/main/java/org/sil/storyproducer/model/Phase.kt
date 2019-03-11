@@ -143,6 +143,38 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
         }
     }
+
+    fun getPhaseDisplaySlideCount() : Int {
+        var tempSlideNum = 0
+        val validSlideTypes = when(phaseType){
+            PhaseType.DRAMATIZATION -> arrayOf(
+                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+            else -> arrayOf(
+                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG)
+        }
+        for (s in Workspace.activeStory.slides)
+            if(s.slideType in validSlideTypes){
+                tempSlideNum++
+            }else{
+                break
+            }
+        return tempSlideNum
+    }
+
+    fun checkValidDisplaySlideNum(slideNum: Int) : Boolean {
+        val slideType = Workspace.activeStory.slides[slideNum].slideType
+        return when(phaseType){
+            PhaseType.DRAMATIZATION -> slideType in arrayOf(
+                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+            else -> slideType in arrayOf(
+                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG)
+        }
+    }
+
     companion object {
         fun getLocalPhases() : List<Phase> {
             return listOf(

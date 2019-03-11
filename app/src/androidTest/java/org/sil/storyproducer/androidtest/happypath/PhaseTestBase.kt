@@ -1,19 +1,13 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
-import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
-import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.IntentMocker
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
-import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
 import java.io.File
