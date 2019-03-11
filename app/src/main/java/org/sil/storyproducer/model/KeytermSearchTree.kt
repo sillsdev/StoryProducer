@@ -65,6 +65,7 @@ class KeytermSearchTree {
             }
         }
         resultPhrases.add(nonKeytermPhrase)
+        resultPhrases.removeAll{ it == "" }
 
         return resultPhrases
     }
