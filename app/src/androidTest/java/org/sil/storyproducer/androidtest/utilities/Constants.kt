@@ -9,7 +9,7 @@ object Constants {
     const val durationToRecordTranslatedClip: Long = durationToRecordLearnClip
     const val durationToRecordFeedbackClip: Long = 250
     const val durationToRecordVoiceStudioClip: Long = 250
-    const val durationToWaitForVideoExport: Long = 30000
+    const val durationToWaitForVideoExport: Long = 60000
     const val intervalToWaitBetweenCheckingForVideoExport: Long = 1000
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
