@@ -22,8 +22,12 @@ public class PagerBaseActivity extends PhaseBaseActivity {
         PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         ViewPager mViewPager = findViewById(R.id.pager);
         mViewPager.setAdapter(mPagerAdapter);
-        //If a slide other than 0 is chosen, use it.  This is to help recalling the last active slide.
+        //See if the slide number is valid for the new phase.  If not, set it to zero.
+        if (!Workspace.INSTANCE.getActivePhase().checkValidDisplaySlideNum(
+                Workspace.INSTANCE.getActiveSlideNum()))
+            Workspace.INSTANCE.setActiveSlideNum(0);
         int slideNum = Workspace.INSTANCE.getActiveSlideNum();
+        //If a slide other than 0 is chosen, use it.  This is to help recalling the last active slide.
         if(slideNum > 0) mViewPager.setCurrentItem(slideNum);
 
         mViewPager.addOnPageChangeListener(new CircularViewPagerHandler(mViewPager));       //sets the change listener to be the circular handler

@@ -1,12 +1,14 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.getDownsample
 import org.sil.storyproducer.tools.file.getStoryImage
-
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder
 
@@ -164,9 +166,12 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         if (bitmap != null) {
             val position = (timeOffsetUs / imgDurationUs.toDouble()).toFloat()
 
+            //If ken burns, then interpolate
             val drawRect = page.kenBurnsEffect?.
                     revInterpolate(position,mWidth,mHeight,bitmap.width,bitmap.height,downSample*1f) ?:
-                RectF(0f, 0f, mWidth*1f, mHeight*1f)
+                //else, fit to crop the height and width to show everything.
+                BitmapScaler.centerCropRectF(
+                        bitmap.height, bitmap.width, mHeight, mWidth)
 
             mBitmapPaint.alpha = (alpha * 255).toInt()
 

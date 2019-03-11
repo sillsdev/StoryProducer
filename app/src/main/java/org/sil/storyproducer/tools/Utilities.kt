@@ -17,3 +17,7 @@ fun dpToPx(dp: Int, activity: Activity): Int{
     val logicalDensity = metrics.density
     return (dp * logicalDensity).toInt()
 }
+
+fun String.stripForFilename(): String {
+    return this.replace("[^\\w -]".toRegex(), "_")
+}
