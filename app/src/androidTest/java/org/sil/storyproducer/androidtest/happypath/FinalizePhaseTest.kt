@@ -1,11 +1,13 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Assert
 import org.junit.Test
@@ -27,6 +29,13 @@ class FinalizePhaseTest : PhaseTestBase() {
     fun when_createVideoButtonPressedWithDefaultOptions_should_produceVideoFileWithMp4Extension() {
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
+        }, Constants.Phase.finalize)
+        PhaseNavigator.doInPhase(Constants.Phase.voiceStudio, {
+            Espresso.onView(allOf(withId(R.id.phase_frame))).perform(swipeRight())
+            Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
+            Espresso.onView(allOf(withId(R.id.edit_text_view), isDisplayed())).perform(click())
+            Espresso.onView(allOf(withId(R.id.edit_text_input), isDisplayed())).perform(clearText()).perform(typeText("created by Espresso!"))
+            Espresso.onView(withText("SAVE")).perform(click())
         }, Constants.Phase.finalize)
 
         val videoTitle = generateUniqueVideoTitle()
