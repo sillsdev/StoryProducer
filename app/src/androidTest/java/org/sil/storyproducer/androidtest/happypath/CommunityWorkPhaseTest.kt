@@ -27,7 +27,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToCommunityWorkPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.communityWork)
     }
 
     @Test
@@ -67,11 +67,11 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase(Constants.Phase.translate)
-        if (!areThereAnyAudioClipsOnThisSlide()) {
-            recordAnAudioTranslationClip()
-        }
-        selectPhase(Constants.Phase.communityWork)
+        PhaseNavigator.doInPhase(Constants.Phase.translate, {
+            if (!areThereAnyAudioClipsOnThisSlide()) {
+                recordAnAudioTranslationClip()
+            }
+        }, Constants.Phase.communityWork)
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
