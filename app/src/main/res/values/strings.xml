@@ -12,6 +12,7 @@
     <string name="submit">Submit</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="enter_text">Enter Text</string>
 
     <string name="play">Play</string>
     <string name="share">Share</string>
@@ -202,7 +203,9 @@
     <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
     <string name = "smartphone_and_extension">Smartphone (MP4)</string>
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
-    <string name="export_format_label">File Format</string>
+    <string name="export_format_label">File Format</string>E
+
+    <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>

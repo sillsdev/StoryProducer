@@ -245,12 +245,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 
-        private val AUDIO_SAMPLE_RATE_AMR = 8000
+        private val AUDIO_SAMPLE_RATE_AMR = 16000
         private val AUDIO_BIT_RATE_AMR = 16000
 
         fun generateDumbAudioFormat(): MediaFormat {
             // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
-            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_NB)
+            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_WB)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
             audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
             audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)

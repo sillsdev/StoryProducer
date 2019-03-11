@@ -17,6 +17,7 @@ import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -137,10 +138,9 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @return true if all approved, otherwise false
      */
     private fun checkAllMarked(): Boolean {
-        //dont check the last slide, it's the copyright.
-        val numStorySlides = Workspace.activeStory.slides.size - 1
-        for (i in 0 until numStorySlides) {
-            if (!Workspace.activeStory.slides[i].isChecked) {
+        for (slide in Workspace.activeStory.slides) {
+            if (!slide.isChecked && slide.slideType in
+                    arrayOf(SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,SlideType.LOCALSONG)) {
                 return false
             }
         }
