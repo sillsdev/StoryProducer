@@ -4,4 +4,6 @@
     <item name="play_recording_button" type="id" />
     <item name="list_recordings_button" type="id" />
     <item name="finish_recording_button" type="id" />
+    <item name="edit_text_view" type="id" />
+    <item name="edit_text_input" type="id" />
 </resources>
