@@ -1,13 +1,18 @@
 package org.sil.storyproducer.androidtest.happypath
 
+import android.view.View
+import android.widget.ImageButton
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
+import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
-import org.sil.storyproducer.androidtest.utilities.Constants
-import org.sil.storyproducer.androidtest.utilities.IntentMocker
-import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
+import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -81,5 +86,28 @@ open abstract class PhaseTestBase {
             item.isChecked = true
         }
         Workspace.activeStory.isApproved = true
+    }
+
+    protected fun makeSureAnAudioClipIsAvailable(phaseToReturnTo: String) {
+        PhaseNavigator.doInPhase(Constants.Phase.translate, {
+            recordAnAudioTranslationClip()
+        }, phaseToReturnTo)
+    }
+
+    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
+        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
+        return showRecordingsListButton?.visibility != View.INVISIBLE
+    }
+
+    private fun recordAnAudioTranslationClip() {
+        AnimationsToggler.withoutCustomAnimations {
+            pressMicButton()
+            Thread.sleep(Constants.durationToRecordTranslatedClip)
+            pressMicButton()
+        }
+    }
+
+    private fun pressMicButton() {
+        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.start_recording_button), ViewMatchers.isDisplayed())).perform(ViewActions.click())
     }
 }

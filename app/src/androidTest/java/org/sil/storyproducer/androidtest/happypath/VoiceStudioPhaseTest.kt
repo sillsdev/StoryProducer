@@ -42,7 +42,7 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
     @Test
     fun should_beAbleToPlaySlideAudio() {
         // Arrange
-        makeSureAnAudioClipIsAvailable()
+        makeSureAnAudioClipIsAvailable(Constants.Phase.voiceStudio)
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
         }, Constants.Phase.voiceStudio)
@@ -136,27 +136,6 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
             }
         })
         return numberOfClips[0]
-    }
-
-    private fun makeSureAnAudioClipIsAvailable() {
-        PhaseNavigator.doInPhase(Constants.Phase.translate, {
-            if (!areThereAnyAudioClipsOnThisSlide()) {
-                recordAnAudioTranslationClip()
-            }
-        }, Constants.Phase.voiceStudio)
-    }
-
-    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
-        return showRecordingsListButton?.visibility != View.INVISIBLE
-    }
-
-    private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.withoutCustomAnimations {
-            pressMicButton()
-            Thread.sleep(Constants.durationToRecordTranslatedClip)
-            pressMicButton()
-        }
     }
 
     private fun recordAVoiceStudioTranslationSnippet() {
