@@ -37,7 +37,7 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun should_BeAbleToPlayTranslationOfASlide() {
-        makeSureAnAudioClipIsAvailable()
+        makeSureAnAudioClipIsAvailable(Constants.Phase.communityWork)
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
@@ -64,27 +64,6 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
     @Test
     fun should_beAbleToSwipeToNextPhase() {
         testSwipingToNextPhase(Constants.Phase.accuracyCheck)
-    }
-
-    private fun makeSureAnAudioClipIsAvailable() {
-        PhaseNavigator.doInPhase(Constants.Phase.translate, {
-            if (!areThereAnyAudioClipsOnThisSlide()) {
-                recordAnAudioTranslationClip()
-            }
-        }, Constants.Phase.communityWork)
-    }
-
-    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
-        return showRecordingsListButton?.visibility != INVISIBLE
-    }
-
-    private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.withoutCustomAnimations {
-            pressMicButton()
-            Thread.sleep(Constants.durationToRecordTranslatedClip)
-            pressMicButton()
-        }
     }
 
     private fun getCurrentNumberOfRecordings() =
