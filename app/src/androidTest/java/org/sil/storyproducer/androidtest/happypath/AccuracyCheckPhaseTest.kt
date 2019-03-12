@@ -35,7 +35,7 @@ import org.sil.storyproducer.model.Workspace
 class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToAccuracyCheckPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.accuracyCheck)
     }
 
     @Test
@@ -45,7 +45,7 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun shouldBeAbleToPlayRecordedAudioForSpecificSlide() {
-        makeSureAnAudioClipIsAvailable()
+        makeSureAnAudioClipIsAvailable(Constants.Phase.accuracyCheck)
 
         val originalProgress = getCurrentSlideAudioProgress()
         pressPlayPauseButton()
@@ -78,31 +78,6 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
         shouldNowBeOnVoiceStudioPhase()
     }
 
-    private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase("Translate")
-        if (!areThereAnyAudioClipsOnThisSlide()) {
-            recordAnAudioTranslationClip()
-        }
-        selectPhase("Accuracy Check")
-    }
-
-    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
-        return showRecordingsListButton?.visibility != View.INVISIBLE
-    }
-
-    private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.withoutCustomAnimations {
-            pressMicButton()
-            Thread.sleep(Constants.durationToRecordTranslatedClip)
-            pressMicButton()
-        }
-    }
-
-    private fun pressMicButton() {
-        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-    }
-
     private fun pressPlayPauseButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
     }
@@ -117,7 +92,7 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun swipeThroughAndApproveAllSlides() {
-        for (i in 1..7) {
+        for (i in 1..6) {
             pressCheckmarkButton()
             swipeLeftOnSlide()
         }
