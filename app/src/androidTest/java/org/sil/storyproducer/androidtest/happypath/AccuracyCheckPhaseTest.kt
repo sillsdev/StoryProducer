@@ -92,7 +92,7 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun swipeThroughAndApproveAllSlides() {
-        for (i in 1..6) {
+        for (i in 1..Constants.numberOfTimesToSwipeWhenApprovingAllSlides) {
             pressCheckmarkButton()
             swipeLeftOnSlide()
         }

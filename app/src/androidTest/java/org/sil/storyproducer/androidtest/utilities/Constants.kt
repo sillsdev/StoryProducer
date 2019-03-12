@@ -14,6 +14,8 @@ object Constants {
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
+    const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
+
     const val nameOfTestStory = "Lost Coin"
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val workspaceDirectory = "/mnt/sdcard/SPWorkspace"
