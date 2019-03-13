@@ -41,7 +41,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                     if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
                     if (textList.size > 1) slide.subtitle= textList[1].removePrefix(" ").removeSuffix(" ")
                     if (textList.size > 2) slide.reference = textList[2].removePrefix(" ").removeSuffix(" ")
-                    if (textList.size > 3) slide.content = textList[3].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 3) slide.content = textList[3].trim()
                 }
                 if(firstSlide) {
                     slide.slideType = SlideType.FRONTCOVER
