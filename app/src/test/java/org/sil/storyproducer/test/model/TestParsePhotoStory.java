@@ -112,11 +112,10 @@ public class TestParsePhotoStory {
     }
 
     @Test
-    @Ignore
     public void parsePhotoStoryXML_When_ASlideHasAMusicTrack_Should_ParseTheVolume() {
         Story result = parseValidStory();
 
-        Assert.assertEquals(9, result.getSlides().get(0).getVolume(), 0.1);
+        Assert.assertEquals(0.09, result.getSlides().get(0).getVolume(), 0.01);
     }
 
     @Test
