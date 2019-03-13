@@ -167,9 +167,9 @@ private fun parseEdit(parser: XmlPullParser, slide: Slide) {
 }
 
 private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
-    //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
-    //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
-    slide.volume = 0.25f
+    val rawVolume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
+    val normalizedVolume = (rawVolume.toFloat() / 100.0f)
+    slide.volume = normalizedVolume
 
     parser.nextTag()
     parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
