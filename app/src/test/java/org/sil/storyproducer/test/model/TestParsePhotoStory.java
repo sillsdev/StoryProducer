@@ -3,13 +3,10 @@ package org.sil.storyproducer.test.model;
 import android.support.v4.provider.DocumentFile;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.sil.storyproducer.model.Slide;
 import org.sil.storyproducer.model.Story;
 
