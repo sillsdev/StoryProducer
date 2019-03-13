@@ -31,8 +31,8 @@ class KeytermSearchTree {
         var currentNode = root
 
         for(word in words){
-            val nextNode = currentNode.childWords[word] ?: WordNode()
-            currentNode.childWords[word] = nextNode
+            val nextNode = currentNode.childWords[word.toLowerCase()] ?: WordNode()
+            currentNode.childWords[word.toLowerCase()] = nextNode
             currentNode = nextNode
         }
         currentNode.isKeyterm = true
