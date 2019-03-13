@@ -3,6 +3,7 @@ package org.sil.storyproducer.test.model;
 import android.support.v4.provider.DocumentFile;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -90,10 +91,10 @@ public class TestParsePhotoStory {
     }
 
     @Test
-    public void parsePhotoStoryXML_When_HasFirstSlide_Should_GetSlideContentFromFolderName() {
+    public void parsePhotoStoryXML_When_HasFirstSlide_Should_GetSlideContentFromCorrespondingTextFile() {
         Story result = parseValidStory();
 
-        Assert.assertEquals("sampledata/ValidStory", result.getSlides().get(0).getContent());
+        Assert.assertEquals("Once there was a sample story template that was formatted correctly.", result.getSlides().get(0).getContent());
     }
 
     @Test
@@ -111,6 +112,7 @@ public class TestParsePhotoStory {
     }
 
     @Test
+    @Ignore
     public void parsePhotoStoryXML_When_ASlideHasAMusicTrack_Should_ParseTheVolume() {
         Story result = parseValidStory();
 
