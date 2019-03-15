@@ -10,28 +10,24 @@ import android.text.style.ClickableSpan
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.test.espresso.Espresso
+import androidx.test.espresso.*
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.R
-import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
-import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
-import org.sil.storyproducer.androidtest.utilities.Constants
-import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
+import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.model.Workspace
 
 @LargeTest
@@ -46,13 +42,14 @@ class KeytermPhaseTest : PhaseTestBase() {
     @Test
     fun should_BeAbleToNavigateToDeeperKeyterm() {
         pressKeyterm("idol", R.id.related_terms_text)
+
         var keytermTitle = (ActivityAccessor.getCurrentActivity() as AppCompatActivity).supportActionBar?.title
-        Assert.assertEquals("Expected backtranslation box text to be 'idol'", "idol", keytermTitle)
+        Assert.assertEquals("Expected keyterm title text to be 'idol'", "idol", keytermTitle)
         Espresso.pressBack()
         //Need time for title to be updated
-        Thread.sleep(Constants.durationToPlayTranslatedClip)
+        Thread.sleep(Constants.durationToWaitWhenUIUpdates)
         keytermTitle = (ActivityAccessor.getCurrentActivity() as AppCompatActivity).supportActionBar?.title
-        Assert.assertEquals("Expected backtranslation box text to be 'God'", "God", keytermTitle)
+        Assert.assertEquals("Expected keyterm title text to be 'God'", "God", keytermTitle)
     }
 
     @Test
@@ -66,20 +63,11 @@ class KeytermPhaseTest : PhaseTestBase() {
     }
 
     @Test
-    fun should_BeAbleToMakeKeytermRecording() {
-        val originalNumberOfRecordings = getCurrentNumberOfRecordings()
-        recordAnAudioTranslationClip()
-        val finalNumberOfRecordings = getCurrentNumberOfRecordings()
-        Assert.assertNotEquals("Expected number of recordings to increase.", originalNumberOfRecordings, finalNumberOfRecordings)
-    }
-
-    @Test
     fun should_BeAbleToOpenCloseKeytermRecordingList() {
-        if (!areThereAnyAudioClipsOnThisSlide()) {
-            recordAnAudioTranslationClip()
-            pressRecordingListButton()
-        }
+        recordAnAudioTranslationClip()
+        pressRecordingListButton()
         val originalSheetState = BottomSheetBehavior.from(ActivityAccessor.getCurrentActivity()?.findViewById<ConstraintLayout>(org.sil.storyproducer.R.id.bottom_sheet)).state
+        Assert.assertNotEquals("Expected the recording list state to be closed after recording and clicked", BottomSheetBehavior.STATE_COLLAPSED, originalSheetState)
         pressRecordingListButton()
         val finalSheetState = BottomSheetBehavior.from(ActivityAccessor.getCurrentActivity()?.findViewById<ConstraintLayout>(org.sil.storyproducer.R.id.bottom_sheet)).state
         Assert.assertNotEquals("Expected the recording list state to change", originalSheetState, finalSheetState)
@@ -91,7 +79,7 @@ class KeytermPhaseTest : PhaseTestBase() {
 
         val originalIcon = getToolbarPlayIcon()
         pressPlayPauseButton()
-        giveAppTimeToPlayAudio()
+        Thread.sleep(Constants.durationToWaitWhenUIUpdates)
         val endingIcon = getToolbarPlayIcon()
         Assert.assertNotEquals("Expected image to change.", originalIcon, endingIcon)
     }
@@ -100,26 +88,27 @@ class KeytermPhaseTest : PhaseTestBase() {
     fun should_BeAbleToPlayRecordingOfAKeytermFromList() {
         makeSureAnAudioClipIsAvailable()
 
-        val originalIcon = getListPlayIcon()
+        onView(withId(R.id.audio_comment_play_button)).check(matches(DrawableMatcher(R.drawable.ic_play_arrow_white_36dp)))
         pressPlayPauseButtonInList()
-        giveAppTimeToPlayAudio()
-        val endingIcon = getListPlayIcon()
-        Assert.assertNotEquals("Expected image to change.", originalIcon, endingIcon)
+        Thread.sleep(Constants.durationToWaitWhenUIUpdates)
+        onView(withId(R.id.audio_comment_play_button)).check(matches(DrawableMatcher(R.drawable.ic_stop_white_36dp)))
+    }
+
+    @Test
+    fun should_BeAbleToMakeKeytermRecording() {
+        onView(withId(R.id.recordings_list)).check(RecyclerViewItemCountAssertion(0))
+        recordAnAudioTranslationClip()
+        onView(withId(R.id.recordings_list)).check(RecyclerViewItemCountAssertion(1))
     }
 
     @Test
     fun should_BeAbleToDeleteRecordingOfAKeytermFromList() {
         makeSureAnAudioClipIsAvailable()
+        recordAnAudioTranslationClip()
 
-        val originalNumberOfRecordings = getCurrentNumberOfRecordings()
+        onView(withId(R.id.recordings_list)).check(RecyclerViewItemCountAssertion(2))
         pressDeleteButton()
-        val finalNumberOfRecordings = getCurrentNumberOfRecordings()
-        if(finalNumberOfRecordings != null) {
-            Assert.assertEquals("Expected one less recordings to exist", originalNumberOfRecordings, finalNumberOfRecordings+1)
-        }
-        else{
-            Assert.assertNull("Expected no recording to exist", finalNumberOfRecordings)
-        }
+        onView(withId(R.id.recordings_list)).check(RecyclerViewItemCountAssertion(1))
     }
 
     @Test
@@ -132,8 +121,7 @@ class KeytermPhaseTest : PhaseTestBase() {
         submitTextToSave()
         val finalText = Workspace.activeKeyterm.keytermRecordings[0].textBackTranslation
         Assert.assertNotEquals("Expected backtranslation text to be 'Test'.", originalText, finalText)
-        val backTranslationTextBoxText = ActivityAccessor.getCurrentActivity()?.findViewById<TextView>(org.sil.storyproducer.R.id.backtranslation_comment_title)?.text.toString()
-        Assert.assertEquals("Expected backtranslation box text to be 'Test'", "Test", backTranslationTextBoxText)
+        onView(withId(R.id.backtranslation_comment_title)).check(matches(withText("Test")))
     }
 
     @Test
@@ -147,12 +135,8 @@ class KeytermPhaseTest : PhaseTestBase() {
         deleteBacktranslationText()
         val finalText = Workspace.activeKeyterm.keytermRecordings[0].textBackTranslation
         Assert.assertNotEquals("Expected backtranslation to be empty.", originalText, finalText)
-        val backTranslationTextBoxText = ActivityAccessor.getCurrentActivity()?.findViewById<TextView>(org.sil.storyproducer.R.id.backtranslation_edit_text)?.text.toString()
-        Assert.assertEquals("Expected backtranslation box to be empty", "", backTranslationTextBoxText)
+        onView(withId(R.id.backtranslation_edit_text)).check(matches(withText("")))
     }
-
-    private fun getCurrentNumberOfRecordings() =
-            ActivityAccessor.getCurrentActivity()?.findViewById<RecyclerView>(org.sil.storyproducer.R.id.recordings_list)?.adapter?.itemCount
 
     private fun makeSureAnAudioClipIsAvailable() {
         if (!areThereAnyAudioClipsOnThisSlide()) {
@@ -235,10 +219,6 @@ class KeytermPhaseTest : PhaseTestBase() {
         onView(ViewMatchers.withText(keyterm)).perform(click())
     }
 
-    private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(Constants.durationToPlayTranslatedClip)
-    }
-
     private fun clickClickableSpan(s: String): ViewAction? {
         return object : ViewAction{
             override fun getDescription(): String {
@@ -263,14 +243,14 @@ class KeytermPhaseTest : PhaseTestBase() {
 
                 // Get the links inside the TextView and check if we find textToClick
                 val spans = spannableString.getSpans(0, spannableString.length, ClickableSpan::class.java)
-                if (spans.size > 0) {
+                if (spans.isNotEmpty()) {
                     var spanCandidate: ClickableSpan
                     for (span in spans) {
                         spanCandidate = span
                         val start = spannableString.getSpanStart(spanCandidate)
                         val end = spannableString.getSpanEnd(spanCandidate)
                         val sequence = spannableString.subSequence(start, end)
-                        if (s.toString().equals(sequence.toString())) {
+                        if (s == sequence.toString()) {
                             span.onClick(textView)
                             return
                         }
@@ -279,5 +259,18 @@ class KeytermPhaseTest : PhaseTestBase() {
             }
 
         }
+    }
+}
+
+class RecyclerViewItemCountAssertion(private var expectedCount: Int) : ViewAssertion {
+
+    override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
+        if(noViewFoundException != null){
+            throw noViewFoundException
+        }
+
+        val recyclerView: RecyclerView = view as RecyclerView
+        val adapter = recyclerView.adapter
+        assertThat(adapter?.itemCount, `is`(expectedCount))
     }
 }

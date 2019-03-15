@@ -12,6 +12,8 @@ object Constants {
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
+    const val durationToWaitWhenUIUpdates: Long = 50
+
     const val durationToWaitForVideoExport: Long = 60000
     const val intervalToWaitBetweenCheckingForVideoExport: Long = 500
 
