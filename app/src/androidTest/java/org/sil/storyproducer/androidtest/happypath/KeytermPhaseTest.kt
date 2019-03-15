@@ -19,15 +19,18 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.R
-import org.sil.storyproducer.androidtest.utilities.*
+import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
+import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
+import org.sil.storyproducer.androidtest.utilities.Constants
+import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 
 @LargeTest
@@ -67,7 +70,7 @@ class KeytermPhaseTest : PhaseTestBase() {
         recordAnAudioTranslationClip()
         pressRecordingListButton()
         val originalSheetState = BottomSheetBehavior.from(ActivityAccessor.getCurrentActivity()?.findViewById<ConstraintLayout>(org.sil.storyproducer.R.id.bottom_sheet)).state
-        Assert.assertNotEquals("Expected the recording list state to be closed after recording and clicked", BottomSheetBehavior.STATE_COLLAPSED, originalSheetState)
+        Assert.assertEquals("Expected the recording list state to be closed after recording and clicked", BottomSheetBehavior.STATE_COLLAPSED, originalSheetState)
         pressRecordingListButton()
         val finalSheetState = BottomSheetBehavior.from(ActivityAccessor.getCurrentActivity()?.findViewById<ConstraintLayout>(org.sil.storyproducer.R.id.bottom_sheet)).state
         Assert.assertNotEquals("Expected the recording list state to change", originalSheetState, finalSheetState)
@@ -88,10 +91,11 @@ class KeytermPhaseTest : PhaseTestBase() {
     fun should_BeAbleToPlayRecordingOfAKeytermFromList() {
         makeSureAnAudioClipIsAvailable()
 
-        onView(withId(R.id.audio_comment_play_button)).check(matches(DrawableMatcher(R.drawable.ic_play_arrow_white_36dp)))
+        val originalIcon = getListPlayIcon()
         pressPlayPauseButtonInList()
         Thread.sleep(Constants.durationToWaitWhenUIUpdates)
-        onView(withId(R.id.audio_comment_play_button)).check(matches(DrawableMatcher(R.drawable.ic_stop_white_36dp)))
+        val endingIcon = getListPlayIcon()
+        Assert.assertNotEquals("Expected image to change.", originalIcon, endingIcon)
     }
 
     @Test
@@ -158,7 +162,7 @@ class KeytermPhaseTest : PhaseTestBase() {
     }
 
     private fun pressMicButton() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.start_recording_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.start_recording_button), isDisplayed())).perform(click())
     }
 
     private fun giveAppTimeToRecordAudio() {
@@ -174,35 +178,36 @@ class KeytermPhaseTest : PhaseTestBase() {
     }
 
     private fun pressPlayPauseButton() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.play_recording_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.play_recording_button), isDisplayed())).perform(click())
     }
 
     private fun pressPlayPauseButtonInList() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.audio_comment_play_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.audio_comment_play_button), isDisplayed())).perform(click())
     }
 
     private fun pressDeleteButton() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.audio_comment_delete_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withParent(withChild(ViewMatchers.withText("God_2"))), withId(R.id.audio_comment_delete_button), isDisplayed())).perform(click())
+        onView(allOf(withText(R.string.yes), isDisplayed())).perform(click())
     }
 
     private fun selectTextBox() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.backtranslation_edit_text), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.backtranslation_edit_text), isDisplayed())).perform(click())
     }
 
     private fun typeTextInBox() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.backtranslation_edit_text), ViewMatchers.isDisplayed())).perform(ViewActions.typeText("Test"))
+        onView(allOf(withId(org.sil.storyproducer.R.id.backtranslation_edit_text), isDisplayed())).perform(ViewActions.typeText("Test"))
     }
 
     private fun submitTextToSave() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.submit_backtranslation_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.submit_backtranslation_button), isDisplayed())).perform(click())
     }
 
     private fun deleteBacktranslationText() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.backtranslation_comment_delete_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.backtranslation_comment_delete_button), isDisplayed())).perform(click())
     }
 
     private fun pressRecordingListButton() {
-        onView(CoreMatchers.allOf(withId(org.sil.storyproducer.R.id.list_recordings_button), ViewMatchers.isDisplayed())).perform(click())
+        onView(allOf(withId(org.sil.storyproducer.R.id.list_recordings_button), isDisplayed())).perform(click())
     }
 
     /**
@@ -210,13 +215,13 @@ class KeytermPhaseTest : PhaseTestBase() {
      * @param id view keyterm is in
      */
     private fun pressKeyterm(keyterm: String, id: Int) {
-        onView(CoreMatchers.allOf(withId(id), ViewMatchers.isDisplayed())).perform(clickClickableSpan(keyterm))
+        onView(allOf(withId(id), isDisplayed())).perform(clickClickableSpan(keyterm))
     }
 
     private fun pressKeytermInList(keyterm: String){
-        onView(ViewMatchers.withContentDescription(R.string.nav_open)).perform(click())
-        onView(ViewMatchers.withText(R.string.title_activity_keyterm_list)).perform(click())
-        onView(ViewMatchers.withText(keyterm)).perform(click())
+        onView(allOf(withContentDescription(R.string.nav_open), isDisplayed())).perform(click())
+        onView(allOf(withText(R.string.title_activity_keyterm_list), isDisplayed())).perform(click())
+        onView(allOf(withText(keyterm), isDisplayed())).perform(click())
     }
 
     private fun clickClickableSpan(s: String): ViewAction? {
@@ -260,17 +265,15 @@ class KeytermPhaseTest : PhaseTestBase() {
 
         }
     }
-}
+    inner class RecyclerViewItemCountAssertion(private var expectedCount: Int) : ViewAssertion {
+        override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
+            if(noViewFoundException != null){
+                throw noViewFoundException
+            }
 
-class RecyclerViewItemCountAssertion(private var expectedCount: Int) : ViewAssertion {
-
-    override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
-        if(noViewFoundException != null){
-            throw noViewFoundException
+            val recyclerView: RecyclerView = view as RecyclerView
+            val adapter = recyclerView.adapter
+            assertThat(adapter?.itemCount, `is`(expectedCount))
         }
-
-        val recyclerView: RecyclerView = view as RecyclerView
-        val adapter = recyclerView.adapter
-        assertThat(adapter?.itemCount, `is`(expectedCount))
     }
 }
