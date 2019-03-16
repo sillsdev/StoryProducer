@@ -94,8 +94,13 @@ open class RegistrationActivity : AppCompatActivity() {
         //Now, let's find the workspace path.
         Workspace.initializeWorskpace(this)
         if (!Workspace.workspace.exists()) {
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-            startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.update_workspace))
+                .setMessage(getString(R.string.workspace_selection_help))
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+                }.create().show()
         }
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
