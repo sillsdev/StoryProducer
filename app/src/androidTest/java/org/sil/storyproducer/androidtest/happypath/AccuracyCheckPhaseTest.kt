@@ -1,31 +1,22 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
-import android.support.v7.widget.DialogTitle
-import android.view.View
-import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.containsString
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.FixMethodOrder
-import org.junit.runners.MethodSorters
-import junit.framework.Assert.assertTrue
-import org.hamcrest.CoreMatchers
-import org.junit.Assert
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
-import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
@@ -57,7 +48,7 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun shouldBeAbleToToggleApprovedState() {
-        val currentSlideNum = findCurrentSlideNumber();
+        val currentSlideNum = findCurrentSlideNumber()
         val originalApprovalState = Workspace.activeStory.slides[currentSlideNum].isChecked
 
         pressCheckmarkButton()

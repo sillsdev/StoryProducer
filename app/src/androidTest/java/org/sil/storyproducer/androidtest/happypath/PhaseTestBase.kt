@@ -17,7 +17,7 @@ import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
 import java.io.File
 
-open abstract class PhaseTestBase {
+abstract class PhaseTestBase {
     @Rule
     @JvmField
     val mActivityTestRule = androidx.test.rule.ActivityTestRule(RegistrationActivity::class.java, false, false)
@@ -94,12 +94,12 @@ open abstract class PhaseTestBase {
         }, phaseToReturnTo)
     }
 
-    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
+    protected fun areThereAnyAudioClipsOnThisSlide(): Boolean {
         val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
         return showRecordingsListButton?.visibility != View.INVISIBLE
     }
 
-    private fun recordAnAudioTranslationClip() {
+    protected fun recordAnAudioTranslationClip() {
         AnimationsToggler.withoutCustomAnimations {
             pressMicButton()
             Thread.sleep(Constants.durationToRecordTranslatedClip)
@@ -107,7 +107,7 @@ open abstract class PhaseTestBase {
         }
     }
 
-    private fun pressMicButton() {
+    protected fun pressMicButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.start_recording_button), ViewMatchers.isDisplayed())).perform(ViewActions.click())
     }
 }

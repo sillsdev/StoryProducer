@@ -3,7 +3,6 @@ package org.sil.storyproducer.androidtest.happypath
 import android.support.v7.widget.AppCompatSeekBar
 import android.support.v7.widget.RecyclerView
 import android.view.View
-import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -24,7 +23,6 @@ import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-import org.sil.storyproducer.model.Workspace
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -144,10 +142,6 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
             Thread.sleep(Constants.durationToRecordVoiceStudioClip)
             pressMicButton()
         }
-    }
-
-    private fun pressMicButton() {
-        Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
     }
 
     private fun getCurrentSlideAudioProgress(): Int {

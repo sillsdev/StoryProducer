@@ -2,15 +2,15 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.support.v7.widget.AppCompatSeekBar
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.allOf
+import org.junit.Assert
+import org.junit.Test
 import org.junit.runner.RunWith
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import org.junit.*
-import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
@@ -53,10 +53,6 @@ class TranslatePhaseTest : SwipablePhaseTestBase() {
             giveAppTimeToRecordAudio()
             pressMicButton()
         }
-    }
-
-    private fun pressMicButton() {
-        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
     }
 
     private fun giveAppTimeToRecordAudio() {
