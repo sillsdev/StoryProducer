@@ -10,10 +10,10 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.Constants
 
-open abstract class SwipablePhaseTestBase : PhaseTestBase() {
+abstract class SwipablePhaseTestBase : PhaseTestBase() {
     protected fun testSwipingBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
+        val nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
         swipeLeftOnSlide()
         giveUiTimeToChangeSlides()

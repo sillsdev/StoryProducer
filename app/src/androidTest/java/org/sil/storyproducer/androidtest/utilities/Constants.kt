@@ -14,6 +14,8 @@ object Constants {
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 50
 
+    const val durationToWaitWhenUIUpdates: Long = 50
+
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
     const val nameOfTestStory = "Lost Coin"
