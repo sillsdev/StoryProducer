@@ -27,6 +27,9 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         //This enables the "onStartedPlaybackOrRecording" to be invoked.
         dispList?.setParentFragment(this)
         dispList?.show()
+
+        setupCameraAndEditButton()
+
         return rootView
     }
 

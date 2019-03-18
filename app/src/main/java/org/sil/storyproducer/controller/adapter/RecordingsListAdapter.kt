@@ -19,6 +19,7 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.controller.keyterm.KeytermRecordingListAdapter
+import org.sil.storyproducer.controller.keyterm.KeytermRecordingListAdapter
 import org.sil.storyproducer.model.KeytermRecording
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -188,6 +189,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             }
 
             recyclerView = rootView?.findViewById(R.id.recordings_list)
+
             updateRecordingList()
 
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
@@ -299,7 +301,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 Workspace.activeKeyterm.keytermRecordings[pos] = KeytermRecording("${Workspace.activeKeyterm.term}/$lastNewName", Workspace.activeKeyterm.keytermRecordings[pos].textBackTranslation )
             }
             updateRecordingList()
-            onRowClick(lastNewName!!)
+            onRowClick(lastNewName.toString())
         }
 
         fun stopAudio() {

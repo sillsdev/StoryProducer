@@ -12,6 +12,7 @@
     <string name="submit">Submit</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="enter_text">Enter Text</string>
 
     <string name="play">Play</string>
     <string name="share">Share</string>
@@ -37,7 +38,6 @@
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
     <string name="title_activity_story_templates">Story Templates</string>
-    <string name="title_activity_keyterm_list">Keyterm List</string>
 
     <!-- String names for registration -->
     <string name="registration_language_header">Language Information</string>
@@ -126,14 +126,7 @@
     <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
     <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
-    <!-- Keyterm Tool -->
-    <string name="keyterm_submit_backTranslation_hint">word-for-word backtranslation / transliteration</string>
-    <string name="keyterm_close">Close</string>
-    <string name="notes">MEANING NOTES. DEFINITIONS:</string>
-    <string name="related_terms">RELATED (BUT DIFFERENT) TERMS:</string>
-    <string name="other_langauge_examples">OTHER LANGUAGE EXAMPLES:</string>
     <string name="fill_with_audio_comment">Fill with Audio Comment</string>
-    <string name="backtranslation">Backtranslation</string>
 
     <!-- Learn Phase -->
     <string name="learn_phase_practice">Retell the whole story in your language!</string>
@@ -210,7 +203,9 @@
     <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
     <string name = "smartphone_and_extension">Smartphone (MP4)</string>
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
-    <string name="export_format_label">File Format</string>
+    <string name="export_format_label">File Format</string>E
+
+    <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
