@@ -3,7 +3,6 @@ package org.sil.storyproducer.tools.media
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
 import java.io.IOException
@@ -75,12 +74,7 @@ class AudioPlayer {
 
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
-        val uri: Uri = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-            getStoryUri(relPath, "keyterms") ?: return false
-        }
-        else{
-            getStoryUri(relPath,storyName) ?: return false
-        }
+        val uri: Uri = getStoryUri(relPath,storyName) ?: return false
         return setSource(context, uri)
     }
 

@@ -17,6 +17,7 @@ import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -25,8 +26,13 @@ import org.sil.storyproducer.model.Workspace
 class ConsultantCheckFrag : SlidePhaseFrag() {
 
     var logDialog: AlertDialog? = null
+    var greenCheckmark: VectorDrawableCompat ?= null
+    var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
+        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
         // The last two arguments ensure LayoutParams are inflated
         // properly.
@@ -65,13 +71,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the check button
      */
     private fun setCheckmarkButton(button: ImageButton) {
-        //TODO replace T/f with storing MD5 or SHA1 of the draft audio.
         if (Workspace.activeStory.slides[slideNum].isChecked) {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+            button.background = greenCheckmark
         } else {
-            //TODO: use non-deprecated method; currently used to support older devices
-            button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+            button.background = grayCheckmark
         }
         button.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -79,10 +82,10 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 return@OnClickListener
             }
             if (Workspace.activeStory.slides[slideNum].isChecked) {
-                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+                button.background = grayCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = false
             } else {
-                button.background = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
+                button.background = greenCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
@@ -135,10 +138,9 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @return true if all approved, otherwise false
      */
     private fun checkAllMarked(): Boolean {
-        //dont check the last slide, it's the copyright.
-        val numStorySlides = Workspace.activeStory.slides.size - 1
-        for (i in 0 until numStorySlides) {
-            if (!Workspace.activeStory.slides[i].isChecked) {
+        for (slide in Workspace.activeStory.slides) {
+            if (!slide.isChecked && slide.slideType in
+                    arrayOf(SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,SlideType.LOCALSONG)) {
                 return false
             }
         }
@@ -151,6 +153,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+        password.id = org.sil.storyproducer.R.id.password_text_field;
 
         // Programmatically set layout properties for edit text field
         val params = LinearLayout.LayoutParams(

@@ -23,6 +23,8 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
+    val shortContet: String
+    get() {return " \\[.*".toRegex().replace(content,"")}
 
     var imageFile = ""
     var textFile = ""
@@ -59,7 +61,7 @@ class Slide{
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
         val tOverlay = when(slideType) {
-            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(content) else TextOverlay(translatedContent)
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(shortContet) else TextOverlay(translatedContent)
             SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
                     "This video is licensed under a Creative Commons Attribution" +
                     "-NonCommercial-ShareAlike 4.0 International License " +

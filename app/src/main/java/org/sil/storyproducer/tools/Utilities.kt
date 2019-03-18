@@ -22,6 +22,10 @@ fun dpToPx(dp: Int, activity: Activity): Int{
     return (dp * logicalDensity).toInt()
 }
 
+fun String.stripForFilename(): String {
+    return this.replace("[^\\w -]".toRegex(), "_")
+}
+
 fun helpDialog(context: Context, title: String): AlertDialog.Builder{
     val alert = AlertDialog.Builder(context)
     alert.setTitle(title)

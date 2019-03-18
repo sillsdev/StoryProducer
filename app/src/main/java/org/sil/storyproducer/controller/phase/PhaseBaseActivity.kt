@@ -247,9 +247,10 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         //draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
-        val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.DRAMATIZATION)
-            Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
-        else Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
+        //only show the untranslated title in the Learn phase.
+        val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.LEARN)
+            Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
+        else Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
         //if overlay is null, it will not write the text.
         tOverlay?.draw(canvas)
 

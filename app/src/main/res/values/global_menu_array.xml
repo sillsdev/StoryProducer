@@ -3,7 +3,6 @@
     <string-array name="global_menu_array">
         <item>@string/update_workspace</item>
         <item>@string/title_activity_story_templates</item>
-        <item>@string/title_activity_keyterm_list</item>
         <item>@string/update_registration</item>
         <item>@string/license_title</item>
     </string-array>
