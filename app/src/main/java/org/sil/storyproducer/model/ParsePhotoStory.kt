@@ -41,7 +41,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                     if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
                     if (textList.size > 1) slide.subtitle= textList[1].removePrefix(" ").removeSuffix(" ")
                     if (textList.size > 2) slide.reference = textList[2].removePrefix(" ").removeSuffix(" ")
-                    if (textList.size > 3) slide.content = textList[3].removePrefix(" ").removeSuffix(" ")
+                    if (textList.size > 3) slide.content = textList[3].trim()
                 }
                 if(firstSlide) {
                     slide.slideType = SlideType.FRONTCOVER
@@ -167,9 +167,9 @@ private fun parseEdit(parser: XmlPullParser, slide: Slide) {
 }
 
 private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
-    //TODO fix volume reading.. How to convert from an int (9) to a float (ratio of 1?)?
-    //slide.volume = Integer.parseInt(parser.getAttributeValue(null, "volume")).toDouble()
-    slide.volume = 0.25f
+    val rawVolume = Integer.parseInt(parser.getAttributeValue(null, "volume"))
+    val normalizedVolume = (rawVolume.toFloat() / 100.0f)
+    slide.volume = normalizedVolume
 
     parser.nextTag()
     parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
