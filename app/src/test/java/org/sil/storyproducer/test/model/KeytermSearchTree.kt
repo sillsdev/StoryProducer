@@ -212,7 +212,7 @@ class TestKeytermSearchTree{
     }
 
     @Test
-    fun splitOnKeyterms_When_TextStartsAndEndsWithNonTermF_Should_ReturnListWithNonTermFollowedByTermFollowedByNonTerm() {
+    fun splitOnKeyterms_When_TextStartsAndEndsWithNonTerm_Should_ReturnListWithNonTermFollowedByTermFollowedByNonTerm() {
         val keytermSearchTree = KeytermSearchTree()
         keytermSearchTree.insertTerm("term")
         val textToSearch = "This term is cool"
