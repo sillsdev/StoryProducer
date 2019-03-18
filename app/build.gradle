@@ -19,7 +19,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 9
-        versionName '2.4.3alpha'
+        versionName '2.4.33alpha'
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
