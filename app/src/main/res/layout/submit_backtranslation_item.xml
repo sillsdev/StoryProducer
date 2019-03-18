@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/darkGray"
+    android:padding="@dimen/keyterm_layout_margin">
+
+    <EditText
+        android:id="@+id/backtranslation_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/submit_backtranslation_item_background"
+        android:hint="@string/keyterm_submit_backTranslation_hint"
+        android:inputType="textMultiLine"
+        android:maxLines="3"
+        android:paddingStart="@dimen/keyterm_layout_margin"
+        android:paddingBottom="@dimen/keyterm_layout_margin"
+        android:paddingTop="@dimen/keyterm_layout_margin"
+        android:paddingEnd="32dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        android:textSize="@dimen/text_body"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill" />
+
+    <ImageButton
+        android:id="@+id/submit_backtranslation_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/keyterm_layout_margin"
+        android:layout_weight="0"
+        android:background="@color/transparent"
+        android:contentDescription="@string/submit"
+        android:src="@drawable/ic_send_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/backtranslation_edit_text"
+        app:layout_constraintEnd_toEndOf="@+id/backtranslation_edit_text"
+        app:layout_constraintTop_toTopOf="@+id/backtranslation_edit_text" />
 
 </android.support.constraint.ConstraintLayout>

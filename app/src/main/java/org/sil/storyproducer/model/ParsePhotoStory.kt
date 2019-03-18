@@ -10,7 +10,7 @@ import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
 fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
