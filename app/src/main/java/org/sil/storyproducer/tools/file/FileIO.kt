@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import org.sil.storyproducer.model.KEYTERMS_DIR
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -74,6 +75,10 @@ fun genDefaultImage(): Bitmap {
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
     if (dirRoot == "") return null
     return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
+}
+
+fun getKeytermChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
+    return getChildOutputStream(context, "$KEYTERMS_DIR/$relPath", mimeType)
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
@@ -235,7 +240,13 @@ fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
     val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
 
     return if(dir?.exists() == true) {
-        dir.findFile(oldFilename)?.renameTo(newFilename) == true
+        if(dir.findFile(newFilename) == null) {
+            dir.findFile(oldFilename)?.renameTo(newFilename)
+            dir.findFile(newFilename) != null
+            true
+        } else{
+            false
+        }
     } else{
         false
     }

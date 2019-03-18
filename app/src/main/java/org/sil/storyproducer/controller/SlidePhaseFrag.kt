@@ -5,14 +5,13 @@ import android.os.Bundle
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -156,12 +155,18 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     /**
-     * Sets the main text of the layout.
+     * Sets the main text of the layout.  The text will be ran through and checked if any of the
+     * words are a keyterm and will turn that string into a link that can be clicked and will
+     * open KeyTermActivity to show the user more about the keyterm
      *
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        val phrases = Workspace.keytermSearchTree.splitOnKeyterms(slide.content)
+        textView.text = phrases.fold(SpannableStringBuilder()){
+            result, phrase -> result.append(stringToKeytermLink(phrase, activity))
+        }
+        textView.movementMethod = LinkMovementMethod.getInstance()
     }
 
     /**
