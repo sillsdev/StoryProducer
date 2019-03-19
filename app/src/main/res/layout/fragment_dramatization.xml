@@ -21,6 +21,7 @@
 
     <ImageView
         android:id="@+id/insert_image_view"
+        android:contentDescription="@string/edit_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -35,6 +36,7 @@
 
     <ImageView
         android:id="@+id/edit_text_view"
+        android:contentDescription="@string/edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
