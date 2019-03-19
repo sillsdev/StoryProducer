@@ -17,7 +17,7 @@ import org.sil.storyproducer.tools.file.getChildDocuments
  * Created by annmcostantino on 10/1/2017.
  */
 //TODO: Cleanup all the useless stuff here
-class ShareActivity : PhaseBaseActivity() {
+class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
 
     private var mShareSection: LinearLayout? = null
     private var mNoVideosText: TextView? = null
@@ -66,7 +66,7 @@ class ShareActivity : PhaseBaseActivity() {
 
         //share view
         mShareSection = findViewById(R.id.share_section)
-        videosAdapter = ExportedVideosAdapter(this)
+        videosAdapter = ExportedVideosAdapter(this, this)
         mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
@@ -88,7 +88,7 @@ class ShareActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     //TODO: cleanup
-    private fun refreshViews() {
+    override fun refreshViews() {
 
         val presentVideos = getChildDocuments(this,VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
