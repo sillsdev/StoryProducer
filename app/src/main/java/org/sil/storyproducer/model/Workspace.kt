@@ -6,6 +6,7 @@ import android.net.Uri
 import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.util.*
 
@@ -120,6 +121,10 @@ object Workspace{
         deleteStoryFile(context, "$activeDir/$name")
     }
 
+    fun deleteVideo(context: Context, path: String){
+        activeStory.outputVideos.remove(path)
+        deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
+    }
 
     fun updateStoryLocalCredits(context: Context) {
         for(story in Stories){
