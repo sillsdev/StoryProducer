@@ -81,11 +81,11 @@
     <string name="consultant_password_message">Please enter the consultant password:</string>
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="stories_not_found_title">No stories found!</string>
-    <string name="stories_not_found_body">The workspace folder does not contain story template folders.
+    <string name="stories_not_found_body">The templates folder does not contain story template folders.
         For example, the template folder for the English story \"Lost Coin\" should be stored in the
-        workspace folder.  Afterwards, restart the app to load the story templates.</string>
+        templates folder.  Afterwards, restart the app to load the story templates.</string>
     <string name="workspace_selection_help">Select the folder than has the story templates in it.
-        This will be the workspace that holds the registration and translation files.</string>
+        This will be the "templates folder" that holds the registration and translation files.</string>
 
     <string-array name="orthography_list">
         <item>None</item>
@@ -240,7 +240,7 @@
     <!-- app menus -->
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
-    <string name="update_workspace">Update Workspace</string>
+    <string name="update_workspace">Update Templates Folder</string>
 
     <!-- license -->
     <string name="license_title">License</string>
