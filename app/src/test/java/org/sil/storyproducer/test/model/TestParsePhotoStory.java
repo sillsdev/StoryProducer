@@ -6,9 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.sil.storyproducer.model.Slide;
 import org.sil.storyproducer.model.Story;
 
@@ -90,10 +88,10 @@ public class TestParsePhotoStory {
     }
 
     @Test
-    public void parsePhotoStoryXML_When_HasFirstSlide_Should_GetSlideContentFromFolderName() {
+    public void parsePhotoStoryXML_When_HasFirstSlide_Should_GetSlideContentFromCorrespondingTextFile() {
         Story result = parseValidStory();
 
-        Assert.assertEquals("sampledata/ValidStory", result.getSlides().get(0).getContent());
+        Assert.assertEquals("Once there was a sample story template that was formatted correctly.", result.getSlides().get(0).getContent());
     }
 
     @Test
@@ -114,7 +112,7 @@ public class TestParsePhotoStory {
     public void parsePhotoStoryXML_When_ASlideHasAMusicTrack_Should_ParseTheVolume() {
         Story result = parseValidStory();
 
-        Assert.assertEquals(9, result.getSlides().get(0).getVolume(), 0.1);
+        Assert.assertEquals(0.09, result.getSlides().get(0).getVolume(), 0.01);
     }
 
     @Test

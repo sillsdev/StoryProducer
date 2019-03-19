@@ -44,7 +44,7 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
         Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
-    private fun findCurrentSlideNumber(): Int {
+    protected fun findCurrentSlideNumber(): Int {
         val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
         return Integer.parseInt(slideNumberTextView!!.text.toString())
     }
