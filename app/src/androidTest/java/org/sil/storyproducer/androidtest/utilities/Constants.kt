@@ -18,10 +18,17 @@ object Constants {
 
     const val nameOfTestStory = "Lost Coin"
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
-    const val workspaceDirectory = "/mnt/sdcard/SPWorkspace"
-    const val espressoResourceDirectory = "/mnt/sdcard/EspressoResources"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
-    const val exportedVideosDirectory = "/mnt/sdcard/SPWorkspace/videos"
+
+    const val sdcardType1 = "mnt/scard"
+    const val sdcardType2 = "storage/SD Card"
+    var sdcard = sdcardType1
+    val workspaceDirectory : String
+        get() {return "$sdcard/SPWorkspace"}
+    val espressoResourceDirectory : String
+        get() {return "$sdcard/EspressoResources"}
+    val exportedVideosDirectory : String
+        get() {return "$sdcard/SPWorkspace/videos"}
 
     object Phase {
         const val learn = "Learn"
