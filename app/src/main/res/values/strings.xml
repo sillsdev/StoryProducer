@@ -26,6 +26,9 @@
 
     <string name="story_picture">story picture</string>
     <string name="stage_locked">stage locked</string>
+    <string name="edit_image">edit image</string>
+    <string name="edit_text">edit text</string>
+
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
