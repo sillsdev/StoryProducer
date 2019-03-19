@@ -85,6 +85,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
             editFab?.visibility = android.view.View.VISIBLE
             editFab?.setOnClickListener {
                 val editText = EditText(context)
+                editText.id = R.id.edit_text_input
 
                 // Programmatically set layout properties for edit text field
                 val params = ViewGroup.LayoutParams(

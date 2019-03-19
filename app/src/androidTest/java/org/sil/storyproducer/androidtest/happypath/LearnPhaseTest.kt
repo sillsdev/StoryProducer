@@ -22,7 +22,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 class LearnPhaseTest : PhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToLearnPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.learn)
     }
 
     @Test
