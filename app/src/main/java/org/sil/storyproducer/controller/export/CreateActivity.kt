@@ -121,15 +121,19 @@ class CreateActivity : PhaseBaseActivity() {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
-        loadPreferences()
     }
 
     override fun onResume() {
         super.onResume()
         loadPreferences()
         toggleVisibleElements()
-
         watchProgress()
+
+        //attach the listeners after everything else is setup.
+        mCheckboxPictures!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
+        mCheckboxKBFX!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
+        mCheckboxText!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
+        mCheckboxSong!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
     }
 
     override fun onPause() {
@@ -183,13 +187,9 @@ class CreateActivity : PhaseBaseActivity() {
 
         mCheckboxSoundtrack = findViewById(R.id.checkbox_export_soundtrack)
         mCheckboxPictures = findViewById(R.id.checkbox_export_pictures)
-        mCheckboxPictures!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
         mCheckboxKBFX = findViewById(R.id.checkbox_export_KBFX)
-        mCheckboxKBFX!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
         mCheckboxText = findViewById(R.id.checkbox_export_text)
-        mCheckboxText!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
         mCheckboxSong = findViewById(R.id.checkbox_export_song)
-        mCheckboxSong!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
 
         val resolutionArray = resources.getStringArray(R.array.export_resolution_options)
         val immutableList = Arrays.asList(*resolutionArray)
@@ -387,6 +387,8 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxSoundtrack!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true)
         mCheckboxPictures!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
         mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
+        // Don't show the dialog again when reloading the activity.
+        if(mCheckboxText!!.isChecked) {mTextConfirmationChecked = false}
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
         mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", Workspace.activeStory.shortTitle))
