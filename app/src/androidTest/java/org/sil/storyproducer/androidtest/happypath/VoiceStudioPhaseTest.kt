@@ -31,7 +31,7 @@ import org.sil.storyproducer.model.Workspace
 class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToVoiceStudioPhase()
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.voiceStudio)
     }
 
     @Test
@@ -42,8 +42,10 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
     @Test
     fun should_beAbleToPlaySlideAudio() {
         // Arrange
-        makeSureAnAudioClipIsAvailable()
-        approveSlides()
+        makeSureAnAudioClipIsAvailable(Constants.Phase.voiceStudio)
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.voiceStudio)
         val originalProgress = getCurrentSlideAudioProgress()
 
         // Act
@@ -63,7 +65,9 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
-        approveSlides()
+        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
+            approveSlides()
+        }, Constants.Phase.voiceStudio)
 
         verifyThatRecordingMultipleSnippetsDoesNotCreateMultipleClips()
 
@@ -134,27 +138,6 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
         return numberOfClips[0]
     }
 
-    private fun makeSureAnAudioClipIsAvailable() {
-        selectPhase(Constants.Phase.translate)
-        if (!areThereAnyAudioClipsOnThisSlide()) {
-            recordAnAudioTranslationClip()
-        }
-        selectPhase(Constants.Phase.voiceStudio)
-    }
-
-    private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
-        return showRecordingsListButton?.visibility != View.INVISIBLE
-    }
-
-    private fun recordAnAudioTranslationClip() {
-        AnimationsToggler.withoutCustomAnimations {
-            pressMicButton()
-            Thread.sleep(Constants.durationToRecordTranslatedClip)
-            pressMicButton()
-        }
-    }
-
     private fun recordAVoiceStudioTranslationSnippet() {
         AnimationsToggler.withoutCustomAnimations {
             pressMicButton()
@@ -178,14 +161,5 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     private fun giveAppTimeToPlayAudio() {
         Thread.sleep(Constants.durationToPlayTranslatedClip)
-    }
-
-    private fun approveSlides() {
-        selectPhase(Constants.Phase.accuracyCheck)
-        for (item in Workspace.activeStory.slides) {
-            item.isChecked = true;
-        }
-        Workspace.activeStory.isApproved = true
-        selectPhase(Constants.Phase.voiceStudio)
     }
 }
