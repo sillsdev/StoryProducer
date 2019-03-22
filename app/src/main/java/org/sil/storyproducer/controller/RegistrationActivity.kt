@@ -131,7 +131,7 @@ open class RegistrationActivity : AppCompatActivity() {
      * Initializes the inputFields to the inputs of this activity.
      */
     private fun setupInputFields() {
-        val view = findViewById<ScrollView>(R.id.scroll_view)
+        val view = findViewById<ScrollView>(R.id.registration_scroll_view)
         inputFields = getInputFields(view)
     }
 
