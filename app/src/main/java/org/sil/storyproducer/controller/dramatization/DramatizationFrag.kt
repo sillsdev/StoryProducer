@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
@@ -23,7 +22,7 @@ class DramatizationFrag : MultiRecordFrag() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
-        setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        setPic(rootView!!.findViewById(R.id.fragment_image_view))
         slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
         slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
