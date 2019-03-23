@@ -12,16 +12,23 @@ object Constants {
     const val durationToWaitForVideoExport: Long = 60000
     const val intervalToWaitBetweenCheckingForVideoExport: Long = 1000
 
-    const val durationToWaitWhenSwipingBetweenSlides: Long = 50
+    const val durationToWaitWhenSwipingBetweenSlides: Long = 200 //Swipe.FAST = 100 * 2
 
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
     const val nameOfTestStory = "Lost Coin"
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
-    const val workspaceDirectory = "/mnt/sdcard/SPWorkspace"
-    const val espressoResourceDirectory = "/mnt/sdcard/EspressoResources"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
-    const val exportedVideosDirectory = "/mnt/sdcard/SPWorkspace/videos"
+
+    const val sdcardType1 = "mnt/scard"
+    const val sdcardType2 = "storage/SD Card"
+    var sdcard = sdcardType1
+    val workspaceDirectory : String
+        get() {return "$sdcard/SPWorkspace"}
+    val espressoResourceDirectory : String
+        get() {return "$sdcard/EspressoResources"}
+    val exportedVideosDirectory : String
+        get() {return "$workspaceDirectory/videos"}
 
     object Phase {
         const val learn = "Learn"
