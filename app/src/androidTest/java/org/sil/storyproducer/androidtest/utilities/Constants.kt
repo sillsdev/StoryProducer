@@ -28,7 +28,7 @@ object Constants {
     val espressoResourceDirectory : String
         get() {return "$sdcard/EspressoResources"}
     val exportedVideosDirectory : String
-        get() {return "$sdcard/SPWorkspace/videos"}
+        get() {return "$workspaceDirectory/videos"}
 
     object Phase {
         const val learn = "Learn"
