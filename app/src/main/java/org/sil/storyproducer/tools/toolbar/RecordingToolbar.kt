@@ -25,7 +25,6 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.hideKeyboard
