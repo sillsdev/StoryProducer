@@ -48,6 +48,7 @@ class SharePhaseTest : PhaseTestBase() {
         try {
             val sampleVideo = File(Constants.espressoResourceDirectory + File.separator + videoFilename)
             val destination = File(Constants.exportedVideosDirectory + File.separator + videoFilename)
+            File(Constants.exportedVideosDirectory).mkdirs()
             sampleVideo.copyRecursively(destination, true)
         } catch (e: Exception){
             Assert.fail("Failed to copy sample video to exported videos directory for test.")

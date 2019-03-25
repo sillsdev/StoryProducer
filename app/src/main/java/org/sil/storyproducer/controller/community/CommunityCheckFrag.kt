@@ -50,11 +50,14 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         dispList?.updateRecordingList()
-        dispList?.recyclerView?.adapter?.notifyItemInserted(dispList?.recyclerView?.adapter?.itemCount!!-1)
+        dispList?.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
         stopPlayBackAndRecording()
+        //this is needed here to - when you are playing the reference audio and start recording
+        //the new audio file pops up, and in the wrong format.
+        dispList?.updateRecordingList()
     }
 
     override fun setToolbar() {

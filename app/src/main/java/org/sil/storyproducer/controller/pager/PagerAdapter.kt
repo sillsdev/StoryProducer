@@ -16,6 +16,8 @@ import org.sil.storyproducer.model.Workspace
 
 class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
 
+    val countCache = Workspace.activePhase.getPhaseDisplaySlideCount()
+
     /**
      * getItem is called every time the user moves on to the next page to get the next fragment
      *
@@ -66,7 +68,9 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
      * @return page count
      */
     override fun getCount(): Int {
-        return Workspace.activePhase.getPhaseDisplaySlideCount()
+        //use the cached value so that if there are two quick phase changes, you will use the
+        //"ActivePhase" when it was first called, not the last time it was called.  Fixes crashes.
+        return countCache
     }
 
     /**

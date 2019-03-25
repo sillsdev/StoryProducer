@@ -175,6 +175,7 @@ class RecordingToolbar : Fragment(){
     override fun onPause() {
         stopToolbarMedia()
         audioPlayer.release()
+        isAppendingOn = false
         super.onPause()
     }
 
@@ -365,8 +366,17 @@ class RecordingToolbar : Fragment(){
         if (enableCheckButton) {
             checkButton.setOnClickListener {
                 //Delete the temp file wav file
-                stopToolbarMedia()
-                deleteStoryFile(appContext, audioTempName)
+                if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+                    stopToolbarMedia()
+                    try {
+                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                    } catch (e: FileNotFoundException) {
+                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                    }
+                }else {
+                    stopToolbarMedia()
+                }
+
                 //make the button invisible till after the next new recording
                 isAppendingOn = false
                 checkButton.visibility = View.INVISIBLE

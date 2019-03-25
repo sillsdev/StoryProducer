@@ -8,6 +8,7 @@ import android.support.v4.provider.DocumentFile
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
@@ -219,6 +220,10 @@ object Workspace{
         for(termForm in termFormToTerm.keys){
             keytermSearchTree.insertTerm(termForm)
         }
+    }
+    fun deleteVideo(context: Context, path: String){
+        activeStory.outputVideos.remove(path)
+        deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
     }
 
     fun updateStoryLocalCredits(context: Context) {

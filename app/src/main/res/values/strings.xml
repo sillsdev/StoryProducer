@@ -26,6 +26,9 @@
 
     <string name="story_picture">story picture</string>
     <string name="stage_locked">stage locked</string>
+    <string name="edit_image">edit image</string>
+    <string name="edit_text">edit text</string>
+
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
@@ -82,9 +85,12 @@
     <string name="consultant_password_message">Please enter the consultant password:</string>
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="stories_not_found_title">No stories found!</string>
-    <string name="stories_not_found_body">The worskpace folder does not contain story template folders.
+    <string name="stories_not_found_body">The template folder does not contain story template folders.
         For example, the template folder for the English story \"Lost Coin\" should be stored in the
-        workspace folder.  Afterwards, restart the app to load the story templates.</string>
+        templates folder.  Afterwards, restart the app to load the story templates.</string>
+    <string name="workspace_selection_help">Select the folder than has the story templates in it.
+        This will be the "template folder" that holds the registration and translation files.</string>
+
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
@@ -148,6 +154,11 @@
     <!-- Dramatization phase -->
     <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>
     <string name="dramatization_edit_title_text_hint">Write story title to show for all videos made.</string>
+
+    <!-- Share Phase -->
+    <string name="delete_video_title">Delete Video file?</string>
+    <string name="delete_video_message">Do you want to delete this video?</string>
+
 
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
@@ -245,7 +256,7 @@
     <!-- app menus -->
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
-    <string name="update_workspace">Update Workspace</string>
+    <string name="update_workspace">Select Template Folder</string>
 
     <!-- license -->
     <string name="license_title">License</string>

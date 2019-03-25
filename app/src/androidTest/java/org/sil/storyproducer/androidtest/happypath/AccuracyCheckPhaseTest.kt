@@ -91,8 +91,10 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun typePasswordAndClickSubmit() {
+        Thread.sleep(200)
         onView(allOf(withId(R.id.password_text_field), isDisplayed())).perform(clearText()).perform(typeText("appr00ved"))
         onView(withText("SUBMIT")).perform(click())
+        Thread.sleep(1000)
     }
 
     private fun shouldNowBeOnVoiceStudioPhase() {
