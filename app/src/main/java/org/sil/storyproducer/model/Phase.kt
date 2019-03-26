@@ -7,7 +7,6 @@ import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
-import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
@@ -24,6 +23,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
+            PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
             else -> ""
         }
@@ -139,7 +139,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.CREATE -> CreateActivity::class.java
             PhaseType.SHARE -> ShareActivity::class.java
             PhaseType.BACKT -> PagerBaseActivity::class.java
-            PhaseType.WHOLE_STORY -> WholeStoryBackTranslationActivity::class.java
+            PhaseType.WHOLE_STORY -> LearnActivity::class.java
             PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
         }
     }

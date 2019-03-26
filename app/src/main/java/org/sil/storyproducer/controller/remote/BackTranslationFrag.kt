@@ -51,7 +51,6 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
         rootView?.findViewById<TextView>(R.id.slide_number_text)?.text = slideNumber.toString()
 
-
         storyName = Workspace.activeStory.title
 
         setToolbar()
