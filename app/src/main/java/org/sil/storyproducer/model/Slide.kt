@@ -27,8 +27,10 @@ class Slide{
     get() {
         //Remove anything that is surrounded by "[]"
         var temp = "\\[[^\\]]*\\]?".toRegex().replace(content,"")
-        //Remove all punctuation
-        temp = "[\\,\\.\\?\\!]".toRegex().replace(temp,"")
+        //remove everything before a : if there is one
+        temp =  ".*\\:".toRegex().replace(temp,"")
+        //remove everything after a .!? if there is one
+        temp =  "[\\.\\!\\?].*".toRegex().replace(temp,"")
         //Make all double spaces one space.
         return "\\s+".toRegex().replace(temp," ")
     }
