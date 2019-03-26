@@ -31,6 +31,20 @@ class WorkspaceSetter {
     @JvmField
     var mGrantPermissionRule: GrantPermissionRule = PermissionsGranter.grantStoryProducerPermissions()
 
+    /**
+     * This "test" uses UIAutomator to set the Story Producer workspace directory to the value
+     * specified in org.sil.storyproducer.androidtest.utilities.Constants. Be sure that the
+     * workspace directory actually exists on the device prior to running this test.
+     *
+     * This test is intended to be run once prior to all the Espresso tests, since those tests
+     * assume that the workspace directory has already been selected by the user. Every time
+     * the app's storage gets cleared, the workspace information gets lost. When this happens,
+     * this test then needs to be run again, to select the workspace.
+     *
+     * This test was developed assuming a Nexus 5X emulator running Android API 28 for x86.
+     * Depending on your device/emulator, you may need to modify the INTERNAL_STORAGE_BUTTON_TEXT
+     * string.
+     */
     @Test
     @SdkSuppress(minSdkVersion = 18)
     fun setWorkspaceSoOtherTestsRunCorrectly() {
@@ -70,9 +84,18 @@ class WorkspaceSetter {
             device.pressBack()
         }
         device.findObject(By.desc("Show roots")).click()
+
+        // Occasionally, clicking on the internal storage button will fail.
+        // Sleeping briefly appears to make it less likely to fail.
+        Thread.sleep(1000)
         device.findObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)).click()
+
         val workspaceDirectoryName = getDirectoryNameFromFullPath(Constants.workspaceDirectory)
+        // Occasionally, clicking on the workspace directory will fail.
+        // Sleeping briefly appears to make it less likely to fail.
+        Thread.sleep(1000)
         device.findObject(By.text(workspaceDirectoryName)).click()
+
         device.findObject(By.text("SELECT")).click()
         device.wait(Until.hasObject(By.res(REGISTRATION_SCREEN_CONTAINER)), TIMEOUT_DURATION)
     }
