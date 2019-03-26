@@ -9,6 +9,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
@@ -27,7 +28,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private var videoSeekBar: SeekBar? = null
     private var mSeekBarTimer = Timer()
 
-    private var narrationPlayer: AudioPlayer = AudioPlayer()
+    private var narrationPlayer = AudioPlayer()
 
     private var isVolumeOn = true
     private var isWatchedOnce = false
@@ -94,7 +95,12 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         }
 
         //has learn already been watched?
-        isWatchedOnce = storyRelPathExists(this,Workspace.activeStory.learnAudioFile)
+        isWatchedOnce = if(Workspace.activePhase.phaseType == PhaseType.LEARN){
+            storyRelPathExists(this,Workspace.activeStory.learnAudioFile)
+        }
+        else {
+            storyRelPathExists(this,Workspace.activeStory.wholeStoryBackTAudioFile)
+        }
 
         //get story audio duration
         numOfSlides = 0
@@ -103,8 +109,14 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             //don't play the copyright slides.
             if (s.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)) {
                 numOfSlides++
-                slideDurations.add((MediaHelper.getAudioDuration(this,
-                        getStoryUri(s.narrationFile)!!) / 1000).toInt())
+                if(Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                    slideDurations.add((MediaHelper.getAudioDuration(this,
+                            getStoryUri(s.narrationFile)!!) / 1000).toInt())
+                }
+                else if(Workspace.activePhase.phaseType == PhaseType.WHOLE_STORY){
+                    slideDurations.add((MediaHelper.getAudioDuration(this,
+                            getStoryUri(s.chosenDraftFile)!!) / 1000).toInt())
+                }
                 slideStartTimes.add(slideStartTimes.last() + slideDurations.last())
             } else {
                 break
@@ -190,7 +202,12 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
                 if(i-1 != curPos){
                     curPos = i-1
                     setPic(learnImageView!!, curPos)
-                    narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
+                    if(Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                        narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
+                    }
+                    else if(Workspace.activePhase.phaseType == PhaseType.WHOLE_STORY){
+                        narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].chosenDraftFile)
+                    }
                 }
                 break
             }

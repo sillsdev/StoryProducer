@@ -23,7 +23,6 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -318,7 +317,7 @@ class RecordingToolbar : Fragment(){
                             }.create()
                     if (storyRelPathExists(activity!!, recordingRelPath) &&
                             //we may be overwriting things in other phases, but we do not care.
-                            Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                            (Workspace.activePhase.phaseType == PhaseType.LEARN || Workspace.activePhase.phaseType == PhaseType.WHOLE_STORY)) {
                         dialog.show()
                     } else {
                         recordAudio(recordingRelPath)

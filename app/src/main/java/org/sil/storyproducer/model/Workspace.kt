@@ -107,7 +107,7 @@ object Workspace{
         Stories.sortBy{it.title}
         //update phases based upon registration selection
         phases = when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases()
+            "Remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
         activePhaseIndex = 0
