@@ -13,7 +13,6 @@ import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
@@ -49,7 +48,6 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
         setPic(rootView!!.findViewById(R.id.fragment_backtranslation_image_view))
         setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
-        rootView?.findViewById<TextView>(R.id.slide_number_text)?.text = slideNumber.toString()
 
         storyName = Workspace.activeStory.title
 
@@ -78,7 +76,7 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
 
     override fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,true))
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,true))
         bundle.putInt("slideNum", slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
@@ -103,7 +101,7 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
             //TODO: put all the volley functions into a separate class? (have redundancy between some classes)
             //requestRemoteReview(context, FileSystem.getContentSlideAmount(storyName))
             getSlidesStatus()
-            setCheckmarkButton(rootView!!.findViewById<View>(R.id.fragment_backtranslation_r_concheck_checkmark_button) as ImageButton)
+            setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
             phaseUnlocked = checkAllMarked()
             if (phaseUnlocked) {
                 unlockDramatizationPhase()
@@ -272,16 +270,14 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
     }
 
     private fun addTranscription() {
-        val transcript = transcriptionText!!.text.toString()
+        val transcript = transcriptionText?.text.toString()
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
         prefsEditor.putString(storyName + slideNumber + TRANSCRIPTION_TEXT, transcript)
         prefsEditor.apply()
-
     }
 
     companion object {
-
         val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
         val R_CONSULTANT_PREFS = "Consultant_Checks"
         val IS_R_CONSULTANT_APPROVED = "isApproved"
