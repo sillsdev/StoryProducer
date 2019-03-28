@@ -4,6 +4,7 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.util.Log
 import org.sil.storyproducer.tools.media.MediaHelper
+import java.lang.Exception
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -110,8 +111,13 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             if (mComponentState == PipedMediaSource.State.CLOSED) {
                 throw SourceClosedException()
             }
-            outputBufferId = mCodec!!.dequeueOutputBuffer(
-                    info, MediaHelper.TIMEOUT_USEC)
+            try {
+                outputBufferId = mCodec!!.dequeueOutputBuffer(
+                        info, MediaHelper.TIMEOUT_USEC)
+            } catch (e : Exception) {
+                mIsDone = true
+                outputBufferId = MediaCodec.INFO_TRY_AGAIN_LATER
+            }
             if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: output format changed")
                 if (mOutputFormat != null) {
