@@ -196,27 +196,23 @@
     <!-- Export Phase -->
     <string name="export_custom_title">Short Story Name</string>
     <string name="export_options_header">Options</string>
-    <string name="export_include_soundtrack">Include Background Music/effects (Fx)</string>
+    <string name="export_include_soundtrack">Include Background Music (Fx)</string>
     <string name="export_include_pictures">Include Pictures (Px)</string>
-    <string name="export_include_text">Include Text (Tx)</string>
+    <string name="export_include_text">Include Story Text (Tx)</string>
     <string name="export_include_song">Include Local Song (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
-    <string name="export_resolution_label">Video Quality</string>
-    <string-array name="export_resolution_options">
-        <item>VLow (176x144)</item>
-        <item>Low (320x240)</item>
-        <item>Medium (640x480)</item>
-        <item>High (1280x720)</item>
-    </string-array>
-    <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
-    <string name = "smartphone_and_extension">Smartphone (MP4)</string>
+    <string name="export_destination">Create Video For</string>E
+    <string name ="dumbphone_3GP">Dumb Phone (3GP)</string>
+    <string name ="dumbphone_MP4">Dumb Phone (MP4)</string>
+    <string name = "smartphone">Smartphone (MP4)</string>
+    <string name = "large_screen">Large Screen (MP4)</string>
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
-    <string name="export_format_label">File Format</string>E
 
     <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
+    <string name="export_destination_unchecked">Choose a video type.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
