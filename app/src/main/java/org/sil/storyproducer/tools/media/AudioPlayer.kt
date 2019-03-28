@@ -18,7 +18,8 @@ class AudioPlayer {
             try{ mPlayer.currentPosition
             } catch (e : Exception){ 0 }
         set(value) {
-            try { mPlayer.seekTo(value)
+            try {
+                mPlayer.seekTo(value)
             } catch (e : Exception) {}
         }
 
@@ -43,6 +44,9 @@ class AudioPlayer {
 
         }
 
+    var isAudioPrepared: Boolean = false
+        private set
+
     /**
      * Constructor for Audio Player, no params
      */
@@ -58,11 +62,13 @@ class AudioPlayer {
             mPlayer.setOnCompletionListener(onCompletionListenerPersist)
             mPlayer.setDataSource(context, uri)
             fileExists = true
+            isAudioPrepared = true
             mPlayer.prepare()
             currentPosition = 0
         } catch (e: Exception) {
             //TODO maybe do something with this exception
             fileExists = false
+            isAudioPrepared = false
             e.printStackTrace()
         }
         return fileExists
@@ -131,6 +137,7 @@ class AudioPlayer {
      * Releases the MediaPlayer object after completion
      */
     fun release() {
+        isAudioPrepared = false
         try {
             mPlayer.release()
         } catch (e : Exception) {}
