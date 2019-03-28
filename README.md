@@ -78,7 +78,7 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 4. Copy an .mp4 video file (the particular length or content doesn't matter) into the espresso resource directory. The name of the .mp4 file needs to match the "nameOfSampleExportVideo" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 5. Launch your emulator device (or connect a physical one via adb).
 6. Run `./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:installDebug :app:installDebugAndroidTest` from the root directory of the repository.
-7. Run `adb shell am instrument -w -e debug false -e class 'org.sil.storyproducer.androidtest.runfirst.WorkspaceSetter' org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner` from the root directory of the repository.
+7. Run `adb shell am instrument -w -e debug false -e class 'org.sil.storyproducer.androidtest.runfirst.WorkspaceSetter' org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner` from the root directory of the repository. (Note that the folder containing ADB must be in your path for this command to work.)
 
 > **Why is this necessary?** The Espresso tests rely on the presence of the "Lost Coin" template as a sample with which to exercise the features of the app. The Espresso Tests also require the workspace to have been set up, but Espresso is not capable interacting with the operating system's file picker, so the WorkspaceSetter class uses UIAutomator to select the workspace.
 
