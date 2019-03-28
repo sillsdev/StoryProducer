@@ -25,8 +25,10 @@ class Slide{
     var content = ""
     val simpleContent: String
     get() {
+        //Remove all newlines
+        var temp = "[\\r\\n]+".toRegex().replace(content,"")
         //Remove anything that is surrounded by "[]"
-        var temp = "\\[[^\\]]*\\]?".toRegex().replace(content,"")
+        temp = "\\[[^\\]]*\\]?".toRegex().replace(temp,"")
         //remove everything before a : if there is one
         temp =  ".*\\:".toRegex().replace(temp,"")
         //remove everything after a .!? if there is one
