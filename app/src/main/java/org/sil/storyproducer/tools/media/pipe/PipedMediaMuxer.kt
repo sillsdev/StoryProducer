@@ -32,6 +32,9 @@ class PipedMediaMuxer
 
     private var mMuxer: MediaMuxer? = null
 
+    @Volatile
+    protected var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
+
     private var mAudioSource: PipedMediaByteBufferSource? = null
     private var mAudioTrackIndex = -1
     private var mAudioOutputFormat: MediaFormat? = null
@@ -156,6 +159,7 @@ class PipedMediaMuxer
         }
         synchronized(muxerLock) {
             mMuxer = MediaMuxer(mPath, mFormat)
+            mComponentState = PipedMediaSource.State.RUNNING
 
             if (mAudioSource != null) {
                 if (MediaHelper.VERBOSE) Log.v(TAG, "setting up audio track.")
@@ -192,7 +196,7 @@ class PipedMediaMuxer
             var buffer: ByteBuffer
             val info = MediaCodec.BufferInfo()
             try {
-                while (!mSource.isDone) {
+                while (!mSource.isDone && mComponentState != PipedMediaSource.State.CLOSED) {
                     buffer = mSource.getBuffer(info)
                     if (MediaHelper.VERBOSE)
                         Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
@@ -211,7 +215,7 @@ class PipedMediaMuxer
                     }
                     mSource.releaseBuffer(buffer)
                 }
-            } catch (e: SourceClosedException) {
+            } catch (e: Exception) {
                 Log.w(TAG, "Source closed forcibly", e)
                 mAbnormallyEnded = true
             }
@@ -222,18 +226,7 @@ class PipedMediaMuxer
     override fun close() {
         synchronized(muxerLock) {
             //Close sources.
-            synchronized(audioLock) {
-                if (mAudioSource != null) {
-                    mAudioSource!!.close()
-                    mAudioSource = null
-                }
-            }
-            synchronized(videoLock) {
-                if (mVideoSource != null) {
-                    mVideoSource!!.close()
-                    mVideoSource = null
-                }
-            }
+            mComponentState = PipedMediaSource.State.CLOSED
 
             //Close self.
             if (mMuxer != null) {
@@ -253,6 +246,20 @@ class PipedMediaMuxer
                 }
                 mMuxer = null
             }
+
+            synchronized(audioLock) {
+                if (mAudioSource != null) {
+                    mAudioSource!!.close()
+                    mAudioSource = null
+                }
+            }
+            synchronized(videoLock) {
+                if (mVideoSource != null) {
+                    mVideoSource!!.close()
+                    mVideoSource = null
+                }
+            }
+
         }
     }
 
