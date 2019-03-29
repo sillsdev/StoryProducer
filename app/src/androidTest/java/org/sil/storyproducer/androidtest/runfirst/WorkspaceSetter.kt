@@ -71,11 +71,13 @@ class WorkspaceSetter {
     }
 
     private fun isWorkspacePickerDisplayed(device: UiDevice): Boolean {
-        val workspacePicker = device.findObject(By.pkg(FILE_PICKER_PACKAGE).desc("Show roots"))
-        return workspacePicker != null
+        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select Template Folder"))
+        return selectTemplateAlert != null
     }
 
     private fun selectStoryProducerWorkspace(device: UiDevice) {
+        device.findObject(By.res("android:id/button1").text("OK")).click()
+        device.wait(Until.hasObject(By.text("More options")), TIMEOUT_DURATION)
         device.findObject(By.desc("More options")).click()
         val showInternalStorage = device.findObject(By.text("Show internal storage"))
         if (showInternalStorage != null) {
