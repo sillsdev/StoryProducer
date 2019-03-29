@@ -9,11 +9,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.apache.commons.io.IOUtils;
+import org.sil.storyproducer.model.Workspace;
 
-import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,13 +29,11 @@ public class BackTranslationUpload {
         public static String testErr;
         public static Map<String,String> js;
 
-        public static void Upload ( final File fileName, Context con, int slide) throws IOException {
-        /* FIXME
+        public static void Upload (final FileDescriptor fileName, Context con, int slide) throws IOException {
             final String api_token = "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
-            final String token =     "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd";
             String phone_id = Settings.Secure.getString(con.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
-            String templateTitle = StoryState.getStoryName();
+            String templateTitle = Workspace.INSTANCE.getActiveStory().getTitle();
           //  File testFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide(), fileName);
           //  File testFile = file;
             String currentSlide = Integer.toString(slide);
@@ -82,10 +80,6 @@ public class BackTranslationUpload {
                 }
             };
 
-
             VolleySingleton.getInstance(con).addToRequestQueue(req);
-*/
         }
-
-
 }

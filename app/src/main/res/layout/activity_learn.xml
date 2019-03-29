@@ -31,7 +31,6 @@
         android:layout_height="wrap_content"
         android:background="@color/black_semi_transparent"
         android:contentDescription="@string/play"
-        android:onClick="onClickPlayPauseButton"
         android:src="@drawable/ic_play_arrow_white_48dp"
         app:layout_constraintEnd_toStartOf="@id/videoSeekBar"
         app:layout_constraintStart_toStartOf="parent"

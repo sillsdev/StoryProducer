@@ -198,17 +198,17 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         //FIXME
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
-        val phone_id = Settings.Secure.getString(context!!.contentResolver,
-                Settings.Secure.ANDROID_ID)
-        js = HashMap()
-        js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
-        js!!["TemplateTitle"] = Workspace.activeStory.title
-        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), Response.Listener { response ->
-            try {
-                obj = JSONObject(response)
-            } catch (e: JSONException) {
-                e.printStackTrace()
+                val phone_id = Settings.Secure.getString(context!!.contentResolver,
+                        Settings.Secure.ANDROID_ID)
+                js = HashMap()
+                js!!["Key"] = getString(R.string.api_token)
+                js!!["PhoneId"] = phone_id
+                js!!["TemplateTitle"] = Workspace.activeStory.title
+                val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), Response.Listener { response ->
+                    try {
+                        obj = JSONObject(response)
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
             }
 
             var arr: JSONArray? = null
@@ -282,6 +282,6 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         val R_CONSULTANT_PREFS = "Consultant_Checks"
         val IS_R_CONSULTANT_APPROVED = "isApproved"
         private val IS_CHECKED = "isCheckedi"
-        private val TRANSCRIPTION_TEXT = "TranscriptionText"
+        val TRANSCRIPTION_TEXT = "TranscriptionText"
     }
 }
