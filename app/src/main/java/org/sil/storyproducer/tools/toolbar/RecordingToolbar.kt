@@ -9,7 +9,9 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.support.v4.app.Fragment
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,18 +19,25 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.google.android.gms.common.util.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.controller.remote.BackTranslationFrag.Companion.R_CONSULTANT_PREFS
+import org.sil.storyproducer.controller.remote.BackTranslationFrag.Companion.TRANSCRIPTION_TEXT
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.Network.BackTranslationUpload.*
+import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.Network.paramStringRequest
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-import java.io.File
+import java.io.FileDescriptor
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -230,6 +239,7 @@ class RecordingToolbar : Fragment(){
                     }
                     4 -> {
                         sendAudioButton = imageButtons[i]
+                        sendAudioButton.id = org.sil.storyproducer.R.id.send_recording_button
                     }
                 }
             }
@@ -394,47 +404,39 @@ class RecordingToolbar : Fragment(){
     * Send single audio file to remote consultant
      */
     private fun sendAudio() {
-/*
         Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show()
-        val phase = Workspace.activePhase
-        val slideNum: Int
-        val slide: File
-        val totalSlides = Workspace.activeStory.slides.size
-        if (phase.phaseType === PhaseType.BACKT) {
-            slideNum = Workspace.activeSlideNum
-            slide = AudioFiles.getBackTranslation(Workspace.activeStory.title, slideNum)
+
+        val slideNum = if (Workspace.activePhase.phaseType === PhaseType.BACKT) {
+            Workspace.activeSlideNum
         } else {
-            slideNum =  Workspace.activeStory.slides.size
-            slide = AudioFiles.getWholeStory(Workspace.activeStory.title)
-        }//Whole story bt audio will be uploaded as one slide past the final slide for the story
+            Workspace.activeStory.slides.count()
+        }
+        val slide = getStoryFileDescriptor(context!!, Workspace.activePhase.getChosenFilename())!!
+        val totalSlides = Workspace.activeStory.slides.size
 
         requestRemoteReview(appContext, totalSlides)
         postABackTranslation(slideNum, slide)
-*/
     }
 
     //Posts a single BT or WSBT
-    fun postABackTranslation(slideNum: Int, slide: File) {
-/*
+    private fun postABackTranslation(slideNum: Int, slide: FileDescriptor) {
         try {
             Upload(slide, appContext, slideNum)
         } catch (e: IOException) {
             e.printStackTrace()
         }
-
-*/
     }
 
     //First time request for review
-    fun requestRemoteReview(con: Context, numSlides: Int) {
+    private fun requestRemoteReview(con: Context, numSlides: Int) {
 
- /*       // TODO replace with InstanceID getID for all phone ID locations
+       // TODO replace with InstanceID getID for all phone ID locations
         val phone_id = Settings.Secure.getString(con.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
         js!!["Key"] = con.resources.getString(R.string.api_token)
         js!!["PhoneId"] = phone_id
-        js!!["TemplateTitle"] = StoryState.getStoryName()
+        js!!["TemplateTitle"] = Workspace.activeStory.title
         js!!["NumberOfSlides"] = Integer.toString(numSlides)
 
         val req = object : StringRequest(Request.Method.POST, con.getString(R.string.url_request_review), Response.Listener { response ->
@@ -449,17 +451,13 @@ class RecordingToolbar : Fragment(){
                 return js
             }
         }
+        VolleySingleton.getInstance(activity?.applicationContext).addToRequestQueue(req)
 
-
-        VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
-
- */   }
+    }
 
     //Subroutine to upload a single audio file
     @Throws(IOException::class)
     fun Upload(relPath: String, context: Context) {
-
-/*
         val phone_id = Settings.Secure.getString(context.contentResolver,
                 Settings.Secure.ANDROID_ID)
         val templateTitle = Workspace.activeStory.title
@@ -475,40 +473,39 @@ class RecordingToolbar : Fragment(){
 
         js = HashMap()
 
-
-        val log = LogFiles.getLog(FileSystem.getLanguage(), Workspace.activeStory.title)
-        val logString = StringBuilder()
-        if (log != null) {
-            val logs = log.toTypedArray()
-
-            //Grabs all applicable logs for this slide num
-            val slideLogs = arrayOfNulls<String>(logs.size)
-
-            for (log1 in logs) {
-                if (log1 is ComChkEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-
-                } else if (log1 is LearnEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-                } else if (log1 is DraftEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-                } else {
-                    val tempLog = log1 as LogEntry
-                    if (tempLog.appliesToSlideNum(slide)) {
-                        logString.append(tempLog.phase).append(" ").append(tempLog.description).append(" ").append(tempLog.dateTime).append("\n")
-                    }
-
-                }
-            }
-        }
-        js!!["Log"] = logString.toString()
-        js!!["Key"] = con.resources.getString(R.string.api_token)
+//        val log = LogFiles.getLog(FileSystem.getLanguage(), Workspace.activeStory.title)
+//        val logString = StringBuilder()
+//        if (log != null) {
+//            val logs = log.toTypedArray()
+//
+//            //Grabs all applicable logs for this slide num
+//            val slideLogs = arrayOfNulls<String>(logs.size)
+//
+//            for (log1 in logs) {
+//                if (log1 is ComChkEntry) {
+//                    if (log1.appliesToSlideNum(slide)) {
+//                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
+//                    }
+//
+//                } else if (log1 is LearnEntry) {
+//                    if (log1.appliesToSlideNum(slide)) {
+//                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
+//                    }
+//                } else if (log1 is DraftEntry) {
+//                    if (log1.appliesToSlideNum(slide)) {
+//                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
+//                    }
+//                } else {
+//                    val tempLog = log1 as LogEntry
+//                    if (tempLog.appliesToSlideNum(slide)) {
+//                        logString.append(tempLog.phase).append(" ").append(tempLog.description).append(" ").append(tempLog.dateTime).append("\n")
+//                    }
+//
+//                }
+//            }
+//        }
+//        js!!["Log"] = logString.toString()
+        js!!["Key"] = resources.getString(R.string.api_token)
         js!!["PhoneId"] = phone_id
         js!!["TemplateTitle"] = templateTitle
         js!!["SlideNumber"] = currentSlide
@@ -516,7 +513,7 @@ class RecordingToolbar : Fragment(){
         js!!["BacktranslationText"] = transcription
 
 
-        val req = object : paramStringRequest(Request.Method.POST, con.resources.getString(R.string.url_upload_audio), js, Response.Listener { response ->
+        val req = object : paramStringRequest(Request.Method.POST, resources.getString(R.string.url_upload_audio), js, Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_UPL", response)
             resp = response
             Toast.makeText(appContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
@@ -532,9 +529,7 @@ class RecordingToolbar : Fragment(){
         }
 
 
-        VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
-
-*/
+        VolleySingleton.getInstance(activity?.applicationContext).addToRequestQueue(req)
     }
 
     /*
