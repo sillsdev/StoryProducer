@@ -12,7 +12,7 @@ import java.io.InputStreamReader
 class TestKeytermCsvReader {
     @Test
     fun readAll_When_AllFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsAllFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/AllFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
@@ -25,7 +25,7 @@ class TestKeytermCsvReader {
 
     @Test
     fun readAll_When_TermFieldEmptyAndOtherFieldsFilled_Should_ReturnEmptyList() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsTermFieldEmptyAndOtherFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/TermFieldEmptyAndOtherFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
 
@@ -36,7 +36,7 @@ class TestKeytermCsvReader {
 
     @Test
     fun readAll_When_OtherFormsFieldEmptyAndOtherFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsOtherFormsFieldEmptyAndOtherFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/OtherFormsFieldEmptyAndOtherFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
@@ -49,7 +49,7 @@ class TestKeytermCsvReader {
 
     @Test
     fun readAll_When_AlternateRenderingsFieldEmptyAndOtherFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsAlternateRenderingsFieldEmptyAndOtherFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/AlternateRenderingsFieldEmptyAndOtherFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
@@ -62,7 +62,7 @@ class TestKeytermCsvReader {
 
     @Test
     fun readAll_When_NotesFieldEmptyAndOtherFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsNotesFieldEmptyAndOtherFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/NotesFieldEmptyAndOtherFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
@@ -76,7 +76,7 @@ class TestKeytermCsvReader {
 
     @Test
     fun readAll_When_RelatedTermsFieldEmptyAndOtherFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
-        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/KeytermsRelatedTermsFieldEmptyAndOtherFieldsFilled.csv")
+        val inputStream = this.javaClass.classLoader?.getResourceAsStream("KeytermCsvReader/RelatedTermsFieldEmptyAndOtherFieldsFilled.csv")
         val streamReader = InputStreamReader(inputStream)
         val keytermCsvReader = KeytermCsvReader(streamReader)
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
