@@ -412,9 +412,8 @@ class RecordingToolbar : Fragment(){
             Workspace.activeStory.slides.count()
         }
         val slide = getStoryFileDescriptor(context!!, Workspace.activePhase.getChosenFilename())!!
-        val totalSlides = Workspace.activeStory.slides.size
 
-        requestRemoteReview(appContext, totalSlides)
+        requestRemoteReview()
         postABackTranslation(slideNum, slide)
     }
 
@@ -428,18 +427,18 @@ class RecordingToolbar : Fragment(){
     }
 
     //First time request for review
-    private fun requestRemoteReview(con: Context, numSlides: Int) {
+    private fun requestRemoteReview() {
 
        // TODO replace with InstanceID getID for all phone ID locations
-        val phone_id = Settings.Secure.getString(con.contentResolver,
+        val phoneID = Settings.Secure.getString(appContext?.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
-        js!!["Key"] = con.resources.getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
+        js!!["Key"] = getString(R.string.api_token)
+        js!!["PhoneId"] = phoneID
         js!!["TemplateTitle"] = Workspace.activeStory.title
-        js!!["NumberOfSlides"] = Integer.toString(numSlides)
+        js!!["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
 
-        val req = object : StringRequest(Request.Method.POST, con.getString(R.string.url_request_review), Response.Listener { response ->
+        val req = object : StringRequest(Request.Method.POST, appContext?.getString(R.string.url_request_review), Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_RR", response)
             resp = response
         }, Response.ErrorListener { error ->
@@ -452,7 +451,6 @@ class RecordingToolbar : Fragment(){
             }
         }
         VolleySingleton.getInstance(activity?.applicationContext).addToRequestQueue(req)
-
     }
 
     //Subroutine to upload a single audio file

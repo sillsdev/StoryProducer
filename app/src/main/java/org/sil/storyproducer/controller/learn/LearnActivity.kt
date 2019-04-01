@@ -277,7 +277,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     /**
      * helper function for pausing the video
      */
-    protected fun pauseStoryAudio() {
+    private fun pauseStoryAudio() {
         makeLogIfNecessary()
         narrationPlayer.pauseAudio()
         playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp)
@@ -286,7 +286,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     /**
      * Shows a snackbar at the bottom of the screen to notify the user that they should practice saying the story
      */
-    protected fun showStartPracticeSnackBar() {
+    private fun showStartPracticeSnackBar() {
         if (!isWatchedOnce) {
             val snackbar = Snackbar.make(findViewById(R.id.drawer_layout),
                     R.string.learn_phase_practice, Snackbar.LENGTH_LONG)

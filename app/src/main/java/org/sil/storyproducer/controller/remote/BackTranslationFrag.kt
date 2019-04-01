@@ -24,6 +24,7 @@ import org.json.JSONObject
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.Network.BackTranslationUpload.testErr
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
@@ -99,7 +100,7 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         if (!prefs.getBoolean(prefsKeyString, false)) {
             //TODO: remove call to create story here and make global var that stores whether story has been created in DB
             //TODO: put all the volley functions into a separate class? (have redundancy between some classes)
-            //requestRemoteReview(context, FileSystem.getContentSlideAmount(storyName))
+            requestRemoteReview()
             getSlidesStatus()
             setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
             phaseUnlocked = checkAllMarked()
@@ -198,17 +199,17 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         //FIXME
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
-                val phone_id = Settings.Secure.getString(context!!.contentResolver,
-                        Settings.Secure.ANDROID_ID)
-                js = HashMap()
-                js!!["Key"] = getString(R.string.api_token)
-                js!!["PhoneId"] = phone_id
-                js!!["TemplateTitle"] = Workspace.activeStory.title
-                val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), Response.Listener { response ->
-                    try {
-                        obj = JSONObject(response)
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
+        val phone_id = Settings.Secure.getString(context!!.contentResolver,
+                Settings.Secure.ANDROID_ID)
+        js = HashMap()
+        js!!["Key"] = getString(R.string.api_token)
+        js!!["PhoneId"] = phone_id
+        js!!["TemplateTitle"] = Workspace.activeStory.title
+        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), Response.Listener { response ->
+            try {
+                obj = JSONObject(response)
+            } catch (e: JSONException) {
+                e.printStackTrace()
             }
 
             var arr: JSONArray? = null
@@ -246,27 +247,27 @@ class BackTranslationFrag : MultiRecordFrag(), RecordingToolbar.RecordingListene
         VolleySingleton.getInstance(activity!!.applicationContext).addToRequestQueue(req)
     }
 
-    fun requestRemoteReview(con: Context?, numSlides: Int) {
-        val phone_id = Settings.Secure.getString(con!!.contentResolver,
+    private fun requestRemoteReview() {
+        val phoneID = Settings.Secure.getString(context?.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
         js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
+        js!!["PhoneId"] = phoneID
         js!!["TemplateTitle"] = Workspace.activeStory.title
-        js!!["NumberOfSlides"] = Integer.toString(numSlides)
+        js!!["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_request_review), Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_RR", response)
             resp = response
         }, Response.ErrorListener { error ->
             Log.e("LOG_VOLLEY_ERR_RR", error.toString())
             Log.e("LOG_VOLLEY", "HIT ERROR")
-            //testErr = error.toString();
+            testErr = error.toString();
         }) {
             override fun getParams(): Map<String, String>? {
                 return js
             }
         }
-        VolleySingleton.getInstance(activity!!.applicationContext).addToRequestQueue(req)
+        VolleySingleton.getInstance(activity?.applicationContext).addToRequestQueue(req)
     }
 
     private fun addTranscription() {
