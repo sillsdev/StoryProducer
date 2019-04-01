@@ -87,7 +87,6 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."** (The device/emulator should be running.)
 2. Navigate to the root directory of the repository.
 3. Run `adb shell am instrument -w -e debug false org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner`.
-*Note:* You may need to run the gradle wrapper with sudo or make the gradle wrapper executable with `sudo chmod +x ./gradlew`
 ##### From Android Studio:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."**
 2. Open the Story Producer project (StoryProducer.iml) in Android Studio.
