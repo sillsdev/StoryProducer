@@ -1,8 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.google.gms.google-services'
-//apply plugin: 'io.fabric'
+apply plugin: 'io.fabric'
 
 android {
 //    signingConfigs {
@@ -90,3 +89,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
