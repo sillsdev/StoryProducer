@@ -45,6 +45,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
                 }
                 if(firstSlide) {
                     slide.slideType = SlideType.FRONTCOVER
+                    slide.translatedContent  = slide.content
                     firstSlide = false
                 }
                 slides.add(slide)
