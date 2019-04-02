@@ -151,6 +151,16 @@ object Workspace{
         return isChanged
     }
 
+    fun getSongFilename() : String{
+        for (s in activeStory.slides){
+            if(s.slideType == SlideType.LOCALSONG){
+                if(s.chosenDramatizationFile != "") return s.chosenDramatizationFile
+                if(s.chosenDraftFile != "") return s.chosenDraftFile
+            }
+        }
+        return ""
+    }
+
     fun goToNextPhase() : Boolean {
         if(activePhaseIndex == -1) return false //phases not initizialized
         if(activePhaseIndex >= phases.size - 1) {
