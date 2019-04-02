@@ -218,6 +218,149 @@ class TestKeytermCsvReader {
         Assert.assertEquals(expectedKeyterms, actualKeyterms)
     }
 
+    @Test
+    fun readAll_When_MultipleOtherForms_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommas() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherForms.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithTrailingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithTrailingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingAndTrailingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingAndTrailingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithTrailingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithTrailingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingAndTrailingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingAndTrailingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingComma_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingComma.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithTrailingComma_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithTrailingComma.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingAndTrailingComma_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingAndTrailingComma.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingCommas_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingCommas.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithTrailingCommas_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithTrailingCommas.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleOtherFormsWithLeadingAndTrailingCommas_Should_ReturnListWithOneKeytermWithListOfOtherFormsSplitOnCommasWithEmptyOtherFormsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleOtherFormsWithLeadingAndTrailingCommas.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("thing", "something else", "completely different yet related thing"), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
     private fun getKeytermCsvReaderFromResourcePath(resource: String): KeytermCsvReader{
         val inputStream = this.javaClass.classLoader?.getResourceAsStream(resource)
         val streamReader = InputStreamReader(inputStream)
