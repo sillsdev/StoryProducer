@@ -43,9 +43,10 @@ class CreateActivity : PhaseBaseActivity() {
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
         val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_mp4 -> "D_"
-            R.id.radio_smartphone -> "S_"
-            R.id.radio_largescreen -> "L_"
+            R.id.radio_dumbphone_3gp -> "vL_"
+            R.id.radio_dumbphone_mp4 -> "L_"
+            R.id.radio_smartphone -> "M_"
+            R.id.radio_largescreen -> "H_"
             else -> ""
         }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
@@ -119,7 +120,7 @@ class CreateActivity : PhaseBaseActivity() {
         if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
-            val mainLayout = findViewById<View>(R.id.main_linear_layout)
+            val mainLayout = findViewById<View>(R.id.layout_export_configuration)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
     }
@@ -257,6 +258,13 @@ class CreateActivity : PhaseBaseActivity() {
             //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true
         }
+
+        //Check if there is a song to play
+        if (mCheckboxSong!!.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong!!.isChecked = false
+        }
     }
 
     /*
@@ -297,6 +305,7 @@ class CreateActivity : PhaseBaseActivity() {
     **Method for handling the click event for the radio buttons
      */
     fun onRadioButtonClicked(view: View) {
+        toggleVisibleElements()
         // Check which radio button was clicked
         when ((view as RadioGroup).checkedRadioButtonId) {
             R.id.radio_dumbphone_3gp -> {
@@ -340,7 +349,7 @@ class CreateActivity : PhaseBaseActivity() {
         if(mCheckboxText!!.isChecked) {mTextConfirmationChecked = false}
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
-        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", Workspace.activeStory.shortTitle))
+        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
         mRadioExportDestiniation?.clearCheck()
     }
 
@@ -348,7 +357,14 @@ class CreateActivity : PhaseBaseActivity() {
         //If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
             Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanges),Toast.LENGTH_SHORT).show()
+                    R.string.export_local_credits_unchanged),Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //If there is no title, don't make video
+        if(mEditTextTitle!!.text.toString() == ""){
+            Toast.makeText(this,this.resources.getText(
+                    R.string.export_no_filename),Toast.LENGTH_SHORT).show()
             return
         }
 

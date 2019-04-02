@@ -97,7 +97,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
         mThread = Thread(Runnable {
             try {
                 spinInput()
-            } catch (e: SourceClosedException) {
+            } catch (e: Exception) {
                 Log.w(TAG, "spinInput stopped prematurely", e)
             }
         })

@@ -194,6 +194,7 @@
     <string name="rename_failed">Rename failed</string>
 
     <!-- Export Phase -->
+    <string name="export_title_header">Text in Filename</string>
     <string name="export_custom_title">Short Story Name</string>
     <string name="export_options_header">Options</string>
     <string name="export_include_soundtrack">Include Background Music (Fx)</string>
@@ -205,13 +206,15 @@
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
     <string name="export_destination">Create Video For</string>E
-    <string name ="dumbphone_3GP">Dumb Phone (3GP)</string>
-    <string name ="dumbphone_MP4">Dumb Phone (MP4)</string>
+    <string name ="dumbphone_3GP">Feature Phone (3GP)</string>
+    <string name ="dumbphone_MP4">Feature Phone (MP4)</string>
     <string name = "smartphone">Smartphone (MP4)</string>
     <string name = "large_screen">Large Screen (MP4)</string>
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
 
-    <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
+    <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
+    <string name="export_no_filename">Choose a filename before making a video.</string>
+    <string name="export_local_song_unrecorded">Record local song first.</string>
     <string name="export_destination_unchecked">Choose a video type.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
