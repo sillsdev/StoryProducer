@@ -25,8 +25,6 @@ import com.android.volley.toolbox.StringRequest
 import com.google.android.gms.common.util.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.controller.remote.BackTranslationFrag.Companion.R_CONSULTANT_PREFS
-import org.sil.storyproducer.controller.remote.BackTranslationFrag.Companion.TRANSCRIPTION_TEXT
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -406,10 +404,12 @@ class RecordingToolbar : Fragment(){
     private fun sendAudio() {
         Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show()
 
-        val slideNum = if (Workspace.activePhase.phaseType === PhaseType.BACKT) {
-            Workspace.activeSlideNum
-        } else {
-            Workspace.activeStory.slides.count()
+        var slideNum = 0
+        if (Workspace.activePhase.phaseType === PhaseType.BACKT) {
+            slideNum = Workspace.activeSlideNum
+        }
+        else if (Workspace.activePhase.phaseType == PhaseType.WHOLE_STORY){
+            slideNum = Workspace.activeStory.slides.count()
         }
         val slide = getStoryFileDescriptor(context!!, Workspace.activePhase.getChosenFilename())!!
 
@@ -428,9 +428,8 @@ class RecordingToolbar : Fragment(){
 
     //First time request for review
     private fun requestRemoteReview() {
-
        // TODO replace with InstanceID getID for all phone ID locations
-        val phoneID = Settings.Secure.getString(appContext?.contentResolver,
+        val phoneID = Settings.Secure.getString(appContext.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
         js!!["Key"] = getString(R.string.api_token)
@@ -438,7 +437,7 @@ class RecordingToolbar : Fragment(){
         js!!["TemplateTitle"] = Workspace.activeStory.title
         js!!["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
 
-        val req = object : StringRequest(Request.Method.POST, appContext?.getString(R.string.url_request_review), Response.Listener { response ->
+        val req = object : StringRequest(Request.Method.POST, appContext.getString(R.string.url_request_review), Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_RR", response)
             resp = response
         }, Response.ErrorListener { error ->
@@ -456,7 +455,7 @@ class RecordingToolbar : Fragment(){
     //Subroutine to upload a single audio file
     @Throws(IOException::class)
     fun Upload(relPath: String, context: Context) {
-        val phone_id = Settings.Secure.getString(context.contentResolver,
+        val phoneID = Settings.Secure.getString(context.contentResolver,
                 Settings.Secure.ANDROID_ID)
         val templateTitle = Workspace.activeStory.title
 
@@ -465,8 +464,7 @@ class RecordingToolbar : Fragment(){
         val audioBytes = IOUtils.toByteArray(input)
 
         //get transcription text if it's there
-        val prefs = context.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val transcription = prefs.getString(templateTitle + Workspace.activeSlideNum + TRANSCRIPTION_TEXT, "")
+        val transcription = Workspace.activeStory.slides[Workspace.activeSlideNum].remoteTranscription
         val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
 
         js = HashMap()
@@ -504,7 +502,7 @@ class RecordingToolbar : Fragment(){
 //        }
 //        js!!["Log"] = logString.toString()
         js!!["Key"] = resources.getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
+        js!!["PhoneId"] = phoneID
         js!!["TemplateTitle"] = templateTitle
         js!!["SlideNumber"] = currentSlide
         js!!["Data"] = byteString
@@ -525,8 +523,6 @@ class RecordingToolbar : Fragment(){
                 return this.mParams
             }
         }
-
-
         VolleySingleton.getInstance(activity?.applicationContext).addToRequestQueue(req)
     }
 
