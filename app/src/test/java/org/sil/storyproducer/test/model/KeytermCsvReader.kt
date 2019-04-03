@@ -588,6 +588,39 @@ class TestKeytermCsvReader {
         Assert.assertEquals(expectedKeyterms, actualKeyterms)
     }
 
+    @Test
+    fun readAll_When_OtherFormContainingSemiColon_Should_ReturnListWithOneKeytermWithWholeOtherFormContainingSemiColon() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/OtherFormContainingSemiColon.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("something; else"), listOf(),"", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_AlternateRenderingContainingComma_Should_ReturnListWithOneKeytermWithWholeAlternateRenderingContainingComma() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/AlternateRenderingContainingComma.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("something, else"),"", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_RelatedTermContainingSemiColon_Should_ReturnListWithOneKeytermWithWholeRelatedTermContainingSemiColon() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/RelatedTermContainingSemiColon.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(),"", listOf("something; else")))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
     private fun getKeytermCsvReaderFromResourcePath(resource: String): KeytermCsvReader{
         val inputStream = this.javaClass.classLoader?.getResourceAsStream(resource)
         val streamReader = InputStreamReader(inputStream)
