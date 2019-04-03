@@ -91,3 +91,11 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+// The following line avoids an ArrayIndexOutOfBounds exception when running `./gradlew build`
+// The version check appears to be problematic in Google Services Plugin 4.2.0.
+// (see https://github.com/google/play-services-plugins/issues/47)
+// This workaround came from Fabian Streitel's answer to the following SO post:
+// https://stackoverflow.com/questions/54441456/cant-update-to-com-google-gmsgoogle-services4-2-0
+// Hopefully the corresponding GitHub issue will resolve this issue, so that this version check can
+// be removed in the future.
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
