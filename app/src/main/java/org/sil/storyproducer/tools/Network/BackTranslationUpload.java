@@ -34,8 +34,6 @@ public class BackTranslationUpload {
             String phone_id = Settings.Secure.getString(con.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
             String templateTitle = Workspace.INSTANCE.getActiveStory().getTitle();
-          //  File testFile = AudioFiles.getBackTranslation(StoryState.getStoryName(), StoryState.getCurrentStorySlide(), fileName);
-          //  File testFile = file;
             String currentSlide = Integer.toString(slide);
             InputStream input = new FileInputStream(fileName);
             byte[] audioBytes = IOUtils.toByteArray(input);
@@ -50,13 +48,7 @@ public class BackTranslationUpload {
              js.put("SlideNumber", currentSlide);
              js.put("Data", byteString);
 
-
-            // }
-            //  catch(JSONException e){
-            //     e.printStackTrace();
-            // }
-
-           // Log.i("LOG_VOLLEY", js.toString());
+            Log.i("LOG_VOLLEY", js.toString());
             StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -71,7 +63,6 @@ public class BackTranslationUpload {
                     testErr = error.toString();
 
                 }
-
             }) {
                 @Override
                 protected Map<String, String> getParams()

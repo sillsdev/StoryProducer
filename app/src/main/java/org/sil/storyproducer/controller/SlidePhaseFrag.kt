@@ -50,7 +50,7 @@ abstract class SlidePhaseFrag : Fragment() {
         // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
+        setPic(rootView!!.findViewById(R.id.fragment_image_view))
 
         return rootView
     }
