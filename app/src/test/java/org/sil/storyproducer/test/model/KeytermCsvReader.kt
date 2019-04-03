@@ -361,6 +361,149 @@ class TestKeytermCsvReader {
         Assert.assertEquals(expectedKeyterms, actualKeyterms)
     }
 
+    @Test
+    fun readAll_When_MultipleAlternateRenderings_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColons() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderings.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithTrailingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithTrailingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingAndTrailingWhitespaceInTerm_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingAndTrailingWhitespaceInTerm.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithTrailingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithTrailingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingAndTrailingWhitespaceInField_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingAndTrailingWhitespaceInField.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingSemiColon_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingSemiColon.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithTrailingSemiColon_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithTrailingSemiColon.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingAndTrailingSemiColon_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingAndTrailingSemiColon.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingSemiColons_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingSemiColons.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithTrailingSemiColons_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithTrailingSemiColons.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_MultipleAlternateRenderingsWithLeadingAndTrailingSemiColons_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithEmptyAlternateRenderingsRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/MultipleAlternateRenderingsWithLeadingAndTrailingSemiColons.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf("thing", "something else", "completely different yet related thing"), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
     private fun getKeytermCsvReaderFromResourcePath(resource: String): KeytermCsvReader{
         val inputStream = this.javaClass.classLoader?.getResourceAsStream(resource)
         val streamReader = InputStreamReader(inputStream)
