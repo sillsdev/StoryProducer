@@ -621,6 +621,72 @@ class TestKeytermCsvReader {
         Assert.assertEquals(expectedKeyterms, actualKeyterms)
     }
 
+    @Test
+    fun readAll_When_TermFieldWithLeadingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TermFieldWithLeadingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_TermFieldWithTrailingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TermFieldWithTrailingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_TermFieldWithLeadingAndTrailingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TermFieldWithLeadingAndTrailingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_NotesFieldWithLeadingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/NotesFieldWithLeadingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "This is a note", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_NotesFieldWithTrailingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/NotesFieldWithTrailingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "This is a note", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_NotesFieldWithLeadingAndTrailingWhitespace_Should_ReturnListWithOneKeytermWithListOfAlternateRenderingsSplitOnSemiColonsWithExtraWhitespaceRemoved() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/NotesFieldWithLeadingAndTrailingWhitespace.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf(), listOf(), "This is a note", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
     private fun getKeytermCsvReaderFromResourcePath(resource: String): KeytermCsvReader{
         val inputStream = this.javaClass.classLoader?.getResourceAsStream(resource)
         val streamReader = InputStreamReader(inputStream)
