@@ -1,7 +1,9 @@
 package org.sil.storyproducer.test.model
 
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.ExpectedException
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.sil.storyproducer.model.Keyterm
@@ -10,6 +12,10 @@ import java.io.InputStreamReader
 
 @RunWith(RobolectricTestRunner::class)
 class TestKeytermCsvReader {
+    @Rule
+    @JvmField
+    var expectedException: ExpectedException = ExpectedException.none()
+
     @Test
     fun readAll_When_AllFieldsFilled_Should_ReturnListWithOneKeytermWithAllThoseFields() {
         val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/AllFieldsFilled.csv")
@@ -69,6 +75,84 @@ class TestKeytermCsvReader {
         val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/RelatedTermsFieldEmptyAndOtherFieldsFilled.csv")
         val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
         expectedKeyterms.add(Keyterm("disciple", listOf("disciples"), listOf("student"), "Some notes.", listOf()))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_EmptyCsvFile_Should_ReturnEmptyListOfKeyterms() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/Empty.csv")
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertTrue(actualKeyterms.isEmpty())
+    }
+
+
+
+    @Test
+    fun readAll_When_EmptyRowBeforeFilledRow_Should_ThrowIndexOutOfBoundsException() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/EmptyRowBeforeFilledRow.csv")
+        
+        expectedException.expect(IndexOutOfBoundsException::class.java)
+
+        keytermCsvReader.readAll()
+    }
+
+    @Test
+    fun readAll_When_RowWithAllEmptyFieldsBeforeFilledRow_Should_ReturnListWithOneKeyterm() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/RowWithAllEmptyFieldsBeforeFilledRow.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_TooFewColumns_Should_ThrowIndexOutOfBoundsException() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TooFewColumns.csv")
+
+        expectedException.expect(IndexOutOfBoundsException::class.java)
+
+        keytermCsvReader.readAll()
+    }
+
+    @Test
+    fun readAll_When_TextInOtherColumns_Should_ReturnListWithOneKeytermAndIgnoreOtherColumns() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TextInOtherColumns.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_FiveRowsOfKeyterms_Should_ReturnListWithFiveKeyterms() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/FiveRowsOfKeyterms.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("term1", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+        expectedKeyterms.add(Keyterm("term2", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+        expectedKeyterms.add(Keyterm("term3", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+        expectedKeyterms.add(Keyterm("term4", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+        expectedKeyterms.add(Keyterm("term5", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+
+        val actualKeyterms = keytermCsvReader.readAll()
+
+        Assert.assertEquals(expectedKeyterms, actualKeyterms)
+    }
+
+    @Test
+    fun readAll_When_TwoDuplicateRowsOfKeyterms_Should_ReturnListWithTwoKeyterms() {
+        val keytermCsvReader = getKeytermCsvReaderFromResourcePath("KeytermCsvReader/TwoDuplicateRowsOfKeyterms.csv")
+        val expectedKeyterms: MutableList<Keyterm> = mutableListOf()
+        expectedKeyterms.add(Keyterm("disciple", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
+        expectedKeyterms.add(Keyterm("disciple", listOf("disciples"), listOf("student"), "Some notes.", listOf("apostle")))
 
         val actualKeyterms = keytermCsvReader.readAll()
 
