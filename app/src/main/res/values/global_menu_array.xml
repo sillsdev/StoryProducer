@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="global_menu_array">
-        <item>@string/update_workspace</item>
         <item>@string/title_activity_story_templates</item>
         <item>@string/update_registration</item>
+        <item>@string/update_workspace</item>
         <item>@string/license_title</item>
     </string-array>
 </resources>
