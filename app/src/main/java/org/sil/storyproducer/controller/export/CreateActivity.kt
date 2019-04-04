@@ -32,13 +32,7 @@ class CreateActivity : PhaseBaseActivity() {
     private var mCheckboxText: CheckBox? = null
     private var mCheckboxKBFX: CheckBox? = null
     private var mCheckboxSong: CheckBox? = null
-    private var mLayoutResolution: View? = null
-    private var mSpinnerResolution: Spinner? = null
-    private var mResolutionAdapterAll: ArrayAdapter<CharSequence>? = null
-    private var mResolutionAdapterHigh: ArrayAdapter<CharSequence>? = null
-    private var mResolutionAdapterLow: ArrayAdapter<CharSequence>? = null
-    private var mRadioButtonSmartPhone: RadioButton? = null
-    private var mRadioButtonDumbPhone: RadioButton? = null
+    private var mRadioExportDestiniation: RadioGroup? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
@@ -48,13 +42,21 @@ class CreateActivity : PhaseBaseActivity() {
         val name = mEditTextTitle!!.text.toString()
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
+        val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
+            R.id.radio_dumbphone_3gp -> "vL_"
+            R.id.radio_dumbphone_mp4 -> "L_"
+            R.id.radio_smartphone -> "M_"
+            R.id.radio_largescreen -> "H_"
+            else -> ""
+        }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
-        val ext = if (mRadioButtonDumbPhone!!.isChecked) {".3gp"} else {".mp4"}
-        return "$num${name}_$ethno$fx$px$mv$tx$sg$ext"
+        val ext = if (mRadioExportDestiniation!!.checkedRadioButtonId ==
+                R.id.radio_dumbphone_3gp) {".3gp"} else {".mp4"}
+        return "$num${name}_$ethno$res$fx$px$mv$tx$sg$ext"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -118,7 +120,7 @@ class CreateActivity : PhaseBaseActivity() {
         if (Workspace.activeStory.isApproved) {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
-            val mainLayout = findViewById<View>(R.id.main_linear_layout)
+            val mainLayout = findViewById<View>(R.id.layout_export_configuration)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
     }
@@ -191,35 +193,7 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText = findViewById(R.id.checkbox_export_text)
         mCheckboxSong = findViewById(R.id.checkbox_export_song)
 
-        val resolutionArray = resources.getStringArray(R.array.export_resolution_options)
-        val immutableList = Arrays.asList(*resolutionArray)
-        val resolutionList = ArrayList(immutableList)
-        val resolutionListLow = ArrayList(immutableList)
-
-        mLayoutResolution = findViewById(R.id.layout_export_resolution)
-        mSpinnerResolution = findViewById(R.id.spinner_export_resolution)
-
-        mResolutionAdapterHigh = ArrayAdapter(this,
-                R.layout.simple_spinner_dropdown_item, resolutionList.toList())
-        mResolutionAdapterHigh!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-        mResolutionAdapterHigh!!.remove(mResolutionAdapterHigh!!.getItem(0))
-        mResolutionAdapterHigh!!.remove(mResolutionAdapterHigh!!.getItem(0))
-
-        mResolutionAdapterLow = ArrayAdapter(this,
-                R.layout.simple_spinner_dropdown_item, resolutionListLow.toList())
-        mResolutionAdapterLow!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-        mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
-        mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
-        mResolutionAdapterLow!!.remove(mResolutionAdapterLow!!.getItem(1))
-
-        mResolutionAdapterAll = ArrayAdapter.createFromResource(this,
-                R.array.export_resolution_options, android.R.layout.simple_spinner_item)
-        mResolutionAdapterAll!!.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-
-        mSpinnerResolution!!.adapter = mResolutionAdapterAll
-
-        mRadioButtonSmartPhone = findViewById(R.id.radio_smartphone)
-        mRadioButtonDumbPhone = findViewById(R.id.radio_dumbphone)
+        mRadioExportDestiniation = findViewById(R.id.radio_export_destination)
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
@@ -273,25 +247,23 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX!!.visibility = if (mCheckboxPictures!!.isChecked) View.VISIBLE else View.GONE
 
 
-        mLayoutResolution!!.visibility = if (mCheckboxPictures!!.isChecked || mCheckboxText!!.isChecked)
-            View.VISIBLE
-        else
-            View.GONE
-
-
         if (mCheckboxText!!.isChecked) {
             if (mTextConfirmationChecked) {
                 showHighResolutionAlertDialog()
             } else {
-                mSpinnerResolution!!.adapter = mResolutionAdapterHigh
                 //mSpinnerFormat.setAdapter(mFormatAdapterSmartphone);
                 textOrKBFX(false)
             }
         } else {
-            mSpinnerResolution!!.adapter = mResolutionAdapterAll
-            setSpinnerValue()
             //mSpinnerFormat.setAdapter(mFormatAdapterAll);
             mTextConfirmationChecked = true
+        }
+
+        //Check if there is a song to play
+        if (mCheckboxSong!!.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong!!.isChecked = false
         }
     }
 
@@ -322,7 +294,6 @@ class CreateActivity : PhaseBaseActivity() {
                     mTextConfirmationChecked = true
                 }
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    mSpinnerResolution!!.adapter = mResolutionAdapterHigh
                     mTextConfirmationChecked = false
                     textOrKBFX(true)
                 }.create()
@@ -334,28 +305,16 @@ class CreateActivity : PhaseBaseActivity() {
     **Method for handling the click event for the radio buttons
      */
     fun onRadioButtonClicked(view: View) {
-        // Is the button now checked?
-        val checked = (view as RadioButton).isChecked
-
+        toggleVisibleElements()
         // Check which radio button was clicked
-        when (view.getId()) {
-            R.id.radio_dumbphone -> {
+        when ((view as RadioGroup).checkedRadioButtonId) {
+            R.id.radio_dumbphone_3gp -> {
                 if (Build.VERSION.SDK_INT < 26){
                     Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
-                    view.isChecked = false
                     findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
+                    view.check(R.id.radio_dumbphone_mp4)
                 } else {
-                    if (checked)
-                    //Only low resolution on dumbphone and uncheck include text
-                        mSpinnerResolution!!.adapter = mResolutionAdapterLow
                     mCheckboxText!!.isChecked = false
-                }
-            }
-            R.id.radio_smartphone -> {
-                if (checked) {
-                    //Default to medium resolution on smartphone
-                    mSpinnerResolution!!.adapter = mResolutionAdapterAll
-                    setSpinnerValue()
                 }
             }
         }
@@ -372,7 +331,6 @@ class CreateActivity : PhaseBaseActivity() {
         editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
         editor.putBoolean(PREF_KEY_INCLUDE_SONG, mCheckboxSong?.isChecked ?: true)
 
-        editor.putString(PREF_KEY_RESOLUTION, mSpinnerResolution?.selectedItemPosition.toString())
         editor.putString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", mEditTextTitle!!.text.toString())
 
         editor.apply()
@@ -391,26 +349,28 @@ class CreateActivity : PhaseBaseActivity() {
         if(mCheckboxText!!.isChecked) {mTextConfirmationChecked = false}
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
-        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", Workspace.activeStory.shortTitle))
-
-        setSpinnerValue()
-    }
-
-    private fun setSpinnerValue() {
-        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
-        val temp = prefs.getString(PREF_KEY_RESOLUTION, null)?.toIntOrNull()
-        if (temp != null) {
-            if (temp < mSpinnerResolution?.count ?: 0 && temp >= 0) {
-                mSpinnerResolution?.setSelection(temp,true)
-            }
-        }
+        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
+        mRadioExportDestiniation?.clearCheck()
     }
 
     private fun tryStartExport() {
         //If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
             Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanges),Toast.LENGTH_SHORT).show()
+                    R.string.export_local_credits_unchanged),Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        //If there is no title, don't make video
+        if(mEditTextTitle!!.text.toString() == ""){
+            Toast.makeText(this,this.resources.getText(
+                    R.string.export_no_filename),Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if(mRadioExportDestiniation?.checkedRadioButtonId == -1){
+            Toast.makeText(this,this.resources.getText(
+                    R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -438,20 +398,32 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
-            storyMaker!!.mDumbPhone = mRadioButtonDumbPhone!!.isChecked
+            storyMaker!!.mDumbPhone = mRadioExportDestiniation!!.checkedRadioButtonId ==
+                    R.id.radio_dumbphone_3gp
 
-            val resolutionStr = mSpinnerResolution!!.selectedItem.toString()
-            //Parse resolution string of "[WIDTH]x[HEIGHT]"
-            val p = Pattern.compile("(\\d+)x(\\d+)")
-            val m = p.matcher(resolutionStr)
-            val found = m.find()
-            if (found) {
-                storyMaker!!.mWidth = Integer.parseInt(m.group(1))
-                storyMaker!!.mHeight = Integer.parseInt(m.group(2))
-            } else {
-                Log.e(TAG, "Resolution in spinner un-parsable.")
+            when(mRadioExportDestiniation?.checkedRadioButtonId){
+                R.id.radio_dumbphone_3gp -> {
+                    storyMaker!!.mWidth  = 176
+                    storyMaker!!.mHeight = 144
+                }
+                R.id.radio_dumbphone_mp4 -> {
+                    storyMaker!!.mWidth  = 320
+                    storyMaker!!.mHeight = 240
+                }
+                R.id.radio_smartphone -> {
+                    storyMaker!!.mWidth  = 640
+                    storyMaker!!.mHeight = 480
+                }
+                R.id.radio_largescreen -> {
+                    storyMaker!!.mWidth  = 1280
+                    storyMaker!!.mHeight = 720
+                }
+                else -> {
+                    Toast.makeText(this,this.resources.getText(
+                            R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
+                    return
+                }
             }
-
 
             storyMaker!!.setOutputFile(mOutputPath)
         }
