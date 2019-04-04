@@ -564,7 +564,7 @@ open class RegistrationActivity : AppCompatActivity() {
         emailIntent.putExtra(Intent.EXTRA_TEXT, message)
 
         try {
-            this.startActivity(Intent.createChooser(emailIntent, "Send mail"))
+            this.startActivity(Intent.createChooser(emailIntent, getText(R.string.registration_submit)))
             this.finish()
             reg.putBoolean(EMAIL_SENT, true)
             reg.save(this)
