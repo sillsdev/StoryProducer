@@ -22,7 +22,7 @@ object Constants {
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
 
-    const val sdcardType1 = "mnt/scard"
+    const val sdcardType1 = "mnt/sdcard"
     const val sdcardType2 = "storage/SD Card"
     var sdcard = sdcardType1
     val workspaceDirectory : String
