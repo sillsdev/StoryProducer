@@ -15,6 +15,7 @@ import android.support.design.widget.TextInputLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -91,18 +92,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_registration)
 
-        //Now, let's find the workspace path.
-        Workspace.initializeWorskpace(this)
-        if (!Workspace.workspace.exists()) {
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.update_workspace))
-                .setMessage(getString(R.string.workspace_selection_help))
-                .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
-                }.create().show()
-        }
-
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
         for (i in sectionIds.indices) {
@@ -115,13 +104,6 @@ open class RegistrationActivity : AppCompatActivity() {
     override fun onPause(){
         super.onPause()
         storeRegistrationInfo()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
-            setupInputFields()
-        }
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -600,7 +582,6 @@ open class RegistrationActivity : AppCompatActivity() {
         val EMAIL_SENT = "registration_email_sent"
 
         private val ID_PREFIX = "org.sil.storyproducer:id/input_"
-        private val RQS_OPEN_DOCUMENT_TREE = 52
         private val SHOW_KEYBOARD = true
         private val CLOSE_KEYBOARD = false
 
@@ -655,10 +636,60 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 }
 
-class WorkspaceAndRegistrationActivity : RegistrationActivity() {
+open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Workspace.clearWorkspace()
+        //Now, let's find the workspace path.
+        Workspace.initializeWorskpace(this)
+        if (true) {
+            AlertDialog.Builder(this)
+                    .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
+                    .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
+                    .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+                    }.create().show()
+        }else{
+            intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
+            Workspace.setupWorkspacePath(this,data?.data!!)
+        }
+        intent = Intent(this, RegistrationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    companion object {
+        private val RQS_OPEN_DOCUMENT_TREE = 52
+    }
+
+}
+
+class WorkspaceUpdateActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Workspace.clearWorkspace()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
+            Workspace.setupWorkspacePath(this,data?.data!!)
+        }
+        intent = Intent(this, RegistrationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    companion object {
+        private val RQS_OPEN_DOCUMENT_TREE = 52
     }
 }
