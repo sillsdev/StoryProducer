@@ -2,15 +2,17 @@ package org.sil.storyproducer.controller
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryImage
 
 class StoryListFrag : Fragment() {
@@ -20,7 +22,19 @@ class StoryListFrag : Fragment() {
 
         if(!Workspace.isInitialized) Workspace.initializeWorskpace(activity!!)
 
-        if (Workspace.Stories.isEmpty()) return inflater.inflate(R.layout.fragment_no_stories, container, false)
+        if (Workspace.Stories.isEmpty()) {
+            val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
+
+            view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
+                    Html.fromHtml(getString(R.string.stories_not_found_body))
+
+            view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
+                val intent = Intent(activity, WorkspaceUpdateActivity::class.java)
+                activity?.startActivity(intent)
+                activity?.finish()
+            }
+            return view
+        }
 
         val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 

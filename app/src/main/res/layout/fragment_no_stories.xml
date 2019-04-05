@@ -10,9 +10,19 @@
         android:textSize="@dimen/text_title"
         android:text="@string/stories_not_found_title" />
     <TextView
+        android:id="@+id/stories_not_found_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="15dp"
-        android:textSize="@dimen/text_title"
-        android:text="@string/stories_not_found_body" />
+        android:textSize="@dimen/text_title"/>
+    <Button
+        android:id="@+id/update_workspace_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/update_workspace"
+        android:layout_gravity="center" />
+
+
 </LinearLayout>

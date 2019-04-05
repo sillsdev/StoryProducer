@@ -18,7 +18,7 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.controller.WorkspaceUpdateActivity
 import org.sil.storyproducer.model.CLICKED_TERM
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
@@ -122,12 +122,12 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
             val intent: Intent
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
-                    intent = Intent(this, WorkspaceAndRegistrationActivity::class.java)
+                    intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
                 R.id.nav_stories -> {
-                    intent = Intent(this, MainActivity::class.java)
+                    intent = Intent(this, RegistrationActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
@@ -135,7 +135,7 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
                     // Current fragment
                 }
                 R.id.nav_registration -> {
-                    intent = Intent(this, RegistrationActivity::class.java)
+                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }

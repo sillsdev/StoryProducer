@@ -54,7 +54,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val audioText = values?.get(position)
         if (audioText != null) {
-            if (Workspace.activePhase.getChosenFilename().substringAfterLast('/') == audioText) {
+            if (Workspace.activePhase.getChosenFilename().contains(audioText)) {
                 val color = ContextCompat.getColor(holder.itemView.context, R.color.primary)
                 holder.itemView.setBackgroundColor(color)
                 selectedPos = holder.adapterPosition
@@ -133,6 +133,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                         when (returnCode) {
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
+                                notifyDataSetChanged()
                                 notifyItemChanged(selectedPos)
                                 notifyItemChanged(position)
                                 Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()

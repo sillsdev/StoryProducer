@@ -154,14 +154,16 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
         narrationPlayer = AudioPlayer()
         narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            if(curPos >= numOfSlides-1){ //is it the last slide?
-                //at the end of video so special case
-                pauseStoryAudio()
-                showStartPracticeSnackBar()
-            } else {
-                //just play the next slide!
-                videoSeekBar?.progress = slideStartTimes[curPos+1]
-                playStoryAudio()
+            if(narrationPlayer.isAudioPrepared){
+                if(curPos >= numOfSlides-1){ //is it the last slide?
+                    //at the end of video so special case
+                    pauseStoryAudio()
+                    showStartPracticeSnackBar()
+                } else {
+                    //just play the next slide!
+                    videoSeekBar?.progress = slideStartTimes[curPos+1]
+                    playStoryAudio()
+                }
             }
         })
 

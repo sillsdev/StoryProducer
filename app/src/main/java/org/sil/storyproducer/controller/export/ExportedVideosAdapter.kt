@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.export
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -10,10 +11,11 @@ import android.widget.ImageButton
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getWorkspaceUri
 import java.util.*
 
-class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
+class ExportedVideosAdapter(private val context: Context, private val rvListener: RefreshViewListener) : BaseAdapter() {
 
     private var videoPaths: List<String> = ArrayList()
     private val mInflater: LayoutInflater
@@ -23,7 +25,13 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
     }
 
     fun setVideoPaths(paths: List<String>) {
-        videoPaths = paths
+        val tempVideos : MutableList<String> = ArrayList()
+        for (i in 0 until paths.size){
+            if(paths[i] in Workspace.activeStory.outputVideos){
+                tempVideos.add(paths[i])
+            }
+        }
+        videoPaths = tempVideos
         notifyDataSetChanged()
     }
 
@@ -53,10 +61,12 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         holder.textView = rowView.findViewById(R.id.video_title)
         holder.playButton = rowView.findViewById(R.id.video_play_button)!!
         holder.shareButton = rowView.findViewById(R.id.file_share_button)
+        holder.deleteButton = rowView.findViewById(R.id.file_delete_button)
 
         //set the two different button listeners
         holder.playButton!!.setOnClickListener { showPlayVideoChooser(path) }
         holder.shareButton!!.setOnClickListener { showShareFileChooser(path, fileName) }
+        holder.deleteButton!!.setOnClickListener { showDeleteDialog(path, fileName) }
         rowView.tag = holder
 
         holder.textView!!.text = fileName
@@ -68,6 +78,7 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         var textView: TextView? = null
         var playButton: ImageButton? = null
         var shareButton: ImageButton? = null
+        var deleteButton: ImageButton? = null
     }
 
     private fun showPlayVideoChooser(path: String) {
@@ -92,4 +103,23 @@ class ExportedVideosAdapter(private val context: Context) : BaseAdapter() {
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))
     }
 
+    private fun showDeleteDialog(path: String, fileName: String) {
+        val dialog = AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.delete_video_title))
+                .setMessage(context.getString(R.string.delete_video_message))
+                .setNegativeButton(context.getString(R.string.no), null)
+                .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
+                    Workspace.deleteVideo(context,path)
+                    rvListener.refreshViews()
+                }
+                .create()
+
+        dialog.show()
+    }
+
 }
+
+interface RefreshViewListener {
+    fun refreshViews()
+}
+

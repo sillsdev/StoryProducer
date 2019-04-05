@@ -6,12 +6,14 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.ActivityTestRule
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.controller.RegistrationActivity
 
 @RunWith(AndroidJUnit4::class)
+@Ignore // Since this is an example test, it should not run automatically.
 class HelloWorldEspressoTest {
 
     @Rule

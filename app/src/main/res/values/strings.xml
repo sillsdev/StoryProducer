@@ -10,6 +10,7 @@
     <string name="search">Search</string>
 
     <string name="submit">Submit</string>
+    <string name="submit_via">Submit via&#8230;</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="enter_text">Enter Text</string>
@@ -26,6 +27,9 @@
 
     <string name="story_picture">story picture</string>
     <string name="stage_locked">stage locked</string>
+    <string name="edit_image">edit image</string>
+    <string name="edit_text">edit text</string>
+
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
@@ -67,6 +71,7 @@
     <string name="registration_exit_title">Exit Registration?</string>
     <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
     <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_submit">Submit Registration via...</string>
     <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
     <string name="registration_submit_title">Submit?</string>
     <string name="registration_submit_complete_message">Are you ready to submit?</string>
@@ -82,9 +87,14 @@
     <string name="consultant_password_message">Please enter the consultant password:</string>
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="stories_not_found_title">No stories found!</string>
-    <string name="stories_not_found_body">The worskpace folder does not contain story template folders.
-        For example, the template folder for the English story \"Lost Coin\" should be stored in the
-        workspace folder.  Afterwards, restart the app to load the story templates.</string>
+    <string name="stories_not_found_body">No story templates found! The currently selected folder
+        for story templates does not contain usable templates.  Select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
+        &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
+    <string name="workspace_selection_help">Select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
+        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>.</string>
+
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
@@ -149,6 +159,11 @@
     <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>
     <string name="dramatization_edit_title_text_hint">Write story title to show for all videos made.</string>
 
+    <!-- Share Phase -->
+    <string name="delete_video_title">Delete Video file?</string>
+    <string name="delete_video_message">Do you want to delete this video?</string>
+
+
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
     <string name="wsbt_alert_text">Please record a translation for each slide.</string>
@@ -191,29 +206,28 @@
     <string name="rename_failed">Rename failed</string>
 
     <!-- Export Phase -->
+    <string name="export_title_header">Text in Filename</string>
     <string name="export_custom_title">Short Story Name</string>
     <string name="export_options_header">Options</string>
-    <string name="export_include_soundtrack">Include Background Music/effects (Fx)</string>
+    <string name="export_include_soundtrack">Include Background Music (Fx)</string>
     <string name="export_include_pictures">Include Pictures (Px)</string>
-    <string name="export_include_text">Include Text (Tx)</string>
+    <string name="export_include_text">Include Story Text (Tx)</string>
     <string name="export_include_song">Include Local Song (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
-    <string name="export_resolution_label">Video Quality</string>
-    <string-array name="export_resolution_options">
-        <item>VLow (176x144)</item>
-        <item>Low (320x240)</item>
-        <item>Medium (640x480)</item>
-        <item>High (1280x720)</item>
-    </string-array>
-    <string name ="dumbphone_and_extension">Dumb Phone (3GP)</string>
-    <string name = "smartphone_and_extension">Smartphone (MP4)</string>
+    <string name="export_destination">Create Video For</string>E
+    <string name ="dumbphone_3GP">Feature Phone (3GP)</string>
+    <string name ="dumbphone_MP4">Feature Phone (MP4)</string>
+    <string name = "smartphone">Smartphone (MP4)</string>
+    <string name = "large_screen">Large Screen (MP4)</string>
     <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
-    <string name="export_format_label">File Format</string>E
 
-    <string name="export_local_credits_unchanges">Update Local Credits before making video.</string>
+    <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
+    <string name="export_no_filename">Choose a filename before making a video.</string>
+    <string name="export_local_song_unrecorded">Record local song first.</string>
+    <string name="export_destination_unchecked">Choose a video type.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
@@ -245,7 +259,7 @@
     <!-- app menus -->
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
-    <string name="update_workspace">Update Workspace</string>
+    <string name="update_workspace">Select \'SP Templates\' folder</string>
 
     <!-- license -->
     <string name="license_title">License</string>
