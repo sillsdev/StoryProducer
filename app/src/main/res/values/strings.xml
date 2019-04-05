@@ -10,6 +10,7 @@
     <string name="search">Search</string>
 
     <string name="submit">Submit</string>
+    <string name="submit_via">Submit via&#8230;</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="enter_text">Enter Text</string>
@@ -70,6 +71,7 @@
     <string name="registration_exit_title">Exit Registration?</string>
     <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
     <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_submit">Submit Registration via...</string>
     <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
     <string name="registration_submit_title">Submit?</string>
     <string name="registration_submit_complete_message">Are you ready to submit?</string>
@@ -85,11 +87,13 @@
     <string name="consultant_password_message">Please enter the consultant password:</string>
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="stories_not_found_title">No stories found!</string>
-    <string name="stories_not_found_body">The template folder does not contain story template folders.
-        For example, the template folder for the English story \"Lost Coin\" should be stored in the
-        templates folder.  Afterwards, restart the app to load the story templates.</string>
-    <string name="workspace_selection_help">Select the folder than has the story templates in it.
-        This will be the "template folder" that holds the registration and translation files.</string>
+    <string name="stories_not_found_body">No story templates found! The currently selected folder
+        for story templates does not contain usable templates.  Select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
+        &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
+    <string name="workspace_selection_help">Select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
+        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>.</string>
 
     <string-array name="orthography_list">
         <item>None</item>
@@ -255,7 +259,7 @@
     <!-- app menus -->
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
-    <string name="update_workspace">Select Template Folder</string>
+    <string name="update_workspace">Select \'SP Templates\' folder</string>
 
     <!-- license -->
     <string name="license_title">License</string>

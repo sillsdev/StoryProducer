@@ -8,8 +8,6 @@ import android.os.Bundle;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.Workspace;
 
-import static org.sil.storyproducer.controller.RegistrationActivityKt.FIRST_ACTIVITY_KEY;
-
 public class SplashScreenActivity extends AppCompatActivity {
     //Time in ms for splash screen to be shown
     private static int TIME_OUT = 300;
@@ -26,8 +24,7 @@ public class SplashScreenActivity extends AppCompatActivity {
             public void run() {
                 // Checks registration file to see if email has been sent and launches registration if it hasn't
                 if (! Workspace.INSTANCE.getRegistration().getComplete()) {
-                    Intent intent = new Intent(SplashScreenActivity.this, RegistrationActivity.class);
-                    intent.putExtra(FIRST_ACTIVITY_KEY, true);
+                    Intent intent = new Intent(SplashScreenActivity.this, WorkspaceDialogUpdateActivity.class);
                     startActivity(intent);
                     return;
                 }

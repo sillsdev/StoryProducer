@@ -58,7 +58,10 @@
             android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".controller.WorkspaceAndRegistrationActivity"
+            android:name=".controller.WorkspaceUpdateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".controller.WorkspaceDialogUpdateActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
