@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             val intent: Intent
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
-                    intent = Intent(this, WorkspaceAndRegistrationActivity::class.java)
+                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }

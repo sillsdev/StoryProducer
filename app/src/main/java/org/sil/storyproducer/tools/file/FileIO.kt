@@ -236,6 +236,14 @@ fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspa
     return false
 }
 
+fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
+    if(workspaceRelPathExists(context, relPath)){
+        val uri = getWorkspaceUri(relPath)
+        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+    }
+    return false
+}
+
 fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
     val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
 

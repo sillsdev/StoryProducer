@@ -76,18 +76,17 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 2. Create a directory on the phone to store resource files that the Espresso tests use. The path needs to match the "pathToEspressoResourceDirectory" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 3. Copy the "Lost Coin" story template into the espresso resource directory you created in step #2. The name of the directory needs to match the "nameOfTestStoryDirectory" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 4. Copy an .mp4 video file (the particular length or content doesn't matter) into the espresso resource directory. The name of the .mp4 file needs to match the "nameOfSampleExportVideo" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
-5. Launch the Story Producer app.
-6. Use the file picker that appears to select the workspace directory you created in step #1.
-7. Close the Story Producer app.
+5. Launch your emulator device (or connect a physical one via adb).
+6. Run `./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:installDebug :app:installDebugAndroidTest` from the root directory of the repository.
+7. Run `adb shell am instrument -w -e debug false -e package 'org.sil.storyproducer.androidtest.runfirst' org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner` from the root directory of the repository. (Note that the folder containing ADB must be in your path for this command to work.)
 
-> **Why is this necessary?** The Espresso tests rely on the presence of the "Lost Coin" template as a sample with which to exercise the features of the app. Setting the workspace manually is a work-around for an unsolved technical challenge related to simulating the workspace picker.
+> **Why is this necessary?** The Espresso tests rely on the presence of the "Lost Coin" template as a sample with which to exercise the features of the app. The Espresso Tests also require the workspace to have been set up, but Espresso is not capable interacting with the operating system's file picker, so the WorkspaceSetter class uses UIAutomator to select the workspace.
 
 #### Running the Espresso Tests
 ##### From the command line:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."** (The device/emulator should be running.)
 2. Navigate to the root directory of the repository.
-3. Run `./gradlew connectedAndroidTest` (on Linux) or `gradlew.bat connectedAndroidTest`(on Windows).
-*Note:* You may need to run the gradle wrapper with sudo or make the gradle wrapper executable with `sudo chmod +x ./gradlew`
+3. Run `adb shell am instrument -w -e debug false org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner`.
 ##### From Android Studio:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."**
 2. Open the Story Producer project (StoryProducer.iml) in Android Studio.

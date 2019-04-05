@@ -5,11 +5,10 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.WorkspaceAndRegistrationActivity
+import org.sil.storyproducer.controller.WorkspaceUpdateActivity
 import org.sil.storyproducer.controller.keyterm.KeyTermListActivity
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
@@ -23,13 +22,13 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
         val intent: Intent
         when (position) {
             0 -> {
-                intent = Intent(activity, WorkspaceAndRegistrationActivity::class.java)
+                intent = Intent(activity.applicationContext, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity.startActivity(intent)
                 activity.finish()
             }
             1 -> {
-                intent = Intent(activity.applicationContext, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent = Intent(activity, RegistrationActivity::class.java)
                 activity.startActivity(intent)
                 activity.finish()
             }
@@ -39,7 +38,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.startActivity(intent)
             }
             3 -> {
-                intent = Intent(activity, RegistrationActivity::class.java)
+                intent = Intent(activity, WorkspaceUpdateActivity::class.java)
                 activity.startActivity(intent)
                 activity.finish()
             }

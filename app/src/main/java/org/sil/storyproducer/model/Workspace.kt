@@ -8,6 +8,7 @@ import android.support.v4.provider.DocumentFile
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
@@ -220,6 +221,10 @@ object Workspace{
             keytermSearchTree.insertTerm(termForm)
         }
     }
+    fun deleteVideo(context: Context, path: String){
+        activeStory.outputVideos.remove(path)
+        deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
+    }
 
     fun updateStoryLocalCredits(context: Context) {
         for(story in Stories){
@@ -244,6 +249,16 @@ object Workspace{
             }
         }
         return isChanged
+    }
+
+    fun getSongFilename() : String{
+        for (s in activeStory.slides){
+            if(s.slideType == SlideType.LOCALSONG){
+                if(s.chosenDramatizationFile != "") return s.chosenDramatizationFile
+                if(s.chosenDraftFile != "") return s.chosenDraftFile
+            }
+        }
+        return ""
     }
 
     fun goToNextPhase() : Boolean {

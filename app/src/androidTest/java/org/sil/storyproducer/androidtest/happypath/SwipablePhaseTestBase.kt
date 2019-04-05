@@ -16,10 +16,8 @@ abstract class SwipablePhaseTestBase : PhaseTestBase() {
         val nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
         swipeLeftOnSlide()
-        giveUiTimeToChangeSlides()
         expectToBeOnSlide(nextSlideNumber)
         swipeRightOnSlide()
-        giveUiTimeToChangeSlides()
         expectToBeOnSlide(originalSlideNumber)
     }
 
@@ -30,18 +28,16 @@ abstract class SwipablePhaseTestBase : PhaseTestBase() {
 
     protected fun swipeRightOnSlide() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.phase_frame))).perform(ViewActions.swipeRight())
+        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
     protected fun swipeLeftOnSlide() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.phase_frame))).perform(ViewActions.swipeLeft())
+        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
     private fun swipeUpOnSlide() {
         Espresso.onView(ViewMatchers.withId(R.id.phase_frame)).perform(ViewActions.swipeUp())
-    }
-
-    protected fun giveUiTimeToChangeSlides() {
-        Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
     }
 
     protected fun findCurrentSlideNumber(): Int {

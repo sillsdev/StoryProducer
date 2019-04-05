@@ -1,13 +1,10 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.Assert
 import org.junit.Test
@@ -57,7 +54,7 @@ class FinalizePhaseTest : PhaseTestBase() {
         var foundTheVideo = false
         var exceededTheTimeout = false
         while (!foundTheVideo && !exceededTheTimeout) {
-            foundTheVideo = doesVideoFileExist(videoTitle)
+            foundTheVideo = doesVideoFileExist(videoTitle,".mp4")
             exceededTheTimeout = System.currentTimeMillis() - startTime > timeout
             Thread.sleep(Constants.intervalToWaitBetweenCheckingForVideoExport)
         }
@@ -66,8 +63,12 @@ class FinalizePhaseTest : PhaseTestBase() {
         }
     }
 
-    private fun doesVideoFileExist(videoTitle: String) : Boolean{
-        val file = File(Constants.exportedVideosDirectory + File.separator + videoTitle + "_FxPxMvSg.mp4")
-        return file.exists()
+    private fun doesVideoFileExist(videoTitle: String, extension: String) : Boolean{
+        val files = File(Constants.exportedVideosDirectory).listFiles() ?: return false
+        for (f in files){
+            if(f.name.contains(videoTitle) && f.name.contains(extension))
+                return true
+        }
+        return false
     }
 }
