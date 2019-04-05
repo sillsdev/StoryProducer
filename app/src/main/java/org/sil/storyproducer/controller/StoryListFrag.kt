@@ -10,9 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryImage
 
 class StoryListFrag : Fragment() {
