@@ -28,14 +28,14 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             1 -> {
-                intent = Intent(activity, RegistrationActivity::class.java)
-                activity.startActivity(intent)
-                activity.finish()
-            }
-            2 -> {
                 intent = Intent(activity.applicationContext, KeyTermListActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 activity.startActivity(intent)
+            }
+            2 -> {
+                intent = Intent(activity, RegistrationActivity::class.java)
+                activity.startActivity(intent)
+                activity.finish()
             }
             3 -> {
                 intent = Intent(activity, WorkspaceUpdateActivity::class.java)
