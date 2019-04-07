@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.consultant
 
 import android.content.Context
 import android.os.Bundle
-import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v7.app.AlertDialog
 import android.text.InputType
 import android.view.LayoutInflater
@@ -13,6 +12,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.ScriptureFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -22,20 +23,15 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
-        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
-
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
 
-        setPic(rootView!!.findViewById(R.id.fragment_image_view))
+        setSlide()
+        setScripture()
+        setLogsButton(rootView.findViewById(R.id.concheck_logs_button))
 
-        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
-        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
-        setLogsButton(rootView!!.findViewById(R.id.concheck_logs_button))
-
-        val checkButton = rootView!!.findViewById<com.getbase.floatingactionbutton.FloatingActionButton>(R.id.concheck_checkmark_button)
+        val checkButton = rootView.findViewById<com.getbase.floatingactionbutton.FloatingActionButton>(R.id.concheck_checkmark_button)
         setCheckmarkButton(checkButton)
         checkButton.setOnClickListener(View.OnClickListener {
             if (Workspace.activeStory.isApproved) {
@@ -69,7 +65,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                referenceAudioPlayer.stopAudio()
+                //TODO referenceAudioPlayer.stopAudio()
             }
         }
     }
@@ -131,6 +127,22 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
         } else {
             imm.hideSoftInputFromWindow(aView!!.windowToken, 0)
         }
+    }
+
+    private fun setSlide(){
+        val bundle = Bundle()
+        bundle.putInt("slideNum", slideNum)
+        val slidePhaseFrag = SlidePhaseFrag()
+        slidePhaseFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+    }
+
+    private fun setScripture(){
+        val bundle = Bundle()
+        bundle.putInt("slideNum", slideNum)
+        val scriptureFrag = ScriptureFrag()
+        scriptureFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, scriptureFrag).commit()
     }
 
     companion object {

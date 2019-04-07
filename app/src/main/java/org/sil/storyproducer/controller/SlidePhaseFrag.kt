@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -10,7 +11,6 @@ import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -21,12 +21,12 @@ import java.util.*
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class SlidePhaseFrag : Fragment() {
-    protected var rootView: View? = null
+class SlidePhaseFrag : Fragment() {
 
-    protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
-    protected var referencePlayButton: ImageButton? = null
-    protected var refPlaybackSeekBar: SeekBar? = null
+    private var referenceAudioPlayer: AudioPlayer = AudioPlayer()
+    private var referencePlayButton: ImageButton? = null
+    private var refPlaybackSeekBar: SeekBar? = null
+    private lateinit var fragmentImageView: ImageView
     private var mSeekBarTimer = Timer()
 
     private var refPlaybackProgress = 0
@@ -34,23 +34,44 @@ abstract class SlidePhaseFrag : Fragment() {
     private var wasAudioPlaying = false
 
 
-    protected var slideNum: Int = 0 //gets overwritten
-    protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
+    private var slideNum: Int = 0 //gets overwritten
+    private lateinit var refPlaybackHolder: ConstraintLayout
+    private lateinit var playbackListener: PlaybackListener
+
+    interface PlaybackListener {
+        fun onStoppedPlayback()
+        fun onStartedPlayback()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if(parentFragment is PlaybackListener){
+            playbackListener = parentFragment as PlaybackListener
+        }
+        else{
+            throw ClassCastException("$parentFragment does not implement SlidePhaseFrag.PlaybackListener")
+        }
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        slideNum = this.arguments!!.getInt(SLIDE_NUM)
-        slide = Workspace.activeStory.slides[slideNum]
+        slideNum = arguments?.getInt(SLIDE_NUM)!!
         setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
-        rootView = inflater.inflate(R.layout.fragment_slide, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
-        setPic(rootView!!.findViewById(R.id.fragment_image_view))
+        fragmentImageView = rootView.findViewById(R.id.fragment_image_view)
+        referencePlayButton = rootView.findViewById(R.id.fragment_reference_audio_button)
+        refPlaybackHolder = rootView.findViewById(R.id.seek_bar)
+        refPlaybackSeekBar = rootView.findViewById(R.id.videoSeekBar)
+        val slideNumberText = rootView.findViewById<TextView>(R.id.slide_number_text)
+        slideNumberText?.text = slideNum.toString()
+
+        setPic()
 
         return rootView
     }
@@ -71,14 +92,13 @@ abstract class SlidePhaseFrag : Fragment() {
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             referenceAudioPlayer.stopAudio()
+            playbackListener.onStoppedPlayback()
         })
 
         //If it is the local credits slide, do not show the audio stuff at all.
-        val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
             refPlaybackHolder.visibility = View.GONE
         }else{
-            refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
             mSeekBarTimer = Timer()
             mSeekBarTimer.schedule(object : TimerTask() {
                 override fun run() {
@@ -103,12 +123,14 @@ abstract class SlidePhaseFrag : Fragment() {
                 referenceAudioPlayer.currentPosition = refPlaybackProgress
                 if(wasAudioPlaying){
                     referenceAudioPlayer.resumeAudio()
+                    playbackListener.onStartedPlayback()
                 }
             }
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
                 referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                playbackListener.onStoppedPlayback()
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -126,6 +148,7 @@ abstract class SlidePhaseFrag : Fragment() {
         refPlaybackProgress = referenceAudioPlayer.currentPosition
         mSeekBarTimer.cancel()
         referenceAudioPlayer.release()
+        playbackListener.onStoppedPlayback()
     }
 
     /**
@@ -141,52 +164,20 @@ abstract class SlidePhaseFrag : Fragment() {
 
     /**
      * This function allows the picture to scale with the phone's screen size.
-     *
-     * @param slideImage    The ImageView that will contain the picture.
      */
-    protected fun setPic(slideImage: ImageView) {
+    internal fun setPic() {
 
-        (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
+        (activity as PhaseBaseActivity).setPic(fragmentImageView, slideNum)
         //Set up the reference audio and slide number overlays
-        referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
+
         setReferenceAudioButton()
-
-        val slideNumberText = rootView?.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText?.text = slideNum.toString()
-    }
-
-    /**
-     * Sets the main text of the layout.
-     *
-     * @param textView The text view that will be filled with the verse's text.
-     */
-    protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
-    }
-
-    /**
-     * This function sets the reference text.
-     *
-     * @param textView The view that will be populated with the reference text.
-     */
-    protected fun setReferenceText(textView: TextView) {
-        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
-
-        for (title in titleNamePriority) {
-            if (title != "") {
-                textView.text = title
-                return
-            }
-        }
-        //There is no reference text.
-        textView.text = ""
     }
 
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
-                Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(view!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 //stop other playback streams.
                 if (referenceAudioPlayer.isAudioPlaying) {
@@ -197,6 +188,7 @@ abstract class SlidePhaseFrag : Fragment() {
                     stopPlayBackAndRecording()
                     referenceAudioPlayer.currentPosition = refPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
+                    playbackListener.onStartedPlayback()
 
                     referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
@@ -210,8 +202,9 @@ abstract class SlidePhaseFrag : Fragment() {
         }
     }
 
-    open fun stopPlayBackAndRecording() {
+    private fun stopPlayBackAndRecording() {
         referenceAudioPlayer.pauseAudio()
+        playbackListener.onStoppedPlayback()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 

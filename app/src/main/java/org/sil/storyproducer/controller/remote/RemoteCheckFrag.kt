@@ -18,6 +18,8 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.SlidePhaseFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag.Companion.SLIDE_NUM
 import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
@@ -31,7 +33,6 @@ import java.util.*
 
 class RemoteCheckFrag : Fragment() {
 
-    private var slideNumber: Int = 0
     private lateinit var storyName: String
     private lateinit var messageSent: EditText
 
@@ -41,26 +42,23 @@ class RemoteCheckFrag : Fragment() {
 
     private var msgAdapter: MessageAdapter? = null
     private var messagesView: ListView? = null
+    var slideNum : Int = 0
 
     override fun onCreate(savedState: Bundle?) {
         super.onCreate(savedState)
         val passedArgs = this.arguments
-        slideNumber = passedArgs!!.getInt(SLIDE_NUM)
+        slideNum = passedArgs!!.getInt(SLIDE_NUM)
         storyName = Workspace.activeStory.title
         setHasOptionsMenu(true)
-
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
-        val phoneID = Settings.Secure.getString(context!!.contentResolver,
-                Settings.Secure.ANDROID_ID)
-        prefsEditor.putString("PhoneId", phoneID).apply()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false)
 
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, SlidePhaseFrag()).commit()
+
         val messageTitle = rootView!!.findViewById<TextView>(R.id.messaging_title)
-        messageTitle.append("Messages for Slide $slideNumber")
+        messageTitle.append("Messages for Slide $slideNum")
 
         messagesView = rootView.findViewById(R.id.message_history)
 
@@ -77,7 +75,7 @@ class RemoteCheckFrag : Fragment() {
         messageSent.setHintTextColor(ContextCompat.getColor(context!!, R.color.black))
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
+        messageSent.setText(prefs.getString(storyName + slideNum + TO_SEND_MESSAGE, ""))
 
         getMessages()
         if (msgAdapter!!.count > 0) {
@@ -103,7 +101,7 @@ class RemoteCheckFrag : Fragment() {
         //save message draft
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
-        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString()).apply()
+        prefsEditor.putString(storyName + slideNum + TO_SEND_MESSAGE, messageSent.text.toString()).apply()
 
         //save message adapter as well
         saveSharedPreferenceMessageHistory()
@@ -142,8 +140,8 @@ class RemoteCheckFrag : Fragment() {
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val gsonBuilder = GsonBuilder()
         val gson = gsonBuilder.create()
-        val json = prefs.getString(R_MESSAGE_HISTORY + storyName + slideNumber, "")
-        val lastID = prefs.getInt(R_LAST_ID + storyName + slideNumber, -1)
+        val json = prefs.getString(R_MESSAGE_HISTORY + storyName + slideNum, "")
+        val lastID = prefs.getInt(R_LAST_ID + storyName + slideNum, -1)
         if (!json!!.isEmpty()) {
             val type = object : TypeToken<List<Message>>() {
 
@@ -164,21 +162,19 @@ class RemoteCheckFrag : Fragment() {
         val gson = gsonBuilder.create()
         val json = gson.toJson(msgAdapter!!.messageHistory)
         val lastID = msgAdapter!!.lastID
-        prefsEditor.putString(R_MESSAGE_HISTORY + storyName + slideNumber, json).apply()
-        prefsEditor.putInt(R_LAST_ID + storyName + slideNumber, lastID).apply()
+        prefsEditor.putString(R_MESSAGE_HISTORY + storyName + slideNum, json).apply()
+        prefsEditor.putInt(R_LAST_ID + storyName + slideNum, lastID).apply()
     }
 
     //function to send messages to remote consultant the given slide
     private fun sendMessage() {
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
         val phoneID = Settings.Secure.getString(context!!.contentResolver,
                 Settings.Secure.ANDROID_ID)
         js = HashMap()
         js!!["Key"] = getString(R.string.api_token)
         js!!["PhoneId"] = phoneID
         js!!["StoryTitle"]  = Workspace.activeStory.title
-        js!!["SlideNumber"] = Integer.toString(slideNumber)
+        js!!["SlideNumber"] = Integer.toString(slideNum)
         val message = messageSent.text.toString()
         js!!["Message"] = message
 
@@ -202,8 +198,7 @@ class RemoteCheckFrag : Fragment() {
             if (resp != null) {
                 if (resp === "true") {
                     //set text back to blank
-                    prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
-                    prefsEditor.apply()
+                    Workspace.activeStory.slides[slideNum].remoteTranscription = ""
                     messageSent.setText("")
                     Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show()
 
@@ -217,8 +212,7 @@ class RemoteCheckFrag : Fragment() {
             Log.e("LOG_VOLLEY_MSG_ERR", error.toString())
             Log.e("LOG_VOLLEY", "HIT ERROR")
             //Save the message to send next time
-            prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString())
-            prefsEditor.apply()
+            Workspace.activeStory.slides[slideNum].remoteTranscription = messageSent.text.toString()
 
             if (error is NoConnectionError || error is NetworkError
                     || error is AuthFailureError) {
@@ -235,14 +229,14 @@ class RemoteCheckFrag : Fragment() {
     }
 
     private fun getMessages() {
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val phoneID = prefs.getString(getString(R.string.PhoneId), "")
+        val phoneID = Settings.Secure.getString(context!!.contentResolver,
+                Settings.Secure.ANDROID_ID)
 
         js = HashMap()
         js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phoneID!!
+        js!!["PhoneId"] = phoneID
         js!!["StoryTitle"] = Workspace.activeStory.title
-        js!!["SlideNumber"] = Integer.toString(slideNumber)
+        js!!["SlideNumber"] = Integer.toString(slideNum)
         js!!["LastId"] = Integer.toString(msgAdapter!!.lastID)
 
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_messages), Response.Listener { response ->
@@ -270,7 +264,6 @@ class RemoteCheckFrag : Fragment() {
             //get all msgs and store into shared preferences
             if (msgs != null) {
                 for (j in 0 until msgs.length()) {
-
                     try {
                         val currMsg = msgs.getJSONObject(j)
                         val num = currMsg.getInt("IsTranslator")
@@ -308,7 +301,6 @@ class RemoteCheckFrag : Fragment() {
     }
 
     companion object {
-        val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
         val R_CONSULTANT_PREFS = "Consultant_Checks"
         private val TO_SEND_MESSAGE = "SND_MSG"
         private val R_MESSAGE_HISTORY = "Message History"

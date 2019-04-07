@@ -1,11 +1,10 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_backtranslation_root_layout"
+    android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    tools:context="org.sil.storyproducer.controller.remote.BackTranslationFrag">
+    android:background="@color/gray">
 
     <FrameLayout
         android:id="@+id/slide_phase"
@@ -26,31 +25,15 @@
         app:layout_constraintGuide_percent=".5" />
 
 
-    <EditText
-        android:id="@+id/transcription"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="9dp"
-        android:layout_marginTop="9dp"
-        android:layout_marginEnd="9dp"
-        android:hint="@string/backTranslation_hint"
-        android:inputType="text"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:textSize="@dimen/large_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/guideline">
-
-    </EditText>
-
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/scripture_text"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/transcription" />
+        app:layout_constraintTop_toBottomOf="@id/guideline">
+
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/toolbar_for_recording_toolbar"
@@ -60,6 +43,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
     </FrameLayout>
-
-
 </android.support.constraint.ConstraintLayout>

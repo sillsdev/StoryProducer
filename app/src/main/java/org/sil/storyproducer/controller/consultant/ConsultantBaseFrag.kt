@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.consultant
 import android.content.Context
 import android.os.Bundle
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.app.Fragment
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
@@ -11,7 +12,7 @@ import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
@@ -22,16 +23,19 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-abstract class ConsultantBaseFrag : MultiRecordFrag() {
+abstract class ConsultantBaseFrag : Fragment() {
 
     var logDialog: AlertDialog? = null
     var greenCheckmark: VectorDrawableCompat? = null
     var grayCheckmark: VectorDrawableCompat? = null
+    var slideNum: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+
+        slideNum = arguments!!.getInt(SlidePhaseFrag.SLIDE_NUM)
     }
 
     /**

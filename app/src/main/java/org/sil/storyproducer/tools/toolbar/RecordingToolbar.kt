@@ -24,6 +24,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.android.gms.common.util.IOUtils
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -104,7 +105,7 @@ class RecordingToolbar : Fragment(){
             enableCheckButton = buttons[1]
             enableMultiRecordButton = buttons[2]
             enableSendAudioButton = buttons[3]
-            slideNum = mArguments.get("slideNum") as Int
+            slideNum = mArguments.getInt(SlidePhaseFrag.SLIDE_NUM)
         }
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
