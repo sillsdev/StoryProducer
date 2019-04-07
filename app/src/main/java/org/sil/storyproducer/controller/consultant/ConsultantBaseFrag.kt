@@ -35,7 +35,7 @@ abstract class ConsultantBaseFrag : Fragment() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        slideNum = arguments!!.getInt(SlidePhaseFrag.SLIDE_NUM)
+        slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
     }
 
     /**

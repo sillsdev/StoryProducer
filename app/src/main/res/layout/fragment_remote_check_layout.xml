@@ -41,6 +41,17 @@
 
     </FrameLayout>
 
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/concheck_status_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/message_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/slide_phase"
+        app:layout_constraintTop_toBottomOf="@+id/remote_title" />
+
     <android.support.constraint.Guideline
         android:id="@+id/guideline"
         android:layout_width="match_parent"
@@ -53,7 +64,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent=".5" />
+        app:layout_constraintGuide_percent=".6" />
 
     <ListView
         android:id="@+id/message_history"
