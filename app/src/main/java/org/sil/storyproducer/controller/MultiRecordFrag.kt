@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.support.v4.app.Fragment
 import android.support.v4.content.FileProvider
 import android.view.LayoutInflater
 import android.view.View
@@ -17,25 +18,27 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 import java.io.File
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
-
-    protected var recordingToolbar: RecordingToolbar = RecordingToolbar()
+class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
     private var tempPicFile: File? = null
-
+    private lateinit var imageFab: ImageView
+    private lateinit var editFab: ImageView
+    private var slideNum: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
-        if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-            setToolbar()
-        }
+        val rootView = inflater.inflate(R.layout.fragment_multi_record_layout, container, false)
+
+        slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
+
+        setSlide()
+
+        imageFab = rootView.findViewById(R.id.insert_image_view)
+        editFab = rootView.findViewById(R.id.edit_text_view)
 
         setupCameraAndEditButton()
 
@@ -46,12 +49,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
      * Setup camera button for updating background image
      * and edit button for renaming text and local credits
      */
-    fun setupCameraAndEditButton() {
+    private fun setupCameraAndEditButton() {
         // display the image selection button, if on the title slide
         if(Workspace.activeStory.slides[slideNum].slideType in
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
-            val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
             imageFab.visibility = android.view.View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
@@ -76,14 +78,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
         if(Workspace.activeStory.slides[slideNum].slideType in
                 arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
         {
-            //for these, use the edit text button instead of the text in the lower half.
-            //In the phases that these are not there, do nothing.
-            val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
-            editBox?.visibility = android.view.View.INVISIBLE
 
-            val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
-            editFab?.visibility = android.view.View.VISIBLE
-            editFab?.setOnClickListener {
+            editFab.visibility = android.view.View.VISIBLE
+            editFab.setOnClickListener {
                 val editText = EditText(context)
                 editText.id = R.id.edit_text_input
 
@@ -102,14 +99,13 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
                             Workspace.activeSlide!!.translatedContent = editText.text.toString()
-                            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+                            (childFragmentManager.findFragmentById(R.id.slide_phase) as SlidePhaseFrag).setPic()
                         }.create()
 
                 dialog.show()
             }
         }
     }
-
 
     /**
      * Change the picture behind the screen.
@@ -123,50 +119,26 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
             copyToWorkspacePath(context!!,uri!!,
                     "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
             tempPicFile?.delete()
-            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+            (childFragmentManager.findFragmentById(R.id.slide_phase) as SlidePhaseFrag).setPic()
         }
     }
 
-    /**
-     * This function serves to handle page changes and stops the audio streams from
-     * continuing.
-     *
-     * @param isVisibleToUser whether fragment is currently visible to user
-     */
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        // Make sure that we are currently visible
-        if (this.isVisible) {
-            // If we are becoming invisible, then...
-            if (!isVisibleToUser) {
-                recordingToolbar.stopToolbarMedia()
-            }
-        }
-    }
-
-    override fun stopPlayBackAndRecording() {
-        super.stopPlayBackAndRecording()
-        recordingToolbar.stopToolbarMedia()
-    }
-
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-        //updatePlayBackPath()
-    }
-
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-    }
-
-    protected open fun setToolbar() {
+    private fun setSlide(){
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
-        bundle.putInt("slideNum", slideNum)
-        recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
-
-        recordingToolbar.keepToolbarVisible()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        val slidePhaseFrag = SlidePhaseFrag()
+        slidePhaseFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
     }
+
+    override fun onStoppedPlayback() {
+
+    }
+
+    override fun onStartedPlayback() {
+
+    }
+
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
     }

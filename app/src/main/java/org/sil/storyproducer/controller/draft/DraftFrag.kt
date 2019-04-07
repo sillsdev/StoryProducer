@@ -1,31 +1,101 @@
 package org.sil.storyproducer.controller.draft
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.ScriptureFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-class DraftFrag : MultiRecordFrag() {
+class DraftFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
+    private var slideNum: Int = 0
+    private val recordingToolbar = RecordingToolbar()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_draft_layout, container, false)
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
-        super.onCreateView(inflater, container, savedInstanceState)
-        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
-        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
+        slideNum = arguments!!.getInt(SlidePhaseFrag.SLIDE_NUM)
+        setSlide()
+        setScripture()
+
+        if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+            setToolbar()
+        }
 
         return rootView
     }
 
+    /**
+     * This function serves to handle page changes and stops the audio streams from
+     * continuing.
+     *
+     * @param isVisibleToUser whether fragment is currently visible to user
+     */
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        // Make sure that we are currently visible
+        if (this.isVisible) {
+            // If we are becoming invisible, then...
+            if (!isVisibleToUser) {
+                recordingToolbar.stopToolbarMedia()
+            }
+        }
+    }
+
+    private fun stopPlayBackAndRecording() {
+        //super.stopPlayBackAndRecording()
+        recordingToolbar.stopToolbarMedia()
+
+    }
+
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+        //updatePlayBackPath()
+    }
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        stopPlayBackAndRecording()
+    }
+
+    private fun setToolbar() {
+        val bundle = Bundle()
+        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        recordingToolbar.arguments = bundle
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
+
+        recordingToolbar.keepToolbarVisible()
+    }
+
+    private fun setScripture(){
+        val bundle = Bundle()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        val scriptureFrag = ScriptureFrag()
+        scriptureFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.scripture_text, scriptureFrag).commit()
+    }
+
+    private fun setSlide(){
+        val bundle = Bundle()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        val slidePhaseFrag = SlidePhaseFrag()
+        slidePhaseFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+    }
+
+    override fun onStoppedPlayback() {
+
+    }
+
+    override fun onStartedPlayback() {
+        stopPlayBackAndRecording()
+    }
 }

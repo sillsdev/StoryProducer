@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
@@ -17,6 +18,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.consultant.ConsultantBaseFrag
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.BackTranslationUpload.testErr
@@ -28,10 +30,19 @@ import java.util.*
  * Created by alexamhepner on 10/23/17.
  */
 
-class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingListener {
+class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
+    override fun onStoppedPlayback() {
+
+    }
+
+    override fun onStartedPlayback() {
+
+    }
 
     private var storyName: String? = null
     private var phaseUnlocked = false
+    private val recordingToolbar = RecordingToolbar()
+    private lateinit var backtranslationCheckButton: ImageButton
 
     private var transcriptionText: EditText? = null
 
@@ -40,17 +51,19 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     private var js: MutableMap<String, String>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
+
         storyName = Workspace.activeStory.title
 
-        setPic(rootView!!.findViewById(R.id.fragment_backtranslation_image_view))
-        setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
+        backtranslationCheckButton = rootView.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button)
+        setCheckmarkButton(backtranslationCheckButton)
 
+        setSlide()
         setToolbar()
 
         closeKeyboardOnTouch(rootView)
 
-        transcriptionText = rootView?.findViewById(R.id.transcription)
+        transcriptionText = rootView.findViewById(R.id.transcription)
         transcriptionText?.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, aft: Int) {}
@@ -66,10 +79,18 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
         return rootView
     }
 
-    override fun setToolbar() {
+    private fun setSlide(){
+        val bundle = Bundle()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        val slidePhaseFrag = SlidePhaseFrag()
+        slidePhaseFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+    }
+
+    private fun setToolbar() {
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,true))
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
@@ -89,7 +110,7 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
         if(!Workspace.activeStory.isApproved) {
             requestRemoteReview()
             getSlidesStatus()
-            setCheckmarkButton(rootView!!.findViewById(R.id.fragment_backtranslation_r_concheck_checkmark_button))
+            setCheckmarkButton(backtranslationCheckButton)
             phaseUnlocked = checkAllMarked()
             if (phaseUnlocked) {
                 unlockDramatizationPhase()
@@ -104,7 +125,7 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     override fun onPause() {
         super.onPause()
         recordingToolbar.onPause()
-        closeKeyboard(rootView)
+        //closeKeyboard(rootView)
     }
 
     /**
@@ -216,5 +237,11 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     private fun addTranscription() {
         val transcript = transcriptionText?.text.toString()
         Workspace.activeStory.slides[slideNum].remoteTranscription = transcript
+    }
+
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        //TODO stopPlayBackAndRecording()
     }
 }
