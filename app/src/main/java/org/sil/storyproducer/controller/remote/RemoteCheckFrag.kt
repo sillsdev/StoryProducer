@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.view.*
@@ -21,6 +20,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.SlidePhaseFrag.Companion.SLIDE_NUM
 import org.sil.storyproducer.controller.adapter.MessageAdapter
+import org.sil.storyproducer.controller.consultant.ConsultantBaseFrag
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -31,8 +31,7 @@ import java.util.*
  * Created by annmcostantino on 2/19/2018.
  */
 
-class RemoteCheckFrag : Fragment() {
-
+class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
     private lateinit var storyName: String
     private lateinit var messageSent: EditText
 
@@ -42,12 +41,10 @@ class RemoteCheckFrag : Fragment() {
 
     private var msgAdapter: MessageAdapter? = null
     private var messagesView: ListView? = null
-    var slideNum : Int = 0
 
-    override fun onCreate(savedState: Bundle?) {
-        super.onCreate(savedState)
-        val passedArgs = this.arguments
-        slideNum = passedArgs!!.getInt(SLIDE_NUM)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        slideNum = arguments?.getInt(SLIDE_NUM)!!
         storyName = Workspace.activeStory.title
         setHasOptionsMenu(true)
     }
@@ -55,9 +52,11 @@ class RemoteCheckFrag : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false)
 
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, SlidePhaseFrag()).commit()
+        setSlide()
 
-        val messageTitle = rootView!!.findViewById<TextView>(R.id.messaging_title)
+        setCheckmarkButton(rootView.findViewById(R.id.concheck_status_button1))
+
+        val messageTitle = rootView.findViewById<TextView>(R.id.messaging_title)
         messageTitle.append("Messages for Slide $slideNum")
 
         messagesView = rootView.findViewById(R.id.message_history)
@@ -67,7 +66,7 @@ class RemoteCheckFrag : Fragment() {
 
         //grab old adapter or make a new one
         msgAdapter = loadSharedPreferenceMessageHistory()
-        messagesView!!.adapter = msgAdapter
+        messagesView?.adapter = msgAdapter
 
         //set texts for this view
         messageSent = rootView.findViewById(R.id.sendMessage)
@@ -78,7 +77,7 @@ class RemoteCheckFrag : Fragment() {
         messageSent.setText(prefs.getString(storyName + slideNum + TO_SEND_MESSAGE, ""))
 
         getMessages()
-        if (msgAdapter!!.count > 0) {
+        if (msgAdapter?.count!! > 0) {
             messagesView!!.setSelection(msgAdapter!!.count)
         }
 
@@ -105,6 +104,22 @@ class RemoteCheckFrag : Fragment() {
 
         //save message adapter as well
         saveSharedPreferenceMessageHistory()
+    }
+
+    private fun setSlide(){
+        val bundle = Bundle()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        val slidePhaseFrag = SlidePhaseFrag()
+        slidePhaseFrag.arguments = bundle
+        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+    }
+
+    override fun onStoppedPlayback() {
+
+    }
+
+    override fun onStartedPlayback() {
+
     }
 
     /**

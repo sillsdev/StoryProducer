@@ -73,7 +73,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
     /**
      * Launches a dialog for the consultant to enter a password once all slides approved
      */
-    internal fun showConsultantPasswordDialog() {
+    private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
         password.id = org.sil.storyproducer.R.id.password_text_field
@@ -131,7 +131,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
 
     private fun setSlide(){
         val bundle = Bundle()
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
@@ -139,7 +139,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
 
     private fun setScripture(){
         val bundle = Bundle()
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val scriptureFrag = ScriptureFrag()
         scriptureFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, scriptureFrag).commit()
