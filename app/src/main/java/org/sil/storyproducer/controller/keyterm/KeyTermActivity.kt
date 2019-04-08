@@ -178,11 +178,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        recordingToolbar.stopToolbarMedia()
-        displayList.stopAudio()
-    }
-
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         if(isRecording) {
             val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
@@ -192,6 +187,11 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
             }
             recordingExpandableListView.smoothScrollToPosition(0)
         }
+    }
+
+    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+        recordingToolbar.stopToolbarMedia()
+        displayList.stopAudio()
     }
 
     /**

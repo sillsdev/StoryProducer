@@ -93,14 +93,14 @@ class RecordingToolbar : Fragment(){
 
         appContext = activity?.applicationContext!!
         voiceRecorder = AudioRecorderMP4(activity!!)
-        val mArguments = arguments
-        if (mArguments != null) {
-            val buttons = mArguments.get("buttonEnabled") as BooleanArray
+        val bundleArguments = arguments
+        if (bundleArguments != null) {
+            val buttons = bundleArguments.get("buttonEnabled") as BooleanArray
             enablePlaybackButton = buttons[0]
             enableCheckButton = buttons[1]
             enableMultiRecordButton = buttons[2]
             enableSendAudioButton = buttons[3]
-            slideNum = mArguments.get("slideNum") as Int
+            slideNum = bundleArguments.get("slideNum") as Int
         }
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
