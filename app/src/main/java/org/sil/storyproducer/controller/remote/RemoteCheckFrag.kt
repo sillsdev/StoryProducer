@@ -98,9 +98,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         super.onPause()
 
         //save message draft
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
-        prefsEditor.putString(storyName + slideNum + TO_SEND_MESSAGE, messageSent.text.toString()).apply()
+        Workspace.activeStory.slides[slideNum].remoteTranscription = messageSent.text.toString()
 
         //save message adapter as well
         saveSharedPreferenceMessageHistory()
