@@ -124,6 +124,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
         recordingToolbar.keepToolbarVisible()
     }
+    
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
         if(isRecording){
             makeLogIfNecessary(true)
