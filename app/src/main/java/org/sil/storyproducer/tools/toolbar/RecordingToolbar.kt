@@ -30,9 +30,7 @@ import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-import java.io.File
 import java.io.FileNotFoundException
-import java.io.IOException
 
 private const val RECORDING_ANIMATION_DURATION = 1500
 
@@ -70,6 +68,7 @@ class RecordingToolbar : Fragment(){
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
+    
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
     private var voiceRecorder: AudioRecorder? = null
@@ -390,157 +389,9 @@ class RecordingToolbar : Fragment(){
         if (enableSendAudioButton) {
             val sendAudioListener = View.OnClickListener {
                 stopToolbarMedia()
-                sendAudio()
             }
             sendAudioButton.setOnClickListener(sendAudioListener)
         }
-    }
-
-    /*
-    * Send single audio file to remote consultant
-     */
-    private fun sendAudio() {
-/*
-        Toast.makeText(appContext, R.string.audio_pre_send, Toast.LENGTH_SHORT).show()
-        val phase = Workspace.activePhase
-        val slideNum: Int
-        val slide: File
-        val totalSlides = Workspace.activeStory.slides.size
-        if (phase.phaseType === PhaseType.BACKT) {
-            slideNum = Workspace.activeSlideNum
-            slide = AudioFiles.getBackTranslation(Workspace.activeStory.title, slideNum)
-        } else {
-            slideNum =  Workspace.activeStory.slides.size
-            slide = AudioFiles.getWholeStory(Workspace.activeStory.title)
-        }//Whole story bt audio will be uploaded as one slide past the final slide for the story
-
-        requestRemoteReview(appContext, totalSlides)
-        postABackTranslation(slideNum, slide)
-*/
-    }
-
-    //Posts a single BT or WSBT
-    fun postABackTranslation(slideNum: Int, slide: File) {
-/*
-        try {
-            Upload(slide, appContext, slideNum)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-
-*/
-    }
-
-    //First time request for review
-    fun requestRemoteReview(con: Context, numSlides: Int) {
-
- /*       // TODO replace with InstanceID getID for all phone ID locations
-        val phone_id = Settings.Secure.getString(con.contentResolver,
-                Settings.Secure.ANDROID_ID)
-        js = HashMap()
-        js!!["Key"] = con.resources.getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
-        js!!["TemplateTitle"] = StoryState.getStoryName()
-        js!!["NumberOfSlides"] = Integer.toString(numSlides)
-
-        val req = object : StringRequest(Request.Method.POST, con.getString(R.string.url_request_review), Response.Listener { response ->
-            Log.i("LOG_VOLLEY_RESP_RR", response)
-            resp = response
-        }, Response.ErrorListener { error ->
-            Log.e("LOG_VOLLEY_ERR_RR", error.toString())
-            Log.e("LOG_VOLLEY", "HIT ERROR")
-            testErr = error.toString()
-        }) {
-            override fun getParams(): Map<String, String>? {
-                return js
-            }
-        }
-
-
-        VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
-
- */   }
-
-    //Subroutine to upload a single audio file
-    @Throws(IOException::class)
-    fun Upload(relPath: String, context: Context) {
-
-/*
-        val phone_id = Settings.Secure.getString(context.contentResolver,
-                Settings.Secure.ANDROID_ID)
-        val templateTitle = Workspace.activeStory.title
-
-        val currentSlide = Integer.toString(Workspace.activeSlideNum)
-        val input = getStoryChildInputStream(context,relPath)
-        val audioBytes = IOUtils.toByteArray(input)
-
-        //get transcription text if it's there
-        val prefs = context.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val transcription = prefs.getString(templateTitle + Workspace.activeSlideNum + TRANSCRIPTION_TEXT, "")
-        val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
-
-        js = HashMap()
-
-
-        val log = LogFiles.getLog(FileSystem.getLanguage(), Workspace.activeStory.title)
-        val logString = StringBuilder()
-        if (log != null) {
-            val logs = log.toTypedArray()
-
-            //Grabs all applicable logs for this slide num
-            val slideLogs = arrayOfNulls<String>(logs.size)
-
-            for (log1 in logs) {
-                if (log1 is ComChkEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-
-                } else if (log1 is LearnEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-                } else if (log1 is DraftEntry) {
-                    if (log1.appliesToSlideNum(slide)) {
-                        logString.append(log1.phase).append(" ").append(log1.description).append(" ").append(log1.dateTime).append("\n")
-                    }
-                } else {
-                    val tempLog = log1 as LogEntry
-                    if (tempLog.appliesToSlideNum(slide)) {
-                        logString.append(tempLog.phase).append(" ").append(tempLog.description).append(" ").append(tempLog.dateTime).append("\n")
-                    }
-
-                }
-            }
-        }
-        js!!["Log"] = logString.toString()
-        js!!["Key"] = con.resources.getString(R.string.api_token)
-        js!!["PhoneId"] = phone_id
-        js!!["TemplateTitle"] = templateTitle
-        js!!["SlideNumber"] = currentSlide
-        js!!["Data"] = byteString
-        js!!["BacktranslationText"] = transcription
-
-
-        val req = object : paramStringRequest(Request.Method.POST, con.resources.getString(R.string.url_upload_audio), js, Response.Listener { response ->
-            Log.i("LOG_VOLLEY_RESP_UPL", response)
-            resp = response
-            Toast.makeText(appContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
-        }, Response.ErrorListener { error ->
-            Log.e("LOG_VOLLEY_ERR_UPL", error.toString())
-            Log.e("LOG_VOLLEY", "HIT ERROR")
-            testErr = error.toString()
-            Toast.makeText(appContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
-        }) {
-            override fun getParams(): Map<String, String> {
-                return this.mParams
-            }
-        }
-
-
-        VolleySingleton.getInstance(activity.applicationContext).addToRequestQueue(req)
-
-*/
     }
 
     /*
