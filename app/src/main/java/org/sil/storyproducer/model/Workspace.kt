@@ -3,7 +3,10 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings.Secure
 import android.support.v4.provider.DocumentFile
+import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
@@ -64,6 +67,8 @@ object Workspace{
         return activeStory.slides[activeSlideNum]
     }
 
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
+
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorskpace(context: Context) {
@@ -71,6 +76,19 @@ object Workspace{
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(context,Uri.parse(prefs!!.getString("workspace","")))
         isInitialized = true
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+    }
+
+    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
+        params.putString("phone_id", Secure.getString(context.contentResolver,
+                Secure.ANDROID_ID))
+        params.putString("story_number", activeStory.titleNumber)
+        params.putString("ethnolog", registration.getString("ethnologue", " "))
+        params.putString("lwc", registration.getString("lwc", " "))
+        params.putString("translator_email", registration.getString("translator_email", " "))
+        params.putString("trainer_email", registration.getString("trainer_email", " "))
+        params.putString("consultant_email", registration.getString("consultant_email", " "))
+        firebaseAnalytics.logEvent(eventName, params)
     }
 
     fun setupWorkspacePath(context: Context, uri: Uri){
