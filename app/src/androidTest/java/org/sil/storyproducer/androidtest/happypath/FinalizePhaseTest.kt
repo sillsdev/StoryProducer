@@ -41,6 +41,8 @@ class FinalizePhaseTest : PhaseTestBase() {
         val videoTitle = generateUniqueVideoTitle()
         Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
         Espresso.closeSoftKeyboard()
+        //Select "mp4 dumbphone format.
+        Espresso.onView(allOf(withId(R.id.radio_dumbphone_mp4), isDisplayed())).perform(click())
         // click the create video button
         Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
         // verify that the expected video file exists on disk
