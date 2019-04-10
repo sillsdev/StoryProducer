@@ -34,7 +34,7 @@ class KeytermList (val keyterms: List<Keyterm>) {
  * @param chosenKeytermFile the active
  **/
 @JsonClass(generateAdapter = true)
-class Keyterm (var term: String = "",
+data class Keyterm (var term: String = "",
                var termForms: List<String> = listOf(),
                var alternateRenderings: List<String> = listOf(),
                var explanation: String = "",
@@ -46,7 +46,7 @@ class Keyterm (var term: String = "",
 }
 
 @JsonClass(generateAdapter = true)
-class KeytermRecording (var audioRecordingFilename : String = "",
+data class KeytermRecording (var audioRecordingFilename : String = "",
                         var textBackTranslation : String = "",
                         var isTextBackTranslationSubmitted: Boolean = false) {
     companion object
