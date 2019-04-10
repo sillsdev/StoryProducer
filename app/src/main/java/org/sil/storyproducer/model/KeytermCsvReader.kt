@@ -54,7 +54,7 @@ class KeytermCsvReader(reader: Reader): AutoCloseable{
             val list = field.split(separator)
             val trimmedList = list.asSequence().map { it.trim() }.toMutableList()
             //Trim any empty string elements
-            trimmedList.remove("")
+            trimmedList.removeAll { it == "" }
             return trimmedList
         }
         else{
