@@ -23,7 +23,7 @@ object Constants {
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
 
     const val sdcardType1 = "mnt/sdcard"
-    const val sdcardType2 = "storage/SD Card"
+    const val sdcardType2 = "storage/removable_SD Card"
     var sdcard = sdcardType1
     val workspaceDirectory : String
         get() {return "$sdcard/SPWorkspace"}

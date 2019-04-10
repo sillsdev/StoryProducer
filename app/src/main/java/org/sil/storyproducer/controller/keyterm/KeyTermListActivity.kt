@@ -121,13 +121,8 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
             // For example, swap UI fragments here
             val intent: Intent
             when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    intent = Intent(this, MainActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
                 R.id.nav_stories -> {
-                    intent = Intent(this, RegistrationActivity::class.java)
+                    intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
@@ -135,6 +130,11 @@ class KeyTermListActivity : AppCompatActivity(), SearchView.OnQueryTextListener 
                     // Current fragment
                 }
                 R.id.nav_registration -> {
+                    intent = Intent(this, RegistrationActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_workspace -> {
                     intent = Intent(this, WorkspaceUpdateActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
