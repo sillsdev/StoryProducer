@@ -68,7 +68,7 @@ class RecordingToolbar : Fragment(){
     private var colorHandler: Handler? = null
     private var colorHandlerRunnable: Runnable? = null
     private var isToolbarRed = false
-    
+
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
     private var voiceRecorder: AudioRecorder? = null
