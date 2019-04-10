@@ -6,6 +6,8 @@ import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.*
@@ -77,7 +79,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         }
 
         val videoFormat = generateVideoFormat()
-        val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
+        //TODO remove this fully after it is tested to work - PR372
+        //val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
+        val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
@@ -99,6 +103,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
             videoTempFile.delete()
             Workspace.activeStory.addVideo(videoRelPath)
+
+            val params = Bundle()
+            params.putString("video_name", videoRelPath)
+            Workspace.logEvent(context,"video_creation",params)
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
@@ -249,7 +257,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_BIT_RATE_AMR = 16000
 
         fun generateDumbAudioFormat(): MediaFormat {
-            // audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
+            // TODO - remove this audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
+            // Not really needed - PR372
             val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_WB)
             audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
             audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
