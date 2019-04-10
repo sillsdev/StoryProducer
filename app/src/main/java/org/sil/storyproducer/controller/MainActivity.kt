@@ -113,11 +113,6 @@ class MainActivity : AppCompatActivity(), Serializable {
             // For example, swap UI fragments here
             val intent: Intent
             when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
                 R.id.nav_stories -> {
                     // Current fragment
                 }
@@ -127,6 +122,11 @@ class MainActivity : AppCompatActivity(), Serializable {
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+                R.id.nav_workspace -> {
+                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
