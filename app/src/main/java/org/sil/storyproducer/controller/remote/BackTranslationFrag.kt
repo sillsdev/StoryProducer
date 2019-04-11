@@ -48,7 +48,6 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
 
     private var obj: JSONObject? = null
     private var resp: String? = null
-    private var js: MutableMap<String, String>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
@@ -163,10 +162,11 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     private fun getSlidesStatus() {
         val phoneID = Settings.Secure.getString(context!!.contentResolver,
                 Settings.Secure.ANDROID_ID)
-        js = HashMap()
-        js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phoneID
-        js!!["TemplateTitle"] = Workspace.activeStory.title
+
+        val js: MutableMap<String, String> = HashMap()
+        js["Key"] = getString(R.string.api_token)
+        js["PhoneId"] = phoneID
+        js["TemplateTitle"] = Workspace.activeStory.title
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_slide_status), Response.Listener { response ->
             try {
                 obj = JSONObject(response)
@@ -204,7 +204,7 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
             Log.e("LOG_VOLLEY", "HIT ERROR")
             //testErr = error.toString();
         }) {
-            public override fun getParams(): Map<String, String>? {
+            override fun getParams(): Map<String, String>? {
                 return js
             }
         }
@@ -214,11 +214,11 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     private fun requestRemoteReview() {
         val phoneID = Settings.Secure.getString(context?.contentResolver,
                 Settings.Secure.ANDROID_ID)
-        js = HashMap()
-        js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phoneID
-        js!!["TemplateTitle"] = Workspace.activeStory.title
-        js!!["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
+        val js: MutableMap<String, String> = HashMap()
+        js["Key"] = getString(R.string.api_token)
+        js["PhoneId"] = phoneID
+        js["TemplateTitle"] = Workspace.activeStory.title
+        js["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_request_review), Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_RR", response)
             resp = response

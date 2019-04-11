@@ -26,6 +26,7 @@ import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
  * Created by annmcostantino on 2/19/2018.
@@ -37,7 +38,6 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
 
     private var obj: JSONObject? = null
     private var resp: String? = null
-    private var js: MutableMap<String, String>? = null
 
     private var msgAdapter: MessageAdapter? = null
     private var messagesView: ListView? = null
@@ -183,13 +183,14 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
     private fun sendMessage() {
         val phoneID = Settings.Secure.getString(context!!.contentResolver,
                 Settings.Secure.ANDROID_ID)
-        js = HashMap()
-        js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phoneID
-        js!!["StoryTitle"]  = Workspace.activeStory.title
-        js!!["SlideNumber"] = Integer.toString(slideNum)
+
+        val js: MutableMap<String, String> = HashMap()
+        js["Key"] = getString(R.string.api_token)
+        js["PhoneId"] = phoneID
+        js["StoryTitle"]  = Workspace.activeStory.title
+        js["SlideNumber"] = Integer.toString(slideNum)
         val message = messageSent.text.toString()
-        js!!["Message"] = message
+        js["Message"] = message
 
         val req = object : paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, Response.Listener { response ->
             Log.i("LOG_VOLLEY_MSG", response.toString())
@@ -245,12 +246,12 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         val phoneID = Settings.Secure.getString(context!!.contentResolver,
                 Settings.Secure.ANDROID_ID)
 
-        js = HashMap()
-        js!!["Key"] = getString(R.string.api_token)
-        js!!["PhoneId"] = phoneID
-        js!!["StoryTitle"] = Workspace.activeStory.title
-        js!!["SlideNumber"] = Integer.toString(slideNum)
-        js!!["LastId"] = Integer.toString(msgAdapter!!.lastID)
+        val js: MutableMap<String, String> = HashMap()
+        js["Key"] = getString(R.string.api_token)
+        js["PhoneId"] = phoneID
+        js["StoryTitle"] = Workspace.activeStory.title
+        js["SlideNumber"] = Integer.toString(slideNum)
+        js["LastId"] = Integer.toString(msgAdapter!!.lastID)
 
         val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_messages), Response.Listener { response ->
             //returns messages array IsTranslator: boolean + Message: String
@@ -304,9 +305,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
             Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIVE MSG")
             //testErr = error.toString();
         }) {
-            @Throws(AuthFailureError::class)
-            public override fun getParams(): Map<String, String>? {
-
+            override fun getParams(): Map<String, String>? {
                 return js
             }
         }
