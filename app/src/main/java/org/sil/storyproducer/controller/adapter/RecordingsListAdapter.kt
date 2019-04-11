@@ -212,7 +212,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
          * Updates the list of draft recordings at beginning of fragment creation and after any list change
          */
         fun updateRecordingList() {
-            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum)!!
+            filenames = Workspace.activePhase.getRecordedAudioFiles(slideNum) ?:  mutableListOf()
             strippedFilenames = filenames
             if (strippedFilenames != null) {
                 for (i in 0 until strippedFilenames!!.size) {
