@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.support.v4.provider.DocumentFile
+import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.getStoryChildOutputStream
 import org.sil.storyproducer.tools.file.getStoryText
@@ -54,12 +55,14 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     try {
         story = parsePhotoStoryXML(context, storyPath)
     } catch (e : Exception){
+        Crashlytics.logException(e)
         story = null
     }
     if(story == null){
         try {
             story = parseBloomHTML(context, storyPath)
         } catch (e : Exception){
+            Crashlytics.logException(e)
             story = null
         }
     }

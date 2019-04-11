@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import com.crashlytics.android.Crashlytics
 import org.json.JSONException
 import org.json.JSONObject
 import org.sil.storyproducer.tools.file.getChildOutputStream
@@ -21,6 +22,7 @@ class Registration{
             try {
                 jsonData = JSONObject(regString)
             } catch (e: JSONException) {
+                Crashlytics.logException(e)
                 jsonData = JSONObject()
             }
         }
@@ -31,7 +33,9 @@ class Registration{
             try {
                 oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
                 oStream.close()
-            }catch(e:Exception){}
+            }catch(e:Exception){
+                Crashlytics.logException(e)
+            }
         }
     }
 
@@ -42,7 +46,7 @@ class Registration{
         var regString = default
         try {
             regString = jsonData.getString(name)
-        } catch (e: JSONException) { }
+        } catch (e: JSONException) {}
         return regString
     }
 

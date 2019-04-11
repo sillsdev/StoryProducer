@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
@@ -265,7 +266,7 @@ class RecordingToolbar : Fragment(){
                         try {
                             AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                         } catch (e: FileNotFoundException) {
-                            Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                            Crashlytics.logException(e)
                         }
                     } else {
                         isAppendingOn = true
@@ -362,7 +363,7 @@ class RecordingToolbar : Fragment(){
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
-                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                        Crashlytics.logException(e)
                     }
                 }else {
                     stopToolbarMedia()
