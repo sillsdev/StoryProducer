@@ -64,6 +64,10 @@
         <activity
             android:name=".controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
+        <!-- WholeStoryBacktranslation -->
+        <activity
+            android:name=".controller.remote.WholeStoryBackTranslationActivity"
+            android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
             android:name=".controller.export.CreateActivity"
