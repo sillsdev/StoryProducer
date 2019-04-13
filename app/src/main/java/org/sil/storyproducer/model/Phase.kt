@@ -7,6 +7,7 @@ import org.sil.storyproducer.controller.export.CreateActivity
 import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
+import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
@@ -139,7 +140,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.CREATE -> CreateActivity::class.java
             PhaseType.SHARE -> ShareActivity::class.java
             PhaseType.BACKT -> PagerBaseActivity::class.java
-            PhaseType.WHOLE_STORY -> LearnActivity::class.java
+            PhaseType.WHOLE_STORY -> WholeStoryBackTranslationActivity::class.java
             PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
         }
     }
