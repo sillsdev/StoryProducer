@@ -71,7 +71,7 @@ class WorkspaceSetter {
     }
 
     private fun isWorkspacePickerDisplayed(device: UiDevice): Boolean {
-        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select Template Folder"))
+        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select 'SP Templates' folder"))
         return selectTemplateAlert != null
     }
 
