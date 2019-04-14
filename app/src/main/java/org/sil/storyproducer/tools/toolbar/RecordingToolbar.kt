@@ -244,12 +244,7 @@ class RecordingToolbar : Fragment(){
             }
         }
 
-        val playBackFileExist = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
-            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum), "keyterms")
-        }
-        else {
-            storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
-        }
+        val playBackFileExist = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
