@@ -261,10 +261,10 @@ class RecordingToolbar : Fragment(){
     private fun setOnClickListeners() {
         // TODO Move setOnClickListeners to their own functions
         micButton.setOnClickListener {
-            // TODO Add a wasRecording field and move stopToolbarMedia up
+            val wasRecording = voiceRecorder?.isRecording == true
+            stopToolbarMedia()
             if(enableCheckButton){
-                if (voiceRecorder?.isRecording == true) {
-                    stopToolbarVoiceRecording()
+                if (wasRecording) {
                     if (isAppendingOn) {
                         try {
                             AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
@@ -276,7 +276,6 @@ class RecordingToolbar : Fragment(){
                     }
                     micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
                 } else {
-                    stopToolbarMedia()
                     if (isAppendingOn) {
                         startRecording(audioTempName)
                     }
@@ -296,10 +295,7 @@ class RecordingToolbar : Fragment(){
                 }
             }
             else {
-                // TODO Determine if stopToolbarMedia can be placed one level higher
-                if (voiceRecorder?.isRecording == true) {
-                    stopToolbarMedia()
-                } else {
+                if (!wasRecording) {
                     val recordingRelPath = assignNewAudioRelPath()
                     //we may be overwriting things in other phases, but we do not care.
                     if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
@@ -311,12 +307,10 @@ class RecordingToolbar : Fragment(){
                                 }
                                 .setPositiveButton(activity!!.getString(R.string.yes)) { _, _ ->
                                     //overwrite audio
-                                    stopToolbarMedia()
                                     recordAudio(recordingRelPath)
                                 }.create()
                         dialog.show()
                     } else {
-                        stopToolbarMedia()
                         recordAudio(recordingRelPath)
                     }
                 }
