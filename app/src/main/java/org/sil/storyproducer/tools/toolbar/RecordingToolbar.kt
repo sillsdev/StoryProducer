@@ -242,7 +242,7 @@ class RecordingToolbar : Fragment(){
             }
         }
 
-        val playBackFileExist : Boolean = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        val playBackFileExist = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
