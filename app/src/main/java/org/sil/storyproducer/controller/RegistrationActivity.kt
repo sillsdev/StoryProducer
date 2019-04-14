@@ -641,19 +641,14 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //Now, let's find the workspace path.
         Workspace.initializeWorskpace(this)
-        if (true) {
-            AlertDialog.Builder(this)
-                    .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
-                    .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
-                    .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
-                    }.create().show()
-        }else{
-            intent = Intent(this, RegistrationActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
+        val dialog = AlertDialog.Builder(this)
+                .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
+                .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
+                .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+                }.create()
+        dialog.show()
         super.onCreate(savedInstanceState)
     }
 
