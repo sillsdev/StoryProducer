@@ -52,7 +52,10 @@ private const val RECORDING_ANIMATION_DURATION = 1500
 class RecordingToolbar : Fragment(){
 
     var rootView: LinearLayout? = null
-    // TODO  Abstract out a toolbar button (ImageButton, isEnabled, visibility, icon, layout params)
+    // TODO Abstract out a toolbar button (ImageButton, isEnabled, visibility, icon, layout params)
+    // TODO Refactor out keyterm phase stuff into a child class
+    // TODO Refactor stuff for other phases into child classes for toolbar if possible/helpful
+    // TODO Add a hideAllButtons function
     private var enablePlaybackButton : Boolean = false
     private var enableCheckButton : Boolean = false
     private var enableMultiRecordButton : Boolean = false
@@ -266,106 +269,12 @@ class RecordingToolbar : Fragment(){
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-        // TODO Move setOnClickListeners to their own functions
-        micButton.setOnClickListener {
-            val wasRecording = voiceRecorder?.isRecording == true
-            stopToolbarMedia()
-            if(enableCheckButton){
-                if (wasRecording) {
-                    if (isAppendingOn) {
-                        try {
-                            AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
-                        } catch (e: FileNotFoundException) {
-                            Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
-                        }
-                    } else {
-                        isAppendingOn = true
-                    }
-                    micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
-                } else {
-                    if (isAppendingOn) {
-                        startRecording(audioTempName)
-                    }
-                    else {
-                        startRecording(assignNewAudioRelPath())
-                    }
-                    micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                    if (enablePlaybackButton) {
-                        playButton.visibility = View.INVISIBLE
-                    }
-                    if (enableMultiRecordButton) {
-                        multiRecordButton.visibility = View.INVISIBLE
-                    }
-                    if (enableSendAudioButton) {
-                        sendAudioButton.visibility = View.INVISIBLE
-                    }
-                }
-            }
-            else {
-                if (!wasRecording) {
-                    val recordingRelPath = assignNewAudioRelPath()
-                    //we may be overwriting things in other phases, but we do not care.
-                    if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
-                        val dialog = AlertDialog.Builder(activity!!)
-                                .setTitle(activity!!.getString(R.string.overwrite))
-                                .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
-                                .setNegativeButton(activity!!.getString(R.string.no)) { _, _ ->
-                                    //do nothing
-                                }
-                                .setPositiveButton(activity!!.getString(R.string.yes)) { _, _ ->
-                                    //overwrite audio
-                                    recordAudio(recordingRelPath)
-                                }.create()
-                        dialog.show()
-                    } else {
-                        recordAudio(recordingRelPath)
-                    }
-                }
-            }
-        }
-
+        micButton.setOnClickListener(getMicButtonOnClickListener())
         if (enablePlaybackButton) {
-            playButton.setOnClickListener {
-                stopToolbarMedia()
-                if (!audioPlayer.isAudioPlaying) {
-                    recordingListener.onStartedRecordingOrPlayback(false)
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
-                        audioPlayer.playAudio()
-                        Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
-                        playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-                        //TODO: make this logging more robust and encapsulated
-                        when (Workspace.activePhase.phaseType){
-                                PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
-                                PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
-                                else ->{}
-                        }
-                    } else {
-                        Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
+            playButton.setOnClickListener(getPlayButtonOnClickListener())
         }
-
         if (enableCheckButton) {
-            checkButton.setOnClickListener {
-                stopToolbarMedia()
-                //Delete the temp file wav file
-                if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
-                    try {
-                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
-                    } catch (e: FileNotFoundException) {
-                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
-                    }
-                }
-
-                //make the button invisible till after the next new recording
-                isAppendingOn = false
-                checkButton.visibility = View.INVISIBLE
-                micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
-                if (enableSendAudioButton) {
-                    sendAudioButton.visibility = View.VISIBLE
-                }
-            }
+            checkButton.setOnClickListener(getCheckButtonOnClickListener())
         }
         if (enableMultiRecordButton) {
             if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
@@ -386,27 +295,138 @@ class RecordingToolbar : Fragment(){
                 setKeytermMultiRecordIcon(from(bottomSheet).state)
             }
 
-            multiRecordButton.setOnClickListener {
-                stopToolbarMedia()
-                if (Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity) {
-                    val bottomSheet = (activity as KeyTermActivity).bottomSheet
+            multiRecordButton.setOnClickListener(getMultiRecordButtonOnClickListener())
+        }
+        if (enableSendAudioButton) {
+            sendAudioButton.setOnClickListener(getSendButtonOnClickListener())
+        }
+    }
 
-                    if(from(bottomSheet).state == STATE_EXPANDED) {
-                        from(bottomSheet).state = STATE_COLLAPSED
+    private fun getMicButtonOnClickListener(): View.OnClickListener{
+          return View.OnClickListener {
+              val wasRecording = voiceRecorder?.isRecording == true
+              stopToolbarMedia()
+              if(enableCheckButton){
+                  if (wasRecording) {
+                      if (isAppendingOn) {
+                          try {
+                              AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                          } catch (e: FileNotFoundException) {
+                              Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                          }
+                      } else {
+                          isAppendingOn = true
+                      }
+                      micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
+                  } else {
+                      if (isAppendingOn) {
+                          startRecording(audioTempName)
+                      }
+                      else {
+                          startRecording(assignNewAudioRelPath())
+                      }
+                      micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                      if (enablePlaybackButton) {
+                          playButton.visibility = View.INVISIBLE
+                      }
+                      if (enableMultiRecordButton) {
+                          multiRecordButton.visibility = View.INVISIBLE
+                      }
+                      if (enableSendAudioButton) {
+                          sendAudioButton.visibility = View.INVISIBLE
+                      }
+                  }
+              }
+              else {
+                  if (!wasRecording) {
+                      val recordingRelPath = assignNewAudioRelPath()
+                      //we may be overwriting things in other phases, but we do not care.
+                      if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                          val dialog = AlertDialog.Builder(activity!!)
+                                  .setTitle(activity!!.getString(R.string.overwrite))
+                                  .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
+                                  .setNegativeButton(activity!!.getString(R.string.no)) { _, _ ->
+                                      //do nothing
+                                  }
+                                  .setPositiveButton(activity!!.getString(R.string.yes)) { _, _ ->
+                                      //overwrite audio
+                                      recordAudio(recordingRelPath)
+                                  }.create()
+                          dialog.show()
+                      } else {
+                          recordAudio(recordingRelPath)
+                      }
+                  }
+              }
+          }
+    }
+
+    private fun getPlayButtonOnClickListener(): View.OnClickListener {
+        return View.OnClickListener {
+            stopToolbarMedia()
+            if (!audioPlayer.isAudioPlaying) {
+                recordingListener.onStartedRecordingOrPlayback(false)
+                if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
+                    audioPlayer.playAudio()
+                    Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
+                    playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
+                    //TODO: make this logging more robust and encapsulated
+                    when (Workspace.activePhase.phaseType){
+                        PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
+                        else ->{}
                     }
-                    else{
-                        from(bottomSheet).state = STATE_EXPANDED
-                    }
-                } else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM) {
-                    recordingListener.onStartedRecordingOrPlayback(false)
-                    RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
+                } else {
+                    Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
                 }
             }
         }
-        if (enableSendAudioButton) {
-            sendAudioButton.setOnClickListener {
-                stopToolbarMedia()
+    }
+
+    private fun getCheckButtonOnClickListener(): View.OnClickListener{
+        return View.OnClickListener {
+            stopToolbarMedia()
+            //Delete the temp file wav file
+            if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+                try {
+                    AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                } catch (e: FileNotFoundException) {
+                    Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                }
             }
+
+            //make the button invisible till after the next new recording
+            isAppendingOn = false
+            checkButton.visibility = View.INVISIBLE
+            micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+            if (enableSendAudioButton) {
+                sendAudioButton.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun getMultiRecordButtonOnClickListener(): View.OnClickListener{
+        return View.OnClickListener {
+            stopToolbarMedia()
+            if (Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity) {
+                val bottomSheet = (activity as KeyTermActivity).bottomSheet
+
+                if(from(bottomSheet).state == STATE_EXPANDED) {
+                    from(bottomSheet).state = STATE_COLLAPSED
+                }
+                else{
+                    from(bottomSheet).state = STATE_EXPANDED
+                }
+            } else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM) {
+                recordingListener.onStartedRecordingOrPlayback(false)
+                RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
+            }
+        }
+    }
+
+    private fun getSendButtonOnClickListener(): View.OnClickListener{
+        return View.OnClickListener {
+            stopToolbarMedia()
         }
     }
 
