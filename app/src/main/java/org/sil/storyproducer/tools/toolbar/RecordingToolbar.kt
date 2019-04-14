@@ -244,7 +244,7 @@ class RecordingToolbar : Fragment(){
             }
         }
 
-        val playBackFileExist : Boolean = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
+        val playBackFileExist = if(Workspace.activePhase.phaseType == PhaseType.KEYTERM){
             storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum), "keyterms")
         }
         else {
