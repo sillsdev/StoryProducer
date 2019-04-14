@@ -262,22 +262,22 @@ class RecordingToolbar : Fragment(){
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-        micButton.setOnClickListener(getMicButtonOnClickListener())
+        micButton.setOnClickListener(micButtonOnClickListener())
         if (enablePlaybackButton) {
-            playButton.setOnClickListener(getPlayButtonOnClickListener())
+            playButton.setOnClickListener(playButtonOnClickListener())
         }
         if (enableCheckButton) {
-            checkButton.setOnClickListener(getCheckButtonOnClickListener())
+            checkButton.setOnClickListener(checkButtonOnClickListener())
         }
         if (enableMultiRecordButton) {
-            multiRecordButton.setOnClickListener(getMultiRecordButtonOnClickListener())
+            multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
         }
         if (enableSendAudioButton) {
-            sendAudioButton.setOnClickListener(getSendButtonOnClickListener())
+            sendAudioButton.setOnClickListener(sendButtonOnClickListener())
         }
     }
 
-    private fun getMicButtonOnClickListener(): View.OnClickListener{
+    private fun micButtonOnClickListener(): View.OnClickListener{
           return View.OnClickListener {
               val wasRecording = voiceRecorder?.isRecording == true
               stopToolbarMedia()
@@ -336,7 +336,7 @@ class RecordingToolbar : Fragment(){
           }
     }
 
-    private fun getPlayButtonOnClickListener(): View.OnClickListener {
+    private fun playButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             stopToolbarMedia()
             if (!audioPlayer.isAudioPlaying) {
@@ -358,7 +358,7 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun getCheckButtonOnClickListener(): View.OnClickListener{
+    private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
             //Delete the temp file wav file
@@ -380,7 +380,7 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun getMultiRecordButtonOnClickListener(): View.OnClickListener{
+    private fun multiRecordButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
             recordingListener.onStartedRecordingOrPlayback(false)
@@ -388,7 +388,7 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun getSendButtonOnClickListener(): View.OnClickListener{
+    private fun sendButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
         }
