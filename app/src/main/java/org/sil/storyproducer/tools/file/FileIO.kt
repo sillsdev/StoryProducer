@@ -9,9 +9,8 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
-import org.sil.storyproducer.model.KEYTERMS_DIR
-import android.util.Log
 import com.crashlytics.android.Crashlytics
+import org.sil.storyproducer.model.KEYTERMS_DIR
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -95,7 +94,7 @@ fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Work
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
-    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
+    context.contentResolver.getType(getWorkspaceUri(relPath)!!) ?: return false
     return true
 }
 

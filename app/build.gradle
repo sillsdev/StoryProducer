@@ -1,3 +1,5 @@
+import com.google.gms.googleservices.GoogleServicesPlugin
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -100,4 +102,4 @@ apply plugin: 'com.google.gms.google-services'
 // https://stackoverflow.com/questions/54441456/cant-update-to-com-google-gmsgoogle-services4-2-0
 // Hopefully the corresponding GitHub issue will resolve this issue, so that this version check can
 // be removed in the future.
-com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
+GoogleServicesPlugin.config.disableVersionCheck = true
