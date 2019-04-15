@@ -43,10 +43,6 @@ class AnimationHandler(initialColor: Int = Color.rgb(0, 0, 255),
         }
     }
 
-//    private fun isAnimationEnabled(): Boolean {
-//        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
-//    }
-
     /**
      * Stops the animation from continuing. The removeCallbacks function removes all
      * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
