@@ -13,6 +13,8 @@ import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.util.*
 
+internal const val SLIDE_NUM = "CurrentSlideNum"
+
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {

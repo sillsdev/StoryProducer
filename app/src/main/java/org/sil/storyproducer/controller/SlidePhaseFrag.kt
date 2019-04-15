@@ -9,10 +9,7 @@ import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Slide
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -213,9 +210,5 @@ abstract class SlidePhaseFrag : Fragment() {
     open fun stopPlayBackAndRecording() {
         referenceAudioPlayer.pauseAudio()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-    }
-
-    companion object {
-        const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
     }
 }

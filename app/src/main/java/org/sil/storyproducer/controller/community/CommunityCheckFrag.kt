@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
+import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -62,9 +65,9 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
 
     override fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBoolean("enablePlaybackButton", false)
-        bundle.putBoolean("enableMultiRecordButton", false)
-        bundle.putInt("slideNum", slideNum)
+        bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, false)
+        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, false)
+        bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
