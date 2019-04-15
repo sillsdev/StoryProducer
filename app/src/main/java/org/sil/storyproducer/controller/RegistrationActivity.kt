@@ -24,6 +24,7 @@ import android.widget.*
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -570,6 +571,7 @@ open class RegistrationActivity : AppCompatActivity() {
             reg.save(this)
             Log.i("Finished sending email", "")
         } catch (ex: android.content.ActivityNotFoundException) {
+            Crashlytics.logException(ex)
             Toast.makeText(this,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show()
         }

@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -117,12 +118,12 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             Toast.makeText(activity, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
         }
         catch (e: IllegalStateException) {
-            Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)
             Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
+            Crashlytics.logException(e)
         }
         catch (e: IOException) {
-            Log.e(AUDIO_RECORDER, "Could not start recording voice.", e)
             Toast.makeText(activity, "IOException!", Toast.LENGTH_SHORT).show()
+            Crashlytics.logException(e)
         }
     }
 
@@ -136,6 +137,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             Toast.makeText(activity, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
+            Crashlytics.logException(stopException)
         } catch (e: InterruptedException) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
         }

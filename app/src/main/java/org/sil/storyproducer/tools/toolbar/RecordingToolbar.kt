@@ -79,7 +79,7 @@ open class RecordingToolbar : Fragment(){
 
         appContext = activity?.applicationContext!!
         voiceRecorder = AudioRecorderMP4(activity!!)
-        
+
         val bundleArguments = arguments
         if (bundleArguments != null) {
             enablePlaybackButton = bundleArguments.get(ENABLE_PLAY_BACK_BUTTON) as Boolean
@@ -292,21 +292,21 @@ open class RecordingToolbar : Fragment(){
             RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }
     }
-    
+
     protected fun recordAudio(recordingRelPath: String) {
         recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder?.startNewRecording(recordingRelPath)
         if(isAnimationEnabled()){
             animationHandler.startAnimation()
         }
-        
+
         //TODO: make this logging more robust and encapsulated
         when(Workspace.activePhase.phaseType){
             PhaseType.DRAFT -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
             PhaseType.COMMUNITY_CHECK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
             else -> {}
         }
-        
+
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
 
         hideSecondaryButtons()
