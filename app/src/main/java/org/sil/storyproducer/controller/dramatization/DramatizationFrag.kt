@@ -13,8 +13,11 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
+import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class DramatizationFrag : MultiRecordFrag() {
@@ -86,10 +89,10 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBoolean("enablePlaybackButton", true)
-        bundle.putBoolean("enableMultiRecordButton", true)
-        bundle.putBoolean("enableSendAudioButton", false)
-        bundle.putInt("slideNum", slideNum)
+        bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
+        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, true)
+        bundle.putBoolean(ENABLE_SEND_AUDIO_BUTTON, false)
+        bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 

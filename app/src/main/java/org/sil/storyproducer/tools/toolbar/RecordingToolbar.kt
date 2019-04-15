@@ -17,6 +17,7 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
@@ -25,6 +26,9 @@ import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+
+internal const val ENABLE_PLAY_BACK_BUTTON = "EnablePlayBackButton"
+internal const val ENABLE_MULTI_RECORD_BUTTON = "EnableMultiRecordButton"
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -78,9 +82,9 @@ open class RecordingToolbar : Fragment(){
         
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            enablePlaybackButton = bundleArguments.get("enablePlaybackButton") as Boolean
-            enableMultiRecordButton = bundleArguments.get("enableMultiRecordButton") as Boolean
-            slideNum = bundleArguments.get("slideNum") as Int
+            enablePlaybackButton = bundleArguments.get(ENABLE_PLAY_BACK_BUTTON) as Boolean
+            enableMultiRecordButton = bundleArguments.get(ENABLE_MULTI_RECORD_BUTTON) as Boolean
+            slideNum = bundleArguments.get(SLIDE_NUM) as Int
         }
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
