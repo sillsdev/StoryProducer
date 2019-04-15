@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import org.sil.storyproducer.model.KEYTERMS_DIR
+import android.util.Log
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -37,7 +39,9 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
         }
         iStream.close()
         iStream.close()
-    } catch (e: Exception) {}
+    } catch (e: Exception) {
+        Crashlytics.logException(e)
+    }
 }
 
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
@@ -177,16 +181,21 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     //build the document tree if it is needed
     val segments = relPath.split("/")
     var uri = Workspace.workspace.uri
-    for (i in 0 .. segments.size-2){
-        //TODO make this faster.
-        val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-        val isDirectory = context.contentResolver.getType(newUri)?.
-                contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
-        if(!isDirectory){
-            DocumentsContract.createDocument(context.contentResolver,uri,
-                    DocumentsContract.Document.MIME_TYPE_DIR,segments[i])
+    try {
+        for (i in 0..segments.size - 2) {
+            //TODO make this faster.
+            val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+            val isDirectory = context.contentResolver.getType(newUri)?.contains(DocumentsContract.Document.MIME_TYPE_DIR)
+                    ?: false
+            if (!isDirectory) {
+                DocumentsContract.createDocument(context.contentResolver, uri,
+                        DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+            }
+            uri = newUri
         }
-        uri = newUri
+    } catch (e: Exception){
+        Crashlytics.logException(e)
+        return null
     }
     //create the file if it is needed
     val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))

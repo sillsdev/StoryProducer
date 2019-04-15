@@ -70,7 +70,6 @@ class AudioPlayer {
             //TODO maybe do something with this exception
             fileExists = false
             isAudioPrepared = false
-            e.printStackTrace()
         }
         return fileExists
     }
@@ -103,11 +102,7 @@ class AudioPlayer {
             try {
                 if(mPlayer.isPlaying)
                     mPlayer.pause()
-            } catch (e: IllegalStateException) {
-                //TODO maybe do something with this exception
-                e.printStackTrace()
-            }
-
+            } catch (e: Exception) {}
         }
     }
 
@@ -120,10 +115,7 @@ class AudioPlayer {
             if(fileExists) {
                 mPlayer.start()
             }
-        } catch (e: IOException) {
-            //TODO maybe do something with this exception
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { }
 
     }
 
@@ -134,9 +126,7 @@ class AudioPlayer {
         try {
             if(mPlayer.isPlaying) mPlayer.pause()
             if(currentPosition != 0) currentPosition = 0
-        } catch (e: IllegalStateException) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) {}
     }
 
     /**
