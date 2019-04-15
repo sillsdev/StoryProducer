@@ -47,21 +47,20 @@ private const val RECORDING_ANIMATION_DURATION = 1500
  * This class also saves the recording and allows playback <br></br> from the toolbar. see: [.createToolbar]
  * <br></br><br></br>
  */
-// TODO Refactor out keyterm phase stuff into a child class
 // TODO Refactor stuff for other phases into child classes for toolbar if possible/helpful
 // TODO Refactor animation stuff into its own class
-class RecordingToolbar : Fragment(){
+open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     private lateinit var appContext: Context
     private lateinit var micButton: ImageButton
     private lateinit var playButton: ImageButton
+    protected lateinit var multiRecordButton: ImageButton
     private lateinit var checkButton: ImageButton
-    private lateinit var multiRecordButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
 
     private var enablePlaybackButton : Boolean = false
-    private var enableCheckButton : Boolean = false
     private var enableMultiRecordButton : Boolean = false
+    private var enableCheckButton : Boolean = false
     private var enableSendAudioButton : Boolean = false
 
     private lateinit var recordingListener : RecordingListener
@@ -247,23 +246,23 @@ class RecordingToolbar : Fragment(){
     }
 
     private fun showSecondaryButtons(){
-        checkButton.visibility = View.VISIBLE
         playButton.visibility = View.VISIBLE
         multiRecordButton.visibility = View.VISIBLE
+        checkButton.visibility = View.VISIBLE
         sendAudioButton.visibility = View.VISIBLE
     }
 
     private fun hideSecondaryButtons(){
-        checkButton.visibility = View.INVISIBLE
         playButton.visibility = View.INVISIBLE
         multiRecordButton.visibility = View.INVISIBLE
+        checkButton.visibility = View.INVISIBLE
         sendAudioButton.visibility = View.INVISIBLE
     }
 
     /**
      * Enables the buttons to have the appropriate onClick listeners.
      */
-    private fun setOnClickListeners() {
+    protected open fun setOnClickListeners() {
         micButton.setOnClickListener(micButtonOnClickListener())
         playButton.setOnClickListener(playButtonOnClickListener())
         checkButton.setOnClickListener(checkButtonOnClickListener())
@@ -364,7 +363,7 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun multiRecordButtonOnClickListener(): View.OnClickListener{
+    protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
             recordingListener.onStartedRecordingOrPlayback(false)
@@ -378,9 +377,6 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    /*
-    * Start recording audio and hide buttons
-     */
     private fun recordAudio(recordingRelPath: String) {
         recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder?.startNewRecording(recordingRelPath)
