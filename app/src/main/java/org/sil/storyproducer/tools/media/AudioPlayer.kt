@@ -6,7 +6,6 @@ import android.net.Uri
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
-import java.io.IOException
 
 class AudioPlayer {
 
