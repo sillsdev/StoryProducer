@@ -16,7 +16,6 @@ import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
 import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
@@ -90,7 +89,6 @@ class DramatizationFrag : MultiRecordFrag() {
     override fun setToolbar() {
         val bundle = Bundle()
         bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
-        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, true)
         bundle.putBoolean(ENABLE_SEND_AUDIO_BUTTON, false)
         bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
