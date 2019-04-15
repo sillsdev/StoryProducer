@@ -87,15 +87,11 @@ class WorkspaceSetter {
         }
         device.findObject(By.desc("Show roots")).click()
 
-        // Occasionally, clicking on the internal storage button will fail.
-        // Sleeping briefly appears to make it less likely to fail.
-        Thread.sleep(1000)
+        device.wait(Until.hasObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)), TIMEOUT_DURATION)
         device.findObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)).click()
 
         val workspaceDirectoryName = getDirectoryNameFromFullPath(Constants.workspaceDirectory)
-        // Occasionally, clicking on the workspace directory will fail.
-        // Sleeping briefly appears to make it less likely to fail.
-        Thread.sleep(1000)
+        device.wait(Until.hasObject(By.text(workspaceDirectoryName)), TIMEOUT_DURATION)
         device.findObject(By.text(workspaceDirectoryName)).click()
 
         device.findObject(By.text("SELECT")).click()
