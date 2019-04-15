@@ -15,9 +15,10 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class DramatizationFrag : MultiRecordFrag() {
-
+    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
     private var slideText: EditText? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -85,7 +86,9 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
+        bundle.putBoolean("enablePlaybackButton", true)
+        bundle.putBoolean("enableMultiRecordButton", true)
+        bundle.putBoolean("enableSendAudioButton", false)
         bundle.putInt("slideNum", slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()

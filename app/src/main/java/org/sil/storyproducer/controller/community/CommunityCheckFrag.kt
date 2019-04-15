@@ -62,7 +62,8 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
 
     override fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
+        bundle.putBoolean("enablePlaybackButton", false)
+        bundle.putBoolean("enableMultiRecordButton", false)
         bundle.putInt("slideNum", slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
