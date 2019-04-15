@@ -264,20 +264,11 @@ class RecordingToolbar : Fragment(){
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-        // TODO Determine if conditional statements can be removed or if they save time
         micButton.setOnClickListener(micButtonOnClickListener())
-        if (enablePlaybackButton) {
-            playButton.setOnClickListener(playButtonOnClickListener())
-        }
-        if (enableCheckButton) {
-            checkButton.setOnClickListener(checkButtonOnClickListener())
-        }
-        if (enableMultiRecordButton) {
-            multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
-        }
-        if (enableSendAudioButton) {
-            sendAudioButton.setOnClickListener(sendButtonOnClickListener())
-        }
+        playButton.setOnClickListener(playButtonOnClickListener())
+        checkButton.setOnClickListener(checkButtonOnClickListener())
+        multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
+        sendAudioButton.setOnClickListener(sendButtonOnClickListener())
     }
 
     private fun micButtonOnClickListener(): View.OnClickListener{
