@@ -17,7 +17,6 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
 import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
@@ -120,7 +119,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private fun setToolbar(){
         val bundle = Bundle()
         bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
-        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, false)
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
         supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
