@@ -21,7 +21,6 @@ import java.util.*
 import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
-
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -117,7 +116,8 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
     private fun setToolbar(){
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,false,false))
+        bundle.putBoolean("enablePlaybackButton", true)
+        bundle.putBoolean("enableMultiRecordButton", false)
         bundle.putInt("slideNum", 0)
         recordingToolbar.arguments = bundle
         supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()

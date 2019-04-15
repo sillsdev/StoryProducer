@@ -26,7 +26,7 @@ import java.io.File
  */
 abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
 
-    protected var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    protected open var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var tempPicFile: File? = null
 
 
@@ -160,7 +160,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
 
     protected open fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
+        bundle.putBoolean("enablePlaybackButton", true)
+        bundle.putBoolean("enableMultiRecordButton", true)
         bundle.putInt("slideNum", slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
