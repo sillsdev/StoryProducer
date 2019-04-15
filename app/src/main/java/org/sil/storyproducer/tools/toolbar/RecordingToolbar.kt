@@ -266,37 +266,28 @@ class RecordingToolbar : Fragment(){
      * Enables the buttons to have the appropriate onClick listeners.
      */
     private fun setOnClickListeners() {
-        // TODO Determine if conditional statements can be removed or if they save time
         micButton.setOnClickListener(micButtonOnClickListener())
-        if (enablePlaybackButton) {
-            playButton.setOnClickListener(playButtonOnClickListener())
-        }
-        if (enableCheckButton) {
-            checkButton.setOnClickListener(checkButtonOnClickListener())
-        }
-        if (enableMultiRecordButton) {
-            if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
-                val bottomSheet = (activity as KeyTermActivity).bottomSheet
-                from(bottomSheet).setBottomSheetCallback(object : BottomSheetCallback(){
-                    override fun onStateChanged(view: View, newState: Int) {
-                        setKeytermMultiRecordIcon(newState)
-                        if(newState == STATE_COLLAPSED){
-                            view.let { activity?.hideKeyboard(it) }
-                        }
-                        // Disables opening recording list when no recordings are available
-                        if(Workspace.activeKeyterm.keytermRecordings.isEmpty()){
-                            from(bottomSheet).state = STATE_COLLAPSED
-                        }
-                    }
-                    override fun onSlide(view: View, newState: Float) {}
-                })
-                setKeytermMultiRecordIcon(from(bottomSheet).state)
-            }
+        playButton.setOnClickListener(playButtonOnClickListener())
+        checkButton.setOnClickListener(checkButtonOnClickListener())
+        multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
+        sendAudioButton.setOnClickListener(sendButtonOnClickListener())
 
-            multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
-        }
-        if (enableSendAudioButton) {
-            sendAudioButton.setOnClickListener(sendButtonOnClickListener())
+        if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
+            val bottomSheet = (activity as KeyTermActivity).bottomSheet
+            from(bottomSheet).setBottomSheetCallback(object : BottomSheetCallback(){
+                override fun onStateChanged(view: View, newState: Int) {
+                    setKeytermMultiRecordIcon(newState)
+                    if(newState == STATE_COLLAPSED){
+                        view.let { activity?.hideKeyboard(it) }
+                    }
+                    // Disables opening recording list when no recordings are available
+                    if(Workspace.activeKeyterm.keytermRecordings.isEmpty()){
+                        from(bottomSheet).state = STATE_COLLAPSED
+                    }
+                }
+                override fun onSlide(view: View, newState: Float) {}
+            })
+            setKeytermMultiRecordIcon(from(bottomSheet).state)
         }
     }
 
