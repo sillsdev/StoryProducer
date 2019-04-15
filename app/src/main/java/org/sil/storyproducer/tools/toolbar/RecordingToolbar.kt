@@ -106,7 +106,9 @@ open class RecordingToolbar : Fragment(){
         rootView?.background = animationHandler.transitionDrawable
 
         setupToolbarButtons()
-        
+        updateToolbarButtonVisibility()
+        setToolbarOnClickListeners()
+
         stopToolbarMedia()
 
         return rootView
@@ -219,10 +221,6 @@ open class RecordingToolbar : Fragment(){
             rootView?.addView(sendAudioButton)
             rootView?.addView(toolbarButtonSpace())
         }
-
-        updateToolbarButtonVisibility()
-
-        setOnClickListeners()
     }
 
     private fun toolbarButton(iconId: Int, buttonId: Int): ImageButton{
@@ -258,11 +256,11 @@ open class RecordingToolbar : Fragment(){
     /**
      * Enables the buttons to have the appropriate onClick listeners.
      */
-    protected open fun setOnClickListeners() {
+    protected open fun setToolbarOnClickListeners() {
         micButton.setOnClickListener(micButtonOnClickListener())
         playButton.setOnClickListener(playButtonOnClickListener())
-        checkButton.setOnClickListener(checkButtonOnClickListener())
         multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
+        checkButton.setOnClickListener(checkButtonOnClickListener())
         sendAudioButton.setOnClickListener(sendButtonOnClickListener())
     }
 
@@ -339,6 +337,14 @@ open class RecordingToolbar : Fragment(){
         }
     }
 
+    protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
+        return View.OnClickListener {
+            stopToolbarMedia()
+            recordingListener.onStartedRecordingOrPlayback(false)
+            RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
+        }
+    }
+
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
@@ -353,17 +359,9 @@ open class RecordingToolbar : Fragment(){
             isAppendingOn = false
 
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
-            
+
             checkButton.visibility = View.INVISIBLE
             sendAudioButton.visibility = View.VISIBLE
-        }
-    }
-
-    protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
-        return View.OnClickListener {
-            stopToolbarMedia()
-            recordingListener.onStartedRecordingOrPlayback(false)
-            RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }
     }
 
