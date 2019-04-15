@@ -8,12 +8,12 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.media.AudioRecorder
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import java.io.FileNotFoundException
 
 internal const val ENABLE_SEND_AUDIO_BUTTON = "EnableSendAudioButton"
 
-class DramatizationRecordingToolbar: RecordingToolbar() {
+class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
     
