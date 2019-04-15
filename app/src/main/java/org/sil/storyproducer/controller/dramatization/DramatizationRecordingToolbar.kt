@@ -1,9 +1,9 @@
 package org.sil.storyproducer.controller.dramatization
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
@@ -88,7 +88,7 @@ class DramatizationRecordingToolbar: RecordingToolbar() {
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
-                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                        Crashlytics.logException(e)
                     }
                 } else {
                     isAppendingOn = true
@@ -114,7 +114,7 @@ class DramatizationRecordingToolbar: RecordingToolbar() {
                 try {
                     AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                 } catch (e: FileNotFoundException) {
-                    Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                    Crashlytics.logException(e)
                 }
             }
             isAppendingOn = false
