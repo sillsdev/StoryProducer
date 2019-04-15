@@ -22,7 +22,6 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.helpDialog
-import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
 import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
@@ -148,7 +147,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
 
         val bundle = Bundle()
         bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
-        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, true)
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar = KeytermRecordingToolbar()
         recordingToolbar.arguments = bundle

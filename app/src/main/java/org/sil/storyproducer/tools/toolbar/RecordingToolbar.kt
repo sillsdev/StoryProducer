@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.Space
 import android.widget.Toast
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -28,7 +27,6 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 internal const val ENABLE_PLAY_BACK_BUTTON = "EnablePlayBackButton"
-internal const val ENABLE_MULTI_RECORD_BUTTON = "EnableMultiRecordButton"
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -43,18 +41,15 @@ internal const val ENABLE_MULTI_RECORD_BUTTON = "EnableMultiRecordButton"
  *
  * This class also saves the recording and allows playback from the toolbar. see: [.createToolbar]
  */
-// TODO Refactor stuff for other phases into child classes for toolbar if possible/helpful
 open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
     private lateinit var playButton: ImageButton
-    protected lateinit var multiRecordButton: ImageButton
 
     private var enablePlaybackButton : Boolean = false
-    private var enableMultiRecordButton : Boolean = false
 
-    private lateinit var recordingListener : RecordingListener
+    protected lateinit var recordingListener : RecordingListener
     protected var voiceRecorder: AudioRecorder? = null
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isRecordingOrPlaying : Boolean
@@ -83,7 +78,6 @@ open class RecordingToolbar : Fragment(){
         val bundleArguments = arguments
         if (bundleArguments != null) {
             enablePlaybackButton = bundleArguments.get(ENABLE_PLAY_BACK_BUTTON) as Boolean
-            enableMultiRecordButton = bundleArguments.get(ENABLE_MULTI_RECORD_BUTTON) as Boolean
             slideNum = bundleArguments.get(SLIDE_NUM) as Int
         }
 
@@ -194,12 +188,6 @@ open class RecordingToolbar : Fragment(){
             rootView?.addView(playButton)
             rootView?.addView(toolbarButtonSpace())
         }
-
-        multiRecordButton = toolbarButton(R.drawable.ic_playlist_play_white_48dp, org.sil.storyproducer.R.id.list_recordings_button)
-        if(enableMultiRecordButton) {
-            rootView?.addView(multiRecordButton)
-            rootView?.addView(toolbarButtonSpace())
-        }
     }
 
     protected fun toolbarButton(iconId: Int, buttonId: Int): ImageButton{
@@ -220,12 +208,10 @@ open class RecordingToolbar : Fragment(){
 
     protected open fun showSecondaryButtons(){
         playButton.visibility = View.VISIBLE
-        multiRecordButton.visibility = View.VISIBLE
     }
 
     protected open fun hideSecondaryButtons(){
         playButton.visibility = View.INVISIBLE
-        multiRecordButton.visibility = View.INVISIBLE
     }
 
     /**
@@ -234,7 +220,6 @@ open class RecordingToolbar : Fragment(){
     protected open fun setToolbarOnClickListeners() {
         micButton.setOnClickListener(micButtonOnClickListener())
         playButton.setOnClickListener(playButtonOnClickListener())
-        multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
     }
 
     protected open fun micButtonOnClickListener(): View.OnClickListener{
@@ -282,14 +267,6 @@ open class RecordingToolbar : Fragment(){
                     Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-    }
-
-    protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
-        return View.OnClickListener {
-            stopToolbarMedia()
-            recordingListener.onStartedRecordingOrPlayback(false)
-            RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }
     }
 

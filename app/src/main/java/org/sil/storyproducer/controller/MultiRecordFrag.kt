@@ -18,8 +18,8 @@ import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
-import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
 import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
+import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 import java.io.File
@@ -28,8 +28,8 @@ import java.io.File
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
 abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
+    protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
 
-    protected open var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var tempPicFile: File? = null
 
 
@@ -164,7 +164,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
     protected open fun setToolbar() {
         val bundle = Bundle()
         bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
-        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, true)
         bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()

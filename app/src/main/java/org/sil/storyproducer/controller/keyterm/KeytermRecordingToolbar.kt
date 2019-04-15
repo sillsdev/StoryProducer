@@ -5,9 +5,9 @@ import android.view.View
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.hideKeyboard
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 
-class KeytermRecordingToolbar : RecordingToolbar(){
+class KeytermRecordingToolbar : MultiRecordRecordingToolbar(){
     override fun setToolbarOnClickListeners(){
         super.setToolbarOnClickListeners()
 
