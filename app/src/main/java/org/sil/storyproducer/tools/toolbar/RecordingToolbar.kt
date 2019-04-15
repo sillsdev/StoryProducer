@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -291,7 +292,9 @@ open class RecordingToolbar : Fragment(){
     protected fun recordAudio(recordingRelPath: String) {
         recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder?.startNewRecording(recordingRelPath)
-        animationHandler.startAnimation()
+        if(isAnimationEnabled()){
+            animationHandler.startAnimation()
+        }
         
         //TODO: make this logging more robust and encapsulated
         when(Workspace.activePhase.phaseType){
@@ -303,5 +306,9 @@ open class RecordingToolbar : Fragment(){
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
 
         hideSecondaryButtons()
+    }
+
+    private fun isAnimationEnabled(): Boolean {
+        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
     }
 }
