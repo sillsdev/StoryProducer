@@ -9,7 +9,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.preference.PreferenceManager
-import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,14 +20,12 @@ import android.widget.Space
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.tools.hideKeyboard
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
@@ -49,21 +46,20 @@ private const val RECORDING_ANIMATION_DURATION = 1500
  *
  * This class also saves the recording and allows playback from the toolbar. see: [.createToolbar]
  */
-// TODO Refactor out keyterm phase stuff into a child class
 // TODO Refactor stuff for other phases into child classes for toolbar if possible/helpful
 // TODO Refactor animation stuff into its own class
-class RecordingToolbar : Fragment(){
+open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     private lateinit var appContext: Context
     private lateinit var micButton: ImageButton
     private lateinit var playButton: ImageButton
+    protected lateinit var multiRecordButton: ImageButton
     private lateinit var checkButton: ImageButton
-    private lateinit var multiRecordButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
 
     private var enablePlaybackButton : Boolean = false
-    private var enableCheckButton : Boolean = false
     private var enableMultiRecordButton : Boolean = false
+    private var enableCheckButton : Boolean = false
     private var enableSendAudioButton : Boolean = false
 
     private lateinit var recordingListener : RecordingListener
@@ -249,46 +245,28 @@ class RecordingToolbar : Fragment(){
     }
 
     private fun showSecondaryButtons(){
-        checkButton.visibility = View.VISIBLE
         playButton.visibility = View.VISIBLE
         multiRecordButton.visibility = View.VISIBLE
+        checkButton.visibility = View.VISIBLE
         sendAudioButton.visibility = View.VISIBLE
     }
 
     private fun hideSecondaryButtons(){
-        checkButton.visibility = View.INVISIBLE
         playButton.visibility = View.INVISIBLE
         multiRecordButton.visibility = View.INVISIBLE
+        checkButton.visibility = View.INVISIBLE
         sendAudioButton.visibility = View.INVISIBLE
     }
 
     /**
      * Enables the buttons to have the appropriate onClick listeners.
      */
-    private fun setOnClickListeners() {
+    protected open fun setOnClickListeners() {
         micButton.setOnClickListener(micButtonOnClickListener())
         playButton.setOnClickListener(playButtonOnClickListener())
         checkButton.setOnClickListener(checkButtonOnClickListener())
         multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
         sendAudioButton.setOnClickListener(sendButtonOnClickListener())
-
-        if(Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity){
-            val bottomSheet = (activity as KeyTermActivity).bottomSheet
-            from(bottomSheet).setBottomSheetCallback(object : BottomSheetCallback(){
-                override fun onStateChanged(view: View, newState: Int) {
-                    setKeytermMultiRecordIcon(newState)
-                    if(newState == STATE_COLLAPSED){
-                        view.let { activity?.hideKeyboard(it) }
-                    }
-                    // Disables opening recording list when no recordings are available
-                    if(Workspace.activeKeyterm.keytermRecordings.isEmpty()){
-                        from(bottomSheet).state = STATE_COLLAPSED
-                    }
-                }
-                override fun onSlide(view: View, newState: Float) {}
-            })
-            setKeytermMultiRecordIcon(from(bottomSheet).state)
-        }
     }
 
     private fun micButtonOnClickListener(): View.OnClickListener{
@@ -384,39 +362,17 @@ class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun multiRecordButtonOnClickListener(): View.OnClickListener{
+    protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
-            if (Workspace.activePhase.phaseType == PhaseType.KEYTERM && activity is KeyTermActivity) {
-                val bottomSheet = (activity as KeyTermActivity).bottomSheet
-                if(from(bottomSheet).state == STATE_EXPANDED) {
-                    from(bottomSheet).state = STATE_COLLAPSED
-                }
-                else{
-                    from(bottomSheet).state = STATE_EXPANDED
-                }
-            } else if(Workspace.activePhase.phaseType != PhaseType.KEYTERM) {
-                recordingListener.onStartedRecordingOrPlayback(false)
-                RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
-            }
+            recordingListener.onStartedRecordingOrPlayback(false)
+            RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }
     }
 
     private fun sendButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
-        }
-    }
-
-    /**
-     * Depending on the state of the bottom sheet will determine the icon used.
-     */
-    private fun setKeytermMultiRecordIcon(state: Int){
-        if(state == STATE_EXPANDED){
-            multiRecordButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_white_48dp)
-        }
-        else if(state == STATE_COLLAPSED){
-            multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
         }
     }
     
