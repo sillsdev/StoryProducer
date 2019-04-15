@@ -19,7 +19,7 @@ import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 
 private const val APP_PACKAGE_NAME = "org.sil.storyproducer"
-private const val TIMEOUT_DURATION = 30000L
+private const val TIMEOUT_DURATION = 60000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
 private const val INTERNAL_STORAGE_BUTTON_TEXT = "Android SDK built for x86"
 private const val REGISTRATION_SCREEN_CONTAINER = "org.sil.storyproducer:id/registration_scroll_view"
@@ -77,7 +77,7 @@ class WorkspaceSetter {
 
     private fun selectStoryProducerWorkspace(device: UiDevice) {
         device.findObject(By.res("android:id/button1").text("OK")).click()
-        device.wait(Until.hasObject(By.text("More options")), TIMEOUT_DURATION)
+        device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)
         device.findObject(By.desc("More options")).click()
         val showInternalStorage = device.findObject(By.text("Show internal storage"))
         if (showInternalStorage != null) {
