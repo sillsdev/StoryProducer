@@ -219,8 +219,4 @@ abstract class SlidePhaseFrag : Fragment() {
         referenceAudioPlayer.pauseAudio()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
-
-    companion object {
-        const val SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG"
-    }
 }

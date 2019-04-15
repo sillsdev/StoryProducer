@@ -3,8 +3,8 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
-import android.os.ParcelFileDescriptor
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.support.v4.provider.DocumentFile
 import android.widget.Toast
@@ -21,6 +21,7 @@ internal const val KEYTERMS_CSV_FILE = "keyterms.csv"
 internal const val KEYTERMS_JSON_FILE = "keyterms.json"
 internal const val PHASE = "Phase"
 internal const val CLICKED_TERM = "ClickedTerm"
+internal const val SLIDE_NUM = "CurrentSlideNum"
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))

@@ -22,6 +22,8 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.helpDialog
+import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
+import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 
@@ -38,7 +40,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
     private val keytermHistory: Stack<String> = Stack()
-
+    // TODO Refactor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
@@ -101,6 +103,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     /**
      * Updates the textViews with the current keyterm information
      */
+    // TODO Refactor out recording toolbar stuff
     private fun setupNoteView(){
         val actionBar = supportActionBar
 
@@ -144,9 +147,9 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }.removeSuffix("\n")
 
         val bundle = Bundle()
-        bundle.putBoolean("enablePlaybackButton", true)
-        bundle.putBoolean("enableMultiRecordButton", true)
-        bundle.putInt("slideNum", 0)
+        bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
+        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, true)
+        bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar = KeytermRecordingToolbar()
         recordingToolbar.arguments = bundle
         supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()

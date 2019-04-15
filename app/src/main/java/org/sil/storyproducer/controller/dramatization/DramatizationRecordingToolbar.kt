@@ -11,6 +11,8 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.io.FileNotFoundException
 
+internal const val ENABLE_SEND_AUDIO_BUTTON = "EnableSendAudioButton"
+
 class DramatizationRecordingToolbar: RecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
@@ -24,7 +26,7 @@ class DramatizationRecordingToolbar: RecordingToolbar() {
 
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            enableSendAudioButton = bundleArguments.get("enableSendAudioButton") as Boolean
+            enableSendAudioButton = bundleArguments.get(ENABLE_SEND_AUDIO_BUTTON) as Boolean
         }
     }
 
