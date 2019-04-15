@@ -263,7 +263,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 }
                 else {
                     Workspace.activePhase.setChosenFilename("")
-                    toolbar?.setupToolbarButtons()
+                    toolbar?.updateToolbarButtonVisibility()
                     dialog?.dismiss()
                 }
             }
