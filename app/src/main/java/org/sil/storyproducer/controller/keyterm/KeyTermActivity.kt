@@ -34,7 +34,6 @@ import java.util.*
  */
 
 class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
-
     private lateinit var recordingToolbar : KeytermRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
@@ -145,7 +144,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }.removeSuffix("\n")
 
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
+        bundle.putBoolean("enablePlaybackButton", true)
+        bundle.putBoolean("enableMultiRecordButton", true)
         bundle.putInt("slideNum", 0)
         recordingToolbar = KeytermRecordingToolbar()
         recordingToolbar.arguments = bundle
