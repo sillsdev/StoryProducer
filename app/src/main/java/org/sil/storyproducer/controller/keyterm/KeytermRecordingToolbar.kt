@@ -8,8 +8,8 @@ import org.sil.storyproducer.tools.hideKeyboard
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class KeytermRecordingToolbar : RecordingToolbar(){
-    override fun setOnClickListeners(){
-        super.setOnClickListeners()
+    override fun setToolbarOnClickListeners(){
+        super.setToolbarOnClickListeners()
 
         val bottomSheet = (activity as KeyTermActivity).bottomSheet
         BottomSheetBehavior.from(bottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
