@@ -3,12 +3,8 @@ package org.sil.storyproducer.tools.toolbar
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.TransitionDrawable
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.os.Handler
-import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
@@ -31,8 +27,6 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 import java.io.FileNotFoundException
 
-private const val RECORDING_ANIMATION_DURATION = 1500
-
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
  * to the toolbar.  This class utilizes an empty layout for the toolbar and floating action button
@@ -47,7 +41,6 @@ private const val RECORDING_ANIMATION_DURATION = 1500
  * This class also saves the recording and allows playback from the toolbar. see: [.createToolbar]
  */
 // TODO Refactor stuff for other phases into child classes for toolbar if possible/helpful
-// TODO Refactor animation stuff into its own class
 open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     private lateinit var appContext: Context
@@ -70,11 +63,8 @@ open class RecordingToolbar : Fragment(){
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
     private var slideNum : Int = 0
-    
-    private var transitionDrawable: TransitionDrawable? = null
-    private var colorHandler: Handler? = null
-    private var colorHandlerRunnable: Runnable? = null
-    private var isToolbarRed = false
+
+    private lateinit  var animationHandler: AnimationHandler
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -109,9 +99,16 @@ open class RecordingToolbar : Fragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.toolbar_for_recording, container, false) as LinearLayout
+
+        val initialColor: Int = Color.rgb(67, 179, 230)
+        val targetColor: Int = Color.rgb(255, 0, 0)
+        animationHandler = AnimationHandler(initialColor, targetColor)
+        rootView?.background = animationHandler.transitionDrawable
+
         setupToolbarButtons()
-        setupRecordingAnimationHandler()
+        
         stopToolbarMedia()
+
         return rootView
     }
 
@@ -167,7 +164,7 @@ open class RecordingToolbar : Fragment(){
 
     private fun stopRecording() {
         voiceRecorder?.stop()
-        stopRecordingAnimation()
+        animationHandler.stopAnimation()
         recordingListener.onStoppedRecordingOrPlayback(true)
     }
 
@@ -379,7 +376,7 @@ open class RecordingToolbar : Fragment(){
     private fun recordAudio(recordingRelPath: String) {
         recordingListener.onStartedRecordingOrPlayback(true)
         voiceRecorder?.startNewRecording(recordingRelPath)
-        startRecordingAnimation(false, 0)
+        animationHandler.startAnimation()
         
         //TODO: make this logging more robust and encapsulated
         when(Workspace.activePhase.phaseType){
@@ -391,68 +388,5 @@ open class RecordingToolbar : Fragment(){
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
 
         hideSecondaryButtons()
-    }
-    
-    private fun setupRecordingAnimationHandler() {
-        val red = Color.rgb(255, 0, 0)
-        var colorOfToolbar = Color.rgb(67, 179, 230)
-
-        val relBackgroundColor = rootView?.background
-        if (relBackgroundColor is ColorDrawable) {
-            colorOfToolbar = relBackgroundColor.color
-        }
-        transitionDrawable = TransitionDrawable(arrayOf(ColorDrawable(colorOfToolbar), ColorDrawable(red)))
-        rootView?.background = transitionDrawable
-
-        colorHandler = Handler()
-        colorHandlerRunnable = Runnable {
-            //Animation to change the toolbar's color while recording
-            isToolbarRed = if (isToolbarRed) {
-                transitionDrawable!!.reverseTransition(RECORDING_ANIMATION_DURATION)
-                false
-            } else {
-                transitionDrawable!!.startTransition(RECORDING_ANIMATION_DURATION)
-                true
-            }
-            startRecordingAnimation(true, RECORDING_ANIMATION_DURATION)
-        }
-    }
-
-    /**
-     * This function is used to start the handler to run the runnable. <br></br>
-     * [.setupRecordingAnimationHandler] should be called first before calling this function
-     * to initialize the colorHandler and colorHandlerRunnable().
-     *
-     * @param isDelayed Used to signify that the runnable will be delayed in running.
-     * @param delay     The time that will be delayed in ms if isDelayed is true.
-     */
-    private fun startRecordingAnimation(isDelayed: Boolean, delay: Int) {
-        if (isRecordingAnimationEnabled()) {
-            if (colorHandler != null && colorHandlerRunnable != null) {
-                if (isDelayed) {
-                    colorHandler!!.postDelayed(colorHandlerRunnable, delay.toLong())
-                } else {
-                    colorHandler!!.post(colorHandlerRunnable)
-                }
-            }
-        }
-    }
-
-    private fun isRecordingAnimationEnabled(): Boolean {
-        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
-    }
-
-    /**
-     * Stops the animation from continuing. The removeCallbacks function removes all
-     * colorHandlerRunnable from the MessageQueue and also resets the toolbar to its original color.
-     * (transitionDrawable.resetTransition();)
-     */
-    private fun stopRecordingAnimation() {
-        if (colorHandler != null && colorHandlerRunnable != null) {
-            colorHandler!!.removeCallbacks(colorHandlerRunnable)
-        }
-        if (transitionDrawable != null) {
-            transitionDrawable!!.resetTransition()
-        }
     }
 }
