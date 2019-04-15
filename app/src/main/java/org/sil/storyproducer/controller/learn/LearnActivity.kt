@@ -9,6 +9,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
@@ -16,6 +17,8 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
+import org.sil.storyproducer.tools.toolbar.ENABLE_MULTI_RECORD_BUTTON
+import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.math.min
@@ -116,9 +119,9 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
     private fun setToolbar(){
         val bundle = Bundle()
-        bundle.putBoolean("enablePlaybackButton", true)
-        bundle.putBoolean("enableMultiRecordButton", false)
-        bundle.putInt("slideNum", 0)
+        bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
+        bundle.putBoolean(ENABLE_MULTI_RECORD_BUTTON, false)
+        bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
         supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
 
