@@ -7,8 +7,10 @@ import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 open class PlayBackRecordingToolbar: RecordingToolbar() {
@@ -17,9 +19,15 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isAudioPlaying : Boolean
         get() {return audioPlayer.isAudioPlaying}
+    private var slideNum : Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val bundleArguments = arguments
+        if (bundleArguments != null) {
+            slideNum = bundleArguments.get(SLIDE_NUM) as Int
+        }
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             stopToolbarAudioPlaying()
@@ -27,9 +35,9 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     }
 
     override fun onPause() {
-        super.onPause()
-
         audioPlayer.release()
+
+        super.onPause()
     }
 
     override fun stopToolbarMedia() {
@@ -42,7 +50,9 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
     private fun stopToolbarAudioPlaying()   {
         audioPlayer.stopAudio()
+
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+
         recordingListener.onStoppedRecordingOrPlayback(false)
     }
 
@@ -51,23 +61,38 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, org.sil.storyproducer.R.id.play_recording_button)
         rootView?.addView(playButton)
+        
         rootView?.addView(toolbarButtonSpace())
     }
 
-    override fun showSecondaryButtons() {
-        super.showSecondaryButtons()
+    /*
+     * This function sets the visibility of any inherited buttons based on the existence of
+     * a playback file.
+     */
+    override fun updateInheritedToolbarButtonVisibility(){
+        val playBackFileExist = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        if(playBackFileExist){
+            showInheritedToolbarButtons()
+        }
+        else{
+            hideInheritedToolbarButtons()
+        }
+    }
+
+    override fun showInheritedToolbarButtons() {
+        super.showInheritedToolbarButtons()
 
         playButton.visibility = View.VISIBLE
     }
 
-    override fun hideSecondaryButtons() {
-        super.hideSecondaryButtons()
+    override fun hideInheritedToolbarButtons() {
+        super.hideInheritedToolbarButtons()
 
         playButton.visibility = View.INVISIBLE
     }
 
-    override fun setToolbarOnClickListeners() {
-        super.setToolbarOnClickListeners()
+    override fun setToolbarButtonOnClickListeners() {
+        super.setToolbarButtonOnClickListeners()
 
         playButton.setOnClickListener(playButtonOnClickListener())
     }
@@ -75,12 +100,17 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     private fun playButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             stopToolbarMedia()
+
             if (!audioPlayer.isAudioPlaying) {
                 recordingListener.onStartedRecordingOrPlayback(false)
+
                 if (audioPlayer.setStorySource(this.appContext, Workspace.activePhase.getChosenFilename())) {
                     audioPlayer.playAudio()
+
                     Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
+
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
+                    
                     //TODO: make this logging more robust and encapsulated
                     when (Workspace.activePhase.phaseType){
                         PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
