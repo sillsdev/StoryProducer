@@ -3,7 +3,6 @@ package org.sil.storyproducer.tools.toolbar
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
@@ -13,20 +12,15 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
-import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-
-internal const val ENABLE_PLAY_BACK_BUTTON = "EnablePlayBackButton"
 
 /**
  * The purpose of this class is to extend the animationToolbar while adding the recording animation
@@ -45,16 +39,11 @@ open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
-    private lateinit var playButton: ImageButton
-
-    private var enablePlaybackButton : Boolean = false
 
     protected lateinit var recordingListener : RecordingListener
     protected var voiceRecorder: AudioRecorder? = null
-    private var audioPlayer: AudioPlayer = AudioPlayer()
-    val isRecordingOrPlaying : Boolean
-        get() {return voiceRecorder?.isRecording == true  || audioPlayer.isAudioPlaying}
-    protected val audioTempName = getTempAppendAudioRelPath()
+    val isRecording : Boolean
+        get() {return voiceRecorder?.isRecording == true}
     private var slideNum : Int = 0
 
     private lateinit  var animationHandler: AnimationHandler
@@ -77,13 +66,8 @@ open class RecordingToolbar : Fragment(){
 
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            enablePlaybackButton = bundleArguments.get(ENABLE_PLAY_BACK_BUTTON) as Boolean
             slideNum = bundleArguments.get(SLIDE_NUM) as Int
         }
-
-        audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            stopToolbarAudioPlaying()
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -109,7 +93,6 @@ open class RecordingToolbar : Fragment(){
      */
     override fun onPause() {
         stopToolbarMedia()
-        audioPlayer.release()
         super.onPause()
     }
 
@@ -131,12 +114,9 @@ open class RecordingToolbar : Fragment(){
      * The auxiliary medias are not stopped because the calling class should be responsible for
      * those.
      */
-    fun stopToolbarMedia() {
+    open fun stopToolbarMedia() {
         if (voiceRecorder?.isRecording == true) {
             stopToolbarVoiceRecording()
-        }
-        if (audioPlayer.isAudioPlaying) {
-            stopToolbarAudioPlaying()
         }
     }
 
@@ -144,12 +124,6 @@ open class RecordingToolbar : Fragment(){
         stopRecording()
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showSecondaryButtons()
-    }
-
-    private fun stopToolbarAudioPlaying()   {
-        audioPlayer.stopAudio()
-        playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-        recordingListener.onStoppedRecordingOrPlayback(false)
     }
 
     private fun stopRecording() {
@@ -182,12 +156,6 @@ open class RecordingToolbar : Fragment(){
         micButton = toolbarButton(R.drawable.ic_mic_white_48dp, org.sil.storyproducer.R.id.start_recording_button)
         rootView?.addView(micButton)
         rootView?.addView(toolbarButtonSpace())
-
-        playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, org.sil.storyproducer.R.id.play_recording_button)
-        if(enablePlaybackButton) {
-            rootView?.addView(playButton)
-            rootView?.addView(toolbarButtonSpace())
-        }
     }
 
     protected fun toolbarButton(iconId: Int, buttonId: Int): ImageButton{
@@ -207,11 +175,11 @@ open class RecordingToolbar : Fragment(){
     }
 
     protected open fun showSecondaryButtons(){
-        playButton.visibility = View.VISIBLE
+
     }
 
     protected open fun hideSecondaryButtons(){
-        playButton.visibility = View.INVISIBLE
+
     }
 
     /**
@@ -219,7 +187,6 @@ open class RecordingToolbar : Fragment(){
      */
     protected open fun setToolbarOnClickListeners() {
         micButton.setOnClickListener(micButtonOnClickListener())
-        playButton.setOnClickListener(playButtonOnClickListener())
     }
 
     protected open fun micButtonOnClickListener(): View.OnClickListener{
@@ -246,28 +213,6 @@ open class RecordingToolbar : Fragment(){
                   }
               }
           }
-    }
-
-    private fun playButtonOnClickListener(): View.OnClickListener {
-        return View.OnClickListener {
-            stopToolbarMedia()
-            if (!audioPlayer.isAudioPlaying) {
-                recordingListener.onStartedRecordingOrPlayback(false)
-                if (audioPlayer.setStorySource(this.appContext, Workspace.activePhase.getChosenFilename())) {
-                    audioPlayer.playAudio()
-                    Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
-                    playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-                    //TODO: make this logging more robust and encapsulated
-                    when (Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
-                        else ->{}
-                    }
-                } else {
-                    Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
     }
 
     protected fun recordAudio(recordingRelPath: String) {
