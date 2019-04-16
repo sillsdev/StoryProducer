@@ -7,6 +7,7 @@ import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
+import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import java.io.FileNotFoundException
@@ -20,6 +21,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private var enableSendAudioButton : Boolean = false
 
     private var isAppendingOn = false
+    private val audioTempName = getTempAppendAudioRelPath()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

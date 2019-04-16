@@ -5,7 +5,7 @@ import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 
-open class MultiRecordRecordingToolbar: RecordingToolbar() {
+open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
     protected lateinit var multiRecordButton: ImageButton
 
     override fun setupToolbarButtons() {
