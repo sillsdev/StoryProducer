@@ -2,6 +2,7 @@ package org.sil.storyproducer.controller
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
@@ -21,20 +22,37 @@ import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import java.io.File
 
 /**
- * The fragment for the Draft view. This is where a user can draft out the story slide by slide
+ * The fragment that loads SlidePhaseFrag as well as the camera and edit buttons that overlays it.
  */
 class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
     private var tempPicFile: File? = null
     private lateinit var imageFab: ImageView
     private lateinit var editFab: ImageView
     private var slideNum: Int = 0
+    private val slidePhaseFrag = SlidePhaseFrag()
+    private lateinit var playbackListener: PlaybackListener
+
+    interface PlaybackListener {
+        fun onStoppedPlayback()
+        fun onStartedPlayback()
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if(parentFragment is PlaybackListener){
+            playbackListener = parentFragment as PlaybackListener
+        }
+        else{
+            throw ClassCastException("$parentFragment does not implement MultiRecordFrag.PlaybackListener")
+        }
+
+    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_multi_record_layout, container, false)
 
         slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
-
         setSlide()
 
         imageFab = rootView.findViewById(R.id.insert_image_view)
@@ -126,17 +144,19 @@ class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
     private fun setSlide(){
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
-        val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
     }
 
     override fun onStoppedPlayback() {
-
+        playbackListener.onStoppedPlayback()
+    }
+    override fun onStartedPlayback() {
+        playbackListener.onStartedPlayback()
     }
 
-    override fun onStartedPlayback() {
-
+    fun stopPlayback(){
+        slidePhaseFrag.stopPlayBackAndRecording()
     }
 
     companion object {

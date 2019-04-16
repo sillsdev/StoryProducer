@@ -31,17 +31,10 @@ import java.util.*
  */
 
 class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
-    override fun onStoppedPlayback() {
-
-    }
-
-    override fun onStartedPlayback() {
-
-    }
-
     private var storyName: String? = null
     private var phaseUnlocked = false
     private val recordingToolbar = RecordingToolbar()
+    private val slidePhaseFrag = SlidePhaseFrag()
     private lateinit var backtranslationCheckButton: ImageButton
 
     private var transcriptionText: EditText? = null
@@ -81,7 +74,6 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     private fun setSlide(){
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
-        val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
     }
@@ -94,6 +86,14 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
+        recordingToolbar.stopToolbarMedia()
+    }
+
+    override fun onStoppedPlayback() {
+
+    }
+
+    override fun onStartedPlayback() {
         recordingToolbar.stopToolbarMedia()
     }
 
@@ -115,16 +115,6 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
                 unlockDramatizationPhase()
             }
         }
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after dramatization has been
-     * put on pause.
-     */
-    override fun onPause() {
-        super.onPause()
-        recordingToolbar.onPause()
-        //closeKeyboard(rootView)
     }
 
     /**
@@ -242,6 +232,6 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        //TODO stopPlayBackAndRecording()
+        slidePhaseFrag.stopPlayBackAndRecording()
     }
 }

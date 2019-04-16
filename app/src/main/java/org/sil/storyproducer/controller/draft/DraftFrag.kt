@@ -18,6 +18,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 class DraftFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
     private var slideNum: Int = 0
     private val recordingToolbar = RecordingToolbar()
+    private val slidePhaseFrag = SlidePhaseFrag()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_draft_layout, container, false)
@@ -47,22 +48,16 @@ class DraftFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
                 recordingToolbar.stopToolbarMedia()
+                slidePhaseFrag.stopPlayBackAndRecording()
             }
         }
     }
 
-    private fun stopPlayBackAndRecording() {
-        //super.stopPlayBackAndRecording()
-        recordingToolbar.stopToolbarMedia()
-
-    }
-
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-        //updatePlayBackPath()
-    }
+    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
+        recordingToolbar.stopToolbarMedia()
+        slidePhaseFrag.stopPlayBackAndRecording()
     }
 
     private fun setToolbar() {
@@ -86,16 +81,13 @@ class DraftFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag
     private fun setSlide(){
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
-        val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
     }
 
-    override fun onStoppedPlayback() {
-
-    }
+    override fun onStoppedPlayback() {}
 
     override fun onStartedPlayback() {
-        stopPlayBackAndRecording()
+        recordingToolbar.stopToolbarMedia()
     }
 }

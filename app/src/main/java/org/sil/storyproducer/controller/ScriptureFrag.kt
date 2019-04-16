@@ -15,12 +15,11 @@ import org.sil.storyproducer.model.Workspace
  */
 class ScriptureFrag : Fragment() {
     private lateinit var slide: Slide
-    private var slideNum: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_scripture_text, container, false)
 
-        slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
+        val slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
         slide = Workspace.activeStory.slides[slideNum]
 
         setScriptureText(rootView.findViewById(R.id.fragment_scripture_text))

@@ -19,8 +19,7 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-class ConsultantCheckFrag : ConsultantBaseFrag() {
-
+class ConsultantCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         // The last two arguments ensure LayoutParams are inflated
@@ -49,25 +48,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
                 }
             }
         })
-
         return rootView
-    }
-
-    /**
-     * This function serves to handle page changes and stops the audio streams from
-     * continuing.
-     * @param isVisibleToUser
-     */
-    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
-        super.setUserVisibleHint(isVisibleToUser)
-
-        // Make sure that we are currently visible
-        if (this.isVisible) {
-            // If we are becoming invisible, then...
-            if (!isVisibleToUser) {
-                //TODO referenceAudioPlayer.stopAudio()
-            }
-        }
     }
 
     /**
@@ -114,6 +95,9 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
         toggleKeyboard(true, password)
     }
 
+    override fun onStoppedPlayback() {}
+    override fun onStartedPlayback() {}
+
     /**
      * This function toggles the soft input keyboard. Allowing the user to have the keyboard
      * to open or close seamlessly alongside the rest UI.
@@ -142,7 +126,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag() {
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val scriptureFrag = ScriptureFrag()
         scriptureFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, scriptureFrag).commit()
+        childFragmentManager.beginTransaction().add(R.id.scripture_text, scriptureFrag).commit()
     }
 
     companion object {
