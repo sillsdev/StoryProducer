@@ -33,17 +33,9 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     }
 
     override fun onPause() {
-        super.onPause()
-
         isAppendingOn = false
-    }
 
-    override fun updateToolbarButtonVisibility() {
-        super.updateToolbarButtonVisibility()
-
-        if(!isAppendingOn){
-            checkButton.visibility = View.INVISIBLE
-        }
+        super.onPause()
     }
 
     override fun setupToolbarButtons() {
@@ -51,31 +43,41 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
         checkButton = toolbarButton(R.drawable.ic_stop_white_48dp, org.sil.storyproducer.R.id.finish_recording_button)
         rootView?.addView(checkButton)
+        
         rootView?.addView(toolbarButtonSpace())
 
         sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1)
         if(enableSendAudioButton) {
             rootView?.addView(sendAudioButton)
+            
             rootView?.addView(toolbarButtonSpace())
         }
     }
 
-    override fun showSecondaryButtons() {
-        super.showSecondaryButtons()
+    override fun updateInheritedToolbarButtonVisibility() {
+        super.updateInheritedToolbarButtonVisibility()
+
+        if(!isAppendingOn){
+            checkButton.visibility = View.INVISIBLE
+        }
+    }
+
+    override fun showInheritedToolbarButtons() {
+        super.showInheritedToolbarButtons()
 
         checkButton.visibility = View.VISIBLE
         sendAudioButton.visibility = View.VISIBLE
     }
 
-    override fun hideSecondaryButtons() {
-        super.hideSecondaryButtons()
+    override fun hideInheritedToolbarButtons() {
+        super.hideInheritedToolbarButtons()
 
         checkButton.visibility = View.INVISIBLE
         sendAudioButton.visibility = View.INVISIBLE
     }
 
-    override fun setToolbarOnClickListeners() {
-        super.setToolbarOnClickListeners()
+    override fun setToolbarButtonOnClickListeners() {
+        super.setToolbarButtonOnClickListeners()
 
         checkButton.setOnClickListener(checkButtonOnClickListener())
         sendAudioButton.setOnClickListener(sendButtonOnClickListener())
@@ -84,7 +86,9 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     override fun micButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             val wasRecording = voiceRecorder?.isRecording == true
+
             stopToolbarMedia()
+
             if (wasRecording) {
                 if (isAppendingOn) {
                     try {
@@ -95,6 +99,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
                 } else {
                     isAppendingOn = true
                 }
+
                 micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
             } else {
                 if (isAppendingOn) {
@@ -102,6 +107,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
                 } else {
                     recordAudio(assignNewAudioRelPath())
                 }
+
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                 checkButton.visibility = View.VISIBLE
             }
@@ -111,7 +117,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
-            //Delete the temp file wav file
+            
             if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
                 try {
                     AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
