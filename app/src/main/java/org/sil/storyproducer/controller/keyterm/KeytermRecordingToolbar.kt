@@ -8,13 +8,14 @@ import org.sil.storyproducer.tools.hideKeyboard
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 
 class KeytermRecordingToolbar : MultiRecordRecordingToolbar(){
-    override fun setToolbarOnClickListeners(){
-        super.setToolbarOnClickListeners()
+    override fun setToolbarButtonOnClickListeners(){
+        super.setToolbarButtonOnClickListeners()
 
         val bottomSheet = (activity as KeyTermActivity).bottomSheet
         BottomSheetBehavior.from(bottomSheet).setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback(){
             override fun onStateChanged(view: View, newState: Int) {
                 setKeytermMultiRecordIcon(newState)
+
                 if(newState == BottomSheetBehavior.STATE_COLLAPSED){
                     view.let { activity?.hideKeyboard(it) }
                 }
@@ -23,14 +24,17 @@ class KeytermRecordingToolbar : MultiRecordRecordingToolbar(){
                     BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
+            
             override fun onSlide(view: View, newState: Float) {}
         })
+        
         setKeytermMultiRecordIcon(BottomSheetBehavior.from(bottomSheet).state)
     }
 
     override fun multiRecordButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             stopToolbarMedia()
+
             val bottomSheet = (activity as KeyTermActivity).bottomSheet
             if (BottomSheetBehavior.from(bottomSheet).state == BottomSheetBehavior.STATE_EXPANDED) {
                 BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_COLLAPSED

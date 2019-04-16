@@ -13,23 +13,24 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
 
         multiRecordButton = toolbarButton(R.drawable.ic_playlist_play_white_48dp, org.sil.storyproducer.R.id.list_recordings_button)
         rootView?.addView(multiRecordButton)
+        
         rootView?.addView(toolbarButtonSpace())
     }
 
-    override fun showSecondaryButtons() {
-        super.showSecondaryButtons()
+    override fun showInheritedToolbarButtons() {
+        super.showInheritedToolbarButtons()
 
         multiRecordButton.visibility = View.VISIBLE
     }
 
-    override fun hideSecondaryButtons() {
-        super.hideSecondaryButtons()
+    override fun hideInheritedToolbarButtons() {
+        super.hideInheritedToolbarButtons()
 
         multiRecordButton.visibility = View.INVISIBLE
     }
 
-    override fun setToolbarOnClickListeners() {
-        super.setToolbarOnClickListeners()
+    override fun setToolbarButtonOnClickListeners() {
+        super.setToolbarButtonOnClickListeners()
 
         multiRecordButton.setOnClickListener(multiRecordButtonOnClickListener())
     }
@@ -37,7 +38,9 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
     protected open fun multiRecordButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
             stopToolbarMedia()
+
             recordingListener.onStartedRecordingOrPlayback(false)
+            
             RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }
     }
