@@ -17,7 +17,7 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.toolbar.ENABLE_PLAY_BACK_BUTTON
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.math.min
@@ -33,7 +33,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private var isVolumeOn = true
     private var isWatchedOnce = false
 
-    private var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
 
     private var numOfSlides: Int = 0
     private var seekbarStartTime: Long = -1
@@ -61,7 +61,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             override fun onStartTrackingTouch(sBar: SeekBar) {}
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    if (recordingToolbar.isRecordingOrPlaying) {
+                    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         //When recording, update the picture to the accurate location, preserving
                         seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
                         setSlideFromSeekbar()
@@ -118,7 +118,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
 
     private fun setToolbar(){
         val bundle = Bundle()
-        bundle.putBoolean(ENABLE_PLAY_BACK_BUTTON, true)
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
         supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
@@ -173,7 +172,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread{
-                    if(recordingToolbar.isRecordingOrPlaying){
+                    if(recordingToolbar.isRecording || recordingToolbar.isAudioPlaying){
                         videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
