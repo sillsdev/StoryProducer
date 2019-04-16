@@ -10,22 +10,23 @@ import android.widget.EditText
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.SlidePhaseFrag.Companion.SLIDE_NUM
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
-
+class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener, MultiRecordFrag.PlaybackListener {
     private var slideText: EditText? = null
     private var slideNum: Int = 0
     private val recordingToolbar = RecordingToolbar()
+    private val multiRecordFrag = MultiRecordFrag()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
 
-        slideNum = arguments!!.getInt(SLIDE_NUM)
+        slideNum = arguments?.getInt(SLIDE_NUM)!!
 
         setSlide()
 
@@ -37,9 +38,9 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
                 setToolbar()
             }
             //closeKeyboardOnTouch(rootView)
-            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
+            rootView.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
-            PhaseBaseActivity.disableViewAndChildren(rootView!!)
+            PhaseBaseActivity.disableViewAndChildren(rootView)
         }
 
         //Make the text bigger if it is the front Page.
@@ -49,15 +50,6 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
         }
 
         return rootView
-    }
-
-    /**
-     * This function serves to stop the audio streams from continuing after dramatization has been
-     * put on pause.
-     */
-    override fun onPause() {
-        super.onPause()
-        //closeKeyboard(rootView)
     }
 
     /**
@@ -79,7 +71,12 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        //TODO stopPlayBackAndRecording()
+        multiRecordFrag.stopPlayback()
+    }
+
+    override fun onStoppedPlayback() {}
+    override fun onStartedPlayback() {
+        recordingToolbar.stopToolbarMedia()
     }
 
     /**
@@ -88,7 +85,7 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
     private fun setToolbar() {
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
@@ -97,8 +94,8 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener {
 
     private fun setSlide(){
         val bundle = Bundle()
-        bundle.putInt("slideNum", slideNum)
-        val multiRecordFrag = MultiRecordFrag()
+        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+
         multiRecordFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, multiRecordFrag).commit()
     }

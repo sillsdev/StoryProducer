@@ -15,9 +15,10 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
+class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, MultiRecordFrag.PlaybackListener {
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
     private var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    private val multiRecordFrag = MultiRecordFrag()
     private var slideNum: Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -57,7 +58,8 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Slide
     }
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
+        dispList?.stopAudio()
+        multiRecordFrag.stopPlayback()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
         dispList?.updateRecordingList()
@@ -66,7 +68,6 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Slide
     private fun setSlide(){
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
-        val multiRecordFrag = MultiRecordFrag()
         multiRecordFrag.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.slide_phase, multiRecordFrag).commit()
     }
@@ -82,15 +83,10 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Slide
         recordingToolbar.stopToolbarMedia()
     }
 
-    override fun onStoppedPlayback() {
-
-    }
+    override fun onStoppedPlayback() {}
 
     override fun onStartedPlayback() {
-
-    }
-
-    private fun stopPlayBackAndRecording() {
         dispList?.stopAudio()
+        recordingToolbar.stopToolbarMedia()
     }
 }
