@@ -30,8 +30,20 @@ open abstract class PhaseTestBase {
         @JvmStatic
         @BeforeClass
         fun revertWorkspaceToCleanState() {
+            checkSDCardType()
             copyFreshTestStoryToWorkspace()
             deleteExportedVideos()
+        }
+
+        private fun checkSDCardType() {
+            Constants.sdcard = Constants.sdcardType1
+            if(File(Constants.workspaceDirectory).exists())
+                return
+            Constants.sdcard = Constants.sdcardType2
+            if(File(Constants.workspaceDirectory).exists())
+                return
+            //Neither place works!
+            Assert.fail("Cannot find the workspace directory: ${Constants.workspaceDirectory}")
         }
 
         private fun copyFreshTestStoryToWorkspace() {
