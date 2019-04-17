@@ -75,14 +75,14 @@ class DraftFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val scriptureFrag = ScriptureFrag()
         scriptureFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.scripture_text, scriptureFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.scripture_text, scriptureFrag).commit()
     }
 
     private fun setSlide(){
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         slidePhaseFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.slide_phase, slidePhaseFrag).commit()
     }
 
     override fun onStoppedPlayback() {}

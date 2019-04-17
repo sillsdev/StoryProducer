@@ -118,7 +118,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListene
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.slide_phase, slidePhaseFrag).commit()
     }
 
     private fun setScripture(){
@@ -126,7 +126,7 @@ class ConsultantCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListene
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         val scriptureFrag = ScriptureFrag()
         scriptureFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.scripture_text, scriptureFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.scripture_text, scriptureFrag).commit()
     }
 
     companion object {

@@ -69,7 +69,7 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Multi
         val bundle = Bundle()
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         multiRecordFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, multiRecordFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.slide_phase, multiRecordFrag).commit()
     }
 
     private fun setToolbar() {
@@ -77,7 +77,7 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Multi
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
         recordingToolbar.stopToolbarMedia()

@@ -97,7 +97,7 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener, MultiR
         bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
 
         multiRecordFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, multiRecordFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.slide_phase, multiRecordFrag).commit()
     }
 
 //    /**
