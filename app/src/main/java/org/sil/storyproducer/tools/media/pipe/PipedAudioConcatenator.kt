@@ -35,8 +35,8 @@ class PipedAudioConcatenator
     private val catVolume = LinkedList<Float>()
 
     //default to 20ms - get most of the finger press noise.
-    private var mFadeInUs: Long = 20000
-    private var mFadeOutUs: Long = 20000
+    private var mFadeInUs: Long = 50000
+    private var mFadeOutUs: Long = 50000
     private val fadeInSamples: Int get() {return (mFadeInUs * mSampleRate / 1000000.0).toInt()}
     private val fadeOutSamples: Int get() {return (mFadeOutUs * mSampleRate / 1000000.0).toInt()}
 

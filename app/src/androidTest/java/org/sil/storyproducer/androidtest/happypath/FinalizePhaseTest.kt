@@ -41,6 +41,8 @@ class FinalizePhaseTest : PhaseTestBase() {
         val videoTitle = generateUniqueVideoTitle()
         Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
         Espresso.closeSoftKeyboard()
+        //Select "mp4 dumbphone format.
+        Espresso.onView(allOf(withId(R.id.radio_dumbphone_mp4), isDisplayed())).perform(click())
         // click the create video button
         Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
         // verify that the expected video file exists on disk
@@ -57,7 +59,7 @@ class FinalizePhaseTest : PhaseTestBase() {
         var foundTheVideo = false
         var exceededTheTimeout = false
         while (!foundTheVideo && !exceededTheTimeout) {
-            foundTheVideo = doesVideoFileExist(videoTitle)
+            foundTheVideo = doesVideoFileExist(videoTitle,".mp4")
             exceededTheTimeout = System.currentTimeMillis() - startTime > timeout
             Thread.sleep(Constants.intervalToWaitBetweenCheckingForVideoExport)
         }
@@ -66,8 +68,12 @@ class FinalizePhaseTest : PhaseTestBase() {
         }
     }
 
-    private fun doesVideoFileExist(videoTitle: String) : Boolean{
-        val file = File(Constants.exportedVideosDirectory + File.separator + videoTitle + "_FxPxMvSg.mp4")
-        return file.exists()
+    private fun doesVideoFileExist(videoTitle: String, extension: String) : Boolean{
+        val files = File(Constants.exportedVideosDirectory).listFiles() ?: return false
+        for (f in files){
+            if(f.name.contains(videoTitle) && f.name.contains(extension))
+                return true
+        }
+        return false
     }
 }

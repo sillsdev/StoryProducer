@@ -23,8 +23,19 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
-    val shortContet: String
-    get() {return " \\[.*".toRegex().replace(content,"")}
+    val simpleContent: String
+    get() {
+        //Remove all newlines
+        var temp = "[\\r\\n]+".toRegex().replace(content,"")
+        //Remove anything that is surrounded by "[]"
+        temp = "\\[[^\\]]*\\]?".toRegex().replace(temp,"")
+        //remove everything before a : if there is one
+        temp =  ".*\\:".toRegex().replace(temp,"")
+        //remove everything after a .!? if there is one
+        temp =  "[\\.\\!\\?].*".toRegex().replace(temp,"")
+        //Make all double spaces one space.
+        return "\\s+".toRegex().replace(temp," ")
+    }
 
     var imageFile = ""
     var textFile = ""
@@ -64,7 +75,7 @@ class Slide{
             if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
         }
         val tOverlay = when(slideType) {
-            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(shortContet) else TextOverlay(translatedContent)
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(simpleContent) else TextOverlay(translatedContent)
             SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
                     "This video is licensed under a Creative Commons Attribution" +
                     "-NonCommercial-ShareAlike 4.0 International License " +

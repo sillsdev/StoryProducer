@@ -19,6 +19,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -36,7 +37,6 @@ import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-import java.io.FileDescriptor
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -178,6 +178,7 @@ class RecordingToolbar : Fragment(){
     override fun onPause() {
         stopToolbarMedia()
         audioPlayer.release()
+        isAppendingOn = false
         super.onPause()
     }
 
@@ -272,7 +273,7 @@ class RecordingToolbar : Fragment(){
                         try {
                             AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                         } catch (e: FileNotFoundException) {
-                            Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                            Crashlytics.logException(e)
                         }
                     } else {
                         isAppendingOn = true
@@ -364,14 +365,17 @@ class RecordingToolbar : Fragment(){
         if (enableCheckButton) {
             checkButton.setOnClickListener {
                 //Delete the temp file wav file
-                stopToolbarMedia()
-                if (isAppendingOn) {
+                if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+                    stopToolbarMedia()
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
-                        Log.e("PauseRecordToolbar", "Did not concatenate audio files", e)
+                        Crashlytics.logException(e)
                     }
+                }else {
+                    stopToolbarMedia()
                 }
+
                 //make the button invisible till after the next new recording
                 isAppendingOn = false
                 checkButton.visibility = View.INVISIBLE

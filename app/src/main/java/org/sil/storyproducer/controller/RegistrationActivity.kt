@@ -15,6 +15,7 @@ import android.support.design.widget.TextInputLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,7 @@ import android.widget.*
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -91,18 +93,6 @@ open class RegistrationActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_registration)
 
-        //Now, let's find the workspace path.
-        Workspace.initializeWorskpace(this)
-        if (!Workspace.workspace.exists()) {
-            AlertDialog.Builder(this)
-                .setTitle(getString(R.string.update_workspace))
-                .setMessage(getString(R.string.workspace_selection_help))
-                .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
-                }.create().show()
-        }
-
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
         for (i in sectionIds.indices) {
@@ -117,13 +107,6 @@ open class RegistrationActivity : AppCompatActivity() {
         storeRegistrationInfo()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
-            setupInputFields()
-        }
-    }
-
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         setupInputFields()
@@ -136,7 +119,7 @@ open class RegistrationActivity : AppCompatActivity() {
      * Initializes the inputFields to the inputs of this activity.
      */
     private fun setupInputFields() {
-        val view = findViewById<ScrollView>(R.id.scroll_view)
+        val view = findViewById<ScrollView>(R.id.registration_scroll_view)
         inputFields = getInputFields(view)
     }
 
@@ -582,12 +565,13 @@ open class RegistrationActivity : AppCompatActivity() {
         emailIntent.putExtra(Intent.EXTRA_TEXT, message)
 
         try {
-            this.startActivity(Intent.createChooser(emailIntent, "Send mail"))
+            this.startActivity(Intent.createChooser(emailIntent, getText(R.string.registration_submit)))
             this.finish()
             reg.putBoolean(EMAIL_SENT, true)
             reg.save(this)
             Log.i("Finished sending email", "")
         } catch (ex: android.content.ActivityNotFoundException) {
+            Crashlytics.logException(ex)
             Toast.makeText(this,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show()
         }
@@ -600,7 +584,6 @@ open class RegistrationActivity : AppCompatActivity() {
         val EMAIL_SENT = "registration_email_sent"
 
         private val ID_PREFIX = "org.sil.storyproducer:id/input_"
-        private val RQS_OPEN_DOCUMENT_TREE = 52
         private val SHOW_KEYBOARD = true
         private val CLOSE_KEYBOARD = false
 
@@ -655,10 +638,60 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 }
 
-class WorkspaceAndRegistrationActivity : RegistrationActivity() {
+open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Workspace.clearWorkspace()
+        //Now, let's find the workspace path.
+        Workspace.initializeWorskpace(this)
+        if (true) {
+            AlertDialog.Builder(this)
+                    .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
+                    .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
+                    .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+                    }.create().show()
+        }else{
+            intent = Intent(this, RegistrationActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
+            Workspace.setupWorkspacePath(this,data?.data!!)
+        }
+        intent = Intent(this, RegistrationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    companion object {
+        private val RQS_OPEN_DOCUMENT_TREE = 52
+    }
+
+}
+
+class WorkspaceUpdateActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        Workspace.clearWorkspace()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
+            Workspace.setupWorkspacePath(this,data?.data!!)
+        }
+        intent = Intent(this, RegistrationActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    companion object {
+        private val RQS_OPEN_DOCUMENT_TREE = 52
     }
 }
