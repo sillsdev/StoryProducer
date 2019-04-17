@@ -25,37 +25,31 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
      */
     override fun getItem(i: Int): Fragment {
         val fragment: Fragment
-        val passedArgs = Bundle()
         when (Workspace.activePhase.phaseType) {
             PhaseType.DRAFT -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.COMMUNITY_CHECK -> {
                 fragment = CommunityCheckFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.CONSULTANT_CHECK -> {
                 fragment = ConsultantCheckFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.DRAMATIZATION -> {
                 fragment = DramatizationFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.BACKT -> {
                 fragment = BackTranslationFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
             else -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
             }
         }
+        val passedArgs = Bundle()
+        passedArgs.putInt(SlidePhaseFrag.SLIDE_NUM, i)
         fragment.arguments = passedArgs
 
         return fragment
