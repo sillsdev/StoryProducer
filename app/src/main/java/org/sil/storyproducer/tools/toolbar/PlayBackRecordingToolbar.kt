@@ -2,7 +2,9 @@ package org.sil.storyproducer.tools.toolbar
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
@@ -28,10 +30,16 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         if (bundleArguments != null) {
             slideNum = bundleArguments.get(SLIDE_NUM) as Int
         }
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = super.onCreateView(inflater, container, savedInstanceState)
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             stopToolbarAudioPlaying()
         })
+
+        return rootView
     }
 
     override fun onPause() {
@@ -59,7 +67,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()
 
-        playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, org.sil.storyproducer.R.id.play_recording_button)
+        playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, R.id.play_recording_button)
         rootView?.addView(playButton)
         
         rootView?.addView(toolbarButtonSpace())
