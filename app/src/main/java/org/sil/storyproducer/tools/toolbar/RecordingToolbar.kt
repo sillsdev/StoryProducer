@@ -19,7 +19,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
-import com.crashlytics.android.Crashlytics
+//import com.crashlytics.android.Crashlytics
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -37,6 +37,7 @@ import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+import java.io.FileDescriptor
 import java.io.FileNotFoundException
 import java.io.IOException
 
@@ -79,9 +80,9 @@ class RecordingToolbar : Fragment(){
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
     private var voiceRecorder: AudioRecorder? = null
-    private var audioPlayer: AudioPlayer = AudioPlayer()
+    private lateinit var audioPlayer: AudioPlayer
     val isRecordingOrPlaying : Boolean
-        get() {return voiceRecorder?.isRecording == true  || audioPlayer.isAudioPlaying}
+        get() {return voiceRecorder?.isRecording == true  || (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying)}
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -107,12 +108,6 @@ class RecordingToolbar : Fragment(){
             enableSendAudioButton = buttons[3]
             slideNum = mArguments.getInt(SlidePhaseFrag.SLIDE_NUM)
         }
-
-        audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
-            audioPlayer.stopAudio()
-            recordingListener.onStoppedRecordingOrPlayback(false)
-        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -164,7 +159,7 @@ class RecordingToolbar : Fragment(){
                 sendAudioButton.visibility = View.VISIBLE
             }
         }
-        if (audioPlayer.isAudioPlaying) {
+        if (this::audioPlayer.isInitialized) {
             playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
             audioPlayer.stopAudio()
             recordingListener.onStoppedRecordingOrPlayback(false)
@@ -177,7 +172,9 @@ class RecordingToolbar : Fragment(){
      */
     override fun onPause() {
         stopToolbarMedia()
-        audioPlayer.release()
+        if(this::audioPlayer.isInitialized) {
+            audioPlayer.release()
+        }
         isAppendingOn = false
         super.onPause()
     }
@@ -223,23 +220,23 @@ class RecordingToolbar : Fragment(){
                 when (i) {
                     0 -> {
                         micButton = imageButtons[i]
-                        micButton.id = org.sil.storyproducer.R.id.start_recording_button
+                        micButton.id = R.id.start_recording_button
                     }
                     1 -> {
                         playButton = imageButtons[i]
-                        playButton.id = org.sil.storyproducer.R.id.play_recording_button
+                        playButton.id = R.id.play_recording_button
                     }
                     2 -> {
                         multiRecordButton = imageButtons[i]
-                        multiRecordButton.id = org.sil.storyproducer.R.id.list_recordings_button
+                        multiRecordButton.id = R.id.list_recordings_button
                     }
                     3 -> {
                         checkButton = imageButtons[i]
-                        checkButton.id = org.sil.storyproducer.R.id.finish_recording_button
+                        checkButton.id = R.id.finish_recording_button
                     }
                     4 -> {
                         sendAudioButton = imageButtons[i]
-                        sendAudioButton.id = org.sil.storyproducer.R.id.send_recording_button
+                        sendAudioButton.id = R.id.send_recording_button
                     }
                 }
             }
@@ -273,7 +270,7 @@ class RecordingToolbar : Fragment(){
                         try {
                             AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                         } catch (e: FileNotFoundException) {
-                            Crashlytics.logException(e)
+                            //Crashlytics.logException(e)
                         }
                     } else {
                         isAppendingOn = true
@@ -338,24 +335,34 @@ class RecordingToolbar : Fragment(){
 
         if (enablePlaybackButton) {
             val playListener = View.OnClickListener {
-                if (audioPlayer.isAudioPlaying) {
+                if (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying) {
                     audioPlayer.stopAudio()
+                    audioPlayer.release()
                     playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
                     recordingListener.onStoppedRecordingOrPlayback(false)
-                } else {
-                    stopToolbarMedia()
-                    recordingListener.onStartedRecordingOrPlayback(false)
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
+                }
+                else {
+                    if (storyRelPathExists(appContext,Workspace.activePhase.getChosenFilename())) {
+                        stopToolbarMedia()
+                        recordingListener.onStartedRecordingOrPlayback(false)
+                        audioPlayer = AudioPlayer()
+                        audioPlayer.setStorySource(appContext, Workspace.activePhase.getChosenFilename())
                         audioPlayer.playAudio()
-                        Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-                        //TODO: make this logging more robust and encapsulated
-                        when (Workspace.activePhase.phaseType){
-                                PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
-                                PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
-                                else ->{}
+                        audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+                            playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+                            audioPlayer.stopAudio()
+                            audioPlayer.release()
+                            recordingListener.onStoppedRecordingOrPlayback(false)
+                        })
+                        when (Workspace.activePhase.phaseType) {
+                            PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
+                            PhaseType.COMMUNITY_CHECK -> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
+                            else -> {
+                            }
                         }
-                    } else {
+                    }
+                    else {
                         Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -370,7 +377,7 @@ class RecordingToolbar : Fragment(){
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
-                        Crashlytics.logException(e)
+                        //Crashlytics.logException(e)
                     }
                 }else {
                     stopToolbarMedia()
@@ -386,7 +393,6 @@ class RecordingToolbar : Fragment(){
             }
         }
         if (enableMultiRecordButton) {
-
             val multiRecordModalButtonListener = View.OnClickListener {
                 stopToolbarMedia()
                 recordingListener.onStartedRecordingOrPlayback(false)
@@ -442,7 +448,7 @@ class RecordingToolbar : Fragment(){
         js!!["TemplateTitle"] = Workspace.activeStory.title
         js!!["NumberOfSlides"] = Integer.toString(Workspace.activeStory.slides.count())
 
-        val req = object : StringRequest(Request.Method.POST, appContext.getString(R.string.url_request_review), Response.Listener { response ->
+        val req = object : StringRequest(Method.POST, appContext.getString(R.string.url_request_review), Response.Listener { response ->
             Log.i("LOG_VOLLEY_RESP_RR", response)
             resp = response
         }, Response.ErrorListener { error ->
