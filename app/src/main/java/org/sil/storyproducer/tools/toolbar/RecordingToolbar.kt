@@ -45,7 +45,6 @@ open class RecordingToolbar : Fragment(){
         catch (e : ClassCastException){
             parentFragment as RecordingListener
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -142,7 +141,7 @@ open class RecordingToolbar : Fragment(){
 
         rootView?.addView(toolbarButtonSpace())
 
-        micButton = toolbarButton(R.drawable.ic_mic_white_48dp, org.sil.storyproducer.R.id.start_recording_button)
+        micButton = toolbarButton(R.drawable.ic_mic_white_48dp, R.id.start_recording_button)
         rootView?.addView(micButton)
         
         rootView?.addView(toolbarButtonSpace())
