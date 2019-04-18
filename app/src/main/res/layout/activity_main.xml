@@ -24,8 +24,19 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true">
+
+            <ProgressBar
+                android:id="@+id/indeterminateBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                />
+
+        </FrameLayout>
     </LinearLayout>
 
     <android.support.design.widget.NavigationView
