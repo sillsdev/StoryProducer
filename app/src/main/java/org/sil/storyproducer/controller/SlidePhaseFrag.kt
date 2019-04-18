@@ -23,7 +23,7 @@ import java.util.*
  */
 class SlidePhaseFrag : Fragment() {
 
-    private var referenceAudioPlayer: AudioPlayer = AudioPlayer()
+    private lateinit var referenceAudioPlayer: AudioPlayer
     private var referencePlayButton: ImageButton? = null
     private var refPlaybackSeekBar: SeekBar? = null
     private lateinit var fragmentImageView: ImageView
@@ -81,39 +81,6 @@ class SlidePhaseFrag : Fragment() {
         item.setIcon(R.drawable.ic_mic_white_48dp)
     }
 
-
-    override fun onResume() {
-        super.onResume()
-
-        if (storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
-            referenceAudioPlayer = AudioPlayer()
-            referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
-
-            referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-                referenceAudioPlayer.stopAudio()
-                playbackListener.onStoppedPlayback()
-            })
-            //If it is the local credits slide, do not show the audio stuff at all.
-            if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
-                refPlaybackHolder.visibility = View.GONE
-            }
-            else{
-                mSeekBarTimer = Timer()
-                mSeekBarTimer.schedule(object : TimerTask() {
-                    override fun run() {
-                        activity!!.runOnUiThread{
-                            refPlaybackProgress = referenceAudioPlayer.currentPosition
-                            refPlaybackSeekBar?.progress = refPlaybackProgress
-                        }
-                    }
-                },0,33)
-
-                setSeekBarListener()
-            }
-        }
-    }
-
     private fun setSeekBarListener() {
         refPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
         refPlaybackSeekBar?.max = refPlaybackDuration
@@ -124,6 +91,7 @@ class SlidePhaseFrag : Fragment() {
                 referenceAudioPlayer.currentPosition = refPlaybackProgress
                 if(wasAudioPlaying){
                     referenceAudioPlayer.resumeAudio()
+                    referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     playbackListener.onStartedPlayback()
                 }
             }
@@ -145,10 +113,12 @@ class SlidePhaseFrag : Fragment() {
      * put on pause.
      */
     override fun onPause() {
-        refPlaybackProgress = referenceAudioPlayer.currentPosition
+        if(this::referenceAudioPlayer.isInitialized) {
+            refPlaybackProgress = referenceAudioPlayer.currentPosition
+            referenceAudioPlayer.stopAudio()
+            referenceAudioPlayer.release()
+        }
         mSeekBarTimer.cancel()
-        referenceAudioPlayer.stopAudio()
-        referenceAudioPlayer.release()
         playbackListener.onStoppedPlayback()
         super.onPause()
     }
@@ -174,36 +144,69 @@ class SlidePhaseFrag : Fragment() {
     }
 
     private fun setReferenceAudioButton() {
-        referencePlayButton!!.setOnClickListener {
+        referencePlayButton?.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
-                //TODO make "no audio" string work for all phases
                 Snackbar.make(view!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
-            } else {
-                //stop other playback streams.
-                if (referenceAudioPlayer.isAudioPlaying) {
+                playbackListener.onStartedPlayback()
+            }
+            else if (Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
+                    refPlaybackHolder.visibility = View.GONE
+            }
+            else {
+                //if its been init and audio is currently playing
+                if (this::referenceAudioPlayer.isInitialized && referenceAudioPlayer.isAudioPlaying) {
                     stopPlayBackAndRecording()
                     refPlaybackProgress = referenceAudioPlayer.currentPosition
                     refPlaybackSeekBar?.progress = refPlaybackProgress
-                } else {
-                    stopPlayBackAndRecording()
-                    referenceAudioPlayer.currentPosition = refPlaybackProgress
-                    referenceAudioPlayer.resumeAudio()
-                    playbackListener.onStartedPlayback()
+                }
+                //if it hasn't been init
+                else if (!this::referenceAudioPlayer.isInitialized) {
+                    referenceAudioPlayer = AudioPlayer()
+                    referenceAudioPlayer.setStorySource(context!!, Workspace.activePhase.getReferenceAudioFile(slideNum))
+                    referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+                        referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                        referenceAudioPlayer.stopAudio()
+                        playbackListener.onStoppedPlayback()
+                    })
+                    mSeekBarTimer = Timer()
+                    mSeekBarTimer.schedule(object : TimerTask() {
+                        override fun run() {
+                            activity!!.runOnUiThread{
+                                if(referenceAudioPlayer.isAudioPlaying) {
+                                    refPlaybackProgress = referenceAudioPlayer.currentPosition
+                                    refPlaybackSeekBar?.progress = refPlaybackProgress
+                                }
+                            }
+                        }
+                    },0,33)
 
-                    referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                    when(Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
-                        else -> {}
-                    }
+                    setSeekBarListener()
+                    continuePlayback()
+                }
+                //if its been init but not playing
+                else{
+                    continuePlayback()
                 }
             }
         }
     }
 
+    private fun continuePlayback(){
+        referenceAudioPlayer.resumeAudio()
+        playbackListener.onStartedPlayback()
+        referencePlayButton?.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+        when (Workspace.activePhase.phaseType) {
+            PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+            PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
+            else -> {
+            }
+        }
+    }
+
     fun stopPlayBackAndRecording() {
-        referenceAudioPlayer.pauseAudio()
+        if(this::referenceAudioPlayer.isInitialized) {
+            referenceAudioPlayer.pauseAudio()
+        }
         playbackListener.onStoppedPlayback()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }

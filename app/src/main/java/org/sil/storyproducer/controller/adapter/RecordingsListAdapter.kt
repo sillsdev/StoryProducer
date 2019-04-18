@@ -152,7 +152,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         internal var recyclerView: RecyclerView? = null
         private var lastNewName: String? = null
         private var lastOldName: String? = null
-        private val audioPlayer: AudioPlayer = AudioPlayer()
+        private lateinit var audioPlayer: AudioPlayer
         private var currentPlayingButton: ImageButton? = null
         private var embedded = false
         private var playbackListener: RecordingToolbar.RecordingListener? = null
@@ -200,8 +200,9 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     dialog?.dismiss()
                 }
                 dialog?.setOnDismissListener {
-                    if (audioPlayer.isAudioPlaying) {
+                    if (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying) {
                         audioPlayer.stopAudio()
+                        audioPlayer.release()
                     }
                 }
                 dialog?.show()
@@ -226,29 +227,32 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
-            if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+            if (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
+                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()
-            } else {
+            }
+            else {
                 stopAudio()
                 playbackListener?.onStartedRecordingOrPlayback(false)
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
-                audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                    currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                    audioPlayer.stopAudio()
-                })
                 if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
+                    audioPlayer = AudioPlayer()
+                    audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+                        currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                        audioPlayer.stopAudio()
+                        audioPlayer.release()
+                    })
                     audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
                     audioPlayer.playAudio()
-                    Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
                     when (Workspace.activePhase.phaseType) {
                         PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
                         PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
                         else -> {
                         }
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(context, context.getString(R.string.recording_toolbar_no_recording), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -286,9 +290,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         fun stopAudio() {
-            if (audioPlayer.isAudioPlaying) {
+            if (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying) {
                 currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()
+                audioPlayer.release()
             }
         }
     }

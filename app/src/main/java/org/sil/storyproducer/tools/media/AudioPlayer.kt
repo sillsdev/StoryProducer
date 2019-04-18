@@ -129,6 +129,7 @@ class AudioPlayer {
     fun release() {
         isAudioPrepared = false
         try {
+            mPlayer.reset()
             mPlayer.release()
         } catch (e : Exception) {}
     }
