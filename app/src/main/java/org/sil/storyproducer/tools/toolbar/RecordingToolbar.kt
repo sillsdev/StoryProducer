@@ -22,14 +22,14 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 /**
- *
+ * 
  */
 open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
 
-    protected lateinit var recordingListener : RecordingListener
+    protected lateinit var toolbarMediaListener : ToolbarMediaListener
     protected var voiceRecorder: AudioRecorder? = null
     val isRecording : Boolean
         get() {return voiceRecorder?.isRecording == true}
@@ -39,11 +39,11 @@ open class RecordingToolbar : Fragment(){
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        recordingListener = try {
-            context as RecordingListener
+        toolbarMediaListener = try {
+            context as ToolbarMediaListener
         }
         catch (e : ClassCastException){
-            parentFragment as RecordingListener
+            parentFragment as ToolbarMediaListener
         }
     }
 
@@ -51,7 +51,7 @@ open class RecordingToolbar : Fragment(){
         super.onCreate(savedInstanceState)
 
         appContext = activity?.applicationContext!!
-
+        
         voiceRecorder = AudioRecorderMP4(activity!!)
     }
 
@@ -74,13 +74,13 @@ open class RecordingToolbar : Fragment(){
 
     override fun onPause() {
         stopToolbarMedia()
-
+        
         super.onPause()
     }
 
-    interface RecordingListener {
-        fun onStoppedRecordingOrPlayback(isRecording: Boolean)
-        fun onStartedRecordingOrPlayback(isRecording: Boolean)
+    interface ToolbarMediaListener {
+        fun onStoppedToolbarMedia(isRecording: Boolean)
+        fun onStartedToolbarMedia(isRecording: Boolean)
     }
 
     /**
@@ -96,17 +96,17 @@ open class RecordingToolbar : Fragment(){
 
     private fun stopToolbarVoiceRecording(){
         voiceRecorder?.stop()
-
+        
         animationHandler.stopAnimation()
 
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showInheritedToolbarButtons()
-
-        recordingListener.onStoppedRecordingOrPlayback(true)
+        
+        toolbarMediaListener.onStoppedToolbarMedia(true)
     }
 
     protected fun recordAudio(recordingRelPath: String) {
-        recordingListener.onStartedRecordingOrPlayback(true)
+        toolbarMediaListener.onStartedToolbarMedia(true)
 
         voiceRecorder?.startNewRecording(recordingRelPath)
 
@@ -143,7 +143,7 @@ open class RecordingToolbar : Fragment(){
 
         micButton = toolbarButton(R.drawable.ic_mic_white_48dp, R.id.start_recording_button)
         rootView?.addView(micButton)
-
+        
         rootView?.addView(toolbarButtonSpace())
     }
 
@@ -182,7 +182,7 @@ open class RecordingToolbar : Fragment(){
     protected open fun micButtonOnClickListener(): View.OnClickListener{
           return View.OnClickListener {
               val wasRecording = voiceRecorder?.isRecording == true
-
+              
               stopToolbarMedia()
 
               if (!wasRecording) {
