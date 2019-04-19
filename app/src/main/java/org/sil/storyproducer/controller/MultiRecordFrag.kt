@@ -54,7 +54,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
             val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
-            imageFab.visibility = android.view.View.VISIBLE
+            imageFab.visibility = View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
                 chooser.putExtra(Intent.EXTRA_TITLE, "Select From:")
@@ -81,10 +81,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
-            editBox?.visibility = android.view.View.INVISIBLE
+            editBox?.visibility = View.INVISIBLE
 
             val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
-            editFab?.visibility = android.view.View.VISIBLE
+            editFab?.visibility = View.VISIBLE
             editFab?.setOnClickListener {
                 val editText = EditText(context)
                 editText.id = R.id.edit_text_input
@@ -147,19 +147,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
         }
     }
 
-    override fun stopPlayBackAndRecording() {
-        super.stopPlayBackAndRecording()
-        recordingToolbar.stopToolbarMedia()
-    }
-
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
-        //updatePlayBackPath()
-    }
-
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-    }
-
     protected open fun setToolbar() {
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, slideNum)
@@ -168,6 +155,19 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
 
         recordingToolbar.keepToolbarVisible()
     }
+
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {}
+
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
+        stopSlidePlayBack()
+    }
+
+    override fun onStartedSlidePlayBack() {
+        super.onStartedSlidePlayBack()
+
+        recordingToolbar.stopToolbarMedia()
+    }
+    
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
     }

@@ -195,11 +195,12 @@ abstract class SlidePhaseFrag : Fragment() {
             } else {
                 //stop other playback streams.
                 if (referenceAudioPlayer.isAudioPlaying) {
-                    stopPlayBackAndRecording()
+                    stopSlidePlayBack()
                     refPlaybackProgress = referenceAudioPlayer.currentPosition
                     refPlaybackSeekBar?.progress = refPlaybackProgress
                 } else {
-                    stopPlayBackAndRecording()
+                    stopSlidePlayBack()
+                    onStartedSlidePlayBack()
                     referenceAudioPlayer.currentPosition = refPlaybackProgress
                     referenceAudioPlayer.resumeAudio()
 
@@ -215,8 +216,10 @@ abstract class SlidePhaseFrag : Fragment() {
         }
     }
 
-    open fun stopPlayBackAndRecording() {
+    protected fun stopSlidePlayBack() {
         referenceAudioPlayer.pauseAudio()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
+
+    open fun onStartedSlidePlayBack() {}
 }

@@ -189,7 +189,6 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.ToolbarMediaListen
     }
 
     override fun onStartedToolbarMedia(isRecording: Boolean) {
-        recordingToolbar.stopToolbarMedia()
         displayList.stopAudio()
     }
 

@@ -116,34 +116,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.ToolbarMediaListener
         invalidateOptionsMenu()
     }
 
-    private fun setToolbar(){
-        val bundle = Bundle()
-        bundle.putInt(SLIDE_NUM, 0)
-        recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
-
-        recordingToolbar.keepToolbarVisible()
-    }
-    
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
-        if(isRecording){
-            makeLogIfNecessary(true)
-        }
-        videoSeekBar!!.progress = 0
-        setSlideFromSeekbar()
-    }
-
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
-        pauseStoryAudio()
-        videoSeekBar!!.progress = 0
-        curPos = 0
-        //This gets the progress bar to show the right time.
-        seekbarStartTime = System.currentTimeMillis()
-        if(isRecording){
-            markLogStart()
-        }
-    }
-
     public override fun onPause() {
         super.onPause()
         pauseStoryAudio()
@@ -198,6 +170,35 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.ToolbarMediaListener
                 break
             }
             i++
+        }
+    }
+
+
+    private fun setToolbar(){
+        val bundle = Bundle()
+        bundle.putInt(SLIDE_NUM, 0)
+        recordingToolbar.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+
+        recordingToolbar.keepToolbarVisible()
+    }
+
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {
+        if(isRecording){
+            makeLogIfNecessary(true)
+        }
+        videoSeekBar!!.progress = 0
+        setSlideFromSeekbar()
+    }
+
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
+        pauseStoryAudio()
+        videoSeekBar!!.progress = 0
+        curPos = 0
+        //This gets the progress bar to show the right time.
+        seekbarStartTime = System.currentTimeMillis()
+        if(isRecording){
+            markLogStart()
         }
     }
 
