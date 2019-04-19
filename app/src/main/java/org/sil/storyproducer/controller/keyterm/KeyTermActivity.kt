@@ -33,7 +33,7 @@ import java.util.*
  * @author Aaron Cannon and Justin Stallard
  */
 
-class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
+class KeyTermActivity : AppCompatActivity(), RecordingToolbar.ToolbarMediaListener {
     private lateinit var recordingToolbar : KeytermRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
@@ -177,7 +177,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {
         if(isRecording) {
             val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
             recordingExpandableListView.adapter?.notifyItemInserted(0)
@@ -188,7 +188,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
         recordingToolbar.stopToolbarMedia()
         displayList.stopAudio()
     }

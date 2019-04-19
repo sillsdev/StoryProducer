@@ -22,7 +22,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.math.min
 
-class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
+class LearnActivity : PhaseBaseActivity(), RecordingToolbar.ToolbarMediaListener {
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -125,7 +125,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         recordingToolbar.keepToolbarVisible()
     }
     
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {
         if(isRecording){
             makeLogIfNecessary(true)
         }
@@ -133,7 +133,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         setSlideFromSeekbar()
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
         pauseStoryAudio()
         videoSeekBar!!.progress = 0
         curPos = 0

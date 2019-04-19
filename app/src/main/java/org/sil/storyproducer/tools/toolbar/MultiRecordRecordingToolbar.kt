@@ -39,7 +39,7 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
         return View.OnClickListener {
             stopToolbarMedia()
 
-            recordingListener.onStartedRecordingOrPlayback(false)
+            toolbarMediaListener.onStartedToolbarMedia(false)
             
             RecordingsListAdapter.RecordingsListModal(activity!!, this).show()
         }

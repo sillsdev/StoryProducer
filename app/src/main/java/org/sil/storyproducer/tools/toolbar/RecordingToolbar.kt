@@ -29,7 +29,7 @@ open class RecordingToolbar : Fragment(){
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
 
-    protected lateinit var recordingListener : RecordingListener
+    protected lateinit var toolbarMediaListener : ToolbarMediaListener
     protected var voiceRecorder: AudioRecorder? = null
     val isRecording : Boolean
         get() {return voiceRecorder?.isRecording == true}
@@ -39,11 +39,11 @@ open class RecordingToolbar : Fragment(){
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
-        recordingListener = try {
-            context as RecordingListener
+        toolbarMediaListener = try {
+            context as ToolbarMediaListener
         }
         catch (e : ClassCastException){
-            parentFragment as RecordingListener
+            parentFragment as ToolbarMediaListener
         }
     }
 
@@ -78,9 +78,9 @@ open class RecordingToolbar : Fragment(){
         super.onPause()
     }
 
-    interface RecordingListener {
-        fun onStoppedRecordingOrPlayback(isRecording: Boolean)
-        fun onStartedRecordingOrPlayback(isRecording: Boolean)
+    interface ToolbarMediaListener {
+        fun onStoppedToolbarMedia(isRecording: Boolean)
+        fun onStartedToolbarMedia(isRecording: Boolean)
     }
 
     /**
@@ -102,11 +102,11 @@ open class RecordingToolbar : Fragment(){
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showInheritedToolbarButtons()
         
-        recordingListener.onStoppedRecordingOrPlayback(true)
+        toolbarMediaListener.onStoppedToolbarMedia(true)
     }
 
     protected fun recordAudio(recordingRelPath: String) {
-        recordingListener.onStartedRecordingOrPlayback(true)
+        toolbarMediaListener.onStartedToolbarMedia(true)
 
         voiceRecorder?.startNewRecording(recordingRelPath)
 
