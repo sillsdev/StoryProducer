@@ -61,7 +61,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
 
-        recordingListener.onStoppedRecordingOrPlayback(false)
+        toolbarMediaListener.onStoppedToolbarMedia(false)
     }
 
     override fun setupToolbarButtons() {
@@ -110,7 +110,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             stopToolbarMedia()
 
             if (!audioPlayer.isAudioPlaying) {
-                recordingListener.onStartedRecordingOrPlayback(false)
+                toolbarMediaListener.onStartedToolbarMedia(false)
 
                 if (audioPlayer.setStorySource(this.appContext, Workspace.activePhase.getChosenFilename())) {
                     audioPlayer.playAudio()
