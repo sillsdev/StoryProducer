@@ -144,7 +144,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -230,17 +230,21 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
             if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
+                stopAudio()
             } else {
                 stopAudio()
+
+                toolbar?.stopToolbarMedia()
+
                 playbackListener?.onStartedToolbarMedia(false)
+
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
+
                 audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                    currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                    audioPlayer.stopAudio()
+                    stopAudio()
                 })
+
                 if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
                     audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
                     audioPlayer.playAudio()

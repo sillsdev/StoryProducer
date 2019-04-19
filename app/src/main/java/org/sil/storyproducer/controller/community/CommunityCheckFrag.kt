@@ -26,7 +26,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListe
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.setSlideNum(slideNum)
-        //This enables the "onStartedPlaybackOrRecording" to be invoked.
+        //This enables the "onStartedToolbarMedia" to be invoked.
         dispList?.setParentFragment(this)
         dispList?.show()
 
@@ -44,22 +44,9 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListe
      * This function serves to handle page changes and stops the audio streams from
      * continuing.
      */
-
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         dispList?.stopAudio()
-    }
-
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
-        dispList?.updateRecordingList()
-        dispList?.recyclerView?.adapter?.notifyDataSetChanged()
-    }
-
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-        //this is needed here to - when you are playing the reference audio and start recording
-        //the new audio file pops up, and in the wrong format.
-        dispList?.updateRecordingList()
     }
 
     override fun setToolbar() {
@@ -72,8 +59,22 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListe
         recordingToolbar.stopToolbarMedia()
     }
 
-    override fun stopPlayBackAndRecording() {
-        super.stopPlayBackAndRecording()
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {
+        dispList?.updateRecordingList()
+        dispList?.recyclerView?.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
+        stopSlidePlayBack()
+        dispList!!.stopAudio()
+        //this is needed here to - when you are playing the reference audio and start recording
+        //the new audio file pops up, and in the wrong format.
+        dispList?.updateRecordingList()
+    }
+
+    override fun onStartedSlidePlayBack() {
+        super.onStartedSlidePlayBack()
+
         dispList!!.stopAudio()
     }
 }

@@ -11,7 +11,7 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()
 
-        multiRecordButton = toolbarButton(R.drawable.ic_playlist_play_white_48dp, org.sil.storyproducer.R.id.list_recordings_button)
+        multiRecordButton = toolbarButton(R.drawable.ic_playlist_play_white_48dp, R.id.list_recordings_button)
         rootView?.addView(multiRecordButton)
         
         rootView?.addView(toolbarButtonSpace())
