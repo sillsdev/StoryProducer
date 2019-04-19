@@ -19,14 +19,14 @@ import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.ToolbarMediaListener
 import java.io.File
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
+abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
     protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
 
     private var tempPicFile: File? = null
@@ -156,9 +156,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), ToolbarMediaListener {
         recordingToolbar.keepToolbarVisible()
     }
 
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {}
+    override fun onStartedToolbarMedia() {
+        super.onStartedToolbarMedia()
 
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
         stopSlidePlayBack()
     }
 

@@ -22,7 +22,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.helpDialog
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 
 /**
@@ -33,7 +33,7 @@ import java.util.*
  * @author Aaron Cannon and Justin Stallard
  */
 
-class KeyTermActivity : AppCompatActivity(), RecordingToolbar.ToolbarMediaListener {
+class KeyTermActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
     private lateinit var recordingToolbar : KeytermRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
@@ -177,18 +177,16 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.ToolbarMediaListen
         }
     }
 
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
-        if(isRecording) {
-            val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
-            recordingExpandableListView.adapter?.notifyItemInserted(0)
-            if(from(bottomSheet).state == STATE_COLLAPSED) {
-                from(bottomSheet).state = STATE_EXPANDED
-            }
-            recordingExpandableListView.smoothScrollToPosition(0)
+    override fun onStoppedToolbarRecording() {
+        val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
+        recordingExpandableListView.adapter?.notifyItemInserted(0)
+        if(from(bottomSheet).state == STATE_COLLAPSED) {
+            from(bottomSheet).state = STATE_EXPANDED
         }
+        recordingExpandableListView.smoothScrollToPosition(0)
     }
 
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
+    override fun onStartedToolbarMedia() {
         displayList.stopAudio()
     }
 

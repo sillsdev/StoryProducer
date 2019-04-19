@@ -13,7 +13,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListener {
+class CommunityCheckFrag : MultiRecordFrag() {
     override var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
@@ -48,13 +48,16 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListe
         dispList?.stopAudio()
     }
 
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
+    override fun onStoppedToolbarMedia() {
+        super.onStoppedToolbarMedia()
+        
         dispList?.updateRecordingList()
         dispList?.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
-        super.onStartedToolbarMedia(isRecording)
+    override fun onStartedToolbarMedia() {
+        super.onStartedToolbarMedia()
+
         dispList!!.stopAudio()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
