@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -49,23 +48,13 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.ToolbarMediaListe
         dispList?.stopAudio()
     }
 
-    override fun setToolbar() {
-        val bundle = Bundle()
-        bundle.putInt(SLIDE_NUM, slideNum)
-        recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
-
-        recordingToolbar.keepToolbarVisible()
-        recordingToolbar.stopToolbarMedia()
-    }
-
     override fun onStoppedToolbarMedia(isRecording: Boolean) {
         dispList?.updateRecordingList()
         dispList?.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
     override fun onStartedToolbarMedia(isRecording: Boolean) {
-        stopSlidePlayBack()
+        super.onStartedToolbarMedia(isRecording)
         dispList!!.stopAudio()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
