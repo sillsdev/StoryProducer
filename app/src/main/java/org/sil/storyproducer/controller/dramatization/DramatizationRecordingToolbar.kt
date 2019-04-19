@@ -1,6 +1,5 @@
 package org.sil.storyproducer.controller.dramatization
 
-import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import com.crashlytics.android.Crashlytics
@@ -12,8 +11,6 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import java.io.FileNotFoundException
 
-internal const val ENABLE_SEND_AUDIO_BUTTON = "EnableSendAudioButton"
-
 class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
@@ -22,15 +19,6 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
     private var isAppendingOn = false
     private val audioTempName = getTempAppendAudioRelPath()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val bundleArguments = arguments
-        if (bundleArguments != null) {
-            enableSendAudioButton = bundleArguments.get(ENABLE_SEND_AUDIO_BUTTON) as Boolean
-        }
-    }
 
     override fun onPause() {
         isAppendingOn = false
