@@ -1,5 +1,6 @@
 package org.sil.storyproducer.tools.toolbar
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,10 +19,22 @@ import org.sil.storyproducer.tools.media.AudioPlayer
 open class PlayBackRecordingToolbar: RecordingToolbar() {
     private lateinit var playButton: ImageButton
 
+    override lateinit var toolbarMediaListener: RecordingToolbar.ToolbarMediaListener
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isAudioPlaying : Boolean
         get() {return audioPlayer.isAudioPlaying}
     private var slideNum : Int = 0
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        toolbarMediaListener = try {
+            context as ToolbarMediaListener
+        }
+        catch (e : ClassCastException){
+            parentFragment as ToolbarMediaListener
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +61,15 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         super.onPause()
     }
 
+    interface ToolbarMediaListener: RecordingToolbar.ToolbarMediaListener{
+        fun onStoppedToolbarPlayBack(){
+            onStoppedToolbarMedia()
+        }
+        fun onStartedToolbarPlayBack(){
+            onStartedToolbarMedia()
+        }
+    }
+
     override fun stopToolbarMedia() {
         super.stopToolbarMedia()
 
@@ -61,7 +83,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
 
-        toolbarMediaListener.onStoppedToolbarMedia(false)
+        (toolbarMediaListener as ToolbarMediaListener).onStoppedToolbarPlayBack()
     }
 
     override fun setupToolbarButtons() {
@@ -107,10 +129,12 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
     private fun playButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
+            val wasPlaying = audioPlayer.isAudioPlaying
+
             stopToolbarMedia()
 
-            if (!audioPlayer.isAudioPlaying) {
-                toolbarMediaListener.onStartedToolbarMedia(false)
+            if (!wasPlaying) {
+                (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
                 if (audioPlayer.setStorySource(this.appContext, Workspace.activePhase.getChosenFilename())) {
                     audioPlayer.playAudio()
