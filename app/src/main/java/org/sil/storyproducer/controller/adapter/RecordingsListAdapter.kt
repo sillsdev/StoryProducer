@@ -160,7 +160,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var embedded = false
-        private var playbackListener: RecordingToolbar.RecordingListener? = null
+        private var playbackListener: RecordingToolbar.ToolbarMediaListener? = null
         private var slideNum: Int = Workspace.activeSlideNum
 
         fun setSlideNum(mSlideNum:Int){
@@ -169,10 +169,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         fun setParentFragment(parentFragment: Fragment?){
             try{
-                playbackListener = parentFragment as RecordingToolbar.RecordingListener
+                playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
             }
             catch (e : ClassCastException){
-                playbackListener = context as RecordingToolbar.RecordingListener
+                playbackListener = context as RecordingToolbar.ToolbarMediaListener
             }
             catch (e:Exception){}
         }
@@ -246,7 +246,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 audioPlayer.stopAudio()
             } else {
                 stopAudio()
-                playbackListener?.onStartedRecordingOrPlayback(false)
+                playbackListener?.onStartedToolbarMedia(false)
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
                 audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
