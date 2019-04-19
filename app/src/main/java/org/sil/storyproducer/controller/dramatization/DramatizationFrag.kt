@@ -76,12 +76,6 @@ class DramatizationFrag : MultiRecordFrag() {
         }
     }
 
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {}
-    
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-    }
-
     /**
      * Initializes the toolbar and toolbar buttons.
      */
@@ -93,6 +87,12 @@ class DramatizationFrag : MultiRecordFrag() {
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
+    }
+
+    override fun onStoppedToolbarMedia(isRecording: Boolean) {}
+    
+    override fun onStartedToolbarMedia(isRecording: Boolean) {
+        stopSlidePlayBack()
     }
 
     /**
@@ -119,7 +119,7 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        if(slideText!!.visibility == android.view.View.VISIBLE) {
+        if(slideText!!.visibility == View.VISIBLE) {
             //Don't update with a press when in title and local credits slides.
             val newText = slideText!!.text.toString()
             if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
@@ -128,5 +128,4 @@ class DramatizationFrag : MultiRecordFrag() {
             }
         }
     }
-
 }
