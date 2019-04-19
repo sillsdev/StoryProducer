@@ -63,6 +63,8 @@ class KeytermRecordingToolbar : MultiRecordRecordingToolbar(){
         return View.OnClickListener {
             stopToolbarMedia()
 
+            toolbarMediaListener.onStartedToolbarMedia(false)
+
             if (from(bottomSheet).state == STATE_EXPANDED) {
                 from(bottomSheet).state = STATE_COLLAPSED
             } else {
