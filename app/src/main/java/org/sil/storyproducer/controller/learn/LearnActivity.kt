@@ -18,11 +18,10 @@ import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.math.min
 
-class LearnActivity : PhaseBaseActivity(), RecordingToolbar.ToolbarMediaListener {
+class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -183,23 +182,29 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.ToolbarMediaListener
         recordingToolbar.keepToolbarVisible()
     }
 
-    override fun onStoppedToolbarMedia(isRecording: Boolean) {
-        if(isRecording){
-            makeLogIfNecessary(true)
-        }
+    override fun onStoppedToolbarRecording() {
+        makeLogIfNecessary(true)
+
+        super.onStoppedToolbarRecording()
+    }
+
+    override fun onStartedToolbarRecording() {
+        super.onStartedToolbarRecording()
+
+        markLogStart()
+    }
+
+    override fun onStoppedToolbarMedia() {
         videoSeekBar!!.progress = 0
         setSlideFromSeekbar()
     }
 
-    override fun onStartedToolbarMedia(isRecording: Boolean) {
+    override fun onStartedToolbarMedia() {
         pauseStoryAudio()
         videoSeekBar!!.progress = 0
         curPos = 0
         //This gets the progress bar to show the right time.
         seekbarStartTime = System.currentTimeMillis()
-        if(isRecording){
-            markLogStart()
-        }
     }
 
     private fun markLogStart() {
