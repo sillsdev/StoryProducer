@@ -100,6 +100,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
                         listeners.onDeleteClick(text, position)
                         notifyItemRemoved(position)
+                        notifyItemChanged(values?.size!! -1)
                     }
                     .create()
 
@@ -131,6 +132,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
                                 notifyDataSetChanged()
+                                notifyItemChanged(selectedPos)
+                                notifyItemChanged(position)
                                 Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                             }
                             RenameCode.ERROR_LENGTH -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
