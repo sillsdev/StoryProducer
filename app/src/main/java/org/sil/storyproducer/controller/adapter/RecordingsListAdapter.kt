@@ -239,6 +239,9 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     if(!this::audioPlayer.isInitialized) {
                         audioPlayer = AudioPlayer()
                     }
+                    else{
+                        audioPlayer.reset()
+                    }
                     audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
                         currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                         audioPlayer.stopAudio()
@@ -293,7 +296,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             if (this::audioPlayer.isInitialized && audioPlayer.isAudioPlaying) {
                 currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()
-                audioPlayer.release()
             }
         }
     }
