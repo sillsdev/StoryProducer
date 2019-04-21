@@ -19,7 +19,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
-//import com.crashlytics.android.Crashlytics
+import com.crashlytics.android.Crashlytics
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -270,7 +270,7 @@ class RecordingToolbar : Fragment(){
                         try {
                             AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                         } catch (e: FileNotFoundException) {
-                            //Crashlytics.logException(e)
+                            Crashlytics.logException(e)
                         }
                     } else {
                         isAppendingOn = true
@@ -377,7 +377,7 @@ class RecordingToolbar : Fragment(){
                     try {
                         AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
-                        //Crashlytics.logException(e)
+                        Crashlytics.logException(e)
                     }
                 }else {
                     stopToolbarMedia()
