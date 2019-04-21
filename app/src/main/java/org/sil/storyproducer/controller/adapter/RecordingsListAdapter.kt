@@ -126,8 +126,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     .setView(newName)
                     .setNegativeButton(itemView.context.getString(R.string.cancel), null)
                     .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
-                        val returnCode = listeners.onRenameClick(values?.get(position)!!, newName.text.toString())
-                        when (returnCode) {
+                        when (listeners.onRenameClick(values?.get(position)!!, newName.text.toString())) {
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
                                 notifyDataSetChanged()
@@ -144,7 +143,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -241,7 +240,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
                         currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                         audioPlayer.stopAudio()
-                        audioPlayer.release()
                     })
                     audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
                     audioPlayer.playAudio()

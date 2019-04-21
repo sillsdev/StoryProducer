@@ -33,7 +33,7 @@ import kotlin.collections.HashMap
  */
 
 class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
-    private lateinit var storyName: String
+    private var storyName: String = ""
     private lateinit var messageSent: EditText
 
     private var obj: JSONObject? = null
@@ -100,25 +100,22 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         //save message draft
         Workspace.activeStory.slides[slideNum].remoteTranscription = messageSent.text.toString()
 
+
         //save message adapter as well
         saveSharedPreferenceMessageHistory()
     }
 
     private fun setSlide(){
         val bundle = Bundle()
-        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
+        bundle.putInt(SLIDE_NUM, slideNum)
         val slidePhaseFrag = SlidePhaseFrag()
         slidePhaseFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
+        childFragmentManager.beginTransaction().replace(R.id.slide_phase, slidePhaseFrag).commit()
     }
 
-    override fun onStoppedPlayback() {
+    override fun onStoppedPlayback() {}
 
-    }
-
-    override fun onStartedPlayback() {
-
-    }
+    override fun onStartedPlayback() {}
 
     /**
      * This function will set a listener to the passed in view so that when the passed in view

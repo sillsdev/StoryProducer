@@ -24,36 +24,15 @@ import java.io.File
 /**
  * The fragment that loads SlidePhaseFrag as well as the camera and edit buttons that overlays it.
  */
-class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
+class MultiRecordFrag : SlidePhaseFrag() {
     private var tempPicFile: File? = null
     private lateinit var imageFab: ImageView
     private lateinit var editFab: ImageView
-    private var slideNum: Int = 0
-    private val slidePhaseFrag = SlidePhaseFrag()
-    private lateinit var playbackListener: PlaybackListener
-
-    interface PlaybackListener {
-        fun onStoppedPlayback()
-        fun onStartedPlayback()
-    }
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        if(parentFragment is PlaybackListener){
-            playbackListener = parentFragment as PlaybackListener
-        }
-        else{
-            throw ClassCastException("$parentFragment does not implement MultiRecordFrag.PlaybackListener")
-        }
-
-    }
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_multi_record_layout, container, false)
-
-        slideNum = arguments?.getInt(SlidePhaseFrag.SLIDE_NUM)!!
-        setSlide()
+        rootView = inflater.inflate(R.layout.fragment_multi_record_layout, container, false)
+        super.onCreateView(inflater, container, savedInstanceState)
 
         imageFab = rootView.findViewById(R.id.insert_image_view)
         editFab = rootView.findViewById(R.id.edit_text_view)
@@ -72,7 +51,7 @@ class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
         if(Workspace.activeStory.slides[slideNum].slideType in
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
-            imageFab.visibility = android.view.View.VISIBLE
+            imageFab.visibility = View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
                 chooser.putExtra(Intent.EXTRA_TITLE, "Select From:")
@@ -97,7 +76,7 @@ class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
                 arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
         {
 
-            editFab.visibility = android.view.View.VISIBLE
+            editFab.visibility = View.VISIBLE
             editFab.setOnClickListener {
                 val editText = EditText(context)
                 editText.id = R.id.edit_text_input
@@ -139,24 +118,6 @@ class MultiRecordFrag : Fragment(), SlidePhaseFrag.PlaybackListener {
             tempPicFile?.delete()
             (childFragmentManager.findFragmentById(R.id.slide_phase) as SlidePhaseFrag).setPic()
         }
-    }
-
-    private fun setSlide(){
-        val bundle = Bundle()
-        bundle.putInt(SlidePhaseFrag.SLIDE_NUM, slideNum)
-        slidePhaseFrag.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.slide_phase, slidePhaseFrag).commit()
-    }
-
-    override fun onStoppedPlayback() {
-        playbackListener.onStoppedPlayback()
-    }
-    override fun onStartedPlayback() {
-        playbackListener.onStartedPlayback()
-    }
-
-    fun stopPlayback(){
-        slidePhaseFrag.stopPlayBackAndRecording()
     }
 
     companion object {

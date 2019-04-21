@@ -15,7 +15,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, MultiRecordFrag.PlaybackListener {
+class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
     private var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private val multiRecordFrag = MultiRecordFrag()
@@ -59,7 +59,7 @@ class CommunityCheckFrag : Fragment(), RecordingToolbar.RecordingListener, Multi
 
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
         dispList?.stopAudio()
-        multiRecordFrag.stopPlayback()
+        multiRecordFrag.stopPlayBackAndRecording()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
         dispList?.updateRecordingList()
