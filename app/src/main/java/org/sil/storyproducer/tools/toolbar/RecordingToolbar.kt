@@ -475,7 +475,7 @@ class RecordingToolbar : Fragment(){
         val audioBytes = IOUtils.toByteArray(input)
 
         //get transcription text if it's there
-        val transcription = Workspace.activeStory.slides[Workspace.activeSlideNum].remoteTranscription
+        val transcription = Workspace.activeStory.slides[Workspace.activeSlideNum].remoteTranscriptionCurrMessage
         val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
 
         js = HashMap()

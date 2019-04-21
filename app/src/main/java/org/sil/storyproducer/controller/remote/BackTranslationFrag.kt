@@ -226,7 +226,7 @@ class BackTranslationFrag : ConsultantBaseFrag(), RecordingToolbar.RecordingList
 
     private fun addTranscription() {
         val transcript = transcriptionText?.text.toString()
-        Workspace.activeStory.slides[slideNum].remoteTranscription = transcript
+        Workspace.activeStory.slides[slideNum].remoteTranscriptionMessages = transcript
     }
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
