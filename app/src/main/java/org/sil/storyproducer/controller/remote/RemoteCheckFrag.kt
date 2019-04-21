@@ -73,8 +73,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         messageSent.setHint(R.string.message_hint)
         messageSent.setHintTextColor(ContextCompat.getColor(context!!, R.color.black))
         //load saved message draft and load saved message adapter
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        messageSent.setText(prefs.getString(storyName + slideNum + TO_SEND_MESSAGE, ""))
+        messageSent.setText(Workspace.activeStory.slides[slideNum].remoteTranscriptionCurrMessage)
 
         getMessages()
         if (msgAdapter?.count!! > 0) {
@@ -98,9 +97,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         super.onPause()
 
         //save message draft
-        Workspace.activeStory.slides[slideNum].remoteTranscription = messageSent.text.toString()
-
-
+        Workspace.activeStory.slides[slideNum].remoteTranscriptionCurrMessage = messageSent.text.toString()
         //save message adapter as well
         saveSharedPreferenceMessageHistory()
     }
@@ -114,7 +111,6 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
     }
 
     override fun onStoppedPlayback() {}
-
     override fun onStartedPlayback() {}
 
     /**
@@ -147,14 +143,12 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
     private fun loadSharedPreferenceMessageHistory(): MessageAdapter {
         val msgAdapter = MessageAdapter(context)
         val msgs: List<Message>
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val gsonBuilder = GsonBuilder()
         val gson = gsonBuilder.create()
-        val json = prefs.getString(R_MESSAGE_HISTORY + storyName + slideNum, "")
-        val lastID = prefs.getInt(R_LAST_ID + storyName + slideNum, -1)
-        if (!json!!.isEmpty()) {
+        val json = Workspace.activeStory.slides[slideNum].remoteTranscriptionMessages
+        val lastID = Workspace.activeStory.slides[slideNum].remoteTranscriptionId
+        if (json.isNotEmpty()) {
             val type = object : TypeToken<List<Message>>() {
-
             }.type
             msgs = gson.fromJson(json, type)
             msgAdapter.messageHistory = msgs
@@ -166,14 +160,12 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
 
     //saves the (local) message history
     private fun saveSharedPreferenceMessageHistory() {
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
         val gsonBuilder = GsonBuilder()
         val gson = gsonBuilder.create()
         val json = gson.toJson(msgAdapter!!.messageHistory)
         val lastID = msgAdapter!!.lastID
-        prefsEditor.putString(R_MESSAGE_HISTORY + storyName + slideNum, json).apply()
-        prefsEditor.putInt(R_LAST_ID + storyName + slideNum, lastID).apply()
+        Workspace.activeStory.slides[slideNum].remoteTranscriptionMessages = json
+        Workspace.activeStory.slides[slideNum].remoteTranscriptionId = lastID
     }
 
     //function to send messages to remote consultant the given slide
@@ -189,7 +181,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         val message = messageSent.text.toString()
         js["Message"] = message
 
-        val req = object : paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, Response.Listener { response ->
+        val req = object : paramStringRequest(Method.POST, getString(R.string.url_send_message), js, Response.Listener { response ->
             Log.i("LOG_VOLLEY_MSG", response.toString())
             resp = response
 
@@ -209,7 +201,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
             if (resp != null) {
                 if (resp === "true") {
                     //set text back to blank
-                    Workspace.activeStory.slides[slideNum].remoteTranscription = ""
+                    Workspace.activeStory.slides[slideNum].remoteTranscriptionCurrMessage = ""
                     messageSent.setText("")
                     Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_sent, Toast.LENGTH_SHORT).show()
 
@@ -223,7 +215,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
             Log.e("LOG_VOLLEY_MSG_ERR", error.toString())
             Log.e("LOG_VOLLEY", "HIT ERROR")
             //Save the message to send next time
-            Workspace.activeStory.slides[slideNum].remoteTranscription = messageSent.text.toString()
+            Workspace.activeStory.slides[slideNum].remoteTranscriptionCurrMessage = messageSent.text.toString()
 
             if (error is NoConnectionError || error is NetworkError
                     || error is AuthFailureError) {
@@ -250,7 +242,7 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
         js["SlideNumber"] = Integer.toString(slideNum)
         js["LastId"] = Integer.toString(msgAdapter!!.lastID)
 
-        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_get_messages), Response.Listener { response ->
+        val req = object : StringRequest(Method.POST, getString(R.string.url_get_messages), Response.Listener { response ->
             //returns messages array IsTranslator: boolean + Message: String
             //returns LastId: Integer
             try {
@@ -307,12 +299,5 @@ class RemoteCheckFrag : ConsultantBaseFrag(), SlidePhaseFrag.PlaybackListener {
             }
         }
         VolleySingleton.getInstance(activity!!.applicationContext).addToRequestQueue(req)
-    }
-
-    companion object {
-        val R_CONSULTANT_PREFS = "Consultant_Checks"
-        private val TO_SEND_MESSAGE = "SND_MSG"
-        private val R_MESSAGE_HISTORY = "Message History"
-        private val R_LAST_ID = "Last Int"
     }
 }
