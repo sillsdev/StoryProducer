@@ -54,7 +54,9 @@ class Slide{
     var translatedContent: String = ""
 
     //transcription for remote phases
-    var remoteTranscription: String = ""
+    var remoteTranscriptionCurrMessage: String = ""
+    var remoteTranscriptionMessages: String = ""
+    var remoteTranscriptionId: Int = 0
 
     //recorded audio files
     var draftAudioFiles: MutableList<String> = ArrayList()
