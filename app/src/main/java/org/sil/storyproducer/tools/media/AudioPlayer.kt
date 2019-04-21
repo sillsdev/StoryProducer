@@ -24,22 +24,15 @@ class AudioPlayer {
         }
 
     /**
-     * returns the duration of the audio as an int in milliseconds
-     * @return the duration of the audio as an int
-     */
-    val audioDurationInMilliseconds: Int
-        get() = mPlayer.duration
-
-    /**
      * returns if the audio is being played or not
      * @return true or false based on if the audio is being played
      */
     val isAudioPlaying: Boolean
         get() {
-            try {
-                return mPlayer.isPlaying
+            return try {
+                mPlayer.isPlaying
             } catch (e: IllegalStateException) {
-                return false
+                false
             }
 
         }
@@ -55,7 +48,7 @@ class AudioPlayer {
         fileExists = false
     }
 
-    fun setSource(context: Context, uri: Uri) : Boolean {
+    private fun setSource(context: Context, uri: Uri) : Boolean {
         try {
             mPlayer.release()
             mPlayer = MediaPlayer()
@@ -134,13 +127,11 @@ class AudioPlayer {
         } catch (e : Exception) {}
     }
 
-    /**
-     * Seeks to the parameter in milliseconds
-     * @param msec milliseconds for where to seek to in the audio
-     */
-    fun seekTo(msec: Int) {
-        if(!fileExists) return
-        mPlayer.seekTo(msec)
+
+    fun reset() {
+        try {
+            mPlayer.reset()
+        } catch (e : Exception) {}
     }
 
     /**
