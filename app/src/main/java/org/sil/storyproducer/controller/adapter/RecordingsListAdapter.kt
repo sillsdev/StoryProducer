@@ -236,7 +236,9 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
                 if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
-                    audioPlayer = AudioPlayer()
+                    if(!this::audioPlayer.isInitialized) {
+                        audioPlayer = AudioPlayer()
+                    }
                     audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
                         currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                         audioPlayer.stopAudio()
