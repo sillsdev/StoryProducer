@@ -73,6 +73,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
+            PhaseType.REMOTE_CHECK-> Workspace.activeStory.slides[slideNum].narrationFile
             else -> ""
         }
 

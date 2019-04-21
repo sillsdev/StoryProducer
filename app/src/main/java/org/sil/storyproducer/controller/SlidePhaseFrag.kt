@@ -13,29 +13,32 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
+import org.sil.storyproducer.tools.media.MediaHelper.getAudioDuration
 import java.util.*
 
 /**
  * The fragment for the slide image view with audio player.  This fragment will display the picture
  * of the current slide as well as load the corresponding audio that is passed by bundle
  */
-class SlidePhaseFrag : Fragment() {
+open class SlidePhaseFrag : Fragment() {
 
     private lateinit var referenceAudioPlayer: AudioPlayer
     private var referencePlayButton: ImageButton? = null
     private var refPlaybackSeekBar: SeekBar? = null
     private lateinit var fragmentImageView: ImageView
-    private var mSeekBarTimer = Timer()
+    private lateinit var mSeekBarTimer: Timer
 
     private var refPlaybackProgress = 0
     private var refPlaybackDuration = 0
     private var wasAudioPlaying = false
 
-    private var slideNum: Int = 0 //gets overwritten
+    protected var slideNum: Int = 0 //gets overwritten
     private lateinit var refPlaybackHolder: LinearLayout
     private lateinit var playbackListener: PlaybackListener
+    protected lateinit var rootView : View
 
     interface PlaybackListener {
         fun onStoppedPlayback()
@@ -50,7 +53,6 @@ class SlidePhaseFrag : Fragment() {
         else{
             throw ClassCastException("$parentFragment does not implement SlidePhaseFrag.PlaybackListener")
         }
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +63,9 @@ class SlidePhaseFrag : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_slide, container, false)
+        if(!this::rootView.isInitialized) {
+            rootView = inflater.inflate(R.layout.fragment_slide, container, false)
+        }
 
         fragmentImageView = rootView.findViewById(R.id.fragment_image_view)
         referencePlayButton = rootView.findViewById(R.id.fragment_reference_audio_button)
@@ -71,6 +75,8 @@ class SlidePhaseFrag : Fragment() {
         slideNumberText?.text = slideNum.toString()
 
         setPic()
+        setReferenceAudioButton()
+        setSeekBarListener()
 
         return rootView
     }
@@ -82,23 +88,20 @@ class SlidePhaseFrag : Fragment() {
     }
 
     private fun setSeekBarListener() {
-        refPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
+        refPlaybackDuration = getAudioDuration(context!!, getStoryUri(Workspace.activePhase.getReferenceAudioFile(slideNum))!!).toInt()/1000
         refPlaybackSeekBar?.max = refPlaybackDuration
-        referenceAudioPlayer.currentPosition = refPlaybackProgress
-        refPlaybackSeekBar?.progress = refPlaybackProgress
         refPlaybackSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {
-                referenceAudioPlayer.currentPosition = refPlaybackProgress
                 if(wasAudioPlaying){
-                    referenceAudioPlayer.resumeAudio()
-                    referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                    playbackListener.onStartedPlayback()
+                    continuePlayback()
                 }
             }
             override fun onStartTrackingTouch(sBar: SeekBar) {
-                wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
-                referenceAudioPlayer.pauseAudio()
-                referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                if(this@SlidePhaseFrag::referenceAudioPlayer.isInitialized){
+                    wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
+                    referenceAudioPlayer.pauseAudio()
+                }
+                referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
                 playbackListener.onStoppedPlayback()
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -118,7 +121,9 @@ class SlidePhaseFrag : Fragment() {
             referenceAudioPlayer.stopAudio()
             referenceAudioPlayer.release()
         }
-        mSeekBarTimer.cancel()
+        if(this::mSeekBarTimer.isInitialized) {
+            mSeekBarTimer.cancel()
+        }
         playbackListener.onStoppedPlayback()
         super.onPause()
     }
@@ -139,8 +144,6 @@ class SlidePhaseFrag : Fragment() {
      */
     internal fun setPic() {
         (activity as PhaseBaseActivity).setPic(fragmentImageView, slideNum)
-        //Set up the reference audio and slide number overlays
-        setReferenceAudioButton()
     }
 
     private fun setReferenceAudioButton() {
@@ -164,8 +167,9 @@ class SlidePhaseFrag : Fragment() {
                     referenceAudioPlayer = AudioPlayer()
                     referenceAudioPlayer.setStorySource(context!!, Workspace.activePhase.getReferenceAudioFile(slideNum))
                     referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                        referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-                        referenceAudioPlayer.stopAudio()
+                        referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                        refPlaybackProgress = 0
+                        refPlaybackSeekBar?.progress = 0
                         playbackListener.onStoppedPlayback()
                     })
                     mSeekBarTimer = Timer()
@@ -179,8 +183,6 @@ class SlidePhaseFrag : Fragment() {
                             }
                         }
                     },0,33)
-
-                    setSeekBarListener()
                     continuePlayback()
                 }
                 //if its been init but not playing
@@ -192,6 +194,7 @@ class SlidePhaseFrag : Fragment() {
     }
 
     private fun continuePlayback(){
+        referenceAudioPlayer.currentPosition = refPlaybackProgress
         referenceAudioPlayer.resumeAudio()
         playbackListener.onStartedPlayback()
         referencePlayButton?.setBackgroundResource(R.drawable.ic_pause_white_48dp)

@@ -17,7 +17,7 @@ import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener, MultiRecordFrag.PlaybackListener {
+class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener, SlidePhaseFrag.PlaybackListener {
     private var slideText: EditText? = null
     private var slideNum: Int = 0
     private val recordingToolbar = RecordingToolbar()
@@ -71,7 +71,7 @@ class DramatizationFrag : Fragment(), RecordingToolbar.RecordingListener, MultiR
 
     override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
     override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        multiRecordFrag.stopPlayback()
+        multiRecordFrag.stopPlayBackAndRecording()
     }
 
     override fun onStoppedPlayback() {}
