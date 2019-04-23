@@ -79,7 +79,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 return@setOnLongClickListener true
             }
             val messageButton = itemView.findViewById<TextView>(R.id.audio_comment_title)
-            messageButton.text = text
+            messageButton.text = text.substringBeforeLast('.')
 
             val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
             playButton.setOnClickListener {
@@ -100,6 +100,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     .setPositiveButton(itemView.context.getString(R.string.yes)) { _, _ ->
                         listeners.onDeleteClick(text, position)
                         notifyItemRemoved(position)
+                        notifyItemChanged(values?.size!! -1)
                     }
                     .create()
 
@@ -131,6 +132,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                             RenameCode.SUCCESS -> {
                                 listeners.onRenameSuccess(position)
                                 notifyDataSetChanged()
+                                notifyItemChanged(selectedPos)
+                                notifyItemChanged(position)
                                 Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
                             }
                             RenameCode.ERROR_LENGTH -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
@@ -144,7 +147,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var filenames: MutableList<String> = mutableListOf()
@@ -155,7 +158,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var embedded = false
-        private var playbackListener: RecordingToolbar.RecordingListener? = null
+        private var playbackListener: RecordingToolbar.ToolbarMediaListener? = null
         private var slideNum: Int = Workspace.activeSlideNum
 
         fun setSlideNum(mSlideNum:Int){
@@ -164,7 +167,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         fun setParentFragment(parentFragment: Fragment){
             try{
-                playbackListener = parentFragment as RecordingToolbar.RecordingListener
+                playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
+            }
+            catch (e : ClassCastException){
+                playbackListener = context as RecordingToolbar.ToolbarMediaListener
             }
             catch (e:Exception){}
         }
@@ -227,17 +233,21 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         override fun onPlayClick(name: String, buttonClickedNow: ImageButton) {
             if (audioPlayer.isAudioPlaying && currentPlayingButton == buttonClickedNow) {
-                currentPlayingButton!!.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
+                stopAudio()
             } else {
                 stopAudio()
-                playbackListener?.onStartedRecordingOrPlayback(false)
+
+                toolbar?.stopToolbarMedia()
+                
+                playbackListener?.onStartedToolbarMedia()
+                
                 currentPlayingButton = buttonClickedNow
                 currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
+
                 audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                    currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                    audioPlayer.stopAudio()
+                    stopAudio()
                 })
+
                 if (storyRelPathExists(context, "${Workspace.activeDir}/$name")) {
                     audioPlayer.setStorySource(context, "${Workspace.activeDir}/$name")
                     audioPlayer.playAudio()
@@ -263,7 +273,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 }
                 else {
                     Workspace.activePhase.setChosenFilename("")
-                    toolbar?.setupToolbarButtons()
+                    toolbar?.updateInheritedToolbarButtonVisibility()
                     dialog?.dismiss()
                 }
             }
@@ -286,10 +296,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         fun stopAudio() {
-            if (audioPlayer.isAudioPlaying) {
-                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
-            }
+            currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+            audioPlayer.stopAudio()
         }
     }
 }
