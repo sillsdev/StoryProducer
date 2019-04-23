@@ -9,6 +9,7 @@ import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
@@ -16,12 +17,11 @@ import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 import kotlin.math.min
 
-class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
-
+class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
     private var learnImageView: ImageView? = null
     private var playButton: ImageButton? = null
     private var videoSeekBar: SeekBar? = null
@@ -32,7 +32,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
     private var isVolumeOn = true
     private var isWatchedOnce = false
 
-    private var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
 
     private var numOfSlides: Int = 0
     private var seekbarStartTime: Long = -1
@@ -60,7 +60,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             override fun onStartTrackingTouch(sBar: SeekBar) {}
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
-                    if (recordingToolbar.isRecordingOrPlaying) {
+                    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         //When recording, update the picture to the accurate location, preserving
                         seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
                         setSlideFromSeekbar()
@@ -115,34 +115,6 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         invalidateOptionsMenu()
     }
 
-    private fun setToolbar(){
-        val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,false,false))
-        bundle.putInt("slideNum", 0)
-        recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
-
-        recordingToolbar.keepToolbarVisible()
-    }
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-        if(isRecording){
-            makeLogIfNecessary(true)
-        }
-        videoSeekBar!!.progress = 0
-        setSlideFromSeekbar()
-    }
-
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        pauseStoryAudio()
-        videoSeekBar!!.progress = 0
-        curPos = 0
-        //This gets the progress bar to show the right time.
-        seekbarStartTime = System.currentTimeMillis()
-        if(isRecording){
-            markLogStart()
-        }
-    }
-
     public override fun onPause() {
         super.onPause()
         pauseStoryAudio()
@@ -171,7 +143,7 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 runOnUiThread{
-                    if(recordingToolbar.isRecordingOrPlaying){
+                    if(recordingToolbar.isRecording || recordingToolbar.isAudioPlaying){
                         videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
                     }else{
@@ -198,6 +170,41 @@ class LearnActivity : PhaseBaseActivity(), RecordingToolbar.RecordingListener {
             }
             i++
         }
+    }
+
+
+    private fun setToolbar(){
+        val bundle = Bundle()
+        bundle.putInt(SLIDE_NUM, 0)
+        recordingToolbar.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+
+        recordingToolbar.keepToolbarVisible()
+    }
+
+    override fun onStoppedToolbarRecording() {
+        makeLogIfNecessary(true)
+
+        super.onStoppedToolbarRecording()
+    }
+
+    override fun onStartedToolbarRecording() {
+        super.onStartedToolbarRecording()
+
+        markLogStart()
+    }
+
+    override fun onStoppedToolbarMedia() {
+        videoSeekBar!!.progress = 0
+        setSlideFromSeekbar()
+    }
+
+    override fun onStartedToolbarMedia() {
+        pauseStoryAudio()
+        videoSeekBar!!.progress = 0
+        curPos = 0
+        //This gets the progress bar to show the right time.
+        seekbarStartTime = System.currentTimeMillis()
     }
 
     private fun markLogStart() {

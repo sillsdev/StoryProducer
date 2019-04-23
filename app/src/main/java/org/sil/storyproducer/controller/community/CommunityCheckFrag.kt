@@ -13,7 +13,8 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener {
+class CommunityCheckFrag : MultiRecordFrag() {
+    override var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -24,7 +25,7 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.setSlideNum(slideNum)
-        //This enables the "onStartedPlaybackOrRecording" to be invoked.
+        //This enables the "onStartedToolbarMedia" to be invoked.
         dispList?.setParentFragment(this)
         dispList?.show()
 
@@ -42,37 +43,30 @@ class CommunityCheckFrag : MultiRecordFrag(), RecordingToolbar.RecordingListener
      * This function serves to handle page changes and stops the audio streams from
      * continuing.
      */
-
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
         dispList?.stopAudio()
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
+    override fun onStoppedToolbarMedia() {
+        super.onStoppedToolbarMedia()
+        
         dispList?.updateRecordingList()
         dispList?.recyclerView?.adapter?.notifyDataSetChanged()
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
+    override fun onStartedToolbarMedia() {
+        super.onStartedToolbarMedia()
+
+        dispList!!.stopAudio()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
         dispList?.updateRecordingList()
     }
 
-    override fun setToolbar() {
-        val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
-        bundle.putInt("slideNum", slideNum)
-        recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
+    override fun onStartedSlidePlayBack() {
+        super.onStartedSlidePlayBack()
 
-        recordingToolbar.keepToolbarVisible()
-        recordingToolbar.stopToolbarMedia()
-    }
-
-    override fun stopPlayBackAndRecording() {
-        super.stopPlayBackAndRecording()
         dispList!!.stopAudio()
     }
 }
