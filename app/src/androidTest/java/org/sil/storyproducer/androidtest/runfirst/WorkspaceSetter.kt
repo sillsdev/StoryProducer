@@ -19,7 +19,7 @@ import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 
 private const val APP_PACKAGE_NAME = "org.sil.storyproducer"
-private const val TIMEOUT_DURATION = 60000L
+private const val TIMEOUT_DURATION = 5000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
 private const val INTERNAL_STORAGE_BUTTON_TEXT = "Android SDK built for x86"
 private const val REGISTRATION_SCREEN_CONTAINER = "org.sil.storyproducer:id/registration_scroll_view"
