@@ -2,6 +2,7 @@ package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
 import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
@@ -15,6 +16,7 @@ import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
+import org.sil.storyproducer.tools.selectCodec
 import java.io.Closeable
 import java.io.File
 import kotlin.math.sqrt
@@ -42,7 +44,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         }
     private val mVideoFrameRate: Int
         get() {
-            return if(mDumbPhone) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
+            return if(m3GP) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
         }
 
     var mIncludeBackgroundMusic = true
@@ -50,6 +52,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     var mIncludeText = false
     var mIncludeKBFX = true
     var mIncludeSong = false
+    var m3GP = false
     var mDumbPhone = false
 
     private var mLogProgress = false
@@ -72,15 +75,13 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     override fun start() {
         val outputFormat : Int
-        if(mDumbPhone && Build.VERSION.SDK_INT >= 26){
+        if(m3GP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
         } else {
             outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
         }
 
         val videoFormat = generateVideoFormat()
-        //TODO remove this fully after it is tested to work - PR372
-        //val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
         val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
@@ -126,10 +127,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val videoFormat =
-                if(mDumbPhone) MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_H263, mWidth, mHeight)
-                else MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
+        val codecString =
+            if(mDumbPhone) MediaFormat.MIMETYPE_VIDEO_H263
+            else MediaFormat.MIMETYPE_VIDEO_AVC
 
+        val cinfo = selectCodec(codecString)
+        val videoFormat = MediaFormat.createVideoFormat(codecString, mWidth, mHeight)
+
+        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
+                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
