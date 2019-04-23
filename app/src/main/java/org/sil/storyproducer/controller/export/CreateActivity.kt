@@ -43,7 +43,7 @@ class CreateActivity : PhaseBaseActivity() {
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
         val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_3gp -> "vL_"
+            R.id.radio_dumbphone_3gp -> ""
             R.id.radio_dumbphone_mp4 -> "L_"
             R.id.radio_smartphone -> "M_"
             R.id.radio_largescreen -> "H_"
@@ -307,15 +307,13 @@ class CreateActivity : PhaseBaseActivity() {
     fun onRadioButtonClicked(view: View) {
         toggleVisibleElements()
         // Check which radio button was clicked
-        when ((view as RadioGroup).checkedRadioButtonId) {
-            R.id.radio_dumbphone_3gp -> {
-                if (Build.VERSION.SDK_INT < 26){
-                    Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
-                    findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
-                    view.check(R.id.radio_dumbphone_mp4)
-                } else {
-                    mCheckboxText!!.isChecked = false
-                }
+        if (view.id == R.id.radio_dumbphone_3gp){
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
+                findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
+                (view as RadioButton).isChecked = false
+            } else {
+                mCheckboxText!!.isChecked = false
             }
         }
     }
@@ -398,8 +396,11 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
-            storyMaker!!.mDumbPhone = mRadioExportDestiniation!!.checkedRadioButtonId ==
+            storyMaker!!.m3GP = mRadioExportDestiniation!!.checkedRadioButtonId ==
                     R.id.radio_dumbphone_3gp
+            storyMaker!!.mDumbPhone = mRadioExportDestiniation!!.checkedRadioButtonId in
+                    arrayOf(R.id.radio_dumbphone_3gp,R.id.radio_dumbphone_mp4)
+
 
             when(mRadioExportDestiniation?.checkedRadioButtonId){
                 R.id.radio_dumbphone_3gp -> {
@@ -407,8 +408,8 @@ class CreateActivity : PhaseBaseActivity() {
                     storyMaker!!.mHeight = 144
                 }
                 R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 320
-                    storyMaker!!.mHeight = 240
+                    storyMaker!!.mWidth  = 176
+                    storyMaker!!.mHeight = 144
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640

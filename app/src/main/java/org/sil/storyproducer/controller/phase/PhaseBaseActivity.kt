@@ -20,6 +20,7 @@ import android.support.v7.widget.Toolbar
 import android.view.*
 import android.webkit.WebView
 import android.widget.*
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.BitmapScaler
@@ -110,7 +111,11 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
     override fun onItemSelected(parent: AdapterView<*>, view: View,
                                 pos: Int, id: Long) {
-        jumpToPhase(Workspace.phases[pos])
+        if(pos >= 0 && pos < Workspace.phases.size){
+            jumpToPhase(Workspace.phases[pos])
+        }else{
+            Crashlytics.log("tyring to select phase index $pos that is out of bounds:${Workspace.phases.size}")
+        }
     }
 
     override fun onNothingSelected(parent: AdapterView<*>) {
