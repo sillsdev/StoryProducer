@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -16,7 +17,12 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.WebView
+import android.widget.ProgressBar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -52,9 +58,18 @@ class MainActivity : AppCompatActivity(), Serializable {
         setContentView(R.layout.activity_main)
         setupDrawer()
 
-        supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
+        //Display a "progress bar" while loading all the template files.  Remove it when your done.
+        val pb = findViewById<ProgressBar>(R.id.indeterminateBar)
+        pb.visibility = View.VISIBLE
 
-        this.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+        GlobalScope.async {
+            if(!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+            runOnUiThread {
+                pb.visibility = View.GONE
+                supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
+                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
