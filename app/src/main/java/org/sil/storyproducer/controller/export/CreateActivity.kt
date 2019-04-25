@@ -408,8 +408,8 @@ class CreateActivity : PhaseBaseActivity() {
                     storyMaker!!.mHeight = 144
                 }
                 R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 176
-                    storyMaker!!.mHeight = 144
+                    storyMaker!!.mWidth  = 320
+                    storyMaker!!.mHeight = 240
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
