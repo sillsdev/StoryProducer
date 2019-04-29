@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
+import org.sil.storyproducer.tools.selectCodec
 import java.io.IOException
 import java.util.*
 
@@ -58,10 +59,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mSource!!.setup()
         mConfigureFormat = mSource!!.outputFormat
 
-        mConfigureFormat!!.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
-
-        mCodec = MediaCodec.createEncoderByType(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))
+        mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
         mSurface = mCodec!!.createInputSurface()

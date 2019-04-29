@@ -88,27 +88,30 @@
                 android:id="@+id/radio_export_destination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:onClick="onRadioButtonClicked">
+                android:orientation="vertical">
                 <RadioButton android:id="@+id/radio_dumbphone_3gp"
                     android:drawableEnd="@drawable/ic_dumbphone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
                     android:text="@string/dumbphone_3GP"/>
                 <RadioButton android:id="@+id/radio_dumbphone_mp4"
                     android:drawableEnd="@drawable/ic_dumbphone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
                     android:text="@string/dumbphone_MP4"/>
                 <RadioButton android:id="@+id/radio_smartphone"
                     android:drawableEnd="@drawable/ic_smartphone_white_24dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
                     android:text="@string/smartphone"/>
                 <RadioButton android:id="@+id/radio_largescreen"
                     android:drawableEnd="@drawable/ic_desktop_windows_white_24dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onRadioButtonClicked"
                     android:text="@string/large_screen"/>
             </RadioGroup>
 
