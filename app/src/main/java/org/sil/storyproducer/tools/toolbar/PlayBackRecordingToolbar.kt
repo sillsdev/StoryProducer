@@ -43,16 +43,10 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         if (bundleArguments != null) {
             slideNum = bundleArguments.getInt(SLIDE_NUM)
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             stopToolbarAudioPlaying()
         })
-
-        return rootView
     }
 
     override fun onPause() {
