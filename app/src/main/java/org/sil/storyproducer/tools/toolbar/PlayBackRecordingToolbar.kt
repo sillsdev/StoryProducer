@@ -41,7 +41,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            slideNum = bundleArguments.get(SLIDE_NUM) as Int
+            slideNum = bundleArguments.getInt(SLIDE_NUM)
         }
     }
 
