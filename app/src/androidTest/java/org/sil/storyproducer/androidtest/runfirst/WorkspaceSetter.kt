@@ -71,13 +71,13 @@ class WorkspaceSetter {
     }
 
     private fun isWorkspacePickerDisplayed(device: UiDevice): Boolean {
-        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select Template Folder"))
+        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select 'SP Templates' folder"))
         return selectTemplateAlert != null
     }
 
     private fun selectStoryProducerWorkspace(device: UiDevice) {
         device.findObject(By.res("android:id/button1").text("OK")).click()
-        device.wait(Until.hasObject(By.text("More options")), TIMEOUT_DURATION)
+        device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)
         device.findObject(By.desc("More options")).click()
         val showInternalStorage = device.findObject(By.text("Show internal storage"))
         if (showInternalStorage != null) {
@@ -87,15 +87,11 @@ class WorkspaceSetter {
         }
         device.findObject(By.desc("Show roots")).click()
 
-        // Occasionally, clicking on the internal storage button will fail.
-        // Sleeping briefly appears to make it less likely to fail.
-        Thread.sleep(1000)
+        device.wait(Until.hasObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)), TIMEOUT_DURATION)
         device.findObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)).click()
 
         val workspaceDirectoryName = getDirectoryNameFromFullPath(Constants.workspaceDirectory)
-        // Occasionally, clicking on the workspace directory will fail.
-        // Sleeping briefly appears to make it less likely to fail.
-        Thread.sleep(1000)
+        device.wait(Until.hasObject(By.text(workspaceDirectoryName)), TIMEOUT_DURATION)
         device.findObject(By.text(workspaceDirectoryName)).click()
 
         device.findObject(By.text("SELECT")).click()

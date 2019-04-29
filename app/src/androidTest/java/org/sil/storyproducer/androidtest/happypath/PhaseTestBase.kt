@@ -88,9 +88,7 @@ open abstract class PhaseTestBase {
     abstract fun navigateToPhase()
 
     private fun launchActivityAndBypassWorkspacePicker() {
-        IntentMocker.setUpDummyWorkspacePickerIntent()
         mActivityTestRule.launchActivity(null)
-        IntentMocker.tearDownDummyWorkspacePickerIntent()
     }
 
     protected fun approveSlides() {
