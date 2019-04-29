@@ -16,6 +16,12 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 
+/**
+ * A class responsible for the playback of audio recordings for a recording toolbar.
+ *
+ * This class extends the recording functionality of its base class. A playback button is added to
+ * the UI in addition to the recording button.
+ */
 open class PlayBackRecordingToolbar: RecordingToolbar() {
     private lateinit var playButton: ImageButton
 

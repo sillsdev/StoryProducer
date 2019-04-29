@@ -22,7 +22,21 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
 
 /**
- * 
+ * A class responsible for controlling the media and appearance of a recording toolbar.
+ *
+ * This is a base class for any toolbar that can record voice audio. The UI includes one recording
+ * button. Other classes may extend this class and add additional buttons with other media sources
+ * and controls (like audio playback) to the toolbar. This class controls media/button callbacks,
+ * toolbar animation, button visibility/appearance.
+ *
+ * Many of the functions are designed to be extensible and generic.
+ * The principle of each function doing one thing and one thing only makes extending or overriding
+ * functions much simpler.
+ *
+ * Additionally, it was helpful to limit coupling between this class and other classes that use it.
+ * A version of an observer/subscriber design pattern is currently used for communication between
+ * this class and other classes that use it so as to limit coupling. This involves the
+ * ToolbarMediaListener interface that other classes can extend.
  */
 open class RecordingToolbar : Fragment(){
     var rootView: LinearLayout? = null
@@ -140,7 +154,8 @@ open class RecordingToolbar : Fragment(){
     }
 
     /**
-     * This function formats and aligns the buttons to the toolbar.
+     * This function formats and aligns the buttons to the toolbar. Buttons are evenly spaced in the
+     * toolbar.
      */
     protected open fun setupToolbarButtons() {
         rootView?.removeAllViews()
