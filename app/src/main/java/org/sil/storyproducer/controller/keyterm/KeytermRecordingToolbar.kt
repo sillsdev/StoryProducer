@@ -11,6 +11,13 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.hideKeyboard
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 
+/**
+ * A class responsible for keyterm specific functionality for audio recording and playback.
+ *
+ * This class extends the recording, playback, and multi-recording listing functionality of its base
+ * classes. The class overrides the multi-record playlist button to display a bottom sheet that
+ * lists audio recordings instead of a modal that lists the audio recordings.
+ */
 class KeytermRecordingToolbar : MultiRecordRecordingToolbar(){
     lateinit var bottomSheet: ConstraintLayout
 
