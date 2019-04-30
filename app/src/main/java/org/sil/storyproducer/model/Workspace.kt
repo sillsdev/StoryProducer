@@ -8,10 +8,10 @@ import android.provider.Settings.Secure
 import android.support.v4.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.util.*
+import kotlin.math.max
 
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -131,12 +131,6 @@ object Workspace{
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
-    }
-
-    fun deleteAudioFileFromList(context: Context, name: String, position: Int) {
-        val filenames = activePhase.getRecordedAudioFiles(activeSlideNum)!!
-        filenames.removeAt(position)
-        deleteStoryFile(context, "$activeDir/$name")
     }
 
     fun deleteVideo(context: Context, path: String){
