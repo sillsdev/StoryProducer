@@ -24,7 +24,7 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.deleteStoryFile
+import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
@@ -238,7 +238,7 @@ class RecordingToolbar : Fragment(){
             }
         }
 
-        val playBackFileExist : Boolean = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        val playBackFileExist : Boolean = storyRelPathExists(activity!!, getChosenFilename(slideNum))
         if (enablePlaybackButton) {
             playButton.visibility = if (playBackFileExist) View.VISIBLE else View.INVISIBLE
         }
@@ -264,7 +264,7 @@ class RecordingToolbar : Fragment(){
                     stopRecording()
                     if (isAppendingOn) {
                         try {
-                            AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                            AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
                         } catch (e: FileNotFoundException) {
                             Crashlytics.logException(e)
                         }
@@ -338,7 +338,7 @@ class RecordingToolbar : Fragment(){
                 } else {
                     stopToolbarMedia()
                     recordingListener.onStartedRecordingOrPlayback(false)
-                    if (audioPlayer.setStorySource(this.appContext,Workspace.activePhase.getChosenFilename())) {
+                    if (audioPlayer.setStorySource(this.appContext,getChosenFilename())) {
                         audioPlayer.playAudio()
                         Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
                         playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
@@ -361,7 +361,7 @@ class RecordingToolbar : Fragment(){
                 if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
                     stopToolbarMedia()
                     try {
-                        AudioRecorder.concatenateAudioFiles(appContext, Workspace.activePhase.getChosenFilename(), audioTempName)
+                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
                     } catch (e: FileNotFoundException) {
                         Crashlytics.logException(e)
                     }

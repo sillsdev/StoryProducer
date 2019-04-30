@@ -248,15 +248,5 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     return false
 }
 
-fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
-    val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
-
-    return if(dir?.exists() == true) {
-        dir.findFile(oldFilename)?.renameTo(newFilename) == true
-    } else{
-        false
-    }
-}
-
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125
