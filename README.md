@@ -9,10 +9,11 @@ End recipients: members of local language communities
 Developers:  
    * Vision and design by Robin Rempel, SIL
    * Logo by Jordan Skomer and Mackenzie Sanders
-   * Prototype app: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
-   * Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
-   * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
+   * Software engineers for Prototype app: LeTourneau University students (Jordan Skomer, Hannah Brown, Caleb Phillips)
+   * Software engineers for v1.2: Cedarville University students (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
+   * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University students (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
    * Software engineer for v2.3 and later: John Lambert
+   * Software engineers for Remote Oral Consultant Checker website and app v2.4 and testing frameworks: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
 
 Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
@@ -20,7 +21,7 @@ Translate and produce stories (starting with templates in a major language made 
 * TRANSLATE/DRAFT an audio translation
 * COMMUNITY CHECK the draft for naturalness and clarity
 * CONSULTANT CHECK for accuracy and approval
-* DRAMATIZE the final audio
+* DRAMATIZE/VOICE STUDIO the final audio
 * FINALIZE/CREATE new videos
 * SHARE the videos
 
