@@ -38,7 +38,9 @@ Translate and produce stories (starting with templates in a major language made 
         * If it does not show up as a drive, swipe down from the top.  You should see a notification: USB for charging.  Touch it.  Select USB for file transfer.
     * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
     * Download the [template folders](https://drive.google.com/drive/folders/0Bw7whhMtjqJTVkljWlY0akZXeDg?usp=sharing) to your computer
-    * Copy the unzipped templates folder to your usb card.  A good directory would be **\[thumb drive\]/SPWorkspace**
+    * Copy the unzipped templates folder to your usb card.  A good directory would be `[thumb drive]/SPWorkspace`
+    * Download the [keyterm database](https://docs.google.com/spreadsheets/d/1ViHae2qUXwLWN8Z9wi_FEBdnOMN-Egb_bE6i_XOInGE/edit?usp=sharing) as a csv file named `keyterms.csv`
+        * Create a folder in the templates folder named `keyterms` and place the `keyterms.csv` file in there
     * Open Story Producer and select the "workspace" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
     * Continue with registration and use the app!
 
