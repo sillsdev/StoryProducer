@@ -244,7 +244,15 @@ class CreateActivity : PhaseBaseActivity() {
         mLayoutCancel!!.visibility = visibilityWhileExport
         mButtonStart!!.visibility = visibilityPreExport
 
-        mCheckboxKBFX!!.visibility = if (mCheckboxPictures!!.isChecked) View.VISIBLE else View.GONE
+        if (mCheckboxPictures!!.isChecked) {
+            mCheckboxKBFX!!.visibility = View.VISIBLE
+            mCheckboxText!!.visibility = View.VISIBLE
+        }else{
+            mCheckboxKBFX!!.visibility = View.GONE
+            mCheckboxKBFX!!.isChecked = false
+            mCheckboxText!!.visibility = View.GONE
+            mCheckboxText!!.isChecked = false
+        }
 
 
         if (mCheckboxText!!.isChecked) {
