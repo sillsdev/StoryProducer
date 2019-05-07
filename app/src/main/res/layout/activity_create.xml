@@ -89,12 +89,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <RadioButton android:id="@+id/radio_dumbphone_3gp"
-                    android:drawableEnd="@drawable/ic_dumbphone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/dumbphone_3GP"/>
                 <RadioButton android:id="@+id/radio_dumbphone_mp4"
                     android:drawableEnd="@drawable/ic_dumbphone"
                     android:layout_width="match_parent"
