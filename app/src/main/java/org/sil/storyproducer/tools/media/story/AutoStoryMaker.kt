@@ -42,17 +42,13 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
                     * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
         }
-    private val mVideoFrameRate: Int
-        get() {
-            return if(m3GP) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
-        }
+    private val mVideoFrameRate = VIDEO_FRAME_RATE
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
     var mIncludeSong = false
-    var m3GP = false
     var mDumbPhone = false
 
     private var mLogProgress = false
@@ -74,12 +70,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     override fun start() {
-        val outputFormat : Int
-        if(m3GP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
-        } else {
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-        }
+        val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
         val videoFormat = generateVideoFormat()
         val audioFormat = generateAudioFormat()
