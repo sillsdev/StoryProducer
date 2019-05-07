@@ -47,7 +47,7 @@ class Phase(val phaseType: PhaseType) {
     }
 
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
-        return when (phaseType){
+        val filename = when (phaseType){
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
@@ -55,7 +55,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
             else -> ""
         }
-
+        return Story.getFilename(filename)
     }
 
     fun getPrettyName() : String {
