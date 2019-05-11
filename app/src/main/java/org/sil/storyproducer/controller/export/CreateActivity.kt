@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -391,22 +392,29 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
-            storyMaker!!.mDumbPhone =
-                    mRadioExportDestiniation!!.checkedRadioButtonId == R.id.radio_dumbphone_mp4
 
 
             when(mRadioExportDestiniation?.checkedRadioButtonId){
                 R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 320
-                    storyMaker!!.mHeight = 240
+                    storyMaker!!.mWidth  = 176
+                    storyMaker!!.mHeight = 144
+                    storyMaker!!.mVideoBitRate = 56000  //don't put above 128000 or it will crash the google h263 encoder.
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_H263
+                    storyMaker!!.mVideoFrameRate = 12
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
                     storyMaker!!.mHeight = 480
+                    storyMaker!!.mVideoBitRate = 200000
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+                    storyMaker!!.mVideoFrameRate = 30
                 }
                 R.id.radio_largescreen -> {
                     storyMaker!!.mWidth  = 1280
                     storyMaker!!.mHeight = 720
+                    storyMaker!!.mVideoBitRate = 400000
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+                    storyMaker!!.mVideoFrameRate = 30
                 }
                 else -> {
                     Toast.makeText(this,this.resources.getText(
