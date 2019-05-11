@@ -32,24 +32,20 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     // first size isn't great quality, but runs faster
     var mWidth = 320
     var mHeight = 240
+    var mVideoBitRate = 128000
+    var mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+    var mVideoFrameRate = 30
 
     private var mOutputExt = ".mp4"
     private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
-    private val mVideoBitRate: Int
-        get() {
-            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
-                    * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
-        }
-    private val mVideoFrameRate = VIDEO_FRAME_RATE
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
     var mIncludeSong = false
-    var mDumbPhone = false
 
     private var mLogProgress = false
 
@@ -118,12 +114,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val codecString =
-            if(mDumbPhone) MediaFormat.MIMETYPE_VIDEO_H263
-            else MediaFormat.MIMETYPE_VIDEO_AVC
-
-        val cinfo = selectCodec(codecString)
-        val videoFormat = MediaFormat.createVideoFormat(codecString, mWidth, mHeight)
+        val videoFormat = MediaFormat.createVideoFormat(mCodecString, mWidth, mHeight)
 
         videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
                 MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
@@ -236,8 +227,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_TRANSITION_US: Long = 500000
 
         // parameters for the video encoder
-        private val VIDEO_FRAME_RATE = 30               // 30fps
-        private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
         private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
 
         // using Kush Gauge for video bit rate
