@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
@@ -87,7 +88,10 @@ class CreateActivity : PhaseBaseActivity() {
 
         runOnUiThread {
             stopExport()
-            Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            if(storyMaker?.isSuccess ?: false)
+                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            else
+                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -398,23 +402,26 @@ class CreateActivity : PhaseBaseActivity() {
                 R.id.radio_dumbphone_mp4 -> {
                     storyMaker!!.mWidth  = 176
                     storyMaker!!.mHeight = 144
-                    storyMaker!!.mVideoBitRate = 56000  //don't put above 128000 or it will crash the google h263 encoder.
+                    storyMaker!!.mVideoBitRate = 1280000  //don't put above 128000 or it will crash the google h263 encoder.
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_H263
-                    storyMaker!!.mVideoFrameRate = 12
+                    storyMaker!!.mVideoFrameRate = 15
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
                     storyMaker!!.mHeight = 480
-                    storyMaker!!.mVideoBitRate = 200000
+                    storyMaker!!.mVideoBitRate = 3000000
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 30
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 R.id.radio_largescreen -> {
                     storyMaker!!.mWidth  = 1280
                     storyMaker!!.mHeight = 720
-                    storyMaker!!.mVideoBitRate = 400000
+                    storyMaker!!.mVideoBitRate = 4000000
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 30
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 else -> {
                     Toast.makeText(this,this.resources.getText(
@@ -477,7 +484,6 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
         private val PREF_KEY_INCLUDE_SONG = "include_song"
         private val PREF_KEY_SHORT_NAME = "short_name"
-        private val PREF_KEY_RESOLUTION = "resolution"
 
         @Volatile
         private var buttonLocked = false

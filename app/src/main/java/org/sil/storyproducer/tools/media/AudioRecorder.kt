@@ -115,7 +115,6 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         try{
             mRecorder.prepare()
             mRecorder.start()
-            Toast.makeText(activity, R.string.recording_toolbar_recording_voice, Toast.LENGTH_SHORT).show()
         }
         catch (e: IllegalStateException) {
             Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
@@ -134,7 +133,6 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.reset()
             mRecorder.release()
             isRecording = false
-            Toast.makeText(activity, R.string.recording_toolbar_stop_recording_voice, Toast.LENGTH_SHORT).show()
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
             Crashlytics.logException(stopException)
