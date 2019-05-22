@@ -183,8 +183,6 @@
     <!-- RecordingToolbar -->
     <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
     <string name="recording_toolbar_no_recording">No recording available!</string>
-    <string name="recording_toolbar_recording_voice">Recording voice!</string>
-    <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
     <string name="recording_toolbar_error_recording">Error recording, record again!</string>
     <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>
 

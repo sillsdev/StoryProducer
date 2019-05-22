@@ -1,9 +1,8 @@
 package org.sil.storyproducer.tools.media.pipe
 
+import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
-import android.media.MediaFormat
+import android.media.*
 import android.os.Build
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -11,6 +10,8 @@ import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
 import org.sil.storyproducer.tools.selectCodec
 import java.io.IOException
 import java.util.*
+import java.nio.ByteBuffer
+
 
 /**
  *
@@ -24,6 +25,8 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     override val componentName: String
         get() = TAG
 
+    private var mBitmap: Bitmap? = null
+    private var mCanvas: Canvas? = null
     private var mSurface: Surface? = null
 
     private var mConfigureFormat: MediaFormat? = null
@@ -31,6 +34,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     private val mPresentationTimeQueue = LinkedList<Long>()
 
+    private val mStartPresentationTime: Long = System.nanoTime()/1000
     private var mCurrentPresentationTime: Long = 0
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -62,7 +66,20 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
-        mSurface = mCodec!!.createInputSurface()
+        if(mSurface != null){
+            //For H264, just use the surface.  It works fine.
+            mSurface = mCodec!!.createInputSurface()
+        }else{
+            //For H263, funny things happen with timestamps.
+            //Use the Image capabilitites to be able to specify a timestamp with the data.
+            mBitmap = Bitmap.createBitmap(
+                    mConfigureFormat!!.getInteger(MediaFormat.KEY_WIDTH),
+                    mConfigureFormat!!.getInteger(MediaFormat.KEY_HEIGHT),
+                    Bitmap.Config.ARGB_8888) //matches MediaCodecInfo.CodecCapabilities.COLOR_Format16bitRGB565
+
+            mCanvas = Canvas(mBitmap)
+        }
+
 
         mComponentState = PipedMediaSource.State.SETUP
 
@@ -75,28 +92,56 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         }
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
-            //Note: This method of getting a canvas to draw to may be invalid
-            //per documentation of MediaCodec.getInputSurface().
 
-            while(mPresentationTimeQueue.size > PipedAudioShortManipulator.BUFFER_COUNT-1){
+            //Posting to the canvas should be done synchonously, but it is on different threads.
+            //Synchonize with PipedMediaMuxerRun!
+            //TODO remove the wait?
+            while(unreleasedBuffer){
                 //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
             }
-            val canv = if (Build.VERSION.SDK_INT >= 23) {
-                mSurface!!.lockHardwareCanvas()
-            } else {
-                mSurface!!.lockCanvas(null)
+            if(mSurface != null){
+                mCanvas = if (Build.VERSION.SDK_INT >= 23) {
+                    mSurface!!.lockHardwareCanvas()
+                } else {
+                    mSurface!!.lockCanvas(null)
+                }
+                mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
+                synchronized(mPresentationTimeQueue) {
+                    mPresentationTimeQueue.add(mCurrentPresentationTime)
+                }
+                mSurface!!.unlockCanvasAndPost(mCanvas!!)
+            }else{
+                val buf_int = mCodec!!.dequeueInputBuffer(10000)
+                if(buf_int >= 0){
+                    val image = mCodec!!.getInputImage(buf_int)!!
+
+                    mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
+                    synchronized(mPresentationTimeQueue) {
+                        mPresentationTimeQueue.add(mCurrentPresentationTime)
+                    }
+                    RGBToYUV(mBitmap!!,image)
+
+                    val size = image.planes[0].buffer.capacity() +
+                            image.planes[1].buffer.capacity() +
+                            image.planes[2].buffer.capacity()
+                    mCodec!!.queueInputBuffer(buf_int,0,size,
+                            mStartPresentationTime + mCurrentPresentationTime,0)
+                }
             }
-            mCurrentPresentationTime = mSource!!.fillCanvas(canv)
-            synchronized(mPresentationTimeQueue) {
-                mPresentationTimeQueue.add(mCurrentPresentationTime)
-            }
-            mSurface!!.unlockCanvasAndPost(canv)
         }
 
-        if (mComponentState != PipedMediaSource.State.CLOSED) {
-            mCodec!!.signalEndOfInputStream()
+        if (mComponentState != PipedMediaSource.State.CLOSED){
+            if(mSurface != null) {
+                mCodec!!.signalEndOfInputStream()
+            }else{
+                //Send empty buffer with "end of stream" flag.
+                val buf_int = mCodec!!.dequeueInputBuffer(10000)
+                mCodec!!.queueInputBuffer(buf_int,0,0,
+                        mStartPresentationTime + mCurrentPresentationTime,MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+
+            }
         }
 
         mSource!!.close()
@@ -104,8 +149,12 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
         try {
-            synchronized(mPresentationTimeQueue) {
-                info.presentationTimeUs = mPresentationTimeQueue.pop()
+            if(mSurface != null) {
+                synchronized(mPresentationTimeQueue) {
+                    info.presentationTimeUs = mPresentationTimeQueue.pop()
+                }
+            }else{
+                info.presentationTimeUs -= mStartPresentationTime
             }
         } catch (e: NoSuchElementException) {
             throw RuntimeException("Tried to correct time for extra frame", e)
@@ -126,5 +175,49 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     companion object {
         private val TAG = "PipedVideoSurfaceEnc"
+
+        //Bitmap is ARGB_8888
+        //Image is YUV 888 (3 planes)
+        fun RGBToYUV(bitmapRGB: Bitmap, imageYUV: Image) {
+
+            val h = bitmapRGB.height
+            val w = bitmapRGB.width
+
+            val y = imageYUV.planes[0].buffer
+            val u = imageYUV.planes[1].buffer
+            val v = imageYUV.planes[2].buffer
+
+            val bufferRGB = ByteBuffer.allocate(bitmapRGB.getByteCount())
+            bitmapRGB.copyPixelsToBuffer(bufferRGB)
+
+            bufferRGB.rewind()
+
+            var unew = 0
+            var vnew = 0
+
+            for (i in 0 until h * w) {
+                val a = bufferRGB.get()
+                val r = bufferRGB.get()
+                val g = bufferRGB.get()
+                val b = bufferRGB.get()
+
+                y.put((0.299 * r + 0.587 * g + 0.114 * b).toByte())
+
+                when (i % 4) {
+                    0 -> {
+                        unew = (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6
+                        vnew = (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6
+                    }
+                    1, 2 -> {
+                        unew = unew shl 2 + (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6
+                        vnew = vnew shl 2 + (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6
+                    }
+                    3 -> {
+                        u.put((unew shl 2 + (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6).toByte())
+                        v.put((vnew shl 2 + (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6).toByte())
+                    }
+                }
+            }
+        }
     }
 }
