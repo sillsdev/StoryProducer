@@ -101,12 +101,6 @@
                     android:layout_height="wrap_content"
                     android:onClick="onRadioButtonClicked"
                     android:text="@string/smartphone"/>
-                <RadioButton android:id="@+id/radio_largescreen"
-                    android:drawableEnd="@drawable/ic_desktop_windows_white_24dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/large_screen"/>
             </RadioGroup>
 
             <Button

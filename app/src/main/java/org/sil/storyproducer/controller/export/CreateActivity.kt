@@ -45,9 +45,8 @@ class CreateActivity : PhaseBaseActivity() {
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
         val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_mp4 -> "S_"
-            R.id.radio_smartphone -> "M_"
-            R.id.radio_largescreen -> "L_"
+            R.id.radio_dumbphone_mp4 -> "Sm_"
+            R.id.radio_smartphone -> "Lg_"
             else -> ""
         }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
@@ -64,6 +63,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private val PROGRESS_UPDATER = Runnable {
         var isDone = false
+        var isSuccess = false
         while (!isDone) {
             try {
                 Thread.sleep(100)
@@ -85,10 +85,11 @@ class CreateActivity : PhaseBaseActivity() {
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
         }
+        isSuccess = storyMaker!!.isSuccess
 
         runOnUiThread {
             stopExport()
-            if(storyMaker?.isSuccess ?: false)
+            if(isSuccess)
                 Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
             else
                 Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
@@ -410,14 +411,6 @@ class CreateActivity : PhaseBaseActivity() {
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
                     storyMaker!!.mHeight = 480
-                    storyMaker!!.mVideoBitRate = 3000000
-                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
-                    storyMaker!!.mVideoFrameRate = 30
-                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-                }
-                R.id.radio_largescreen -> {
-                    storyMaker!!.mWidth  = 1280
-                    storyMaker!!.mHeight = 720
                     storyMaker!!.mVideoBitRate = 4000000
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 30

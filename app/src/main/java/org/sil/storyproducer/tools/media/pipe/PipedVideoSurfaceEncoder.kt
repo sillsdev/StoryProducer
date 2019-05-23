@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.media.*
 import android.os.Build
+import android.support.v4.math.MathUtils
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
@@ -66,7 +67,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
-        if(mSurface != null){
+        if(mConfigureFormat!!.getString(MediaFormat.KEY_MIME) == "video/avc"){
             //For H264, just use the surface.  It works fine.
             mSurface = mCodec!!.createInputSurface()
         }else{
@@ -178,6 +179,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
         //Bitmap is ARGB_8888
         //Image is YUV 888 (3 planes)
+        @kotlin.ExperimentalUnsignedTypes
         fun RGBToYUV(bitmapRGB: Bitmap, imageYUV: Image) {
 
             val h = bitmapRGB.height
@@ -187,34 +189,38 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
             val u = imageYUV.planes[1].buffer
             val v = imageYUV.planes[2].buffer
 
+            var unew = DoubleArray(w/2)
+            var vnew = DoubleArray(w/2)
+
             val bufferRGB = ByteBuffer.allocate(bitmapRGB.getByteCount())
             bitmapRGB.copyPixelsToBuffer(bufferRGB)
 
             bufferRGB.rewind()
 
-            var unew = 0
-            var vnew = 0
-
             for (i in 0 until h * w) {
-                val a = bufferRGB.get()
-                val r = bufferRGB.get()
-                val g = bufferRGB.get()
-                val b = bufferRGB.get()
+                val r:Int = bufferRGB.get().toUByte().toInt()
+                val g:Int = bufferRGB.get().toUByte().toInt()
+                val b:Int = bufferRGB.get().toUByte().toInt()
+                val a:Int = bufferRGB.get().toUByte().toInt()
 
-                y.put((0.299 * r + 0.587 * g + 0.114 * b).toByte())
+                y.put(MathUtils.clamp(0.299 * r + 0.587 * g + 0.114 * b,0.0,255.0).toByte())
 
-                when (i % 4) {
+                val ind = (i % w) / 2
+                val stage = (i % 2) + ((i / w) % 2) * 2
+                when (stage % 4) {
                     0 -> {
-                        unew = (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6
-                        vnew = (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6
+                        unew[ind] = -0.147 * r - 0.289 * g + 0.436 * b
+                        vnew[ind] = 0.615 * r - 0.515 * g - 0.100 * b
                     }
                     1, 2 -> {
-                        unew = unew shl 2 + (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6
-                        vnew = vnew shl 2 + (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6
+                        unew[ind] += -0.147 * r - 0.289 * g + 0.436 * b
+                        vnew[ind] += 0.615 * r - 0.515 * g - 0.100 * b
                     }
                     3 -> {
-                        u.put((unew shl 2 + (-0.147 * r - 0.289 * g + 0.436 * b).toInt() shr 6).toByte())
-                        v.put((vnew shl 2 + (0.615 * r - 0.515 * g - 0.100 * b).toInt() shr 6).toByte())
+                        val utemp = unew[ind] + -0.147 * r - 0.289 * g + 0.436 * b
+                        val vtemp = vnew[ind] + 0.615 * r - 0.515 * g - 0.100 * b
+                        u.put(MathUtils.clamp(128.0+utemp/4.0,0.0,255.0).toByte())
+                        v.put(MathUtils.clamp(128.0+vtemp/4.0,0.0,255.0).toByte())
                     }
                 }
             }
