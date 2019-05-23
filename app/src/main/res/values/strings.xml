@@ -202,10 +202,9 @@
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
-    <string name="export_destination">Create Video For</string>E
-    <string name ="dumbphone_MP4">Feature Phone (S)</string>
-    <string name = "smartphone">Smartphone (M)</string>
-    <string name = "large_screen">Large Screen (L)</string>
+    <string name="export_destination">Create Video For</string>
+    <string name ="dumbphone_MP4">Feature Phone (Sm)</string>
+    <string name = "smartphone">Smartphone (Lg)</string>
 
     <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
     <string name="export_no_filename">Choose a filename before making a video.</string>
