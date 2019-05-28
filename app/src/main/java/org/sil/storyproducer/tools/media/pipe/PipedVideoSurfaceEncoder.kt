@@ -121,7 +121,11 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
         try {
-            if(!mTimeSync) {
+            if(mTimeSync) {
+                //subtract the time so the progress bar displays correctly.
+                info.presentationTimeUs -= mStartPresentationTime
+            }else{
+                //If no timesync, than rely on a 1-to-1 correspondance with input and output frames.
                 synchronized(mPresentationTimeQueue) {
                     info.presentationTimeUs = mPresentationTimeQueue.pop()
                 }
