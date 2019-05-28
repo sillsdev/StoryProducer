@@ -30,8 +30,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     private var mOutputFormat: MediaFormat? = null
     protected var unreleasedBuffer = false
 
-    private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
-
     @Volatile
     private var mIsDone = false
     private var mPresentationTimeUsLast: Long = 0
@@ -41,7 +39,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     override fun getOutputFormat(): MediaFormat {
         if (mOutputFormat == null) {
             try {
-                pullBuffer(mInfo, true)
+                mOutputFormat = mCodec!!.outputFormat
             } catch (e: SourceClosedException) {
                 throw RuntimeException("format retrieval interrupted", e)
             }
@@ -101,13 +99,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             throw RuntimeException("pullBuffer called after depleted")
         }
 
-        //If actually trying to get a buffer and we cached the buffer, return buffer from cache.
-        if (!getFormat && !mBuffersBeforeFormat.isEmpty()) {
-            val tempBuffer = mBuffersBeforeFormat.remove()
-            MediaHelper.copyBufferInfo(tempBuffer.info, info)
-            return tempBuffer.buffer
-        }
-
         while (!mIsDone) {
             if (mComponentState == PipedMediaSource.State.CLOSED) {
                 throw SourceClosedException()
@@ -121,15 +112,12 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             }
             if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 Log.v(TAG, "$componentName.pullBuffer: output format changed")
-                if (mOutputFormat != null) {
-                    throw RuntimeException("changed output format again?")
-                }
                 mOutputFormat = mCodec!!.outputFormat
-                if (getFormat) {
-                    return null
-                }
             }
             if (outputBufferId >= 0) {
+                if(mOutputFormat == null) {
+                    mOutputFormat = mCodec!!.outputFormat
+                }
                 unreleasedBuffer = true
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     // TODO: Perhaps these buffers should not be ignored in the future.
@@ -141,7 +129,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 } else {
                     val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
 
-                    if (((info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) == 0) && (info.size != 0)) {
+                    if (info.size != 0) {
                         correctTime(info)
                         buffer.position(info.offset)
                         buffer.limit(info.offset + info.size)
@@ -152,14 +140,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                         mIsDone = true
                     }
 
-                    //If trying to get the format, save the buffer for later and don't return it.
-                    if (getFormat) {
-                        val tempInfo = MediaCodec.BufferInfo()
-                        MediaHelper.copyBufferInfo(info, tempInfo)
-                        mBuffersBeforeFormat.add(MediaBuffer(buffer, tempInfo))
-                    } else {
-                        return buffer
-                    }
+                    return buffer
                 }
             }
         }
