@@ -406,7 +406,7 @@ class CreateActivity : PhaseBaseActivity() {
                     storyMaker!!.mVideoBitRate = 1280000  //don't put above 128000 or it will crash the google h263 encoder.
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_H263
                     storyMaker!!.mVideoFrameRate = 15
-                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
