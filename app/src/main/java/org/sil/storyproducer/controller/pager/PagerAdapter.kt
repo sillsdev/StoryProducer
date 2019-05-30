@@ -29,33 +29,27 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
         when (Workspace.activePhase.phaseType) {
             PhaseType.DRAFT -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
             PhaseType.COMMUNITY_CHECK -> {
                 fragment = CommunityCheckFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
             PhaseType.CONSULTANT_CHECK -> {
                 fragment = ConsultantCheckFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
             PhaseType.DRAMATIZATION -> {
                 fragment = DramatizationFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
 //            PhaseType.BACKT -> {
 //                fragment = BackTranslationFrag()
-//                passedArgs.putInt(SLIDE_NUM, i)
 //            }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
             else -> {
                 fragment = DraftFrag()
-                passedArgs.putInt(SLIDE_NUM, i)
             }
         }
+        passedArgs.putInt(SLIDE_NUM, i)
         fragment.arguments = passedArgs
 
         return fragment

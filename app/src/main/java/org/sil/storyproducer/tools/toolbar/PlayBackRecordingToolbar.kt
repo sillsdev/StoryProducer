@@ -17,6 +17,12 @@ import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 
+/**
+ * A class responsible for the playback of audio recordings for a recording toolbar.
+ *
+ * This class extends the recording functionality of its base class. A playback button is added to
+ * the UI in addition to the recording button.
+ */
 open class PlayBackRecordingToolbar: RecordingToolbar() {
     private lateinit var playButton: ImageButton
 
@@ -42,18 +48,12 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            slideNum = bundleArguments.get(SLIDE_NUM) as Int
+            slideNum = bundleArguments.getInt(SLIDE_NUM)
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             stopToolbarAudioPlaying()
         })
-
-        return rootView
     }
 
     override fun onPause() {
