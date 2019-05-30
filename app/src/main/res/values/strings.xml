@@ -79,9 +79,9 @@
     <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
     <string name="registration_robin_rempel_email">SPapp_info@sil.org</string>
-    <string name="rename_title">Rename Title</string>
+    <string name="rename_title">Choose a new name</string>
     <string name="recordings_title">Recordings</string>
-    <string name="backTranslation_recordings_title"> Back Translation Recordings </string> <!-- for new backtranslation phase -->
+    <string name="backTranslation_recordings_title">Back Translation Recordings </string> <!-- for new backtranslation phase -->
     <string name="consultant_password_title">Consultant Password</string>
     <string name="consultant_password_message">Please enter the consultant password:</string>
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
@@ -181,21 +181,13 @@
     <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
-    <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
     <string name="recording_toolbar_no_recording">No recording available!</string>
-    <string name="recording_toolbar_recording_voice">Recording voice!</string>
-    <string name="recording_toolbar_stop_recording_voice">Stopped recording!</string>
     <string name="recording_toolbar_error_recording">Error recording, record again!</string>
     <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>
 
     <!-- Multiple Recording Dialog -->
     <string name="delete_audio_title">Delete Audio file?</string>
     <string name="delete_audio_message">Do you want to delete this audio file?</string>
-
-    <string name="renamed_success">File successfully renamed</string>
-    <string name="rename_must_be_20">Filename must be less than 20 characters</string>
-    <string name="rename_no_special">Filename cannot contain special characters</string>
-    <string name="rename_failed">Rename failed</string>
 
     <!-- Export Phase -->
     <string name="export_title_header">Text in Filename</string>
@@ -209,12 +201,9 @@
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
-    <string name="export_destination">Create Video For</string>E
-    <string name ="dumbphone_3GP">Feature Phone (3GP)</string>
-    <string name ="dumbphone_MP4">Feature Phone (MP4)</string>
-    <string name = "smartphone">Smartphone (MP4)</string>
-    <string name = "large_screen">Large Screen (MP4)</string>
-    <string name = "min_SDK_26">Need Android 8.0 for 3GP</string>
+    <string name="export_destination">Create Video For</string>
+    <string name ="dumbphone_MP4">Feature Phone (Sm)</string>
+    <string name = "smartphone">Smartphone (Lg)</string>
 
     <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
     <string name="export_no_filename">Choose a filename before making a video.</string>
