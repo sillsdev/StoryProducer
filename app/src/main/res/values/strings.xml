@@ -181,7 +181,6 @@
     <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
-    <string name="recording_toolbar_play_back_recording">Playing back recording!</string>
     <string name="recording_toolbar_no_recording">No recording available!</string>
     <string name="recording_toolbar_error_recording">Error recording, record again!</string>
     <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>

@@ -79,7 +79,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
             val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
             playButton.setOnClickListener {
-                listeners.onPlayClick(adapterPosition, playButton)
+                listeners.onPlayClick(adapterPosition, it as ImageButton)
             }
 
             val deleteButton = itemView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
@@ -227,14 +227,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                     buttonClickedNow.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                     stopAudio()
                 })
-                    buttonClickedNow.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                    stopAudio()
-                    audioPos = -1
 
                 if (storyRelPathExists(context, getRecordedAudioFiles()[pos])) {
                     audioPlayer.setStorySource(context, getRecordedAudioFiles()[pos])
                     audioPlayer.playAudio()
-                    Toast.makeText(context, context.getString(R.string.recording_toolbar_play_back_recording), Toast.LENGTH_SHORT).show()
                     when (Workspace.activePhase.phaseType) {
                         PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
                         PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))

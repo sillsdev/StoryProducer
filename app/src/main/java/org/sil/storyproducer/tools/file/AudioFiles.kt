@@ -44,8 +44,8 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
  * Setting to -1 clears the chosen file.
  */
 fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
-    val nameSize = getRecordedDisplayNames(slideNum)?.size ?: -1
-    val combName = if(index < 0 || index >= nameSize) "" else getRecordedDisplayNames(slideNum)!![index]
+    val nameSize = Workspace.activePhase.getCombNames(slideNum)?.size ?: -1
+    val combName = if(index < 0 || index >= nameSize) "" else Workspace.activePhase.getCombNames(slideNum)!![index]
 
     when(Workspace.activePhase.phaseType){
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = combName
@@ -86,8 +86,16 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
     //make sure to update the actual list, not a copy.
     val filenames = Workspace.activePhase.getCombNames() ?: return
     val filename = Story.getFilename(filenames[pos])
-    filenames.removeAt(pos)
-    deleteStoryFile(context, "$Workspace.activeDir/$filename")
+    if(getChosenCombName() == filenames[pos]){
+        //the chosen filename was deleted!  Make it some other selection.
+        filenames.removeAt(pos)
+        //If there is only 1 left, the resulting index will be -1, or no chosen filename.
+        setChosenFileIndex(filenames.size-1)
+    }else{
+        //just delete the file index.
+        filenames.removeAt(pos)
+    }
+    deleteStoryFile(context,filename)
 }
 
 fun createRecordingCombinedName() : String {
