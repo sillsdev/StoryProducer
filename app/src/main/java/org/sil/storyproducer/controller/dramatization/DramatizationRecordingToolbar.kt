@@ -12,6 +12,15 @@ import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import java.io.FileNotFoundException
 
+/**
+ * A class responsible for more advanced recording functionality (allowing multiple recordings to
+ * be appended together into one final recording).
+ *
+ * This class extends the recording, playback, and multi-recording listing functionality of its base
+ * classes. A fourth button is added for finishing a set of recordings that are to be appended
+ * together. A fifth button is added for sending the finished recording to a web server (not
+ * currently implemented).
+ */
 class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton

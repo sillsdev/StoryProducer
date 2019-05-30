@@ -5,6 +5,12 @@ import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 
+/**
+ * A class responsible for listing recorded audio files from a recording toolbar.
+ *
+ * This class extends both recording and playback functionality of its base classes. A third button
+ * is added that can bring up a modal listing the audio recording created with this toolbar.
+ */
 open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
     protected lateinit var multiRecordButton: ImageButton
 
