@@ -13,6 +13,8 @@ import java.io.File
 import java.util.*
 import kotlin.math.max
 
+internal const val SLIDE_NUM = "CurrentSlideNum"
+
 object Workspace{
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {

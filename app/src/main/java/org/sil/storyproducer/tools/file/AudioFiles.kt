@@ -99,7 +99,7 @@ fun createRecordingCombinedName() : String {
     return when(Workspace.activePhase.phaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
-            "${Workspace.activePhase.getDisplayName()}|$PROJECT_DIR/$Workspace.activePhase.phaseName$AUDIO_EXT"
+            "${Workspace.activePhase.getDisplayName()}|$PROJECT_DIR/${Workspace.activePhase.getShortName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
