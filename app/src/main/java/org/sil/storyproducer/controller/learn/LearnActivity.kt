@@ -11,6 +11,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.file.getStoryUri
@@ -104,7 +105,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             if (s.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)) {
                 numOfSlides++
                 slideDurations.add((MediaHelper.getAudioDuration(this,
-                        getStoryUri(s.narrationFile)!!) / 1000).toInt())
+                        getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
                 slideStartTimes.add(slideStartTimes.last() + slideDurations.last())
             } else {
                 break

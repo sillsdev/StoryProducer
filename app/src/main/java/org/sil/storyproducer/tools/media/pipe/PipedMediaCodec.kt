@@ -26,9 +26,9 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     protected var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
 
     protected var mCodec: MediaCodec? = null
-    protected var mInputBuffers: Array<ByteBuffer>? = null
     protected var outputBufferId: Int = 0
     private var mOutputFormat: MediaFormat? = null
+    protected var unreleasedBuffer = false
 
     private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
 
@@ -76,12 +76,13 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             throw SourceClosedException()
         }
         mCodec!!.releaseOutputBuffer(outputBufferId,true)
+        unreleasedBuffer = false
+        if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.release buffer $outputBufferId")
         return
     }
 
     protected fun start() {
         mCodec!!.start()
-        mInputBuffers = mCodec!!.inputBuffers
 
         mThread = Thread(Runnable {
             try {
@@ -119,7 +120,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 outputBufferId = MediaCodec.INFO_TRY_AGAIN_LATER
             }
             if (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.pullBuffer: output format changed")
+                Log.v(TAG, "$componentName.pullBuffer: output format changed")
                 if (mOutputFormat != null) {
                     throw RuntimeException("changed output format again?")
                 }
@@ -129,12 +130,14 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 }
             }
             if (outputBufferId >= 0) {
+                unreleasedBuffer = true
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     // TODO: Perhaps these buffers should not be ignored in the future.
                     // This indicated that the buffer marked as such contains codec initialization / codec specific data instead of media data.
                     // This should actually never occur...
                     // Simply ignore codec config buffers.
-                    mCodec!!.releaseOutputBuffer(outputBufferId, true)
+                    mCodec!!.releaseOutputBuffer(outputBufferId, false)
+                    unreleasedBuffer = false
                 } else {
                     val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
 

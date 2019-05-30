@@ -13,6 +13,7 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
+import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 
@@ -100,7 +101,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility(){
-        val playBackFileExist = storyRelPathExists(activity!!, Workspace.activePhase.getChosenFilename(slideNum))
+        val playBackFileExist = storyRelPathExists(activity!!, getChosenFilename(slideNum))
         if(playBackFileExist){
             showInheritedToolbarButtons()
         }
@@ -136,10 +137,8 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
-                if (audioPlayer.setStorySource(this.appContext, Workspace.activePhase.getChosenFilename())) {
+                if (audioPlayer.setStorySource(this.appContext, getChosenFilename())) {
                     audioPlayer.playAudio()
-
-                    Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
                     
