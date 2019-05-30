@@ -30,7 +30,6 @@ import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
-import org.sil.storyproducer.tools.StorySharedPreferences
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity(), Serializable {
@@ -52,8 +51,6 @@ class MainActivity : AppCompatActivity(), Serializable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        StorySharedPreferences.init(applicationContext)
 
         setContentView(R.layout.activity_main)
         setupDrawer()

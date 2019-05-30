@@ -14,19 +14,21 @@ import android.widget.EditText
 import android.widget.ImageView
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
+import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar.RecordingListener
 import java.io.File
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
+abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
+    protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
 
-    protected var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var tempPicFile: File? = null
 
 
@@ -52,7 +54,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
             val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
-            imageFab.visibility = android.view.View.VISIBLE
+            imageFab.visibility = View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
                 chooser.putExtra(Intent.EXTRA_TITLE, "Select From:")
@@ -79,10 +81,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
-            editBox?.visibility = android.view.View.INVISIBLE
+            editBox?.visibility = View.INVISIBLE
 
             val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
-            editFab?.visibility = android.view.View.VISIBLE
+            editFab?.visibility = View.VISIBLE
             editFab?.setOnClickListener {
                 val editText = EditText(context)
                 editText.id = R.id.edit_text_input
@@ -145,28 +147,27 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), RecordingListener {
         }
     }
 
-    override fun stopPlayBackAndRecording() {
-        super.stopPlayBackAndRecording()
-        recordingToolbar.stopToolbarMedia()
-    }
-
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-        //updatePlayBackPath()
-    }
-
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-    }
-
     protected open fun setToolbar() {
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,false,true,false))
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
     }
+
+    override fun onStartedToolbarMedia() {
+        super.onStartedToolbarMedia()
+
+        stopSlidePlayBack()
+    }
+
+    override fun onStartedSlidePlayBack() {
+        super.onStartedSlidePlayBack()
+
+        recordingToolbar.stopToolbarMedia()
+    }
+    
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
     }

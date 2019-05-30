@@ -24,7 +24,6 @@ import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
-import java.util.Collections.addAll
 
 class RecordingsListAdapter(private val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
@@ -33,7 +32,6 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         fun onPlayClick(pos: Int, buttonClickedNow: ImageButton)
         fun onDeleteClick(name: String, pos: Int)
         fun onRenameClick(pos: Int, newName: String)
-        fun onRenameSuccess(pos: Int)
     }
 
     private var selectedPos = RecyclerView.NO_POSITION
@@ -81,7 +79,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
             val playButton = itemView.findViewById<ImageButton>(R.id.audio_comment_play_button)
             playButton.setOnClickListener {
-                listeners.onPlayClick(adapterPosition, it as ImageButton)
+                listeners.onPlayClick(adapterPosition, playButton)
             }
 
             val deleteButton = itemView.findViewById<ImageButton>(R.id.audio_comment_delete_button)
@@ -133,16 +131,16 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : RecordingsListAdapter.ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var displayNames: MutableList<String> = mutableListOf()
         internal var recyclerView: RecyclerView? = null
-        private var lastNewName: String? = null
         private val audioPlayer: AudioPlayer = AudioPlayer()
+        private var currentPlayingButton: ImageButton? = null
         private var audioPos = -1
         private var embedded = false
-        private var playbackListener: RecordingToolbar.RecordingListener? = null
+        private var playbackListener: RecordingToolbar.ToolbarMediaListener? = null
         private var slideNum: Int = Workspace.activeSlideNum
 
         fun setSlideNum(mSlideNum:Int){
@@ -151,7 +149,10 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         fun setParentFragment(parentFragment: Fragment){
             try{
-                playbackListener = parentFragment as RecordingToolbar.RecordingListener
+                playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
+            }
+            catch (e : ClassCastException){
+                playbackListener = context as RecordingToolbar.ToolbarMediaListener
             }
             catch (e:Exception){}
         }
@@ -210,18 +211,26 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         override fun onPlayClick(pos: Int, buttonClickedNow: ImageButton) {
             if (audioPlayer.isAudioPlaying && audioPos == pos) {
-                buttonClickedNow.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                audioPlayer.stopAudio()
+                stopAudio()
             } else {
-                buttonClickedNow.setImageResource(R.drawable.ic_stop_white_36dp)
                 stopAudio()
                 audioPos = pos
-                playbackListener?.onStartedRecordingOrPlayback(false)
+
+                toolbar?.stopToolbarMedia()
+
+                playbackListener?.onStartedToolbarMedia()
+
+                currentPlayingButton = buttonClickedNow
+                currentPlayingButton?.setImageResource(R.drawable.ic_stop_white_36dp)
+
                 audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
                     buttonClickedNow.setImageResource(R.drawable.ic_play_arrow_white_36dp)
-                    audioPlayer.stopAudio()
-                    audioPos = -1
+                    stopAudio()
                 })
+                    buttonClickedNow.setImageResource(R.drawable.ic_play_arrow_white_36dp)
+                    stopAudio()
+                    audioPos = -1
+
                 if (storyRelPathExists(context, getRecordedAudioFiles()[pos])) {
                     audioPlayer.setStorySource(context, getRecordedAudioFiles()[pos])
                     audioPlayer.playAudio()
@@ -247,7 +256,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
                 }
                 else {
                     setChosenFileIndex(-1)
-                    toolbar?.setupToolbarButtons()
+                    toolbar?.updateInheritedToolbarButtonVisibility()
                     dialog?.dismiss()
                 }
             }
@@ -258,14 +267,9 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
             updateRecordingList()
         }
 
-        override fun onRenameSuccess(pos: Int) {
-            displayNames[pos] = lastNewName!!
-            onRowClick(pos)
-            updateRecordingList()
-        }
-
         fun stopAudio() {
             if (audioPlayer.isAudioPlaying) {
+                currentPlayingButton?.setImageResource(R.drawable.ic_play_arrow_white_36dp)
                 audioPlayer.stopAudio()
             }
         }
