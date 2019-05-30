@@ -3,6 +3,8 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.media.MediaCodecInfo
+import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -43,10 +45,8 @@ class CreateActivity : PhaseBaseActivity() {
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
         val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_3gp -> ""
-            R.id.radio_dumbphone_mp4 -> "L_"
-            R.id.radio_smartphone -> "M_"
-            R.id.radio_largescreen -> "H_"
+            R.id.radio_dumbphone_mp4 -> "Sm_"
+            R.id.radio_smartphone -> "Lg_"
             else -> ""
         }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
@@ -54,9 +54,7 @@ class CreateActivity : PhaseBaseActivity() {
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
-        val ext = if (mRadioExportDestiniation!!.checkedRadioButtonId ==
-                R.id.radio_dumbphone_3gp) {".3gp"} else {".mp4"}
-        return "$num${name}_$ethno$res$fx$px$mv$tx$sg$ext"
+        return "$num${name}_$ethno$res$fx$px$mv$tx$sg.mp4"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -65,6 +63,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private val PROGRESS_UPDATER = Runnable {
         var isDone = false
+        var isSuccess = false
         while (!isDone) {
             try {
                 Thread.sleep(100)
@@ -86,10 +85,14 @@ class CreateActivity : PhaseBaseActivity() {
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
         }
+        isSuccess = storyMaker!!.isSuccess
 
         runOnUiThread {
             stopExport()
-            Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            if(isSuccess)
+                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            else
+                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -244,7 +247,15 @@ class CreateActivity : PhaseBaseActivity() {
         mLayoutCancel!!.visibility = visibilityWhileExport
         mButtonStart!!.visibility = visibilityPreExport
 
-        mCheckboxKBFX!!.visibility = if (mCheckboxPictures!!.isChecked) View.VISIBLE else View.GONE
+        if (mCheckboxPictures!!.isChecked) {
+            mCheckboxKBFX!!.visibility = View.VISIBLE
+            mCheckboxText!!.visibility = View.VISIBLE
+        }else{
+            mCheckboxKBFX!!.visibility = View.GONE
+            mCheckboxKBFX!!.isChecked = false
+            mCheckboxText!!.visibility = View.GONE
+            mCheckboxText!!.isChecked = false
+        }
 
 
         if (mCheckboxText!!.isChecked) {
@@ -306,16 +317,6 @@ class CreateActivity : PhaseBaseActivity() {
      */
     fun onRadioButtonClicked(view: View) {
         toggleVisibleElements()
-        // Check which radio button was clicked
-        if (view.id == R.id.radio_dumbphone_3gp){
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
-                findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
-                (view as RadioButton).isChecked = false
-            } else {
-                mCheckboxText!!.isChecked = false
-            }
-        }
     }
     /**
      * Save current configuration options to shared preferences.
@@ -396,28 +397,24 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
-            storyMaker!!.m3GP = mRadioExportDestiniation!!.checkedRadioButtonId ==
-                    R.id.radio_dumbphone_3gp
-            storyMaker!!.mDumbPhone = mRadioExportDestiniation!!.checkedRadioButtonId in
-                    arrayOf(R.id.radio_dumbphone_3gp,R.id.radio_dumbphone_mp4)
 
 
             when(mRadioExportDestiniation?.checkedRadioButtonId){
-                R.id.radio_dumbphone_3gp -> {
-                    storyMaker!!.mWidth  = 176
-                    storyMaker!!.mHeight = 144
-                }
                 R.id.radio_dumbphone_mp4 -> {
                     storyMaker!!.mWidth  = 176
                     storyMaker!!.mHeight = 144
+                    storyMaker!!.mVideoBitRate = 1280000  //don't put above 128000 or it will crash the google h263 encoder.
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_H263
+                    storyMaker!!.mVideoFrameRate = 15
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 R.id.radio_smartphone -> {
                     storyMaker!!.mWidth  = 640
                     storyMaker!!.mHeight = 480
-                }
-                R.id.radio_largescreen -> {
-                    storyMaker!!.mWidth  = 1280
-                    storyMaker!!.mHeight = 720
+                    storyMaker!!.mVideoBitRate = 4000000
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+                    storyMaker!!.mVideoFrameRate = 30
+                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 else -> {
                     Toast.makeText(this,this.resources.getText(
@@ -480,7 +477,6 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
         private val PREF_KEY_INCLUDE_SONG = "include_song"
         private val PREF_KEY_SHORT_NAME = "short_name"
-        private val PREF_KEY_RESOLUTION = "resolution"
 
         @Volatile
         private var buttonLocked = false

@@ -15,9 +15,10 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class DramatizationFrag : MultiRecordFrag() {
-
+    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
     private var slideText: EditText? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -74,24 +75,6 @@ class DramatizationFrag : MultiRecordFrag() {
         }
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {}
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        stopPlayBackAndRecording()
-    }
-
-    /**
-     * Initializes the toolbar and toolbar buttons.
-     */
-    override fun setToolbar() {
-        val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true,true,true,false))
-        bundle.putInt("slideNum", slideNum)
-        recordingToolbar.arguments = bundle
-        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
-
-        recordingToolbar.keepToolbarVisible()
-    }
-
     /**
      * This function will set a listener to the passed in view so that when the passed in view
      * is touched the keyboard close function will be called see: [.closeKeyboard].
@@ -116,7 +99,7 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        if(slideText!!.visibility == android.view.View.VISIBLE) {
+        if(slideText!!.visibility == View.VISIBLE) {
             //Don't update with a press when in title and local credits slides.
             val newText = slideText!!.text.toString()
             if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
@@ -125,5 +108,4 @@ class DramatizationFrag : MultiRecordFrag() {
             }
         }
     }
-
 }

@@ -26,7 +26,7 @@ Translate and produce stories (starting with templates in a major language made 
 
 ## Installing the application
 * Minimum Requirements:  
-    * Android 4.4.x (API 19) and 1GB storage available
+    * Android 5.0.x (API 21) and 1GB storage available
     * Android file browser: [ASTRO File Manager](https://play.google.com/store/apps/details?id=com.metago.astro&hl=en) or [File Manager](https://play.google.com/store/apps/details?id=com.asus.filemanager&hl=en) by ZenUI  
 * Prepare your Android device: 
     * If you have installed Story Producer before, delete the previous version. If the version of the app that you delete is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
