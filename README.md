@@ -9,10 +9,11 @@ End recipients: members of local language communities
 Developers:  
    * Vision and design by Robin Rempel, SIL
    * Logo by Jordan Skomer and Mackenzie Sanders
-   * Prototype app: LeTourneau University engineering students (Jordan Skomer, Hannah Brown, Caleb Phillips)
-   * Software engineers for v1.2: Cedarville University Bible Story Team (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
-   * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University student team #2 (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
+   * Software engineers for Prototype app: LeTourneau University students (Jordan Skomer, Hannah Brown, Caleb Phillips)
+   * Software engineers for v1.2: Cedarville University students (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
+   * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University students (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
    * Software engineer for v2.3 and later: John Lambert
+   * Software engineers for Remote Oral Consultant Checker website and app v2.4 and testing frameworks: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
 
 Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
@@ -20,26 +21,28 @@ Translate and produce stories (starting with templates in a major language made 
 * TRANSLATE/DRAFT an audio translation
 * COMMUNITY CHECK the draft for naturalness and clarity
 * CONSULTANT CHECK for accuracy and approval
-* DRAMATIZE the final audio
+* DRAMATIZE/VOICE STUDIO the final audio
 * FINALIZE/CREATE new videos
 * SHARE the videos
 
 ## Installing the application
 * Minimum Requirements:  
-    * Android 5.0.x (API 21) and 1GB storage available
-    * Android file browser: [ASTRO File Manager](https://play.google.com/store/apps/details?id=com.metago.astro&hl=en) or [File Manager](https://play.google.com/store/apps/details?id=com.asus.filemanager&hl=en) by ZenUI  
+    * Android 5.x.x; Android 8 is required to create 3GP output videos
+    * 2+GB RAM is needed to create the longer/larger videos
+    * an average of 500 MB storage must be available per story template one wishes to create; it is suggested to put templates on an SD card
+    * an (Android) file manager
 * Prepare your Android device: 
     * If you have installed Story Producer before, delete the previous version. If the version of the app that you delete is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
     * Enable a manual install of apk file: 
         * Settings(gear icon) -> Security -> (scroll down) Enable "Unknown sources"; disable "Verify apps"
     * Insert SD card if desired
-         * You will need approximately 300 MB of storage for each story you wish to produce.
+         * You will need approximately 500 MB of storage for each story you wish to produce.
     * Connect to your device via USB (it will show as a drive on your computer)
         * If it does not show up as a drive, swipe down from the top.  You should see a notification: USB for charging.  Touch it.  Select USB for file transfer.
     * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
     * Download the [template folders](https://drive.google.com/drive/folders/0Bw7whhMtjqJTVkljWlY0akZXeDg?usp=sharing) to your computer
-    * Copy the unzipped templates folder to your usb card.  A good directory would be **\[thumb drive\]/SPWorkspace**
-    * Open Story Producer and select the "workspace" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
+    * Copy the unzipped templates folder to your SD card.  A good directory would be **\[thumb drive\]/SP Templates**
+    * Open Story Producer and select the "SP Templates" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
     * Continue with registration and use the app!
 
 ## Unit Tests
