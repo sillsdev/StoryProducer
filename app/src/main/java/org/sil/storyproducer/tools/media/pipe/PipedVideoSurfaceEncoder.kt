@@ -1,16 +1,20 @@
 package org.sil.storyproducer.tools.media.pipe
 
+import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
-import android.media.MediaFormat
+import android.media.*
+import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.os.Build
+import android.support.v4.math.MathUtils
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
 import org.sil.storyproducer.tools.selectCodec
 import java.io.IOException
 import java.util.*
+import java.nio.ByteBuffer
+import kotlin.math.max
+
 
 /**
  *
@@ -24,6 +28,9 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     override val componentName: String
         get() = TAG
 
+    private var mTimeSync: Boolean = false
+
+    private var mCanvas: Canvas? = null
     private var mSurface: Surface? = null
 
     private var mConfigureFormat: MediaFormat? = null
@@ -31,6 +38,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     private val mPresentationTimeQueue = LinkedList<Long>()
 
+    private val mStartPresentationTime: Long = System.nanoTime()/1000
     private var mCurrentPresentationTime: Long = 0
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -62,6 +70,11 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
+        if(mCodec!!.name.contains("h263")){
+            //Sync time for software codecs
+            mTimeSync = true
+        }
+
         mSurface = mCodec!!.createInputSurface()
 
         mComponentState = PipedMediaSource.State.SETUP
@@ -75,27 +88,31 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         }
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
-            //Note: This method of getting a canvas to draw to may be invalid
-            //per documentation of MediaCodec.getInputSurface().
 
-            while(mPresentationTimeQueue.size > PipedAudioShortManipulator.BUFFER_COUNT-1){
+            //Posting to the canvas should be done synchonously, but it is on different threads.
+            //Synchonize with PipedMediaMuxerRun!
+            //TODO remove the wait?
+            while(unreleasedBuffer){
                 //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
             }
-            val canv = if (Build.VERSION.SDK_INT >= 23) {
+            mCanvas = if (Build.VERSION.SDK_INT >= 23) {
                 mSurface!!.lockHardwareCanvas()
             } else {
                 mSurface!!.lockCanvas(null)
             }
-            mCurrentPresentationTime = mSource!!.fillCanvas(canv)
+            mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
+            if(mTimeSync){
+                Thread.sleep(67)
+            }
             synchronized(mPresentationTimeQueue) {
                 mPresentationTimeQueue.add(mCurrentPresentationTime)
             }
-            mSurface!!.unlockCanvasAndPost(canv)
+            mSurface!!.unlockCanvasAndPost(mCanvas!!)
         }
 
-        if (mComponentState != PipedMediaSource.State.CLOSED) {
+        if (mComponentState != PipedMediaSource.State.CLOSED){
             mCodec!!.signalEndOfInputStream()
         }
 
@@ -104,8 +121,14 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
         try {
-            synchronized(mPresentationTimeQueue) {
-                info.presentationTimeUs = mPresentationTimeQueue.pop()
+            if(mTimeSync) {
+                //subtract the time so the progress bar displays correctly.
+                info.presentationTimeUs -= mStartPresentationTime
+            }else{
+                //If no timesync, than rely on a 1-to-1 correspondance with input and output frames.
+                synchronized(mPresentationTimeQueue) {
+                    info.presentationTimeUs = mPresentationTimeQueue.pop()
+                }
             }
         } catch (e: NoSuchElementException) {
             throw RuntimeException("Tried to correct time for extra frame", e)
@@ -126,5 +149,6 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     companion object {
         private val TAG = "PipedVideoSurfaceEnc"
+
     }
 }

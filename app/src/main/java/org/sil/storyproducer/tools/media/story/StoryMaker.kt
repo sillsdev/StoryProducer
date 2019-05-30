@@ -41,6 +41,9 @@ class StoryMaker
     var isDone = false
         private set
 
+    var isSuccess = false
+        private set
+
     val progress: Double
         get() {
             if (isDone) {
@@ -104,8 +107,6 @@ class StoryMaker
         }
         mMuxer = PipedMediaMuxer(mOutputFile.absolutePath, mOutputFormat)
 
-        var success = false
-
         try {
             mMuxer!!.addSource(audioEncoder)
 
@@ -165,7 +166,7 @@ class StoryMaker
 
                 videoEncoder.addSource(videoDrawer!!)
             }
-            success = mMuxer!!.crunch()
+            isSuccess = mMuxer!!.crunch()
             Log.i(TAG, "Video saved to $mOutputFile")
         } catch (e: Exception) {
             Log.e(TAG, "Error in story making", e)
@@ -184,7 +185,7 @@ class StoryMaker
 
         isDone = true
 
-        return success
+        return isSuccess
     }
 
     override fun close() {

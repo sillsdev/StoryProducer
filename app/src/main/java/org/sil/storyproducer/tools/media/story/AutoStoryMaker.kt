@@ -32,28 +32,21 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     // first size isn't great quality, but runs faster
     var mWidth = 320
     var mHeight = 240
+    var mVideoBitRate = 128000
+    var mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+    var mVideoFrameRate = 30
+    var mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
 
     private var mOutputExt = ".mp4"
     private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
-    private val mVideoBitRate: Int
-        get() {
-            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
-                    * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
-        }
-    private val mVideoFrameRate: Int
-        get() {
-            return if(m3GP) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
-        }
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
     var mIncludeSong = false
-    var m3GP = false
-    var mDumbPhone = false
 
     private var mLogProgress = false
 
@@ -61,6 +54,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     val isDone: Boolean
         get() = mStoryMaker != null && mStoryMaker!!.isDone
+
+    val isSuccess: Boolean
+        get() = mStoryMaker != null && mStoryMaker!!.isSuccess
 
     val progress: Double
         get() = if (mStoryMaker == null) {
@@ -74,12 +70,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     }
 
     override fun start() {
-        val outputFormat : Int
-        if(m3GP && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
-        } else {
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-        }
+        val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
         val videoFormat = generateVideoFormat()
         val audioFormat = generateAudioFormat()
@@ -97,9 +88,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var duration = -System.currentTimeMillis()
 
         Log.i(TAG, "Starting video creation")
-        val success = mStoryMaker!!.churn()
+        mStoryMaker!!.churn()
 
-        if (success) {
+        if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
             videoTempFile.delete()
@@ -127,16 +118,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             return null
         }
 
-        val codecString =
-            if(mDumbPhone) MediaFormat.MIMETYPE_VIDEO_H263
-            else MediaFormat.MIMETYPE_VIDEO_AVC
+        val videoFormat = MediaFormat.createVideoFormat(mCodecString, mWidth, mHeight)
 
-        val cinfo = selectCodec(codecString)
-        val videoFormat = MediaFormat.createVideoFormat(codecString, mWidth, mHeight)
 
-        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+        //Image format: MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
+        //Surface Format: MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,mVideoColorFormat)
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
+        videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, mVideoFrameRate)
+        videoFormat.setInteger(MediaFormat.KEY_OPERATING_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
 
@@ -157,14 +147,14 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
             val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = slide.chosenDramatizationFile
+            var audio = Story.getFilename(slide.chosenDramatizationFile)
             //fallback to draft audio
             if (audio == "") {
-                audio = slide.chosenDraftFile
+                audio = Story.getFilename(slide.chosenDraftFile)
             }
             //fallback to LWC audio
             if (audio == "") {
-                audio = slide.narrationFile
+                audio = Story.getFilename(slide.narrationFile)
             }
 
             var soundtrack = ""
@@ -194,7 +184,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             val overlayText = slide.getOverlayText(mIncludeText)
 
             //error
-            var duration = 5000000L  // 3 seconds, microseconds.
+            var duration = 5000000L  // 5 seconds, microseconds.
             if (audio != "") {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
@@ -245,8 +235,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_TRANSITION_US: Long = 500000
 
         // parameters for the video encoder
-        private val VIDEO_FRAME_RATE = 30               // 30fps
-        private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
         private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
 
         // using Kush Gauge for video bit rate
@@ -258,19 +246,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
-
-        private val AUDIO_SAMPLE_RATE_AMR = 16000
-        private val AUDIO_BIT_RATE_AMR = 16000
-
-        fun generateDumbAudioFormat(): MediaFormat {
-            // TODO - remove this audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
-            // Not really needed - PR372
-            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_WB)
-            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
-            return audioFormat
-        }
 
         fun generateAudioFormat(): MediaFormat {
 
