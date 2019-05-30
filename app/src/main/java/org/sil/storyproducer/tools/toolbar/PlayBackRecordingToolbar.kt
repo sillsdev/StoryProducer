@@ -140,8 +140,6 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
                 if (audioPlayer.setStorySource(this.appContext, getChosenFilename())) {
                     audioPlayer.playAudio()
 
-                    Toast.makeText(appContext, R.string.recording_toolbar_play_back_recording, Toast.LENGTH_SHORT).show()
-
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
                     
                     //TODO: make this logging more robust and encapsulated
