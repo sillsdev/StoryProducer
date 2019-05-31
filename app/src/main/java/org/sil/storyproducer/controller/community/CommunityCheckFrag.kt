@@ -48,20 +48,13 @@ class CommunityCheckFrag : MultiRecordFrag() {
         dispList?.stopAudio()
     }
 
-    override fun onStoppedToolbarMedia() {
-        super.onStoppedToolbarMedia()
-        
-        dispList?.updateRecordingList()
-        dispList?.recyclerView?.adapter?.notifyDataSetChanged()
-    }
-
     override fun onStartedToolbarMedia() {
         super.onStartedToolbarMedia()
 
         dispList!!.stopAudio()
         //this is needed here to - when you are playing the reference audio and start recording
         //the new audio file pops up, and in the wrong format.
-        dispList?.updateRecordingList()
+        dispList?.resetRecordingList()
     }
 
     override fun onStartedSlidePlayBack() {
