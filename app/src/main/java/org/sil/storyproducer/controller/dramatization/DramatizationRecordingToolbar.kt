@@ -114,14 +114,16 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
-            stopToolbarMedia()
-            
+
             if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+                stopToolbarMedia()
                 try {
                     AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
                 } catch (e: FileNotFoundException) {
                     Crashlytics.logException(e)
                 }
+            }else{
+                stopToolbarMedia()
             }
             isAppendingOn = false
 

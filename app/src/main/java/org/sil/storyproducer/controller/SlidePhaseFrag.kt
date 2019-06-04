@@ -32,7 +32,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
 
     protected var slideNum: Int = 0 //gets overwritten
-    protected var slide: Slide = Workspace.activeSlide!! //this is a placeholder that gets overwritten in onCreate.
+    protected lateinit var slide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

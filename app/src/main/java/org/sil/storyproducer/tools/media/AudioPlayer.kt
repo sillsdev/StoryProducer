@@ -92,19 +92,16 @@ class AudioPlayer {
      * Pauses the audio if it is currently being played
      */
     fun pauseAudio() {
-        if (mPlayer.isPlaying) {
-            try {
-                if(mPlayer.isPlaying)
-                    mPlayer.pause()
-            } catch (e: Exception) {}
-        }
+        try {
+            if(mPlayer.isPlaying)
+                mPlayer.pause()
+        } catch (e: Exception) {}
     }
 
     /**
      * Resumes the audio from where it was last paused
      */
     fun resumeAudio() {
-        if(!fileExists) return
         try {
             if(fileExists) {
                 mPlayer.start()
