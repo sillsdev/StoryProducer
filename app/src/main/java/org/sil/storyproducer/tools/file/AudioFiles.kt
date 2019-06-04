@@ -2,6 +2,7 @@ package org.sil.storyproducer.tools.file
 
 
 import android.content.Context
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -117,9 +118,14 @@ fun createRecordingCombinedName() : String {
             val rNameNum = "${Workspace.activePhase.getDisplayName()} ([0-9]+)".toRegex()
             var maxNum = 0
             for (n in names!!){
-                val num = rNameNum.find(n)
-                if(num != null)
-                    maxNum = max(maxNum,num.groupValues[1].toInt())
+                try {
+                    val num = rNameNum.find(n)
+                    if (num != null)
+                        maxNum = max(maxNum, num.groupValues[1].toInt())
+                }catch(e: Exception){
+                    //If there is a crash (such as a bad int parse) just keep going.
+                    Crashlytics.logException(e)
+                }
             }
             "${Workspace.activePhase.getDisplayName()} ${maxNum+1}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
         }

@@ -25,7 +25,7 @@ import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class RecordingsListAdapter(private val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
+class RecordingsListAdapter(val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(pos: Int)
@@ -170,7 +170,7 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
             recyclerView = rootView?.findViewById(R.id.recordings_list)
 
-            updateRecordingList()
+            resetRecordingList()
             recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
             recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
             recyclerView?.layoutManager = LinearLayoutManager(context)
@@ -197,12 +197,15 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
         }
 
         /**
-         * Updates the list of draft recordings at beginning of fragment creation and after any list change
+         * Initializes the list of draft recordings at beginning of fragment creation and after externally driven list changes.
          */
-        fun updateRecordingList() {
-            //A copy is already made.
-            displayNames = getRecordedDisplayNames(slideNum) ?:  mutableListOf()
-            recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
+        fun resetRecordingList() {
+            //only update if there was a change.
+            val newNames = getRecordedDisplayNames(slideNum) ?:  mutableListOf()
+            if(!displayNames.equals(newNames)) {
+                displayNames = newNames
+                recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
+            }
         }
 
         override fun onRowClick(pos: Int) {
@@ -245,7 +248,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         override fun onDeleteClick(name: String, pos: Int){
             deleteAudioFileFromList(context,pos)
-            updateRecordingList()
+            displayNames.removeAt(pos)
+            recyclerView?.adapter!!.notifyDataSetChanged()
             if ("${Workspace.activeDir}/$name" == getChosenDisplayName()) {
                 if (displayNames.size > 0) {
                     onRowClick(displayNames.size-1)
@@ -260,7 +264,8 @@ class RecordingsListAdapter(private val values: MutableList<String>?, private va
 
         override fun onRenameClick(position: Int, newName: String) {
             updateDisplayName(position, newName)
-            updateRecordingList()
+            displayNames[position] = newName
+            recyclerView?.adapter!!.notifyDataSetChanged()
         }
 
         fun stopAudio() {
