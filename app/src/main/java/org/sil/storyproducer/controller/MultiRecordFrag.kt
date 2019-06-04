@@ -12,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -117,15 +119,20 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      * Change the picture behind the screen.
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == ACTIVITY_SELECT_IMAGE) {
-            //copy image into workspace
-            var uri = data?.data
-            if(uri == null) uri = FileProvider.getUriForFile(context!!,"${BuildConfig.APPLICATION_ID}.fileprovider",tempPicFile!!)   //it was a camera intent
-            Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}_Local.png"
-            copyToWorkspacePath(context!!,uri!!,
-                    "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
-            tempPicFile?.delete()
-            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+        try {
+            if (resultCode == Activity.RESULT_OK && requestCode == ACTIVITY_SELECT_IMAGE) {
+                //copy image into workspace
+                var uri = data?.data
+                if (uri == null) uri = FileProvider.getUriForFile(context!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
+                Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}_Local.png"
+                copyToWorkspacePath(context!!, uri!!,
+                        "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
+                tempPicFile?.delete()
+                setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+            }
+        }catch (e:Exception){
+            Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
+            Crashlytics.logException(e)
         }
     }
 
