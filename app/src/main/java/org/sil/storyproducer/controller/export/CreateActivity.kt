@@ -401,17 +401,17 @@ class CreateActivity : PhaseBaseActivity() {
 
             when(mRadioExportDestiniation?.checkedRadioButtonId){
                 R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 176
-                    storyMaker!!.mHeight = 144
-                    storyMaker!!.mVideoBitRate = 1280000  //don't put above 128000 or it will crash the google h263 encoder.
-                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_H263
+                    storyMaker!!.mWidth  = 320
+                    storyMaker!!.mHeight = 240
+                    storyMaker!!.mVideoBitRate = 2500000
+                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 15
                     storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
                 }
                 R.id.radio_smartphone -> {
-                    storyMaker!!.mWidth  = 640
-                    storyMaker!!.mHeight = 480
-                    storyMaker!!.mVideoBitRate = 4000000
+                    storyMaker!!.mWidth  = 768
+                    storyMaker!!.mHeight = 576
+                    storyMaker!!.mVideoBitRate = 5000000
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 30
                     storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
