@@ -28,8 +28,6 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     override val componentName: String
         get() = TAG
 
-    private var mTimeSync: Boolean = false
-
     private var mCanvas: Canvas? = null
     private var mSurface: Surface? = null
 
@@ -70,11 +68,6 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
-        if(mCodec!!.name.contains("h263")){
-            //Sync time for software codecs
-            mTimeSync = true
-        }
-
         mSurface = mCodec!!.createInputSurface()
 
         mComponentState = PipedMediaSource.State.SETUP
@@ -103,9 +96,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
                 mSurface!!.lockCanvas(null)
             }
             mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
-            if(mTimeSync){
-                Thread.sleep(67)
-            }
+
             synchronized(mPresentationTimeQueue) {
                 mPresentationTimeQueue.add(mCurrentPresentationTime)
             }
@@ -121,14 +112,8 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     override fun correctTime(info: MediaCodec.BufferInfo) {
         try {
-            if(mTimeSync) {
-                //subtract the time so the progress bar displays correctly.
-                info.presentationTimeUs -= mStartPresentationTime
-            }else{
-                //If no timesync, than rely on a 1-to-1 correspondance with input and output frames.
-                synchronized(mPresentationTimeQueue) {
-                    info.presentationTimeUs = mPresentationTimeQueue.pop()
-                }
+            synchronized(mPresentationTimeQueue) {
+                info.presentationTimeUs = mPresentationTimeQueue.pop()
             }
         } catch (e: NoSuchElementException) {
             throw RuntimeException("Tried to correct time for extra frame", e)
