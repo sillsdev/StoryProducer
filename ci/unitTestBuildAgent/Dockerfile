@@ -9,6 +9,13 @@ ARG SERVER_URL
 ENV ANDROID_HOME=$ANDROID_HOME
 ENV SERVER_URL=$SERVER_URL
 
+RUN  apt-get update -y && \
+     apt-get -y autoremove && \
+     apt-get clean
+     
+RUN apt-get install -y zip \
+    unzip
+
 RUN mkdir /opt/android-sdk
 WORKDIR /opt/android-sdk
 COPY sdk-tools-linux-*.zip ./sdk.zip
