@@ -82,10 +82,11 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
 
-            //Posting to the canvas should be done synchonously, but it is on different threads.
-            //Synchonize with PipedMediaMuxerRun!
-            //TODO remove the wait?
-            while(unreleasedBuffer){
+            //For video creation, it should be able to create one slide from one image.
+            //If there is something holding it up, keep going but give it time to process.
+            //give it 100ms to process a frame.
+            var waitTries = 0
+            while(mPresentationTimeQueue.size > 1 && waitTries++ < 10){
                 //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
