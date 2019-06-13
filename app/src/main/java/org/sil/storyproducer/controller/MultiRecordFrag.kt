@@ -16,6 +16,7 @@ import android.widget.Toast
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
@@ -124,7 +125,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 //copy image into workspace
                 var uri = data?.data
                 if (uri == null) uri = FileProvider.getUriForFile(context!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
-                Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}_Local.png"
+                Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}_Local.png"
                 copyToWorkspacePath(context!!, uri!!,
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
                 tempPicFile?.delete()
