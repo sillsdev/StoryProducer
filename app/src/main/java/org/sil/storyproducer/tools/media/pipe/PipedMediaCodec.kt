@@ -28,7 +28,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     protected var mCodec: MediaCodec? = null
     protected var outputBufferId: Int = 0
     private var mOutputFormat: MediaFormat? = null
-    protected var unreleasedBuffer = false
 
     private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
 
@@ -76,7 +75,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
             throw SourceClosedException()
         }
         mCodec!!.releaseOutputBuffer(outputBufferId,true)
-        unreleasedBuffer = false
         if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.release buffer $outputBufferId")
         return
     }
@@ -130,14 +128,12 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
                 }
             }
             if (outputBufferId >= 0) {
-                unreleasedBuffer = true
                 if (info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
                     // TODO: Perhaps these buffers should not be ignored in the future.
                     // This indicated that the buffer marked as such contains codec initialization / codec specific data instead of media data.
                     // This should actually never occur...
                     // Simply ignore codec config buffers.
                     mCodec!!.releaseOutputBuffer(outputBufferId, false)
-                    unreleasedBuffer = false
                 } else {
                     val buffer = mCodec!!.getOutputBuffer(outputBufferId)!!
 
