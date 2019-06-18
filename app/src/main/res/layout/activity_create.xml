@@ -76,33 +76,6 @@
                 android:text="@string/export_include_text" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:labelFor="@+id/spinner_export_format"
-                android:text="@string/export_destination"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <RadioGroup
-                android:id="@+id/radio_export_destination"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <RadioButton android:id="@+id/radio_dumbphone_mp4"
-                    android:drawableEnd="@drawable/ic_dumbphone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/dumbphone_MP4"/>
-                <RadioButton android:id="@+id/radio_smartphone"
-                    android:drawableEnd="@drawable/ic_smartphone_white_24dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onRadioButtonClicked"
-                    android:text="@string/smartphone"/>
-            </RadioGroup>
-
             <Button
                 android:id="@+id/button_export_start"
                 android:layout_marginTop="20dp"

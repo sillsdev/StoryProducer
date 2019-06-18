@@ -86,7 +86,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
             //If there is something holding it up, keep going but give it time to process.
             //give it 100ms to process a frame.
             var waitTries = 0
-            while(mPresentationTimeQueue.size > 1 && waitTries++ < 10){
+            while(mPresentationTimeQueue.size > 3 && waitTries++ < 10){
                 //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
