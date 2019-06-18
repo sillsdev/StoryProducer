@@ -2,13 +2,10 @@ package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
 import android.media.MediaCodecInfo
-import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.*
@@ -16,10 +13,9 @@ import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
-import org.sil.storyproducer.tools.selectCodec
 import java.io.Closeable
 import java.io.File
-import kotlin.math.sqrt
+import com.arthenica.mobileffmpeg.FFmpeg
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -41,6 +37,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
+    private var video3gpFile: File = File(context.filesDir,"temp.3gp")
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
@@ -92,8 +89,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
+            video3gpFile.delete()  //just in case it's still there.
+            FFmpeg.execute("-i ${videoTempFile.absolutePath} " +
+                    "-f 3gp -vcodec h263 -vf scale=352x288 -acodec aac -ar 8000 -ac 1 " +
+                    video3gpFile.absolutePath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
-            videoTempFile.delete()
+            //videoTempFile.delete()
             Workspace.activeStory.addVideo(videoRelPath)
 
             val params = Bundle()
