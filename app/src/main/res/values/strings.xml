@@ -201,14 +201,9 @@
     <string name="export_include_text_title">Do you want to enable text?</string>
     <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
 
-    <string name="export_destination">Create Video For</string>
-    <string name ="dumbphone_MP4">Feature Phone (Sm)</string>
-    <string name = "smartphone">Smartphone (Lg)</string>
-
     <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
     <string name="export_no_filename">Choose a filename before making a video.</string>
     <string name="export_local_song_unrecorded">Record local song first.</string>
-    <string name="export_destination_unchecked">Choose a video type.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
     <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
