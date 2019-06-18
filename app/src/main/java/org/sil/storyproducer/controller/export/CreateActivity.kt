@@ -401,8 +401,8 @@ class CreateActivity : PhaseBaseActivity() {
 
             when(mRadioExportDestiniation?.checkedRadioButtonId){
                 R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 320
-                    storyMaker!!.mHeight = 240
+                    storyMaker!!.mWidth  = 352
+                    storyMaker!!.mHeight = 288
                     storyMaker!!.mVideoBitRate = 2500000
                     storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
                     storyMaker!!.mVideoFrameRate = 15
