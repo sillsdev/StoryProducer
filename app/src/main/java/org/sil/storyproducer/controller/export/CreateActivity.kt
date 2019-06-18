@@ -34,7 +34,6 @@ class CreateActivity : PhaseBaseActivity() {
     private var mCheckboxText: CheckBox? = null
     private var mCheckboxKBFX: CheckBox? = null
     private var mCheckboxSong: CheckBox? = null
-    private var mRadioExportDestiniation: RadioGroup? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
@@ -44,17 +43,12 @@ class CreateActivity : PhaseBaseActivity() {
         val name = mEditTextTitle!!.text.toString()
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
-        val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_mp4 -> "Sm_"
-            R.id.radio_smartphone -> "Lg_"
-            else -> ""
-        }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
-        return "$num${name}_$ethno$res$fx$px$mv$tx$sg.mp4"
+        return "$num${name}_$ethno$fx$px$mv$tx$sg.mp4"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -195,8 +189,6 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX = findViewById(R.id.checkbox_export_KBFX)
         mCheckboxText = findViewById(R.id.checkbox_export_text)
         mCheckboxSong = findViewById(R.id.checkbox_export_song)
-
-        mRadioExportDestiniation = findViewById(R.id.radio_export_destination)
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
@@ -349,7 +341,6 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
         mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
-        mRadioExportDestiniation?.clearCheck()
     }
 
     private fun tryStartExport() {
@@ -364,12 +355,6 @@ class CreateActivity : PhaseBaseActivity() {
         if(mEditTextTitle!!.text.toString() == ""){
             Toast.makeText(this,this.resources.getText(
                     R.string.export_no_filename),Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if(mRadioExportDestiniation?.checkedRadioButtonId == -1){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -399,29 +384,12 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
 
 
-            when(mRadioExportDestiniation?.checkedRadioButtonId){
-                R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 352
-                    storyMaker!!.mHeight = 288
-                    storyMaker!!.mVideoBitRate = 2500000
-                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
-                    storyMaker!!.mVideoFrameRate = 15
-                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-                }
-                R.id.radio_smartphone -> {
-                    storyMaker!!.mWidth  = 768
-                    storyMaker!!.mHeight = 576
-                    storyMaker!!.mVideoBitRate = 5000000
-                    storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
-                    storyMaker!!.mVideoFrameRate = 30
-                    storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-                }
-                else -> {
-                    Toast.makeText(this,this.resources.getText(
-                            R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
-                    return
-                }
-            }
+            storyMaker!!.mWidth  = 768
+            storyMaker!!.mHeight = 576
+            storyMaker!!.mVideoBitRate = 5000000
+            storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
+            storyMaker!!.mVideoFrameRate = 30
+            storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
 
             storyMaker!!.setOutputFile(mOutputPath)
         }

@@ -16,6 +16,7 @@ import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import java.io.Closeable
 import java.io.File
 import com.arthenica.mobileffmpeg.FFmpeg
+import org.sil.storyproducer.tools.stripForFilename
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -35,6 +36,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     private var mOutputExt = ".mp4"
     private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
+    private val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + ".3gp"}
     // bits per second for video
     private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
     private var video3gpFile: File = File(context.filesDir,"temp.3gp")
@@ -89,13 +91,19 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
+            copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
+            Workspace.activeStory.addVideo(videoRelPath)
+
+            Log.v(TAG, "Creating 3gp video" + video3gpPath)
             video3gpFile.delete()  //just in case it's still there.
             FFmpeg.execute("-i ${videoTempFile.absolutePath} " +
-                    "-f 3gp -vcodec h263 -vf scale=352x288 -acodec aac -ar 8000 -ac 1 " +
+                    "-f 3gp -vcodec h263 -framerate 15 -vf scale=352x288 -acodec aac -b:v 500k " +
                     video3gpFile.absolutePath)
-            copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
-            //videoTempFile.delete()
-            Workspace.activeStory.addVideo(videoRelPath)
+            copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
+            videoTempFile.delete()
+            video3gpFile.delete()
+            Workspace.activeStory.addVideo(video3gpPath)
+            Toast.makeText(context,"3gp video created",Toast.LENGTH_SHORT).show()
 
             val params = Bundle()
             params.putString("video_name", videoRelPath)
@@ -127,7 +135,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,mVideoColorFormat)
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, mVideoFrameRate)
-        videoFormat.setInteger(MediaFormat.KEY_OPERATING_RATE, mVideoFrameRate)
         videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
         videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
 
@@ -237,10 +244,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         // parameters for the video encoder
         private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
-
-        // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 1.5                  // 1, 2, or 4
-        private val KUSH_GAUGE_CONSTANT = 0.07f
 
         // parameters for the audio encoder
         private val AUDIO_MIME_TYPE = "audio/mp4a-latm" //MediaFormat.MIMETYPE_AUDIO_AAC;
