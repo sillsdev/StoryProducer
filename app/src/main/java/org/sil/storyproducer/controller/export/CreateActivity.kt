@@ -383,15 +383,7 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
 
-
-            storyMaker!!.mWidth  = 768
-            storyMaker!!.mHeight = 576
-            storyMaker!!.mVideoBitRate = 5000000
-            storyMaker!!.mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
-            storyMaker!!.mVideoFrameRate = 30
-            storyMaker!!.mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-
-            storyMaker!!.setOutputFile(mOutputPath)
+            storyMaker!!.videoRelPath = mOutputPath
         }
 
         storyMaker!!.start()
