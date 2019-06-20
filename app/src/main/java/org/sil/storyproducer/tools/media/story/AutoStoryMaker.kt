@@ -16,7 +16,13 @@ import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import java.io.Closeable
 import java.io.File
 import com.arthenica.mobileffmpeg.FFmpeg
-import org.sil.storyproducer.tools.stripForFilename
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.Statistics
+import com.arthenica.mobileffmpeg.StatisticsCallback
+import com.crashlytics.android.Crashlytics
+import org.sil.storyproducer.controller.MainActivity
+
+
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -25,21 +31,12 @@ import org.sil.storyproducer.tools.stripForFilename
  */
 class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
-    // size of a frame, in pixels
-    // first size isn't great quality, but runs faster
-    var mWidth = 320
-    var mHeight = 240
-    var mVideoBitRate = 128000
-    var mCodecString = MediaFormat.MIMETYPE_VIDEO_AVC
-    var mVideoFrameRate = 30
-    var mVideoColorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+    var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + VIDEO_MP4_EXT
+    val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT}
 
-    private var mOutputExt = ".mp4"
-    private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
-    private val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + ".3gp"}
     // bits per second for video
-    private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
-    private var video3gpFile: File = File(context.filesDir,"temp.3gp")
+    private var videoTempFile: File = File(context.filesDir,"temp$VIDEO_MP4_EXT")
+    private var video3gpFile: File = File(context.filesDir,"temp$VIDEO_3GP_EXT")
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
@@ -50,31 +47,38 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private var mLogProgress = false
 
     private var mStoryMaker: StoryMaker? = null
+    private var time3GPms = 0
+    private var allVideosDone = false
 
     val isDone: Boolean
-        get() = mStoryMaker != null && mStoryMaker!!.isDone
+        get() = allVideosDone
 
     val isSuccess: Boolean
         get() = mStoryMaker != null && mStoryMaker!!.isSuccess
 
     val progress: Double
-        get() = if (mStoryMaker == null) {
-            0.0
-        } else {
-            mStoryMaker!!.progress
+        get() {
+            if (mStoryMaker == null) {
+                return 0.0
+            } else {
+                if (!mStoryMaker!!.isDone) {
+                    //Still making main video
+                    return mStoryMaker!!.progress / 2
+                }else {
+                    //making 3gp video
+                    return 0.5 + time3GPms*1000.0/mStoryMaker!!.storyDuration / 2
+                }
+            }
         }
-
-    fun setOutputFile(relPath: String) {
-        videoRelPath = relPath
-    }
 
     override fun start() {
         val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
-        val videoFormat = generateVideoFormat()
+        val videoFormat = if(mIncludePictures) {generateVideoFormat()} else {null}
         val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
+        videoTempFile.delete()  //just in case it's still there.
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
 
@@ -89,56 +93,49 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         Log.i(TAG, "Starting video creation")
         mStoryMaker!!.churn()
 
+        duration += System.currentTimeMillis()
+        Log.i(TAG, "Stopped making story after "
+                + MediaHelper.getDecimal(duration / 1000.toDouble()) + " seconds")
+
         if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
             Workspace.activeStory.addVideo(videoRelPath)
 
-            Log.v(TAG, "Creating 3gp video" + video3gpPath)
-            video3gpFile.delete()  //just in case it's still there.
-            FFmpeg.execute("-i ${videoTempFile.absolutePath} " +
-                    "-f 3gp -vcodec h263 -framerate 15 -vf scale=352x288 -acodec aac -b:v 500k " +
-                    video3gpFile.absolutePath)
-            copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
-            videoTempFile.delete()
-            video3gpFile.delete()
-            Workspace.activeStory.addVideo(video3gpPath)
-            Toast.makeText(context,"3gp video created",Toast.LENGTH_SHORT).show()
-
             val params = Bundle()
             params.putString("video_name", videoRelPath)
             Workspace.logEvent(context,"video_creation",params)
+
+            //Make 3gp video before you delete the temp video - it's made from that.
+            if(mIncludePictures) make3GPVideo()
+
+            videoTempFile.delete()
+
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
         }
-
-        duration += System.currentTimeMillis()
-
-        Log.i(TAG, "Stopped making story after "
-                + MediaHelper.getDecimal(duration / 1000.toDouble()) + " seconds")
+        allVideosDone = true
     }
 
+    private fun make3GPVideo() {
+        Log.v(TAG, "Creating 3gp video" + video3gpPath)
+        video3gpFile.delete()  //just in case it's still there.
 
+        try{
 
-    private fun generateVideoFormat(): MediaFormat? {
-        //If no video component, use null format.
-        if (!mIncludePictures && !mIncludeText) {
-            return null
-        }
+            Config.resetStatistics()
+            Config.enableStatisticsCallback { newStatistics -> time3GPms = newStatistics.time }
+            FFmpeg.execute("-i ${videoTempFile.absolutePath} " +
+                    "-f 3gp -vcodec $VIDEO_3GP_CODEC -framerate $VIDEO_3GP_FRAMERATE -vf " +
+                    "scale=${VIDEO_3GP_WIDTH}x$VIDEO_3GP_HEIGHT -acodec $VIDEO_3GP_AUDIO" +
+                    " -b:v $VIDEO_3GP_BITRATE " + video3gpFile.absolutePath)
+            Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
+            copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
+            Workspace.activeStory.addVideo(video3gpPath)
+        }catch(e:Exception){Crashlytics.logException(e)}
 
-        val videoFormat = MediaFormat.createVideoFormat(mCodecString, mWidth, mHeight)
-
-
-        //Image format: MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
-        //Surface Format: MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
-        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,mVideoColorFormat)
-        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
-        videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, mVideoFrameRate)
-        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
-        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
-
-        return videoFormat
+        video3gpFile.delete()
     }
 
     private fun generatePages(): Array<StoryPage>? {
@@ -217,7 +214,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
-
             }
         })
 
@@ -242,14 +238,44 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val SLIDE_CROSS_FADE_US: Long = 3000000
         private val AUDIO_TRANSITION_US: Long = 500000
 
-        // parameters for the video encoder
-        private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
+
+        private val VIDEO_MP4_EXT = ".mp4"
+        private val VIDEO_MP4_CODEC = MediaFormat.MIMETYPE_VIDEO_AVC
+        private val VIDEO_MP4_COLOR = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        private val VIDEO_MP4_WIDTH = 768
+        private val VIDEO_MP4_HEIGHT = 576
+        private val VIDEO_MP4_BITRATE = 5000000
+        private val VIDEO_MP4_FRAMERATE = 30
+        private val VIDEO_MP4_IFRAME_INTERVAL = 8           // 5 second between I-frames
+
+        private val VIDEO_3GP_EXT = ".3gp"
+        private val VIDEO_3GP_CODEC = "h263"
+        private val VIDEO_3GP_WIDTH = 352
+        private val VIDEO_3GP_HEIGHT = 288
+        private val VIDEO_3GP_AUDIO = "aac"
+        private val VIDEO_3GP_BITRATE = 1000000
+        private val VIDEO_3GP_FRAMERATE = 15
 
         // parameters for the audio encoder
         private val AUDIO_MIME_TYPE = "audio/mp4a-latm" //MediaFormat.MIMETYPE_AUDIO_AAC;
         private val AUDIO_SAMPLE_RATE = 44100
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
+
+        private fun generateVideoFormat(): MediaFormat? {
+            //If no video component, use null format.
+
+            val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC,
+                    VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT)
+
+            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
+            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
+            videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
+            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)
+            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_MP4_IFRAME_INTERVAL)
+
+            return videoFormat
+        }
 
         fun generateAudioFormat(): MediaFormat {
 
