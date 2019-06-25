@@ -172,15 +172,17 @@ private fun parseMusicTrack(slide: Slide, parser: XmlPullParser) {
     slide.volume = normalizedVolume
 
     parser.nextTag()
-    parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
+    if(parser.name == "SoundTrack"){
+        parser.require(XmlPullParser.START_TAG, null, "SoundTrack")
 
-    slide.musicFile = parser.getAttributeValue(null, "path")
+        slide.musicFile = parser.getAttributeValue(null, "path")
 
-    parser.nextTag()
-    parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
+        parser.nextTag()
+        parser.require(XmlPullParser.END_TAG, null, "SoundTrack")
 
-    parser.nextTag()
-    parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
+        parser.nextTag()
+        parser.require(XmlPullParser.END_TAG, null, "MusicTrack")
+    }
 }
 
 private fun parseMotion(parser: XmlPullParser, slide: Slide) {
