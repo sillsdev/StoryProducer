@@ -235,7 +235,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        private val SLIDE_CROSS_FADE_US: Long = 3000000
+        private val SLIDE_CROSS_FADE_US: Long = 750000
         private val AUDIO_TRANSITION_US: Long = 500000
 
 
