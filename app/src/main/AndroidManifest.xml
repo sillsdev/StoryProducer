@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.sil.storyproducer">
 
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
@@ -13,10 +14,12 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_new_splash"
+        android:roundIcon="@mipmap/logo_new_splash"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:largeHeap="true"
         android:fullBackupContent="false"
+        tools:replace="android:icon,android:roundIcon"
         >
 
         <provider

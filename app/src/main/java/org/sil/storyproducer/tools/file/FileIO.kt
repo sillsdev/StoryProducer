@@ -94,7 +94,7 @@ fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Work
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
-    context.contentResolver.getType(getWorkspaceUri(relPath)!!) ?: return false
+    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
     return true
 }
 
@@ -250,22 +250,6 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
         return DocumentsContract.deleteDocument(context.contentResolver,uri)
     }
     return false
-}
-
-fun renameStoryFile(oldFilename: String, newFilename: String) : Boolean {
-    val dir = Workspace.workspace.findFile(Workspace.activeDirRoot)?.findFile(Workspace.activeDir)
-
-    return if(dir?.exists() == true) {
-        if(dir.findFile(newFilename) == null) {
-            dir.findFile(oldFilename)?.renameTo(newFilename)
-            dir.findFile(newFilename) != null
-            true
-        } else{
-            false
-        }
-    } else{
-        false
-    }
 }
 
 val DEFAULT_WIDTH: Int = 1500

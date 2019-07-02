@@ -10,11 +10,11 @@ import android.support.v4.provider.DocumentFile
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.deleteStoryFile
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
+import kotlin.math.max
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_CSV_FILE = "keyterms.csv"
@@ -163,14 +163,6 @@ object Workspace{
         storiesUpdated = true
     }
 
-    fun deleteAudioFileFromList(context: Context, name: String, position: Int) {
-        val filenames = activePhase.getRecordedAudioFiles(activeSlideNum)!!
-        filenames.removeAt(position)
-        if (activePhase.phaseType == PhaseType.KEYTERM) {
-            activeKeyterm.keytermRecordings.removeAt(position)
-        }
-        deleteStoryFile(context, "$activeDir/$name")
-    }
 
     private fun importKeyterms(context: Context) {
         val keytermsDirectory = workspace.findFile(KEYTERMS_DIR)

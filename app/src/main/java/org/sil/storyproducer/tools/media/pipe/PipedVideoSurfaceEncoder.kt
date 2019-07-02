@@ -1,15 +1,20 @@
 package org.sil.storyproducer.tools.media.pipe
 
+import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.media.MediaCodec
-import android.media.MediaCodecInfo
-import android.media.MediaFormat
+import android.media.*
+import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.os.Build
+import android.support.v4.math.MathUtils
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
+import org.sil.storyproducer.tools.selectCodec
 import java.io.IOException
 import java.util.*
+import java.nio.ByteBuffer
+import kotlin.math.max
+
 
 /**
  *
@@ -23,6 +28,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     override val componentName: String
         get() = TAG
 
+    private var mCanvas: Canvas? = null
     private var mSurface: Surface? = null
 
     private var mConfigureFormat: MediaFormat? = null
@@ -30,6 +36,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     private val mPresentationTimeQueue = LinkedList<Long>()
 
+    private val mStartPresentationTime: Long = System.nanoTime()/1000
     private var mCurrentPresentationTime: Long = 0
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -58,10 +65,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mSource!!.setup()
         mConfigureFormat = mSource!!.outputFormat
 
-        mConfigureFormat!!.setInteger(MediaFormat.KEY_COLOR_FORMAT,
-                MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
-
-        mCodec = MediaCodec.createEncoderByType(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))
+        mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
         mSurface = mCodec!!.createInputSurface()
@@ -77,27 +81,30 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         }
 
         while (mComponentState != PipedMediaSource.State.CLOSED && !mSource!!.isDone) {
-            //Note: This method of getting a canvas to draw to may be invalid
-            //per documentation of MediaCodec.getInputSurface().
 
-            while(mPresentationTimeQueue.size > PipedAudioShortManipulator.BUFFER_COUNT-1){
+            //For video creation, it should be able to create one slide from one image.
+            //If there is something holding it up, keep going but give it time to process.
+            //give it 100ms to process a frame.
+            var waitTries = 0
+            while(mPresentationTimeQueue.size > 3 && waitTries++ < 10){
                 //Really, for async processing we would use MediaCodec.Callback(), but maybe we can
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
             }
-            val canv = if (Build.VERSION.SDK_INT >= 23) {
+            mCanvas = if (Build.VERSION.SDK_INT >= 23) {
                 mSurface!!.lockHardwareCanvas()
             } else {
                 mSurface!!.lockCanvas(null)
             }
-            mCurrentPresentationTime = mSource!!.fillCanvas(canv)
+            mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
+
             synchronized(mPresentationTimeQueue) {
                 mPresentationTimeQueue.add(mCurrentPresentationTime)
             }
-            mSurface!!.unlockCanvasAndPost(canv)
+            mSurface!!.unlockCanvasAndPost(mCanvas!!)
         }
 
-        if (mComponentState != PipedMediaSource.State.CLOSED) {
+        if (mComponentState != PipedMediaSource.State.CLOSED){
             mCodec!!.signalEndOfInputStream()
         }
 
@@ -128,5 +135,6 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
 
     companion object {
         private val TAG = "PipedVideoSurfaceEnc"
+
     }
 }

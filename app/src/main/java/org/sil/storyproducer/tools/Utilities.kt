@@ -3,6 +3,8 @@ package org.sil.storyproducer.tools
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.media.MediaCodecInfo
+import android.media.MediaCodecList
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -26,19 +28,36 @@ fun String.stripForFilename(): String {
     return this.replace("[^\\w -]".toRegex(), "_")
 }
 
-fun helpDialog(context: Context, title: String): AlertDialog.Builder{
+fun helpDialog(context: Context, title: String): AlertDialog.Builder {
     val alert = AlertDialog.Builder(context)
     alert.setTitle(title)
 
     val wv = WebView(context)
     val iStream = context.assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
     val text = iStream.reader().use {
-        it.readText() }
+        it.readText()
+    }
 
-    wv.loadData(text,"text/html",null)
+    wv.loadData(text, "text/html", null)
     alert.setView(wv)
     alert.setNegativeButton("Close") { dialog, _ ->
         dialog!!.dismiss()
     }
     return alert
+}
+
+fun selectCodec(mimeType: String): MediaCodecInfo? {
+    for (codecInfo in MediaCodecList(MediaCodecList.ALL_CODECS).codecInfos) {
+        if (!codecInfo.isEncoder) {
+            continue
+        }
+
+        val types = codecInfo.supportedTypes
+        for (j in types.indices) {
+            if (types[j].equals(mimeType, ignoreCase = true)) {
+                return codecInfo
+            }
+        }
+    }
+    return null
 }

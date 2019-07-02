@@ -36,13 +36,12 @@ abstract class PhaseTestBase {
         }
 
         private fun checkSDCardType() {
-            Constants.sdcard = Constants.sdcardType1
-            if(File(Constants.workspaceDirectory).exists())
-                return
-            Constants.sdcard = Constants.sdcardType2
-            if(File(Constants.workspaceDirectory).exists())
-                return
-            //Neither place works!
+            for(s in Constants.storageRoots){
+                Constants.storage = s
+                if(File(Constants.workspaceDirectory).exists())
+                    return
+            }
+            //no available place works!
             Assert.fail("Cannot find the workspace directory: ${Constants.workspaceDirectory}")
         }
 
@@ -88,9 +87,7 @@ abstract class PhaseTestBase {
     abstract fun navigateToPhase()
 
     private fun launchActivityAndBypassWorkspacePicker() {
-        IntentMocker.setUpDummyWorkspacePickerIntent()
         mActivityTestRule.launchActivity(null)
-        IntentMocker.tearDownDummyWorkspacePickerIntent()
     }
 
     protected fun approveSlides() {

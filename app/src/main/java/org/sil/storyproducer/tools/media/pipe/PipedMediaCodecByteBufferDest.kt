@@ -46,7 +46,7 @@ abstract class PipedMediaCodecByteBufferDest : PipedMediaCodec(), PipedMediaByte
                     durationNs = -System.nanoTime()
                 }
 
-                val inputBuffer = mInputBuffers!![pollCode]
+                val inputBuffer = mCodec!!.getInputBuffer(pollCode)
                 mSource!!.fillBuffer(inputBuffer, mInfo)
                 mCodec!!.queueInputBuffer(pollCode, 0, mInfo.size, mInfo.presentationTimeUs, mInfo.flags)
 

@@ -5,9 +5,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import org.sil.storyproducer.model.*
@@ -17,7 +15,14 @@ import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import java.io.Closeable
 import java.io.File
-import kotlin.math.sqrt
+import com.arthenica.mobileffmpeg.FFmpeg
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.Statistics
+import com.arthenica.mobileffmpeg.StatisticsCallback
+import com.crashlytics.android.Crashlytics
+import org.sil.storyproducer.controller.MainActivity
+
+
 
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
@@ -26,64 +31,54 @@ import kotlin.math.sqrt
  */
 class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
-    // size of a frame, in pixels
-    // first size isn't great quality, but runs faster
-    var mWidth = 320
-    var mHeight = 240
+    var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + VIDEO_MP4_EXT
+    val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT}
 
-    private var mOutputExt = ".mp4"
-    private var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + "_" + mWidth + "x" + mHeight + mOutputExt
     // bits per second for video
-    private var videoTempFile: File = File(context.filesDir,"temp$mOutputExt")
-    private val mVideoBitRate: Int
-        get() {
-            return ((1280 * sqrt((mHeight*720).toFloat()) * mVideoFrameRate)
-                    * MOTION_FACTOR.toFloat() * KUSH_GAUGE_CONSTANT).toInt()
-        }
-    private val mVideoFrameRate: Int
-        get() {
-            return if(mDumbPhone) VIDEO_FRAME_RATE_DUMBPHONE else VIDEO_FRAME_RATE
-        }
+    private var videoTempFile: File = File(context.filesDir,"temp$VIDEO_MP4_EXT")
+    private var video3gpFile: File = File(context.filesDir,"temp$VIDEO_3GP_EXT")
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
     var mIncludeText = false
     var mIncludeKBFX = true
     var mIncludeSong = false
-    var mDumbPhone = false
 
     private var mLogProgress = false
 
     private var mStoryMaker: StoryMaker? = null
+    private var time3GPms = 0
+    private var allVideosDone = false
 
     val isDone: Boolean
-        get() = mStoryMaker != null && mStoryMaker!!.isDone
+        get() = allVideosDone
+
+    val isSuccess: Boolean
+        get() = mStoryMaker != null && mStoryMaker!!.isSuccess
 
     val progress: Double
-        get() = if (mStoryMaker == null) {
-            0.0
-        } else {
-            mStoryMaker!!.progress
+        get() {
+            if (mStoryMaker == null) {
+                return 0.0
+            } else {
+                if (!mStoryMaker!!.isDone) {
+                    //Still making main video
+                    return mStoryMaker!!.progress / 2
+                }else {
+                    //making 3gp video
+                    return 0.5 + time3GPms*1000.0/mStoryMaker!!.storyDuration / 2
+                }
+            }
         }
-
-    fun setOutputFile(relPath: String) {
-        videoRelPath = relPath
-    }
 
     override fun start() {
-        val outputFormat : Int
-        if(mDumbPhone && Build.VERSION.SDK_INT >= 26){
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_3GPP
-        } else {
-            outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-        }
+        val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
-        val videoFormat = generateVideoFormat()
-        //TODO remove this fully after it is tested to work - PR372
-        //val audioFormat = if(mDumbPhone) generateDumbAudioFormat() else generateAudioFormat()
+        val videoFormat = if(mIncludePictures) {generateVideoFormat()} else {null}
         val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
+        videoTempFile.delete()  //just in case it's still there.
         mStoryMaker = StoryMaker(context, videoTempFile, outputFormat, videoFormat, audioFormat,
                 pages, AUDIO_TRANSITION_US, SLIDE_CROSS_FADE_US)
 
@@ -96,45 +91,51 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var duration = -System.currentTimeMillis()
 
         Log.i(TAG, "Starting video creation")
-        val success = mStoryMaker!!.churn()
+        mStoryMaker!!.churn()
 
-        if (success) {
+        duration += System.currentTimeMillis()
+        Log.i(TAG, "Stopped making story after "
+                + MediaHelper.getDecimal(duration / 1000.toDouble()) + " seconds")
+
+        if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
             copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
-            videoTempFile.delete()
             Workspace.activeStory.addVideo(videoRelPath)
 
             val params = Bundle()
             params.putString("video_name", videoRelPath)
             Workspace.logEvent(context,"video_creation",params)
+
+            //Make 3gp video before you delete the temp video - it's made from that.
+            if(mIncludePictures) make3GPVideo()
+
+            videoTempFile.delete()
+
         } else {
             Log.w(TAG, "Deleting incomplete temporary video")
             videoTempFile.delete()
         }
-
-        duration += System.currentTimeMillis()
-
-        Log.i(TAG, "Stopped making story after "
-                + MediaHelper.getDecimal(duration / 1000.toDouble()) + " seconds")
+        allVideosDone = true
     }
 
+    private fun make3GPVideo() {
+        Log.v(TAG, "Creating 3gp video" + video3gpPath)
+        video3gpFile.delete()  //just in case it's still there.
 
+        try{
 
-    private fun generateVideoFormat(): MediaFormat? {
-        //If no video component, use null format.
-        if (!mIncludePictures && !mIncludeText) {
-            return null
-        }
+            Config.resetStatistics()
+            Config.enableStatisticsCallback { newStatistics -> time3GPms = newStatistics.time }
+            FFmpeg.execute("-i ${videoTempFile.absolutePath} " +
+                    "-f 3gp -vcodec $VIDEO_3GP_CODEC -framerate $VIDEO_3GP_FRAMERATE -vf " +
+                    "scale=${VIDEO_3GP_WIDTH}x$VIDEO_3GP_HEIGHT -acodec $VIDEO_3GP_AUDIO" +
+                    " -b:v $VIDEO_3GP_BITRATE " + video3gpFile.absolutePath)
+            Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
+            copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
+            Workspace.activeStory.addVideo(video3gpPath)
+        }catch(e:Exception){Crashlytics.logException(e)}
 
-        val videoFormat =
-                if(mDumbPhone) MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_H263, mWidth, mHeight)
-                else MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, mWidth, mHeight)
-
-        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, mVideoFrameRate)
-        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, mVideoBitRate)
-        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_IFRAME_INTERVAL)
-
-        return videoFormat
+        video3gpFile.delete()
     }
 
     private fun generatePages(): Array<StoryPage>? {
@@ -151,14 +152,14 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
             val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = slide.chosenDramatizationFile
+            var audio = Story.getFilename(slide.chosenDramatizationFile)
             //fallback to draft audio
             if (audio == "") {
-                audio = slide.chosenDraftFile
+                audio = Story.getFilename(slide.chosenDraftFile)
             }
             //fallback to LWC audio
             if (audio == "") {
-                audio = slide.narrationFile
+                audio = Story.getFilename(slide.narrationFile)
             }
 
             var soundtrack = ""
@@ -188,7 +189,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             val overlayText = slide.getOverlayText(mIncludeText)
 
             //error
-            var duration = 5000000L  // 3 seconds, microseconds.
+            var duration = 5000000L  // 5 seconds, microseconds.
             if (audio != "") {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
@@ -213,7 +214,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 } catch (e: InterruptedException) {
                     e.printStackTrace()
                 }
-
             }
         })
 
@@ -235,17 +235,26 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     companion object {
         private val TAG = "AutoStoryMaker"
 
-        private val SLIDE_CROSS_FADE_US: Long = 3000000
+        private val SLIDE_CROSS_FADE_US: Long = 750000
         private val AUDIO_TRANSITION_US: Long = 500000
 
-        // parameters for the video encoder
-        private val VIDEO_FRAME_RATE = 30               // 30fps
-        private val VIDEO_FRAME_RATE_DUMBPHONE = 15     // 15fps
-        private val VIDEO_IFRAME_INTERVAL = 8           // 5 second between I-frames
 
-        // using Kush Gauge for video bit rate
-        private val MOTION_FACTOR = 1.5                  // 1, 2, or 4
-        private val KUSH_GAUGE_CONSTANT = 0.07f
+        private val VIDEO_MP4_EXT = ".mp4"
+        private val VIDEO_MP4_CODEC = MediaFormat.MIMETYPE_VIDEO_AVC
+        private val VIDEO_MP4_COLOR = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface
+        private val VIDEO_MP4_WIDTH = 768
+        private val VIDEO_MP4_HEIGHT = 576
+        private val VIDEO_MP4_BITRATE = 5000000
+        private val VIDEO_MP4_FRAMERATE = 30
+        private val VIDEO_MP4_IFRAME_INTERVAL = 8           // 5 second between I-frames
+
+        private val VIDEO_3GP_EXT = ".3gp"
+        private val VIDEO_3GP_CODEC = "h263"
+        private val VIDEO_3GP_WIDTH = 352
+        private val VIDEO_3GP_HEIGHT = 288
+        private val VIDEO_3GP_AUDIO = "aac"
+        private val VIDEO_3GP_BITRATE = 1000000
+        private val VIDEO_3GP_FRAMERATE = 15
 
         // parameters for the audio encoder
         private val AUDIO_MIME_TYPE = "audio/mp4a-latm" //MediaFormat.MIMETYPE_AUDIO_AAC;
@@ -253,17 +262,19 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 
-        private val AUDIO_SAMPLE_RATE_AMR = 16000
-        private val AUDIO_BIT_RATE_AMR = 16000
+        private fun generateVideoFormat(): MediaFormat? {
+            //If no video component, use null format.
 
-        fun generateDumbAudioFormat(): MediaFormat {
-            // TODO - remove this audio: AMR (samr), mono, 8000 Hz, 32 bits per sample
-            // Not really needed - PR372
-            val audioFormat = MediaHelper.createFormat(MediaFormat.MIMETYPE_AUDIO_AMR_WB)
-            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE_AMR)
-            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
-            return audioFormat
+            val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC,
+                    VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT)
+
+            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
+            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
+            videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
+            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)
+            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_MP4_IFRAME_INTERVAL)
+
+            return videoFormat
         }
 
         fun generateAudioFormat(): MediaFormat {

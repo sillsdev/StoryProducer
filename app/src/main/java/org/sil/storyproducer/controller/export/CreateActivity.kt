@@ -3,6 +3,8 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
+import android.media.MediaCodecInfo
+import android.media.MediaFormat
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -32,7 +34,6 @@ class CreateActivity : PhaseBaseActivity() {
     private var mCheckboxText: CheckBox? = null
     private var mCheckboxKBFX: CheckBox? = null
     private var mCheckboxSong: CheckBox? = null
-    private var mRadioExportDestiniation: RadioGroup? = null
     private var mButtonStart: Button? = null
     private var mButtonCancel: Button? = null
     private var mProgressBar: ProgressBar? = null
@@ -42,21 +43,12 @@ class CreateActivity : PhaseBaseActivity() {
         val name = mEditTextTitle!!.text.toString()
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
-        val res = when(mRadioExportDestiniation!!.checkedRadioButtonId){
-            R.id.radio_dumbphone_3gp -> "vL_"
-            R.id.radio_dumbphone_mp4 -> "L_"
-            R.id.radio_smartphone -> "M_"
-            R.id.radio_largescreen -> "H_"
-            else -> ""
-        }
         val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
         val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
         val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
         val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
-        val ext = if (mRadioExportDestiniation!!.checkedRadioButtonId ==
-                R.id.radio_dumbphone_3gp) {".3gp"} else {".mp4"}
-        return "$num${name}_$ethno$res$fx$px$mv$tx$sg$ext"
+        return "$num${name}_$ethno$fx$px$mv$tx$sg.mp4"
     }
 
     private var mTextConfirmationChecked: Boolean = false
@@ -65,6 +57,7 @@ class CreateActivity : PhaseBaseActivity() {
 
     private val PROGRESS_UPDATER = Runnable {
         var isDone = false
+        var isSuccess = false
         while (!isDone) {
             try {
                 Thread.sleep(100)
@@ -86,10 +79,14 @@ class CreateActivity : PhaseBaseActivity() {
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
         }
+        isSuccess = storyMaker!!.isSuccess
 
         runOnUiThread {
             stopExport()
-            Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            if(isSuccess)
+                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            else
+                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -193,8 +190,6 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxText = findViewById(R.id.checkbox_export_text)
         mCheckboxSong = findViewById(R.id.checkbox_export_song)
 
-        mRadioExportDestiniation = findViewById(R.id.radio_export_destination)
-
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
         setOnClickListeners()
@@ -244,7 +239,15 @@ class CreateActivity : PhaseBaseActivity() {
         mLayoutCancel!!.visibility = visibilityWhileExport
         mButtonStart!!.visibility = visibilityPreExport
 
-        mCheckboxKBFX!!.visibility = if (mCheckboxPictures!!.isChecked) View.VISIBLE else View.GONE
+        if (mCheckboxPictures!!.isChecked) {
+            mCheckboxKBFX!!.visibility = View.VISIBLE
+            mCheckboxText!!.visibility = View.VISIBLE
+        }else{
+            mCheckboxKBFX!!.visibility = View.GONE
+            mCheckboxKBFX!!.isChecked = false
+            mCheckboxText!!.visibility = View.GONE
+            mCheckboxText!!.isChecked = false
+        }
 
 
         if (mCheckboxText!!.isChecked) {
@@ -306,18 +309,6 @@ class CreateActivity : PhaseBaseActivity() {
      */
     fun onRadioButtonClicked(view: View) {
         toggleVisibleElements()
-        // Check which radio button was clicked
-        when ((view as RadioGroup).checkedRadioButtonId) {
-            R.id.radio_dumbphone_3gp -> {
-                if (Build.VERSION.SDK_INT < 26){
-                    Toast.makeText(this,getString(R.string.min_SDK_26),Toast.LENGTH_SHORT).show()
-                    findViewById<RadioButton>(R.id.radio_smartphone).isChecked = true
-                    view.check(R.id.radio_dumbphone_mp4)
-                } else {
-                    mCheckboxText!!.isChecked = false
-                }
-            }
-        }
     }
     /**
      * Save current configuration options to shared preferences.
@@ -350,7 +341,6 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
         mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
-        mRadioExportDestiniation?.clearCheck()
     }
 
     private fun tryStartExport() {
@@ -365,12 +355,6 @@ class CreateActivity : PhaseBaseActivity() {
         if(mEditTextTitle!!.text.toString() == ""){
             Toast.makeText(this,this.resources.getText(
                     R.string.export_no_filename),Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if(mRadioExportDestiniation?.checkedRadioButtonId == -1){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -398,34 +382,8 @@ class CreateActivity : PhaseBaseActivity() {
             storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
             storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
             storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
-            storyMaker!!.mDumbPhone = mRadioExportDestiniation!!.checkedRadioButtonId ==
-                    R.id.radio_dumbphone_3gp
 
-            when(mRadioExportDestiniation?.checkedRadioButtonId){
-                R.id.radio_dumbphone_3gp -> {
-                    storyMaker!!.mWidth  = 176
-                    storyMaker!!.mHeight = 144
-                }
-                R.id.radio_dumbphone_mp4 -> {
-                    storyMaker!!.mWidth  = 320
-                    storyMaker!!.mHeight = 240
-                }
-                R.id.radio_smartphone -> {
-                    storyMaker!!.mWidth  = 640
-                    storyMaker!!.mHeight = 480
-                }
-                R.id.radio_largescreen -> {
-                    storyMaker!!.mWidth  = 1280
-                    storyMaker!!.mHeight = 720
-                }
-                else -> {
-                    Toast.makeText(this,this.resources.getText(
-                            R.string.export_destination_unchecked),Toast.LENGTH_SHORT).show()
-                    return
-                }
-            }
-
-            storyMaker!!.setOutputFile(mOutputPath)
+            storyMaker!!.videoRelPath = mOutputPath
         }
 
         storyMaker!!.start()
@@ -479,7 +437,6 @@ class CreateActivity : PhaseBaseActivity() {
         private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
         private val PREF_KEY_INCLUDE_SONG = "include_song"
         private val PREF_KEY_SHORT_NAME = "short_name"
-        private val PREF_KEY_RESOLUTION = "resolution"
 
         @Volatile
         private var buttonLocked = false

@@ -22,13 +22,15 @@ object Constants {
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
 
-    const val sdcardType1 = "mnt/sdcard"
-    const val sdcardType2 = "storage/removable_SD Card"
-    var sdcard = sdcardType1
+    val storageRoots = arrayOf(
+            "mnt/sdcard",
+            "storage/removable_SD Card",
+            "storage")
+    var storage = storageRoots[0]
     val workspaceDirectory : String
-        get() {return "$sdcard/SPWorkspace"}
+        get() {return "$storage/SPWorkspace"}
     val espressoResourceDirectory : String
-        get() {return "$sdcard/EspressoResources"}
+        get() {return "$storage/EspressoResources"}
     val exportedVideosDirectory : String
         get() {return "$workspaceDirectory/videos"}
 

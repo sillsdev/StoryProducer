@@ -14,17 +14,15 @@ import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.KeytermRecording
-import org.sil.storyproducer.tools.file.RenameCode
 import org.sil.storyproducer.tools.hideKeyboard
 
 class KeytermRecordingListAdapter(val context: Context?, private val recordings: MutableList<KeytermRecording>, val bottomSheet: ConstraintLayout, private val listeners: ClickListeners) : RecyclerView.Adapter<KeytermRecordingListAdapter.RecordingListViewHolder>() {
 
     interface ClickListeners {
-        fun onRowClick(name: String)
-        fun onPlayClick(name: String, buttonClickedNow: ImageButton)
+        fun onRowClick(pos: Int)
+        fun onPlayClick(pos: Int, buttonClickedNow: ImageButton)
         fun onDeleteClick(name: String, pos: Int)
-        fun onRenameClick(name: String, newName: String): RenameCode
-        fun onRenameSuccess(pos: Int)
+        fun onRenameClick(pos: Int, newName: String)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecordingListViewHolder {
@@ -55,13 +53,13 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
             val audioFilename = keytermRecording.audioRecordingFilename.substringAfterLast('/')
             parentTextView.text = audioFilename.substringBeforeLast('.')
             parentPlayButton.setOnClickListener {
-                listeners.onPlayClick(audioFilename, parentPlayButton)
+                listeners.onPlayClick(adapterPosition, parentPlayButton)
             }
             parentDeleteButton.setOnClickListener {
                 showDeleteItemDialog(adapterPosition, audioFilename)
             }
             parentTextView.setOnClickListener {
-                listeners.onRowClick(audioFilename)
+                listeners.onRowClick(adapterPosition)
             }
             parentTextView.setOnLongClickListener {
                 showItemRenameDialog(adapterPosition)
@@ -154,17 +152,8 @@ class KeytermRecordingListAdapter(val context: Context?, private val recordings:
                     .setView(newName)
                     .setNegativeButton(itemView.context.getString(R.string.cancel), null)
                     .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
-                        val returnCode = listeners.onRenameClick(recordings[position].audioRecordingFilename.substringAfterLast('/'), newName.text.toString())
-                        when (returnCode) {
-                            RenameCode.SUCCESS -> {
-                                listeners.onRenameSuccess(position)
-                                notifyItemChanged(position)
-                                Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.renamed_success), Toast.LENGTH_SHORT).show()
-                            }
-                            RenameCode.ERROR_LENGTH -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_must_be_20), Toast.LENGTH_SHORT).show()
-                            RenameCode.ERROR_SPECIAL_CHARS -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_no_special), Toast.LENGTH_SHORT).show()
-                            RenameCode.ERROR_UNDEFINED -> Toast.makeText(itemView.context, itemView.context.resources.getString(R.string.rename_failed), Toast.LENGTH_SHORT).show()
-                        }
+                        listeners.onRenameClick(position, newName.text.toString())
+                        notifyDataSetChanged()
                     }.create()
 
             dialog.show()
