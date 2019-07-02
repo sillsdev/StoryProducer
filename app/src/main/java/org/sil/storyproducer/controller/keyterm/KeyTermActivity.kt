@@ -22,7 +22,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.tools.helpDialog
-import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 
 /**
@@ -33,13 +33,12 @@ import java.util.*
  * @author Aaron Cannon and Justin Stallard
  */
 
-class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener {
-
-    private lateinit var recordingToolbar : RecordingToolbar
+class KeyTermActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
+    private lateinit var recordingToolbar : KeytermRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
     private val keytermHistory: Stack<String> = Stack()
-
+    // TODO Refactor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_key_term)
@@ -102,6 +101,7 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
     /**
      * Updates the textViews with the current keyterm information
      */
+    // TODO Refactor out recording toolbar stuff
     private fun setupNoteView(){
         val actionBar = supportActionBar
 
@@ -145,9 +145,8 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }.removeSuffix("\n")
 
         val bundle = Bundle()
-        bundle.putBooleanArray("buttonEnabled", booleanArrayOf(true, false, true, false))
-        bundle.putInt("slideNum", 0)
-        recordingToolbar = RecordingToolbar()
+        bundle.putInt(SLIDE_NUM, 0)
+        recordingToolbar = KeytermRecordingToolbar()
         recordingToolbar.arguments = bundle
         supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
     }
@@ -178,20 +177,17 @@ class KeyTermActivity : AppCompatActivity(), RecordingToolbar.RecordingListener 
         }
     }
 
-    override fun onStartedRecordingOrPlayback(isRecording: Boolean) {
-        recordingToolbar.stopToolbarMedia()
-        displayList.stopAudio()
+    override fun onStoppedToolbarRecording() {
+        val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
+        recordingExpandableListView.adapter?.notifyItemInserted(0)
+        if(from(bottomSheet).state == STATE_COLLAPSED) {
+            from(bottomSheet).state = STATE_EXPANDED
+        }
+        recordingExpandableListView.smoothScrollToPosition(0)
     }
 
-    override fun onStoppedRecordingOrPlayback(isRecording: Boolean) {
-        if(isRecording) {
-            val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
-            recordingExpandableListView.adapter?.notifyItemInserted(0)
-            if(from(bottomSheet).state == STATE_COLLAPSED) {
-                from(bottomSheet).state = STATE_EXPANDED
-            }
-            recordingExpandableListView.smoothScrollToPosition(0)
-        }
+    override fun onStartedToolbarMedia() {
+        displayList.stopAudio()
     }
 
     /**
