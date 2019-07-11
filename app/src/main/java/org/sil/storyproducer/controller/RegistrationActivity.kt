@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -648,6 +649,10 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
                 .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
                 .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                            or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
                     startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
                 }.create()
         dialog.show()
@@ -657,6 +662,8 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
             Workspace.setupWorkspacePath(this,data?.data!!)
+            contentResolver.takePersistableUriPermission(data.data!!,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
         intent = Intent(this, RegistrationActivity::class.java)
         startActivity(intent)
@@ -673,6 +680,10 @@ class WorkspaceUpdateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         Workspace.clearWorkspace()
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+                or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
         startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
         super.onCreate(savedInstanceState)
     }
@@ -680,6 +691,8 @@ class WorkspaceUpdateActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
             Workspace.setupWorkspacePath(this,data?.data!!)
+	        contentResolver.takePersistableUriPermission(data.data!!,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
         intent = Intent(this, RegistrationActivity::class.java)
         startActivity(intent)
