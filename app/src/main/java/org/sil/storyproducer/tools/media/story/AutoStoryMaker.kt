@@ -250,8 +250,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         private val VIDEO_3GP_EXT = ".3gp"
         private val VIDEO_3GP_CODEC = "h263"
-        private val VIDEO_3GP_WIDTH = 352
-        private val VIDEO_3GP_HEIGHT = 288
+        private val VIDEO_3GP_WIDTH = 176
+        private val VIDEO_3GP_HEIGHT = 144
         private val VIDEO_3GP_AUDIO = "aac"
         private val VIDEO_3GP_BITRATE = 1000000
         private val VIDEO_3GP_FRAMERATE = 15
