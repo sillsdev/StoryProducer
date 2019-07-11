@@ -1,15 +1,10 @@
 package org.sil.storyproducer.controller.export
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
-import android.media.MediaCodecInfo
-import android.media.MediaFormat
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -21,37 +16,33 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.stripForFilename
-import java.util.*
-import java.util.regex.Pattern
 
 class CreateActivity : PhaseBaseActivity() {
 
-    private var mEditTextTitle: EditText? = null
-    private var mLayoutConfiguration: View? = null
-    private var mLayoutCancel: View? = null
-    private var mCheckboxSoundtrack: CheckBox? = null
-    private var mCheckboxPictures: CheckBox? = null
-    private var mCheckboxText: CheckBox? = null
-    private var mCheckboxKBFX: CheckBox? = null
-    private var mCheckboxSong: CheckBox? = null
-    private var mButtonStart: Button? = null
-    private var mButtonCancel: Button? = null
-    private var mProgressBar: ProgressBar? = null
+    private lateinit var mEditTextTitle: EditText
+    private lateinit var mLayoutConfiguration: View
+    private lateinit var mLayoutCancel: View
+    private lateinit var mCheckboxSoundtrack: CheckBox
+    private lateinit var mCheckboxPictures: CheckBox
+    private lateinit var mCheckboxText: CheckBox
+    private lateinit var mCheckboxKBFX: CheckBox
+    private lateinit var mCheckboxSong: CheckBox
+    private lateinit var mButtonStart: Button
+    private lateinit var mButtonCancel: Button
+    private lateinit var mProgressBar: ProgressBar
 
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
-        val name = mEditTextTitle!!.text.toString()
+        val name = mEditTextTitle.text.toString()
         var ethno = Workspace.registration.getString("ethnologue", "")
         if(ethno != "") ethno = "${ethno}_"
-        val fx = if(mCheckboxSoundtrack!!.isChecked) {"Fx"} else {""}
-        val px = if(mCheckboxPictures!!.isChecked) {"Px"} else {""}
-        val mv = if(mCheckboxKBFX!!.isChecked) {"Mv"} else {""}
-        val tx = if(mCheckboxText!!.isChecked) {"Tx"} else {""}
-        val sg = if(mCheckboxSong!!.isChecked) {"Sg"} else {""}
+        val fx = if(mCheckboxSoundtrack.isChecked) {"Fx"} else {""}
+        val px = if(mCheckboxPictures.isChecked) {"Px"} else {""}
+        val mv = if(mCheckboxKBFX.isChecked) {"Mv"} else {""}
+        val tx = if(mCheckboxText.isChecked) {"Tx"} else {""}
+        val sg = if(mCheckboxSong.isChecked) {"Sg"} else {""}
         return "$num${name}_$ethno$fx$px$mv$tx$sg.mp4"
     }
-
-    private var mTextConfirmationChecked: Boolean = false
 
     private var mProgressUpdater: Thread? = null
 
@@ -101,8 +92,8 @@ class CreateActivity : PhaseBaseActivity() {
         } finally {
             buttonLocked = false
             runOnUiThread {
-                mButtonStart!!.isEnabled = true
-                mButtonCancel!!.isEnabled = true
+                mButtonStart.isEnabled = true
+                mButtonCancel.isEnabled = true
             }
         }
     }
@@ -129,10 +120,10 @@ class CreateActivity : PhaseBaseActivity() {
         watchProgress()
 
         //attach the listeners after everything else is setup.
-        mCheckboxPictures!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
-        mCheckboxKBFX!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
-        mCheckboxText!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
-        mCheckboxSong!!.setOnCheckedChangeListener { _, _ -> toggleVisibleElements() }
+        mCheckboxPictures.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxPictures) }
+        mCheckboxKBFX.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxKBFX) }
+        mCheckboxText.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxText) }
+        mCheckboxSong.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxSong) }
     }
 
     override fun onPause() {
@@ -170,7 +161,7 @@ class CreateActivity : PhaseBaseActivity() {
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle!!.addTextChangedListener( object: TextWatcher {
+        mEditTextTitle.addTextChangedListener( object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
                 if(temp != s.toString()){
@@ -195,8 +186,8 @@ class CreateActivity : PhaseBaseActivity() {
         setOnClickListeners()
 
         mProgressBar = findViewById(R.id.progress_bar_export)
-        mProgressBar!!.max = PROGRESS_MAX
-        mProgressBar!!.progress = 0
+        mProgressBar.max = PROGRESS_MAX
+        mProgressBar.progress = 0
 
     }
 
@@ -205,14 +196,14 @@ class CreateActivity : PhaseBaseActivity() {
      */
     private fun setOnClickListeners() {
 
-        mButtonStart!!.setOnClickListener {
+        mButtonStart.setOnClickListener {
             if (!buttonLocked) {
                 tryStartExport()
             }
             lockButtons()
         }
 
-        mButtonCancel!!.setOnClickListener {
+        mButtonCancel.setOnClickListener {
             if (!buttonLocked) {
                 stopExport()
             }
@@ -224,7 +215,7 @@ class CreateActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements() {
+    private fun toggleVisibleElements(currentCheckbox : CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
@@ -235,94 +226,50 @@ class CreateActivity : PhaseBaseActivity() {
             }
         }
 
-        mLayoutConfiguration!!.visibility = visibilityPreExport
-        mLayoutCancel!!.visibility = visibilityWhileExport
-        mButtonStart!!.visibility = visibilityPreExport
+        mLayoutConfiguration.visibility = visibilityPreExport
+        mLayoutCancel.visibility = visibilityWhileExport
+        mButtonStart.visibility = visibilityPreExport
 
-        if (mCheckboxPictures!!.isChecked) {
-            mCheckboxKBFX!!.visibility = View.VISIBLE
-            mCheckboxText!!.visibility = View.VISIBLE
+        if (mCheckboxPictures.isChecked) {
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
         }else{
-            mCheckboxKBFX!!.visibility = View.GONE
-            mCheckboxKBFX!!.isChecked = false
-            mCheckboxText!!.visibility = View.GONE
-            mCheckboxText!!.isChecked = false
+            mCheckboxKBFX.visibility = View.GONE
+            mCheckboxKBFX.isChecked = false
+            mCheckboxText.visibility = View.GONE
+            mCheckboxText.isChecked = false
         }
 
 
-        if (mCheckboxText!!.isChecked) {
-            if (mTextConfirmationChecked) {
-                showHighResolutionAlertDialog()
-            } else {
-                //mSpinnerFormat.setAdapter(mFormatAdapterSmartphone);
-                textOrKBFX(false)
+        if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
+            if(currentCheckbox == mCheckboxText){
+                mCheckboxKBFX.isChecked = false
+            }else{
+                mCheckboxText.isChecked = false
             }
-        } else {
-            //mSpinnerFormat.setAdapter(mFormatAdapterAll);
-            mTextConfirmationChecked = true
         }
 
         //Check if there is a song to play
-        if (mCheckboxSong!!.isChecked && (Workspace.getSongFilename() == "")){
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
             //you have to have a song to include it!
             Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
-            mCheckboxSong!!.isChecked = false
+            mCheckboxSong.isChecked = false
         }
     }
 
-    /*
-    * Function that makes KBFX and Enabling Text mutually exclusive options
-    * Takes a boolean that says whether or not text was just turned on
-     */
-    private fun textOrKBFX(textJustEnabled: Boolean) {
-        if (textJustEnabled && !mTextConfirmationChecked && mCheckboxKBFX!!.isChecked) {
-            mCheckboxKBFX!!.isChecked = false
-        } else {
-            if (mCheckboxKBFX!!.isChecked && mCheckboxText!!.isChecked) {
-                mCheckboxText!!.isChecked = false
-            }
-        }
-    }
-
-    /**
-     * Creates an alert dialog asking if the user wants to skip registration
-     * If they respond yes, finish activity or send them back to MainActivity
-     */
-    private fun showHighResolutionAlertDialog() {
-        val dialog = AlertDialog.Builder(this@CreateActivity)
-                .setTitle(getString(R.string.export_include_text_title))
-                .setMessage(getString(R.string.export_include_text_message))
-                .setNegativeButton(getString(R.string.no)) { _, _ ->
-                    mCheckboxText!!.isChecked = false
-                    mTextConfirmationChecked = true
-                }
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    mTextConfirmationChecked = false
-                    textOrKBFX(true)
-                }.create()
-
-        dialog.show()
-    }
-
-    /*
-    **Method for handling the click event for the radio buttons
-     */
-    fun onRadioButtonClicked(view: View) {
-        toggleVisibleElements()
-    }
     /**
      * Save current configuration options to shared preferences.
      */
     private fun savePreferences() {
         val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
 
-        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack?.isChecked ?: true)
-        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures?.isChecked ?: true)
-        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText?.isChecked ?: true)
-        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX?.isChecked ?: true)
-        editor.putBoolean(PREF_KEY_INCLUDE_SONG, mCheckboxSong?.isChecked ?: true)
+        editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_TEXT, mCheckboxText.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_KBFX, mCheckboxKBFX.isChecked)
+        editor.putBoolean(PREF_KEY_INCLUDE_SONG, mCheckboxSong.isChecked)
 
-        editor.putString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", mEditTextTitle!!.text.toString())
+        editor.putString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", mEditTextTitle.text.toString())
 
         editor.apply()
     }
@@ -333,14 +280,12 @@ class CreateActivity : PhaseBaseActivity() {
     private fun loadPreferences() {
         val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
 
-        mCheckboxSoundtrack!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true)
-        mCheckboxPictures!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
-        mCheckboxText!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
-        // Don't show the dialog again when reloading the activity.
-        if(mCheckboxText!!.isChecked) {mTextConfirmationChecked = false}
-        mCheckboxKBFX!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
-        mCheckboxSong!!.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
-        mEditTextTitle!!.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
+        mCheckboxSoundtrack.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true)
+        mCheckboxPictures.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
+        mCheckboxText.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_TEXT, false)
+        mCheckboxKBFX.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
+        mCheckboxSong.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
+        mEditTextTitle.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
     }
 
     private fun tryStartExport() {
@@ -352,7 +297,7 @@ class CreateActivity : PhaseBaseActivity() {
         }
 
         //If there is no title, don't make video
-        if(mEditTextTitle!!.text.toString() == ""){
+        if(mEditTextTitle.text.toString() == ""){
             Toast.makeText(this,this.resources.getText(
                     R.string.export_no_filename),Toast.LENGTH_SHORT).show()
             return
@@ -377,11 +322,11 @@ class CreateActivity : PhaseBaseActivity() {
         synchronized(storyMakerLock) {
             storyMaker = AutoStoryMaker(this)
 
-            storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack!!.isChecked
-            storyMaker!!.mIncludePictures = mCheckboxPictures!!.isChecked
-            storyMaker!!.mIncludeText = mCheckboxText!!.isChecked
-            storyMaker!!.mIncludeKBFX = mCheckboxKBFX!!.isChecked
-            storyMaker!!.mIncludeSong = mCheckboxSong!!.isChecked
+            storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
+            storyMaker!!.mIncludePictures = mCheckboxPictures.isChecked
+            storyMaker!!.mIncludeText = mCheckboxText.isChecked
+            storyMaker!!.mIncludeKBFX = mCheckboxKBFX.isChecked
+            storyMaker!!.mIncludeSong = mCheckboxSong.isChecked
 
             storyMaker!!.videoRelPath = mOutputPath
         }
@@ -408,7 +353,7 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun updateProgress(progress: Int) {
-        runOnUiThread { mProgressBar!!.progress = progress }
+        runOnUiThread { mProgressBar.progress = progress }
     }
 
     /**
@@ -419,8 +364,8 @@ class CreateActivity : PhaseBaseActivity() {
         //Unlock button in a short bit.
         Thread(BUTTON_UNLOCKER).start()
 
-        mButtonStart!!.isEnabled = false
-        mButtonCancel!!.isEnabled = false
+        mButtonStart.isEnabled = false
+        mButtonCancel.isEnabled = false
     }
 
     companion object {
