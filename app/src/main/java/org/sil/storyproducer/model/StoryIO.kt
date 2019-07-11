@@ -20,8 +20,8 @@ fun Story.toJson(context: Context){
     if(oStream != null) {
         try {
             oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
-            oStream.close()
         }catch(e:java.lang.Exception){}
+        finally{oStream.close()}
     }
 }
 

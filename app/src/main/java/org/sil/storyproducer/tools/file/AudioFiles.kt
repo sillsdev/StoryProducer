@@ -90,8 +90,12 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
     if(getChosenCombName() == filenames[pos]){
         //the chosen filename was deleted!  Make it some other selection.
         filenames.removeAt(pos)
-        //If there is only 1 left, the resulting index will be -1, or no chosen filename.
-        setChosenFileIndex(filenames.size-1)
+        if(filenames.size == 0) {
+            //If there is only 1 left, the resulting index will be -1, or no chosen filename.
+            setChosenFileIndex(-1)
+        }else{
+            setChosenFileIndex(0)
+        }
     }else{
         //just delete the file index.
         filenames.removeAt(pos)
@@ -140,17 +144,18 @@ fun addCombinedName(name:String){
         PhaseType.LEARN -> {Workspace.activeStory.learnAudioFile = name}
         PhaseType.WHOLE_STORY -> {Workspace.activeStory.wholeStoryBackTAudioFile = name}
         //multiple files, no distinction.
+        //Add to beginning of list
         PhaseType.COMMUNITY_CHECK -> {
-            Workspace.activeSlide!!.communityCheckAudioFiles.add(name)
+            Workspace.activeSlide!!.communityCheckAudioFiles.add(0,name)
         }
-        PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(name)}
+        PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(0,name)}
         //multiple files, one chosen.
         PhaseType.DRAFT ->{
-            Workspace.activeSlide!!.draftAudioFiles.add(name)
+            Workspace.activeSlide!!.draftAudioFiles.add(0,name)
             Workspace.activeSlide!!.chosenDraftFile = name
         }
         PhaseType.DRAMATIZATION -> {
-            Workspace.activeSlide!!.dramatizationAudioFiles.add(name)
+            Workspace.activeSlide!!.dramatizationAudioFiles.add(0,name)
             Workspace.activeSlide!!.chosenDramatizationFile = name
         }
         else -> {}

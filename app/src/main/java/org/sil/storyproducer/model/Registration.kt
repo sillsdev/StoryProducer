@@ -32,9 +32,10 @@ class Registration{
         if(oStream != null) {
             try {
                 oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
-                oStream.close()
             }catch(e:Exception){
                 Crashlytics.logException(e)
+            }finally {
+                oStream.close()
             }
         }
     }

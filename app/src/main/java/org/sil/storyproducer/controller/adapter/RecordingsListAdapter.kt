@@ -264,6 +264,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
 
         override fun onRenameClick(position: Int, newName: String) {
             updateDisplayName(position, newName)
+            setChosenFileIndex(position)
             displayNames[position] = newName
             recyclerView?.adapter!!.notifyDataSetChanged()
         }
