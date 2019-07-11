@@ -9,83 +9,99 @@
     tools:context="org.sil.storyproducer.controller.export.CreateActivity">
 
 
-    <ScrollView
+    <LinearLayout
         android:id="@+id/layout_export_configuration"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/export_title_header"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <EditText
+            android:id="@+id/editText_export_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/export_custom_title"
+            android:inputType="textMultiLine|textCapWords"
+            android:maxLines="4"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/export_options_header"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <CheckBox
+            android:id="@+id/checkbox_export_soundtrack"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/export_include_soundtrack" />
+
+        <CheckBox
+            android:id="@+id/checkbox_export_song"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/export_include_song" />
+
+        <CheckBox
+            android:id="@+id/checkbox_export_pictures"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/export_include_pictures" />
+
+        <CheckBox
+            android:id="@+id/checkbox_export_KBFX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/export_include_KBFX" />
+
+
+        <CheckBox
+            android:id="@+id/checkbox_export_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/export_include_text" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/dumbphone_3gp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/export_title_header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <EditText
-                android:id="@+id/editText_export_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/export_custom_title"
-                android:inputType="textMultiLine|textCapWords"
-                android:maxLines="4"/>
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/export_dumbphone"
+                android:drawableEnd="@drawable/ic_dumbphone"/>
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/smartphone_mp4"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/export_options_header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_soundtrack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_soundtrack" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_song"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_include_song" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_pictures"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_pictures" />
-
-            <CheckBox
-                android:id="@+id/checkbox_export_KBFX"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="@string/export_include_KBFX" />
-
-
-            <CheckBox
-                android:id="@+id/checkbox_export_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_include_text" />
-
-
-            <Button
-                android:id="@+id/button_export_start"
-                android:layout_marginTop="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/export_start"/>
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/export_smartphone"
+                android:drawableEnd="@drawable/ic_smartphone_white_24dp"/>
         </LinearLayout>
 
-    </ScrollView>
+        <Button
+            android:id="@+id/button_export_start"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/export_start"/>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/layout_cancel"
