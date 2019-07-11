@@ -198,6 +198,8 @@
     <string name="export_include_text">Include Story Text (Tx)</string>
     <string name="export_include_song">Include Local Song (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
+    <string name="export_dumbphone">(3gp) is for </string>
+    <string name="export_smartphone">(mp4) is for </string>
 
     <string name="export_local_credits_unchanged">Update Local Credits - last slide in Studio</string>
     <string name="export_no_filename">Type a Short Story Title, above</string>
