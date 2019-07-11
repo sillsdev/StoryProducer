@@ -199,8 +199,8 @@
     <string name="export_include_song">Include Local Song (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
 
-    <string name="export_local_credits_unchanged">Update credits - last slide in Studio</string>
-    <string name="export_no_filename">Type a short story title, above</string>
+    <string name="export_local_credits_unchanged">Update Local Credits - last slide in Studio</string>
+    <string name="export_no_filename">Type a Short Story Title, above</string>
     <string name="export_local_song_unrecorded">Record local song first.</string>
 
     <string name="export_location_exists_title">Replace File?</string>

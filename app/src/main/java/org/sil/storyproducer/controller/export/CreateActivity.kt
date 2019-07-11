@@ -292,14 +292,14 @@ class CreateActivity : PhaseBaseActivity() {
         //If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
             Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanged),Toast.LENGTH_SHORT).show()
+                    R.string.export_local_credits_unchanged),Toast.LENGTH_LONG).show()
             return
         }
 
         //If there is no title, don't make video
         if(mEditTextTitle.text.toString() == ""){
             Toast.makeText(this,this.resources.getText(
-                    R.string.export_no_filename),Toast.LENGTH_SHORT).show()
+                    R.string.export_no_filename),Toast.LENGTH_LONG).show()
             return
         }
 
