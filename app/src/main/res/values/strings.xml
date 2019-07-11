@@ -198,11 +198,11 @@
     <string name="export_include_text">Include Story Text (Tx)</string>
     <string name="export_include_song">Include Local Song (Sg)</string>
     <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
-    <string name="export_include_text_title">Do you want to enable text?</string>
-    <string name="export_include_text_message">Including text for each slide will cause the exported video to be larger (to take more space). If you want the video to be smaller, do not include text.</string>
+    <string name="export_dumbphone">(3gp) is for </string>
+    <string name="export_smartphone">(mp4) is for </string>
 
-    <string name="export_local_credits_unchanged">Update Local Credits before making video.</string>
-    <string name="export_no_filename">Choose a filename before making a video.</string>
+    <string name="export_local_credits_unchanged">Update Local Credits - last slide in Studio</string>
+    <string name="export_no_filename">Type a Short Story Title, above</string>
     <string name="export_local_song_unrecorded">Record local song first.</string>
 
     <string name="export_location_exists_title">Replace File?</string>
