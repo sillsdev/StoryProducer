@@ -179,7 +179,7 @@ class KeyTermActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMed
 
     override fun onStoppedToolbarRecording() {
         val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
-        recordingExpandableListView.adapter?.notifyItemInserted(0)
+        recordingExpandableListView.adapter?.notifyDataSetChanged()
         if(from(bottomSheet).state == STATE_COLLAPSED) {
             from(bottomSheet).state = STATE_EXPANDED
         }
@@ -188,6 +188,11 @@ class KeyTermActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMed
 
     override fun onStartedToolbarMedia() {
         displayList.stopAudio()
+    }
+
+    override fun onStartedToolbarRecording() {
+        super.onStartedToolbarRecording()
+        displayList.resetRecordingList()
     }
 
     /**

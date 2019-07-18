@@ -101,8 +101,8 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility(){
-        val playBackFileExist = storyRelPathExists(activity!!, getChosenFilename(slideNum))
-        if(playBackFileExist){
+        val filesExist = Workspace.activePhase.getCombNames(slideNum)?.isNotEmpty() ?: false
+        if(filesExist){
             showInheritedToolbarButtons()
         }
         else{

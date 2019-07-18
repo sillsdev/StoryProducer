@@ -48,13 +48,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.sil.storyproducer.model.WorkspaceKt.SLIDE_NUM;
+
 /**
  * Created by annmcostantino on 2/19/2018.
  */
 
 public class RemoteCheckFrag extends Fragment {
 
-    public static final String SLIDE_NUM = "CURRENT_SLIDE_NUM_OF_FRAG";
     public static final String R_CONSULTANT_PREFS = "Consultant_Checks";
     private static final String TO_SEND_MESSAGE = "SND_MSG";
     private static final String R_MESSAGE_HISTORY = "Message History";

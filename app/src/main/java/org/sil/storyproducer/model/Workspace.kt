@@ -14,7 +14,6 @@ import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.io.InputStreamReader
 import java.util.*
-import kotlin.math.max
 
 internal const val KEYTERMS_DIR = "keyterms"
 internal const val KEYTERMS_CSV_FILE = "keyterms.csv"

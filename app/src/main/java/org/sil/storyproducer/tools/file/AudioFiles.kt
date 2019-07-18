@@ -3,10 +3,8 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.crashlytics.android.Crashlytics
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
 import java.util.*
 import kotlin.math.max
 
@@ -37,6 +35,7 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
         PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
         PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+        PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile
         else -> ""
     }
 }
@@ -52,6 +51,7 @@ fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = combName
         PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = combName
         PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
+        PhaseType.KEYTERM -> Workspace.activeKeyterm.chosenKeytermFile = combName
         else -> return
     }
     return
@@ -79,8 +79,7 @@ fun assignNewAudioRelPath() : String {
 
 fun updateDisplayName(position:Int, newName:String) {
     //make sure to update the actual list, not a copy.
-    val filenames = Workspace.activePhase.getCombNames() ?: return
-    filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+    Workspace.activePhase.updateDisplayName(position, newName)
 }
 
 fun deleteAudioFileFromList(context: Context, pos: Int) {
@@ -89,8 +88,8 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
     val filename = Story.getFilename(filenames[pos])
     if(getChosenCombName() == filenames[pos]){
         //the chosen filename was deleted!  Make it some other selection.
-        filenames.removeAt(pos)
-        if(filenames.size == 0) {
+        Workspace.activePhase.removeName(pos)
+        if(filenames.size == 1) {
             //If there is only 1 left, the resulting index will be -1, or no chosen filename.
             setChosenFileIndex(-1)
         }else{
@@ -98,7 +97,7 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
         }
     }else{
         //just delete the file index.
-        filenames.removeAt(pos)
+        Workspace.activePhase.removeName(pos)
     }
     deleteStoryFile(context,filename)
 }
@@ -115,6 +114,7 @@ fun createRecordingCombinedName() : String {
             "${Workspace.activePhase.getDisplayName()}|$PROJECT_DIR/${Workspace.activePhase.getShortName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
+        PhaseType.KEYTERM,
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             //find the next number that is available for saving files at.
@@ -157,6 +157,10 @@ fun addCombinedName(name:String){
         PhaseType.DRAMATIZATION -> {
             Workspace.activeSlide!!.dramatizationAudioFiles.add(0,name)
             Workspace.activeSlide!!.chosenDramatizationFile = name
+        }
+        PhaseType.KEYTERM -> {
+            Workspace.activeKeyterm.keytermRecordings.add(0, KeytermRecording(name))
+            Workspace.activeKeyterm.chosenKeytermFile = name
         }
         else -> {}
     }

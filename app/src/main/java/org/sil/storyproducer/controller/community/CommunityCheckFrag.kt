@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -60,7 +61,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
     override fun setToolbar() {
         val bundle = Bundle()
         bundle.putBooleanArray("buttonEnabled", booleanArrayOf(false,false,false,false))
-        bundle.putInt("slideNum", slideNum)
+        bundle.putInt(SLIDE_NUM, slideNum)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().add(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 

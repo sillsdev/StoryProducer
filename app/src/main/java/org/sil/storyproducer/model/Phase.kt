@@ -1,5 +1,6 @@
 package org.sil.storyproducer.model
 
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -9,6 +10,7 @@ import org.sil.storyproducer.controller.keyterm.KeyTermActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
+import java.lang.Exception
 
 
 enum class PhaseType {
@@ -36,6 +38,33 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             else -> null
         }
+    }
+
+    fun updateDisplayName(position:Int, newName:String){
+        when(phaseType){
+            PhaseType.KEYTERM -> {
+                val keytermRec = Workspace.activeKeyterm.keytermRecordings[position]
+                keytermRec.audioRecordingFilename = "$newName|${Story.getFilename(keytermRec.audioRecordingFilename)}"
+            }
+            else -> {
+                val filenames = getCombNames() ?: return
+                filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+            }
+        }
+    }
+
+    fun removeName(position:Int){
+        try {
+            when (phaseType) {
+                PhaseType.DRAFT -> Workspace.activeSlide?.draftAudioFiles?.removeAt(position)
+                PhaseType.KEYTERM -> Workspace.activeKeyterm.keytermRecordings.removeAt(position)
+                PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide?.communityCheckAudioFiles?.removeAt(position)
+                PhaseType.DRAMATIZATION -> Workspace.activeSlide?.dramatizationAudioFiles?.removeAt(position)
+                PhaseType.BACKT -> Workspace.activeSlide?.backTranslationAudioFiles?.removeAt(position)
+                else -> {
+                }
+            }
+        }catch(e:Exception){Crashlytics.logException(e)}
     }
 
     fun getIcon(phase: PhaseType = phaseType) : Int {
