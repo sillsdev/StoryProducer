@@ -4,9 +4,11 @@ import android.content.Context
 import android.support.v4.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
-import org.sil.storyproducer.tools.file.getStoryChildOutputStream
-import org.sil.storyproducer.tools.file.getStoryText
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.*
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -72,4 +74,60 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
         return story
     }
     return null
+}
+
+fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders: Array<DocumentFile?>): Boolean{
+    val zis = ZipInputStream(getStoryChildInputStream(context,zipFile!!.name!!)) ?: return
+
+    val folderNames: MutableList<String> = mutableListOf()
+    try
+    {
+        for (f in existingFolders){
+            if(f != null) folderNames.add(f.name ?: continue)
+        }
+
+        var ze: ZipEntry? = zis.nextEntry
+
+        val baos = ByteArrayOutputStream()
+        val buffer = ByteArray(1024)
+        var count: Int = 0
+
+        while(ze != null)
+        {
+
+            val filename = ze.name ?: continue
+
+            //Only parse new root folders, not existing folders.
+            val folderName = filename.substring(0,filename.indexOf('/'))
+            if(folderName in folderNames) continue
+
+            if( ! storyRelPathExists(context,filename)) continue
+
+            val ostream = getChildOutputStream(context,filename) ?: continue
+
+            // reading and writing
+            count = zis.read(buffer)
+            while(count != -1)
+            {
+                baos.write(buffer, 0, count)
+                val bytes = baos.toByteArray()
+                ostream.write(bytes)
+                baos.reset()
+                count = zis.read(buffer)
+            }
+
+            ostream.close()
+            zis.closeEntry()
+            ze = zis.nextEntry
+        }
+
+        zis.close();
+    }
+    catch(e: Exception)
+    {
+        Crashlytics.logException(e)
+        return false
+    }
+
+    return true
 }
