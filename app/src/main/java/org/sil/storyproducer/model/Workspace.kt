@@ -12,6 +12,9 @@ import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.util.*
 import kotlin.math.max
+import android.R
+
+
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 
@@ -113,16 +116,31 @@ object Workspace{
         if(workspace.isDirectory){
             //find all stories
             Stories.removeAll(Stories)
-            for (storyPath in workspace.listFiles()) {
+            val files = workspace.listFiles()
+            for (storyPath in files) {
                 //TODO - check storyPath.name against titles.
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context,storyPath)
                     if (story != null) {
                         Stories.add(story)
                     }
+                }else{
+                    if(unzipIfNewFolders(context,storyPath,files))
+                        deleteWorkspaceFile(context, storyPath!!.name!!)
                 }
             }
-        }
+            //After you unzipped the files, see if there are any new templates that we can read in.
+            val newFiles = workspace.listFiles()
+            for (storyPath in newFiles) {
+                if(storyPath in files) continue
+                //only read in new folders.
+                if (storyPath.isDirectory) {
+                    val story = parseStoryIfPresent(context, storyPath)
+                    if (story != null) {
+                        Stories.add(story)
+                    }
+                }
+            }
         //sort by title.
         Stories.sortBy{it.title}
         //update phases based upon registration selection
