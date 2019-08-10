@@ -76,24 +76,25 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     return null
 }
 
-fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders: Array<DocumentFile?>): Boolean{
-    val zis = ZipInputStream(getStoryChildInputStream(context,zipFile!!.name!!)) ?: return
-
-    val folderNames: MutableList<String> = mutableListOf()
+fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders: Array<DocumentFile?>){
     try
     {
+        val zis = ZipInputStream(getChildInputStream(context,zipFile!!.name!!))
+
+        val folderNames: MutableList<String> = mutableListOf()
         for (f in existingFolders){
             if(f != null) folderNames.add(f.name ?: continue)
         }
-
-        var ze: ZipEntry? = zis.nextEntry
 
         val baos = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
         var count: Int = 0
 
-        while(ze != null)
+        while(true)
         {
+            val ze: ZipEntry? = zis.nextEntry
+            //if it's not a zip file, return false (didn't work).
+            if(ze == null) break
 
             val filename = ze.name ?: continue
 
@@ -101,33 +102,32 @@ fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders:
             val folderName = filename.substring(0,filename.indexOf('/'))
             if(folderName in folderNames) continue
 
-            if( ! storyRelPathExists(context,filename)) continue
+            if( storyRelPathExists(context,filename)) continue
 
             val ostream = getChildOutputStream(context,filename) ?: continue
 
             // reading and writing
             count = zis.read(buffer)
-            while(count != -1)
-            {
-                baos.write(buffer, 0, count)
-                val bytes = baos.toByteArray()
-                ostream.write(bytes)
-                baos.reset()
-                count = zis.read(buffer)
-            }
+            try {
+                while (count != -1) {
+                    baos.write(buffer, 0, count)
+                    val bytes = baos.toByteArray()
+                    ostream.write(bytes)
+                    baos.reset()
+                    count = zis.read(buffer)
+                }
+            }catch(e: Exception){}
 
             ostream.close()
             zis.closeEntry()
-            ze = zis.nextEntry
         }
 
         zis.close();
     }
     catch(e: Exception)
     {
-        Crashlytics.logException(e)
-        return false
+        return
     }
 
-    return true
+    return
 }
