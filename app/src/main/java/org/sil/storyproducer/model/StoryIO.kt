@@ -87,7 +87,7 @@ fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders:
         }
 
         val baos = ByteArrayOutputStream()
-        val buffer = ByteArray(1024)
+        val buffer = ByteArray(4192)
         var count: Int = 0
 
         while(true)
@@ -114,7 +114,7 @@ fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders:
                     val bytes = baos.toByteArray()
                     ostream.write(bytes)
                     baos.reset()
-                    count = zis.read(buffer)
+                    count = zis.read(buffer,0,4192)
                 }
             }catch(e: Exception){}
 
