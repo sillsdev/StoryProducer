@@ -6,6 +6,7 @@ import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.InputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipInputStream
@@ -76,10 +77,14 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     return null
 }
 
-fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders: Array<DocumentFile?>){
+fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile?, existingFolders: Array<DocumentFile?>){
     try
     {
-        val zis = ZipInputStream(getChildInputStream(context,zipFile!!.name!!))
+        val zipFile = File("${context.filesDir}/${zipDocFile!!.name!!}")
+        if(!zipFile.exists()){
+            copyToFilesDir(context,getWorkspaceUri(zipDocFile.name!!),zipFile)
+        }
+        val zis = ZipInputStream(zipFile.inputStream())
 
         val folderNames: MutableList<String> = mutableListOf()
         for (f in existingFolders){
@@ -90,21 +95,22 @@ fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders:
         val buffer = ByteArray(4192)
         var count: Int = 0
 
-        while(true)
-        {
+        while(true) {
+
+            zis.closeEntry() //close the last entry even if you continue.
             val ze: ZipEntry? = zis.nextEntry
             //if it's not a zip file, return false (didn't work).
-            if(ze == null) break
+            if (ze == null) break
 
             val filename = ze.name ?: continue
 
             //Only parse new root folders, not existing folders.
-            val folderName = filename.substring(0,filename.indexOf('/'))
-            if(folderName in folderNames) continue
+            val folderName = filename.substring(0, filename.indexOf('/'))
+            if (folderName in folderNames) continue
 
-            if( storyRelPathExists(context,filename)) continue
+            if (storyRelPathExists(context, filename)) continue
 
-            val ostream = getChildOutputStream(context,filename) ?: continue
+            val ostream = getChildOutputStream(context, filename) ?: continue
 
             // reading and writing
             count = zis.read(buffer)
@@ -114,12 +120,12 @@ fun unzipIfNewFolders(context: Context, zipFile: DocumentFile?, existingFolders:
                     val bytes = baos.toByteArray()
                     ostream.write(bytes)
                     baos.reset()
-                    count = zis.read(buffer,0,4192)
+                    count = zis.read(buffer, 0, 4192)
                 }
-            }catch(e: Exception){}
+            } catch (e: Exception) {
+            }
 
             ostream.close()
-            zis.closeEntry()
         }
 
         zis.close();
