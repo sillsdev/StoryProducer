@@ -43,6 +43,26 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
     }
 }
 
+fun copyToFilesDir(context: Context, sourceUri: Uri?, destFile: File){
+    try {
+        //TODO Why is DocumentsContract.isDocument not working right?
+        val ipfd = context.contentResolver.openFileDescriptor(
+                sourceUri, "r")
+        val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
+        val oStream = destFile.outputStream()
+        val bArray = ByteArray(100000)
+        var bytesRead = iStream.read(bArray)
+        while(bytesRead > 0){ //eof not reached
+            oStream.write(bArray,0,bytesRead)
+            bytesRead = iStream.read(bArray)
+        }
+        iStream.close()
+        iStream.close()
+    } catch (e: Exception) {
+        Crashlytics.logException(e)
+    }
+}
+
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
     if(story.title == "") return genDefaultImage()
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
