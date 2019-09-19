@@ -104,7 +104,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
             val params = Bundle()
             params.putString("video_name", videoRelPath)
-            Workspace.logEvent(context,"video_creation_$videoRelPath",params)
+            Workspace.logEvent(context,"video_creation_${videoRelPath.substringBefore(".")}",params)
 
             //Make 3gp video before you delete the temp video - it's made from that.
             if(mIncludePictures) make3GPVideo()
