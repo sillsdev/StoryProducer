@@ -116,7 +116,7 @@ object Workspace{
             val files = workspace.listFiles()
             for (storyPath in files) {
                 //TODO - check storyPath.name against titles.
-                //unzipIfNewFolders(context, storyPath, files)
+                unzipIfNewFolders(context, storyPath, files)
                 //deleteWorkspaceFile(context, storyPath!!.name!!)
             }
             //After you unzipped the files, see if there are any new templates that we can read in.
