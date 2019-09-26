@@ -8,6 +8,9 @@ import org.sil.storyproducer.tools.file.getText
 import java.util.*
 import java.util.regex.Pattern
 import org.sil.storyproducer.tools.file.getChildDocuments
+import android.graphics.BitmapFactory
+import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+
 
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is a BLOOM html file there
@@ -26,7 +29,9 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
     //Image and transition pattern
     val reSlideType = Pattern.compile("(^[^\"]+)")
-    val reNarration = Pattern.compile("id=\"narration([0-9]+)[^>]+>([^<]+)")
+    val reAudioSentence = Pattern.compile("audio-sentence.+id=\"(\\w+)[^>]+>([^<]+)")
+    val reParagraph = Pattern.compile("<p>([^<>]+)</p>")
+    val reScripture = Pattern.compile("^\\w+\\s+[0-9]")
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
     val reSoundTrackVolume = Pattern.compile("data-backgroundaudiovolume=\"([^\"]+)")
     val reImage = Pattern.compile("\"(\\w+.(jpg|png))")
@@ -37,17 +42,23 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val reOrgAcknSplit = Pattern.compile(">([^<]*[a-zA-Z0-9]+[^<]*)<")
 
     val pageTextList = htmlText.split("class=\"bloom-page")
+    val bmOptions = BitmapFactory.Options()
+    bmOptions.inJustDecodeBounds = true
 
     if(pageTextList.size <= 2) return null
 
     //add the title slide
     var slide = Slide()
-    var mNarration = reNarration.matcher(pageTextList[0])
+    var mNarration = reAudioSentence.matcher(pageTextList[0])
     if(mNarration.find()) {
         slide.slideType = SlideType.FRONTCOVER
-        slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
+        slide.narrationFile = "audio/${mNarration.group(1)}.mp3"
         slide.content = mNarration.group(2)
         slide.title = slide.content
+        val mSubtitle = reParagraph.matcher(pageTextList[0])
+        if(mSubtitle.find()){
+            slide.reference = mSubtitle.group(1)
+        }
         slides.add(slide)
     } else { return null }
 
@@ -66,12 +77,23 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         }
 
         //narration
-        mNarration = reNarration.matcher(t)
+        mNarration = reAudioSentence.matcher(t)
         if(mNarration.find()){
-            slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
-            slide.content = mNarration.group(2)
-            if(i==1) slide.title = slide.content  //first slide title
+            slide.narrationFile = "audio/${mNarration.group(1)}.mp3"
         }
+
+        val mParagraphs = reParagraph.matcher(t)
+        while(mParagraphs.find()){
+            val text = mParagraphs.group(1)
+            if(reScripture.matcher(text).find()){
+                if(slide.reference == "") slide.reference = text
+                else slide.reference += " $text"
+            }else{
+                if(slide.content == "") slide.content = text
+                else slide.content += " $text"
+            }
+        }
+        if(i==1) slide.title = slide.content  //first slide title
 
         //soundtrack
         val mSoundTrack = reSoundTrack.matcher(t)
@@ -83,35 +105,34 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mImage = reImage.matcher(t)
         if(mImage.find()){
             slide.imageFile = mImage.group(1)
-        }
-        val mHW = reHW.matcher(t)
-        if(mHW.find()){
-            slide.width = mHW.group(1).toInt()
-            slide.height = mHW.group(2).toInt()
+            BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
+            slide.height = bmOptions.outHeight
+            slide.width = bmOptions.outWidth
             slide.startMotion = Rect(0, 0, slide.width, slide.height)
             slide.endMotion = Rect(0, 0, slide.width, slide.height)
-        }
-        val mSR = reSR.matcher(t)
-        if(mSR.find()) {
-            val x = mSR.group(1).toDouble()*slide.width
-            val y = mSR.group(2).toDouble()*slide.height
-            val w = mSR.group(3).toDouble()*slide.width
-            val h = mSR.group(4).toDouble()*slide.height
-            slide.startMotion = Rect((x).toInt(), //left
-                    (y).toInt(),  //top
-                    (x+w).toInt(),   //right
-                    (y+h).toInt())  //bottom
-        }
-        val mER = reER.matcher(t)
-        if(mER.find()) {
-            val x = mER.group(1).toDouble()*slide.width
-            val y = mER.group(2).toDouble()*slide.height
-            val w = mER.group(3).toDouble()*slide.width
-            val h = mER.group(4).toDouble()*slide.height
-            slide.endMotion = Rect((x).toInt(), //left
-                    (y).toInt(),  //top
-                    (x+w).toInt(),   //right
-                    (y+h).toInt())  //bottom
+
+            val mSR = reSR.matcher(t)
+            if(mSR.find()) {
+                val x = mSR.group(1).toDouble()*slide.width
+                val y = mSR.group(2).toDouble()*slide.height
+                val w = mSR.group(3).toDouble()*slide.width
+                val h = mSR.group(4).toDouble()*slide.height
+                slide.startMotion = Rect((x).toInt(), //left
+                        (y).toInt(),  //top
+                        (x+w).toInt(),   //right
+                        (y+h).toInt())  //bottom
+            }
+            val mER = reER.matcher(t)
+            if(mER.find()) {
+                val x = mER.group(1).toDouble()*slide.width
+                val y = mER.group(2).toDouble()*slide.height
+                val w = mER.group(3).toDouble()*slide.width
+                val h = mER.group(4).toDouble()*slide.height
+                slide.endMotion = Rect((x).toInt(), //left
+                        (y).toInt(),  //top
+                        (x+w).toInt(),   //right
+                        (y+h).toInt())  //bottom
+            }
         }
         slides.add(slide)
     }
@@ -151,4 +172,8 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     }
 
     return Story(storyPath.name!!,slides)
+}
+
+private fun getDropboxIMGSize(context: Context, relPath: String) {
+
 }
