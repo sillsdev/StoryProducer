@@ -60,7 +60,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     override fun fillBuffer(buffer: ByteBuffer, info: MediaCodec.BufferInfo) {
         val outputBuffer = pullBuffer(info, false)
         buffer.clear()
-        buffer.put(outputBuffer)
+        buffer.put(outputBuffer!!)
         releaseBuffer(outputBuffer)
     }
 

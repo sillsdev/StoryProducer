@@ -9,14 +9,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import android.view.*
 import android.webkit.WebView
 import android.widget.*
@@ -34,7 +34,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     private var mDrawerList: ListView? = null
     private var mAdapter: ArrayAdapter<String>? = null
     private var mDrawerToggle: ActionBarDrawerToggle? = null
-    private var mDrawerLayout: DrawerLayout? = null
+    private var mDrawerLayout: androidx.drawerlayout.widget.DrawerLayout? = null
 
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
@@ -186,7 +186,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         mDrawerList!!.bringToFront()
         mDrawerLayout = findViewById(R.id.drawer_layout)
         //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         addDrawerItems()
         mDrawerList!!.onItemClickListener = DrawerItemClickListener(this)
         mDrawerToggle = object : ActionBarDrawerToggle(this, mDrawerLayout,

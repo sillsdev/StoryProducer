@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.Secure
-import android.support.v4.provider.DocumentFile
+import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
@@ -16,7 +16,7 @@ import java.util.*
 internal const val SLIDE_NUM = "CurrentSlideNum"
 
 object Workspace{
-    var workspace: DocumentFile = DocumentFile.fromFile(File(""))
+    var workspace: androidx.documentfile.provider.DocumentFile = androidx.documentfile.provider.DocumentFile.fromFile(File(""))
         set(value) {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
@@ -95,14 +95,14 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri){
         try {
-            workspace = DocumentFile.fromTreeUri(context, uri)!!
+            workspace = androidx.documentfile.provider.DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)
     }
 
     fun clearWorkspace(){
-        workspace = DocumentFile.fromFile(File(""))
+        workspace = androidx.documentfile.provider.DocumentFile.fromFile(File(""))
 
     }
 

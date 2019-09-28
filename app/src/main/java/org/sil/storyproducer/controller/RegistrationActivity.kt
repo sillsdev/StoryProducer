@@ -11,11 +11,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Secure
-import android.support.design.widget.TextInputEditText
-import android.support.design.widget.TextInputLayout
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.app.AppCompatActivity
 import android.text.Html
 import android.util.Log
 import android.view.View
@@ -645,8 +645,8 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
         //Now, let's find the workspace path.
         Workspace.initializeWorskpace(this)
         val dialog = AlertDialog.Builder(this)
-                .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
-                .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))
+                .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>",0))
+                .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help),0))
                 .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION

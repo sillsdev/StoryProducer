@@ -1,7 +1,8 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.support.v4.provider.DocumentFile
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.*
@@ -44,7 +45,7 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
     }
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
+fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
     var story: Story?
     //Check if path is path
     if(!storyPath.isDirectory) return null
@@ -77,12 +78,13 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     return null
 }
 
-fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile?, existingFolders: Array<DocumentFile?>){
+fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>){
     try
     {
-        val zipFile = File("${context.filesDir}/${zipDocFile!!.name!!}")
+        val zipFile = File("${context.filesDir}/${zipDocFile.name!!}")
         if(!zipFile.exists()){
-            copyToFilesDir(context,getWorkspaceUri(zipDocFile.name!!),zipFile)
+            val uri = getWorkspaceUri(zipDocFile.name!!)
+            if(uri != null){copyToFilesDir(context,uri,zipFile)}
         }
         val zis = ZipInputStream(zipFile.inputStream())
 
@@ -93,7 +95,7 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile?, existingFolde
 
         val baos = ByteArrayOutputStream()
         val buffer = ByteArray(4192)
-        var count: Int = 0
+        var count : Int
 
         while(true) {
 

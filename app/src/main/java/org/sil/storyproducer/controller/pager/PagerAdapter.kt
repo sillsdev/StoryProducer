@@ -1,9 +1,9 @@
 package org.sil.storyproducer.controller.pager
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentStatePagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
@@ -13,7 +13,7 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 
-class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
+class PagerAdapter(fm: FragmentManager) : androidx.fragment.app.FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
     val countCache = Workspace.activePhase.getPhaseDisplaySlideCount()
 

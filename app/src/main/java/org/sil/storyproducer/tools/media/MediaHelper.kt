@@ -77,7 +77,7 @@ object MediaHelper {
      * @return
      */
     fun getTypeFromFormat(format: MediaFormat): MediaType {
-        val mime = format.getString(MediaFormat.KEY_MIME)
+        val mime = format.getString(MediaFormat.KEY_MIME) ?: ""
         return getTypeFromMime(mime)
     }
 
