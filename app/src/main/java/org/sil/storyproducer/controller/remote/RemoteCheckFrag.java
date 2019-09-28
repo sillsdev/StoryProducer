@@ -35,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.sil.storyproducer.BuildConfig;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
 import org.sil.storyproducer.model.messaging.Message;
@@ -264,7 +265,8 @@ public class RemoteCheckFrag extends Fragment {
         // js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
 
-        paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
+        String sendMessagesUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_send_message);
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, sendMessagesUrl, js, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Log.i("LOG_VOLLEY_MSG", response.toString());
@@ -344,7 +346,8 @@ public class RemoteCheckFrag extends Fragment {
         js.put("LastId", Integer.toString(msgAdapter.getLastID()));
 
 
-        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_messages), new Response.Listener<String>() {
+        String getMessagesUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_get_messages);
+        StringRequest req = new StringRequest(Request.Method.POST, getMessagesUrl, new Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

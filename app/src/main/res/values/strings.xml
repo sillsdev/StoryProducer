@@ -128,12 +128,12 @@
     <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
-    <string name="url_get_messages">https://storyproducer.eastus.cloudapp.azure.com/API/GetMessages.php</string>
-    <string name="url_send_message">https://storyproducer.eastus.cloudapp.azure.com/API/SendMessage.php</string>
-    <string name="url_request_review">https://storyproducer.eastus.cloudapp.azure.com/API/RequestRemoteReview.php</string>
-    <string name="url_get_slide_status">https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php</string>
-    <string name="url_upload_audio"> https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php</string>
-    <string name="url_register_phone">https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php</string>
+    <string name="url_get_messages">/API/GetMessages.php</string>
+    <string name="url_send_message">/API/SendMessage.php</string>
+    <string name="url_request_review">/API/RequestRemoteReview.php</string>
+    <string name="url_get_slide_status">/API/GetSlideStatuses.php</string>
+    <string name="url_upload_audio">/API/UploadSlideBacktranslation.php</string>
+    <string name="url_register_phone">/API/RegisterPhone.php</string>
     <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 
     <string name="fill_with_audio_comment">Fill with Audio Comment</string>

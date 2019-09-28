@@ -30,6 +30,7 @@ android {
         }
         debug {
             versionNameSuffix ".debug"
+            buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
         }
     }
     defaultConfig {
