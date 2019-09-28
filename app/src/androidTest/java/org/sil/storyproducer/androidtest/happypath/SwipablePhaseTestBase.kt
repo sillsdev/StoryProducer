@@ -1,6 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.support.v7.widget.AppCompatTextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.GeneralSwipeAction
 import androidx.test.espresso.action.ViewActions

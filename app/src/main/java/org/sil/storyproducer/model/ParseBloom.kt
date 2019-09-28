@@ -2,7 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.graphics.Rect
-import android.support.v4.provider.DocumentFile
+import androidx.documentfile.provider.DocumentFile
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
@@ -12,7 +12,7 @@ import android.graphics.BitmapFactory
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 
 
-fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
+fun parseBloomHTML(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
     //See if there is a BLOOM html file there
     val childDocs = getChildDocuments(context, storyPath.name!!)
     var html_name = ""
@@ -35,7 +35,6 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
     val reSoundTrackVolume = Pattern.compile("data-backgroundaudiovolume=\"([^\"]+)")
     val reImage = Pattern.compile("\"(\\w+.(jpg|png))")
-    val reHW = Pattern.compile("bloom-backgroundImage[^\\n]+title=\"[\\w.]+ [0-9]+ \\w+ ([0-9]+) x ([0-9]+)")
     val reSR = Pattern.compile("data-initialrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
     val reER = Pattern.compile("data-finalrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
     val reOrgAckn = Pattern.compile("originalAcknowledgments.*>([\\w\\W]*?)</div>")
@@ -53,11 +52,11 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     if(mNarration.find()) {
         slide.slideType = SlideType.FRONTCOVER
         slide.narrationFile = "audio/${mNarration.group(1)}.mp3"
-        slide.content = mNarration.group(2)
+        slide.content = mNarration.group(2) ?: ""
         slide.title = slide.content
         val mSubtitle = reParagraph.matcher(pageTextList[0])
         if(mSubtitle.find()){
-            slide.reference = mSubtitle.group(1)
+            slide.reference = mSubtitle.group(1) ?: ""
         }
         slides.add(slide)
     } else { return null }
@@ -70,7 +69,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         //slide type
         val mSlideVariables = reSlideType.matcher(t)
         if(mSlideVariables.find()){
-            val sv = mSlideVariables.group(1).split(" ")
+            val sv = mSlideVariables.group(1)!!.split(" ")
             if("numberedPage" in sv) slide.slideType = SlideType.NUMBEREDPAGE
             //only add the numbered pages.
             else continue
@@ -84,7 +83,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
         val mParagraphs = reParagraph.matcher(t)
         while(mParagraphs.find()){
-            val text = mParagraphs.group(1)
+            val text = mParagraphs.group(1) ?: ""
             if(reScripture.matcher(text).find()){
                 if(slide.reference == "") slide.reference = text
                 else slide.reference += " $text"
@@ -99,12 +98,12 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mSoundTrack = reSoundTrack.matcher(t)
         if(mSoundTrack.find()) {slide.musicFile = "audio/${mSoundTrack.group(1)}"}
         val mSoundTrackV = reSoundTrackVolume.matcher(t)
-        if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1).toFloat()}
+        if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1)!!.toFloat()}
 
         //image
         val mImage = reImage.matcher(t)
         if(mImage.find()){
-            slide.imageFile = mImage.group(1)
+            slide.imageFile = mImage.group(1) ?: ""
             BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
             slide.height = bmOptions.outHeight
             slide.width = bmOptions.outWidth
@@ -113,10 +112,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
             val mSR = reSR.matcher(t)
             if(mSR.find()) {
-                val x = mSR.group(1).toDouble()*slide.width
-                val y = mSR.group(2).toDouble()*slide.height
-                val w = mSR.group(3).toDouble()*slide.width
-                val h = mSR.group(4).toDouble()*slide.height
+                val x = mSR.group(1)!!.toDouble()*slide.width
+                val y = mSR.group(2)!!.toDouble()*slide.height
+                val w = mSR.group(3)!!.toDouble()*slide.width
+                val h = mSR.group(4)!!.toDouble()*slide.height
                 slide.startMotion = Rect((x).toInt(), //left
                         (y).toInt(),  //top
                         (x+w).toInt(),   //right
@@ -124,10 +123,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
             }
             val mER = reER.matcher(t)
             if(mER.find()) {
-                val x = mER.group(1).toDouble()*slide.width
-                val y = mER.group(2).toDouble()*slide.height
-                val w = mER.group(3).toDouble()*slide.width
-                val h = mER.group(4).toDouble()*slide.height
+                val x = mER.group(1)!!.toDouble()*slide.width
+                val y = mER.group(2)!!.toDouble()*slide.height
+                val w = mER.group(3)!!.toDouble()*slide.width
+                val h = mER.group(4)!!.toDouble()*slide.height
                 slide.endMotion = Rect((x).toInt(), //left
                         (y).toInt(),  //top
                         (x+w).toInt(),   //right
@@ -157,7 +156,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     if(mOrgOckn.find()){
         slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
-        val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1))
+        val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1) ?: "")
         slide.content = ""
         var firstLine = true
         while(mOAParts.find()){
@@ -172,8 +171,4 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     }
 
     return Story(storyPath.name!!,slides)
-}
-
-private fun getDropboxIMGSize(context: Context, relPath: String) {
-
 }

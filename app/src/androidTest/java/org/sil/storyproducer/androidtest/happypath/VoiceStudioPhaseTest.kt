@@ -1,7 +1,7 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso
@@ -132,7 +132,7 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
             }
 
             override fun perform(uiController: UiController, view: View) {
-                numberOfClips[0] = (view as RecyclerView).childCount
+                numberOfClips[0] = (view as androidx.recyclerview.widget.RecyclerView).childCount
             }
         })
         return numberOfClips[0]

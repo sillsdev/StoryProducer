@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +15,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.file.getStoryImage
 
-class StoryListFrag : Fragment() {
+class StoryListFrag : androidx.fragment.app.Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -25,7 +25,7 @@ class StoryListFrag : Fragment() {
             val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
-                    Html.fromHtml(getString(R.string.stories_not_found_body))
+                    Html.fromHtml(getString(R.string.stories_not_found_body),0)
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
                 val intent = Intent(activity, WorkspaceUpdateActivity::class.java)

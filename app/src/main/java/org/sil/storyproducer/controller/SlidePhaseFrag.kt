@@ -2,9 +2,8 @@ package org.sil.storyproducer.controller
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.Snackbar
-import android.support.v4.app.Fragment
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.snackbar.Snackbar
 import android.view.*
 import android.widget.*
 import org.sil.storyproducer.R
@@ -18,7 +17,7 @@ import java.util.*
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class SlidePhaseFrag : Fragment() {
+abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     protected var rootView: View? = null
 
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
@@ -52,8 +51,8 @@ abstract class SlidePhaseFrag : Fragment() {
         return rootView
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        val item = menu!!.getItem(0)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        val item = menu.getItem(0)
         super.onCreateOptionsMenu(menu, inflater)
         item.setIcon(R.drawable.ic_mic_white_48dp)
     }

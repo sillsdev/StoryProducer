@@ -1,7 +1,7 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import android.preference.PreferenceManager
-import android.support.v7.widget.AppCompatSeekBar
+import androidx.appcompat.widget.AppCompatSeekBar
 import android.view.View.VISIBLE
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso.onView

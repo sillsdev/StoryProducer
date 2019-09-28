@@ -3,12 +3,12 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.appcompat.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,7 +31,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         fun onRowClick(pos: Int)
         fun onPlayClick(pos: Int, buttonClickedNow: ImageButton)
         fun onDeleteClick(name: String, pos: Int)
-        fun onRenameClick(pos: Int, newName: String)
+        fun onRenameClick(position: Int, newName: String)
     }
 
     private var selectedPos = RecyclerView.NO_POSITION
@@ -135,7 +135,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var displayNames: MutableList<String> = mutableListOf()
-        internal var recyclerView: RecyclerView? = null
+        internal var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var audioPos = -1
@@ -147,7 +147,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
             slideNum = mSlideNum
         }
 
-        fun setParentFragment(parentFragment: Fragment){
+        fun setParentFragment(parentFragment: androidx.fragment.app.Fragment){
             try{
                 playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
             }
@@ -172,8 +172,8 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
 
             resetRecordingList()
             recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
-            recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            recyclerView?.layoutManager = LinearLayoutManager(context)
+            recyclerView?.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(context, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
+            recyclerView?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
 
             if (!embedded) {
                 val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)

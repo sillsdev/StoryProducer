@@ -48,7 +48,6 @@ class CreateActivity : PhaseBaseActivity() {
 
     private val PROGRESS_UPDATER = Runnable {
         var isDone = false
-        var isSuccess = false
         while (!isDone) {
             try {
                 Thread.sleep(100)
@@ -57,7 +56,7 @@ class CreateActivity : PhaseBaseActivity() {
                 return@Runnable
             }
 
-            var progress = 0.0
+            var progress: Int
             synchronized(storyMakerLock) {
                 //Stop if storyMaker was cancelled by someone else.
                 if (storyMaker == null) {
@@ -65,12 +64,12 @@ class CreateActivity : PhaseBaseActivity() {
                     return@Runnable
                 }
 
-                progress = storyMaker!!.progress
+                progress = storyMaker!!.progress.toInt()
                 isDone = storyMaker!!.isDone
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
         }
-        isSuccess = storyMaker!!.isSuccess
+        val isSuccess = storyMaker!!.isSuccess
 
         runOnUiThread {
             stopExport()
