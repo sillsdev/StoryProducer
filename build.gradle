@@ -3,8 +3,8 @@
 buildscript {
     ext.kotlin_version = '1.3.40'
     repositories {
-        jcenter()
         google()
+        jcenter()
         mavenCentral()
         maven {
             url 'https://maven.fabric.io/public'
@@ -24,13 +24,14 @@ apply plugin: "kotlin"
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
     }
 }
 repositories {
+    google()
     mavenCentral()
     jcenter()
 }
