@@ -26,6 +26,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.crashlytics.android.Crashlytics
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -338,8 +339,9 @@ open class RegistrationActivity : AppCompatActivity() {
         js["TrainerPhone"] = reg.getString("trainer_phone", " ")
 
         Log.i("LOG_VOLLEY", js.toString())
-        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_register_phone), Response.Listener { response ->
-            Log.i("LOG_VOLEY", response)
+        val registerPhoneUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_register_phone)
+        val req = object : StringRequest(Request.Method.POST, registerPhoneUrl, Response.Listener { response ->
+            Log.i("LOG_VOLLEY", response)
             resp = response
         }, Response.ErrorListener { error ->
             Log.e("LOG_VOLLEY", error.toString())
