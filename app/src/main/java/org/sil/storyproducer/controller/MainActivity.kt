@@ -153,10 +153,12 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_license -> {
+                    val version = packageManager.getPackageInfo(packageName, 0).versionName
+                    val message = getString(R.string.license_body)
                     val dialog = AlertDialog.Builder(this)
-                            .setTitle(this.getString(R.string.license_title))
-                            .setMessage(this.getString(R.string.license_body))
-                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
+                            .setTitle(getString(R.string.license_title))
+                            .setMessage("version: $version\n\n$message")
+                            .setPositiveButton(getString(R.string.ok)) { _, _ -> }.create()
                     dialog.show()
                 }
             }
