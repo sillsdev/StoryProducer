@@ -101,10 +101,10 @@ class TextOverlay(private val mText: String) {
         //text
         //TODO switch to StaticLayout.Builder.obtain when switching to API23.
         mTextLayout = StaticLayout(mText, mTextPaint, mTextWidth,
-                mHorizontalAlign, 1.0f, 0.0f, false)
+                mHorizontalAlign, 0.8f, 0.0f, false)
         //text outline
         mTextOutlineLayout = StaticLayout(mText, mTextOutlinePaint, mTextWidth,
-                mHorizontalAlign, 1.0f, 0.0f, false)
+                mHorizontalAlign, 0.8f, 0.0f, false)
 
         //Get height of multiline text.
         mTextHeight = mTextLayout!!.height

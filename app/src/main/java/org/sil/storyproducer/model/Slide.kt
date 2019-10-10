@@ -81,10 +81,11 @@ class Slide{
         }
         val fontSize : Int = when(slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
-            SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
-            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 16
+            SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 14
+            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 14
         }
         tOverlay.setFontSize(fontSize)
+
         if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
             tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
         return tOverlay

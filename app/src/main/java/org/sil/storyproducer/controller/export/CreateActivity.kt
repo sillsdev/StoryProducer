@@ -56,7 +56,7 @@ class CreateActivity : PhaseBaseActivity() {
                 return@Runnable
             }
 
-            var progress: Int
+            var progress: Double
             synchronized(storyMakerLock) {
                 //Stop if storyMaker was cancelled by someone else.
                 if (storyMaker == null) {
@@ -64,7 +64,7 @@ class CreateActivity : PhaseBaseActivity() {
                     return@Runnable
                 }
 
-                progress = storyMaker!!.progress.toInt()
+                progress = storyMaker!!.progress
                 isDone = storyMaker!!.isDone
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
