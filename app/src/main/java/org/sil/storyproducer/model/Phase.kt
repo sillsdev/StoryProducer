@@ -11,7 +11,19 @@ import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 
 
 enum class PhaseType {
-    WORKSPACE, REGISTRATION, STORY_LIST, LEARN, DRAFT, COMMUNITY_CHECK, CONSULTANT_CHECK, DRAMATIZATION, CREATE, SHARE, BACKT, WHOLE_STORY, REMOTE_CHECK
+    WORKSPACE,
+    REGISTRATION,
+    STORY_LIST,
+    LEARN,
+    DRAFT,
+    COMMUNITY_CHECK,
+    CONSULTANT_CHECK,
+    DRAMATIZATION,
+    CREATE,
+    SHARE,
+    BACKT,
+    WHOLE_STORY,
+    REMOTE_CHECK
 }
 
 /**
