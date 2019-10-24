@@ -79,10 +79,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         val mOAParts = mOrgAckn.getElementsByAttributeValueContaining("class","bloom-editable")
         slide.content = ""
         for(p in mOAParts){
-            slide.content += mOAParts.text()
+            slide.content += p.wholeText()
         }
-        slide.content = slide.content.replace(Regex.fromLiteral("\n+"),"\n")
-        slide.content = slide.content.replace(Regex.fromLiteral("\n$"),"")
+        //cleanup whitespace
+        slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
         slide.translatedContent = slide.content
         slide.musicFile = MUSIC_NONE
         slides.add(slide)
@@ -91,10 +91,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     return Story(storyPath.name!!,slides)
 }
 
-fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile){
+//Image and transition pattern
+val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
 
-    //Image and transition pattern
-    val reRect = Regex.fromLiteral("([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
+fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile){
 
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
@@ -105,14 +105,17 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
         slide.narrationFile = "audio/${audios[0].id()}.mp3"
     }
     for(a in audios){
-        slide.content += a.text()
+        slide.content += a.wholeText()
     }
 
-    slide.content = slide.content.replace(Regex.fromLiteral("\n+"),"\n")
-    slide.content = slide.content.replace(Regex.fromLiteral("\n$"),"")
-
-    slide.content = page.getElementsByAttributeValueContaining("class",
-            "bloom-translationGroup")[0].text()
+    //cleanup whitespace
+    slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
+    //extract reference, which would be the first line, only if there are multiple lines.
+    val split = slide.content.split("\n")
+    if(split.size > 1){
+        slide.reference = split[0]
+        slide.content = split.subList(1,split.size).joinToString("\n")
+    }
 
     //soundtrack
     val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
@@ -126,6 +129,10 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
     if(images.size >= 1){
         val image = images[0]
         slide.imageFile = image.attr("src")
+        if(slide.imageFile == ""){
+            val src = image.getElementsByAttribute("src")
+            if(src.size >= 1) slide.imageFile = src[0].attr("src")
+        }
         BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
         slide.height = bmOptions.outHeight
         slide.width = bmOptions.outWidth
