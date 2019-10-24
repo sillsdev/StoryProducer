@@ -8,12 +8,12 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.SystemClock
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import com.google.android.material.navigation.NavigationView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity(), Serializable {
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
         //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             // set item as selected to persist highlight
@@ -153,10 +153,12 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_license -> {
+                    val version = packageManager.getPackageInfo(packageName, 0).versionName
+                    val message = getString(R.string.license_body)
                     val dialog = AlertDialog.Builder(this)
-                            .setTitle(this.getString(R.string.license_title))
-                            .setMessage(this.getString(R.string.license_body))
-                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
+                            .setTitle(getString(R.string.license_title))
+                            .setMessage("version: $version\n\n$message")
+                            .setPositiveButton(getString(R.string.ok)) { _, _ -> }.create()
                     dialog.show()
                 }
             }

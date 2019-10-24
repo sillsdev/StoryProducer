@@ -66,7 +66,7 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         //set the two different button listeners
         holder.playButton!!.setOnClickListener { showPlayVideoChooser(path) }
         holder.shareButton!!.setOnClickListener { showShareFileChooser(path, fileName) }
-        holder.deleteButton!!.setOnClickListener { showDeleteDialog(path, fileName) }
+        holder.deleteButton!!.setOnClickListener { showDeleteDialog(path) }
         rowView.tag = holder
 
         holder.textView!!.text = fileName
@@ -103,7 +103,7 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))
     }
 
-    private fun showDeleteDialog(path: String, fileName: String) {
+    private fun showDeleteDialog(path: String) {
         val dialog = AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.delete_video_title))
                 .setMessage(context.getString(R.string.delete_video_message))

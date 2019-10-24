@@ -2,8 +2,8 @@ package org.sil.storyproducer.controller.learn
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.content.res.ResourcesCompat
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.content.res.ResourcesCompat
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
@@ -178,7 +178,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
     }
@@ -233,7 +233,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
      * Button action for playing/pausing the audio
      * @param view button to set listeners for
      */
-    fun onClickPlayPauseButton(view: View) {
+    fun onClickPlayPauseButton(@Suppress("UNUSED_PARAMETER") view: View) {
         if (narrationPlayer.isAudioPlaying) {
             pauseStoryAudio()
         } else {
@@ -277,7 +277,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                     R.string.learn_phase_practice, Snackbar.LENGTH_LONG)
             val snackBarView = snackbar.view
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.lightWhite, null))
-            val textView = snackBarView.findViewById<TextView>(android.support.design.R.id.snackbar_text)
+            val textView = snackBarView.findViewById<TextView>(R.id.snackbar_text)
             textView.setTextColor(ResourcesCompat.getColor(resources, R.color.darkGray, null))
             snackbar.show()
         }

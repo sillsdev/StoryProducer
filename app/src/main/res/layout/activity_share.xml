@@ -14,6 +14,29 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dumbphone_3gp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/export_dumbphone"
+                android:drawableEnd="@drawable/ic_dumbphone"/>
+
+            <TextView
+                android:id="@+id/smartphone_mp4"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                android:text="@string/export_smartphone"
+                android:drawableEnd="@drawable/ic_smartphone_white_24dp"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/share_section"
             android:layout_width="match_parent"
             android:layout_height="0dp"

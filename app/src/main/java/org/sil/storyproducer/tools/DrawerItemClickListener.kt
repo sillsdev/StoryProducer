@@ -2,7 +2,7 @@ package org.sil.storyproducer.tools
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
 import org.sil.storyproducer.R
@@ -37,9 +37,11 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             3 -> {
+                val version = activity.packageManager.getPackageInfo(activity.packageName, 0).versionName
+                val message = activity.getString(R.string.license_body)
                 val dialog = AlertDialog.Builder(activity)
                         .setTitle(activity.getString(R.string.license_title))
-                        .setMessage(activity.getString(R.string.license_body))
+                        .setMessage("version: $version\n\n$message")
                         .setPositiveButton(activity.getString(R.string.ok)) { _, _ -> }.create()
                 dialog.show()
             }

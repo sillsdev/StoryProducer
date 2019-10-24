@@ -5,18 +5,18 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.Secure
-import android.support.v4.provider.DocumentFile
+import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.util.*
-import kotlin.math.max
+
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 
 object Workspace{
-    var workspace: DocumentFile = DocumentFile.fromFile(File(""))
+    var workspace: androidx.documentfile.provider.DocumentFile = androidx.documentfile.provider.DocumentFile.fromFile(File(""))
         set(value) {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
@@ -95,14 +95,14 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri){
         try {
-            workspace = DocumentFile.fromTreeUri(context, uri)!!
+            workspace = androidx.documentfile.provider.DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch ( e : Exception) {}
         updateStories(context)
     }
 
     fun clearWorkspace(){
-        workspace = DocumentFile.fromFile(File(""))
+        workspace = androidx.documentfile.provider.DocumentFile.fromFile(File(""))
 
     }
 
@@ -110,13 +110,22 @@ object Workspace{
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
         if(storiesUpdated) return
-        if(workspace.isDirectory){
+        if(workspace.isDirectory) {
             //find all stories
             Stories.removeAll(Stories)
-            for (storyPath in workspace.listFiles()) {
+            val files = workspace.listFiles()
+            for (storyPath in files) {
                 //TODO - check storyPath.name against titles.
+                unzipIfNewFolders(context, storyPath, files)
+                //deleteWorkspaceFile(context, storyPath!!.name!!)
+            }
+            //After you unzipped the files, see if there are any new templates that we can read in.
+            val newFiles = workspace.listFiles()
+            for (storyPath in newFiles) {
+                if (storyPath in files) continue
+                //only read in new folders.
                 if (storyPath.isDirectory) {
-                    val story = parseStoryIfPresent(context,storyPath)
+                    val story = parseStoryIfPresent(context, storyPath)
                     if (story != null) {
                         Stories.add(story)
                     }

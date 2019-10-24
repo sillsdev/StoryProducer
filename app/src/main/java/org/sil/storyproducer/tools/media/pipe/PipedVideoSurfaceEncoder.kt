@@ -5,7 +5,7 @@ import android.graphics.Canvas
 import android.media.*
 import android.media.MediaCodecInfo.CodecCapabilities.*
 import android.os.Build
-import android.support.v4.math.MathUtils
+import androidx.core.math.MathUtils
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
@@ -65,7 +65,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
         mSource!!.setup()
         mConfigureFormat = mSource!!.outputFormat
 
-        mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME))!!.name)
+        mCodec = MediaCodec.createByCodecName(selectCodec(mConfigureFormat!!.getString(MediaFormat.KEY_MIME)!!)!!.name)
         mCodec!!.configure(mConfigureFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
 
         mSurface = mCodec!!.createInputSurface()

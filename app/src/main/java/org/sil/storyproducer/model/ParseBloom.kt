@@ -2,12 +2,16 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.graphics.Rect
-import android.support.v4.provider.DocumentFile
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
-import java.util.regex.Pattern
 import org.sil.storyproducer.tools.file.getChildDocuments
+import android.graphics.BitmapFactory
+import androidx.documentfile.provider.DocumentFile
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+
 
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is a BLOOM html file there
@@ -24,96 +28,31 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
 
-    //Image and transition pattern
-    val reSlideType = Pattern.compile("(^[^\"]+)")
-    val reNarration = Pattern.compile("id=\"narration([0-9]+)[^>]+>([^<]+)")
-    val reSoundTrack = Pattern.compile("data-backgroundaudio=\"([^\"]+)")
-    val reSoundTrackVolume = Pattern.compile("data-backgroundaudiovolume=\"([^\"]+)")
-    val reImage = Pattern.compile("\"(\\w+.(jpg|png))")
-    val reHW = Pattern.compile("bloom-backgroundImage[^\\n]+title=\"[\\w.]+ [0-9]+ \\w+ ([0-9]+) x ([0-9]+)")
-    val reSR = Pattern.compile("data-initialrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
-    val reER = Pattern.compile("data-finalrect=\"([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)")
-    val reOrgAckn = Pattern.compile("originalAcknowledgments.*>([\\w\\W]*?)</div>")
-    val reOrgAcknSplit = Pattern.compile(">([^<]*[a-zA-Z0-9]+[^<]*)<")
 
-    val pageTextList = htmlText.split("class=\"bloom-page")
-
-    if(pageTextList.size <= 2) return null
+    val soup = Jsoup.parse(htmlText)
 
     //add the title slide
     var slide = Slide()
-    var mNarration = reNarration.matcher(pageTextList[0])
-    if(mNarration.find()) {
-        slide.slideType = SlideType.FRONTCOVER
-        slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
-        slide.content = mNarration.group(2)
-        slide.title = slide.content
-        slides.add(slide)
-    } else { return null }
+    val tPages = soup.getElementsByAttributeValueContaining("class","outsideFrontCover")
+    if(tPages.size == 0) return null
+    val titlePage = tPages[0]
+    slide.slideType = SlideType.FRONTCOVER
 
-    for(i in 1 until pageTextList.size){
-        //Don't keep the first element, as it is before the first slide.
-        slide = Slide()
-        val t = pageTextList[i]
+    parsePage(context, titlePage, slide,storyPath)
 
+    slide.title = slide.content
+    slides.add(slide)
+
+    val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
+    if(pages.size <= 2) return null
+    for(page in pages){
         //slide type
-        val mSlideVariables = reSlideType.matcher(t)
-        if(mSlideVariables.find()){
-            val sv = mSlideVariables.group(1).split(" ")
-            if("numberedPage" in sv) slide.slideType = SlideType.NUMBEREDPAGE
-            //only add the numbered pages.
-            else continue
+        if(page.attr("class").contains("numberedPage")){
+            slide = Slide()
+            slide.slideType = SlideType.NUMBEREDPAGE
+            parsePage(context, page, slide,storyPath)
+            slides.add(slide)
         }
-
-        //narration
-        mNarration = reNarration.matcher(t)
-        if(mNarration.find()){
-            slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
-            slide.content = mNarration.group(2)
-            if(i==1) slide.title = slide.content  //first slide title
-        }
-
-        //soundtrack
-        val mSoundTrack = reSoundTrack.matcher(t)
-        if(mSoundTrack.find()) {slide.musicFile = "audio/${mSoundTrack.group(1)}"}
-        val mSoundTrackV = reSoundTrackVolume.matcher(t)
-        if(mSoundTrackV.find()) {slide.volume = mSoundTrackV.group(1).toFloat()}
-
-        //image
-        val mImage = reImage.matcher(t)
-        if(mImage.find()){
-            slide.imageFile = mImage.group(1)
-        }
-        val mHW = reHW.matcher(t)
-        if(mHW.find()){
-            slide.width = mHW.group(1).toInt()
-            slide.height = mHW.group(2).toInt()
-            slide.startMotion = Rect(0, 0, slide.width, slide.height)
-            slide.endMotion = Rect(0, 0, slide.width, slide.height)
-        }
-        val mSR = reSR.matcher(t)
-        if(mSR.find()) {
-            val x = mSR.group(1).toDouble()*slide.width
-            val y = mSR.group(2).toDouble()*slide.height
-            val w = mSR.group(3).toDouble()*slide.width
-            val h = mSR.group(4).toDouble()*slide.height
-            slide.startMotion = Rect((x).toInt(), //left
-                    (y).toInt(),  //top
-                    (x+w).toInt(),   //right
-                    (y+h).toInt())  //bottom
-        }
-        val mER = reER.matcher(t)
-        if(mER.find()) {
-            val x = mER.group(1).toDouble()*slide.width
-            val y = mER.group(2).toDouble()*slide.height
-            val w = mER.group(3).toDouble()*slide.width
-            val h = mER.group(4).toDouble()*slide.height
-            slide.endMotion = Rect((x).toInt(), //left
-                    (y).toInt(),  //top
-                    (x+w).toInt(),   //right
-                    (y+h).toInt())  //bottom
-        }
-        slides.add(slide)
     }
 
     //Add the song slide
@@ -132,23 +71,95 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.
     //If they are there, append to the end of the slides.
-    val mOrgOckn = reOrgAckn.matcher(pageTextList[0])
-    if(mOrgOckn.find()){
+    val mOrgAckns = soup.getElementsByAttributeValueMatching("class","(?=.*bloom-translationGroup)(?=.*originalAcknowledgments)")
+    if(mOrgAckns.size >= 1){
+        val mOrgAckn = mOrgAckns[0]
         slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
-        val mOAParts = reOrgAcknSplit.matcher(mOrgOckn.group(1))
+        val mOAParts = mOrgAckn.getElementsByAttributeValueContaining("class","bloom-editable")
         slide.content = ""
-        var firstLine = true
-        while(mOAParts.find()){
-            if(!firstLine) slide.content += "\n"
-            firstLine = false
-            slide.content += mOAParts.group(1)
+        for(p in mOAParts){
+            slide.content += p.wholeText()
         }
-        slide.content
+        //cleanup whitespace
+        slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
         slide.translatedContent = slide.content
         slide.musicFile = MUSIC_NONE
         slides.add(slide)
     }
 
     return Story(storyPath.name!!,slides)
+}
+
+//Image and transition pattern
+val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
+
+fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile){
+
+    val bmOptions = BitmapFactory.Options()
+    bmOptions.inJustDecodeBounds = true
+    //narration
+    val audios = page.getElementsByAttributeValueContaining("class","audio-sentence")
+    slide.content = ""
+    if(audios.size >= 0){
+        slide.narrationFile = "audio/${audios[0].id()}.mp3"
+    }
+    for(a in audios){
+        slide.content += a.wholeText()
+    }
+
+    //cleanup whitespace
+    slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
+    //extract reference, which would be the first line, only if there are multiple lines.
+    val split = slide.content.split("\n")
+    if(split.size > 1){
+        slide.reference = split[0]
+        slide.content = split.subList(1,split.size).joinToString("\n")
+    }
+
+    //soundtrack
+    val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
+    if(soundtrack.size >= 1){
+        slide.musicFile = "audio/${soundtrack[0].attr("data-backgroundaudio")}"
+        slide.volume = (soundtrack[0].attr("data-backgroundaudiovolume") ?: "0.25").toFloat()
+    }
+
+    //image
+    val images = page.getElementsByAttributeValueContaining("class","bloom-imageContainer")
+    if(images.size >= 1){
+        val image = images[0]
+        slide.imageFile = image.attr("src")
+        if(slide.imageFile == ""){
+            val src = image.getElementsByAttribute("src")
+            if(src.size >= 1) slide.imageFile = src[0].attr("src")
+        }
+        BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
+        slide.height = bmOptions.outHeight
+        slide.width = bmOptions.outWidth
+        slide.startMotion = Rect(0, 0, slide.width, slide.height)
+        slide.endMotion = Rect(0, 0, slide.width, slide.height)
+
+        val mSR = reRect.find(image.attr("data-initialrect"))
+        if(mSR != null) {
+            val x = mSR.groupValues[1].toDouble()*slide.width
+            val y = mSR.groupValues[2].toDouble()*slide.height
+            val w = mSR.groupValues[3].toDouble()*slide.width
+            val h = mSR.groupValues[4].toDouble()*slide.height
+            slide.startMotion = Rect((x).toInt(), //left
+                    (y).toInt(),  //top
+                    (x+w).toInt(),   //right
+                    (y+h).toInt())  //bottom
+        }
+        val mER = reRect.find(image.attr("data-finalrect"))
+        if(mER != null) {
+            val x = mER.groupValues[1].toDouble()*slide.width
+            val y = mER.groupValues[2].toDouble()*slide.height
+            val w = mER.groupValues[3].toDouble()*slide.width
+            val h = mER.groupValues[4].toDouble()*slide.height
+            slide.endMotion = Rect((x).toInt(), //left
+                    (y).toInt(),  //top
+                    (x+w).toInt(),   //right
+                    (y+h).toInt())  //bottom
+        }
+    }
 }

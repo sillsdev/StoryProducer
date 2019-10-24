@@ -1,6 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.support.v7.widget.AppCompatSeekBar
+import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
