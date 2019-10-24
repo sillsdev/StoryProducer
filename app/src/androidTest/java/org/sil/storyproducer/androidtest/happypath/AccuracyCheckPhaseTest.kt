@@ -1,9 +1,9 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import android.preference.PreferenceManager
-import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
-import android.support.v7.widget.DialogTitle
+import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.DialogTitle
 import android.view.View
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso

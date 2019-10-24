@@ -2,7 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.graphics.Rect
-import android.support.v4.provider.DocumentFile
+import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
@@ -12,7 +12,7 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.ArrayList
 
-fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
+fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
     //See if there is an xml photostory file there
     val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.

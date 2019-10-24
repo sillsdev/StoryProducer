@@ -32,7 +32,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         get() {return audioPlayer.isAudioPlaying}
     private var slideNum : Int = 0
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
 
         toolbarMediaListener = try {

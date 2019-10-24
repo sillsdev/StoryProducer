@@ -43,6 +43,26 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
     }
 }
 
+fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
+    try {
+        //TODO Why is DocumentsContract.isDocument not working right?
+        val ipfd = context.contentResolver.openFileDescriptor(
+                sourceUri, "r")
+        val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
+        val oStream = destFile.outputStream()
+        val bArray = ByteArray(100000)
+        var bytesRead = iStream.read(bArray)
+        while(bytesRead > 0){ //eof not reached
+            oStream.write(bArray,0,bytesRead)
+            bytesRead = iStream.read(bArray)
+        }
+        iStream.close()
+        iStream.close()
+    } catch (e: Exception) {
+        Crashlytics.logException(e)
+    }
+}
+
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
     if(story.title == "") return genDefaultImage()
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
@@ -90,7 +110,8 @@ fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Work
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
-    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
+    val uri: Uri = getWorkspaceUri(relPath) ?: return false
+    context.contentResolver.getType(uri) ?: return false
     return true
 }
 
@@ -199,7 +220,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         //find the mime type by extension
         var mType = mimeType
         if(mType == "") {
-            mType = when (File(uri.path).extension) {
+            mType = when (File(uri.path ?: "").extension) {
                 "json" -> "application/json"
                 //todo - use m4p.
                 "mp3"  -> "audio/x-mp3"
@@ -234,7 +255,7 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
 
 fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean {
     if(storyRelPathExists(context, relPath, dirRoot)){
-        val uri = getStoryUri(relPath,dirRoot)
+        val uri: Uri = getStoryUri(relPath,dirRoot) ?: return false
         return DocumentsContract.deleteDocument(context.contentResolver,uri)
     }
     return false
@@ -242,7 +263,7 @@ fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspa
 
 fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     if(workspaceRelPathExists(context, relPath)){
-        val uri = getWorkspaceUri(relPath)
+        val uri: Uri  = getWorkspaceUri(relPath) ?: return false
         return DocumentsContract.deleteDocument(context.contentResolver,uri)
     }
     return false

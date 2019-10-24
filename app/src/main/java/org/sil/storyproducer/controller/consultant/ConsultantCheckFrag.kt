@@ -2,9 +2,9 @@ package org.sil.storyproducer.controller.consultant
 
 import android.content.Context
 import android.os.Bundle
-import android.support.graphics.drawable.VectorDrawableCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
@@ -108,7 +108,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     }
 
     private fun makeLogView() {
-        val alertDialog = android.support.v7.app.AlertDialog.Builder(context!!)
+        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(context!!)
         val linf = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
 

@@ -1,6 +1,6 @@
 package org.sil.storyproducer.test.model
 
-import android.support.v4.provider.DocumentFile
+import androidx.documentfile.provider.DocumentFile
 
 import org.junit.Assert
 import org.junit.Test
@@ -152,7 +152,7 @@ class TestParsePhotoStory {
     @Test
     fun parsePhotoStoryXML_When_StoryFolderDoesNotExist_Should_ReturnNull() {
         setupWorkspace()
-        val storyPath = Mockito.mock(DocumentFile::class.java)
+        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
         Mockito.`when`(storyPath.name).thenReturn("IDoNotExist")
 
         val result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
@@ -163,7 +163,7 @@ class TestParsePhotoStory {
     @Test
     fun parsePhotoStoryXML_When_StoryHasNoSlides_Should_ReturnNull() {
         setupWorkspace()
-        val storyPath = Mockito.mock(DocumentFile::class.java)
+        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
         Mockito.`when`(storyPath.name).thenReturn("StoryWithNoSlides")
 
         val result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
@@ -173,16 +173,16 @@ class TestParsePhotoStory {
 
     private fun parseValidStory(): Story? {
         setupWorkspace()
-        val storyPath = Mockito.mock(DocumentFile::class.java)
+        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
         Mockito.`when`(storyPath.name).thenReturn("ValidStory")
 
         return parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
     }
 
     private fun setupWorkspace() {
-        var df = DocumentFile.fromFile(File("app/sampledata"))
+        var df = androidx.documentfile.provider.DocumentFile.fromFile(File("app/sampledata"))
         if(!df.isDirectory){
-            df = DocumentFile.fromFile(File("sampledata"))
+            df = androidx.documentfile.provider.DocumentFile.fromFile(File("sampledata"))
         }
 
         Workspace.workspace = df

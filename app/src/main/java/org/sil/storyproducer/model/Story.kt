@@ -37,7 +37,7 @@ class Story(var title: String, val slides: List<Slide>){
         return if(match != null){
             match.groupValues[1]
         } else {
-            ""
+            "N/A"
         }
     }
 

@@ -1,7 +1,7 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.widget.AppCompatSeekBar
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View.INVISIBLE
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso
@@ -67,7 +67,7 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun getCurrentNumberOfRecordings() =
-            ActivityAccessor.getCurrentActivity()!!.findViewById<RecyclerView>(R.id.recordings_list)!!.childCount
+            ActivityAccessor.getCurrentActivity()!!.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recordings_list)!!.childCount
 
     private fun getCurrentSlideAudioProgress(): Int {
         val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
