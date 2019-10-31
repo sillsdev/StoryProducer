@@ -37,10 +37,15 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     if(tPages.size == 0) return null
     val titlePage = tPages[0]
     slide.slideType = SlideType.FRONTCOVER
-
     parsePage(context, titlePage, slide,storyPath)
-
     slide.title = slide.content
+    //get title ideas - the 4th element, if there is one.
+    val screen_only = soup.getElementsByAttributeValueContaining("class","screen-only")
+    if(screen_only.size == 4){
+        val tgroup = screen_only[3].getElementsByAttributeValueContaining("class","bloom-translationGroup")
+        if(tgroup.size >= 1) slide.content = tgroup[0].wholeText().trim().replace("\\s*\\n\\s*".toRegex(),"\n")
+    }
+
     slides.add(slide)
 
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
@@ -50,7 +55,12 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         if(page.attr("class").contains("numberedPage")){
             slide = Slide()
             slide.slideType = SlideType.NUMBEREDPAGE
-            parsePage(context, page, slide,storyPath)
+            if(! parsePage(context, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
+            //get scripture reference, if there is one.
+            val ref = page.getElementsByAttributeValueContaining("class","bloom-translationGroup")
+            if(ref.size >= 1){
+                slide.reference = ref[0].wholeText().trim().replace("\\s+".toRegex()," ")
+            }
             slides.add(slide)
         }
     }
@@ -94,15 +104,17 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 //Image and transition pattern
 val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
 
-fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile){
+fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile): Boolean{
 
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
     //narration
     val audios = page.getElementsByAttributeValueContaining("class","audio-sentence")
     slide.content = ""
-    if(audios.size >= 0){
+    if(audios.size >= 1){
         slide.narrationFile = "audio/${audios[0].id()}.mp3"
+    }else{
+        return false
     }
     for(a in audios){
         slide.content += a.wholeText()
@@ -110,12 +122,6 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
 
     //cleanup whitespace
     slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
-    //extract reference, which would be the first line, only if there are multiple lines.
-    val split = slide.content.split("\n")
-    if(split.size > 1){
-        slide.reference = split[0]
-        slide.content = split.subList(1,split.size).joinToString("\n")
-    }
 
     //soundtrack
     val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
@@ -162,4 +168,5 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
                     (y+h).toInt())  //bottom
         }
     }
+    return true
 }
