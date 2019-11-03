@@ -49,7 +49,12 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
 
-        setToolbar()
+        // Insert toolbar fragment into UI
+        val bundle = Bundle()
+        bundle.putInt(SLIDE_NUM, 0)
+        recordingToolbar.arguments = bundle
+        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        recordingToolbar.keepToolbarVisible()
 
         learnImageView = findViewById(R.id.fragment_image_view)
         playButton = findViewById(R.id.fragment_reference_audio_button)
@@ -147,8 +152,10 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                     if(recordingToolbar.isRecording || recordingToolbar.isAudioPlaying){
                         videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
                         setSlideFromSeekbar()
-                    }else{
+                    } else if (narrationPlayer.isAudioPrepared) {
                         if(curPos >= 0) videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
+                    } else {
+                        videoSeekBar?.progress = 0
                     }
                 }
             }
@@ -173,15 +180,6 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         }
     }
 
-
-    private fun setToolbar(){
-        val bundle = Bundle()
-        bundle.putInt(SLIDE_NUM, 0)
-        recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
-
-        recordingToolbar.keepToolbarVisible()
-    }
 
     override fun onStoppedToolbarRecording() {
         makeLogIfNecessary(true)

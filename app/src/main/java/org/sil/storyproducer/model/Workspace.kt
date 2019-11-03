@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.support.v4.provider.DocumentFile
+import android.util.Log;
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
@@ -55,7 +56,7 @@ object Workspace{
         return "${activePhase.getShortName()}${ Workspace.activeSlideNum }"
     }
 
-    var activeSlideNum: Int = -1
+    var activeSlideNum: Int = 0
     set(value){
         field = 0
         if(value >= 0 && value < activeStory.slides.size){
@@ -126,10 +127,13 @@ object Workspace{
         //sort by title.
         Stories.sortBy{it.title}
         //update phases based upon registration selection
+        Log.e("@pwhite", "updateStories(): updating...phases = ${phases.size}");
+        Log.e("@pwhite", "updateStories(): updating...reg = ${registration.getString("consultant_location_type")}");
         phases = when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases()
+            "Remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
+        Log.e("@pwhite", "updateStories(): updating...phases = ${phases.size}");
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
@@ -181,6 +185,7 @@ object Workspace{
             activePhaseIndex = phases.size - 1
             return false
         }
+        Log.e("@pwhite", "goToNextPhase(): phases = ${phases.size}");
         activePhaseIndex++
         activePhase = phases[activePhaseIndex]
         //there was a successful phase change!

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/fragment_backtranslation_root_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/gray"
+tools:context="org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity">
+
+<RelativeLayout
+    android:id="@+id/whole_story_picture_envelope"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/whole_story_image_view"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop"
+        android:contentDescription="@string/back_translation_title" />
+
+    <ImageButton
+        android:id="@+id/whole_story_play_draft_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/ic_play_circle_outline_white_36dp"
+        android:src="@drawable/ic_close_red_36dp"
+        android:contentDescription="@string/backTranslation_play_draft" />
+
+    <TextView
+        android:layout_width="@dimen/triangle_width"
+        android:layout_height="@dimen/triangle_height"
+        android:layout_alignBottom="@id/whole_story_image_view"
+        android:layout_alignEnd="@id/whole_story_image_view"
+        android:background="@drawable/triangle_background" />
+
+    <TextView
+        android:id="@+id/slide_number_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/whole_story_image_view"
+        android:layout_alignEnd="@id/whole_story_image_view"
+        android:paddingStart="7dp"
+        android:paddingEnd="7dp"
+        android:text=""
+        android:textSize="@dimen/text_body" />
+
+</RelativeLayout>
+
+<RelativeLayout
+    android:id="@+id/slide_status"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:paddingBottom="50dp">
+
+
+    <EditText
+        android:id="@+id/transcription"
+        android:layout_width="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/large_text"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:inputType="none"
+        android:hint="@string/backTranslation_hint"
+        android:layout_alignParentEnd="true">
+
+
+    </EditText>
+
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/transcription"
+        />
+</RelativeLayout>
+
+</RelativeLayout>

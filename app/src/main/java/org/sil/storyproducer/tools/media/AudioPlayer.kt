@@ -3,6 +3,7 @@ package org.sil.storyproducer.tools.media
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
 import java.io.IOException
@@ -14,13 +15,15 @@ class AudioPlayer {
     private var onCompletionListenerPersist: MediaPlayer.OnCompletionListener? = null
 
     var currentPosition: Int
-        get() =
-            try{ mPlayer.currentPosition
-            } catch (e : Exception){ 0 }
+        get() = if (isAudioPrepared) {
+            mPlayer.currentPosition
+        } else {
+            0
+        }
         set(value) {
-            try {
+            if (isAudioPrepared) {
                 mPlayer.seekTo(value)
-            } catch (e : Exception) {}
+            }
         }
 
     /**
@@ -28,21 +31,18 @@ class AudioPlayer {
      * @return the duration of the audio as an int
      */
     val audioDurationInMilliseconds: Int
-        get() = mPlayer.duration
+        get() = if (isAudioPrepared) {
+            mPlayer.duration
+        } else {
+            0
+        }
 
     /**
      * returns if the audio is being played or not
      * @return true or false based on if the audio is being played
      */
     val isAudioPlaying: Boolean
-        get() {
-            try {
-                return mPlayer.isPlaying
-            } catch (e: IllegalStateException) {
-                return false
-            }
-
-        }
+        get() = isAudioPrepared && mPlayer.isPlaying
 
     var isAudioPrepared: Boolean = false
         private set
@@ -52,34 +52,38 @@ class AudioPlayer {
      */
     init {
         mPlayer = MediaPlayer()
+        mPlayer.setOnErrorListener { _, what, extra ->
+            Log.e("@pwhite", "media player error what = $what, extra = $extra")
+            false
+        }
         fileExists = false
     }
 
-    fun setSource(context: Context, uri: Uri) : Boolean {
-        try {
-            mPlayer.release()
-            mPlayer = MediaPlayer()
-            mPlayer.setOnCompletionListener(onCompletionListenerPersist)
-            mPlayer.setDataSource(context, uri)
-            fileExists = true
-            isAudioPrepared = true
-            mPlayer.prepare()
-            currentPosition = 0
-        } catch (e: Exception) {
-            //TODO maybe do something with this exception
-            fileExists = false
-            isAudioPrepared = false
+    fun setSource(context: Context, uri: Uri): Boolean {
+        mPlayer.release()
+        mPlayer = MediaPlayer()
+        mPlayer.setOnCompletionListener(onCompletionListenerPersist)
+        Log.e("@pwhite", "setting source and error listener")
+        mPlayer.setOnErrorListener { _, what, extra ->
+            Log.e("@pwhite", "media player error what = $what, extra = $extra")
+            false
         }
+        mPlayer.setDataSource(context, uri)
+        fileExists = true
+        isAudioPrepared = true
+        mPlayer.prepare()
+        currentPosition = 0
         return fileExists
     }
+
     /**
      * set the audio file from the worskspace data
      * @return true if the file exists, false if it does not.
      */
 
     fun setStorySource(context: Context, relPath: String,
-                       storyName: String = Workspace.activeStory.title) : Boolean {
-        val uri: Uri = getStoryUri(relPath,storyName) ?: return false
+                       storyName: String = Workspace.activeStory.title): Boolean {
+        val uri: Uri = getStoryUri(relPath, storyName) ?: return false
         return setSource(context, uri)
     }
 
@@ -92,21 +96,18 @@ class AudioPlayer {
      * Pauses the audio if it is currently being played
      */
     fun pauseAudio() {
-        try {
-            if(mPlayer.isPlaying)
-                mPlayer.pause()
-        } catch (e: Exception) {}
+        if (mPlayer.isPlaying) {
+            mPlayer.pause()
+        }
     }
 
     /**
      * Resumes the audio from where it was last paused
      */
     fun resumeAudio() {
-        try {
-            if(fileExists) {
-                mPlayer.start()
-            }
-        } catch (e: Exception) { }
+        if (fileExists) {
+            mPlayer.start()
+        }
 
     }
 
@@ -114,10 +115,8 @@ class AudioPlayer {
      * Stops the audio if it is currently being played
      */
     fun stopAudio() {
-        try {
-            if(mPlayer.isPlaying) mPlayer.pause()
-            if(currentPosition != 0) currentPosition = 0
-        } catch (e: Exception) {}
+        if (mPlayer.isPlaying) mPlayer.pause()
+        if (currentPosition != 0) currentPosition = 0
     }
 
     /**
@@ -125,9 +124,7 @@ class AudioPlayer {
      */
     fun release() {
         isAudioPrepared = false
-        try {
-            mPlayer.release()
-        } catch (e : Exception) {}
+        mPlayer.release()
     }
 
     /**
@@ -135,7 +132,7 @@ class AudioPlayer {
      * @param msec milliseconds for where to seek to in the audio
      */
     fun seekTo(msec: Int) {
-        if(!fileExists) return
+        if (!fileExists) return
         mPlayer.seekTo(msec)
     }
 

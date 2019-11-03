@@ -37,7 +37,8 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
         PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
         PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
-        else -> ""
+        PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile
+        else -> throw Exception("Unsupported stage to get the audio file for")
     }
 }
 

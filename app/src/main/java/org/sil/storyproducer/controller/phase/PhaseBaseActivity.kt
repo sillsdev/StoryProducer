@@ -17,6 +17,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.*
 import android.webkit.WebView
 import android.widget.*
@@ -220,6 +221,8 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     fun jumpToPhase(newPhase: Phase) {
         if(newPhase.phaseType == phase.phaseType) return
         Workspace.activePhase = newPhase
+        val c = newPhase.getTheClass()
+        Log.e("@pwhite", "sending intent to class $c")
         val intent = Intent(this.applicationContext, newPhase.getTheClass())
         intent.putExtra("storyname", Workspace.activeStory.title)
         startActivity(intent)
@@ -265,28 +268,23 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
 
-        //scale down image to not crash phone from memory error from displaying too large an image
-        //Get the height of the phone.
-        val phoneProperties = this.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
-        val width = phoneProperties.widthPixels
+        if (slideNum < Workspace.activeStory.slides.size) {
+            //scale down image to not crash phone from memory error from displaying too large an image
+            //Get the height of the phone.
+            val scalingFactor = 0.4
+            var height = (resources.displayMetrics.heightPixels * scalingFactor).toInt()
+            val width = resources.displayMetrics.widthPixels
 
-        //scale bitmap
-        slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
-
-        //draw the text overlay
-        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
-        val canvas = Canvas(slidePicture)
-        //only show the untranslated title in the Learn phase.
-        val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.LEARN)
-            Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
-        else Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
-        //if overlay is null, it will not write the text.
-        tOverlay?.setPadding(max(20, 20 + (canvas.width - phoneProperties.widthPixels) / 2))
-        tOverlay?.draw(canvas)
-
+            slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
+            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+            val canvas = Canvas(slidePicture)
+            //only show the untranslated title in the Learn phase.
+            val tOverlay = Workspace.activeStory.slides[slideNum]
+                    .getOverlayText(false, Workspace.activePhase.phaseType == PhaseType.LEARN)
+            //if overlay is null, it will not write the text.
+            tOverlay?.setPadding(max(20, 20 + (canvas.width - width) / 2))
+            tOverlay?.draw(canvas)
+        }
         //Set the height of the image view
         slideImage.requestLayout()
 

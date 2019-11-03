@@ -1,5 +1,6 @@
 package org.sil.storyproducer.model
 
+import android.util.Log;
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
@@ -134,6 +135,7 @@ class Phase(val phaseType: PhaseType) {
     }
 
     fun getTheClass() : Class<*> {
+        Log.e("@pwhite", "getTheClass(): the phase type is $phaseType");
         return when(phaseType){
             PhaseType.WORKSPACE -> RegistrationActivity::class.java
             PhaseType.REGISTRATION -> RegistrationActivity::class.java
@@ -171,6 +173,7 @@ class Phase(val phaseType: PhaseType) {
     }
 
     fun checkValidDisplaySlideNum(slideNum: Int) : Boolean {
+        // TODO @pwhite: This is a pretty pointless function; would it be possible to remove it?
         val slideType = Workspace.activeStory.slides[slideNum].slideType
         return when(phaseType){
             PhaseType.DRAMATIZATION -> slideType in arrayOf(

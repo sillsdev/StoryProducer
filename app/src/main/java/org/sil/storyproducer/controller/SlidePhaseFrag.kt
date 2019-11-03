@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.*
 import android.widget.*
+import android.util.Log;
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.*
@@ -39,6 +40,7 @@ abstract class SlidePhaseFrag : Fragment() {
         slideNum = this.arguments!!.getInt(SLIDE_NUM)
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
+        Log.e("@pwhite", "file: ${Workspace.activePhase.getReferenceAudioFile(slideNum)}")
     }
 
     override fun onCreateView(inflater: LayoutInflater,

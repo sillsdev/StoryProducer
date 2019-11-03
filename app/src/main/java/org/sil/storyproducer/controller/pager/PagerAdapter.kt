@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
+import android.util.Log;
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
@@ -26,6 +27,7 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
     override fun getItem(i: Int): Fragment {
         val fragment: Fragment
         val passedArgs = Bundle()
+        Log.e("@pwhite", "PagerAdapter.getItem(): phase type is ${Workspace.activePhase.phaseType}");
         when (Workspace.activePhase.phaseType) {
             PhaseType.DRAFT -> {
                 fragment = DraftFrag()
@@ -39,9 +41,9 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
             PhaseType.DRAMATIZATION -> {
                 fragment = DramatizationFrag()
             }
-//            PhaseType.BACKT -> {
-//                fragment = BackTranslationFrag()
-//            }
+            //PhaseType.BACKT -> {
+                //fragment = BackTranslationFrag()
+            //}
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
             }

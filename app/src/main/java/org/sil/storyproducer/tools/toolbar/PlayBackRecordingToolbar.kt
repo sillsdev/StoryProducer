@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import android.util.Log
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -23,22 +24,23 @@ import org.sil.storyproducer.tools.media.AudioPlayer
  * This class extends the recording functionality of its base class. A playback button is added to
  * the UI in addition to the recording button.
  */
-open class PlayBackRecordingToolbar: RecordingToolbar() {
+open class PlayBackRecordingToolbar : RecordingToolbar() {
     private lateinit var playButton: ImageButton
 
     override lateinit var toolbarMediaListener: RecordingToolbar.ToolbarMediaListener
     private var audioPlayer: AudioPlayer = AudioPlayer()
-    val isAudioPlaying : Boolean
-        get() {return audioPlayer.isAudioPlaying}
-    private var slideNum : Int = 0
+    val isAudioPlaying: Boolean
+        get() {
+            return audioPlayer.isAudioPlaying
+        }
+    private var slideNum: Int = 0
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
 
         toolbarMediaListener = try {
             context as ToolbarMediaListener
-        }
-        catch (e : ClassCastException){
+        } catch (e: ClassCastException) {
             parentFragment as ToolbarMediaListener
         }
     }
@@ -62,11 +64,12 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         super.onPause()
     }
 
-    interface ToolbarMediaListener: RecordingToolbar.ToolbarMediaListener{
-        fun onStoppedToolbarPlayBack(){
+    interface ToolbarMediaListener : RecordingToolbar.ToolbarMediaListener {
+        fun onStoppedToolbarPlayBack() {
             onStoppedToolbarMedia()
         }
-        fun onStartedToolbarPlayBack(){
+
+        fun onStartedToolbarPlayBack() {
             onStartedToolbarMedia()
         }
     }
@@ -79,7 +82,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         }
     }
 
-    private fun stopToolbarAudioPlaying()   {
+    private fun stopToolbarAudioPlaying() {
         audioPlayer.stopAudio()
 
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
@@ -92,7 +95,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
         playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, R.id.play_recording_button)
         rootView?.addView(playButton)
-        
+
         rootView?.addView(toolbarButtonSpace())
     }
 
@@ -100,12 +103,11 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
      * This function sets the visibility of any inherited buttons based on the existence of
      * a playback file.
      */
-    override fun updateInheritedToolbarButtonVisibility(){
+    override fun updateInheritedToolbarButtonVisibility() {
         val playBackFileExist = storyRelPathExists(activity!!, getChosenFilename(slideNum))
-        if(playBackFileExist){
+        if (playBackFileExist) {
             showInheritedToolbarButtons()
-        }
-        else{
+        } else {
             hideInheritedToolbarButtons()
         }
     }
@@ -137,16 +139,18 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
+                Log.e("@pwhite", "playButtonOnClickListener with filename ${getChosenFilename()}")
                 if (audioPlayer.setStorySource(this.appContext, getChosenFilename())) {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
-                    
+
                     //TODO: make this logging more robust and encapsulated
-                    when (Workspace.activePhase.phaseType){
+                    when (Workspace.activePhase.phaseType) {
                         PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
-                        else ->{}
+                        PhaseType.COMMUNITY_CHECK -> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
+                        else -> {
+                        }
                     }
                 } else {
                     Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
