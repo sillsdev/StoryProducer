@@ -23,7 +23,6 @@ import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.controller.MainActivity
 
 
-
 /**
  * AutoStoryMaker is a layer of abstraction above [StoryMaker] that handles all of the
  * parameters for StoryMaker according to some defaults, structure of projects/templates, and
@@ -32,11 +31,14 @@ import org.sil.storyproducer.controller.MainActivity
 class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + VIDEO_MP4_EXT
-    val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT}
+    val video3gpPath: String
+        get() {
+            return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT
+        }
 
     // bits per second for video
-    private var videoTempFile: File = File(context.filesDir,"temp$VIDEO_MP4_EXT")
-    private var video3gpFile: File = File(context.filesDir,"temp$VIDEO_3GP_EXT")
+    private var videoTempFile: File = File(context.filesDir, "temp$VIDEO_MP4_EXT")
+    private var video3gpFile: File = File(context.filesDir, "temp$VIDEO_3GP_EXT")
 
     var mIncludeBackgroundMusic = true
     var mIncludePictures = true
@@ -64,9 +66,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 if (!mStoryMaker!!.isDone) {
                     //Still making main video
                     return mStoryMaker!!.progress / 2
-                }else {
+                } else {
                     //making 3gp video
-                    return 0.5 + time3GPms*1000.0/mStoryMaker!!.storyDuration / 2
+                    return 0.5 + time3GPms * 1000.0 / mStoryMaker!!.storyDuration / 2
                 }
             }
         }
@@ -74,7 +76,11 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     override fun start() {
         val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
 
-        val videoFormat = if(mIncludePictures) {generateVideoFormat()} else {null}
+        val videoFormat = if (mIncludePictures) {
+            generateVideoFormat()
+        } else {
+            null
+        }
         val audioFormat = generateAudioFormat()
         val pages = generatePages() ?: return
 
@@ -99,15 +105,15 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         if (isSuccess) {
             Log.v(TAG, "Moving completed video to " + videoRelPath)
-            copyToWorkspacePath(context,Uri.fromFile(videoTempFile),"$VIDEO_DIR/$videoRelPath")
+            copyToWorkspacePath(context, Uri.fromFile(videoTempFile), "$VIDEO_DIR/$videoRelPath")
             Workspace.activeStory.addVideo(videoRelPath)
 
             val params = Bundle()
             params.putString("video_name", videoRelPath)
-            Workspace.logEvent(context,"video_creation",params)
+            Workspace.logEvent(context, "video_creation", params)
 
             //Make 3gp video before you delete the temp video - it's made from that.
-            if(mIncludePictures) make3GPVideo()
+            if (mIncludePictures) make3GPVideo()
 
             videoTempFile.delete()
 
@@ -122,7 +128,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         Log.v(TAG, "Creating 3gp video" + video3gpPath)
         video3gpFile.delete()  //just in case it's still there.
 
-        try{
+        try {
 
             Config.resetStatistics()
             Config.enableStatisticsCallback { newStatistics -> time3GPms = newStatistics.time }
@@ -130,10 +136,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                     "-f 3gp -vcodec $VIDEO_3GP_CODEC -framerate $VIDEO_3GP_FRAMERATE -vf " +
                     "scale=${VIDEO_3GP_WIDTH}x$VIDEO_3GP_HEIGHT -acodec $VIDEO_3GP_AUDIO" +
                     " -b:v $VIDEO_3GP_BITRATE " + video3gpFile.absolutePath)
-            Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
-            copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
+            Log.w(TAG, FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
+            copyToWorkspacePath(context, Uri.fromFile(video3gpFile), "$VIDEO_DIR/$video3gpPath")
             Workspace.activeStory.addVideo(video3gpPath)
-        }catch(e:Exception){Crashlytics.logException(e)}
+        } catch (e: Exception) {
+            Crashlytics.logException(e)
+        }
 
         video3gpFile.delete()
     }
@@ -149,18 +157,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             val slide = Workspace.activeStory.slides[iSlide++]
 
             //Check if the song slide should be included
-            if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
+            if (slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
             val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = Story.getFilename(slide.chosenDramatizationFile)
-            //fallback to draft audio
-            if (audio == "") {
-                audio = Story.getFilename(slide.chosenDraftFile)
-            }
-            //fallback to LWC audio
-            if (audio == "") {
-                audio = Story.getFilename(slide.narrationFile)
-            }
+            val audio = (slide.dramatizationRecordings.selectedFile
+                    ?: slide.draftRecordings.selectedFile
+                    ?: slide.narration)?.fileName
 
             var soundtrack = ""
             var soundtrackVolume = 0.0f
@@ -190,11 +192,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
             //error
             var duration = 5000000L  // 5 seconds, microseconds.
-            if (audio != "") {
+
+            if (audio != null) {
                 duration = MediaHelper.getAudioDuration(context, getStoryUri(audio)!!)
             }
 
-            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack,soundtrackVolume,slide.slideType))
+            pages.add(StoryPage(image, audio, duration, kbfx, overlayText, soundtrack, soundtrackVolume, slide.slideType))
         }
 
         return pages.toTypedArray()
@@ -268,7 +271,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC,
                     VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT)
 
-            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
+            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, VIDEO_MP4_COLOR)
             videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
             videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
             videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)

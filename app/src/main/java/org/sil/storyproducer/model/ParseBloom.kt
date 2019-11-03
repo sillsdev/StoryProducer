@@ -45,7 +45,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     var mNarration = reNarration.matcher(pageTextList[0])
     if(mNarration.find()) {
         slide.slideType = SlideType.FRONTCOVER
-        slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
+        slide.narration = Recording("audio/narration${mNarration.group(1)}.mp3", "")
         slide.content = mNarration.group(2)
         slide.title = slide.content
         slides.add(slide)
@@ -68,7 +68,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         //narration
         mNarration = reNarration.matcher(t)
         if(mNarration.find()){
-            slide.narrationFile = "audio/narration${mNarration.group(1)}.mp3"
+            slide.narration = Recording("audio/narration${mNarration.group(1)}.mp3", "")
             slide.content = mNarration.group(2)
             if(i==1) slide.title = slide.content  //first slide title
         }

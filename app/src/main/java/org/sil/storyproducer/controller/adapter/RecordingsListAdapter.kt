@@ -19,13 +19,14 @@ import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.RecordingList
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class RecordingsListAdapter(val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
+class RecordingsListAdapter(private val recordings: RecordingList, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(pos: Int)
@@ -43,22 +44,18 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         return ViewHolder(individualAudio)
     }
 
-    override fun getItemCount(): Int = values?.size ?: 0
+    override fun getItemCount(): Int = recordings.getFiles().size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val audioText = values?.get(position)
-        if (audioText != null) {
-            if (getChosenDisplayName().contains(audioText)) {
-                val color = ContextCompat.getColor(holder.itemView.context, R.color.primary)
-                holder.itemView.setBackgroundColor(color)
-                selectedPos = holder.adapterPosition
-            }
-            else{
-                val color = ContextCompat.getColor(holder.itemView.context, R.color.black)
-                holder.itemView.setBackgroundColor(color)
-            }
-            holder.bindView(audioText)
+        if (recordings.selectedIndex == position) {
+            val color = ContextCompat.getColor(holder.itemView.context, R.color.primary)
+            holder.itemView.setBackgroundColor(color)
+            selectedPos = holder.adapterPosition
+        } else {
+            val color = ContextCompat.getColor(holder.itemView.context, R.color.black)
+            holder.itemView.setBackgroundColor(color)
         }
+        holder.bindView(recordings.getFiles()!![position].displayName)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -134,7 +131,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
     class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
-        private var displayNames: MutableList<String> = mutableListOf()
+        private var displayNames = RecordingList()
         internal var recyclerView: RecyclerView? = null
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
@@ -143,18 +140,17 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         private var playbackListener: RecordingToolbar.ToolbarMediaListener? = null
         private var slideNum: Int = Workspace.activeSlideNum
 
-        fun setSlideNum(mSlideNum:Int){
+        fun setSlideNum(mSlideNum: Int) {
             slideNum = mSlideNum
         }
 
-        fun setParentFragment(parentFragment: Fragment){
-            try{
+        fun setParentFragment(parentFragment: Fragment) {
+            try {
                 playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
-            }
-            catch (e : ClassCastException){
+            } catch (e: ClassCastException) {
                 playbackListener = context as RecordingToolbar.ToolbarMediaListener
+            } catch (e: Exception) {
             }
-            catch (e:Exception){}
         }
 
         fun embedList(view: ViewGroup) {
@@ -201,15 +197,12 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
          */
         fun resetRecordingList() {
             //only update if there was a change.
-            val newNames = getRecordedDisplayNames(slideNum) ?:  mutableListOf()
-            if(!displayNames.equals(newNames)) {
-                displayNames = newNames
-                recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
-            }
+            displayNames = Workspace.activePhase.getRecordings()
+            recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
         }
 
         override fun onRowClick(pos: Int) {
-            setChosenFileIndex(pos)
+            displayNames.selectedIndex = pos
         }
 
         override fun onPlayClick(pos: Int, buttonClickedNow: ImageButton) {
@@ -246,26 +239,23 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
             }
         }
 
-        override fun onDeleteClick(name: String, pos: Int){
-            deleteAudioFileFromList(context,pos)
-            displayNames.removeAt(pos)
+        override fun onDeleteClick(name: String, pos: Int) {
+            deleteAudioFileFromList(context, pos)
             recyclerView?.adapter!!.notifyDataSetChanged()
             if ("${Workspace.activeDir}/$name" == getChosenDisplayName()) {
-                if (displayNames.size > 0) {
-                    onRowClick(displayNames.size-1)
-                }
-                else {
-                    setChosenFileIndex(-1)
+                if (displayNames.getFiles().isNotEmpty()) {
+                    onRowClick(displayNames.getFiles().size - 1)
+                } else {
+                    displayNames.selectedIndex = -1
                     toolbar?.updateInheritedToolbarButtonVisibility()
                     dialog?.dismiss()
                 }
             }
         }
 
-        override fun onRenameClick(position: Int, newName: String) {
-            updateDisplayName(position, newName)
-            setChosenFileIndex(position)
-            displayNames[position] = newName
+        override fun onRenameClick(pos: Int, newName: String) {
+            updateDisplayName(pos, newName)
+            displayNames.selectedIndex = pos
             recyclerView?.adapter!!.notifyDataSetChanged()
         }
 

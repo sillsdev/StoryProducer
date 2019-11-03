@@ -104,8 +104,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility() {
-        val playBackFileExist = storyRelPathExists(activity!!, getChosenFilename(slideNum))
-        if (playBackFileExist) {
+        if (getChosenFilename(slideNum) != null) {
             showInheritedToolbarButtons()
         } else {
             hideInheritedToolbarButtons()
@@ -140,7 +139,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
                 Log.e("@pwhite", "playButtonOnClickListener with filename ${getChosenFilename()}")
-                if (audioPlayer.setStorySource(this.appContext, getChosenFilename())) {
+                if (audioPlayer.setStorySource(this.appContext, getChosenFilename()!!)) {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

@@ -32,19 +32,30 @@ enum class PhaseType {
  */
 class Phase(val phaseType: PhaseType) {
 
-
-    fun getCombNames(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>?{
-        return when (phaseType){
-            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftAudioFiles
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckAudioFiles
-            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationAudioFiles
-            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
-            else -> null
+    fun getRecordings(slideNum: Int = Workspace.activeSlideNum): RecordingList {
+        return when (phaseType) {
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationRecordings
+            else -> throw Exception("Unsupported phase to get a recordings list from")
         }
     }
 
-    fun getIcon(phase: PhaseType = phaseType) : Int {
-        return when (phase){
+    fun getCombNames(slideNum: Int = Workspace.activeSlideNum): List<Recording> {
+        val recordings =
+                when (phaseType) {
+                    PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
+                    PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
+                    PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings
+                    PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationRecordings
+                    else -> throw Exception("Unsupported phase to get a list of recordings from")
+                }
+        return recordings.getFiles()
+    }
+
+    fun getIcon(phase: PhaseType = phaseType): Int {
+        return when (phase) {
             PhaseType.LEARN -> R.drawable.ic_ear_speak
             PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
             PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
@@ -59,19 +70,19 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
-        val filename = when (phaseType){
-            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].narrationFile
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-            PhaseType.CONSULTANT_CHECK -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-            else -> ""
+    fun getReferenceRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
+        val slide = Workspace.activeStory.slides[slideNum]
+        return when (phaseType) {
+            PhaseType.DRAFT -> slide.narration
+            PhaseType.COMMUNITY_CHECK -> slide.communityCheckRecordings.selectedFile
+            PhaseType.CONSULTANT_CHECK -> slide.draftRecordings.selectedFile
+            PhaseType.DRAMATIZATION -> slide.draftRecordings.selectedFile
+            PhaseType.BACKT -> slide.draftRecordings.selectedFile
+            else -> throw Exception("Unsupported stage to get a reference audio file for")
         }
-        return Story.getFilename(filename)
     }
 
-    fun getPrettyName() : String {
+    fun getPrettyName(): String {
         return when (phaseType) {
             PhaseType.LEARN -> "Learn"
             PhaseType.DRAFT -> "Translate"
@@ -87,7 +98,7 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getDisplayName() : String {
+    fun getDisplayName(): String {
         return when (phaseType) {
             PhaseType.DRAFT -> "Translation Draft"
             PhaseType.COMMUNITY_CHECK -> "Comment"
@@ -101,7 +112,7 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getShortName() : String {
+    fun getShortName(): String {
         return when (phaseType) {
             PhaseType.DRAFT -> "Translate"
             PhaseType.COMMUNITY_CHECK -> "Community"
@@ -114,12 +125,13 @@ class Phase(val phaseType: PhaseType) {
             else -> phaseType.toString().toLowerCase()
         }
     }
+
     /**
      * get the color for the phase
      * @return return the color
      */
-    fun getColor() : Int {
-        return when(phaseType){
+    fun getColor(): Int {
+        return when (phaseType) {
             PhaseType.LEARN -> R.color.learn_phase
             PhaseType.DRAFT -> R.color.draft_phase
             PhaseType.COMMUNITY_CHECK -> R.color.comunity_check_phase
@@ -134,9 +146,9 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getTheClass() : Class<*> {
+    fun getTheClass(): Class<*> {
         Log.e("@pwhite", "getTheClass(): the phase type is $phaseType");
-        return when(phaseType){
+        return when (phaseType) {
             PhaseType.WORKSPACE -> RegistrationActivity::class.java
             PhaseType.REGISTRATION -> RegistrationActivity::class.java
             PhaseType.STORY_LIST -> MainActivity::class.java
@@ -153,40 +165,40 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getPhaseDisplaySlideCount() : Int {
+    fun getPhaseDisplaySlideCount(): Int {
         var tempSlideNum = 0
-        val validSlideTypes = when(phaseType){
+        val validSlideTypes = when (phaseType) {
             PhaseType.DRAMATIZATION -> arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG, SlideType.LOCALCREDITS)
             else -> arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
         }
         for (s in Workspace.activeStory.slides)
-            if(s.slideType in validSlideTypes){
+            if (s.slideType in validSlideTypes) {
                 tempSlideNum++
-            }else{
+            } else {
                 break
             }
         return tempSlideNum
     }
 
-    fun checkValidDisplaySlideNum(slideNum: Int) : Boolean {
+    fun checkValidDisplaySlideNum(slideNum: Int): Boolean {
         // TODO @pwhite: This is a pretty pointless function; would it be possible to remove it?
         val slideType = Workspace.activeStory.slides[slideNum].slideType
-        return when(phaseType){
+        return when (phaseType) {
             PhaseType.DRAMATIZATION -> slideType in arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
+                    SlideType.LOCALSONG, SlideType.LOCALCREDITS)
             else -> slideType in arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
+                    SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
         }
     }
 
     companion object {
-        fun getLocalPhases() : List<Phase> {
+        fun getLocalPhases(): List<Phase> {
             return listOf(
                     Phase(PhaseType.LEARN),
                     Phase(PhaseType.DRAFT),
@@ -197,7 +209,7 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.SHARE))
         }
 
-        fun getRemotePhases() : List<Phase> {
+        fun getRemotePhases(): List<Phase> {
             return listOf(
                     Phase(PhaseType.LEARN),
                     Phase(PhaseType.DRAFT),
@@ -210,7 +222,7 @@ class Phase(val phaseType: PhaseType) {
                     Phase(PhaseType.SHARE))
         }
 
-        fun getHelpName(phase: PhaseType) : String {
+        fun getHelpName(phase: PhaseType): String {
             return "${phase.name.toLowerCase()}.html"
         }
     }

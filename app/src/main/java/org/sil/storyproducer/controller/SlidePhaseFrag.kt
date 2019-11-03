@@ -12,7 +12,6 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import java.util.*
 
@@ -40,7 +39,7 @@ abstract class SlidePhaseFrag : Fragment() {
         slideNum = this.arguments!!.getInt(SLIDE_NUM)
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
-        Log.e("@pwhite", "file: ${Workspace.activePhase.getReferenceAudioFile(slideNum)}")
+        Log.e("@pwhite", "file: ${Workspace.activePhase.getReferenceRecording(slideNum)}")
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -65,7 +64,10 @@ abstract class SlidePhaseFrag : Fragment() {
         super.onResume()
 
         referenceAudioPlayer = AudioPlayer()
-        referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
+        val referenceRecording = Workspace.activePhase.getReferenceRecording(slideNum)
+        if (referenceRecording != null) {
+            referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
+        }
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
@@ -183,7 +185,8 @@ abstract class SlidePhaseFrag : Fragment() {
 
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
-            if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
+            val referenceRecording = Workspace.activePhase.getReferenceRecording(slideNum)
+            if (referenceRecording == null) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {

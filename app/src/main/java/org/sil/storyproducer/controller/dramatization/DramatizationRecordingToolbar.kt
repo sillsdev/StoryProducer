@@ -90,7 +90,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (wasRecording) {
                 if (isAppendingOn) {
                     try {
-                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
+                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename()!!, audioTempName)
                     } catch (e: FileNotFoundException) {
                         Crashlytics.logException(e)
                     }
@@ -118,7 +118,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
                 stopToolbarMedia()
                 try {
-                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
+                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename()!!, audioTempName)
                 } catch (e: FileNotFoundException) {
                     Crashlytics.logException(e)
                 }

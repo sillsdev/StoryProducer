@@ -6,19 +6,15 @@ import android.text.Layout
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
+import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.text.SimpleDateFormat
 import java.util.*
 
-
-/**
- * This class contains metadata pertinent to a given slide from a story template.
- */
-@JsonClass(generateAdapter = true)
 class Slide{
     // template information
     var slideType: SlideType = SlideType.NUMBEREDPAGE
-    var narrationFile = ""
+    var narration: Recording? = null
     var title = ""
     var subtitle = ""
     var reference = ""
@@ -54,14 +50,11 @@ class Slide{
     var translatedContent: String = ""
 
     //recorded audio files
-    var draftAudioFiles: MutableList<String> = ArrayList()
-    var chosenDraftFile = ""
-    var communityCheckAudioFiles: MutableList<String> = ArrayList()
-    var consultantCheckAudioFiles: MutableList<String> = ArrayList()
-    var dramatizationAudioFiles: MutableList<String> = ArrayList()
-    var chosenDramatizationFile = ""
-    var backTranslationAudioFiles: MutableList<String> = ArrayList()
-    var chosenBackTranslationFile = ""
+    var draftRecordings = RecordingList()
+    var communityCheckRecordings = RecordingList()
+    var consultantCheckRecordings = RecordingList()
+    var dramatizationRecordings = RecordingList()
+    var backTranslationRecordings = RecordingList()
 
     //consultant approval
     var isChecked: Boolean = false

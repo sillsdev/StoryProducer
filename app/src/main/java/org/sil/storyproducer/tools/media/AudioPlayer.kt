@@ -63,7 +63,7 @@ class AudioPlayer {
         mPlayer.release()
         mPlayer = MediaPlayer()
         mPlayer.setOnCompletionListener(onCompletionListenerPersist)
-        Log.e("@pwhite", "setting source and error listener")
+        Log.e("@pwhite", "setting source and error listener...uri = $uri")
         mPlayer.setOnErrorListener { _, what, extra ->
             Log.e("@pwhite", "media player error what = $what, extra = $extra")
             false

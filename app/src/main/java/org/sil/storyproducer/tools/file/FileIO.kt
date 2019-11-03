@@ -85,6 +85,7 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
     val uri = getStoryUri(relPath,dirRoot) ?: return false
+    Log.e("@pwhite","checking path $uri")
     context.contentResolver.getType(uri) ?: return false
     return true
 }
@@ -97,6 +98,7 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 }
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
+    Log.e("@pwhite", "getting story uri. $relPath, $dirRoot")
     if (dirRoot == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$dirRoot/$relPath"))

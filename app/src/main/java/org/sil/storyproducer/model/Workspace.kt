@@ -16,7 +16,7 @@ import kotlin.math.max
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 
-object Workspace{
+object Workspace {
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
@@ -33,42 +33,44 @@ object Workspace{
     var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
-    set(value){
-        field = value
-        //You are switching the active story.  Recall the last phase and slide.
-        activePhase = Phase(value.lastPhaseType)
-        activeSlideNum = value.lastSlideNum
-    }
+        set(value) {
+            field = value
+            //You are switching the active story.  Recall the last phase and slide.
+            activePhase = Phase(value.lastPhaseType)
+            activeSlideNum = value.lastSlideNum
+        }
     var activePhase: Phase = Phase(PhaseType.LEARN)
-        set(value){
+        set(value) {
             field = value
             activePhaseIndex = -1
-            for((i,p) in phases.withIndex()){
-                if(p.phaseType == value.phaseType) activePhaseIndex = i
+            for ((i, p) in phases.withIndex()) {
+                if (p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
     val activeDirRoot: String
-    get(){return activeStory.title }
+        get() {
+            return activeStory.title
+        }
 
     val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
-    get() {
-        return "${activePhase.getShortName()}${ Workspace.activeSlideNum }"
-    }
+        get() {
+            return "${activePhase.getShortName()}${Workspace.activeSlideNum}"
+        }
 
     var activeSlideNum: Int = 0
-    set(value){
-        field = 0
-        if(value >= 0 && value < activeStory.slides.size){
-            if(activePhase.checkValidDisplaySlideNum(value))
-                field = value
+        set(value) {
+            field = 0
+            if (value >= 0 && value < activeStory.slides.size) {
+                if (activePhase.checkValidDisplaySlideNum(value))
+                    field = value
+            }
         }
-    }
     val activeSlide: Slide?
-    get(){
-        if(activeStory.title == "") return null
-        return activeStory.slides[activeSlideNum]
-    }
+        get() {
+            if (activeStory.title == "") return null
+            return activeStory.slides[activeSlideNum]
+        }
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -77,12 +79,12 @@ object Workspace{
     fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(context,Uri.parse(prefs!!.getString("workspace","")))
+        setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     }
 
-    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
+    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()) {
         params.putString("phone_id", Secure.getString(context.contentResolver,
                 Secure.ANDROID_ID))
         params.putString("story_number", activeStory.titleNumber)
@@ -94,15 +96,16 @@ object Workspace{
         firebaseAnalytics.logEvent(eventName, params)
     }
 
-    fun setupWorkspacePath(context: Context, uri: Uri){
+    fun setupWorkspacePath(context: Context, uri: Uri) {
         try {
             workspace = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
-        } catch ( e : Exception) {}
+        } catch (e: Exception) {
+        }
         updateStories(context)
     }
 
-    fun clearWorkspace(){
+    fun clearWorkspace() {
         workspace = DocumentFile.fromFile(File(""))
 
     }
@@ -110,14 +113,14 @@ object Workspace{
     private fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
-        if(storiesUpdated) return
-        if(workspace.isDirectory){
+        if (storiesUpdated) return
+        if (workspace.isDirectory) {
             //find all stories
             Stories.removeAll(Stories)
             for (storyPath in workspace.listFiles()) {
                 //TODO - check storyPath.name against titles.
                 if (storyPath.isDirectory) {
-                    val story = parseStoryIfPresent(context,storyPath)
+                    val story = parseStoryIfPresent(context, storyPath)
                     if (story != null) {
                         Stories.add(story)
                     }
@@ -125,11 +128,11 @@ object Workspace{
             }
         }
         //sort by title.
-        Stories.sortBy{it.title}
+        Stories.sortBy { it.title }
         //update phases based upon registration selection
         Log.e("@pwhite", "updateStories(): updating...phases = ${phases.size}");
         Log.e("@pwhite", "updateStories(): updating...reg = ${registration.getString("consultant_location_type")}");
-        phases = when(registration.getString("consultant_location_type")) {
+        phases = when (registration.getString("consultant_location_type")) {
             "Remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
@@ -139,16 +142,16 @@ object Workspace{
         storiesUpdated = true
     }
 
-    fun deleteVideo(context: Context, path: String){
+    fun deleteVideo(context: Context, path: String) {
         activeStory.outputVideos.remove(path)
         deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
     }
 
     fun updateStoryLocalCredits(context: Context) {
-        for(story in Stories){
-            for(slide in story.slides){
-                if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                    if(slide.translatedContent == ""){
+        for (story in Stories) {
+            for (slide in story.slides) {
+                if (slide.slideType == SlideType.LOCALCREDITS) { //local credits
+                    if (slide.translatedContent == "") {
                         slide.translatedContent = context.getString(R.string.LC_starting_text)
                     }
                 }
@@ -156,12 +159,12 @@ object Workspace{
         }
     }
 
-    fun isLocalCreditsChanged(context: Context) : Boolean {
+    fun isLocalCreditsChanged(context: Context): Boolean {
         var isChanged = false
         val orgLCText = context.getString(R.string.LC_starting_text)
-        for(slide in activeStory.slides){
-            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                if(slide.translatedContent != orgLCText){
+        for (slide in activeStory.slides) {
+            if (slide.slideType == SlideType.LOCALCREDITS) { //local credits
+                if (slide.translatedContent != orgLCText) {
                     isChanged = true
                 }
             }
@@ -169,19 +172,15 @@ object Workspace{
         return isChanged
     }
 
-    fun getSongFilename() : String{
-        for (s in activeStory.slides){
-            if(s.slideType == SlideType.LOCALSONG){
-                if(s.chosenDramatizationFile != "") return s.chosenDramatizationFile
-                if(s.chosenDraftFile != "") return s.chosenDraftFile
-            }
-        }
-        return ""
+    fun getSongFilename(): String? {
+        val songSlide = activeStory.slides.firstOrNull { it.slideType == SlideType.LOCALSONG }
+        return (songSlide?.dramatizationRecordings?.selectedFile
+                ?: songSlide?.draftRecordings?.selectedFile)?.fileName
     }
 
-    fun goToNextPhase() : Boolean {
-        if(activePhaseIndex == -1) return false //phases not initizialized
-        if(activePhaseIndex >= phases.size - 1) {
+    fun goToNextPhase(): Boolean {
+        if (activePhaseIndex == -1) return false //phases not initizialized
+        if (activePhaseIndex >= phases.size - 1) {
             activePhaseIndex = phases.size - 1
             return false
         }
@@ -192,9 +191,9 @@ object Workspace{
         return true
     }
 
-    fun goToPreviousPhase() : Boolean {
-        if(activePhaseIndex == -1) return false //phases not initizialized
-        if(activePhaseIndex <= 0) {
+    fun goToPreviousPhase(): Boolean {
+        if (activePhaseIndex == -1) return false //phases not initizialized
+        if (activePhaseIndex <= 0) {
             activePhaseIndex = 0
             return false
         }

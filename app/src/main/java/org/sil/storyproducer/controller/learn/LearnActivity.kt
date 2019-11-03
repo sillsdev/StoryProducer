@@ -23,27 +23,32 @@ import java.util.*
 import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
-    private var learnImageView: ImageView? = null
-    private var playButton: ImageButton? = null
-    private var videoSeekBar: SeekBar? = null
-    private var mSeekBarTimer = Timer()
 
+    class DraftSlide(slideNum: Int, duration: Int, startTime: Int, filename: String) {
+        val slideNum: Int = slideNum
+        val duration: Int = duration
+        val startTime: Int = startTime
+        val filename: String = filename
+    }
+
+    private lateinit var learnImageView: ImageView
+    private lateinit var playButton: ImageButton
+    private lateinit var seekBar: SeekBar
+
+    private var mSeekBarTimer = Timer()
     private var narrationPlayer: AudioPlayer = AudioPlayer()
+    private var seekbarStartTime: Long = -1
 
     private var isVolumeOn = true
     private var isWatchedOnce = false
 
     private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
 
-    private var numOfSlides: Int = 0
-    private var seekbarStartTime: Long = -1
-    private var logStartTime: Long = -1
-    private var curPos: Int = -1 //set to -1 so that the first slide will register as "different"
-    private val slideDurations: MutableList<Int> = ArrayList()
-    private val slideStartTimes: MutableList<Int> = ArrayList()
+    private var currentSlideIndex: Int = 0
+    private val slides: MutableList<DraftSlide> = ArrayList()
 
+    private var logStartTime: Long = -1
     private var isLogging = false
-    private var startPos = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,36 +63,47 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         learnImageView = findViewById(R.id.fragment_image_view)
         playButton = findViewById(R.id.fragment_reference_audio_button)
+        seekBar = findViewById(R.id.videoSeekBar)
 
-        //setup seek bar listenters
-        videoSeekBar = findViewById(R.id.videoSeekBar)
-        videoSeekBar!!.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onStopTrackingTouch(sBar: SeekBar) {}
-            override fun onStartTrackingTouch(sBar: SeekBar) {}
-            override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
-                        //When recording, update the picture to the accurate location, preserving
-                        seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
-                        setSlideFromSeekbar()
-                    } else {
-                        if (narrationPlayer.isAudioPlaying) {
-                            pauseStoryAudio()
-                            playStoryAudio()
-                        } else {
-                            setSlideFromSeekbar()
-                        }
-                        //always start at the beginning of the slide.
-                        if (slideStartTimes.size > curPos)
-                            videoSeekBar!!.progress = slideStartTimes[curPos]
+        seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            var wasPlayingBeforeTouch = false
+            override fun onStopTrackingTouch(sBar: SeekBar) {
+                if (wasPlayingBeforeTouch) {
+                    // Always start at the beginning of the slide.
+                    if (currentSlideIndex < slides.size) {
+                        seekBar.progress = slides[currentSlideIndex].startTime
                     }
+                    playStoryAudio()
                 }
+            }
+
+            override fun onStartTrackingTouch(sBar: SeekBar) {
+                wasPlayingBeforeTouch = narrationPlayer.isAudioPlaying
+            }
+
+            override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
+                setSlideFromSeekbar()
+                //if (fromUser) {
+                //    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
+                //        //When recording, update the picture to the accurate location, preserving
+                //        seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
+                //        setSlideFromSeekbar()
+                //    } else {
+                //        if (narrationPlayer.isAudioPlaying) {
+                //            pauseStoryAudio()
+                //            playStoryAudio()
+                //        } else {
+                //            setSlideFromSeekbar()
+                //        }
+                //        //always start at the beginning of the slide.
+                //        if (slideStartTimes.size > curPos)
+                //            videoSeekBar!!.progress = slideStartTimes[curPos]
+                //    }
+                //}
             }
         })
 
-        //setup volume switch callbacks
         val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
-        //set the volume switch change listener
         volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
             isVolumeOn = if (isChecked) {
@@ -100,23 +116,32 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         }
 
         //has learn already been watched?
-        isWatchedOnce = storyRelPathExists(this,Workspace.activeStory.learnAudioFile)
+        isWatchedOnce = Workspace.activeStory.learnAudioFile != null
 
         //get story audio duration
-        numOfSlides = 0
-        slideStartTimes.add(0)
-        for (s in story.slides) {
-            //don't play the copyright slides.
-            if (s.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)) {
-                numOfSlides++
-                slideDurations.add((MediaHelper.getAudioDuration(this,
-                        getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
-                slideStartTimes.add(slideStartTimes.last() + slideDurations.last())
-            } else {
-                break
+        var lastEndTime = 0
+        story.slides.forEachIndexed { slideNum, slide ->
+            // Don't play the copyright slides.
+            if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
+                val filename = slide.narration?.fileName
+                if (filename != null) {
+                    val duration = (MediaHelper.getAudioDuration(this, getStoryUri(filename)!!) / 1000).toInt()
+                    val startTime = lastEndTime
+                    lastEndTime = startTime + duration
+                    slides.add(DraftSlide(slideNum, duration, startTime, filename))
+                }
             }
         }
-        videoSeekBar?.max = slideStartTimes.last()
+
+        seekBar.max = if (slides.isNotEmpty()) {
+            val lastSlide = slides.last()
+            lastSlide.startTime + lastSlide.duration
+            slides.last().startTime
+        } else {
+            0
+        }
+        seekBar.progress = 0
+        setSlideFromSeekbar()
 
         invalidateOptionsMenu()
     }
@@ -132,14 +157,13 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         narrationPlayer = AudioPlayer()
         narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            if(narrationPlayer.isAudioPrepared){
-                if(curPos >= numOfSlides-1){ //is it the last slide?
+            if (narrationPlayer.isAudioPrepared) {
+                if (currentSlideIndex >= slides.size - 1) { //is it the last slide?
                     //at the end of video so special case
                     pauseStoryAudio()
-                    showStartPracticeSnackBar()
                 } else {
                     //just play the next slide!
-                    videoSeekBar?.progress = slideStartTimes[curPos+1]
+                    seekBar.progress = slides[currentSlideIndex + 1].startTime
                     playStoryAudio()
                 }
             }
@@ -148,35 +172,31 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         mSeekBarTimer = Timer()
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
-                runOnUiThread{
-                    if(recordingToolbar.isRecording || recordingToolbar.isAudioPlaying){
-                        videoSeekBar?.progress = min((System.currentTimeMillis() - seekbarStartTime).toInt(),videoSeekBar!!.max)
-                        setSlideFromSeekbar()
+                runOnUiThread {
+                    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
+                        seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
                     } else if (narrationPlayer.isAudioPrepared) {
-                        if(curPos >= 0) videoSeekBar?.progress = slideStartTimes[curPos] + narrationPlayer.currentPosition
+                        seekBar.progress = slides[currentSlideIndex].startTime + narrationPlayer.currentPosition
                     } else {
-                        videoSeekBar?.progress = 0
+                        seekBar.progress = 0
                     }
                 }
             }
-        },0,33)
+        }, 0, 33)
 
         setSlideFromSeekbar()
     }
 
     private fun setSlideFromSeekbar() {
-        val time = videoSeekBar!!.progress
-        var i = 0
-        for (d in slideStartTimes) {
-            if (time < d) {
-                if(i-1 != curPos){
-                    curPos = i-1
-                    setPic(learnImageView!!, curPos)
-                    narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
-                }
-                break
+        if (slides.isNotEmpty()) {
+            val time = seekBar.progress
+            var slideIndexBeforeSeekBar = slides.indexOfLast { it.startTime <= time }
+            if (slideIndexBeforeSeekBar != currentSlideIndex || !narrationPlayer.isAudioPrepared) {
+                currentSlideIndex = slideIndexBeforeSeekBar
+                val slide = slides[currentSlideIndex]
+                setPic(learnImageView, slide.slideNum)
+                narrationPlayer.setStorySource(this, slide.filename)
             }
-            i++
         }
     }
 
@@ -194,21 +214,22 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     }
 
     override fun onStoppedToolbarMedia() {
-        videoSeekBar!!.progress = 0
+        seekBar.progress = 0
         setSlideFromSeekbar()
     }
 
     override fun onStartedToolbarMedia() {
         pauseStoryAudio()
-        videoSeekBar!!.progress = 0
-        curPos = 0
+        seekBar.progress = 0
+        currentSlideIndex = 0
+
         //This gets the progress bar to show the right time.
         seekbarStartTime = System.currentTimeMillis()
     }
 
     private fun markLogStart() {
-        if(!isLogging) {
-            startPos = curPos
+        if (!isLogging) {
+            //startPos = curPos
             logStartTime = System.currentTimeMillis()
         }
         isLogging = true
@@ -216,15 +237,15 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
     private fun makeLogIfNecessary(isRecording: Boolean = false) {
         if (isLogging) {
-            if (startPos != -1) {
+//            if (startPos != -1) {
                 val duration: Long = System.currentTimeMillis() - logStartTime
-                if(duration > 2000){ //you need 2 seconds to listen to anything
-                    saveLearnLog(this, startPos,curPos, duration, isRecording)
+                if (duration > 2000) { //you need 2 seconds to listen to anything
+                    //saveLearnLog(this, startPos, curPos, duration, isRecording)
                 }
-                startPos = -1
-            }
+                //startPos = -1
+//            }
         }
-        isLogging = false
+        //isLogging = false
     }
 
     /**
@@ -235,9 +256,9 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         if (narrationPlayer.isAudioPlaying) {
             pauseStoryAudio()
         } else {
-            if (videoSeekBar!!.progress >= videoSeekBar!!.max-100) {
+            if (seekBar.progress >= seekBar.max - 100) {
                 //reset the video to the beginning because they already finished it (within 100 ms)
-                videoSeekBar!!.progress = 0
+                seekBar.progress = 0
             }
             playStoryAudio()
         }
@@ -254,7 +275,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         seekbarStartTime = System.currentTimeMillis()
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
         narrationPlayer.playAudio()
-        playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
+        playButton.setImageResource(R.drawable.ic_pause_white_48dp)
     }
 
     /**
@@ -263,7 +284,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     private fun pauseStoryAudio() {
         makeLogIfNecessary()
         narrationPlayer.pauseAudio()
-        playButton!!.setImageResource(R.drawable.ic_play_arrow_white_48dp)
+        playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp)
     }
 
     /**

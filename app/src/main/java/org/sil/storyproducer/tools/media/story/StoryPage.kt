@@ -11,7 +11,7 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlay
  */
 class StoryPage
 
-(val imRelPath: String = "", val narrationAudioPath: String = "", private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect? = null,
+(val imRelPath: String = "", val narrationAudioPath: String? = null, private val mDuration: Long, val kenBurnsEffect: KenBurnsEffect? = null,
  val textOverlay: TextOverlay? = null, val soundtrackAudioPath: String = "", val soundtrackVolume: Float = 0.25f, val sType: SlideType = SlideType.NONE) {
 
     /**

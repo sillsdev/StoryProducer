@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.support.v4.provider.DocumentFile
+import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.getStoryChildOutputStream
