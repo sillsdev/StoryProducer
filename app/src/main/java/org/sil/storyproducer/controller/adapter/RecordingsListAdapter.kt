@@ -224,8 +224,9 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
                     stopAudio()
                 })
 
-                if (storyRelPathExists(context, getRecordedAudioFiles()[pos])) {
-                    audioPlayer.setStorySource(context, getRecordedAudioFiles()[pos])
+                val recordingFile = Workspace.activePhase.getRecordings().getFiles()[pos].fileName
+                if (storyRelPathExists(context, recordingFile)) {
+                    audioPlayer.setStorySource(context, recordingFile)
                     audioPlayer.playAudio()
                     when (Workspace.activePhase.phaseType) {
                         PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
@@ -242,11 +243,9 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         override fun onDeleteClick(name: String, pos: Int) {
             deleteAudioFileFromList(context, pos)
             recyclerView?.adapter!!.notifyDataSetChanged()
-            if ("${Workspace.activeDir}/$name" == getChosenDisplayName()) {
-                if (displayNames.getFiles().isNotEmpty()) {
-                    onRowClick(displayNames.getFiles().size - 1)
-                } else {
-                    displayNames.selectedIndex = -1
+            if (pos == Workspace.activePhase.getRecordings().selectedIndex) {
+                displayNames.selectedIndex = displayNames.getFiles().size - 1
+                if (displayNames.getFiles().isEmpty()) {
                     toolbar?.updateInheritedToolbarButtonVisibility()
                     dialog?.dismiss()
                 }

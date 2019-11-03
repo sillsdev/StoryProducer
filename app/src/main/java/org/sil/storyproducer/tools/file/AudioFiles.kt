@@ -21,14 +21,6 @@ internal const val AUDIO_EXT = ".m4a"
  * @return the path generated, or an empty string if there is a failure.
  */
 
-fun getChosenFilename(slideNum: Int = Workspace.activeSlideNum): String? {
-    return getChosenRecording(slideNum)?.fileName
-}
-
-fun getChosenDisplayName(slideNum: Int = Workspace.activeSlideNum): String? {
-    return getChosenRecording(slideNum)?.displayName
-}
-
 fun getChosenRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
     return when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
@@ -41,17 +33,9 @@ fun getChosenRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
     }
 }
 
-fun getRecordedDisplayNames(slideNum: Int = Workspace.activeSlideNum): List<String> {
-    return Workspace.activePhase.getCombNames(slideNum).map { it.displayName }
-}
-
-fun getRecordedAudioFiles(slideNum: Int = Workspace.activeSlideNum): List<String> {
-    return Workspace.activePhase.getCombNames(slideNum).map { it.fileName }
-}
-
 fun assignNewAudioRelPath(): String {
-    val recording = createRecordingCombinedName()
-    addCombinedName(recording)
+    val recording = createRecording()
+    addRecording(recording)
     return recording.fileName
 }
 
@@ -69,7 +53,7 @@ fun deleteAudioFileFromList(context: Context, pos: Int) {
     deleteStoryFile(context, filename)
 }
 
-fun createRecordingCombinedName(): Recording {
+fun createRecording(): Recording {
     //Example: project/communityCheck_3_2018-03-17T11:14;31.542.md4
     //This is the file name generator for all audio files for the app.
 
@@ -84,7 +68,7 @@ fun createRecordingCombinedName(): Recording {
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
             //find the next number that is available for saving files at.
-            val names = getRecordedDisplayNames()
+            val names = Workspace.activePhase.getRecordings().getFiles().map { it.displayName }
             val rNameNum = "${Workspace.activePhase.getDisplayName()} ([0-9]+)".toRegex()
             var maxNum = 0
             for (n in names) {
@@ -105,7 +89,7 @@ fun createRecordingCombinedName(): Recording {
     }
 }
 
-fun addCombinedName(recording: Recording) {
+fun addRecording(recording: Recording) {
     //register it in the story data structure.
     when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile = recording

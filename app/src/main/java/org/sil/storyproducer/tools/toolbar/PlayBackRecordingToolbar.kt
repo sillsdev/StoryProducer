@@ -3,19 +3,15 @@ package org.sil.storyproducer.tools.toolbar
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
-import android.util.Log
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.getChosenFilename
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.getChosenRecording
 import org.sil.storyproducer.tools.media.AudioPlayer
 
 /**
@@ -104,7 +100,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility() {
-        if (getChosenFilename(slideNum) != null) {
+        if (getChosenRecording(slideNum) != null) {
             showInheritedToolbarButtons()
         } else {
             hideInheritedToolbarButtons()
@@ -138,8 +134,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
-                Log.e("@pwhite", "playButtonOnClickListener with filename ${getChosenFilename()}")
-                if (audioPlayer.setStorySource(this.appContext, getChosenFilename()!!)) {
+                if (audioPlayer.setStorySource(this.appContext, getChosenRecording()!!.fileName)) {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

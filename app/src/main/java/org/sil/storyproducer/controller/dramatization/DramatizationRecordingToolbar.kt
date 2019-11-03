@@ -4,9 +4,8 @@ import android.view.View
 import android.widget.ImageButton
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.getChosenFilename
+import org.sil.storyproducer.tools.file.getChosenRecording
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
@@ -90,7 +89,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (wasRecording) {
                 if (isAppendingOn) {
                     try {
-                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename()!!, audioTempName)
+                        AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording()!!.fileName, audioTempName)
                     } catch (e: FileNotFoundException) {
                         Crashlytics.logException(e)
                     }
@@ -118,7 +117,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
                 stopToolbarMedia()
                 try {
-                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename()!!, audioTempName)
+                    AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording()!!.fileName, audioTempName)
                 } catch (e: FileNotFoundException) {
                     Crashlytics.logException(e)
                 }

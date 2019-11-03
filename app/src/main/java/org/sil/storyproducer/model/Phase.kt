@@ -42,18 +42,6 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getCombNames(slideNum: Int = Workspace.activeSlideNum): List<Recording> {
-        val recordings =
-                when (phaseType) {
-                    PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
-                    PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
-                    PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings
-                    PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationRecordings
-                    else -> throw Exception("Unsupported phase to get a list of recordings from")
-                }
-        return recordings.getFiles()
-    }
-
     fun getIcon(phase: PhaseType = phaseType): Int {
         return when (phase) {
             PhaseType.LEARN -> R.drawable.ic_ear_speak

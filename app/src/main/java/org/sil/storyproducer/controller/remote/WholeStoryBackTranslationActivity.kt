@@ -112,7 +112,7 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                         js["Key"] = getString(R.string.api_token)
                         js["PhoneId"] = phoneID
                         js["TemplateTitle"] = Workspace.activeStory.title
-                        js["SlideNumber"] = Workspace.activeSlideNum.toString()
+                        js["SlideNumber"] = Workspace.activeStory.slides.size.toString()
                         js["Data"] = byteString
                         val url = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_upload_audio)
                         val req = object : paramStringRequest(Method.POST, url, js, {
