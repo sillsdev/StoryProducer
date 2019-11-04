@@ -98,10 +98,10 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
             when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
                 UploadState.UPLOADED -> Toast.makeText(this, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
-                    Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADING
-                    uploadButton.background = yellowCheckmark
                     val audioRecording = Workspace.activeStory.wholeStoryBackTAudioFile
                     if (audioRecording != null) {
+                        Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADING
+                        uploadButton.background = yellowCheckmark
 
                         Toast.makeText(this, "Uploading audio", Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(this, audioRecording.fileName)
@@ -132,6 +132,8 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                             }
                         }
                         VolleySingleton.getInstance(applicationContext).addToRequestQueue(req)
+                    } else {
+                        Toast.makeText(this, "No recording found", Toast.LENGTH_SHORT).show()
                     }
 
 

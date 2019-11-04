@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentStatePagerAdapter
 import android.util.Log;
+import org.sil.storyproducer.controller.backtranslation.BackTranslationFrag
 import org.sil.storyproducer.controller.community.CommunityCheckFrag
 import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
@@ -25,32 +26,17 @@ class PagerAdapter(fm: FragmentManager) : FragmentStatePagerAdapter(fm) {
      * @return the fragment
      */
     override fun getItem(i: Int): Fragment {
-        val fragment: Fragment
-        val passedArgs = Bundle()
-        Log.e("@pwhite", "PagerAdapter.getItem(): phase type is ${Workspace.activePhase.phaseType}");
-        when (Workspace.activePhase.phaseType) {
-            PhaseType.DRAFT -> {
-                fragment = DraftFrag()
-            }
-            PhaseType.COMMUNITY_CHECK -> {
-                fragment = CommunityCheckFrag()
-            }
-            PhaseType.CONSULTANT_CHECK -> {
-                fragment = ConsultantCheckFrag()
-            }
-            PhaseType.DRAMATIZATION -> {
-                fragment = DramatizationFrag()
-            }
-            //PhaseType.BACKT -> {
-                //fragment = BackTranslationFrag()
-            //}
-            PhaseType.REMOTE_CHECK -> {
-                fragment = RemoteCheckFrag()
-            }
-            else -> {
-                fragment = DraftFrag()
-            }
+        val fragment: Fragment = when (Workspace.activePhase.phaseType) {
+            PhaseType.DRAFT -> DraftFrag()
+            PhaseType.COMMUNITY_CHECK -> CommunityCheckFrag()
+            PhaseType.CONSULTANT_CHECK -> ConsultantCheckFrag()
+            PhaseType.DRAMATIZATION -> DramatizationFrag()
+            PhaseType.BACKT -> BackTranslationFrag()
+            PhaseType.REMOTE_CHECK -> RemoteCheckFrag()
+            else -> DraftFrag()
         }
+
+        val passedArgs = Bundle()
         passedArgs.putInt(SLIDE_NUM, i)
         fragment.arguments = passedArgs
 

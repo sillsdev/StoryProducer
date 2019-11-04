@@ -55,6 +55,7 @@ class Slide{
     var consultantCheckRecordings = RecordingList()
     var dramatizationRecordings = RecordingList()
     var backTranslationRecordings = RecordingList()
+    var backTranslationUploadState = UploadState.NOT_UPLOADED
 
     //consultant approval
     var isChecked: Boolean = false

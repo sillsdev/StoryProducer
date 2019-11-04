@@ -1,85 +1,86 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_backtranslation_root_layout"
+    android:id="@+id/fragment_mr_root_relayout_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
-    tools:context="org.sil.storyproducer.controller.remote.BackTranslationFrag">
+    android:background="@color/gray">
 
-    <RelativeLayout
-        android:id="@+id/fragment_backtranslation_picture_envelope"
+    <ImageView
+        android:id="@+id/fragment_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/story_picture"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/insert_image_view"
+        android:contentDescription="@string/edit_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:background="@color/black_semi_transparent"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="6dp"
+        android:src="@drawable/ic_photo_camera_white_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/fragment_backtranslation_image_view"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop"
-            android:contentDescription="@string/back_translation_title" />
+    <ImageView
+        android:id="@+id/edit_text_view"
+        android:contentDescription="@string/edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:background="@color/black_semi_transparent"
+        android:focusable="true"
+        android:clickable="true"
+        android:padding="6dp"
+        android:src="@drawable/ic_edit_white_24dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/fragment_backtranslation_play_draft_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:background="@drawable/ic_play_circle_outline_white_36dp"
-            android:src="@drawable/ic_close_red_36dp"
-            android:contentDescription="@string/backTranslation_play_draft" />
-
-        <TextView
-            android:layout_width="@dimen/triangle_width"
-            android:layout_height="@dimen/triangle_height"
-            android:layout_alignBottom="@id/fragment_backtranslation_image_view"
-            android:layout_alignEnd="@id/fragment_backtranslation_image_view"
-            android:background="@drawable/triangle_background" />
-
-        <TextView
-            android:id="@+id/slide_number_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/fragment_backtranslation_image_view"
-            android:layout_alignEnd="@id/fragment_backtranslation_image_view"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:text=""
-            android:textSize="@dimen/text_body" />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/slide_status"
+    <include
+        android:id="@+id/seek_bar"
+        layout="@layout/play_seek_number_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:paddingBottom="50dp">
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
 
 
-        <EditText
-            android:id="@+id/transcription"
-            android:layout_width="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/large_text"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:inputType="none"
-            android:hint="@string/backTranslation_hint"
-            android:layout_alignParentEnd="true">
+    <com.getbase.floatingactionbutton.FloatingActionButton
+        android:id="@+id/upload_audio_botton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_bar" />
 
-
-        </EditText>
-
-        <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fragment_backtranslation_r_concheck_checkmark_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@id/transcription"
-            />
-    </RelativeLayout>
-
-</RelativeLayout>
+    <FrameLayout
+        android:id="@+id/toolbar_for_recording_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+    </FrameLayout>
+</android.support.constraint.ConstraintLayout>

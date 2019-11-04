@@ -66,7 +66,8 @@ fun createRecording(): Recording {
                 Workspace.activePhase.getDisplayName())
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
-        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK,
+        PhaseType.BACKT -> {
             //find the next number that is available for saving files at.
             val names = Workspace.activePhase.getRecordings().getFiles().map { it.displayName }
             val rNameNum = "${Workspace.activePhase.getDisplayName()} ([0-9]+)".toRegex()
@@ -98,6 +99,7 @@ fun addRecording(recording: Recording) {
         PhaseType.CONSULTANT_CHECK -> Workspace.activeSlide!!.consultantCheckRecordings.add(recording)
         PhaseType.DRAFT -> Workspace.activeSlide!!.draftRecordings.add(recording)
         PhaseType.DRAMATIZATION -> Workspace.activeSlide!!.dramatizationRecordings.add(recording)
+        PhaseType.BACKT -> Workspace.activeSlide!!.backTranslationRecordings.add(recording)
         else -> throw Exception("Unsupported phase to add an audio file to")
     }
 }
