@@ -12,12 +12,6 @@ internal val RE_TITLE_NUMBER = "([0-9]+[A-Za-z]?)?[_ -]*(.+)".toRegex()
 internal val RE_DISPLAY_NAME = "([^|]+)[|.]".toRegex()
 internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
-enum class UploadState {
-    UPLOADING,
-    NOT_UPLOADED,
-    UPLOADED
-}
-
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>) {
 
@@ -30,6 +24,7 @@ class Story(var title: String, val slides: List<Slide>) {
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
+    var remoteStoryId: Int? = null
 
     val shortTitle: String
         get() {

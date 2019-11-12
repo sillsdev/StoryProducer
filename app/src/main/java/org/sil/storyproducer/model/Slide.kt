@@ -11,6 +11,12 @@ import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.text.SimpleDateFormat
 import java.util.*
 
+enum class UploadState {
+    UPLOADING,
+    NOT_UPLOADED,
+    UPLOADED
+}
+
 class Slide{
     // template information
     var slideType: SlideType = SlideType.NUMBEREDPAGE

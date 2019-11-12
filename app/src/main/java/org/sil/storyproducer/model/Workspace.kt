@@ -192,7 +192,7 @@ object Workspace {
     }
 
     fun goToPreviousPhase(): Boolean {
-        if (activePhaseIndex == -1) return false //phases not initizialized
+        if (activePhaseIndex == -1) return false
         if (activePhaseIndex <= 0) {
             activePhaseIndex = 0
             return false
@@ -202,6 +202,8 @@ object Workspace {
         //there was a successful phase change!
         return true
     }
+    
+
 }
 
 

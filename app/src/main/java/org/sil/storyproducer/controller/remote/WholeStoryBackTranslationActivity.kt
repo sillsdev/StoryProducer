@@ -23,7 +23,6 @@ import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.Network.BackTranslationUpload.js
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.*
@@ -85,6 +84,9 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
         seekBar = findViewById(R.id.videoSeekBar)
         uploadButton = findViewById(R.id.upload_audio_botton)
 
+        // TODO @pwhite: This state machine of switching between green, gray,
+        // and yellow checkmarks is the same between the whole story and single
+        // slide backtranslation, and perhaps even between text messages. It is likely worth abstracting this somehow.
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
