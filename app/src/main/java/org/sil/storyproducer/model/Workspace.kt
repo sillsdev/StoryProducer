@@ -5,16 +5,26 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.Secure
+import android.support.v4.content.res.TypedArrayUtils.getString
 import android.support.v4.provider.DocumentFile
 import android.util.Log;
+import com.android.volley.Request
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
+import org.sil.storyproducer.tools.Network.paramStringRequest
 import java.io.File
 import java.util.*
 import kotlin.math.max
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
+
+// Represents a message which is waiting to be sent to the server. Such a
+// message can be either a text message or an audio file. The `isAudio`
+// property specifies which type it is; if `isAudio` is true, then `param` is
+// the filename of the audio to be uploaded. Otherwise, `param` is the text
+// content of the message.
+class EnqueuedMessage(val isAudio: Boolean, param: String, storyId: Int, slideNum: Int);
 
 object Workspace {
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -30,6 +40,7 @@ object Workspace {
     var activePhaseIndex: Int = -1
         private set
     var isInitialized = false
+    var projectId: Int? = null
     var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
@@ -80,6 +91,7 @@ object Workspace {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
+//        projectId = Integer.parseInt(registration.getString("project_id"))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     }
@@ -88,11 +100,11 @@ object Workspace {
         params.putString("phone_id", Secure.getString(context.contentResolver,
                 Secure.ANDROID_ID))
         params.putString("story_number", activeStory.titleNumber)
-        params.putString("ethnolog", registration.getString("ethnologue", " "))
-        params.putString("lwc", registration.getString("lwc", " "))
-        params.putString("translator_email", registration.getString("translator_email", " "))
-        params.putString("trainer_email", registration.getString("trainer_email", " "))
-        params.putString("consultant_email", registration.getString("consultant_email", " "))
+        params.putString("ethnolog", registration.projectEthnoCode)
+        params.putString("lwc", registration.projectMajorityLanguage)
+        params.putString("translator_email", registration.translatorEmail)
+        params.putString("trainer_email", registration.trainerEmail)
+        params.putString("consultant_email", registration.consultantEmail)
         firebaseAnalytics.logEvent(eventName, params)
     }
 
@@ -130,13 +142,10 @@ object Workspace {
         //sort by title.
         Stories.sortBy { it.title }
         //update phases based upon registration selection
-        Log.e("@pwhite", "updateStories(): updating...phases = ${phases.size}");
-        Log.e("@pwhite", "updateStories(): updating...reg = ${registration.getString("consultant_location_type")}");
-        phases = when (registration.getString("consultant_location_type")) {
+        phases = when (registration.consultantLocationType) {
             "Remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
-        Log.e("@pwhite", "updateStories(): updating...phases = ${phases.size}");
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
@@ -202,7 +211,20 @@ object Workspace {
         //there was a successful phase change!
         return true
     }
-    
+
+    fun sendMessage(url: String, content: String): Boolean {
+      val js = HashMap<String, String>()
+      if (projectId != null) {
+        js["ProjectId"] = projectId.toString()
+      }
+      js["TemplateTitle"] = activeStory.title
+      js["SlideNumber"] = activeStory.slides.size.toString()
+      js["Data"] = content
+      val req = paramStringRequest(Request.Method.POST, url, js, {
+      }, {
+      })
+      return false
+    }
 
 }
 

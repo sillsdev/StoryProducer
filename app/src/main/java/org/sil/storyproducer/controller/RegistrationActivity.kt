@@ -3,26 +3,25 @@ package org.sil.storyproducer.controller
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.Secure
+import android.provider.Settings
 import android.support.design.widget.TextInputEditText
-import android.support.design.widget.TextInputLayout
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
-import com.android.volley.Request
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.crashlytics.android.Crashlytics
@@ -43,16 +42,9 @@ import java.util.*
  *
  *  * setAccordionListener() is called which adds click listeners to the header sections of the accordion.
  *
- *  1. onPostCreate() is called and calls the following:
+ *  2. onPostCreate() is called and calls the following:
  *
- *  1. setupInputFields() is called which takes a root ScrollView.
- *
- *  * getInputFields() is called and takes the root ScrollView and does an in-order
- * traversal of the nodes in the registration xml to find the TextInputEditText
- * and Spinner inputs. Each TextInputEditText and Spinner inputs are added to the
- * sectionViews[] for parsing and saving.
- *
- *  1. addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input) to check for valid inputs.
+ *  3. addSubmitButtonSave() is called which only parses the TextInpuEditText(not the Spinner input) to check for valid inputs.
  *
  *  * textFieldParsed() is called. This checks to see if all fields were entered
  *  * A confirmation dialog is launched to ask if the user wants to submit the info
@@ -67,62 +59,214 @@ import java.util.*
  *  * [android.support.design.widget.TextInputEditText] for inputting text for registration fields.
  *
  */
-const val FIRST_ACTIVITY_KEY = "first"
-
 
 open class RegistrationActivity : AppCompatActivity() {
 
-    private val sectionIds = intArrayOf(R.id.language_section, R.id.translator_section, R.id.consultant_section, R.id.trainer_section, R.id.archive_section)
-    private val headerIds = intArrayOf(R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header)
-    private val sectionViews = arrayOfNulls<View>(sectionIds.size)
-    private val headerViews = arrayOfNulls<View>(headerIds.size)
+    private lateinit var projectLanguageEditText: TextInputEditText
+    private lateinit var projectEthnoCodeEditText: TextInputEditText
+    private lateinit var projectCountryEditText: TextInputEditText
+    private lateinit var projectRegionEditText: TextInputEditText
+    private lateinit var projectCityEditText: TextInputEditText
+    private lateinit var projectMajorityLanguageEditText: TextInputEditText
+    private lateinit var projectOrthographySpinner: Spinner
+
+    private lateinit var translatorNameEditText: TextInputEditText
+    private lateinit var translatorEducationEditText: TextInputEditText
+    private lateinit var translatorLanguagesEditText: TextInputEditText
+    private lateinit var translatorPhoneEditText: TextInputEditText
+    private lateinit var translatorEmailEditText: TextInputEditText
+    private lateinit var translatorCommunicationPreferenceSpinner: Spinner
+    private lateinit var translatorLocationEditText: TextInputEditText
+
+    private lateinit var consultantNameEditText: TextInputEditText
+    private lateinit var consultantLanguagesEditText: TextInputEditText
+    private lateinit var consultantPhoneEditText: TextInputEditText
+    private lateinit var consultantEmailEditText: TextInputEditText
+    private lateinit var consultantCommunicationPreferenceSpinner: Spinner
+    private lateinit var consultantLocationEditText: TextInputEditText
+    private lateinit var consultantLocationTypeSpinner: Spinner
+
+    private lateinit var trainerNameEditText: TextInputEditText
+    private lateinit var trainerLanguagesEditText: TextInputEditText
+    private lateinit var trainerPhoneEditText: TextInputEditText
+    private lateinit var trainerEmailEditText: TextInputEditText
+    private lateinit var trainerCommunicationPreferenceSpinner: Spinner
+    private lateinit var trainerLocationEditText: TextInputEditText
+
+    private lateinit var archiveEmail1EditText: TextInputEditText
+    private lateinit var archiveEmail2EditText: TextInputEditText
+    private lateinit var archiveEmail3EditText: TextInputEditText
+
+    private lateinit var sectionViews: Array<View>
+    private lateinit var headerViews: Array<View>
     var resp: String? = null
     var testErr = ""
-    var js: MutableMap<String, String> = hashMapOf()
 
-    private var inputFields: List<View>? = null
+    private lateinit var inputFields: Array<View>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //first get permissions
-        val PERMISSION_ALL = 1
-        val PERMISSIONS = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        if (!hasPermissions(this, *PERMISSIONS)) {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL)
+        val permissions = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (!hasPermissions(this, *permissions)) {
+            val permissionsAll = 1
+            ActivityCompat.requestPermissions(this, permissions, permissionsAll)
         }
 
         setContentView(R.layout.activity_registration)
 
+        // TODO @pwhite: Some of the ugliness could be removed while
+        // simultaneously improving user experience if some field for the
+        // translator, consultant, and trainer were put in a `Person`
+        // abstraction. The UI could reflect this be reusing the same fragment
+        // for each of the forms. Or perhaps the ROCC can serve some
+        // pre-populated people which the user can select from; this would mean
+        // that the user would not have to fill out each of the forms and
+        // potentially make a mistake with an email, for example. Of course,
+        // this ought not to be required since the application might not be
+        // online.
+
+        // @pwhite: This is a lot of boilerplate to load the current values of
+        // the registration.json file. I'm not the most pleased, but I find
+        // this far better than doing a walk of the UI tree to find all the
+        // text and spinner controls and setting them from a JSON object based
+        // on some string manipulation of the android resource IDs. This was a
+        // previous solution which has been replaced by this ugliness; although
+        // this solution is rather ugly, it is extremely clear what is
+        // happening, and quite easy to modify. In addition, this is likely
+        // more efficient than the previous solution since we know exactly what
+        // controls exist and thus don't need to walk the UI tree to find them.
+
+        // NOW @pwhite: Add phone make, model and manufacturer as before.
+
+        projectLanguageEditText = findViewById(R.id.input_language)
+        projectLanguageEditText.setText(Workspace.registration.projectLanguage)
+        projectEthnoCodeEditText = findViewById(R.id.input_ethnologue)
+        projectEthnoCodeEditText.setText(Workspace.registration.projectEthnoCode)
+        projectCountryEditText = findViewById(R.id.input_country)
+        projectCountryEditText.setText(Workspace.registration.projectCountry)
+        projectRegionEditText = findViewById(R.id.input_location)
+        projectRegionEditText.setText(Workspace.registration.projectRegion)
+        projectCityEditText = findViewById(R.id.input_town)
+        projectCityEditText.setText(Workspace.registration.projectCity)
+        projectMajorityLanguageEditText = findViewById(R.id.input_lwc)
+        projectMajorityLanguageEditText.setText(Workspace.registration.projectMajorityLanguage)
+        projectOrthographySpinner = findViewById(R.id.input_orthography)
+        projectOrthographySpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.projectOrthography))
+
+        translatorNameEditText = findViewById(R.id.input_translator_name)
+        translatorNameEditText.setText(Workspace.registration.translatorName)
+        translatorEducationEditText = findViewById(R.id.input_translator_education)
+        translatorEducationEditText.setText(Workspace.registration.translatorEducation)
+        translatorLanguagesEditText = findViewById(R.id.input_translator_languages)
+        translatorLanguagesEditText.setText(Workspace.registration.translatorLanguages)
+        translatorPhoneEditText = findViewById(R.id.input_translator_phone)
+        translatorPhoneEditText.setText(Workspace.registration.translatorPhone)
+        translatorEmailEditText = findViewById(R.id.input_translator_email)
+        translatorEmailEditText.setText(Workspace.registration.translatorEmail)
+        translatorCommunicationPreferenceSpinner = findViewById(R.id.input_translator_communication_preference)
+        translatorCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.translatorCommunicationPreference))
+        translatorLocationEditText = findViewById(R.id.input_translator_location)
+        translatorLocationEditText.setText(Workspace.registration.translatorLocation)
+
+        consultantNameEditText = findViewById(R.id.input_consultant_name)
+        consultantNameEditText.setText(Workspace.registration.consultantName)
+        consultantLanguagesEditText = findViewById(R.id.input_consultant_languages)
+        consultantLanguagesEditText.setText(Workspace.registration.consultantLanguages)
+        consultantPhoneEditText = findViewById(R.id.input_consultant_phone)
+        consultantPhoneEditText.setText(Workspace.registration.consultantPhone)
+        consultantEmailEditText = findViewById(R.id.input_consultant_email)
+        consultantEmailEditText.setText(Workspace.registration.consultantEmail)
+        consultantCommunicationPreferenceSpinner = findViewById(R.id.input_consultant_communication_preference)
+        consultantCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.consultantCommunicationPreference))
+        consultantLocationEditText = findViewById(R.id.input_consultant_location)
+        consultantLocationEditText.setText(Workspace.registration.consultantLocation)
+        consultantLocationTypeSpinner = findViewById(R.id.input_consultant_location_type)
+        consultantLocationTypeSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.consultantLocationType))
+
+        trainerNameEditText = findViewById(R.id.input_trainer_name)
+        trainerNameEditText.setText(Workspace.registration.trainerName)
+        trainerLanguagesEditText = findViewById(R.id.input_trainer_languages)
+        trainerLanguagesEditText.setText(Workspace.registration.trainerLanguages)
+        trainerPhoneEditText = findViewById(R.id.input_trainer_phone)
+        trainerPhoneEditText.setText(Workspace.registration.trainerPhone)
+        trainerEmailEditText = findViewById(R.id.input_trainer_email)
+        trainerEmailEditText.setText(Workspace.registration.trainerEmail)
+        trainerCommunicationPreferenceSpinner = findViewById(R.id.input_trainer_communication_preference)
+        trainerCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.trainerCommunicationPreference))
+        trainerLocationEditText = findViewById(R.id.input_trainer_location)
+        trainerLocationEditText.setText(Workspace.registration.trainerLocation)
+
+        archiveEmail1EditText = findViewById(R.id.input_database_email_1)
+        archiveEmail1EditText.setText(Workspace.registration.archiveEmail1)
+        archiveEmail2EditText = findViewById(R.id.input_database_email_2)
+        archiveEmail2EditText.setText(Workspace.registration.archiveEmail2)
+        archiveEmail3EditText = findViewById(R.id.input_database_email_3)
+        archiveEmail3EditText.setText(Workspace.registration.archiveEmail3)
+
+        inputFields = arrayOf(
+                projectLanguageEditText,
+                projectEthnoCodeEditText,
+                projectCountryEditText,
+                projectRegionEditText,
+                projectCityEditText,
+                projectMajorityLanguageEditText,
+                projectOrthographySpinner,
+                translatorNameEditText,
+                translatorEducationEditText,
+                translatorLanguagesEditText,
+                translatorPhoneEditText,
+                translatorEmailEditText,
+                translatorCommunicationPreferenceSpinner,
+                translatorLocationEditText,
+                consultantNameEditText,
+                consultantLanguagesEditText,
+                consultantPhoneEditText,
+                consultantEmailEditText,
+                consultantCommunicationPreferenceSpinner,
+                consultantLocationEditText,
+                consultantLocationTypeSpinner,
+                trainerNameEditText,
+                trainerLanguagesEditText,
+                trainerPhoneEditText,
+                trainerEmailEditText,
+                trainerCommunicationPreferenceSpinner,
+                trainerLocationEditText,
+                archiveEmail1EditText,
+                archiveEmail2EditText,
+                archiveEmail3EditText)
+
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
-        for (i in sectionIds.indices) {
-            sectionViews[i] = findViewById(sectionIds[i])
-            headerViews[i] = findViewById(headerIds[i])
-            setAccordionListener(findViewById(headerIds[i]), sectionViews[i]!!)
+
+        sectionViews = arrayOf(
+                findViewById(R.id.language_section),
+                findViewById(R.id.translator_section),
+                findViewById(R.id.consultant_section),
+                findViewById(R.id.trainer_section),
+                findViewById(R.id.archive_section))
+        headerViews = arrayOf(
+                findViewById(R.id.language_header),
+                findViewById(R.id.translator_header),
+                findViewById(R.id.consultant_header),
+                findViewById(R.id.trainer_header),
+                findViewById(R.id.archive_header))
+
+        for (i in sectionViews.indices) {
+            setAccordionListener(headerViews[i]!!, sectionViews[i]!!)
         }
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
         storeRegistrationInfo()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        setupInputFields()
         addSubmitButtonSave()
         addRegistrationSkip()
         addEthnologueQuestion()
-    }
-
-    /**
-     * Initializes the inputFields to the inputs of this activity.
-     */
-    private fun setupInputFields() {
-        val view = findViewById<ScrollView>(R.id.registration_scroll_view)
-        inputFields = getInputFields(view)
     }
 
     /**
@@ -131,27 +275,38 @@ open class RegistrationActivity : AppCompatActivity() {
     private fun addSubmitButtonSave() {
         val submitButton = findViewById<Button>(R.id.submit_button)
         submitButton.setOnClickListener {
-            val databaseEmailField1 = findViewById<EditText>(R.id.input_database_email_1)
-            val databaseEmailField2 = findViewById<EditText>(R.id.input_database_email_2)
-            val databaseEmailField3 = findViewById<EditText>(R.id.input_database_email_3)
-            val databaseEmail1 = databaseEmailField1.text.toString()
-            val databaseEmail2 = databaseEmailField2.text.toString()
-            val databaseEmail3 = databaseEmailField3.text.toString()
-            val completeFields: Boolean
-
+            val databaseEmail1 = archiveEmail1EditText.text.toString()
+            val databaseEmail2 = archiveEmail2EditText.text.toString()
+            val databaseEmail3 = archiveEmail3EditText.text.toString()
             submitButton.requestFocus()
             if (databaseEmail1.isEmpty() && databaseEmail2.isEmpty() && databaseEmail3.isEmpty()) {
-                createErrorDialog(databaseEmailField1)
-                databaseEmailField1.requestFocus()
+                createErrorDialog(archiveEmail1EditText)
+                archiveEmail1EditText.requestFocus()
                 for (sectionView in sectionViews) {
                     if (sectionView!!.findFocus() != null) {
                         sectionView.visibility = View.VISIBLE
-                        toggleKeyboard(SHOW_KEYBOARD, databaseEmailField1)
+                        toggleKeyboard(SHOW_KEYBOARD, archiveEmail1EditText)
                     }
                 }
             } else {
-                completeFields = parseTextFields()
-                createSubmitConfirmationDialog(completeFields)
+                val message = getString(if (checkAllFieldsFilledOutOrFocusEmptyField()) {
+                    R.string.registration_submit_complete_message
+                } else {
+                    R.string.registration_submit_incomplete_message
+                })
+                val dialog = AlertDialog.Builder(this@RegistrationActivity)
+                        .setTitle(getString(R.string.registration_submit_title))
+                        .setMessage(message)
+                        .setNegativeButton(getString(R.string.no), null)
+                        .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                            Workspace.registration.registrationComplete = true
+                            storeRegistrationInfo()
+                            postRegistrationInfo()
+                            val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
+                            saveToast.show()
+                            sendEmail()
+                        }.create()
+                dialog.show()
             }
         }
     }
@@ -183,78 +338,6 @@ open class RegistrationActivity : AppCompatActivity() {
      */
     override fun onBackPressed() {
         showExitAlertDialog()
-    }
-
-    /**
-     * This function takes a scroll view as the root view of a xml layout and searches for
-     * TextInputEditText and spinner_item fields to add to the List.
-     *
-     * @param rootScrollView The root scroll view where all the children will be visited to
-     * check if there is an TextInputEditText field.
-     * @return The list of input fields that will be parsed either a spinner_item or a
-     * TextInputEditText.
-     */
-    private fun getInputFields(rootScrollView: ScrollView?): List<View> {
-
-        val inputFieldsList = ArrayList<View>()
-        val viewStack = Stack<ViewGroup>()
-        var storedValue: String
-        var storedSpinnerIndex: Int
-        var textFieldView: EditText?
-        var spinnerView: Spinner
-
-        //error check
-        if (rootScrollView == null) {
-            return inputFieldsList
-        }
-
-        viewStack.push(rootScrollView)
-
-        while (viewStack.size > 0) {
-            val currentView = viewStack.pop()
-            if (currentView is TextInputLayout) {
-                textFieldView = currentView.editText
-                if (textFieldView != null) {
-                    storedValue = getStoredValueForView(textFieldView)
-                    if (!storedValue.isEmpty()) {
-                        textFieldView.setText(storedValue)
-                    }
-                    inputFieldsList.add(textFieldView)
-                }
-            } else if (currentView is Spinner) {
-                spinnerView = currentView
-                storedValue = getStoredValueForView(spinnerView)
-                if (!storedValue.isEmpty()) {
-                    storedSpinnerIndex = getSpinnerIndexFromString(storedValue)
-                    if (storedSpinnerIndex >= 0) {
-                        spinnerView.setSelection(storedSpinnerIndex)
-                    }
-                }
-                inputFieldsList.add(spinnerView)
-            } else {
-                //push children onto stack from right to left
-                //pushing on in reverse order so that the traversal is in-order traversal
-                for (i in currentView.childCount - 1 downTo 0) {
-                    val child = currentView.getChildAt(i)
-                    if (child is ViewGroup) {
-                        viewStack.push(child)
-                    }
-                }
-            }
-        }
-
-        return inputFieldsList
-    }
-
-    /**
-     * Takes a field and searches the registration data for a value corresponding to it
-     * @param view the view to be queried
-     * @return the value if found or an empty string if no value found
-     */
-    private fun getStoredValueForView(view: View): String {
-        var viewName = resources.getResourceName(view.id)
-        viewName = viewName.replace(ID_PREFIX, "")
-        return Workspace.registration.getString(viewName, "")
     }
 
     /**
@@ -292,12 +375,10 @@ open class RegistrationActivity : AppCompatActivity() {
      *
      * @return true if all fields are filled in, false if any field is blank
      */
-    private fun parseTextFields(): Boolean {
-        for (i in inputFields!!.indices) {
-            val field = inputFields!![i]
+    private fun checkAllFieldsFilledOutOrFocusEmptyField(): Boolean {
+        for (field in inputFields) {
             if (field is TextInputEditText) {
-                val inputString = field.text.toString()
-                if (inputString.trim { it <= ' ' }.isEmpty()) {
+                if (field.text.toString().trim().isEmpty()) {
                     // Set focus to first empty field and make section visible if hidden
                     field.requestFocus()
                     for (j in sectionViews.indices) {
@@ -317,35 +398,31 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     private fun postRegistrationInfo() {
-        val myContext = this.applicationContext
-
         val reg = Workspace.registration
-
-        val PhoneId = Secure.getString(myContext.contentResolver,
-                Secure.ANDROID_ID)
-
+        val js = HashMap<String, String>()
+        js["PhoneId"] = Settings.Secure.getString(
+                this.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
         js["Key"] = getString(R.string.api_token)
-        js["PhoneId"] = PhoneId
-        js["TranslatorEmail"] = reg.getString("translator_email", " ")
-        js["TranslatorPhone"] = reg.getString("translator_phone", " ")
-        js["TranslatorLanguage"] = reg.getString("translator_languages", " ")
-        js["ProjectEthnoCode"] = reg.getString("ethnologue", " ")
-        js["ProjectLanguage"] = reg.getString("language", " ")
-        js["ProjectCountry"] = reg.getString("country", " ")
-        js["ProjectMajorityLanguage"] = reg.getString("lwc", " ")
-        js["ConsultantEmail"] = reg.getString("consultant_email", " ")
-        js["ConsultantPhone"] = reg.getString("consultant_phone", " ")
-        js["TrainerEmail"] = reg.getString("trainer_email", " ")
-        js["TrainerPhone"] = reg.getString("trainer_phone", " ")
+        js["TranslatorEmail"] = reg.translatorEmail
+        js["TranslatorPhone"] = reg.translatorPhone
+        js["TranslatorLanguage"] = reg.translatorLanguages
+        js["ProjectEthnoCode"] = reg.projectEthnoCode
+        js["ProjectLanguage"] = reg.projectLanguage
+        js["ProjectCountry"] = reg.projectCountry
+        js["ProjectMajorityLanguage"] = reg.projectMajorityLanguage
+        js["ConsultantEmail"] = reg.consultantEmail
+        js["ConsultantPhone"] = reg.consultantPhone
+        js["TrainerEmail"] = reg.trainerEmail
+        js["TrainerPhone"] = reg.trainerPhone
 
         Log.i("LOG_VOLLEY", js.toString())
         val registerPhoneUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_register_phone)
-        val req = object : StringRequest(Request.Method.POST, registerPhoneUrl, Response.Listener { response ->
+        val req = object : StringRequest(Method.POST, registerPhoneUrl, Response.Listener { response ->
             Log.i("LOG_VOLLEY", response)
             resp = response
         }, Response.ErrorListener { error ->
+            Log.e("LOG_VOLLEY", "Failed to send registration message")
             Log.e("LOG_VOLLEY", error.toString())
-            Log.e("LOG_VOLLEY", "HIT ERROR")
             testErr = error.toString()
         }) {
             override fun getParams(): Map<String, String> {
@@ -353,11 +430,8 @@ open class RegistrationActivity : AppCompatActivity() {
             }
         }
 
-
-        val test = VolleySingleton.getInstance(myContext).requestQueue
+        val test = VolleySingleton.getInstance(this.applicationContext).requestQueue
         test.add(req)
-
-
     }
 
     /**
@@ -366,63 +440,40 @@ open class RegistrationActivity : AppCompatActivity() {
      */
     private fun storeRegistrationInfo() {
         val reg = Workspace.registration
-        val calendar: Calendar = Calendar.getInstance()
-        val date: String
-        val androidVersion: String = Build.VERSION.RELEASE
-        val manufacturer: String = Build.MANUFACTURER
-        val model: String = Build.MODEL
-        val day: String
-        val month: String
-        val year: String
-        val hour: String
-        var min: String
+        reg.projectLanguage = projectLanguageEditText.text.toString()
+        reg.projectEthnoCode = projectEthnoCodeEditText.text.toString()
+        reg.projectCountry = projectCountryEditText.text.toString()
+        reg.projectRegion = projectRegionEditText.text.toString()
+        reg.projectCity = projectCityEditText.text.toString()
+        reg.projectMajorityLanguage = projectMajorityLanguageEditText.text.toString()
+        reg.projectOrthography = projectOrthographySpinner.selectedItem.toString()
 
-        for (i in inputFields!!.indices) {
-            val field = inputFields!![i]
-            if (field is TextInputEditText) {
-                var textFieldName = resources.getResourceEntryName(field.id)
-                textFieldName = textFieldName.replace("input_", "")
-                val textFieldText = field.text.toString()
-                reg.putString(textFieldName, textFieldText)
+        reg.translatorName = translatorNameEditText.text.toString()
+        reg.translatorEducation = translatorEducationEditText.text.toString()
+        reg.translatorLanguages = translatorLanguagesEditText.text.toString()
+        reg.translatorPhone = translatorPhoneEditText.text.toString()
+        reg.translatorEmail = translatorEmailEditText.text.toString()
+        reg.translatorCommunicationPreference = translatorCommunicationPreferenceSpinner.selectedItem.toString()
+        reg.translatorLocation = translatorLocationEditText.text.toString()
 
-                if (textFieldName == "country") {
-                    country = textFieldText
-                } else if (textFieldName == "ethnologue") {
-                    languageCode = textFieldText
-                }
-            } else if (field is Spinner) {
-                var spinnerName = resources.getResourceEntryName(field.id)
-                spinnerName = spinnerName.replace("input_", "")
-                val spinnerText = field.selectedItem.toString()
-                reg.putString(spinnerName, spinnerText)
-                //if(spinnerText.equals("Remote")){
-                //isRemoteConsultant = true;
-                //}
-            }
+        reg.consultantName = consultantNameEditText.text.toString()
+        reg.consultantLanguages = consultantLanguagesEditText.text.toString()
+        reg.consultantPhone = consultantPhoneEditText.text.toString()
+        reg.consultantEmail = consultantEmailEditText.text.toString()
+        reg.consultantCommunicationPreference = consultantCommunicationPreferenceSpinner.selectedItem.toString()
+        reg.consultantLocation = consultantLocationEditText.text.toString()
+        reg.consultantLocationType = consultantLocationTypeSpinner.selectedItem.toString()
 
-        }
-        // Create timestamp for when the data was submitted
-        day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH))
-        month = Integer.toString(calendar.get(Calendar.MONTH) + 1)
-        year = Integer.toString(calendar.get(Calendar.YEAR))
-        hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY))
-        min = Integer.toString(calendar.get(Calendar.MINUTE))
-        if (min.length < 2) {
-            min = "0$min"
-        }
-        date = "$month/$day/$year $hour:$min"
-        reg.putString("date", date)
+        reg.trainerName = trainerNameEditText.text.toString()
+        reg.trainerLanguages = trainerLanguagesEditText.text.toString()
+        reg.trainerPhone = trainerPhoneEditText.text.toString()
+        reg.trainerEmail = trainerEmailEditText.text.toString()
+        reg.trainerCommunicationPreference = trainerCommunicationPreferenceSpinner.selectedItem.toString()
+        reg.trainerLocation = trainerLocationEditText.text.toString()
 
-        // Retrieve phone information
-        reg.putString("manufacturer", manufacturer)
-        reg.putString("model", model)
-        reg.putString("android_version", androidVersion)
-
-        //Store whether remote or not
-        var isRemote: Boolean? = false
-        if (reg.getString("consultant_location_type", "") == "Remote")
-            isRemote = true
-        reg.putBoolean("isRemote", isRemote!!)
+        reg.archiveEmail1 = archiveEmail1EditText.text.toString()
+        reg.archiveEmail2 = archiveEmail2EditText.text.toString()
+        reg.archiveEmail3 = archiveEmail3EditText.text.toString()
 
         reg.save(this)
 
@@ -479,7 +530,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setMessage(getString(R.string.registration_skip_message))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
+                    // TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
@@ -513,27 +564,7 @@ open class RegistrationActivity : AppCompatActivity() {
      *
      * @param completeFields true if all fields filled in, false if any fields are empty
      */
-    private fun createSubmitConfirmationDialog(completeFields: Boolean) {
-        val message: String
-        if (completeFields) {
-            message = getString(R.string.registration_submit_complete_message)
-        } else {
-            message = getString(R.string.registration_submit_incomplete_message)
-        }
-        val dialog = AlertDialog.Builder(this@RegistrationActivity)
-                .setTitle(getString(R.string.registration_submit_title))
-                .setMessage(message)
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    Workspace.registration.complete = true
-                    storeRegistrationInfo()
-                    postRegistrationInfo()
-                    val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
-                    saveToast.show()
-                    sendEmail()
-                }.create()
-
-        dialog.show()
+    private fun createSubmitConfirmationDialog() {
     }
 
     /**
@@ -554,25 +585,57 @@ open class RegistrationActivity : AppCompatActivity() {
     private fun sendEmail() {
 
         val reg = Workspace.registration
+        val message = StringBuilder()
+        message.append("Date: ${reg.date}\n\n")
+        message.append("Language: ${reg.projectLanguage}\n")
+        message.append("Ethnologue: ${reg.projectEthnoCode}\n")
+        message.append("Country: ${reg.projectCountry}\n")
+        message.append("Location: ${reg.projectRegion}\n")
+        message.append("Town: ${reg.projectCity}\n")
+        message.append("Lwc: ${reg.projectMajorityLanguage}\n")
+        message.append("Orthography: ${reg.projectOrthography}\n\n")
+        message.append("Translator Name: ${reg.translatorName}\n")
+        message.append("Translator Education: ${reg.translatorEducation}\n")
+        message.append("Translator Languages: ${reg.translatorLanguages}\n")
+        message.append("Translator Phone: ${reg.translatorPhone}\n")
+        message.append("Translator Email: ${reg.translatorEmail}\n")
+        message.append("Translator Communication Preference: ${reg.trainerCommunicationPreference}\n")
+        message.append("Translator Location: ${reg.translatorLocation}\n\n")
+        message.append("Consultant Name: ${reg.consultantName}\n")
+        message.append("Consultant Languages: ${reg.consultantLanguages}\n")
+        message.append("Consultant Phone: ${reg.consultantPhone}\n")
+        message.append("Consultant Email: ${reg.consultantEmail}\n")
+        message.append("Consultant Communication Preference: ${reg.consultantCommunicationPreference}\n")
+        message.append("Consultant Location: ${reg.consultantLocation}\n")
+        message.append("Consultant Location Type: ${reg.consultantLocationType}\n\n")
+        message.append("Trainer Name: ${reg.trainerName}\n")
+        message.append("Trainer Languages: ${reg.trainerLanguages}\n")
+        message.append("Trainer Phone: ${reg.trainerPhone}\n")
+        message.append("Trainer Email: ${reg.trainerEmail}\n")
+        message.append("Trainer Communication Preference: ${reg.trainerCommunicationPreference}\n")
+        message.append("Trainer Location: ${reg.trainerLocation}\n\n")
+        message.append("Phone Manufacturer: ${Build.MANUFACTURER}\n")
+        message.append("Phone Model: ${Build.MODEL}\n")
+        message.append("Android Version: ${Build.VERSION.RELEASE}\n")
 
-        val message = formatRegistrationEmail()
-
-        val TO = arrayOf(reg.getString("database_email_1", ""), reg.getString("database_email_2", ""), reg.getString("database_email_3", ""), reg.getString("translator_email", ""), reg.getString("consultant_email", ""), reg.getString("trainer_email", ""))
+        val toAddresses = arrayOf(
+                reg.archiveEmail1, reg.archiveEmail2, reg.archiveEmail3,
+                reg.translatorEmail, reg.consultantEmail, reg.trainerEmail)
 
         val emailIntent = Intent(Intent.ACTION_SEND)
         emailIntent.data = Uri.parse("mailto:")
         emailIntent.type = "text/plain"
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL, TO)
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, toAddresses)
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, "StoryProducer Registration Info")
-        emailIntent.putExtra(Intent.EXTRA_TEXT, message)
+        emailIntent.putExtra(Intent.EXTRA_TEXT, message.toString())
 
         try {
             this.startActivity(Intent.createChooser(emailIntent, getText(R.string.registration_submit)))
-            this.finish()
-            reg.putBoolean(EMAIL_SENT, true)
+            reg.registrationEmailSent = true
             reg.save(this)
             Log.i("Finished sending email", "")
+            // TODO @pwhite: Redirect to main activity after the email has been sent.
         } catch (ex: android.content.ActivityNotFoundException) {
             Crashlytics.logException(ex)
             Toast.makeText(this,
@@ -583,20 +646,8 @@ open class RegistrationActivity : AppCompatActivity() {
 
     companion object {
 
-
-        val EMAIL_SENT = "registration_email_sent"
-
-        private val ID_PREFIX = "org.sil.storyproducer:id/input_"
-        private val SHOW_KEYBOARD = true
-        private val CLOSE_KEYBOARD = false
-
-        //private static boolean isRemoteConsultant = false;
-        //public static boolean haveRemoteConsultant(){ return isRemoteConsultant;}
-
-        var country: String? = null
-            private set
-        var languageCode: String? = null
-            private set
+        private const val SHOW_KEYBOARD = true
+        private const val CLOSE_KEYBOARD = false
 
         private fun hasPermissions(context: Context?, vararg permissions: String): Boolean {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null) {
@@ -607,36 +658,6 @@ open class RegistrationActivity : AppCompatActivity() {
                 }
             }
             return true
-        }
-
-        /**
-         * Returns a string of formatted fields in readable format based on the registration data
-         *
-         * @return a well formatted string of registration information
-         */
-        private fun formatRegistrationEmail(): String {
-            // Gives the order for retrieval and printing
-            // Empty strings ("") are used to separate sections in the printing phase
-            val keyListOrder = arrayOf("date", "", "language", "ethnologue", "country", "location", "town", "lwc", "orthography", "", "translator_name", "translator_education", "translator_languages", "translator_phone", "translator_email", "translator_communication_preference", "translator_location", "", "consultant_name", "consultant_languages", "consultant_phone", "consultant_email", "consultant_communication_preference", "consultant_location", "consultant_location_type", "", "trainer_name", "trainer_languages", "trainer_phone", "trainer_email", "trainer_communication_preference", "trainer_location", "", "manufacturer", "model", "android_version")
-
-            val message = StringBuilder()
-            var formattedKey: String
-
-            for (aKeyListOrder in keyListOrder) {
-                // Section separation appends newline
-                if (aKeyListOrder.isEmpty()) {
-                    message.append("\n")
-                    // Find key and value and print in clean format
-                } else {
-                    formattedKey = aKeyListOrder.replace("_", " ")
-                    formattedKey = formattedKey.toUpperCase()
-                    message.append(formattedKey)
-                    message.append(": ")
-                    message.append(Workspace.registration.getString(aKeyListOrder, "NA"))
-                    message.append("\n")
-                }
-            }
-            return message.toString()
         }
     }
 }
@@ -663,7 +684,7 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
+            Workspace.setupWorkspacePath(this, data?.data!!)
             contentResolver.takePersistableUriPermission(data.data!!,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
@@ -673,7 +694,7 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val RQS_OPEN_DOCUMENT_TREE = 52
+        private const val RQS_OPEN_DOCUMENT_TREE = 52
     }
 
 }
@@ -692,8 +713,8 @@ class WorkspaceUpdateActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
-	        contentResolver.takePersistableUriPermission(data.data!!,
+            Workspace.setupWorkspacePath(this, data?.data!!)
+            contentResolver.takePersistableUriPermission(data.data!!,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
         }
         intent = Intent(this, RegistrationActivity::class.java)
@@ -702,6 +723,6 @@ class WorkspaceUpdateActivity : AppCompatActivity() {
     }
 
     companion object {
-        private val RQS_OPEN_DOCUMENT_TREE = 52
+        private const val RQS_OPEN_DOCUMENT_TREE = 52
     }
 }

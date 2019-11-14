@@ -59,11 +59,11 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         setupStatusBar()
     }
 
-    override fun onPause(){
+    override fun onPause() {
         super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum
         story.lastPhaseType = Workspace.activePhase.phaseType
-        Thread(Runnable{story.toJson(this)}).start()
+        Thread(Runnable { story.toJson(this) }).start()
     }
 
     //Override setContentView to coerce into child view.
@@ -90,15 +90,12 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
-        val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
-            //remote
-            ArrayAdapter.createFromResource(this,
-                    R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item)
+        val phaseArrayResource = if (Workspace.registration.consultantLocationType == "Remote") {
+            R.array.remote_phases_menu_array
         } else {
-            //local
-            ArrayAdapter.createFromResource(this,
-                    R.array.local_phases_menu_array, android.R.layout.simple_spinner_item)
+            R.array.local_phases_menu_array
         }
+        val adapter = ArrayAdapter.createFromResource(this, phaseArrayResource, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         spinner.adapter = adapter
@@ -112,9 +109,9 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
     override fun onItemSelected(parent: AdapterView<*>, view: View,
                                 pos: Int, id: Long) {
-        if(pos >= 0 && pos < Workspace.phases.size){
+        if (pos >= 0 && pos < Workspace.phases.size) {
             jumpToPhase(Workspace.phases[pos])
-        }else{
+        } else {
             Crashlytics.log("tyring to select phase index $pos that is out of bounds:${Workspace.phases.size}")
         }
     }
@@ -146,9 +143,9 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                if (mDrawerLayout!!.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout!!.closeDrawer(GravityCompat.START)
-                }else{
+                } else {
                     mDrawerLayout!!.openDrawer(GravityCompat.START)
                 }
                 true
@@ -163,9 +160,10 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
                 val text = iStream.reader().use {
-                    it.readText() }
+                    it.readText()
+                }
 
-                wv.loadData(text,"text/html",null)
+                wv.loadData(text, "text/html", null)
                 alert.setView(wv)
                 alert.setNegativeButton("Close") { dialog, _ ->
                     dialog!!.dismiss()
@@ -219,7 +217,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     }
 
     fun jumpToPhase(newPhase: Phase) {
-        if(newPhase.phaseType == phase.phaseType) return
+        if (newPhase.phaseType == phase.phaseType) return
         Workspace.activePhase = newPhase
         val c = newPhase.getTheClass()
         Log.e("@pwhite", "sending intent to class $c")
@@ -251,7 +249,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
 
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
+            val hsv: FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
             Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
             hsv[2] *= 0.8f
             window.statusBarColor = Color.HSVToColor(hsv)

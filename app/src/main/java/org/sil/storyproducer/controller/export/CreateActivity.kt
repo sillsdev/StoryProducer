@@ -34,7 +34,7 @@ class CreateActivity : PhaseBaseActivity() {
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
         val name = mEditTextTitle.text.toString()
-        var ethno = Workspace.registration.getString("ethnologue", "")
+        var ethno = Workspace.registration.projectEthnoCode
         if(ethno != "") ethno = "${ethno}_"
         val fx = if(mCheckboxSoundtrack.isChecked) {"Fx"} else {""}
         val px = if(mCheckboxPictures.isChecked) {"Px"} else {""}

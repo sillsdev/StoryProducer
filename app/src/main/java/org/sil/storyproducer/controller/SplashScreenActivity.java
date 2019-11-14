@@ -22,22 +22,16 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                //do we have a workspace?
-                if (! Workspace.INSTANCE.getWorkspace().isDirectory()){
+                if (!Workspace.INSTANCE.getWorkspace().isDirectory()){
                     Intent intent = new Intent(SplashScreenActivity.this, WorkspaceDialogUpdateActivity.class);
                     startActivity(intent);
-                    return;
-                }
-                // Checks registration file to see if email has been sent and launches registration if it hasn't
-                if (! Workspace.INSTANCE.getRegistration().getComplete()) {
+                } else if (! Workspace.INSTANCE.getRegistration().getRegistrationComplete()) {
                     Intent intent = new Intent(SplashScreenActivity.this, RegistrationActivity.class);
                     startActivity(intent);
-                    return;
+                } else {
+                    Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
-
-                Intent intent = new Intent(SplashScreenActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
             }
         }, TIME_OUT);
     }
