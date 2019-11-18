@@ -15,6 +15,8 @@ import android.view.Menu
 import android.view.View
 import android.widget.*
 import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.VolleyError
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.BuildConfig
 
@@ -32,13 +34,13 @@ import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 // TODO @pwhite: Perhaps this function is more appropriate in another file, but
 // hey, code is code, and it semantically doesn't matter where we put it. It
 // matters for discoverability and convenience though, so worth thinking about
 // once it is used more.
-fun sendSlideSpecificRequest(context: Context, relativeUrl: String, content: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-    val js = HashMap<String, String>()
+fun sendSlideSpecificRequest(context: Context, slideNumber: Int, relativeUrl: String, content: String, onSuccess: () -> Unit, onFailure: (VolleyError) -> Unit, js: HashMap<String, String> = HashMap()) {
     js["Key"] = context.getString(R.string.api_token)
     js["PhoneId"] = Settings.Secure.getString(context.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
     if (Workspace.activeStory.remoteId != null) {
@@ -46,7 +48,7 @@ fun sendSlideSpecificRequest(context: Context, relativeUrl: String, content: Str
     } else {
         js["TemplateTitle"] = Workspace.activeStory.title
     }
-    js["SlideNumber"] = Workspace.activeStory.slides.size.toString()
+    js["SlideNumber"] = slideNumber.toString()
     js["Data"] = content
     val url = BuildConfig.ROCC_URL_PREFIX + relativeUrl
     val req = object : paramStringRequest(Method.POST, url, js, {
@@ -67,7 +69,7 @@ fun sendSlideSpecificRequest(context: Context, relativeUrl: String, content: Str
     }, {
         Log.e("LOG_VOLLEY", "HIT ERROR")
         Log.e("LOG_VOLLEY", it.toString())
-        onFailure()
+        onFailure(it)
     }) {
         override fun getParams(): Map<String, String> {
             return this.mParams
@@ -153,7 +155,8 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                         val input = getStoryChildInputStream(this, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        sendSlideSpecificRequest(this, getString(R.string.url_upload_audio), byteString, {
+                        val slideCount = Workspace.activeStory.slides.size
+                        sendSlideSpecificRequest(this, slideCount, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(applicationContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark

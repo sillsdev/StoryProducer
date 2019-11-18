@@ -253,7 +253,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 findViewById(R.id.archive_header))
 
         for (i in sectionViews.indices) {
-            setAccordionListener(headerViews[i]!!, sectionViews[i]!!)
+            setAccordionListener(headerViews[i], sectionViews[i])
         }
     }
 
@@ -283,7 +283,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 createErrorDialog(archiveEmail1EditText)
                 archiveEmail1EditText.requestFocus()
                 for (sectionView in sectionViews) {
-                    if (sectionView!!.findFocus() != null) {
+                    if (sectionView.findFocus() != null) {
                         sectionView.visibility = View.VISIBLE
                         toggleKeyboard(SHOW_KEYBOARD, archiveEmail1EditText)
                     }
@@ -382,9 +382,9 @@ open class RegistrationActivity : AppCompatActivity() {
                     // Set focus to first empty field and make section visible if hidden
                     field.requestFocus()
                     for (j in sectionViews.indices) {
-                        if (sectionViews[j]!!.findFocus() != null) {
-                            sectionViews[j]!!.visibility = View.VISIBLE
-                            headerViews[j]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
+                        if (sectionViews[j].findFocus() != null) {
+                            sectionViews[j].visibility = View.VISIBLE
+                            headerViews[j].setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                             toggleKeyboard(SHOW_KEYBOARD, field)
                             return false
                         }
@@ -552,19 +552,11 @@ open class RegistrationActivity : AppCompatActivity() {
                     // The index here comes from the index of the archive section and header
                     // If another section is added or the sections are rearranged, this index
                     // will need to be changed
-                    sectionViews[4]!!.visibility = View.VISIBLE
-                    headerViews[4]!!.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
+                    sectionViews[4].visibility = View.VISIBLE
+                    headerViews[4].setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
                     emailTextField.requestFocus()
                 }.create()
         dialog.show()
-    }
-
-    /**
-     * Creates a dialog to confirm the user wants to submit
-     *
-     * @param completeFields true if all fields filled in, false if any fields are empty
-     */
-    private fun createSubmitConfirmationDialog() {
     }
 
     /**

@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller.remote
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.os.WorkSource
 import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -11,25 +10,23 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.android.volley.*
+import com.android.volley.AuthFailureError
+import com.android.volley.NetworkError
+import com.android.volley.NoConnectionError
+import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.SLIDE_NUM
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.Network.VolleySingleton
-import org.sil.storyproducer.tools.Network.paramStringRequest
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.List
-import kotlin.collections.Map
 import kotlin.collections.set
 
 /**
@@ -45,7 +42,6 @@ class RemoteCheckFrag : Fragment() {
     private lateinit var messageSent: EditText
     private var slideNumber: Int = 0
 
-    private var obj: JSONObject? = null
     private var resp: String? = null
 
     private lateinit var msgAdapter: MessageAdapter
@@ -82,7 +78,6 @@ class RemoteCheckFrag : Fragment() {
         messageSent = rootView.findViewById<View>(R.id.sendMessage) as EditText
 
         closeKeyboardOnTouch(rootView)
-
 
         return rootView
     }
@@ -201,80 +196,30 @@ class RemoteCheckFrag : Fragment() {
 
     //function to send messages to remote consultant the given slide
     private fun sendMessage() {
+
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         val prefsEditor = prefs.edit()
-        val phoneId = prefs.getString(getString(R.string.PhoneId), "")
         val js = HashMap<String, String>()
-
-        //Get msg for current slide
         val message = messageSent.text.toString()
-        //TODO: SANITIZE POTENTIAL HARMFUL MESSAGE BEFORE SENDING
-        js["text"] = message
-        js["Key"] = getString(R.string.api_token)
-        js["PhoneId"] = phoneId!!
-        //FIXME
-        // js.put("StoryTitle" , StoryState.getStoryName());
-        js["SlideNumber"] = slideNumber.toString()
         js["IsTranscript"] = 0.toString()
-
-        if (Workspace.activeStory.remoteId != null) {
-            js["StoryId"] = Workspace.activeStory.remoteId.toString()
-        }
-
-        val sendMessagesUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_send_message)
-        val req = object : paramStringRequest(Method.POST, sendMessagesUrl, js, Response.Listener { response ->
-            Log.e("LOG_VOLLEY_MSG", response.toString())
-            resp = response
-
-            try {
-                obj = JSONObject(response)
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-
-            try {
-                resp = obj!!.getString("Success")
-
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-
-            if (resp != null) {
-                if (resp === "true") {
-                    //set text back to blank
-                    prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
-                    prefsEditor.apply()
-                    messageSent.setText("")
-                    successToast!!.show()
-
-                    //pull new messages from the server
-                    getMessages()
-                } else {
-                    unknownError!!.show()
-                }
-            }
-        }, Response.ErrorListener { error ->
-            Log.e("LOG_VOLLEY_MSG_ERR", error.toString())
-            Log.e("LOG_VOLLEY", "HIT ERROR")
+        sendSlideSpecificRequest(context!!, slideNumber, getString(R.string.url_send_message), message, {
+            prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
+            prefsEditor.apply()
+            messageSent.setText("")
+            successToast!!.show()
+            getMessages()
+        }, {
             //Save the message to send next time
             prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString())
             prefsEditor.apply()
 
-            if (error is NoConnectionError || error is NetworkError
-                    || error is AuthFailureError) {
+            if (it is NoConnectionError || it is NetworkError || it is AuthFailureError) {
                 noConnection!!.show()
             } else {
                 unknownError!!.show()
             }
-        }) {
-            override fun getParams(): Map<String, String> {
-                return this.mParams
-            }
-        }
 
-
-        VolleySingleton.getInstance(activity!!.applicationContext).addToRequestQueue(req)
-
+        }, js)
     }
 
     private fun getMessages() {
@@ -336,7 +281,7 @@ class RemoteCheckFrag : Fragment() {
     companion object {
 
         const val R_CONSULTANT_PREFS = "Consultant_Checks"
-        private const val TO_SEND_MESSAGE = "SND_MSG"
+        const val TO_SEND_MESSAGE = "SND_MSG"
         private const val R_MESSAGE_HISTORY = "Message History"
         private const val R_LAST_ID = "Last Int"
     }

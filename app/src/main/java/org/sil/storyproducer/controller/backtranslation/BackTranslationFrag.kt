@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.backtranslation
 
+import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
 import android.support.graphics.drawable.VectorDrawableCompat
@@ -8,17 +9,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.android.volley.AuthFailureError
+import com.android.volley.NetworkError
+import com.android.volley.NoConnectionError
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
+import java.util.HashMap
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
@@ -61,6 +67,31 @@ class BackTranslationFrag : MultiRecordFrag() {
             UploadState.UPLOADING -> yellowCheckmark
         }
 
+        sendTranscriptButton.setOnClickListener {
+            val prefs = activity!!.getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+            val prefsEditor = prefs.edit()
+            val js = HashMap<String, String>()
+            val message = transcriptEditText.text.toString()
+            js["IsTranscript"] = 1.toString()
+            sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_send_message), message, {
+                prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, "")
+                prefsEditor.apply()
+                transcriptEditText.setText("")
+//                successToast!!.show()
+            }, {
+                //Save the message to send next time
+                prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, message)
+                prefsEditor.apply()
+
+//                if (it is NoConnectionError || it is NetworkError || it is AuthFailureError) {
+//                    noConnection!!.show()
+//                } else {
+//                    unknownError!!.show()
+//                }
+
+            }, js)
+        }
+
         uploadButton.setOnClickListener {
             when (Workspace.activeSlide!!.backTranslationUploadState) {
                 UploadState.UPLOADED -> Toast.makeText(context, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
@@ -73,7 +104,7 @@ class BackTranslationFrag : MultiRecordFrag() {
                         val input = getStoryChildInputStream(context!!, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        sendSlideSpecificRequest(context!!, getString(R.string.url_upload_audio), byteString, {
+                        sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(context, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeSlide!!.backTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark
