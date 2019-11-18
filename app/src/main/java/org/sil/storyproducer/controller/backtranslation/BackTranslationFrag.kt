@@ -7,9 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
@@ -32,6 +30,8 @@ class BackTranslationFrag : MultiRecordFrag() {
     private lateinit var yellowCheckmark: VectorDrawableCompat
     private lateinit var uploadButton: ImageButton
     private lateinit var imageView: ImageView
+    private lateinit var transcriptEditText: EditText
+    private lateinit var sendTranscriptButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +47,8 @@ class BackTranslationFrag : MultiRecordFrag() {
 
         imageView = rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView
         uploadButton = rootView!!.findViewById(R.id.upload_audio_botton)
+        transcriptEditText = rootView!!.findViewById(R.id.transcript_edit_text)
+        sendTranscriptButton = rootView!!.findViewById(R.id.send_transcript_button)
 
         setPic(imageView)
 

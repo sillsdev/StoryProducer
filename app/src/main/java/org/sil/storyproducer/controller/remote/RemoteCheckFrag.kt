@@ -215,6 +215,7 @@ class RemoteCheckFrag : Fragment() {
         //FIXME
         // js.put("StoryTitle" , StoryState.getStoryName());
         js["SlideNumber"] = slideNumber.toString()
+        js["IsTranscript"] = 0.toString()
 
         if (Workspace.activeStory.remoteId != null) {
             js["StoryId"] = Workspace.activeStory.remoteId.toString()
@@ -292,15 +293,15 @@ class RemoteCheckFrag : Fragment() {
         val req = object : StringRequest(Method.POST, getMessagesUrl, Response.Listener { response ->
             Log.e("@pwhite", response)
             try {
-                val msgs = JSONArray(response)
+                val messages = JSONArray(response)
                 val messageList = ArrayList<Message>()
-                for (j in 0 until msgs.length()) {
-                    val currMsg = msgs.getJSONObject(j)
-                    if (currMsg.getInt("slideNumber") == slideNumber) {
-                        val num = currMsg.getInt("isConsultant")
-                        val isFromTranslator = num == 0
-                        val msg = currMsg.getString("text")
-                        val m = Message(isFromTranslator, msg)
+                for (j in 0 until messages.length()) {
+                    val message = messages.getJSONObject(j)
+                    if (message.getInt("slideNumber") == slideNumber) {
+                        val isConsultant = message.getInt("isConsultant") == 1
+                        val isTranscript = message.getInt("isTranscript") == 1
+                        val text = message.getString("text")
+                        val m = Message(isConsultant, isTranscript, text)
                         messageList.add(m)
                     }
                 }

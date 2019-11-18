@@ -72,20 +72,18 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(i);
 
         // from phone; on right
-        if (message.isFromPhone()) {
-            convertView = messageInflater.inflate(R.layout.phone_message_layout, null);
-        }
-        // from rocc; on left
-        else {
+        if (message.isTranscript()) {
+            convertView = messageInflater.inflate(R.layout.phone_back_translation_message_layout, null);
+        } else if (message.isConsultant()) {
             convertView = messageInflater.inflate(R.layout.rocc_message_layout, null);
+        } else {
+            convertView = messageInflater.inflate(R.layout.phone_message_layout, null);
         }
         holder.messageBody = convertView.findViewById(R.id.message_body);
         convertView.setTag(holder);
         holder.messageBody.setText(message.getMessage());
         return convertView;
     }
-
-
 }
 
 class MessageViewHolder {

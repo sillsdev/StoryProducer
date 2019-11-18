@@ -13,37 +13,37 @@
         android:contentDescription="@string/story_picture"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toTopOf="@id/guideline"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/insert_image_view"
-        android:contentDescription="@string/edit_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="invisible"
         android:background="@color/black_semi_transparent"
-        android:focusable="true"
         android:clickable="true"
+        android:contentDescription="@string/edit_image"
+        android:focusable="true"
         android:padding="6dp"
         android:src="@drawable/ic_photo_camera_white_24dp"
+        android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/edit_text_view"
-        android:contentDescription="@string/edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="invisible"
         android:background="@color/black_semi_transparent"
-        android:focusable="true"
         android:clickable="true"
+        android:contentDescription="@string/edit_text"
+        android:focusable="true"
         android:padding="6dp"
         android:src="@drawable/ic_edit_white_24dp"
+        android:visibility="invisible"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -81,6 +81,27 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-    </FrameLayout>
+        app:layout_constraintStart_toStartOf="parent"></FrameLayout>
+
+    <EditText
+        android:id="@+id/transcript_edit_text"
+        android:layout_width="240dp"
+        android:layout_height="90dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:inputType="textMultiLine"
+        app:layout_constraintBottom_toTopOf="@+id/upload_audio_botton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seek_bar" />
+
+    <Button
+        android:id="@+id/send_transcript_button"
+        android:layout_width="136dp"
+        android:layout_height="61dp"
+        android:text="Send Transcript"
+        app:layout_constraintBottom_toTopOf="@+id/upload_audio_botton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/transcript_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/seek_bar" />
+
 </android.support.constraint.ConstraintLayout>
