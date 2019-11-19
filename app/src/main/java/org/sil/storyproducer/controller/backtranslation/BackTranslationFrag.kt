@@ -15,6 +15,7 @@ import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -66,41 +67,22 @@ class BackTranslationFrag : MultiRecordFrag() {
                     if (audioRecording != null) {
                         Workspace.activeSlide!!.backTranslationUploadState = UploadState.UPLOADING
                         uploadButton.background = yellowCheckmark
-
                         Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(context!!, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        val phoneID = Settings.Secure.getString(context!!.contentResolver, Settings.Secure.ANDROID_ID)
-                        val js = HashMap<String, String>()
-                        js["Key"] = getString(R.string.api_token)
-                        js["PhoneId"] = phoneID
-                        js["TemplateTitle"] = Workspace.activeStory.title
-                        js["SlideNumber"] = Workspace.activeSlideNum.toString()
-                        js["Data"] = byteString
-                        val url = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_upload_audio)
-                        val req = object : paramStringRequest(Method.POST, url, js, {
-                            Log.i("LOG_VOLLEY_RESP_UPL", it)
+                        sendSlideSpecificRequest(context!!, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(context, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeSlide!!.backTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark
                         }, {
-                            Log.e("LOG_VOLLEY_ERR_UPL", it.toString())
-                            Log.e("LOG_VOLLEY", "HIT ERROR")
                             Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeSlide!!.backTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadButton.background = grayCheckmark
-                        }) {
-                            override fun getParams(): Map<String, String> {
-                                return this.mParams
-                            }
-                        }
-                        VolleySingleton.getInstance(context).addToRequestQueue(req)
+                        })
                     } else {
                         Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
                     }
-
-
                 }
                 UploadState.UPLOADING -> {
                     uploadButton.background = yellowCheckmark

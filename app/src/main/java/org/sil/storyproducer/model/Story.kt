@@ -24,7 +24,7 @@ class Story(var title: String, val slides: List<Slide>) {
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
-    var remoteStoryId: Int? = null
+    var remoteId: Int? = null
 
     val shortTitle: String
         get() {

@@ -5,6 +5,7 @@
 // but this is does not prevent us from extracting the common functionality.
 package org.sil.storyproducer.controller.remote
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.Settings
@@ -32,6 +33,34 @@ import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 import kotlin.collections.ArrayList
 
+
+fun sendSlideSpecificRequest(context: Context, relativeUrl: String, content: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    val js = HashMap<String, String>()
+    js["Key"] = context.getString(R.string.api_token)
+    js["PhoneId"] = Settings.Secure.getString(context.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+    if (Workspace.activeStory.remoteId != null) {
+        js["StoryId"] = Workspace.activeStory.remoteId.toString()
+    } else {
+        js["TemplateTitle"] = Workspace.activeStory.title
+    }
+    js["SlideNumber"] = Workspace.activeStory.slides.size.toString()
+    js["Data"] = content
+    val url = BuildConfig.ROCC_URL_PREFIX + relativeUrl
+    val req = object : paramStringRequest(Method.POST, url, js, {
+        Log.i("LOG_VOLLEY", it)
+        onSuccess()
+    }, {
+        Log.e("LOG_VOLLEY", "HIT ERROR")
+        Log.e("LOG_VOLLEY", it.toString())
+        onFailure()
+    }) {
+        override fun getParams(): Map<String, String> {
+            return this.mParams
+        }
+    }
+    VolleySingleton.getInstance(context.applicationContext).addToRequestQueue(req)
+}
+
 /**
  * Created by annmcostantino on 1/14/2018.
  *
@@ -39,6 +68,7 @@ import kotlin.collections.ArrayList
  * which provide a UI for watching the video with both slides and audio. There is also a recording
  * toolbar for recording and uploading audio. It is us
  */
+
 
 class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
@@ -104,41 +134,22 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                     if (audioRecording != null) {
                         Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADING
                         uploadButton.background = yellowCheckmark
-
                         Toast.makeText(this, "Uploading audio", Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(this, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        val phoneID = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
-                        val js = HashMap<String, String>()
-                        js["Key"] = getString(R.string.api_token)
-                        js["PhoneId"] = phoneID
-                        js["TemplateTitle"] = Workspace.activeStory.title
-                        js["SlideNumber"] = Workspace.activeStory.slides.size.toString()
-                        js["Data"] = byteString
-                        val url = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_upload_audio)
-                        val req = object : paramStringRequest(Method.POST, url, js, {
-                            Log.i("LOG_VOLLEY_RESP_UPL", it)
+                        sendSlideSpecificRequest(this, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(applicationContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark
                         }, {
-                            Log.e("LOG_VOLLEY_ERR_UPL", it.toString())
-                            Log.e("LOG_VOLLEY", "HIT ERROR")
                             Toast.makeText(applicationContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadButton.background = grayCheckmark
-                        }) {
-                            override fun getParams(): Map<String, String> {
-                                return this.mParams
-                            }
-                        }
-                        VolleySingleton.getInstance(applicationContext).addToRequestQueue(req)
+                        })
                     } else {
                         Toast.makeText(this, "No recording found", Toast.LENGTH_SHORT).show()
                     }
-
-
                 }
                 UploadState.UPLOADING -> {
                     uploadButton.background = yellowCheckmark
@@ -325,9 +336,7 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
         draftPlayer.pauseAudio()
         seekbarStartTime = System.currentTimeMillis()
         draftPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
-        Log.e("@pwhite:", "playStoryAudio() here 1")
         draftPlayer.playAudio()
-        Log.e("@pwhite:", "playStoryAudio() here 2")
         playButton.setImageResource(R.drawable.ic_pause_white_48dp)
     }
 
