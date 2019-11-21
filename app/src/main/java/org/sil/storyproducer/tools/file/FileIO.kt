@@ -9,7 +9,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
-import android.util.Log
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -117,12 +116,12 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
     if (dirRoot == "") return null
-    return Uri.parse(Workspace.workspace.uri.toString() +
+    return Uri.parse(Workspace.workdocfile.uri.toString() +
             Uri.encode("/$dirRoot/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
-    return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
+    return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("/$relPath"))
 }
 
 fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : String? {
@@ -173,9 +172,9 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     try {
         cursor = context.contentResolver.query(
                 DocumentsContract.buildChildDocumentsUriUsingTree(
-                        Workspace.workspace.uri,
+                        Workspace.workdocfile.uri,
                         DocumentsContract.getDocumentId(
-                                Uri.parse(Workspace.workspace.uri.toString() +
+                                Uri.parse(Workspace.workdocfile.uri.toString() +
                                         Uri.encode("/$relPath"))
                         ))
                 , arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
@@ -193,10 +192,10 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
 }
 
 fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
-    if (!Workspace.workspace.isDirectory) return null
+    if (!Workspace.workdocfile.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
-    var uri = Workspace.workspace.uri
+    var uri = Workspace.workdocfile.uri
     try {
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
@@ -239,7 +238,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
-    val childUri = Uri.parse(Workspace.workspace.uri.toString() +
+    val childUri = Uri.parse(Workspace.workdocfile.uri.toString() +
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {

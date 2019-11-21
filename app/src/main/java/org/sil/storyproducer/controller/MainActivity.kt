@@ -21,8 +21,7 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.ProgressBar
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -59,8 +58,9 @@ class MainActivity : AppCompatActivity(), Serializable {
         val pb = findViewById<ProgressBar>(R.id.indeterminateBar)
         pb.visibility = View.VISIBLE
 
-        GlobalScope.async {
-            if(!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+        GlobalScope.launch {
+            if(!Workspace.isInitialized)
+                Workspace.initializeWorskpace(this@MainActivity.applicationContext)
             runOnUiThread {
                 pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
@@ -144,6 +144,13 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.startActivity(intent)
                     this.finish()
                 }
+                R.id.nav_demo -> {
+                    Workspace.setDemoWorkspace(this)
+                    intent = Intent(this, RegistrationActivity::class.java)
+                    this.startActivity(intent)
+                    this.finish()
+                }
+
                 R.id.nav_stories -> {
                     // Current fragment
                 }
