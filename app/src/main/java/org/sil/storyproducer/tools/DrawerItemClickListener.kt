@@ -9,6 +9,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.WorkspaceUpdateActivity
+import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
 
@@ -37,6 +38,12 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             3 -> {
+                Workspace.setDemoWorkspace(activity)
+                intent = Intent(activity, RegistrationActivity::class.java)
+                activity.startActivity(intent)
+                activity.finish()
+            }
+            4 -> {
                 val version = activity.packageManager.getPackageInfo(activity.packageName, 0).versionName
                 val message = activity.getString(R.string.license_body)
                 val dialog = AlertDialog.Builder(activity)
