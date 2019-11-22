@@ -36,6 +36,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // NOW @pwhite: Hmmm, I thought the bundle was no longer a helpful thing to use, but maybe it is. Is there the same weird bug if we just use the active workspace slidenum here?
         slideNum = this.arguments!!.getInt(SLIDE_NUM)
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)

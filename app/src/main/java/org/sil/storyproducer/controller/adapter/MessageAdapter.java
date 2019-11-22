@@ -24,43 +24,43 @@ public class MessageAdapter extends BaseAdapter {
     Context con;
     int lastID = -1;
 
-    public MessageAdapter(Context context){
+    public MessageAdapter(Context context) {
         this.con = context;
     }
 
-    public void add(Message m){
+    public void add(Message m) {
         this.messages.add(m);
         notifyDataSetChanged();
     }
 
-    public void setMessageHistory(List<Message> m){
+    public void setMessageHistory(List<Message> m) {
         messages = m;
     }
 
-    public List<Message> getMessageHistory(){
+    public List<Message> getMessageHistory() {
         return this.messages;
     }
 
-    public void setLastID(int n){
+    public void setLastID(int n) {
         lastID = n;
     }
 
-    public int getLastID(){
+    public int getLastID() {
         return lastID;
     }
 
     @Override
-    public int getCount(){
+    public int getCount() {
         return messages.size();
     }
 
     @Override
-    public Object getItem(int i){
+    public Object getItem(int i) {
         return messages.get(i);
     }
 
     @Override
-    public long getItemId(int i){
+    public long getItemId(int i) {
         return i;
     }
 

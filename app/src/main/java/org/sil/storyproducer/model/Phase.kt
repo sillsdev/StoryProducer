@@ -173,7 +173,13 @@ class Phase(val phaseType: PhaseType) {
     }
 
     fun checkValidDisplaySlideNum(slideNum: Int): Boolean {
-        // TODO @pwhite: This is a pretty pointless function; would it be possible to remove it?
+        // TODO @pwhite: This is a pretty pointless function; would it be
+        // possible to remove it? It is used in two places. One is to do a
+        // sanity check, so it would only return false in that usage if there
+        // is a bug. The other usage is to reset the slide number when a stage
+        // is switch to that uses a different slideNum. It would be good to
+        // rethink the usages and see if there is a simpler and less
+        // error-prone way to verify that slide numbers are valid.
         val slideType = Workspace.activeStory.slides[slideNum].slideType
         return when (phaseType) {
             PhaseType.DRAMATIZATION -> slideType in arrayOf(

@@ -70,11 +70,11 @@ object Workspace {
         }
 
     var activeSlideNum: Int = 0
-        set(value) {
-            field = 0
-            if (value >= 0 && value < activeStory.slides.size) {
-                if (activePhase.checkValidDisplaySlideNum(value))
-                    field = value
+        set(x) {
+            field = if (x >= 0 && x < activeStory.slides.size && activePhase.checkValidDisplaySlideNum(x)) {
+                x
+            } else {
+                0
             }
         }
     val activeSlide: Slide?
@@ -85,7 +85,7 @@ object Workspace {
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
-    val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
+    private const val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
@@ -213,17 +213,17 @@ object Workspace {
     }
 
     fun sendMessage(url: String, content: String): Boolean {
-      val js = HashMap<String, String>()
-      if (projectId != null) {
-        js["ProjectId"] = projectId.toString()
-      }
-      js["TemplateTitle"] = activeStory.title
-      js["SlideNumber"] = activeStory.slides.size.toString()
-      js["Data"] = content
-      val req = paramStringRequest(Request.Method.POST, url, js, {
-      }, {
-      })
-      return false
+        val js = HashMap<String, String>()
+        if (projectId != null) {
+            js["ProjectId"] = projectId.toString()
+        }
+        js["TemplateTitle"] = activeStory.title
+        js["SlideNumber"] = activeStory.slides.size.toString()
+        js["Data"] = content
+        val req = paramStringRequest(Request.Method.POST, url, js, {
+        }, {
+        })
+        return false
     }
 
 }
