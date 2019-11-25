@@ -236,7 +236,7 @@
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
     <string name="update_workspace">Select \'SP Templates\' folder</string>
-    <string name="demo_workspace">SP Template internal demo</string>
+    <string name="copy_demo">Add demo to story list</string>
 
     <!-- license -->
     <string name="license_title">License</string>
