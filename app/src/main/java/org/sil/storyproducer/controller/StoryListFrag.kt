@@ -31,6 +31,13 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
                 activity?.startActivity(intent)
                 activity?.finish()
             }
+            view.findViewById<Button>(R.id.copy_demo_button).setOnClickListener {
+                Workspace.addDemoToWorkspace(context!!)
+                val intent = Intent(activity!!.applicationContext, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity!!.startActivity(intent)
+                activity!!.finish()
+            }
             return view
         }
 

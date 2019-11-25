@@ -38,10 +38,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             3 -> {
-                Workspace.setDemoWorkspace(activity)
-                intent = Intent(activity, RegistrationActivity::class.java)
-                activity.startActivity(intent)
-                activity.finish()
+                Workspace.addDemoToWorkspace(activity)
             }
             4 -> {
                 val version = activity.packageManager.getPackageInfo(activity.packageName, 0).versionName

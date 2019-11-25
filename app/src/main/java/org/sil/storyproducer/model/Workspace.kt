@@ -82,7 +82,7 @@ object Workspace{
     fun initializeWorskpace(context: Context) {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setDemoWorkspace(context)
+        setupWorkspacePath(context,Uri.parse(prefs!!.getString("workspace","")))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     }
@@ -99,14 +99,7 @@ object Workspace{
         firebaseAnalytics.logEvent(eventName, params)
     }
 
-    fun setDemoWorkspace(context: Context){
-        //set new path
-        try {
-            File(context.filesDir,"SPWorkspace").mkdir()
-            val fileUri = getUriForFile(context,"${context.applicationContext.packageName}.fileprovider",File(context.filesDir,"/SPWorkspace"))
-            workdocfile = DocumentFile.fromSingleUri(context,fileUri)!!
-            registration.load(context)
-        } catch ( e : Exception) {}
+    fun addDemoToWorkspace(context: Context){
         //check if there are any files in there.  If not, add the demo
         if(!workspaceRelPathExists(context,DEMO_FOLDER)){
             //folder is not there, add the demo.
@@ -134,6 +127,7 @@ object Workspace{
                 }
             }
         }
+        storiesUpdated = false
         updateStories(context)
     }
 
@@ -158,15 +152,6 @@ object Workspace{
             Stories.removeAll(Stories)
             val files = workdocfile.listFiles()
             for (storyPath in files) {
-                //TODO - check storyPath.name against titles.
-                unzipIfNewFolders(context, storyPath, files)
-                //deleteWorkspaceFile(context, storyPath!!.name!!)
-            }
-            //After you unzipped the files, see if there are any new templates that we can read in.
-            val newFiles = workdocfile.listFiles()
-            for (storyPath in newFiles) {
-                if (storyPath in files) continue
-                //only read in new folders.
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context, storyPath)
                     if (story != null) {

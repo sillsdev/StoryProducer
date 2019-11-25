@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.SystemClock
 import com.google.android.material.navigation.NavigationView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -29,6 +28,7 @@ import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.dpToPx
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity(), Serializable {
@@ -145,10 +145,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.finish()
                 }
                 R.id.nav_demo -> {
-                    Workspace.setDemoWorkspace(this)
-                    intent = Intent(this, RegistrationActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
+                    Workspace.addDemoToWorkspace(this)
                 }
 
                 R.id.nav_stories -> {
