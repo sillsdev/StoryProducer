@@ -164,7 +164,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
                 val text = iStream.reader().use {
                     it.readText() }
 
-                wv.loadData(text,"text/html",null)
+                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 alert.setView(wv)
                 alert.setNegativeButton("Close") { dialog, _ ->
                     dialog!!.dismiss()
