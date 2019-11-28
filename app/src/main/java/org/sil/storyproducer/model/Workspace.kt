@@ -40,7 +40,6 @@ object Workspace {
     var activePhaseIndex: Int = -1
         private set
     var isInitialized = false
-    var projectId: Int? = null
     var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
@@ -91,7 +90,6 @@ object Workspace {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
-//        projectId = Integer.parseInt(registration.getString("project_id"))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     }
@@ -212,19 +210,6 @@ object Workspace {
         return true
     }
 
-    fun sendMessage(url: String, content: String): Boolean {
-        val js = HashMap<String, String>()
-        if (projectId != null) {
-            js["ProjectId"] = projectId.toString()
-        }
-        js["TemplateTitle"] = activeStory.title
-        js["SlideNumber"] = activeStory.slides.size.toString()
-        js["Data"] = content
-        val req = paramStringRequest(Request.Method.POST, url, js, {
-        }, {
-        })
-        return false
-    }
 
 }
 

@@ -34,7 +34,8 @@ class BackTranslationFrag : MultiRecordFrag() {
     private lateinit var greenCheckmark: VectorDrawableCompat
     private lateinit var grayCheckmark: VectorDrawableCompat
     private lateinit var yellowCheckmark: VectorDrawableCompat
-    private lateinit var uploadButton: ImageButton
+    private lateinit var uploadAudioButton: ImageButton
+    private lateinit var slideApprovedIndicator: ImageButton
     private lateinit var imageView: ImageView
     private lateinit var transcriptEditText: EditText
     private lateinit var sendTranscriptButton: Button
@@ -51,8 +52,11 @@ class BackTranslationFrag : MultiRecordFrag() {
         // The last two arguments ensure LayoutParams are inflated
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
 
+        Log.e("@pwhite", "Active slide num = ${Workspace.activeSlideNum}, slideNum is $slideNum")
+
         imageView = rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView
-        uploadButton = rootView!!.findViewById(R.id.upload_audio_botton)
+        uploadAudioButton = rootView!!.findViewById(R.id.upload_audio_botton)
+        slideApprovedIndicator = rootView!!.findViewById(R.id.slide_approved_indicator)
         transcriptEditText = rootView!!.findViewById(R.id.transcript_edit_text)
         sendTranscriptButton = rootView!!.findViewById(R.id.send_transcript_button)
 
@@ -61,7 +65,7 @@ class BackTranslationFrag : MultiRecordFrag() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
-        uploadButton.background = when (Workspace.activeSlide!!.backTranslationUploadState) {
+        uploadAudioButton.background = when (Workspace.activeSlide!!.backTranslationUploadState) {
             UploadState.UPLOADED -> greenCheckmark
             UploadState.NOT_UPLOADED -> grayCheckmark
             UploadState.UPLOADING -> yellowCheckmark
@@ -77,29 +81,22 @@ class BackTranslationFrag : MultiRecordFrag() {
                 prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, "")
                 prefsEditor.apply()
                 transcriptEditText.setText("")
-//                successToast!!.show()
             }, {
-                //Save the message to send next time
                 prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, message)
                 prefsEditor.apply()
-
-//                if (it is NoConnectionError || it is NetworkError || it is AuthFailureError) {
-//                    noConnection!!.show()
-//                } else {
-//                    unknownError!!.show()
-//                }
-
             }, js)
         }
 
-        uploadButton.setOnClickListener {
+        slideApprovedIndicator.background = if (Workspace.activeSlide!!.isApproved) { greenCheckmark } else { grayCheckmark }
+
+        uploadAudioButton.setOnClickListener {
             when (Workspace.activeSlide!!.backTranslationUploadState) {
                 UploadState.UPLOADED -> Toast.makeText(context, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
                     val audioRecording = Workspace.activeSlide!!.backTranslationRecordings.selectedFile
                     if (audioRecording != null) {
                         Workspace.activeSlide!!.backTranslationUploadState = UploadState.UPLOADING
-                        uploadButton.background = yellowCheckmark
+                        uploadAudioButton.background = yellowCheckmark
                         Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(context!!, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
@@ -107,34 +104,34 @@ class BackTranslationFrag : MultiRecordFrag() {
                         sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(context, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeSlide!!.backTranslationUploadState = UploadState.UPLOADED
-                            uploadButton.background = greenCheckmark
+                            uploadAudioButton.background = greenCheckmark
                         }, {
                             Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeSlide!!.backTranslationUploadState = UploadState.NOT_UPLOADED
-                            uploadButton.background = grayCheckmark
+                            uploadAudioButton.background = grayCheckmark
                         })
                     } else {
                         Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
                     }
                 }
                 UploadState.UPLOADING -> {
-                    uploadButton.background = yellowCheckmark
+                    uploadAudioButton.background = yellowCheckmark
                     Toast.makeText(context!!, "Upload already in progress", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        uploadButton.setOnLongClickListener {
+        uploadAudioButton.setOnLongClickListener {
             when (Workspace.activeSlide!!.backTranslationUploadState) {
                 UploadState.UPLOADING -> {
                     Workspace.activeSlide!!.backTranslationUploadState = UploadState.NOT_UPLOADED
                     Toast.makeText(context!!, "Cancelling upload", Toast.LENGTH_SHORT).show()
-                    uploadButton.background = grayCheckmark
+                    uploadAudioButton.background = grayCheckmark
                 }
                 UploadState.UPLOADED -> {
                     Workspace.activeSlide!!.backTranslationUploadState = UploadState.NOT_UPLOADED
                     Toast.makeText(context!!, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
-                    uploadButton.background = grayCheckmark
+                    uploadAudioButton.background = grayCheckmark
                 }
                 UploadState.NOT_UPLOADED -> Toast.makeText(context!!, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
             }

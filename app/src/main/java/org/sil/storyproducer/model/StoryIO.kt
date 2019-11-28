@@ -16,6 +16,8 @@ fun Story.toJson(context: Context){
             .add(UriAdapter())
             .build()
     val adapter = Story.jsonAdapter(moshi)
+    Log.e("@pwhite", "Writing the story json file");
+    Thread.dumpStack()
     val oStream = getStoryChildOutputStream(context,
             "$PROJECT_DIR/$PROJECT_FILE","",this.title)
     if(oStream != null) {
@@ -66,11 +68,9 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
             Crashlytics.logException(e)
             story = null
         }
-    }
-    //write the story (if it is not null) to json.
-    if(story != null) {
+        return null
+    } else {
         story.toJson(context)
         return story
     }
-    return null
 }

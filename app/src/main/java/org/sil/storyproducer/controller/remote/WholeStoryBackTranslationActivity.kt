@@ -18,6 +18,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
 import org.apache.commons.io.IOUtils
+import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
 
 import org.sil.storyproducer.R
@@ -36,36 +37,24 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-// TODO @pwhite: Perhaps this function is more appropriate in another file, but
-// hey, code is code, and it semantically doesn't matter where we put it. It
-// matters for discoverability and convenience though, so worth thinking about
-// once it is used more.
-fun sendSlideSpecificRequest(context: Context, slideNumber: Int, relativeUrl: String, content: String, onSuccess: () -> Unit, onFailure: (VolleyError) -> Unit, js: HashMap<String, String> = HashMap()) {
-    js["Key"] = context.getString(R.string.api_token)
-    js["PhoneId"] = Settings.Secure.getString(context.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
-    if (Workspace.activeStory.remoteId != null) {
-        js["StoryId"] = Workspace.activeStory.remoteId.toString()
-    } else {
-        js["TemplateTitle"] = Workspace.activeStory.title
-    }
-    js["SlideNumber"] = slideNumber.toString()
-    js["Data"] = content
+fun getPhoneId(context: Context): String {
+    return Settings.Secure.getString(context.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+}
+
+fun sendProjectSpecificRequest(
+    context: Context,
+    relativeUrl: String,
+    onSuccess: (JSONObject) -> Unit,
+    onFailure: (VolleyError) -> Unit,
+    params: HashMap<String, String> = HashMap()) {
+
+    params["Key"] = context.getString(R.string.api_token)
+    params["PhoneId"] = getPhoneId(context)
     val url = BuildConfig.ROCC_URL_PREFIX + relativeUrl
-    val req = object : paramStringRequest(Method.POST, url, js, {
+    val req = object : paramStringRequest(Method.POST, url, params, {
         Log.i("LOG_VOLLEY", it)
-        val newStoryId = it.toIntOrNull()
-        if (newStoryId != null) {
-            Log.i("@pwhite", "Received id $newStoryId")
-            if (Workspace.activeStory.remoteId == null) {
-                Log.i("@pwhite", "Setting active story id from null to $newStoryId")
-                Workspace.activeStory.remoteId = newStoryId
-            } else {
-                Log.e("SanityCheck", "Response id ($newStoryId) should be the same story id as stored (${Workspace.activeStory.remoteId})")
-            }
-        } else {
-            Log.e("SanityCheck", "Response is not a valid integer. This is a bug in the server.")
-        }
-        onSuccess()
+        var jsonObject = JSONObject(it)
+        onSuccess(jsonObject)
     }, {
         Log.e("LOG_VOLLEY", "HIT ERROR")
         Log.e("LOG_VOLLEY", it.toString())
@@ -76,6 +65,39 @@ fun sendSlideSpecificRequest(context: Context, slideNumber: Int, relativeUrl: St
         }
     }
     VolleySingleton.getInstance(context.applicationContext).addToRequestQueue(req)
+}
+
+// TODO @pwhite: Perhaps this function is more appropriate in another file, but
+// hey, code is code, and it semantically doesn't matter where we put it. It
+// matters for discoverability and convenience though, so worth thinking about
+// once it is used more.
+fun sendSlideSpecificRequest(
+    context: Context,
+    slideNumber: Int,
+    relativeUrl: String,
+    content: String,
+    onSuccess: (JSONObject) -> Unit,
+    onFailure: (VolleyError) -> Unit,
+    js: HashMap<String, String> = HashMap()) {
+
+    if (Workspace.activeStory.remoteId != null) {
+        js["StoryId"] = Workspace.activeStory.remoteId.toString()
+    } else {
+        js["TemplateTitle"] = Workspace.activeStory.title
+    }
+    js["SlideNumber"] = slideNumber.toString()
+    js["Data"] = content
+    sendProjectSpecificRequest(context, relativeUrl, {
+        val newStoryId = it.getInt("StoryId")
+        Log.e("@pwhite", "Received id $newStoryId")
+        if (Workspace.activeStory.remoteId == null) {
+          Log.i("@pwhite", "Setting active story id from null to $newStoryId")
+          Workspace.activeStory.remoteId = newStoryId
+        } else {
+          Log.e("SanityCheck", "Response id ($newStoryId) should be the same story id as stored (${Workspace.activeStory.remoteId})")
+        }
+        onSuccess(it)
+    }, onFailure, js)
 }
 
 /**

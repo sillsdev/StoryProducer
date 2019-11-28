@@ -23,6 +23,7 @@ import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import java.util.*
@@ -223,59 +224,39 @@ class RemoteCheckFrag : Fragment() {
     }
 
     private fun getMessages() {
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val phoneId = prefs.getString(getString(R.string.PhoneId), "")
+        sendProjectSpecificRequest(context!!, getString(R.string.url_get_messages), {
+            val messages = it.getJSONArray("Messages")
+            val messageList = ArrayList<Message>()
+            for (j in 0 until messages.length()) {
+                val message = messages.getJSONObject(j)
+                if (message.getInt("slideNumber") == slideNumber) {
+                    val isConsultant = message.getInt("isConsultant") == 1
+                    val isTranscript = message.getInt("isTranscript") == 1
+                    val text = message.getString("text")
+                    val m = Message(isConsultant, isTranscript, text)
+                    messageList.add(m)
+                }
+            }
+            msgAdapter.messageHistory = messageList
 
-        val js = HashMap<String, String>()
-        js["Key"] = getString(R.string.api_token)
-        js["PhoneId"] = phoneId!!
-        //FIXME
-        // js.put("StoryTitle" , StoryState.getStoryName());
-        js["SlideNumber"] = slideNumber.toString()
-        js["LastId"] = msgAdapter.lastID.toString()
+            val approvals = it.getJSONArray("Approvals")
+            for (j in 0 until messages.length()) {
+                val approval = approvals.getJSONObject(j)
+                val storyId = approval.getInt("storyId")
+                val slideNumber = approval.getInt("slideNumber")
+                val isApproved = approval.getInt("isApproved") == 1
 
-        val getMessagesUrl = BuildConfig.ROCC_URL_PREFIX + getString(R.string.url_get_messages)
-        val req = object : StringRequest(Method.POST, getMessagesUrl, Response.Listener { response ->
-            Log.e("@pwhite", response)
-            try {
-                val messages = JSONArray(response)
-                val messageList = ArrayList<Message>()
-                for (j in 0 until messages.length()) {
-                    val message = messages.getJSONObject(j)
-                    if (message.getInt("slideNumber") == slideNumber) {
-                        val isConsultant = message.getInt("isConsultant") == 1
-                        val isTranscript = message.getInt("isTranscript") == 1
-                        val text = message.getString("text")
-                        val m = Message(isConsultant, isTranscript, text)
-                        messageList.add(m)
+                for (story in Workspace.Stories) {
+                    if (story.remoteId == storyId) {
+                        story.slides[slideNumber].isApproved = isApproved
                     }
                 }
-                msgAdapter.messageHistory = messageList
-
-                if (msgAdapter.count > 0) {
-                    messagesView.setSelection(msgAdapter.count)
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
             }
 
-            Log.i("LOG_VOLLEY", response.toString())
-
-            resp = response
-        }, Response.ErrorListener { error ->
-            Log.e("LOG_VOLLEY", error.toString())
-            Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIVE MSG")
-            //testErr = error.toString();
-        }) {
-            @Throws(AuthFailureError::class)
-            public override fun getParams(): Map<String, String> {
-
-                return js
+            if (msgAdapter.count > 0) {
+                messagesView.setSelection(msgAdapter.count)
             }
-        }
-
-
-        VolleySingleton.getInstance(activity!!.applicationContext).addToRequestQueue(req)
+        }, {})
     }
 
     companion object {

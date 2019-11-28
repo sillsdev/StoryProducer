@@ -18,6 +18,8 @@ enum class UploadState {
 }
 
 class Slide{
+    var isApproved: Boolean = false
+
     // template information
     var slideType: SlideType = SlideType.NUMBEREDPAGE
     var narration: Recording? = null
