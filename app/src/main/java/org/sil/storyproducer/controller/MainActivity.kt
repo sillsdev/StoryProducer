@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), Serializable {
 
         GlobalScope.launch {
             if(!Workspace.isInitialized)
-                Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+                Workspace.initializeWorskpace(this@MainActivity)
             runOnUiThread {
                 pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
@@ -90,20 +90,20 @@ class MainActivity : AppCompatActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-                val alert = AlertDialog.Builder(this)
-                alert.setTitle("Story List Help")
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
                 val text = iStream.reader().use {
                         it.readText() }
 
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+                val dialog = AlertDialog.Builder(this)
+                    .setTitle("Story List Help")
+                    .setView(wv)
+                    .setNegativeButton("Close") { dialog, _ ->
+                        dialog!!.dismiss()
+                    }
+                dialog.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
