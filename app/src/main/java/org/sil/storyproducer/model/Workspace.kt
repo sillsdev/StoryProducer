@@ -1,12 +1,12 @@
 package org.sil.storyproducer.model
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.util.Log
-import androidx.core.content.FileProvider.getUriForFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
@@ -79,12 +79,12 @@ object Workspace{
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(context: Context) {
+    fun initializeWorskpace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
-        prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(context,Uri.parse(prefs!!.getString("workspace","")))
+        prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
+        setupWorkspacePath(activity,Uri.parse(prefs!!.getString("workspace","")))
         isInitialized = true
-        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
     }
 
     fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
@@ -104,14 +104,15 @@ object Workspace{
         if(!workspaceRelPathExists(context,DEMO_FOLDER)){
             //folder is not there, add the demo.
             val assetManager = context.assets
-            var files: Array<String>? = null
+            var files: MutableList<String>? = null
             try {
-                files = assetManager.list(DEMO_FOLDER)
+                files = assetManager.list(DEMO_FOLDER)!!.toMutableList()
+                files.add("$PROJECT_DIR/$PROJECT_FILE")
             } catch (e: IOException) {
                 Log.e("workspace", "Failed to get demo assets.", e)
                 return
             }
-            if (files != null) for (filename in files) {
+            for (filename in files) {
                 try {
                     val instream = assetManager.open("$DEMO_FOLDER/$filename")
                     val outstream = getChildOutputStream(context, "$DEMO_FOLDER/$filename")
