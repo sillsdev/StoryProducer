@@ -55,7 +55,7 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
             val color = ContextCompat.getColor(holder.itemView.context, R.color.black)
             holder.itemView.setBackgroundColor(color)
         }
-        holder.bindView(recordings.getFiles()!![position].displayName)
+        holder.bindView(recordings.getFiles()[position].displayName)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

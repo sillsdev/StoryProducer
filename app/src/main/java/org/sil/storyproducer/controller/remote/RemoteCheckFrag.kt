@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
+import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.util.Log
@@ -23,6 +24,7 @@ import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -36,11 +38,17 @@ import kotlin.collections.set
 
 class RemoteCheckFrag : Fragment() {
 
+    private lateinit var greenCheckmark: VectorDrawableCompat
+    private lateinit var grayCheckmark: VectorDrawableCompat
+    private lateinit var yellowCheckmark: VectorDrawableCompat
+
     private lateinit var rootView: View
     private val storyName: String? = null
     private lateinit var messageTitle: TextView
     private lateinit var sendMessageButton: Button
     private lateinit var messageSent: EditText
+    private lateinit var uploadAudioButton: ImageButton
+    private lateinit var slideApprovedIndicator: ImageButton
     private var slideNumber: Int = 0
 
     private var resp: String? = null
@@ -67,6 +75,7 @@ class RemoteCheckFrag : Fragment() {
         prefsEditor.putString("PhoneId", phoneId).apply()
 
         slideNumber = this.arguments!!.getInt(SLIDE_NUM)
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -77,6 +86,19 @@ class RemoteCheckFrag : Fragment() {
 
         sendMessageButton = rootView.findViewById<View>(R.id.button_send_msg) as Button
         messageSent = rootView.findViewById<View>(R.id.sendMessage) as EditText
+
+        uploadAudioButton = rootView.findViewById(R.id.upload_audio_botton)
+        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
+        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
+        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
+        yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
+        val slide = Workspace.activeStory.slides[slideNumber]
+        uploadAudioButton.background = when (slide.backTranslationUploadState) {
+            UploadState.UPLOADED -> greenCheckmark
+            UploadState.NOT_UPLOADED -> grayCheckmark
+            UploadState.UPLOADING -> yellowCheckmark
+        }
+        slideApprovedIndicator.background = if (slide.isApproved) { greenCheckmark } else { grayCheckmark }
 
         closeKeyboardOnTouch(rootView)
 
@@ -97,8 +119,8 @@ class RemoteCheckFrag : Fragment() {
         messagesView.adapter = msgAdapter
 
         //set texts for this view
-        val titleString = " $slideNumber"
-        messageTitle.append(titleString)
+        val titleString = "Messages for Slide $slideNumber"
+        messageTitle.setText(titleString)
         messageSent.setHint(R.string.message_hint)
         messageSent.setHintTextColor(ContextCompat.getColor(context!!, R.color.black))
         //load saved message draft and load saved message adapter

@@ -10,6 +10,26 @@
     tools:context="org.sil.storyproducer.controller.remote.RemoteCheckFrag">
 
     <LinearLayout
+        android:id="@+id/indicator_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/upload_audio_botton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/slide_approved_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/messaging_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
