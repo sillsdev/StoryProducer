@@ -240,7 +240,7 @@ class RemoteCheckFrag : Fragment() {
             msgAdapter.messageHistory = messageList
 
             val approvals = it.getJSONArray("Approvals")
-            for (j in 0 until messages.length()) {
+            for (j in 0 until approvals.length()) {
                 val approval = approvals.getJSONObject(j)
                 val storyId = approval.getInt("storyId")
                 val slideNumber = approval.getInt("slideNumber")
@@ -248,6 +248,7 @@ class RemoteCheckFrag : Fragment() {
 
                 for (story in Workspace.Stories) {
                     if (story.remoteId == storyId) {
+                      Log.e("@pwhite", "setting approval to $isApproved for story ${story.remoteId} and slide $slideNumber")
                         story.slides[slideNumber].isApproved = isApproved
                     }
                 }
