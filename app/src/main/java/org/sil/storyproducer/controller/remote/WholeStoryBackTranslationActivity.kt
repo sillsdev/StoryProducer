@@ -178,6 +178,8 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
                         val slideCount = Workspace.activeStory.slides.size
+                        var js = HashMap<String, String>()
+                        js["IsWholeStory"] = "true"
                         sendSlideSpecificRequest(this, slideCount, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(applicationContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
@@ -186,7 +188,7 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                             Toast.makeText(applicationContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadButton.background = grayCheckmark
-                        })
+                        }, js)
                     } else {
                         Toast.makeText(this, "No recording found", Toast.LENGTH_SHORT).show()
                     }
