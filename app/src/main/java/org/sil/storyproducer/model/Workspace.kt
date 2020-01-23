@@ -153,6 +153,15 @@ object Workspace{
             Stories.removeAll(Stories)
             val files = workdocfile.listFiles()
             for (storyPath in files) {
+                //TODO - check storyPath.name against titles.
+                unzipIfNewFolders(context, storyPath, files)
+                //deleteWorkspaceFile(context, storyPath!!.name!!)
+            }
+            //After you unzipped the files, see if there are any new templates that we can read in.
+            val newFiles = workdocfile.listFiles()
+            for (storyPath in newFiles) {
+                if (storyPath in files) continue
+                //only read in new folders.
                 if (storyPath.isDirectory) {
                     val story = parseStoryIfPresent(context, storyPath)
                     if (story != null) {

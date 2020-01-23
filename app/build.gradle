@@ -24,6 +24,10 @@ android {
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -85,6 +89,7 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
     implementation 'com.google.firebase:firebase-core:17.2.2'
     implementation 'org.jsoup:jsoup:1.11.3'
+    implementation 'net.lingala.zip4j:zip4j:2.3.0'
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0'

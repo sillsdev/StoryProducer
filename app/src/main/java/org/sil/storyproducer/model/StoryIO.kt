@@ -1,16 +1,13 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.InputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
+import net.lingala.zip4j.ZipFile
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -76,4 +73,62 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
         return story
     }
     return null
+}
+
+fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>){
+
+    //only work with zip files.
+    if(!zipDocFile.name!!.endsWith(".zip")) return
+
+    val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
+    val zipFile = ZipFile(sourceFile.absolutePath)
+    try
+    {
+        //copy file to internal files directory to perform the normal "File" opterations on.
+        val uri = getWorkspaceUri(zipDocFile.name!!)
+        if(uri != null){copyToFilesDir(context,uri,sourceFile)}
+
+        //Exctract to files/unzip
+        val fileHeaders = zipFile.fileHeaders
+
+        val folderNames: MutableList<String> = mutableListOf()
+        for (f in existingFolders){
+            if(f != null) folderNames.add(f.name ?: continue)
+        }
+
+        val baos = ByteArrayOutputStream()
+        val buffer = ByteArray(4192)
+        var count : Int
+
+        for (f in fileHeaders){
+
+            if (storyRelPathExists(context, f.fileName)) continue
+
+            val ostream = getChildOutputStream(context, f.fileName) ?: continue
+
+            // reading and writing
+            val zis = zipFile.getInputStream(f)
+            count = zis.read(buffer)
+            try {
+                while (count != -1) {
+                    baos.write(buffer, 0, count)
+                    val bytes = baos.toByteArray()
+                    ostream.write(bytes)
+                    baos.reset()
+                    count = zis.read(buffer, 0, 4192)
+                }
+            } catch (e: Exception) {
+            }
+            ostream.close()
+            zis.close()
+        }
+
+        //delete copied zip file
+    }
+    catch(e: Exception) { }
+    //delete copied and original zip file to save space
+    sourceFile.delete()
+    deleteWorkspaceFile(context,zipDocFile.name!!)
+
+    return
 }
