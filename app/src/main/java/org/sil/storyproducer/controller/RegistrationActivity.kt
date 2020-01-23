@@ -644,9 +644,14 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         //Now, let's find the workspace path.
         Workspace.initializeWorskpace(this)
+        val title = "<b>${getString(R.string.update_workspace)}</b>"
+        val message = getString(R.string.workspace_selection_help)
         val dialog = AlertDialog.Builder(this)
-                .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>",0))
-                .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help),0))
+                .setTitle( if (Build.VERSION.SDK_INT >= 24) {Html.fromHtml(title,0)
+                } else {Html.fromHtml(title) })
+                .setMessage(if (Build.VERSION.SDK_INT >= 24) {
+                    Html.fromHtml(message, 0)
+                } else {Html.fromHtml(message) })
                 .setPositiveButton(getString(R.string.ok)) { _, _ ->
                     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -660,6 +665,7 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
             Workspace.setupWorkspacePath(this,data?.data!!)
             contentResolver.takePersistableUriPermission(data.data!!,
@@ -689,6 +695,7 @@ class WorkspaceUpdateActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
             Workspace.setupWorkspacePath(this,data?.data!!)
 	        contentResolver.takePersistableUriPermission(data.data!!,
