@@ -22,7 +22,7 @@ internal const val AUDIO_EXT = ".m4a"
  */
 
 fun getChosenRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
-    return when (Workspace.activePhase.phaseType) {
+    return when (Workspace.activePhase) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings.selectedFile
         PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings.selectedFile
@@ -59,7 +59,7 @@ fun createRecording(): Recording {
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so
     //they are used for the stages that do that.
-    return when (Workspace.activePhase.phaseType) {
+    return when (Workspace.activePhase) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> Recording(
                 "$PROJECT_DIR/${Workspace.activePhase.getShortName()}$AUDIO_EXT",
@@ -92,7 +92,7 @@ fun createRecording(): Recording {
 
 fun addRecording(recording: Recording) {
     //register it in the story data structure.
-    when (Workspace.activePhase.phaseType) {
+    when (Workspace.activePhase) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile = recording
         PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile = recording
         PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.communityCheckRecordings.add(recording)

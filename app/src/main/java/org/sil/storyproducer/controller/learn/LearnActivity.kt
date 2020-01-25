@@ -3,8 +3,11 @@ package org.sil.storyproducer.controller.learn
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
@@ -22,7 +25,7 @@ import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 import kotlin.math.min
 
-class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
+class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
     class DraftSlide(slideNum: Int, duration: Int, startTime: Int, filename: String) {
         val slideNum: Int = slideNum
@@ -30,6 +33,8 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         val startTime: Int = startTime
         val filename: String = filename
     }
+
+    private lateinit var rootView: View
 
     private lateinit var learnImageView: ImageView
     private lateinit var playButton: ImageButton
@@ -50,20 +55,20 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     private var logStartTime: Long = -1
     private var isLogging = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_learn)
+        rootView = inflater.inflate(R.layout.activity_learn, container, false)
 
         // Insert toolbar fragment into UI
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
         recordingToolbar.keepToolbarVisible()
 
-        learnImageView = findViewById(R.id.fragment_image_view)
-        playButton = findViewById(R.id.fragment_reference_audio_button)
-        seekBar = findViewById(R.id.videoSeekBar)
+        learnImageView = rootView.findViewById(R.id.fragment_image_view)
+        playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
+        seekBar = rootView.findViewById(R.id.videoSeekBar)
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             var wasPlayingBeforeTouch = false
@@ -103,7 +108,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             }
         })
 
-        val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
+        val volumeSwitch = rootView.findViewById<Switch>(R.id.volumeSwitch)
         volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
             isVolumeOn = if (isChecked) {
@@ -120,12 +125,12 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         //get story audio duration
         var lastEndTime = 0
-        story.slides.forEachIndexed { slideNum, slide ->
+        Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
             // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
                 val filename = slide.narration?.fileName
                 if (filename != null) {
-                    val duration = (MediaHelper.getAudioDuration(this, getStoryUri(filename)!!) / 1000).toInt()
+                    val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
                     val startTime = lastEndTime
                     lastEndTime = startTime + duration
                     slides.add(DraftSlide(slideNum, duration, startTime, filename))
@@ -143,16 +148,16 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         seekBar.progress = 0
         setSlideFromSeekbar()
 
-        invalidateOptionsMenu()
+        return rootView
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         pauseStoryAudio()
         narrationPlayer.release()
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
 
         narrationPlayer = AudioPlayer()
@@ -169,10 +174,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             }
         })
 
+        val learnActivity = activity!!
         mSeekBarTimer = Timer()
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
-                runOnUiThread {
+                learnActivity.runOnUiThread {
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
                     } else if (narrationPlayer.isAudioPrepared) {
@@ -194,8 +200,8 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             if (slideIndexBeforeSeekBar != currentSlideIndex || !narrationPlayer.isAudioPrepared) {
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = slides[currentSlideIndex]
-                setPic(learnImageView, slide.slideNum)
-                narrationPlayer.setStorySource(this, slide.filename)
+                PhaseBaseActivity.setPic(context!!, learnImageView, slide.slideNum)
+                narrationPlayer.setStorySource(context!!, slide.filename)
             }
         }
     }
@@ -245,7 +251,6 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                 //startPos = -1
 //            }
         }
-        //isLogging = false
     }
 
     /**
@@ -292,7 +297,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
      */
     private fun showStartPracticeSnackBar() {
         if (!isWatchedOnce) {
-            val snackbar = Snackbar.make(findViewById(R.id.drawer_layout),
+            val snackbar = Snackbar.make(rootView.findViewById(R.id.drawer_layout),
                     R.string.learn_phase_practice, Snackbar.LENGTH_LONG)
             val snackBarView = snackbar.view
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.lightWhite, null))

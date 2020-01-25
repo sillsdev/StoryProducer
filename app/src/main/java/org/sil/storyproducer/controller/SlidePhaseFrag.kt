@@ -31,16 +31,17 @@ abstract class SlidePhaseFrag : Fragment() {
     private var wasAudioPlaying = false
 
 
-    protected var slideNum: Int = 0 //gets overwritten
+    protected var slideNum: Int = 0 // gets overwritten
+    protected lateinit var phaseType: PhaseType
     protected lateinit var slide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // NOW @pwhite: Hmmm, I thought the bundle was no longer a helpful thing to use, but maybe it is. Is there the same weird bug if we just use the active workspace slidenum here?
-        slideNum = this.arguments!!.getInt(SLIDE_NUM)
+        slideNum = arguments!!.getInt(SLIDE_NUM)
+        phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE))
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
-        Log.e("@pwhite", "file: ${Workspace.activePhase.getReferenceRecording(slideNum)}")
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -65,7 +66,7 @@ abstract class SlidePhaseFrag : Fragment() {
         super.onResume()
 
         referenceAudioPlayer = AudioPlayer()
-        val referenceRecording = Workspace.activePhase.getReferenceRecording(slideNum)
+        val referenceRecording = phaseType.getReferenceRecording(slideNum)
         if (referenceRecording != null) {
             referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
         }
@@ -148,7 +149,7 @@ abstract class SlidePhaseFrag : Fragment() {
      */
     protected fun setPic(slideImage: ImageView) {
 
-        (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
+        PhaseBaseActivity.setPic(context!!, slideImage, slideNum)
         //Set up the reference audio and slide number overlays
         referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
         setReferenceAudioButton()
@@ -186,7 +187,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
-            val referenceRecording = Workspace.activePhase.getReferenceRecording(slideNum)
+            val referenceRecording = phaseType.getReferenceRecording(slideNum)
             if (referenceRecording == null) {
                 //TODO make "no audio" string work for all phases
                 Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
@@ -204,7 +205,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
                     referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                     Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                    when(Workspace.activePhase.phaseType){
+                    when(phaseType){
                         PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
                         PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
                         else -> {}

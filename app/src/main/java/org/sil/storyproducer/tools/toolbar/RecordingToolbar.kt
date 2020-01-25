@@ -20,6 +20,7 @@ import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+import android.util.Log
 
 /**
  * A class responsible for controlling the media and appearance of a recording toolbar.
@@ -65,7 +66,7 @@ open class RecordingToolbar : Fragment(){
         super.onCreate(savedInstanceState)
 
         appContext = activity?.applicationContext!!
-        
+
         voiceRecorder = AudioRecorderMP4(activity!!)
     }
 
@@ -88,7 +89,7 @@ open class RecordingToolbar : Fragment(){
 
     override fun onPause() {
         stopToolbarMedia()
-        
+
         super.onPause()
     }
 
@@ -135,7 +136,7 @@ open class RecordingToolbar : Fragment(){
         }
 
         //TODO: make this logging more robust and encapsulated
-        when(Workspace.activePhase.phaseType){
+        when(Workspace.activePhase){
             PhaseType.DRAFT -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
             PhaseType.COMMUNITY_CHECK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
             else -> {}
@@ -203,13 +204,13 @@ open class RecordingToolbar : Fragment(){
     protected open fun micButtonOnClickListener(): View.OnClickListener{
           return View.OnClickListener {
               val wasRecording = voiceRecorder?.isRecording == true
-              
+
               stopToolbarMedia()
 
               if (!wasRecording) {
                   val recordingRelPath = assignNewAudioRelPath()
                   //we may be overwriting things in other phases, but we do not care.
-                  if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
+                  if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase == PhaseType.LEARN) {
                       val dialog = AlertDialog.Builder(activity!!)
                               .setTitle(activity!!.getString(R.string.overwrite))
                               .setMessage(activity!!.getString(R.string.learn_phase_overwrite))

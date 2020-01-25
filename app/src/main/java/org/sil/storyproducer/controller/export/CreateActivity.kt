@@ -1,13 +1,13 @@
 package org.sil.storyproducer.controller.export
 
 import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.MotionEvent
+import android.view.LayoutInflater
 import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
@@ -17,7 +17,7 @@ import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.stripForFilename
 
-class CreateActivity : PhaseBaseActivity() {
+class CreateFragment : Fragment() {
 
     private lateinit var mEditTextTitle: EditText
     private lateinit var mLayoutConfiguration: View
@@ -31,24 +31,46 @@ class CreateActivity : PhaseBaseActivity() {
     private lateinit var mButtonCancel: Button
     private lateinit var mProgressBar: ProgressBar
 
-    private val mOutputPath: String get() {
-        val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
-        val name = mEditTextTitle.text.toString()
-        var ethno = Workspace.registration.projectEthnoCode
-        if(ethno != "") ethno = "${ethno}_"
-        val fx = if(mCheckboxSoundtrack.isChecked) {"Fx"} else {""}
-        val px = if(mCheckboxPictures.isChecked) {"Px"} else {""}
-        val mv = if(mCheckboxKBFX.isChecked) {"Mv"} else {""}
-        val tx = if(mCheckboxText.isChecked) {"Tx"} else {""}
-        val sg = if(mCheckboxSong.isChecked) {"Sg"} else {""}
-        return "$num${name}_$ethno$fx$px$mv$tx$sg.mp4"
-    }
+    private val mOutputPath: String
+        get() {
+            val num = if (Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {
+                ""
+            }
+            val name = mEditTextTitle.text.toString()
+            var ethno = Workspace.registration.projectEthnoCode
+            if (ethno != "") ethno = "${ethno}_"
+            val fx = if (mCheckboxSoundtrack.isChecked) {
+                "Fx"
+            } else {
+                ""
+            }
+            val px = if (mCheckboxPictures.isChecked) {
+                "Px"
+            } else {
+                ""
+            }
+            val mv = if (mCheckboxKBFX.isChecked) {
+                "Mv"
+            } else {
+                ""
+            }
+            val tx = if (mCheckboxText.isChecked) {
+                "Tx"
+            } else {
+                ""
+            }
+            val sg = if (mCheckboxSong.isChecked) {
+                "Sg"
+            } else {
+                ""
+            }
+            return "$num${name}_$ethno$fx$px$mv$tx$sg.mp4"
+        }
 
     private var mProgressUpdater: Thread? = null
 
-    private val PROGRESS_UPDATER = Runnable {
+    private val progressUpdate = Runnable {
         var isDone = false
-        var isSuccess = false
         while (!isDone) {
             try {
                 Thread.sleep(100)
@@ -57,7 +79,7 @@ class CreateActivity : PhaseBaseActivity() {
                 return@Runnable
             }
 
-            var progress = 0.0
+            var progress: Double
             synchronized(storyMakerLock) {
                 //Stop if storyMaker was cancelled by someone else.
                 if (storyMaker == null) {
@@ -70,14 +92,14 @@ class CreateActivity : PhaseBaseActivity() {
             }
             updateProgress((progress * PROGRESS_MAX).toInt())
         }
-        isSuccess = storyMaker!!.isSuccess
+        val isSuccess = storyMaker!!.isSuccess
 
-        runOnUiThread {
+        activity!!.runOnUiThread {
             stopExport()
-            if(isSuccess)
-                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+            if (isSuccess)
+                Toast.makeText(context!!, "Video created!", Toast.LENGTH_LONG).show()
             else
-                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
+                Toast.makeText(context!!, "Error!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -91,7 +113,7 @@ class CreateActivity : PhaseBaseActivity() {
             e.printStackTrace()
         } finally {
             buttonLocked = false
-            runOnUiThread {
+            activity!!.runOnUiThread {
                 mButtonStart.isEnabled = true
                 mButtonCancel.isEnabled = true
             }
@@ -100,17 +122,51 @@ class CreateActivity : PhaseBaseActivity() {
 
     private var storyMaker: AutoStoryMaker? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create)
-        setupViews()
-        invalidateOptionsMenu()
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        val rootView = inflater.inflate(R.layout.activity_create, container, false)
+
+        //Initialize sectionViews[] with the integer id's of the various LinearLayouts
+        //Add the listeners to the LinearLayouts's header section.
+
+        mEditTextTitle = rootView.findViewById(R.id.editText_export_title)
+        mEditTextTitle.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val temp = s.toString().stripForFilename()
+                if (temp != s.toString()) {
+                    s!!.replace(0, s.length, temp)
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
+        mLayoutConfiguration = rootView.findViewById(R.id.layout_export_configuration)
+        mLayoutCancel = rootView.findViewById(R.id.layout_cancel)
+
+        mCheckboxSoundtrack = rootView.findViewById(R.id.checkbox_export_soundtrack)
+        mCheckboxPictures = rootView.findViewById(R.id.checkbox_export_pictures)
+        mCheckboxKBFX = rootView.findViewById(R.id.checkbox_export_KBFX)
+        mCheckboxText = rootView.findViewById(R.id.checkbox_export_text)
+        mCheckboxSong = rootView.findViewById(R.id.checkbox_export_song)
+
+        mButtonStart = rootView.findViewById(R.id.button_export_start)
+        mButtonCancel = rootView.findViewById(R.id.button_export_cancel)
+        setOnClickListeners()
+
+        mProgressBar = rootView.findViewById(R.id.progress_bar_export)
+        mProgressBar.max = PROGRESS_MAX
+        mProgressBar.progress = 0
+
         if (Workspace.activeStory.isApproved) {
-            findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
+            rootView.findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
-            val mainLayout = findViewById<View>(R.id.layout_export_configuration)
+            val mainLayout = rootView.findViewById<View>(R.id.layout_export_configuration)
             PhaseBaseActivity.disableViewAndChildren(mainLayout)
         }
+
+        return rootView
     }
 
     override fun onResume() {
@@ -136,60 +192,22 @@ class CreateActivity : PhaseBaseActivity() {
     /**
      * Remove focus from EditText when tapping outside. See http://stackoverflow.com/a/28939113/4639640
      */
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            val v = currentFocus
-            if (v is EditText) {
-                val outRect = Rect()
-                v.getGlobalVisibleRect(outRect)
-                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
-                    v.clearFocus()
-                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.hideSoftInputFromWindow(v.windowToken, 0)
-                }
-            }
-        }
-        return super.dispatchTouchEvent(event)
-    }
-
-    /**
-     * Get handles to all necessary views and add some listeners.
-     */
-    private fun setupViews() {
-
-        //Initialize sectionViews[] with the integer id's of the various LinearLayouts
-        //Add the listeners to the LinearLayouts's header section.
-
-        mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener( object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val temp = s.toString().stripForFilename()
-                if(temp != s.toString()){
-                    s!!.replace(0,s.length,temp)
-                }
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        mLayoutConfiguration = findViewById(R.id.layout_export_configuration)
-        mLayoutCancel = findViewById(R.id.layout_cancel)
-
-        mCheckboxSoundtrack = findViewById(R.id.checkbox_export_soundtrack)
-        mCheckboxPictures = findViewById(R.id.checkbox_export_pictures)
-        mCheckboxKBFX = findViewById(R.id.checkbox_export_KBFX)
-        mCheckboxText = findViewById(R.id.checkbox_export_text)
-        mCheckboxSong = findViewById(R.id.checkbox_export_song)
-
-        mButtonStart = findViewById(R.id.button_export_start)
-        mButtonCancel = findViewById(R.id.button_export_cancel)
-        setOnClickListeners()
-
-        mProgressBar = findViewById(R.id.progress_bar_export)
-        mProgressBar.max = PROGRESS_MAX
-        mProgressBar.progress = 0
-
-    }
+    // TODO @pwhite: This was commented out because fragments do not have this function to override.
+    //  Evaluate whether this function is actually useful, and if so, how to actually do it.
+//    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+//        if (event.action == MotionEvent.ACTION_DOWN) {
+//            val v = activity!!.currentFocus
+//            if (v is EditText) {
+//                val outRect = Rect()
+//                v.getGlobalVisibleRect(outRect)
+//                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+//                    v.clearFocus()
+//                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                    imm.hideSoftInputFromWindow(v.windowToken, 0)
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Setup listeners for start/cancel.
@@ -215,7 +233,7 @@ class CreateActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements(currentCheckbox : CheckBox? = null) {
+    private fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
@@ -233,7 +251,7 @@ class CreateActivity : PhaseBaseActivity() {
         if (mCheckboxPictures.isChecked) {
             mCheckboxKBFX.visibility = View.VISIBLE
             mCheckboxText.visibility = View.VISIBLE
-        }else{
+        } else {
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
@@ -242,17 +260,17 @@ class CreateActivity : PhaseBaseActivity() {
 
 
         if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
-            if(currentCheckbox == mCheckboxText){
+            if (currentCheckbox == mCheckboxText) {
                 mCheckboxKBFX.isChecked = false
-            }else{
+            } else {
                 mCheckboxText.isChecked = false
             }
         }
 
         //Check if there is a song to play
-        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")) {
             //you have to have a song to include it!
-            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            Toast.makeText(context!!, getString(R.string.export_local_song_unrecorded), Toast.LENGTH_SHORT).show()
             mCheckboxSong.isChecked = false
         }
     }
@@ -261,7 +279,7 @@ class CreateActivity : PhaseBaseActivity() {
      * Save current configuration options to shared preferences.
      */
     private fun savePreferences() {
-        val editor = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
+        val editor = context!!.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE).edit()
 
         editor.putBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, mCheckboxSoundtrack.isChecked)
         editor.putBoolean(PREF_KEY_INCLUDE_PICTURES, mCheckboxPictures.isChecked)
@@ -278,7 +296,7 @@ class CreateActivity : PhaseBaseActivity() {
      * Load configuration options from shared preferences.
      */
     private fun loadPreferences() {
-        val prefs = getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
+        val prefs = context!!.getSharedPreferences(PREF_FILE, Context.MODE_PRIVATE)
 
         mCheckboxSoundtrack.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_BACKGROUND_MUSIC, true)
         mCheckboxPictures.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_PICTURES, true)
@@ -290,22 +308,22 @@ class CreateActivity : PhaseBaseActivity() {
 
     private fun tryStartExport() {
         //If the credits are unchanged, don't make the video.
-        if(!Workspace.isLocalCreditsChanged(this)){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanged),Toast.LENGTH_LONG).show()
+        if (!Workspace.isLocalCreditsChanged(context!!)) {
+            Toast.makeText(context!!, this.resources.getText(
+                    R.string.export_local_credits_unchanged), Toast.LENGTH_LONG).show()
             return
         }
 
         //If there is no title, don't make video
-        if(mEditTextTitle.text.toString() == ""){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_no_filename),Toast.LENGTH_LONG).show()
+        if (mEditTextTitle.text.toString() == "") {
+            Toast.makeText(context!!, this.resources.getText(
+                    R.string.export_no_filename), Toast.LENGTH_LONG).show()
             return
         }
 
         //Else, check if the file already exists...
-        if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
-            val dialog = android.app.AlertDialog.Builder(this)
+        if (workspaceRelPathExists(context!!, "$VIDEO_DIR/$mOutputPath")) {
+            val dialog = android.app.AlertDialog.Builder(context!!)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
                     .setNegativeButton(getString(R.string.no), null)
@@ -320,7 +338,7 @@ class CreateActivity : PhaseBaseActivity() {
     private fun startExport() {
         savePreferences()
         synchronized(storyMakerLock) {
-            storyMaker = AutoStoryMaker(this)
+            storyMaker = AutoStoryMaker(context!!)
 
             storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
             storyMaker!!.mIncludePictures = mCheckboxPictures.isChecked
@@ -347,13 +365,13 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     private fun watchProgress() {
-        mProgressUpdater = Thread(PROGRESS_UPDATER)
+        mProgressUpdater = Thread(progressUpdate)
         mProgressUpdater!!.start()
         toggleVisibleElements()
     }
 
     private fun updateProgress(progress: Int) {
-        runOnUiThread { mProgressBar.progress = progress }
+        activity!!.runOnUiThread { mProgressBar.progress = progress }
     }
 
     /**

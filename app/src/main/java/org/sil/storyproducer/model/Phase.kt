@@ -2,19 +2,8 @@ package org.sil.storyproducer.model
 
 import android.util.Log;
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MainActivity
-import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.export.CreateActivity
-import org.sil.storyproducer.controller.export.ShareActivity
-import org.sil.storyproducer.controller.learn.LearnActivity
-import org.sil.storyproducer.controller.pager.PagerBaseActivity
-import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
-
 
 enum class PhaseType {
-    WORKSPACE,
-    REGISTRATION,
-    STORY_LIST,
     LEARN,
     DRAFT,
     COMMUNITY_CHECK,
@@ -24,16 +13,10 @@ enum class PhaseType {
     SHARE,
     BACKT,
     WHOLE_STORY,
-    REMOTE_CHECK
-}
-
-/**
- * The business object for phases that are part of the story
- */
-class Phase(val phaseType: PhaseType) {
+    REMOTE_CHECK;
 
     fun getRecordings(slideNum: Int = Workspace.activeSlideNum): RecordingList {
-        return when (phaseType) {
+        return when (this) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
             PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings
@@ -42,8 +25,8 @@ class Phase(val phaseType: PhaseType) {
         }
     }
 
-    fun getIcon(phase: PhaseType = phaseType): Int {
-        return when (phase) {
+    fun getIcon(): Int {
+        return when (this) {
             PhaseType.LEARN -> R.drawable.ic_ear_speak
             PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
             PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
@@ -54,13 +37,12 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK -> R.drawable.ic_school_white_48dp
             PhaseType.BACKT -> R.drawable.ic_headset_mic_white_48dp
             PhaseType.DRAMATIZATION -> R.drawable.ic_mic_box_48dp
-            else -> R.drawable.ic_mic_white_48dp
         }
     }
 
     fun getReferenceRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
         val slide = Workspace.activeStory.slides[slideNum]
-        return when (phaseType) {
+        return when (this) {
             PhaseType.DRAFT -> slide.narration
             PhaseType.COMMUNITY_CHECK -> slide.communityCheckRecordings.selectedFile
             PhaseType.CONSULTANT_CHECK -> slide.draftRecordings.selectedFile
@@ -71,7 +53,7 @@ class Phase(val phaseType: PhaseType) {
     }
 
     fun getPrettyName(): String {
-        return when (phaseType) {
+        return when (this) {
             PhaseType.LEARN -> "Learn"
             PhaseType.DRAFT -> "Translate"
             PhaseType.CREATE -> "Finalize"
@@ -82,12 +64,11 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK -> "Remote Check"
             PhaseType.BACKT -> "Back Translation"
             PhaseType.DRAMATIZATION -> "Voice Studio"
-            else -> phaseType.toString().toLowerCase()
         }
     }
 
     fun getDisplayName(): String {
-        return when (phaseType) {
+        return when (this) {
             PhaseType.DRAFT -> "Translation Draft"
             PhaseType.COMMUNITY_CHECK -> "Comment"
             PhaseType.CONSULTANT_CHECK -> "Accuracy"
@@ -96,12 +77,12 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> "BackTrans"
             PhaseType.DRAMATIZATION -> "Studio Recording"
             PhaseType.CREATE -> "Finalize"
-            else -> phaseType.toString().toLowerCase()
+            else -> this.toString().toLowerCase()
         }
     }
 
     fun getShortName(): String {
-        return when (phaseType) {
+        return when (this) {
             PhaseType.DRAFT -> "Translate"
             PhaseType.COMMUNITY_CHECK -> "Community"
             PhaseType.CONSULTANT_CHECK -> "Accuracy"
@@ -110,7 +91,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> "BackTrans"
             PhaseType.DRAMATIZATION -> "VStudio"
             PhaseType.CREATE -> "Finalize"
-            else -> phaseType.toString().toLowerCase()
+            else -> this.toString().toLowerCase()
         }
     }
 
@@ -119,7 +100,7 @@ class Phase(val phaseType: PhaseType) {
      * @return return the color
      */
     fun getColor(): Int {
-        return when (phaseType) {
+        return when (this) {
             PhaseType.LEARN -> R.color.learn_phase
             PhaseType.DRAFT -> R.color.draft_phase
             PhaseType.COMMUNITY_CHECK -> R.color.comunity_check_phase
@@ -130,32 +111,12 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.BACKT -> R.color.backT_phase
             PhaseType.WHOLE_STORY -> R.color.whole_story_phase
             PhaseType.REMOTE_CHECK -> R.color.remote_check_phase
-            else -> R.color.black
-        }
-    }
-
-    fun getTheClass(): Class<*> {
-        Log.e("@pwhite", "getTheClass(): the phase type is $phaseType");
-        return when (phaseType) {
-            PhaseType.WORKSPACE -> RegistrationActivity::class.java
-            PhaseType.REGISTRATION -> RegistrationActivity::class.java
-            PhaseType.STORY_LIST -> MainActivity::class.java
-            PhaseType.LEARN -> LearnActivity::class.java
-            PhaseType.DRAFT -> PagerBaseActivity::class.java
-            PhaseType.COMMUNITY_CHECK -> PagerBaseActivity::class.java
-            PhaseType.CONSULTANT_CHECK -> PagerBaseActivity::class.java
-            PhaseType.DRAMATIZATION -> PagerBaseActivity::class.java
-            PhaseType.CREATE -> CreateActivity::class.java
-            PhaseType.SHARE -> ShareActivity::class.java
-            PhaseType.BACKT -> PagerBaseActivity::class.java
-            PhaseType.WHOLE_STORY -> WholeStoryBackTranslationActivity::class.java
-            PhaseType.REMOTE_CHECK -> PagerBaseActivity::class.java
         }
     }
 
     fun getPhaseDisplaySlideCount(): Int {
         var tempSlideNum = 0
-        val validSlideTypes = when (phaseType) {
+        val validSlideTypes = when (this) {
             PhaseType.DRAMATIZATION -> arrayOf(
                     SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG, SlideType.LOCALCREDITS)
@@ -181,7 +142,7 @@ class Phase(val phaseType: PhaseType) {
         // rethink the usages and see if there is a simpler and less
         // error-prone way to verify that slide numbers are valid.
         val slideType = Workspace.activeStory.slides[slideNum].slideType
-        return when (phaseType) {
+        return when (this) {
             PhaseType.DRAMATIZATION -> slideType in arrayOf(
                     SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG, SlideType.LOCALCREDITS)
@@ -192,28 +153,32 @@ class Phase(val phaseType: PhaseType) {
     }
 
     companion object {
-        fun getLocalPhases(): List<Phase> {
-            return listOf(
-                    Phase(PhaseType.LEARN),
-                    Phase(PhaseType.DRAFT),
-                    Phase(PhaseType.COMMUNITY_CHECK),
-                    Phase(PhaseType.CONSULTANT_CHECK),
-                    Phase(PhaseType.DRAMATIZATION),
-                    Phase(PhaseType.CREATE),
-                    Phase(PhaseType.SHARE))
+        fun ofInt(i: Int): PhaseType {
+            return PhaseType.values()[i]
         }
 
-        fun getRemotePhases(): List<Phase> {
+        fun getLocalPhases(): List<PhaseType> {
             return listOf(
-                    Phase(PhaseType.LEARN),
-                    Phase(PhaseType.DRAFT),
-                    Phase(PhaseType.COMMUNITY_CHECK),
-                    Phase(PhaseType.WHOLE_STORY),
-                    Phase(PhaseType.BACKT),
-                    Phase(PhaseType.REMOTE_CHECK),
-                    Phase(PhaseType.DRAMATIZATION),
-                    Phase(PhaseType.CREATE),
-                    Phase(PhaseType.SHARE))
+                    PhaseType.LEARN,
+                    PhaseType.DRAFT,
+                    PhaseType.COMMUNITY_CHECK,
+                    PhaseType.CONSULTANT_CHECK,
+                    PhaseType.DRAMATIZATION,
+                    PhaseType.CREATE,
+                    PhaseType.SHARE)
+        }
+
+        fun getRemotePhases(): List<PhaseType> {
+            return listOf(
+                    PhaseType.LEARN,
+                    PhaseType.DRAFT,
+                    PhaseType.COMMUNITY_CHECK,
+                    PhaseType.WHOLE_STORY,
+                    PhaseType.BACKT,
+                    PhaseType.REMOTE_CHECK,
+                    PhaseType.DRAMATIZATION,
+                    PhaseType.CREATE,
+                    PhaseType.SHARE)
         }
 
         fun getHelpName(phase: PhaseType): String {

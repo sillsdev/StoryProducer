@@ -7,13 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.LogEntry
-
-import java.util.ArrayList
+import java.util.*
 
 internal class LogListAdapter(private val context: Context, slide: Int) : BaseAdapter() {
 
@@ -32,7 +30,7 @@ internal class LogListAdapter(private val context: Context, slide: Int) : BaseAd
     fun updateList(learn: Boolean, draft: Boolean, comCheck: Boolean) {
         displayEntries = ArrayList()
         for (le in allEntries) {
-            when(le.phase.phaseType){
+            when(le.phase){
                 PhaseType.LEARN -> if(learn) displayEntries.add(le)
                 PhaseType.DRAFT -> if(draft) displayEntries.add(le)
                 PhaseType.COMMUNITY_CHECK -> if(comCheck) displayEntries.add(le)

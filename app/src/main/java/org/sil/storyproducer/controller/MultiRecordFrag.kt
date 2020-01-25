@@ -18,6 +18,7 @@ import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.SLIDE_NUM
+import org.sil.storyproducer.model.PHASE_TYPE
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -37,13 +38,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        super.onCreateView(inflater, container, savedInstanceState)
+        val rootView = super.onCreateView(inflater, container, savedInstanceState)
         if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
             setToolbar()
         }
-
         setupCameraAndEditButton()
-
         return rootView
     }
 
@@ -158,6 +157,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     protected open fun setToolbar() {
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, slideNum)
+        bundle.putInt(PHASE_TYPE, phaseType.ordinal)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 

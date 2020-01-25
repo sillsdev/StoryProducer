@@ -24,7 +24,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), Serializable {
      */
     fun switchToStory(story: Story) {
         Workspace.activeStory = story
-        val intent = Intent(this.applicationContext, Workspace.activePhase.getTheClass())
+        val intent = Intent(this.applicationContext, PhaseBaseActivity::class.java)
         startActivity(intent)
     }
 
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), Serializable {
                 alert.setTitle("Story List Help")
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
+                val iStream = assets.open("story_list.html")
                 val text = iStream.reader().use {
                         it.readText() }
 
@@ -126,13 +126,11 @@ class MainActivity : AppCompatActivity(), Serializable {
         supportActionBar!!.setHomeButtonEnabled(true)
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
-        //Lock from opening with left swipe
         mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
-            // set item as selected to persist highlight
+
             menuItem.isChecked = true
-            // close drawer when item is tapped
             mDrawerLayout!!.closeDrawers()
 
             // Add code here to update the UI based on the item selected

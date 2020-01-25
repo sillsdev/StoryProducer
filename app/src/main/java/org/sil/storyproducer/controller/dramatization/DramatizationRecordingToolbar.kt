@@ -9,6 +9,7 @@ import org.sil.storyproducer.tools.file.getChosenRecording
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
+import org.sil.storyproducer.model.PhaseType
 import java.io.FileNotFoundException
 
 /**
@@ -23,7 +24,7 @@ import java.io.FileNotFoundException
 class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
-    
+
     private var enableSendAudioButton : Boolean = false
 
     private var isAppendingOn = false
@@ -40,13 +41,13 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
         checkButton = toolbarButton(R.drawable.ic_stop_white_48dp, R.id.finish_recording_button)
         rootView?.addView(checkButton)
-        
+
         rootView?.addView(toolbarButtonSpace())
 
         sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1)
         if(enableSendAudioButton) {
             rootView?.addView(sendAudioButton)
-            
+
             rootView?.addView(toolbarButtonSpace())
         }
     }

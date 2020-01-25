@@ -15,7 +15,6 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
@@ -34,8 +33,6 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
         rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
 
         setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
@@ -206,7 +203,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
         //Move to dramatization, slide 0.
         Workspace.activeSlideNum = 0
-        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.DRAMATIZATION))
+        // TODO @pwhite: implement jumpToPhase with viewpager
+        //PhaseBaseActivity.jumpToPhase(Phase(PhaseType.DRAMATIZATION))
     }
 
     /**

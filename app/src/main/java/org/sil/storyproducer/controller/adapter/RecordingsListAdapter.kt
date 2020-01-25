@@ -128,7 +128,7 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         }
     }
 
-    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?) : ClickListeners, Modal {
+    class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?, private val phaseType: PhaseType) : ClickListeners, Modal {
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var displayNames = RecordingList()
@@ -197,7 +197,7 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
          */
         fun resetRecordingList() {
             //only update if there was a change.
-            displayNames = Workspace.activePhase.getRecordings()
+            displayNames = phaseType.getRecordings()
             recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
         }
 
@@ -224,11 +224,11 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
                     stopAudio()
                 })
 
-                val recordingFile = Workspace.activePhase.getRecordings().getFiles()[pos].fileName
+                val recordingFile = phaseType.getRecordings().getFiles()[pos].fileName
                 if (storyRelPathExists(context, recordingFile)) {
                     audioPlayer.setStorySource(context, recordingFile)
                     audioPlayer.playAudio()
-                    when (Workspace.activePhase.phaseType) {
+                    when (phaseType) {
                         PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
                         PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
                         else -> {
@@ -243,7 +243,7 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         override fun onDeleteClick(name: String, pos: Int) {
             deleteAudioFileFromList(context, pos)
             recyclerView?.adapter!!.notifyDataSetChanged()
-            if (pos == Workspace.activePhase.getRecordings().selectedIndex) {
+            if (pos == phaseType.getRecordings().selectedIndex) {
                 displayNames.selectedIndex = displayNames.getFiles().size - 1
                 if (displayNames.getFiles().isEmpty()) {
                     toolbar?.updateInheritedToolbarButtonVisibility()

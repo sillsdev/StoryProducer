@@ -61,28 +61,14 @@
             android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".controller.phase.PhaseBaseActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".controller.WorkspaceUpdateActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".controller.WorkspaceDialogUpdateActivity"
             android:screenOrientation="portrait" />
-        <!-- Learn -->
-        <activity
-            android:name=".controller.learn.LearnActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".controller.remote.WholeStoryBackTranslationActivity"
-            android:screenOrientation="portrait" />
-        <!-- Create -->
-        <activity
-            android:name=".controller.export.CreateActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
-        <!-- Share -->
-        <activity
-            android:name=".controller.export.ShareActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden" />
     </application>
 
 </manifest>

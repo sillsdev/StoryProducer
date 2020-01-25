@@ -14,7 +14,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityCheckFrag : MultiRecordFrag() {
-    override var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    override var recordingToolbar = RecordingToolbar()
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -22,7 +22,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
-        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
+        dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar, phaseType)
         dispList?.embedList(rootView!! as ViewGroup)
         dispList?.setSlideNum(slideNum)
         //This enables the "onStartedToolbarMedia" to be invoked.

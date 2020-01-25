@@ -2,29 +2,19 @@ package org.sil.storyproducer.controller.backtranslation
 
 import android.content.Context
 import android.os.Bundle
-import android.provider.Settings
 import android.support.graphics.drawable.VectorDrawableCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.android.volley.AuthFailureError
-import com.android.volley.NetworkError
-import com.android.volley.NoConnectionError
 import org.apache.commons.io.IOUtils
-import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.model.UploadState
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.Network.VolleySingleton
-import org.sil.storyproducer.tools.Network.paramStringRequest
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
-import java.util.HashMap
+import java.util.*
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide

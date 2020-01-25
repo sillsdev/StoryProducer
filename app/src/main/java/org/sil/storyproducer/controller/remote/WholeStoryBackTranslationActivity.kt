@@ -10,17 +10,17 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.provider.Settings
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.app.Fragment
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
-import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.VolleyError
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
-
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -29,7 +29,8 @@ import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import org.sil.storyproducer.tools.Network.paramStringRequest
-import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.file.getStoryChildInputStream
+import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
@@ -109,14 +110,9 @@ fun sendSlideSpecificRequest(
  */
 
 
-class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
+class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
-    class DraftSlide(slideNum: Int, duration: Int, startTime: Int, filename: String) {
-        val slideNum: Int = slideNum
-        val duration: Int = duration
-        val startTime: Int = startTime
-        val filename: String = filename
-    }
+    class DraftSlide(val slideNum: Int, val duration: Int, val startTime: Int, val filename: String) {}
 
     private lateinit var wholeStoryImageView: ImageView
     private lateinit var playButton: ImageButton
@@ -138,20 +134,20 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
     private var currentSlideIndex: Int = 0
     private val translatedSlides: MutableList<DraftSlide> = ArrayList()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_whole_story)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+        val rootView = inflater.inflate(R.layout.activity_whole_story, container, false)
 
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
         recordingToolbar.keepToolbarVisible()
 
-        wholeStoryImageView = findViewById(R.id.fragment_image_view)
-        playButton = findViewById(R.id.fragment_reference_audio_button)
-        seekBar = findViewById(R.id.videoSeekBar)
-        uploadButton = findViewById(R.id.upload_audio_botton)
+        wholeStoryImageView = rootView.findViewById(R.id.fragment_image_view)
+        playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
+        seekBar = rootView.findViewById(R.id.videoSeekBar)
+        uploadButton = rootView.findViewById(R.id.upload_audio_botton)
 
         // TODO @pwhite: This state machine of switching between green, gray,
         // and yellow checkmarks is the same between the whole story and single
@@ -167,35 +163,35 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
 
         uploadButton.setOnClickListener {
             when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
-                UploadState.UPLOADED -> Toast.makeText(this, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
+                UploadState.UPLOADED -> Toast.makeText(context!!, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
                     val audioRecording = Workspace.activeStory.wholeStoryBackTAudioFile
                     if (audioRecording != null) {
                         Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADING
                         uploadButton.background = yellowCheckmark
-                        Toast.makeText(this, "Uploading audio", Toast.LENGTH_SHORT).show()
-                        val input = getStoryChildInputStream(this, audioRecording.fileName)
+                        Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
+                        val input = getStoryChildInputStream(context!!, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
                         val slideCount = Workspace.activeStory.slides.size
-                        var js = HashMap<String, String>()
+                        val js = HashMap<String, String>()
                         js["IsWholeStory"] = "true"
-                        sendSlideSpecificRequest(this, slideCount, getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(applicationContext, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
+                        sendSlideSpecificRequest(context!!, slideCount, getString(R.string.url_upload_audio), byteString, {
+                            Toast.makeText(context!!, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark
                         }, {
-                            Toast.makeText(applicationContext, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context!!, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadButton.background = grayCheckmark
                         }, js)
                     } else {
-                        Toast.makeText(this, "No recording found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
                     }
                 }
                 UploadState.UPLOADING -> {
                     uploadButton.background = yellowCheckmark
-                    Toast.makeText(this, "Upload already in progress", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context!!, "Upload already in progress", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -204,15 +200,15 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
             when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
                 UploadState.UPLOADING -> {
                     Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(this, "Cancelling upload", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context!!, "Cancelling upload", Toast.LENGTH_SHORT).show()
                     uploadButton.background = grayCheckmark
                 }
                 UploadState.UPLOADED -> {
                     Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(this, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context!!, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
                     uploadButton.background = grayCheckmark
                 }
-                UploadState.NOT_UPLOADED -> Toast.makeText(this, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
+                UploadState.NOT_UPLOADED -> Toast.makeText(context!!, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
             }
             true
         }
@@ -234,14 +230,11 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
             }
 
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
-                if (fromUser) {
-                    Log.e("@pwhite", "progress changed to $progress")
-                }
                 setSlideFromSeekbar()
             }
         })
 
-        val volumeSwitch = findViewById<Switch>(R.id.volumeSwitch)
+        val volumeSwitch = rootView.findViewById<Switch>(R.id.volumeSwitch)
         volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
             isVolumeOn = if (isChecked) {
@@ -255,12 +248,12 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
 
         //get story audio duration
         var lastEndTime = 0
-        story.slides.forEachIndexed { slideNum, slide ->
+        Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
             // Don't play the copyright translatedSlides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
                 val filename = slide.draftRecordings.selectedFile?.fileName
                 if (filename != null) {
-                    val duration = (MediaHelper.getAudioDuration(this, getStoryUri(filename)!!) / 1000).toInt()
+                    val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
                     val startTime = lastEndTime
                     lastEndTime = startTime + duration
                     translatedSlides.add(DraftSlide(slideNum, duration, startTime, filename))
@@ -278,16 +271,16 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
         seekBar.progress = 0
         setSlideFromSeekbar()
 
-        invalidateOptionsMenu()
+        return rootView
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
         pauseStoryAudio()
         draftPlayer.release()
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
         draftPlayer = AudioPlayer()
         draftPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
@@ -303,10 +296,11 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
             }
         })
 
+        val currentActivity = activity!!
         mSeekBarTimer = Timer()
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
-                runOnUiThread {
+                currentActivity.runOnUiThread {
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
                     } else if (draftPlayer.isAudioPrepared) {
@@ -328,8 +322,8 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
             if (slideIndexBeforeSeekBar != currentSlideIndex || !draftPlayer.isAudioPrepared) {
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = translatedSlides[currentSlideIndex]
-                setPic(wholeStoryImageView, slide.slideNum)
-                draftPlayer.setStorySource(this, slide.filename)
+                PhaseBaseActivity.setPic(context!!, wholeStoryImageView, slide.slideNum)
+                draftPlayer.setStorySource(context!!, slide.filename)
             }
         }
     }
@@ -347,26 +341,9 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
         seekbarStartTime = System.currentTimeMillis()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu) {
         val item = menu.getItem(0)
         item.setIcon(R.drawable.ic_school_white_48dp)
-        return true
-    }
-
-    /**
-     * Button action for playing/pausing the audio
-     * @param view uploadButton to set listeners for
-     */
-    fun onClickPlayPauseButton(view: View) {
-        if (draftPlayer.isAudioPlaying) {
-            pauseStoryAudio()
-        } else {
-            if (seekBar.progress >= seekBar.max - 100) {
-                //reset the video to the beginning because they already finished it (within 100 ms)
-                seekBar.progress = 0
-            }
-            playStoryAudio()
-        }
     }
 
     /**

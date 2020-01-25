@@ -18,13 +18,7 @@ import java.util.*
 import kotlin.math.max
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
-
-// Represents a message which is waiting to be sent to the server. Such a
-// message can be either a text message or an audio file. The `isAudio`
-// property specifies which type it is; if `isAudio` is true, then `param` is
-// the filename of the audio to be uploaded. Otherwise, `param` is the text
-// content of the message.
-class EnqueuedMessage(val isAudio: Boolean, param: String, storyId: Int, slideNum: Int);
+internal const val PHASE_TYPE = "CurrentPhaseType"
 
 object Workspace {
     var workspace: DocumentFile = DocumentFile.fromFile(File(""))
@@ -36,7 +30,7 @@ object Workspace {
     val Stories: MutableList<Story> = mutableListOf()
     var storiesUpdated = false
     var registration: Registration = Registration()
-    var phases: List<Phase> = ArrayList()
+    var phases: List<PhaseType> = ArrayList()
     var activePhaseIndex: Int = -1
         private set
     var isInitialized = false
@@ -46,15 +40,15 @@ object Workspace {
         set(value) {
             field = value
             //You are switching the active story.  Recall the last phase and slide.
-            activePhase = Phase(value.lastPhaseType)
+            activePhase = value.lastPhaseType
             activeSlideNum = value.lastSlideNum
         }
-    var activePhase: Phase = Phase(PhaseType.LEARN)
+    var activePhase = PhaseType.LEARN
         set(value) {
             field = value
             activePhaseIndex = -1
             for ((i, p) in phases.withIndex()) {
-                if (p.phaseType == value.phaseType) activePhaseIndex = i
+                if (p == value) activePhaseIndex = i
             }
         }
     val activeDirRoot: String
@@ -76,6 +70,7 @@ object Workspace {
                 0
             }
         }
+
     val activeSlide: Slide?
         get() {
             if (activeStory.title == "") return null
@@ -141,8 +136,8 @@ object Workspace {
         Stories.sortBy { it.title }
         //update phases based upon registration selection
         phases = when (registration.consultantLocationType) {
-            "Remote" -> Phase.getRemotePhases()
-            else -> Phase.getLocalPhases()
+            "Remote" -> PhaseType.getRemotePhases()
+            else -> PhaseType.getLocalPhases()
         }
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
@@ -186,15 +181,13 @@ object Workspace {
     }
 
     fun goToNextPhase(): Boolean {
-        if (activePhaseIndex == -1) return false //phases not initizialized
+        if (activePhaseIndex == -1) return false // phases not initizialized
         if (activePhaseIndex >= phases.size - 1) {
             activePhaseIndex = phases.size - 1
             return false
         }
-        Log.e("@pwhite", "goToNextPhase(): phases = ${phases.size}");
         activePhaseIndex++
         activePhase = phases[activePhaseIndex]
-        //there was a successful phase change!
         return true
     }
 
@@ -206,7 +199,6 @@ object Workspace {
         }
         activePhaseIndex--
         activePhase = phases[activePhaseIndex]
-        //there was a successful phase change!
         return true
     }
 

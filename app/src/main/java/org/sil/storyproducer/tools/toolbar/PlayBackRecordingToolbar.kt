@@ -140,11 +140,10 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
 
                     //TODO: make this logging more robust and encapsulated
-                    when (Workspace.activePhase.phaseType) {
+                    when (Workspace.activePhase) {
                         PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
                         PhaseType.COMMUNITY_CHECK -> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
-                        else -> {
-                        }
+                        else -> {}
                     }
                 } else {
                     Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()

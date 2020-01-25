@@ -31,6 +31,7 @@ android {
         debug {
             versionNameSuffix ".debug"
             buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", ENABLE_IN_APP_ROCC_URL_SETTING
         }
     }
     defaultConfig {

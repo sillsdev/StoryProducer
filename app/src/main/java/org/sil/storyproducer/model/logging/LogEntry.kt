@@ -3,7 +3,6 @@ package org.sil.storyproducer.model.logging
 import android.content.Context
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import java.text.SimpleDateFormat
@@ -11,11 +10,11 @@ import java.util.*
 
 @JsonClass(generateAdapter = true)
 class LogEntry(var dateTimeString: String,
-               var description: String, var phase: Phase,
+               var description: String, var phase: PhaseType,
                var startSlideNum: Int = -1, var endSlideNum: Int = -1) {
 
     fun appliesToSlideNum(compareNum: Int): Boolean {
-        if (phase.phaseType == PhaseType.LEARN)
+        if (phase == PhaseType.LEARN)
             if(compareNum in startSlideNum..endSlideNum ||
                compareNum in endSlideNum..startSlideNum)
                 return true
