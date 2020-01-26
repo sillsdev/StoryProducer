@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller.phase
 
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -27,9 +26,7 @@ import android.widget.ImageView
 import android.widget.Spinner
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.MainActivity
-import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.WorkspaceUpdateActivity
+import org.sil.storyproducer.controller.handleDrawerItemSelection
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -41,7 +38,7 @@ import kotlin.math.max
 class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, ViewPager.OnPageChangeListener {
 
 
-    private var mDrawerLayout: DrawerLayout? = null
+    private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mViewPager: ViewPager
 
     private var phase = Workspace.activePhase
@@ -70,48 +67,17 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                 phase.getColor(), null)))
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
-        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val drawerLayout = mDrawerLayout
         navigationView.setNavigationItemSelectedListener { menuItem ->
-
-            menuItem.isChecked = true
-            mDrawerLayout!!.closeDrawers()
-
-            // Add code here to update the UI based on the item selected
-            // For example, swap UI fragments here
-            when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    val intent = Intent(this, WorkspaceUpdateActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_stories -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_registration -> {
-                    val intent = Intent(this, RegistrationActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_license -> {
-                    val dialog = AlertDialog.Builder(this)
-                            .setTitle(this.getString(R.string.license_title))
-                            .setMessage(this.getString(R.string.license_body))
-                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
-                    dialog.show()
-                }
-            }
-
-            true
+            handleDrawerItemSelection(this, menuItem, drawerLayout, null)
         }
         setupStatusBar()
 
         val pagerAdapter = PagerAdapter(supportFragmentManager!!)
         mViewPager = findViewById(R.id.phase_pager)
         mViewPager.adapter = pagerAdapter
-        Log.e("@pwhite", "in constructor switching to stage ${Workspace.activePhaseIndex}")
         mViewPager.currentItem = Workspace.activePhaseIndex
         mViewPager.addOnPageChangeListener(this)
     }
@@ -180,10 +146,10 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                if (mDrawerLayout!!.isDrawerOpen(GravityCompat.START)) {
-                    mDrawerLayout!!.closeDrawer(GravityCompat.START)
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerLayout.closeDrawer(GravityCompat.START)
                 } else {
-                    mDrawerLayout!!.openDrawer(GravityCompat.START)
+                    mDrawerLayout.openDrawer(GravityCompat.START)
                 }
                 true
             }
@@ -234,7 +200,7 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
                 //scale down image to not crash phone from memory error from displaying too large an image
                 //Get the height of the phone.
                 val scalingFactor = 0.4
-                var height = (context.resources.displayMetrics.heightPixels * scalingFactor).toInt()
+                val height = (context.resources.displayMetrics.heightPixels * scalingFactor).toInt()
                 val width = context.resources.displayMetrics.widthPixels
 
                 slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)

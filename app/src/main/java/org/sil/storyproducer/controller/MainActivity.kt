@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -7,7 +8,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.SystemClock
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -21,19 +21,58 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.ProgressBar
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.phase.PhaseBaseActivity
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import java.io.Serializable
 
+fun handleDrawerItemSelection(activity: Activity, menuItem: MenuItem, drawerLayout: DrawerLayout, currentItemId: Int?): Boolean {
+    menuItem.isChecked = true
+    drawerLayout.closeDrawers()
+
+    if (currentItemId == menuItem.itemId) {
+        return true
+    }
+
+    when (menuItem.itemId) {
+        R.id.nav_workspace -> {
+            val intent = Intent(activity, WorkspaceUpdateActivity::class.java)
+            activity.startActivity(intent)
+            activity.finish()
+        }
+        R.id.nav_stories -> {
+            val intent = Intent(activity, MainActivity::class.java)
+            activity.startActivity(intent)
+            activity.finish()
+        }
+        R.id.nav_registration -> {
+            val intent = Intent(activity, RegistrationActivity::class.java)
+            activity.startActivity(intent)
+            activity.finish()
+        }
+        R.id.nav_license -> {
+            val dialog = AlertDialog.Builder(activity)
+                    .setTitle(activity.getString(R.string.license_title))
+                    .setMessage(activity.getString(R.string.license_body))
+                    .setPositiveButton(activity.getString(R.string.ok)) { _, _ -> }.create()
+            dialog.show()
+        }
+        R.id.nav_set_rocc_url_prefix -> {
+            val dialog = AlertDialog.Builder(activity)
+                    .setTitle("ROCC URL Prefix")
+                    .setMessage("Enter a string to prefix all requests to the remote consultant site")
+                    .setPositiveButton(activity.getString(R.string.ok)) { _, _ -> }.create()
+            dialog.show()
+        }
+    }
+
+    return true
+}
+
 class MainActivity : AppCompatActivity(), Serializable {
-    private var mDrawerLayout: DrawerLayout? = null
+    private lateinit var mDrawerLayout: DrawerLayout
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -60,7 +99,7 @@ class MainActivity : AppCompatActivity(), Serializable {
         pb.visibility = View.VISIBLE
 
         GlobalScope.async {
-            if(!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+            if (!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
             runOnUiThread {
                 pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
@@ -74,19 +113,10 @@ class MainActivity : AppCompatActivity(), Serializable {
         return true
     }
 
-    /**
-     * move to the chosen story
-     */
-    fun switchToStory(story: Story) {
-        Workspace.activeStory = story
-        val intent = Intent(this.applicationContext, PhaseBaseActivity::class.java)
-        startActivity(intent)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                mDrawerLayout.openDrawer(GravityCompat.START)
                 true
             }
             R.id.helpButton -> {
@@ -96,9 +126,10 @@ class MainActivity : AppCompatActivity(), Serializable {
                 val wv = WebView(this)
                 val iStream = assets.open("story_list.html")
                 val text = iStream.reader().use {
-                        it.readText() }
+                    it.readText()
+                }
 
-                wv.loadData(text,"text/html",null)
+                wv.loadData(text, "text/html", null)
                 alert.setView(wv)
                 alert.setNegativeButton("Close") { dialog, _ ->
                     dialog!!.dismiss()
@@ -126,40 +157,11 @@ class MainActivity : AppCompatActivity(), Serializable {
         supportActionBar!!.setHomeButtonEnabled(true)
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
-        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val drawerLayout = mDrawerLayout
         navigationView.setNavigationItemSelectedListener { menuItem ->
-
-            menuItem.isChecked = true
-            mDrawerLayout!!.closeDrawers()
-
-            // Add code here to update the UI based on the item selected
-            // For example, swap UI fragments here
-            val intent: Intent
-            when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_stories -> {
-                    // Current fragment
-                }
-                R.id.nav_registration -> {
-                    intent = Intent(this, RegistrationActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_license -> {
-                    val dialog = AlertDialog.Builder(this)
-                            .setTitle(this.getString(R.string.license_title))
-                            .setMessage(this.getString(R.string.license_body))
-                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
-                    dialog.show()
-                }
-            }
-
-            true
+            handleDrawerItemSelection(this, menuItem, drawerLayout, R.id.nav_stories)
         }
     }
 

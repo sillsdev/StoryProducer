@@ -1,4 +1,5 @@
 @file:JvmName("FileIO")
+
 package org.sil.storyproducer.tools.file
 
 import android.content.Context
@@ -10,6 +11,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import android.util.Log
+import android.util.LruCache
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -21,19 +23,19 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
+fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String) {
 //    var iStream: AutoCloseInputStream = null
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val opfd = getPFD(context, destRelPath,"","w")
+        val opfd = getPFD(context, destRelPath, "", "w")
         val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
         val bArray = ByteArray(100000)
         var bytesRead = iStream.read(bArray)
-        while(bytesRead > 0){ //eof not reached
-            oStream.write(bArray,0,bytesRead)
+        while (bytesRead > 0) { //eof not reached
+            oStream.write(bArray, 0, bytesRead)
             bytesRead = iStream.read(bArray)
         }
         iStream.close()
@@ -44,111 +46,123 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 }
 
 fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
-    if(story.title == "" || slideNum == story.slides.size) {
+    if (story.title == "" || slideNum == story.slides.size) {
         return genDefaultImage()
     }
-    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
+    return getStoryImage(context, story.slides[slideNum].imageFile, sampleSize, false, story)
 }
 
 fun getDownsample(context: Context, relPath: String,
-                         dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
-                         story: Story = Workspace.activeStory): Int{
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
-    if(iStream.available() == 0) return 1
+                  dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
+                  story: Story = Workspace.activeStory): Int {
+    val iStream = getStoryChildInputStream(context, relPath, story.title) ?: return 1
+    if (iStream.available() == 0) return 1
     val options = BitmapFactory.Options()
     options.inJustDecodeBounds = true
     BitmapFactory.decodeStream(iStream, null, options)
-    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
+    return max(1, min(options.outHeight / dstHeight, options.outWidth / dstWidth))
 }
 
+var storyImageCache = LruCache<String, Bitmap>(30)
+
 fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
-    if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
-    val options = BitmapFactory.Options()
-    options.inSampleSize = sampleSize
-    if(useAllPixels) options.inTargetDensity=1
-    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
-    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    val cacheString = "${story.title}:$useAllPixels:$relPath"
+    var bmp = storyImageCache.get(cacheString)
+    if (bmp == null) {
+        val iStream = getStoryChildInputStream(context, relPath, story.title)
+                ?: return genDefaultImage()
+        if (iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+        val options = BitmapFactory.Options()
+        options.inSampleSize = sampleSize
+        if (useAllPixels) options.inTargetDensity = 1
+        bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+        if (useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+        storyImageCache.put(cacheString, bmp)
+    }
     return bmp
 }
 
 fun genDefaultImage(): Bitmap {
-    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
     pic!!.eraseColor(Color.DKGRAY)
     return pic
 }
-fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
+
+fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot): OutputStream? {
     if (dirRoot == "") return null
     return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
 }
 
-fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
-    if(relPath == "") return false
-    val uri = getStoryUri(relPath,dirRoot) ?: return false
-    Log.e("@pwhite","checking path $uri")
+fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot): Boolean {
+    if (relPath == "") return false
+    val uri = getStoryUri(relPath, dirRoot) ?: return false
+    Log.e("@pwhite", "checking path $uri")
     context.contentResolver.getType(uri) ?: return false
     return true
 }
 
-fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
-    if(relPath == "") return false
+fun workspaceRelPathExists(context: Context, relPath: String): Boolean {
+    if (relPath == "") return false
     //if we can get the type, it exists.
     context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
     return true
 }
 
-fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
+fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot): Uri? {
     Log.e("@pwhite", "getting story uri. $relPath, $dirRoot")
     if (dirRoot == "") return null
     return Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$dirRoot/$relPath"))
 }
 
-fun getWorkspaceUri(relPath: String) : Uri? {
+fun getWorkspaceUri(relPath: String): Uri? {
     return Uri.parse(Workspace.workspace.uri.toString() + Uri.encode("/$relPath"))
 }
 
-fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : String? {
+fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot): String? {
     val iStream = getStoryChildInputStream(context, relPath, dirRoot)
     if (iStream != null)
         return iStream.reader().use {
-            it.readText() }
+            it.readText()
+        }
     return null
 }
 
-fun getStoryChildInputStream(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : InputStream? {
+fun getStoryChildInputStream(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot): InputStream? {
     if (dirRoot == "") return null
     return getChildInputStream(context, "$dirRoot/$relPath")
 }
 
-fun getText(context: Context, relPath: String) : String? {
+fun getText(context: Context, relPath: String): String? {
     val iStream = getChildInputStream(context, relPath)
     if (iStream != null)
         return iStream.reader().use {
-            it.readText() }
+            it.readText()
+        }
     return null
 }
 
-fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-    val pfd = getPFD(context, relPath, mimeType,"w")
+fun getChildOutputStream(context: Context, relPath: String, mimeType: String = ""): OutputStream? {
+    val pfd = getPFD(context, relPath, mimeType, "w")
     var oStream: OutputStream? = null
     try {
         oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
-    } catch (e:java.lang.Exception) {}
+    } catch (e: java.lang.Exception) {
+    }
 
     return oStream
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : FileDescriptor? {
-    return getStoryPFD(context,relPath,mimeType,mode,dirRoot)?.fileDescriptor
+fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot): FileDescriptor? {
+    return getStoryPFD(context, relPath, mimeType, mode, dirRoot)?.fileDescriptor
 }
 
-fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
+fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot): ParcelFileDescriptor? {
     if (dirRoot == "") return null
     return getPFD(context, "$dirRoot/$relPath", mimeType, mode)
 }
 
-fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
+fun getChildDocuments(context: Context, relPath: String): MutableList<String> {
     //build a query to look for the child documents
     //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
     var childDocs: MutableList<String> = ArrayList()
@@ -170,12 +184,14 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
             cursor.moveToNext()
         } while ((!cursor.isAfterLast))
         cursor.close()
-    } catch (e: Exception) { childDocs = ArrayList() }
+    } catch (e: Exception) {
+        childDocs = ArrayList()
+    }
 
     return childDocs
 }
 
-fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
+fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r"): ParcelFileDescriptor? {
     if (!Workspace.workspace.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
@@ -192,36 +208,37 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             }
             uri = newUri
         }
-    } catch (e: Exception){
+    } catch (e: Exception) {
         Crashlytics.logException(e)
         return null
     }
     //create the file if it is needed
     val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
     //TODO replace with custom exists thing.
-    if(context.contentResolver.getType(newUri) == null){
+    if (context.contentResolver.getType(newUri) == null) {
         //find the mime type by extension
         var mType = mimeType
-        if(mType == "") {
+        if (mType == "") {
             mType = when (File(uri.path).extension) {
                 "json" -> "application/json"
                 //todo - use m4p.
-                "mp3"  -> "audio/x-mp3"
+                "mp3" -> "audio/x-mp3"
                 "wav" -> "audio/w-wav"
                 "txt" -> "plain/text"
                 else -> "*/*"
             }
         }
-        DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
+        DocumentsContract.createDocument(context.contentResolver, uri, mType, segments.last())
     }
     var pfd: ParcelFileDescriptor? = null
-    try{
-        pfd = context.contentResolver.openFileDescriptor(newUri,mode)
-    }catch(e:java.lang.Exception){}
+    try {
+        pfd = context.contentResolver.openFileDescriptor(newUri, mode)
+    } catch (e: java.lang.Exception) {
+    }
     return pfd
 }
 
-fun getChildInputStream(context: Context, relPath: String) : InputStream? {
+fun getChildInputStream(context: Context, relPath: String): InputStream? {
     val childUri = Uri.parse(Workspace.workspace.uri.toString() +
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
@@ -236,21 +253,21 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
     }
 }
 
-fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean {
-    if(storyRelPathExists(context, relPath, dirRoot)){
-        val uri = getStoryUri(relPath,dirRoot)
-        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot): Boolean {
+    if (storyRelPathExists(context, relPath, dirRoot)) {
+        val uri = getStoryUri(relPath, dirRoot)
+        return DocumentsContract.deleteDocument(context.contentResolver, uri)
     }
     return false
 }
 
-fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
-    if(workspaceRelPathExists(context, relPath)){
+fun deleteWorkspaceFile(context: Context, relPath: String): Boolean {
+    if (workspaceRelPathExists(context, relPath)) {
         val uri = getWorkspaceUri(relPath)
-        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+        return DocumentsContract.deleteDocument(context.contentResolver, uri)
     }
     return false
 }
 
-val DEFAULT_WIDTH: Int = 1500
-val DEFAULT_HEIGHT: Int = 1125
+const val DEFAULT_WIDTH: Int = 1500
+const val DEFAULT_HEIGHT: Int = 1125

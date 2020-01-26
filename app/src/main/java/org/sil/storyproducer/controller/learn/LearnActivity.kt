@@ -14,16 +14,12 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.saveLearnLog
 import org.sil.storyproducer.tools.file.getStoryUri
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
-import kotlin.math.min
 
 class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
@@ -69,6 +65,18 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         learnImageView = rootView.findViewById(R.id.fragment_image_view)
         playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         seekBar = rootView.findViewById(R.id.videoSeekBar)
+
+        playButton.setOnClickListener {
+            if (narrationPlayer.isAudioPlaying) {
+                pauseStoryAudio()
+            } else {
+                if (seekBar.progress >= seekBar.max - 100) {
+                    //reset the video to the beginning because they already finished it (within 100 ms)
+                    seekBar.progress = 0
+                }
+                playStoryAudio()
+            }
+        }
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             var wasPlayingBeforeTouch = false
@@ -147,6 +155,8 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         }
         seekBar.progress = 0
         setSlideFromSeekbar()
+
+
 
         return rootView
     }
@@ -250,22 +260,6 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
                 }
                 //startPos = -1
 //            }
-        }
-    }
-
-    /**
-     * Button action for playing/pausing the audio
-     * @param view button to set listeners for
-     */
-    fun onClickPlayPauseButton(view: View) {
-        if (narrationPlayer.isAudioPlaying) {
-            pauseStoryAudio()
-        } else {
-            if (seekBar.progress >= seekBar.max - 100) {
-                //reset the video to the beginning because they already finished it (within 100 ms)
-                seekBar.progress = 0
-            }
-            playStoryAudio()
         }
     }
 
