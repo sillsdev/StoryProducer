@@ -51,7 +51,7 @@ fun sendProjectSpecificRequest(
 
     params["Key"] = context.getString(R.string.api_token)
     params["PhoneId"] = getPhoneId(context)
-    val url = BuildConfig.ROCC_URL_PREFIX + relativeUrl
+    val url = Workspace.getRoccUrlPrefix(context) + relativeUrl
     val req = object : paramStringRequest(Method.POST, url, params, {
         Log.i("LOG_VOLLEY", it)
         var jsonObject = JSONObject(it)

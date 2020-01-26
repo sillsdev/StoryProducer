@@ -45,11 +45,12 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String) {
     }
 }
 
-fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
-    if (story.title == "" || slideNum == story.slides.size) {
-        return genDefaultImage()
+fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
+    return if (story.title == "" || slideNum == story.slides.size) {
+        null
+    } else {
+        getStoryImage(context, story.slides[slideNum].imageFile, sampleSize, false, story)
     }
-    return getStoryImage(context, story.slides[slideNum].imageFile, sampleSize, false, story)
 }
 
 fun getDownsample(context: Context, relPath: String,
@@ -64,14 +65,17 @@ fun getDownsample(context: Context, relPath: String,
 }
 
 var storyImageCache = LruCache<String, Bitmap>(30)
+var storyImageCacheState = HashSet<String>()
 
-fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
-    val cacheString = "${story.title}:$useAllPixels:$relPath"
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap? {
+    val cacheString = "${story.title}:$useAllPixels:$sampleSize:$relPath"
     var bmp = storyImageCache.get(cacheString)
-    if (bmp == null) {
+    if (!storyImageCacheState.contains(cacheString)) {
+        storyImageCacheState.add(cacheString)
         val iStream = getStoryChildInputStream(context, relPath, story.title)
-                ?: return genDefaultImage()
-        if (iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+        if (iStream == null || iStream.available() == 0) {
+            return null
+        }
         val options = BitmapFactory.Options()
         options.inSampleSize = sampleSize
         if (useAllPixels) options.inTargetDensity = 1
@@ -104,7 +108,7 @@ fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Work
 fun workspaceRelPathExists(context: Context, relPath: String): Boolean {
     if (relPath == "") return false
     //if we can get the type, it exists.
-    context.contentResolver.getType(getWorkspaceUri(relPath)) ?: return false
+    context.contentResolver.getType(getWorkspaceUri(relPath)!!) ?: return false
     return true
 }
 

@@ -1,13 +1,14 @@
 package org.sil.storyproducer.tools.Network;
 
-import com.android.volley.toolbox.Volley;
-import com.android.volley.RequestQueue;
-import com.android.volley.Request;
 import android.content.Context;
 import android.widget.Toast;
 
-import org.sil.storyproducer.BuildConfig;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import org.sil.storyproducer.R;
+import org.sil.storyproducer.model.Workspace;
 
 /**
  * Created by Brendon on 11/13/17.
@@ -50,11 +51,12 @@ public class VolleySingleton {
 
             if(isStopped){
                 //notify currently no connection
-                String uploadAudioUrl = BuildConfig.ROCC_URL_PREFIX + mCtx.getString(R.string.url_upload_audio);
-                String registerPhoneUrl = BuildConfig.ROCC_URL_PREFIX + mCtx.getString(R.string.url_register_phone);
-                String sendMessageUrl = BuildConfig.ROCC_URL_PREFIX + mCtx.getString(R.string.url_send_message);
-                String getMessagesUrl = BuildConfig.ROCC_URL_PREFIX + mCtx.getString(R.string.url_get_messages);
-                String getSlideStatusUrl = BuildConfig.ROCC_URL_PREFIX + mCtx.getString(R.string.url_get_slide_status);
+                String rup = Workspace.INSTANCE.getRoccUrlPrefix(mCtx);
+                String uploadAudioUrl = rup + mCtx.getString(R.string.url_upload_audio);
+                String registerPhoneUrl = rup + mCtx.getString(R.string.url_register_phone);
+                String sendMessageUrl = rup + mCtx.getString(R.string.url_send_message);
+                String getMessagesUrl = rup + mCtx.getString(R.string.url_get_messages);
+                String getSlideStatusUrl = rup + mCtx.getString(R.string.url_get_slide_status);
                 // TODO @pwhite: This is basically a switch statement on what
                 // type of request the parameter is. I'll have to look more
                 // thoroughly through the code to understand, but I think it

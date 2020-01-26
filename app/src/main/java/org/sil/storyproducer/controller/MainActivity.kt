@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -19,6 +20,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
+import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -60,10 +63,20 @@ fun handleDrawerItemSelection(activity: Activity, menuItem: MenuItem, drawerLayo
             dialog.show()
         }
         R.id.nav_set_rocc_url_prefix -> {
+            val input = EditText(activity)
+            val lp = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT)
+            input.layoutParams = lp
+            input.setText(PreferenceManager.getDefaultSharedPreferences(activity).getString("ROCC_URL_PREFIX", "") ?: "")
             val dialog = AlertDialog.Builder(activity)
                     .setTitle("ROCC URL Prefix")
                     .setMessage("Enter a string to prefix all requests to the remote consultant site")
-                    .setPositiveButton(activity.getString(R.string.ok)) { _, _ -> }.create()
+                    .setView(input)
+                    .setPositiveButton(activity.getString(R.string.ok)) { _, _ ->
+                        PreferenceManager.getDefaultSharedPreferences(activity).edit()
+                                .putString("ROCC_URL_PREFIX", input.text.toString()).apply()
+                    }.create()
             dialog.show()
         }
     }

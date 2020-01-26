@@ -32,6 +32,7 @@ import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.toJson
 import org.sil.storyproducer.tools.BitmapScaler
+import org.sil.storyproducer.tools.file.genDefaultImage
 import org.sil.storyproducer.tools.file.getStoryImage
 import kotlin.math.max
 
@@ -194,7 +195,7 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
          */
         fun setPic(context: Context, slideImage: ImageView, slideNum: Int) {
             val downSample = 2
-            var slidePicture: Bitmap = getStoryImage(context, slideNum, downSample)
+            var slidePicture: Bitmap = getStoryImage(context, slideNum, downSample) ?: genDefaultImage()
 
             if (slideNum < Workspace.activeStory.slides.size) {
                 //scale down image to not crash phone from memory error from displaying too large an image

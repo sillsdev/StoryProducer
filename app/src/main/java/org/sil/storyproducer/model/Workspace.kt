@@ -4,18 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings.Secure
-import android.support.v4.content.res.TypedArrayUtils.getString
 import android.support.v4.provider.DocumentFile
-import android.util.Log;
-import com.android.volley.Request
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
-import org.sil.storyproducer.tools.Network.paramStringRequest
 import java.io.File
 import java.util.*
-import kotlin.math.max
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val PHASE_TYPE = "CurrentPhaseType"
@@ -76,6 +73,15 @@ object Workspace {
             if (activeStory.title == "") return null
             return activeStory.slides[activeSlideNum]
         }
+
+    fun getRoccUrlPrefix(context: Context): String {
+        if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+            return PreferenceManager.getDefaultSharedPreferences(context).getString("ROCC_URL_PREFIX", BuildConfig.ROCC_URL_PREFIX)
+                    ?: BuildConfig.ROCC_URL_PREFIX
+        } else {
+            return BuildConfig.ROCC_URL_PREFIX
+        }
+    }
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
