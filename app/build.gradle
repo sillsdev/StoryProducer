@@ -25,13 +25,24 @@ android {
     }
     buildTypes {
         release {
+            versionNameSuffix ".release"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", "false"
+            resValue "bool", "enable_in_app_rocc_url_setting", "false"
         }
         debug {
             versionNameSuffix ".debug"
             buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
-            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", ENABLE_IN_APP_ROCC_URL_SETTING
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", "true"
+            resValue "bool", "enable_in_app_rocc_url_setting", "true"
+        }
+        clientDebug {
+            initWith debug
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", "false"
+            resValue "bool", "enable_in_app_rocc_url_setting", "false"
+
         }
     }
     defaultConfig {
