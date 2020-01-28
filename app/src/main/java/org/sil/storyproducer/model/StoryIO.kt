@@ -79,6 +79,8 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolder
 
     //only work with zip files.
     if(!zipDocFile.name!!.endsWith(".zip")) return
+    if(!zipDocFile.name!!.endsWith(".bloom")) return
+    if(!zipDocFile.name!!.endsWith(".bloomd")) return
 
     val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
