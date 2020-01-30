@@ -78,9 +78,9 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
 fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>){
 
     //only work with zip files.
-    if(!zipDocFile.name!!.endsWith(".zip")) return
-    if(!zipDocFile.name!!.endsWith(".bloom")) return
-    if(!zipDocFile.name!!.endsWith(".bloomd")) return
+    val extension = zipDocFile.name!!.substringAfterLast(".","")
+    val name = zipDocFile.name!!.substringBeforeLast(".","")
+    if (!(extension in arrayOf("zip","bloom","bloomd"))) return
 
     val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
@@ -106,7 +106,7 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolder
 
             if (storyRelPathExists(context, f.fileName)) continue
 
-            val ostream = getChildOutputStream(context, f.fileName) ?: continue
+            val ostream = getChildOutputStream(context, "$name/${f.fileName}") ?: continue
 
             // reading and writing
             val zis = zipFile.getInputStream(f)
