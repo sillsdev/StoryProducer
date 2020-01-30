@@ -136,6 +136,12 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
         val image = images[0]
         slide.imageFile = image.attr("src")
         if(slide.imageFile == ""){
+            //bloomd books store the image in a different location
+            slide.imageFile = image.attr("style")
+            //typical format: background-image:url('1.jpg')
+            slide.imageFile = slide.imageFile.substringAfter("'").substringBefore("'")
+        }
+        if(slide.imageFile == ""){
             val src = image.getElementsByAttribute("src")
             if(src.size >= 1) slide.imageFile = src[0].attr("src")
         }
