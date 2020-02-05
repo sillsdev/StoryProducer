@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.pager
 
 import android.support.v4.view.ViewPager
+import android.util.Log
 
 import org.sil.storyproducer.model.Workspace
 
@@ -12,6 +13,7 @@ class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.On
 
     override fun onPageSelected(position: Int) {
         Workspace.activeSlideNum = position
+        Log.e("@pwhite", "switched sides $position")
     }
 
     override fun onPageScrollStateChanged(state: Int) {

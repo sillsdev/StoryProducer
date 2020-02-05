@@ -7,7 +7,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.view.*
 import android.widget.*
-import android.util.Log;
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.*
@@ -41,7 +40,6 @@ abstract class SlidePhaseFrag : Fragment() {
         slideNum = arguments!!.getInt(SLIDE_NUM)
         phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE))
         slide = Workspace.activeStory.slides[slideNum]
-        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater,

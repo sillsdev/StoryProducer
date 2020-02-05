@@ -14,7 +14,6 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -24,7 +23,6 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.Spinner
-import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.handleDrawerItemSelection
 import org.sil.storyproducer.model.PhaseType
@@ -36,36 +34,34 @@ import org.sil.storyproducer.tools.file.genDefaultImage
 import org.sil.storyproducer.tools.file.getStoryImage
 import kotlin.math.max
 
-class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener, ViewPager.OnPageChangeListener {
+class PhaseBaseActivity : AppCompatActivity() {
 
 
     private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mViewPager: ViewPager
+    private var spinner: Spinner? = null
 
-    private var phase = Workspace.activePhase
     private var story: Story = Workspace.activeStory
+    private var isSettingSpinnerProgrammatically = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         super.setContentView(R.layout.phase_frame)
 
+        Log.e("@pwhite", "onCreate")
+
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val actionbar: ActionBar? = supportActionBar
-        actionbar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
-        }
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
 
         supportActionBar?.title = ""
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
-                phase.getColor(), null)))
+                Workspace.activePhase.getColor(), null)))
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -80,17 +76,20 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         mViewPager = findViewById(R.id.phase_pager)
         mViewPager.adapter = pagerAdapter
         mViewPager.currentItem = Workspace.activePhaseIndex
-        mViewPager.addOnPageChangeListener(this)
+        mViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            }
+
+            override fun onPageSelected(position: Int) {
+                Workspace.activePhaseIndex = position
+                spinner?.setSelection(position)
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+        })
     }
 
-    override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
-    }
-
-    override fun onPageSelected(position: Int) {
-    }
-
-    override fun onPageScrollStateChanged(state: Int) {
-    }
 
     override fun onPause() {
         super.onPause()
@@ -99,22 +98,10 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         Thread(Runnable { story.toJson(this) }).start()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        val item = menu.getItem(0)
-        item.setIcon(phase.getIcon())
-        return true
-    }
-
-    /**
-     * sets the Menu spinner_item object
-     * @param menu
-     * @return
-     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_phases, menu)
 
-        val item = menu.findItem(R.id.spinner)
-        val spinner = item.actionView as Spinner
+        val newSpinner = menu.findItem(R.id.spinner).actionView as Spinner
         val phaseArrayResource = if (Workspace.registration.consultantLocationType == "Remote") {
             R.array.remote_phases_menu_array
         } else {
@@ -123,26 +110,29 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
         val adapter = ArrayAdapter.createFromResource(this, phaseArrayResource, android.R.layout.simple_spinner_item)
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
-        spinner.adapter = adapter
-        //Set the selection before setting the listener.  If flipped, the listener would be called
-        //when initializing and cause bad things.
-        spinner.setSelection(Workspace.activePhaseIndex)
-        spinner.onItemSelectedListener = this
+        newSpinner.adapter = adapter
+        // Set selection before listener so that the listener is not triggered at first.
+        newSpinner.setSelection(Workspace.activePhaseIndex)
+        newSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                Log.e("@pwhite", "switching to stage $position")
+                if (!isSettingSpinnerProgrammatically) {
+                    mViewPager.currentItem = position
+                } else {
+                    isSettingSpinnerProgrammatically = false
+                }
+                val item = menu.getItem(0)
+                item.setIcon(Workspace.activePhase.getIcon())
+                supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
+                        Workspace.activePhase.getColor(), null)))
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+        spinner = newSpinner
+
         return true
     }
-
-
-    override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-        if (pos >= 0 && pos < Workspace.phases.size) {
-            Log.e("@pwhite", "switching to stage $pos")
-            //mViewPager.currentItem = pos
-        } else {
-            Crashlytics.log("trying to select phase index $pos that is out of bounds:${Workspace.phases.size}")
-        }
-    }
-
-    override fun onNothingSelected(parent: AdapterView<*>) { }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -195,7 +185,8 @@ class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListene
          */
         fun setPic(context: Context, slideImage: ImageView, slideNum: Int) {
             val downSample = 2
-            var slidePicture: Bitmap = getStoryImage(context, slideNum, downSample) ?: genDefaultImage()
+            var slidePicture: Bitmap = getStoryImage(context, slideNum, downSample)
+                    ?: genDefaultImage()
 
             if (slideNum < Workspace.activeStory.slides.size) {
                 //scale down image to not crash phone from memory error from displaying too large an image

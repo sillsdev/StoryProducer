@@ -9,7 +9,6 @@ import org.sil.storyproducer.tools.file.getChosenRecording
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
-import org.sil.storyproducer.model.PhaseType
 import java.io.FileNotFoundException
 
 /**
@@ -90,7 +89,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (wasRecording) {
                 if (isAppendingOn) {
                     try {
-                        AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording()!!.fileName, audioTempName)
+                        AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording(phaseType, slideNum)!!.fileName, audioTempName)
                     } catch (e: FileNotFoundException) {
                         Crashlytics.logException(e)
                     }
@@ -118,7 +117,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
             if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
                 stopToolbarMedia()
                 try {
-                    AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording()!!.fileName, audioTempName)
+                    AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording(phaseType, slideNum)!!.fileName, audioTempName)
                 } catch (e: FileNotFoundException) {
                     Crashlytics.logException(e)
                 }

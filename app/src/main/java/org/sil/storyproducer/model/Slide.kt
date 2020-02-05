@@ -6,7 +6,6 @@ import android.text.Layout
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
-import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.text.SimpleDateFormat
 import java.util.*

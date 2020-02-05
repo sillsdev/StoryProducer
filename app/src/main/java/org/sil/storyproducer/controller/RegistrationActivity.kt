@@ -657,7 +657,7 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         //Now, let's find the workspace path.
-        Workspace.initializeWorskpace(this)
+        Workspace.initializeWorkspace(this)
         val dialog = AlertDialog.Builder(this)
                 .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
                 .setMessage(Html.fromHtml(getString(R.string.workspace_selection_help)))

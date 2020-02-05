@@ -237,6 +237,7 @@
     <string name="update_registration">Update Registration</string>
     <string name="update_workspace">Select \'SP Templates\' folder</string>
     <string name="set_rocc_url_prefix">Set ROCC Url Prefix</string>
+    <string name="clear_all_messages">Clear All Messages</string>
 
     <!-- license -->
     <string name="license_title">License</string>

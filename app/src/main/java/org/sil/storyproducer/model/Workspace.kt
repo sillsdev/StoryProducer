@@ -7,11 +7,22 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings.Secure
 import android.support.v4.provider.DocumentFile
+import android.util.Log
+import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
+import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.*
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
@@ -28,8 +39,7 @@ object Workspace {
     var storiesUpdated = false
     var registration: Registration = Registration()
     var phases: List<PhaseType> = ArrayList()
-    var activePhaseIndex: Int = -1
-        private set
+    var activePhaseIndex: Int = 0
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
@@ -40,14 +50,12 @@ object Workspace {
             activePhase = value.lastPhaseType
             activeSlideNum = value.lastSlideNum
         }
-    var activePhase = PhaseType.LEARN
+    var activePhase: PhaseType
+        get() = phases[activePhaseIndex]
         set(value) {
-            field = value
-            activePhaseIndex = -1
-            for ((i, p) in phases.withIndex()) {
-                if (p == value) activePhaseIndex = i
-            }
+            activePhaseIndex = phases.indexOf(value)
         }
+
     val activeDirRoot: String
         get() {
             return activeStory.title
@@ -56,7 +64,7 @@ object Workspace {
     val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
         get() {
-            return "${activePhase.getShortName()}${Workspace.activeSlideNum}"
+            return "${activePhase.getShortName()}$activeSlideNum"
         }
 
     var activeSlideNum: Int = 0
@@ -74,12 +82,27 @@ object Workspace {
             return activeStory.slides[activeSlideNum]
         }
 
+    val messages = ArrayList<Message>()
+    val messageChannel = BroadcastChannel<Message>(30)
+    val toSendMessageChannel = Channel<JSONObject>(100)
+    var messageClient: MessageWebSocketClient? = null
+
     fun getRoccUrlPrefix(context: Context): String {
-        if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
-            return PreferenceManager.getDefaultSharedPreferences(context).getString("ROCC_URL_PREFIX", BuildConfig.ROCC_URL_PREFIX)
+        return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+            PreferenceManager.getDefaultSharedPreferences(context).getString("ROCC_URL_PREFIX", BuildConfig.ROCC_URL_PREFIX)
                     ?: BuildConfig.ROCC_URL_PREFIX
         } else {
-            return BuildConfig.ROCC_URL_PREFIX
+            BuildConfig.ROCC_URL_PREFIX
+        }
+    }
+
+
+    fun getRoccWebSocketsUrl(context: Context): String {
+        return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+            PreferenceManager.getDefaultSharedPreferences(context).getString("WEBSOCKETS_URL", BuildConfig.ROCC_WEBSOCKETS_PREFIX)
+                    ?: BuildConfig.ROCC_WEBSOCKETS_PREFIX
+        } else {
+            BuildConfig.ROCC_WEBSOCKETS_PREFIX
         }
     }
 
@@ -87,12 +110,82 @@ object Workspace {
 
     private const val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(context: Context) {
+    fun initializeWorkspace(context: Context) {
         //first, see if there is already a workspace in shared preferences
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
+        val client = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+        client.connect()
+        messageClient = client
+        GlobalScope.launch {
+            for (message in messageChannel.openSubscription()) {
+                messages.add(message)
+            }
+        }
+        GlobalScope.launch {
+            for (js in toSendMessageChannel) {
+                while (messageClient?.isOpen != true) {
+                    Log.e("@pwhite", "checking messageClient: ${messageClient?.isOpen}")
+                    delay(3000)
+                }
+                messageClient?.send(js.toString(2))
+            }
+        }
+        GlobalScope.launch {
+            while (true) {
+                Log.e("@pwhite", "checking websocket status: ${messageClient?.isOpen}")
+                if (messageClient?.isOpen != true) {
+                    val client =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                    client.connectBlocking()
+                    messageClient = client
+                }
+                delay(5000)
+            }
+        }
+    }
+
+    fun ensureWebSocketConnection(context: Context): Boolean {
+        return ensureWebSocketConnection(URI(getRoccWebSocketsUrl(context)))
+    }
+
+    fun ensureWebSocketConnection(uri: URI): Boolean {
+        var client = messageClient
+        if (client == null || client.isClosed) {
+            try {
+                client = MessageWebSocketClient(uri)
+                client.connectBlocking()
+                messageClient = client
+                return true
+            } catch (e: URISyntaxException) {
+                return false
+            }
+        }
+        return true
+    }
+
+    fun sendMessage(context: Context, isTranscript: Boolean, slideNumber: Int, text: String) {
+        val js = JSONObject()
+        js.put("isTranscript", isTranscript)
+        js.put("slideNumber", slideNumber)
+        val remoteId = Workspace.activeStory.remoteId
+        if (remoteId == null) {
+            js.put("storyTitle", Workspace.activeStory.title)
+        } else {
+            js.put("storyId", remoteId)
+        }
+        js.put("text", text)
+        GlobalScope.launch {
+            toSendMessageChannel.send(js)
+        }
+        //if (ensureWebSocketConnection(context!!)) {
+        //    messageClient!!.send(js.toString(2))
+        //    return true
+        //} else {
+        //    return false
+        //}
     }
 
     fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()) {
@@ -185,30 +278,6 @@ object Workspace {
         return (songSlide?.dramatizationRecordings?.selectedFile
                 ?: songSlide?.draftRecordings?.selectedFile)?.fileName
     }
-
-    fun goToNextPhase(): Boolean {
-        if (activePhaseIndex == -1) return false // phases not initizialized
-        if (activePhaseIndex >= phases.size - 1) {
-            activePhaseIndex = phases.size - 1
-            return false
-        }
-        activePhaseIndex++
-        activePhase = phases[activePhaseIndex]
-        return true
-    }
-
-    fun goToPreviousPhase(): Boolean {
-        if (activePhaseIndex == -1) return false
-        if (activePhaseIndex <= 0) {
-            activePhaseIndex = 0
-            return false
-        }
-        activePhaseIndex--
-        activePhase = phases[activePhaseIndex]
-        return true
-    }
-
-
 }
 
 

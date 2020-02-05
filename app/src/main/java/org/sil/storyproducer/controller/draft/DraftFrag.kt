@@ -12,11 +12,6 @@ import org.sil.storyproducer.controller.MultiRecordFrag
  */
 class DraftFrag : MultiRecordFrag() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The last two arguments ensure LayoutParams are inflated

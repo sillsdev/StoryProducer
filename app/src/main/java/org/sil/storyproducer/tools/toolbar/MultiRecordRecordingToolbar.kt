@@ -1,12 +1,9 @@
 package org.sil.storyproducer.tools.toolbar
 
-import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.PHASE_TYPE
-import org.sil.storyproducer.model.PhaseType
 
 /**
  * A class responsible for listing recorded audio files from a recording toolbar.
@@ -15,15 +12,8 @@ import org.sil.storyproducer.model.PhaseType
  * is added that can bring up a modal listing the audio recording created with this toolbar.
  */
 open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
-    protected lateinit var multiRecordButton: ImageButton
+    private lateinit var multiRecordButton: ImageButton
 
-    protected lateinit var phaseType: PhaseType
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE))
-
-    }
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()
 

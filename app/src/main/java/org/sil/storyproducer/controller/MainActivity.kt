@@ -63,21 +63,37 @@ fun handleDrawerItemSelection(activity: Activity, menuItem: MenuItem, drawerLayo
             dialog.show()
         }
         R.id.nav_set_rocc_url_prefix -> {
-            val input = EditText(activity)
-            val lp = LinearLayout.LayoutParams(
+            val container = LinearLayout(activity)
+            container.orientation = LinearLayout.VERTICAL
+            container.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT)
-            input.layoutParams = lp
-            input.setText(PreferenceManager.getDefaultSharedPreferences(activity).getString("ROCC_URL_PREFIX", "") ?: "")
+            val roccPrefixInput = EditText(activity)
+            roccPrefixInput.setText(PreferenceManager.getDefaultSharedPreferences(activity).getString("ROCC_URL_PREFIX", "")
+                    ?: "")
+            container.addView(roccPrefixInput,
+                    LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT))
+            val webSocketsInput = EditText(activity)
+            container.addView(webSocketsInput,
+                    LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT))
+            webSocketsInput.setText(PreferenceManager.getDefaultSharedPreferences(activity).getString("WEBSOCKETS_URL", "")
+                    ?: "")
             val dialog = AlertDialog.Builder(activity)
                     .setTitle("ROCC URL Prefix")
                     .setMessage("Enter a string to prefix all requests to the remote consultant site")
-                    .setView(input)
+                    .setView(container)
                     .setPositiveButton(activity.getString(R.string.ok)) { _, _ ->
                         PreferenceManager.getDefaultSharedPreferences(activity).edit()
-                                .putString("ROCC_URL_PREFIX", input.text.toString()).apply()
+                                .putString("ROCC_URL_PREFIX", roccPrefixInput.text.toString())
+                                .putString("WEBSOCKETS_URL", webSocketsInput.text.toString()).apply()
                     }.create()
             dialog.show()
+        }
+        R.id.nav_clear_all_messages -> {
         }
     }
 
@@ -112,7 +128,7 @@ class MainActivity : AppCompatActivity(), Serializable {
         pb.visibility = View.VISIBLE
 
         GlobalScope.async {
-            if (!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+            if (!Workspace.isInitialized) Workspace.initializeWorkspace(this@MainActivity.applicationContext)
             runOnUiThread {
                 pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()

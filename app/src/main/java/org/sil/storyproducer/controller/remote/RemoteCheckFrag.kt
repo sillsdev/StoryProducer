@@ -11,20 +11,19 @@ import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.android.volley.AuthFailureError
-import com.android.volley.NetworkError
-import com.android.volley.NoConnectionError
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Message
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.set
 
 /**
  * Created by annmcostantino on 2/19/2018.
@@ -50,13 +49,14 @@ class RemoteCheckFrag : Fragment() {
     private lateinit var msgAdapter: MessageAdapter
     private lateinit var messagesView: ListView
 
-    private var successToast: Toast? = null
-    private var noConnection: Toast? = null
-    private var unknownError: Toast? = null
+    private lateinit var successToast: Toast
+    private lateinit var noConnection: Toast
+    private lateinit var unknownError: Toast
+
+    private var messageReceiveChannel: ReceiveChannel<Message>? = null
 
     override fun onCreate(savedState: Bundle?) {
         super.onCreate(savedState)
-        setHasOptionsMenu(true)
         successToast = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_sent, Toast.LENGTH_SHORT)
         noConnection = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT)
         unknownError = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_failed, Toast.LENGTH_SHORT)
@@ -92,7 +92,13 @@ class RemoteCheckFrag : Fragment() {
             UploadState.NOT_UPLOADED -> grayCheckmark
             UploadState.UPLOADING -> yellowCheckmark
         }
-        slideApprovedIndicator.background = if (slide.isApproved) { greenCheckmark } else { grayCheckmark }
+        slideApprovedIndicator.background = if (slide.isApproved) {
+            greenCheckmark
+        } else {
+            grayCheckmark
+        }
+
+        messageTitle.text = "Messages for Slide $slideNumber"
 
         closeKeyboardOnTouch(rootView)
 
@@ -109,22 +115,35 @@ class RemoteCheckFrag : Fragment() {
         super.onStart()
 
         //grab old adapter or make a new one
-        msgAdapter = loadSharedPreferenceMessageHistory()
+        msgAdapter = MessageAdapter(context!!)
         messagesView.adapter = msgAdapter
 
         //set texts for this view
-        val titleString = "Messages for Slide $slideNumber"
-        messageTitle.setText(titleString)
         messageSent.setHint(R.string.message_hint)
         messageSent.setHintTextColor(ContextCompat.getColor(context!!, R.color.black))
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
-        getMessages()
-        if (msgAdapter.count > 0) {
-            messagesView.setSelection(msgAdapter.count)
-        }
         sendMessageButton.setOnClickListener { sendMessage() }
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        messageReceiveChannel = if (isVisibleToUser) {
+            val sub = Workspace.messageChannel.openSubscription()
+            GlobalScope.launch(Dispatchers.Main) {
+                for (message in sub) {
+                    msgAdapter.add(message)
+                    messagesView.setSelection(msgAdapter.messageHistory.size - 1)
+                    Log.e("@pwhite", "!!!!got message for slide $slideNumber; message count is ${msgAdapter.messageHistory.size}")
+                }
+            }
+            sub
+        } else {
+            messageReceiveChannel?.cancel()
+            null
+        }
     }
 
     /**
@@ -194,7 +213,6 @@ class RemoteCheckFrag : Fragment() {
             msgs = gson.fromJson(json, type)
             msgAdapter.messageHistory = msgs
             msgAdapter.lastID = lastID
-
         }
         return msgAdapter
     }
@@ -214,67 +232,36 @@ class RemoteCheckFrag : Fragment() {
     //function to send messages to remote consultant the given slide
     private fun sendMessage() {
 
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val prefsEditor = prefs.edit()
-        val js = HashMap<String, String>()
-        val message = messageSent.text.toString()
-        js["IsTranscript"] = 0.toString()
-        sendSlideSpecificRequest(context!!, slideNumber, getString(R.string.url_send_message), message, {
-            prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
-            prefsEditor.apply()
-            messageSent.setText("")
-            successToast!!.show()
-            getMessages()
-        }, {
-            //Save the message to send next time
-            prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString())
-            prefsEditor.apply()
-
-            if (it is NoConnectionError || it is NetworkError || it is AuthFailureError) {
-                noConnection!!.show()
-            } else {
-                unknownError!!.show()
-            }
-
-        }, js)
+//        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+//        val prefsEditor = prefs.edit()
+//        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
+//        prefsEditor.apply()
+//        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString())
+//        prefsEditor.apply()
+        Workspace.sendMessage(context!!, false, slideNumber, messageSent.text.toString())
     }
 
-    private fun getMessages() {
-        sendProjectSpecificRequest(context!!, getString(R.string.url_get_messages), {
-            val messages = it.getJSONArray("Messages")
-            val messageList = ArrayList<Message>()
-            for (j in 0 until messages.length()) {
-                val message = messages.getJSONObject(j)
-                if (message.getInt("slideNumber") == slideNumber) {
-                    val isConsultant = message.getInt("isConsultant") == 1
-                    val isTranscript = message.getInt("isTranscript") == 1
-                    val text = message.getString("text")
-                    val m = Message(isConsultant, isTranscript, text)
-                    messageList.add(m)
-                }
-            }
-            msgAdapter.messageHistory = messageList
+    private fun messageIsRelevant(m: Message) =
+            m.storyId == Workspace.activeStory.remoteId && m.slideNumber == slideNumber
 
-            val approvals = it.getJSONArray("Approvals")
-            for (j in 0 until approvals.length()) {
-                val approval = approvals.getJSONObject(j)
-                val storyId = approval.getInt("storyId")
-                val slideNumber = approval.getInt("slideNumber")
-                val isApproved = approval.getInt("isApproved") == 1
-
-                for (story in Workspace.Stories) {
-                    if (story.remoteId == storyId) {
-                      Log.e("@pwhite", "setting approval to $isApproved for story ${story.remoteId} and slide $slideNumber")
-                        story.slides[slideNumber].isApproved = isApproved
-                    }
-                }
-            }
-
-            if (msgAdapter.count > 0) {
-                messagesView.setSelection(msgAdapter.count)
-            }
-        }, {})
-    }
+//    private fun getMessages(): ReceiveChannel<Message> {
+//
+//
+//            val approvals = it.getJSONArray("Approvals")
+//            for (j in 0 until approvals.length()) {
+//                val approval = approvals.getJSONObject(j)
+//                val storyId = approval.getInt("storyId")
+//                val slideNumber = approval.getInt("slideNumber")
+//                val isApproved = approval.getInt("isApproved") == 1
+//
+//                for (story in Workspace.Stories) {
+//                    if (story.remoteId == storyId) {
+//                      Log.e("@pwhite", "setting approval to $isApproved for story ${story.remoteId} and slide $slideNumber")
+//                        story.slides[slideNumber].isApproved = isApproved
+//                    }
+//                }
+//            }
+//    }
 
     companion object {
 

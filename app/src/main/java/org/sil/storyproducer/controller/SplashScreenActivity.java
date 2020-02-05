@@ -16,8 +16,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        Workspace.INSTANCE.initializeWorskpace(this);
-
+        Workspace.INSTANCE.initializeWorkspace(this);
 
         new Handler().postDelayed(new Runnable() {
             @Override

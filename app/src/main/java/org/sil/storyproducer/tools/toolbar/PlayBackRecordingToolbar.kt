@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.PHASE_TYPE
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -23,13 +24,13 @@ import org.sil.storyproducer.tools.media.AudioPlayer
 open class PlayBackRecordingToolbar : RecordingToolbar() {
     private lateinit var playButton: ImageButton
 
-    override lateinit var toolbarMediaListener: RecordingToolbar.ToolbarMediaListener
     private var audioPlayer: AudioPlayer = AudioPlayer()
     val isAudioPlaying: Boolean
         get() {
             return audioPlayer.isAudioPlaying
         }
-    private var slideNum: Int = 0
+    protected var slideNum: Int = 0
+    protected lateinit var phaseType: PhaseType
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
@@ -47,6 +48,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
         val bundleArguments = arguments
         if (bundleArguments != null) {
             slideNum = bundleArguments.getInt(SLIDE_NUM)
+            phaseType = PhaseType.ofInt(bundleArguments.getInt(PHASE_TYPE))
         }
 
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
@@ -100,7 +102,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility() {
-        if (getChosenRecording(slideNum) != null) {
+        if (getChosenRecording(phaseType, slideNum) != null) {
             showInheritedToolbarButtons()
         } else {
             hideInheritedToolbarButtons()
@@ -134,7 +136,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
-                if (audioPlayer.setStorySource(this.appContext, getChosenRecording()!!.fileName)) {
+                if (audioPlayer.setStorySource(this.appContext, getChosenRecording(phaseType, slideNum)!!.fileName)) {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

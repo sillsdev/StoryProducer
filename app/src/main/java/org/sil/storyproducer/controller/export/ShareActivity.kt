@@ -72,7 +72,6 @@ class ShareFragment : Fragment(), RefreshViewListener {
             val handler = Handler()
             handler.postDelayed({
                 refreshViews()
-                //your code here
             }, 3000)
         }
 
@@ -84,6 +83,10 @@ class ShareFragment : Fragment(), RefreshViewListener {
      */
     //TODO: cleanup
     override fun refreshViews() {
+
+        if (context == null) {
+            return
+        }
 
         val presentVideos = getChildDocuments(context!!, VIDEO_DIR)
         val exportedVideos: MutableList<String> = ArrayList()

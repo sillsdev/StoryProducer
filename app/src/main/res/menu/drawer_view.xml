@@ -17,5 +17,9 @@
             android:id="@+id/nav_set_rocc_url_prefix"
             android:title="@string/set_rocc_url_prefix"
             android:visible="@bool/enable_in_app_rocc_url_setting" />
+        <item
+            android:id="@+id/nav_clear_all_messages"
+            android:title="@string/clear_all_messages"
+            android:visible="@bool/enable_in_app_rocc_url_setting" />
     </group>
 </menu>

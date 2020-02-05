@@ -3,8 +3,10 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.crashlytics.android.Crashlytics
-import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Recording
+import org.sil.storyproducer.model.Workspace
 import java.util.*
 import kotlin.math.max
 
@@ -21,8 +23,8 @@ internal const val AUDIO_EXT = ".m4a"
  * @return the path generated, or an empty string if there is a failure.
  */
 
-fun getChosenRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
-    return when (Workspace.activePhase) {
+fun getChosenRecording(phaseType: PhaseType, slideNum: Int): Recording? {
+    return when (phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
         PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings.selectedFile
         PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings.selectedFile

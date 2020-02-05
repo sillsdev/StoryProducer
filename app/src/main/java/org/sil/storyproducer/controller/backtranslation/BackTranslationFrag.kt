@@ -30,13 +30,6 @@ class BackTranslationFrag : MultiRecordFrag() {
     private lateinit var transcriptEditText: EditText
     private lateinit var sendTranscriptButton: Button
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The last two arguments ensure LayoutParams are inflated
