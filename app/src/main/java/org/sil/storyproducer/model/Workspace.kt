@@ -83,9 +83,11 @@ object Workspace {
         }
 
     val messages = ArrayList<Message>()
+    val queuedMessages = ArrayList<JSONObject>()
     val messageChannel = BroadcastChannel<Message>(30)
-    val toSendMessageChannel = Channel<JSONObject>(100)
+    val toSendMessageChannel = Channel<Message>(100)
     var messageClient: MessageWebSocketClient? = null
+    var nextMessageId = 0
 
     fun getRoccUrlPrefix(context: Context): String {
         return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
@@ -126,12 +128,13 @@ object Workspace {
             }
         }
         GlobalScope.launch {
-            for (js in toSendMessageChannel) {
-                while (messageClient?.isOpen != true) {
-                    Log.e("@pwhite", "checking messageClient: ${messageClient?.isOpen}")
-                    delay(3000)
+            for (message in toSendMessageChannel) {
+                val js = messageToJson(message)
+                if (messageClient?.isOpen == true) {
+                    messageClient?.send(js.toString(2))
+                } else {
+                    queuedMessages.add(js)
                 }
-                messageClient?.send(js.toString(2))
             }
         }
         GlobalScope.launch {
@@ -141,6 +144,11 @@ object Workspace {
                     val client =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
                     client.connectBlocking()
                     messageClient = client
+                } else {
+                    for (js in queuedMessages) {
+                        messageClient?.send(js.toString(2))
+                    }
+                    queuedMessages.clear()
                 }
                 delay(5000)
             }
@@ -166,26 +174,13 @@ object Workspace {
         return true
     }
 
-    fun sendMessage(context: Context, isTranscript: Boolean, slideNumber: Int, text: String) {
+    fun messageToJson(m: Message): JSONObject {
         val js = JSONObject()
-        js.put("isTranscript", isTranscript)
-        js.put("slideNumber", slideNumber)
-        val remoteId = Workspace.activeStory.remoteId
-        if (remoteId == null) {
-            js.put("storyTitle", Workspace.activeStory.title)
-        } else {
-            js.put("storyId", remoteId)
-        }
-        js.put("text", text)
-        GlobalScope.launch {
-            toSendMessageChannel.send(js)
-        }
-        //if (ensureWebSocketConnection(context!!)) {
-        //    messageClient!!.send(js.toString(2))
-        //    return true
-        //} else {
-        //    return false
-        //}
+        js.put("isTranscript", m.isTranscript)
+        js.put("slideNumber", m.slideNumber)
+        js.put("storyId", m.storyId)
+        js.put("text", m.message)
+        return js
     }
 
     fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()) {

@@ -2,6 +2,7 @@
 <resources>
     <color name="primary">#43b3e6</color>
     <color name="primaryDark">#2c97d4</color>
+    <color name="queuedMessage">#4cb7f4</color>
     <color name="backTranslationMessageBackground">#CE2CD4</color>
     <color name="white">#ffffff</color>
     <color name="lightBlue">#bde5f2</color>

@@ -124,7 +124,13 @@ class RemoteCheckFrag : Fragment() {
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
-        sendMessageButton.setOnClickListener { sendMessage() }
+        sendMessageButton.setOnClickListener {
+            val message = Message(slideNumber, 0, false, false, messageSent.text.toString())
+            msgAdapter.addQueuedMessage(message)
+            GlobalScope.launch {
+                Workspace.toSendMessageChannel.send(message)
+            }
+        }
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -134,9 +140,9 @@ class RemoteCheckFrag : Fragment() {
             val sub = Workspace.messageChannel.openSubscription()
             GlobalScope.launch(Dispatchers.Main) {
                 for (message in sub) {
+                    msgAdapter.clearQueuedMessages()
                     msgAdapter.add(message)
                     messagesView.setSelection(msgAdapter.messageHistory.size - 1)
-                    Log.e("@pwhite", "!!!!got message for slide $slideNumber; message count is ${msgAdapter.messageHistory.size}")
                 }
             }
             sub
@@ -197,26 +203,6 @@ class RemoteCheckFrag : Fragment() {
         }
     }
 
-    //loads the (local) message history or creates a new one if it doesn't yet exist
-    private fun loadSharedPreferenceMessageHistory(): MessageAdapter {
-        msgAdapter = MessageAdapter(context)
-        val msgs: List<Message>
-        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-        val gsonBuilder = GsonBuilder()
-        val gson = gsonBuilder.create()
-        val json = prefs.getString(R_MESSAGE_HISTORY + storyName + slideNumber, "")
-        val lastID = prefs.getInt(R_LAST_ID + storyName + slideNumber, -1)
-        if (json!!.isNotEmpty()) {
-            val type = object : TypeToken<List<Message>>() {
-
-            }.type
-            msgs = gson.fromJson(json, type)
-            msgAdapter.messageHistory = msgs
-            msgAdapter.lastID = lastID
-        }
-        return msgAdapter
-    }
-
     //saves the (local) message history
     private fun saveSharedPreferenceMessageHistory() {
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
@@ -227,18 +213,6 @@ class RemoteCheckFrag : Fragment() {
         val lastID = msgAdapter.lastID
         prefsEditor.putString(R_MESSAGE_HISTORY + storyName + slideNumber, json).apply()
         prefsEditor.putInt(R_LAST_ID + storyName + slideNumber, lastID).apply()
-    }
-
-    //function to send messages to remote consultant the given slide
-    private fun sendMessage() {
-
-//        val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-//        val prefsEditor = prefs.edit()
-//        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "")
-//        prefsEditor.apply()
-//        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.text.toString())
-//        prefsEditor.apply()
-        Workspace.sendMessage(context!!, false, slideNumber, messageSent.text.toString())
     }
 
     private fun messageIsRelevant(m: Message) =
