@@ -100,12 +100,14 @@ object Workspace {
 
 
     fun getRoccWebSocketsUrl(context: Context): String {
-        return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+        var baseUrl = if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
             PreferenceManager.getDefaultSharedPreferences(context).getString("WEBSOCKETS_URL", BuildConfig.ROCC_WEBSOCKETS_PREFIX)
                     ?: BuildConfig.ROCC_WEBSOCKETS_PREFIX
         } else {
             BuildConfig.ROCC_WEBSOCKETS_PREFIX
         }
+        val projectId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+        return "$baseUrl/phone/$projectId"
     }
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -119,8 +121,7 @@ object Workspace {
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
-        val projectId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
-        val client = MessageWebSocketClient(URI("${getRoccWebSocketsUrl(context)}/phone/$projectId"))
+        val client = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
         client.connect()
         messageClient = client
         GlobalScope.launch {

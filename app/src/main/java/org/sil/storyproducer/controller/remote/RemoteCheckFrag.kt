@@ -117,6 +117,11 @@ class RemoteCheckFrag : Fragment() {
         //grab old adapter or make a new one
         msgAdapter = MessageAdapter(context!!)
         messagesView.adapter = msgAdapter
+        for (message in Workspace.messages) {
+            if (message.slideNumber == slideNumber) {
+                msgAdapter.add(message)
+            }
+        }
 
         //set texts for this view
         messageSent.setHint(R.string.message_hint)
@@ -141,7 +146,9 @@ class RemoteCheckFrag : Fragment() {
             GlobalScope.launch(Dispatchers.Main) {
                 for (message in sub) {
                     msgAdapter.clearQueuedMessages()
-                    msgAdapter.add(message)
+                    if (message.slideNumber == slideNumber) {
+                        msgAdapter.add(message)
+                    }
                     messagesView.setSelection(msgAdapter.messageHistory.size - 1)
                 }
             }
@@ -217,25 +224,6 @@ class RemoteCheckFrag : Fragment() {
 
     private fun messageIsRelevant(m: Message) =
             m.storyId == Workspace.activeStory.remoteId && m.slideNumber == slideNumber
-
-//    private fun getMessages(): ReceiveChannel<Message> {
-//
-//
-//            val approvals = it.getJSONArray("Approvals")
-//            for (j in 0 until approvals.length()) {
-//                val approval = approvals.getJSONObject(j)
-//                val storyId = approval.getInt("storyId")
-//                val slideNumber = approval.getInt("slideNumber")
-//                val isApproved = approval.getInt("isApproved") == 1
-//
-//                for (story in Workspace.Stories) {
-//                    if (story.remoteId == storyId) {
-//                      Log.e("@pwhite", "setting approval to $isApproved for story ${story.remoteId} and slide $slideNumber")
-//                        story.slides[slideNumber].isApproved = isApproved
-//                    }
-//                }
-//            }
-//    }
 
     companion object {
 
