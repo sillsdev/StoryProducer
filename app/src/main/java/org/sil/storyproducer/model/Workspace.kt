@@ -119,7 +119,8 @@ object Workspace {
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
-        val client = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+        val projectId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+        val client = MessageWebSocketClient(URI("${getRoccWebSocketsUrl(context)}/phone/$projectId"))
         client.connect()
         messageClient = client
         GlobalScope.launch {
