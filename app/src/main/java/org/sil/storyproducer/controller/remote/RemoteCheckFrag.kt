@@ -118,7 +118,7 @@ class RemoteCheckFrag : Fragment() {
         msgAdapter = MessageAdapter(context!!)
         messagesView.adapter = msgAdapter
         for (message in Workspace.messages) {
-            if (message.slideNumber == slideNumber) {
+            if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
                 msgAdapter.add(message)
             }
         }
@@ -146,7 +146,7 @@ class RemoteCheckFrag : Fragment() {
             GlobalScope.launch(Dispatchers.Main) {
                 for (message in sub) {
                     msgAdapter.clearQueuedMessages()
-                    if (message.slideNumber == slideNumber) {
+                    if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
                         msgAdapter.add(message)
                     }
                     messagesView.setSelection(msgAdapter.messageHistory.size - 1)
