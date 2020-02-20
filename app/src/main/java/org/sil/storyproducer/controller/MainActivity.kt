@@ -95,6 +95,9 @@ fun handleDrawerItemSelection(activity: Activity, menuItem: MenuItem, drawerLayo
         }
         R.id.nav_clear_all_messages -> {
         }
+        R.id.nav_forget_remote_story_id -> {
+            Workspace.activeStory.remoteId = null
+        }
     }
 
     return true

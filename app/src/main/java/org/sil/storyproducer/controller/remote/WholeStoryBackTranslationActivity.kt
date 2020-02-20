@@ -18,8 +18,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.android.volley.VolleyError
+import com.android.volley.Response;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.NetworkResponse;
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
+import org.json.JSONException
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
@@ -37,6 +41,7 @@ import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.text.Charsets.UTF_8
 
 fun getPhoneId(context: Context): String {
     return Settings.Secure.getString(context.applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
@@ -52,17 +57,30 @@ fun sendProjectSpecificRequest(
     params["Key"] = context.getString(R.string.api_token)
     params["PhoneId"] = getPhoneId(context)
     val url = Workspace.getRoccUrlPrefix(context) + relativeUrl
-    val req = object : paramStringRequest(Method.POST, url, params, {
+    val req = object : StringRequest(Method.POST, url, {
         Log.i("LOG_VOLLEY", it)
-        var jsonObject = JSONObject(it)
-        onSuccess(jsonObject)
+        var jsonObject: JSONObject? = null
+        try {
+            jsonObject = JSONObject(it)
+        } catch (e: JSONException) {
+            Toast.makeText(context, "The request was successful, but the response was of an unexpected form.", Toast.LENGTH_SHORT).show()
+        }
+        if (jsonObject != null) {
+            onSuccess(jsonObject)
+        }
     }, {
         Log.e("LOG_VOLLEY", "HIT ERROR")
         Log.e("LOG_VOLLEY", it.toString())
+        val nr = it.networkResponse
+        if (nr != null) {
+            Toast.makeText(context, "${nr.statusCode}: ${String(nr.data, UTF_8)}", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Failed to connect to server.", Toast.LENGTH_SHORT).show()
+        }
         onFailure(it)
     }) {
         override fun getParams(): Map<String, String> {
-            return this.mParams
+            return params
         }
     }
     VolleySingleton.getInstance(context.applicationContext).addToRequestQueue(req)
@@ -83,9 +101,8 @@ fun sendSlideSpecificRequest(
 
     if (Workspace.activeStory.remoteId != null) {
         js["StoryId"] = Workspace.activeStory.remoteId.toString()
-    } else {
-        js["TemplateTitle"] = Workspace.activeStory.title
     }
+    js["TemplateTitle"] = Workspace.activeStory.title
     js["SlideNumber"] = slideNumber.toString()
     js["Data"] = content
     sendProjectSpecificRequest(context, relativeUrl, {
@@ -181,7 +198,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
                             uploadButton.background = greenCheckmark
                         }, {
-                            Toast.makeText(context!!, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(context!!, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadButton.background = grayCheckmark
                         }, js)

@@ -17,6 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import org.json.JSONObject
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
@@ -29,7 +31,7 @@ import org.sil.storyproducer.model.messaging.Message
  * Created by annmcostantino on 2/19/2018.
  */
 
-class RemoteCheckFrag : Fragment() {
+class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
     private lateinit var greenCheckmark: VectorDrawableCompat
     private lateinit var grayCheckmark: VectorDrawableCompat
@@ -130,9 +132,10 @@ class RemoteCheckFrag : Fragment() {
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
         sendMessageButton.setOnClickListener {
-            val message = Message(slideNumber, 0, false, false, messageSent.text.toString())
+            val storyId = Workspace.activeStory.remoteId ?: 0
+            val message = Message(slideNumber, storyId, false, false, messageSent.text.toString())
             msgAdapter.addQueuedMessage(message)
-            GlobalScope.launch {
+            launch {
                 Workspace.toSendMessageChannel.send(message)
             }
         }
@@ -143,10 +146,12 @@ class RemoteCheckFrag : Fragment() {
 
         messageReceiveChannel = if (isVisibleToUser) {
             val sub = Workspace.messageChannel.openSubscription()
-            GlobalScope.launch(Dispatchers.Main) {
+            launch(Dispatchers.Main) {
                 for (message in sub) {
+                    Log.e("@pwhite", "got message $message, remoteId = ${Workspace.activeStory.remoteId}")
                     msgAdapter.clearQueuedMessages()
                     if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
+                        Log.e("@pwhite", "adding message to adapter")
                         msgAdapter.add(message)
                     }
                     messagesView.setSelection(msgAdapter.messageHistory.size - 1)

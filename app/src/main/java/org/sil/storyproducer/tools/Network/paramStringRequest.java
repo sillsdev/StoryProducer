@@ -5,11 +5,13 @@ import java.util.Map;
 
 public class paramStringRequest extends StringRequest {
     public final Map<String, String> mParams;
+    protected int statusCode;
     public paramStringRequest(int method , String url, Map<String, String> params,
                               Response.Listener<String> listener, Response.ErrorListener errorListener) {
         super(method, url, listener, errorListener);
         this.mParams = params;
     }
+
 }
 
 

@@ -87,7 +87,7 @@ class BackTranslationFrag : MultiRecordFrag() {
                             slide.backTranslationUploadState = UploadState.UPLOADED
                             uploadAudioButton.background = greenCheckmark
                         }, {
-                            Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
+                            //Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             slide.backTranslationUploadState = UploadState.NOT_UPLOADED
                             uploadAudioButton.background = grayCheckmark
                         })

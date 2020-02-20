@@ -178,6 +178,7 @@ object Workspace {
 
     fun messageToJson(m: Message): JSONObject {
         val js = JSONObject()
+        js.put("type", "text")
         js.put("isTranscript", m.isTranscript)
         js.put("slideNumber", m.slideNumber)
         js.put("storyId", m.storyId)

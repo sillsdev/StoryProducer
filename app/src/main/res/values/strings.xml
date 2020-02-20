@@ -238,6 +238,7 @@
     <string name="update_workspace">Select \'SP Templates\' folder</string>
     <string name="set_rocc_url_prefix">Set ROCC Url Prefix</string>
     <string name="clear_all_messages">Clear All Messages</string>
+    <string name="forget_remote_story_id">Forget Remote Story Id</string>
 
     <!-- license -->
     <string name="license_title">License</string>
