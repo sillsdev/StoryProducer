@@ -10,6 +10,10 @@ import android.support.v4.provider.DocumentFile
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.analytics.FirebaseAnalytics
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.TimeZone
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -83,11 +87,11 @@ object Workspace {
         }
 
     val messages = ArrayList<Message>()
-    val queuedMessages = ArrayList<JSONObject>()
+    val queuedMessages = ArrayDeque<Message>()
     val messageChannel = BroadcastChannel<Message>(30)
     val toSendMessageChannel = Channel<Message>(100)
     var messageClient: MessageWebSocketClient? = null
-    var nextMessageId = 0
+    var lastReceivedTimeSent = Timestamp(0)
 
     fun getRoccUrlPrefix(context: Context): String {
         return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
@@ -127,32 +131,59 @@ object Workspace {
         GlobalScope.launch {
             for (message in messageChannel.openSubscription()) {
                 messages.add(message)
+                if (message.timeSent > lastReceivedTimeSent) {
+                    lastReceivedTimeSent = message.timeSent
+                }
             }
         }
         GlobalScope.launch {
             for (message in toSendMessageChannel) {
-                val js = messageToJson(message)
-                if (messageClient?.isOpen == true) {
-                    messageClient?.send(js.toString(2))
-                } else {
-                    queuedMessages.add(js)
+                try {
+                    val js = messageToJson(message)
+                    messageClient!!.send(js.toString(2))
+                } catch (e: Exception) {
+                    queuedMessages.add(message)
                 }
             }
         }
         GlobalScope.launch {
-            while (true) {
-                Log.e("@pwhite", "checking websocket status: ${messageClient?.isOpen}")
-                if (messageClient?.isOpen != true) {
-                    val client =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-                    client.connectBlocking()
-                    messageClient = client
-                } else {
-                    for (js in queuedMessages) {
-                        messageClient?.send(js.toString(2))
-                    }
-                    queuedMessages.clear()
+            var hasSentCatchupMessage = false
+            val reconnect: () -> Unit = {
+                hasSentCatchupMessage = false
+                val oldClient = messageClient
+                if (oldClient != null) {
+                    oldClient.close()
                 }
-                delay(5000)
+                Log.e("@pwhite", "Restarting websocket.")
+                val client =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                client.connectBlocking()
+                messageClient = client
+            }
+            while (true) {
+                try {
+                    Log.e("@pwhite", "doing loop iteration hasSentCatchupMessage = $hasSentCatchupMessage")
+                    if (messageClient?.isOpen != true) {
+                        reconnect()
+                    }
+                    if (!hasSentCatchupMessage) {
+                        val js = JSONObject()
+                        js.put("type", "catchup")
+                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        js.put("since", df.format(lastReceivedTimeSent))
+                        messageClient!!.send(js.toString(2))
+                        hasSentCatchupMessage = true
+                    }
+                    val nextQueuedMessage = queuedMessages.peek()
+                    if (nextQueuedMessage != null) {
+                        val js = messageToJson(nextQueuedMessage)
+                        messageClient!!.send(js.toString(2))
+                        queuedMessages.remove()
+                    }
+                } catch (ex: Exception) {
+                    Log.e("@pwhite", "websocket iteration failed: ${ex}. Closing old websocket.")
+                    reconnect()
+                    delay(5000)
+                }
             }
         }
     }

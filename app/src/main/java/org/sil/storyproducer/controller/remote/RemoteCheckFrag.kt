@@ -13,6 +13,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import java.time.Instant
+import java.sql.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -133,7 +135,7 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
         sendMessageButton.setOnClickListener {
             val storyId = Workspace.activeStory.remoteId ?: 0
-            val message = Message(slideNumber, storyId, false, false, messageSent.text.toString())
+            val message = Message(slideNumber, storyId, false, false, Timestamp(0), messageSent.text.toString())
             msgAdapter.addQueuedMessage(message)
             launch {
                 Workspace.toSendMessageChannel.send(message)
@@ -149,7 +151,7 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
             launch(Dispatchers.Main) {
                 for (message in sub) {
                     Log.e("@pwhite", "got message $message, remoteId = ${Workspace.activeStory.remoteId}")
-                    msgAdapter.clearQueuedMessages()
+                    msgAdapter.setQueuedMessages(Workspace.queuedMessages)
                     if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
                         Log.e("@pwhite", "adding message to adapter")
                         msgAdapter.add(message)

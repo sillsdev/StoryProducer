@@ -12,6 +12,7 @@ import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.messaging.Message;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -43,8 +44,8 @@ public class MessageAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    public void clearQueuedMessages() {
-        queuedMessages.clear();
+    public void setQueuedMessages(ArrayDeque<Message> qm) {
+        queuedMessages = new ArrayList(qm);
     }
 
     public List<Message> getMessageHistory() {

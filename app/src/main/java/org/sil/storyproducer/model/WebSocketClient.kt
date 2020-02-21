@@ -4,6 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.sql.Timestamp
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import org.json.JSONObject
@@ -32,9 +33,11 @@ class MessageWebSocketClient(uri: URI) : WebSocketClient(uri) {
         val storyId = message.getInt("storyId")
         val isConsultant = message.getBoolean("isConsultant")
         val isTranscript = message.getBoolean("isTranscript")
+        val timeSent = Timestamp.valueOf(message.getString("timeSent"))
         val text = message.getString("text")
         GlobalScope.launch {
-            Workspace.messageChannel.send(Message(slideNumber, storyId, isConsultant, isTranscript, text))
+            Workspace.messageChannel.send(
+                Message(slideNumber, storyId, isConsultant, isTranscript, timeSent, text))
         }
     }
 
