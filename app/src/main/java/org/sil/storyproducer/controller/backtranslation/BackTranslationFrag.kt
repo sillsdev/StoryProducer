@@ -3,10 +3,16 @@ package org.sil.storyproducer.controller.backtranslation
 import android.content.Context
 import android.os.Bundle
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import org.apache.commons.io.IOUtils
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
@@ -14,12 +20,14 @@ import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.messaging.Approval
 import java.util.*
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-class BackTranslationFrag : MultiRecordFrag() {
+class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
     private lateinit var greenCheckmark: VectorDrawableCompat
     private lateinit var grayCheckmark: VectorDrawableCompat
@@ -29,6 +37,7 @@ class BackTranslationFrag : MultiRecordFrag() {
     private lateinit var imageView: ImageView
     private lateinit var transcriptEditText: EditText
     private lateinit var sendTranscriptButton: Button
+    private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -122,5 +131,26 @@ class BackTranslationFrag : MultiRecordFrag() {
         setToolbar()
         return rootView
     }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        approvalReceiveChannel = if (isVisibleToUser) {
+            val sub = Workspace.approvalChannel.openSubscription()
+            launch(Dispatchers.Main) {
+                for (approval in sub) {
+                    Log.e("@pwhite", "got approval $approval, remoteId = ${Workspace.activeStory.remoteId}")
+                    if (approval.slideNumber == slideNum && approval.storyId == Workspace.activeStory.remoteId) {
+                        slideApprovedIndicator.background = if (approval.approvalStatus) { greenCheckmark } else { grayCheckmark }
+                    }
+                }
+            }
+            sub
+        } else {
+            approvalReceiveChannel?.cancel()
+            null
+        }
+    }
+
 
 }

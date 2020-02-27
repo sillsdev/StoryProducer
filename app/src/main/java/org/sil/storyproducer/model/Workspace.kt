@@ -23,6 +23,7 @@ import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.messaging.Message
+import org.sil.storyproducer.model.messaging.Approval
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import java.io.File
 import java.net.URI
@@ -58,6 +59,9 @@ object Workspace {
         get() = phases[activePhaseIndex]
         set(value) {
             activePhaseIndex = phases.indexOf(value)
+            if (activePhaseIndex < 0 || activePhaseIndex >= phases.size) {
+                activePhaseIndex = 0
+            }
         }
 
     val activeDirRoot: String
@@ -89,6 +93,7 @@ object Workspace {
     val messages = ArrayList<Message>()
     val queuedMessages = ArrayDeque<Message>()
     val messageChannel = BroadcastChannel<Message>(30)
+    val approvalChannel = BroadcastChannel<Approval>(30)
     val toSendMessageChannel = Channel<Message>(100)
     var messageClient: MessageWebSocketClient? = null
     var lastReceivedTimeSent = Timestamp(0)
@@ -137,6 +142,18 @@ object Workspace {
             }
         }
         GlobalScope.launch {
+            for (approval in approvalChannel.openSubscription()) {
+                for (story in Stories) {
+                    if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
+                        story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
+                    }
+                }
+                if (approval.timeSent > lastReceivedTimeSent) {
+                    lastReceivedTimeSent = approval.timeSent
+                }
+            }
+        }
+        GlobalScope.launch {
             for (message in toSendMessageChannel) {
                 try {
                     val js = messageToJson(message)
@@ -155,13 +172,12 @@ object Workspace {
                     oldClient.close()
                 }
                 Log.e("@pwhite", "Restarting websocket.")
-                val client =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-                client.connectBlocking()
-                messageClient = client
+                val newClient =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                newClient.connectBlocking()
+                messageClient = newClient
             }
             while (true) {
                 try {
-                    Log.e("@pwhite", "doing loop iteration hasSentCatchupMessage = $hasSentCatchupMessage")
                     if (messageClient?.isOpen != true) {
                         reconnect()
                     }
