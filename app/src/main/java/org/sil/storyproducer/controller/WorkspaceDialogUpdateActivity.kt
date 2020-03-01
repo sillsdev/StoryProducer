@@ -23,13 +23,14 @@ class WorkspaceDialogUpdateActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
                 .setTitle(buildTitle())
                 .setMessage(buildMessage())
-                .setPositiveButton(R.string.ok) { _, _ -> openDocumentTree() }
+                .setPositiveButton(R.string.use_internal_demo) { _, _ -> initDemoFolder() }
+                .setNegativeButton(R.string.update_workspace) { _, _ -> openDocumentTree() }
                 .create()
                 .show()
     }
 
     private fun buildTitle(): Spanned {
-        val title = "<b>${getString(R.string.update_workspace)}</b>"
+        val title = "<b>${getString(R.string.welcome_to_story_producer)}</b>"
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(title,0)
         } else {
@@ -42,6 +43,10 @@ class WorkspaceDialogUpdateActivity : AppCompatActivity() {
             Html.fromHtml(message, 0)
         } else {
             Html.fromHtml(message) }
+    }
+
+    private fun initDemoFolder() {
+
     }
 
     private fun openDocumentTree() {
