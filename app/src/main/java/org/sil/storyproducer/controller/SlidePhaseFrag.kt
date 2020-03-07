@@ -2,10 +2,10 @@ package org.sil.storyproducer.controller
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.snackbar.Snackbar
 import android.view.*
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.*
@@ -157,7 +157,10 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
      * @param textView The text view that will be filled with the verse's text.
      */
     protected fun setScriptureText(textView: TextView) {
-        textView.text = slide.content
+        textView.text = when (slide.slideType) {
+            SlideType.FRONTCOVER ->  buildTitleIdeas()
+            else -> slide.content
+        }
     }
 
     /**
@@ -166,16 +169,25 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
      * @param textView The view that will be populated with the reference text.
      */
     protected fun setReferenceText(textView: TextView) {
-        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
-
-        for (title in titleNamePriority) {
-            if (title != "") {
-                textView.text = title
-                return
-            }
+        textView.text = when (slide.slideType) {
+            SlideType.FRONTCOVER -> buildScriptureReference()
+            else -> arrayOf(slide.reference, slide.subtitle, slide.title).filterNot { it.isEmpty() }.firstOrNull().orEmpty()
         }
-        //There is no reference text.
-        textView.text = ""
+    }
+
+    private fun buildScriptureReference(): String {
+        return slide
+                .content
+                .split(SCRIPTURE_REFERENCE)
+                .getOrNull(1)
+                .orEmpty()
+                .split("\n")
+                .filterNot { it.trim().isEmpty() }
+                .joinToString(" ")
+    }
+
+    private fun buildTitleIdeas(): String {
+        return slide.content.split(SCRIPTURE_REFERENCE).firstOrNull().orEmpty()
     }
 
     private fun setReferenceAudioButton() {
@@ -213,4 +225,11 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     }
 
     open fun onStartedSlidePlayBack() {}
+
+    companion object {
+
+        const val SCRIPTURE_REFERENCE = "Scripture Reference:"
+
+    }
+
 }
