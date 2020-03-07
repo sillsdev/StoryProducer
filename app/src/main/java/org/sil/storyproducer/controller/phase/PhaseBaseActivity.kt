@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -263,8 +264,11 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
      */
     fun setPic(slideImage: ImageView, slideNum: Int) {
         val downSample = 2
-        var slidePicture: Bitmap = getStoryImage(this, slideNum, downSample)
-
+        var slidePicture: Bitmap = if (Workspace.activePhase.phaseType == PhaseType.LEARN || slideNum == 0) {
+            BitmapFactory.decodeResource(resources, R.drawable.greybackground)
+        } else {
+            getStoryImage(this, slideNum, downSample)
+        }
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
