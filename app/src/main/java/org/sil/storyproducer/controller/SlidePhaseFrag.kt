@@ -163,15 +163,25 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         }
     }
 
+    private fun buildTitleIdeas(): String {
+        return slide
+                .content
+                .split(SCRIPTURE_REFERENCE)
+                .firstOrNull()
+                .orEmpty()
+    }
+
     /**
      * This function sets the reference text.
      *
      * @param textView The view that will be populated with the reference text.
      */
     protected fun setReferenceText(textView: TextView) {
-        textView.text = when (slide.slideType) {
-            SlideType.FRONTCOVER -> buildScriptureReference()
-            else -> arrayOf(slide.reference, slide.subtitle, slide.title).filterNot { it.isEmpty() }.firstOrNull().orEmpty()
+        when (slide.slideType) {
+            SlideType.FRONTCOVER -> arrayOf(buildScriptureReference(), slide.reference, slide.subtitle, slide.title)
+            else -> arrayOf(slide.reference, slide.subtitle, slide.title)
+        }.also {
+            textView.text = it.filterNot { it.isEmpty() }.firstOrNull().orEmpty()
         }
     }
 
@@ -184,10 +194,6 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                 .split("\n")
                 .filterNot { it.trim().isEmpty() }
                 .joinToString(" ")
-    }
-
-    private fun buildTitleIdeas(): String {
-        return slide.content.split(SCRIPTURE_REFERENCE).firstOrNull().orEmpty()
     }
 
     private fun setReferenceAudioButton() {
