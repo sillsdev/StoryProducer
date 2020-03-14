@@ -200,13 +200,13 @@ object Workspace{
     }
 
     fun isLocalCreditsChanged(context: Context) : Boolean {
-        var isChanged = false
+        //if there are no local credits, let them make the video.
+        var isChanged = true
         val orgLCText = context.getString(R.string.LC_starting_text)
         for(slide in activeStory.slides){
             if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                if(slide.translatedContent != orgLCText){
-                    isChanged = true
-                }
+                isChanged = (slide.translatedContent != orgLCText)
+                break
             }
         }
         return isChanged
