@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import java.sql.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Approval
+import org.sil.storyproducer.model.messaging.Message
 import java.util.*
 
 /**
@@ -62,19 +64,14 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         }
 
         sendTranscriptButton.setOnClickListener {
-            val prefs = activity!!.getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
-            val prefsEditor = prefs.edit()
-            val js = HashMap<String, String>()
-            val message = transcriptEditText.text.toString()
-            js["IsTranscript"] = 1.toString()
-            sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_send_message), message, {
-                prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, "")
-                prefsEditor.apply()
-                transcriptEditText.setText("")
-            }, {
-                prefsEditor.putString(slideNum.toString() + RemoteCheckFrag.TO_SEND_MESSAGE, message)
-                prefsEditor.apply()
-            }, js)
+            val text = transcriptEditText.text.toString()
+            if (text.length > 0) {
+                val storyId = Workspace.activeStory.remoteId ?: 0
+                val message = Message(slideNum, storyId, false, true, Timestamp(0), text)
+                launch {
+                    Workspace.toSendMessageChannel.send(message)
+                }
+            }
         }
 
         slideApprovedIndicator.background = if (slide.isApproved) { greenCheckmark } else { grayCheckmark }
