@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -16,15 +17,24 @@ class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Workspace.initializeWorskpace(this)
-        showDialog()
+        showWelcomeDialog()
     }
 
-    private fun showDialog() {
+    private fun showWelcomeDialog() {
         AlertDialog.Builder(this)
                 .setTitle(buildTitle())
                 .setMessage(buildMessage())
-                .setPositiveButton(R.string.use_internal_demo) { _, _ -> initDemoFolder() }
-                .setNegativeButton(R.string.update_workspace) { _, _ -> openDocumentTree() }
+                .setPositiveButton(R.string.use_internal_demo) { _, _ -> showCreateAndSelectFolderDialog() }
+                .setNegativeButton(R.string.update_workspace) { _, _ -> openDocumentTree(SELECT) }
+                .create()
+                .show()
+    }
+
+    private fun showCreateAndSelectFolderDialog() {
+        AlertDialog.Builder(this)
+                .setTitle(buildTitle())
+                .setMessage(R.string.please_create_and_then_select_folder)
+                .setPositiveButton(R.string.ok) { _, _ -> openDocumentTree(CREATE_AND_SELECT) }
                 .create()
                 .show()
     }
@@ -45,32 +55,45 @@ class WorkspaceDialogUpdateActivity : AppCompatActivity() {
             Html.fromHtml(message) }
     }
 
-    private fun initDemoFolder() {
-
-    }
-
-    private fun openDocumentTree() {
+    private fun openDocumentTree(requestCode: Int) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
                 .addFlags(URI_PERMISSION_FLAGS)
 
-        startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, requestCode)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
-            contentResolver.takePersistableUriPermission(data.data!!,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        if (resultCode == Activity.RESULT_OK && arrayOf(CREATE_AND_SELECT, SELECT).contains(requestCode)) {
+            data?.data?.also {
+                setupWorkspace(requestCode, it)
+            }
         }
-        intent = Intent(this, RegistrationActivity::class.java)
-        startActivity(intent)
+        showRegistration()
+    }
+
+    private fun setupWorkspace(requestCode: Int, uri: Uri) {
+        Workspace.setupWorkspacePath(this, uri)
+
+        contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
+
+        if (requestCode == CREATE_AND_SELECT) {
+            Workspace.addDemoToWorkspace(this)
+        }
+    }
+
+    private fun showRegistration() {
+        startActivity(Intent(this, RegistrationActivity::class.java))
         finish()
     }
 
     companion object {
 
-        private const val RQS_OPEN_DOCUMENT_TREE = 52
+        private const val CREATE_AND_SELECT = 51
+        private const val SELECT = 52
 
         private const val URI_PERMISSION_FLAGS =
                 Intent.FLAG_GRANT_READ_URI_PERMISSION or
