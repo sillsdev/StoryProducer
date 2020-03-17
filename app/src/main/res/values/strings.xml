@@ -67,6 +67,9 @@
     <string name="bypass_button_text">Skip Registration</string>
 
     <!-- Dialog strings for titles, messages, and buttons -->
+    <string name="welcome_to_story_producer">Welcome to Story Producer</string>
+    <string name="use_internal_demo">Use internal demo</string>
+    <string name="please_create_and_then_select_folder">Please create and then Select a new folder, needed for running the demo.</string>
     <string name="registration_exit_title">Exit Registration?</string>
     <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
     <string name="registration_skip_title">Skip Registration?</string>
@@ -90,9 +93,9 @@
         for story templates does not contain usable templates.  Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
-    <string name="workspace_selection_help">Select the appropriate
+    <string name="workspace_selection_help">Would you like to use the internal demo or select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
-        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>.</string>
+        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>?</string>
 
     <string-array name="orthography_list">
         <item>None</item>

@@ -3,7 +3,6 @@ package org.sil.storyproducer.controller
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -11,21 +10,20 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Secure
-import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.appcompat.app.AppCompatActivity
-import android.text.Html
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.res.ResourcesCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.crashlytics.android.Crashlytics
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -637,49 +635,6 @@ open class RegistrationActivity : AppCompatActivity() {
             return message.toString()
         }
     }
-}
-
-open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        //Now, let's find the workspace path.
-        Workspace.initializeWorskpace(this)
-        val title = "<b>${getString(R.string.update_workspace)}</b>"
-        val message = getString(R.string.workspace_selection_help)
-        val dialog = AlertDialog.Builder(this)
-                .setTitle( if (Build.VERSION.SDK_INT >= 24) {Html.fromHtml(title,0)
-                } else {Html.fromHtml(title) })
-                .setMessage(if (Build.VERSION.SDK_INT >= 24) {
-                    Html.fromHtml(message, 0)
-                } else {Html.fromHtml(message) })
-                .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                            or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-                            or Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
-                    startActivityForResult(intent, RQS_OPEN_DOCUMENT_TREE)
-                }.create()
-        dialog.show()
-        super.onCreate(savedInstanceState)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == RQS_OPEN_DOCUMENT_TREE) {
-            Workspace.setupWorkspacePath(this,data?.data!!)
-            contentResolver.takePersistableUriPermission(data.data!!,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-        }
-        intent = Intent(this, RegistrationActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    companion object {
-        private val RQS_OPEN_DOCUMENT_TREE = 52
-    }
-
 }
 
 class WorkspaceUpdateActivity : AppCompatActivity() {
