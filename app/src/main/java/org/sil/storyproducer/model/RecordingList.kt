@@ -12,10 +12,14 @@ class RecordingList {
 
     fun add(recording: Recording) {
         files.add(recording)
+        selectedIndex = files.size - 1
     }
 
     fun removeAt(index: Int) {
         files.removeAt(index)
+        if (selectedIndex >= index) {
+            selectedIndex--
+        }
     }
 
     fun getFiles() : List<Recording> {

@@ -129,10 +129,10 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
     }
 
     class RecordingsListModal(private val context: Context, private val toolbar: RecordingToolbar?, private val phaseType: PhaseType) : ClickListeners, Modal {
-        private var rootView: ViewGroup? = null
+        private lateinit var rootView: ViewGroup
         private var dialog: AlertDialog? = null
         private var displayNames = RecordingList()
-        internal var recyclerView: RecyclerView? = null
+        internal lateinit var recyclerView: RecyclerView
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var audioPos = -1
@@ -161,25 +161,25 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         override fun show() {
             if (!embedded) {
                 val inflater = LayoutInflater.from(context)
-                rootView = inflater?.inflate(R.layout.recordings_list, rootView) as ViewGroup?
+                rootView = inflater.inflate(R.layout.recordings_list, null) as ViewGroup
             }
 
-            recyclerView = rootView?.findViewById(R.id.recordings_list)
+            recyclerView = rootView.findViewById(R.id.recordings_list)
 
             resetRecordingList()
-            recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
-            recyclerView?.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-            recyclerView?.layoutManager = LinearLayoutManager(context)
+            recyclerView.adapter = RecordingsListAdapter(displayNames, this)
+            recyclerView.addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+            recyclerView.layoutManager = LinearLayoutManager(context)
 
             if (!embedded) {
-                val tb = rootView?.findViewById<Toolbar>(R.id.toolbar2)
+                val tb = rootView.findViewById<Toolbar>(R.id.toolbar2)
                 tb?.setTitle(R.string.recordings_title)
 
                 val alertDialog = AlertDialog.Builder(context)
                 alertDialog.setView(rootView)
                 dialog = alertDialog.create()
 
-                val exit = rootView?.findViewById<ImageButton>(R.id.exitButton)
+                val exit = rootView.findViewById<ImageButton>(R.id.exitButton)
                 exit?.setOnClickListener {
                     dialog?.dismiss()
                 }
@@ -198,7 +198,7 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         fun resetRecordingList() {
             //only update if there was a change.
             displayNames = phaseType.getRecordings()
-            recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
+            recyclerView.adapter = RecordingsListAdapter(displayNames, this)
         }
 
         override fun onRowClick(pos: Int) {
@@ -242,20 +242,17 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
 
         override fun onDeleteClick(name: String, pos: Int) {
             deleteAudioFileFromList(context, pos)
-            recyclerView?.adapter!!.notifyDataSetChanged()
-            if (pos == phaseType.getRecordings().selectedIndex) {
-                displayNames.selectedIndex = displayNames.getFiles().size - 1
-                if (displayNames.getFiles().isEmpty()) {
-                    toolbar?.updateInheritedToolbarButtonVisibility()
-                    dialog?.dismiss()
-                }
+            recyclerView.adapter!!.notifyDataSetChanged()
+            if (displayNames.getFiles().isEmpty()) {
+                toolbar?.updateInheritedToolbarButtonVisibility()
+                dialog?.dismiss()
             }
         }
 
         override fun onRenameClick(pos: Int, newName: String) {
             updateDisplayName(pos, newName)
             displayNames.selectedIndex = pos
-            recyclerView?.adapter!!.notifyDataSetChanged()
+            recyclerView.adapter!!.notifyDataSetChanged()
         }
 
         fun stopAudio() {

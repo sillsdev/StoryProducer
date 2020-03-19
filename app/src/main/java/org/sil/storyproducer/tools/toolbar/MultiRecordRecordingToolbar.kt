@@ -45,7 +45,7 @@ open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
             stopToolbarMedia()
 
             toolbarMediaListener.onStartedToolbarMedia()
-            
+
             RecordingsListAdapter.RecordingsListModal(activity!!, this, phaseType).show()
         }
     }
