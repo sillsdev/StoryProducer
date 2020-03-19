@@ -36,7 +36,6 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
     private lateinit var yellowCheckmark: VectorDrawableCompat
     private lateinit var uploadAudioButton: ImageButton
     private lateinit var slideApprovedIndicator: ImageButton
-    private lateinit var imageView: ImageView
     private lateinit var transcriptEditText: EditText
     private lateinit var sendTranscriptButton: Button
     private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
@@ -45,14 +44,12 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // The last two arguments ensure LayoutParams are inflated
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
+        initializeViews()
 
-        imageView = rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView
-        uploadAudioButton = rootView!!.findViewById(R.id.upload_audio_botton)
-        slideApprovedIndicator = rootView!!.findViewById(R.id.slide_approved_indicator)
-        transcriptEditText = rootView!!.findViewById(R.id.transcript_edit_text)
-        sendTranscriptButton = rootView!!.findViewById(R.id.send_transcript_button)
-
-        setPic(imageView)
+        uploadAudioButton = rootView.findViewById(R.id.upload_audio_botton)
+        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
+        transcriptEditText = rootView.findViewById(R.id.transcript_edit_text)
+        sendTranscriptButton = rootView.findViewById(R.id.send_transcript_button)
 
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
@@ -74,7 +71,11 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             }
         }
 
-        slideApprovedIndicator.background = if (slide.isApproved) { greenCheckmark } else { grayCheckmark }
+        slideApprovedIndicator.background = if (slide.isApproved) {
+            greenCheckmark
+        } else {
+            grayCheckmark
+        }
 
         uploadAudioButton.setOnClickListener {
             when (slide.backTranslationUploadState) {

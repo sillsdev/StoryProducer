@@ -13,16 +13,17 @@ import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.media.AudioPlayer
 import java.util.*
+import android.util.Log
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
 abstract class SlidePhaseFrag : Fragment() {
-    protected var rootView: View? = null
+    protected lateinit var rootView: View
 
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
-    protected var referencePlayButton: ImageButton? = null
-    protected var refPlaybackSeekBar: SeekBar? = null
+    protected lateinit var referencePlayButton: ImageButton
+    protected lateinit var refPlaybackSeekBar: SeekBar
     private var mSeekBarTimer = Timer()
 
     private var refPlaybackProgress = 0
@@ -36,20 +37,16 @@ abstract class SlidePhaseFrag : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // NOW @pwhite: Hmmm, I thought the bundle was no longer a helpful thing to use, but maybe it is. Is there the same weird bug if we just use the active workspace slidenum here?
         slideNum = arguments!!.getInt(SLIDE_NUM)
         phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE))
         slide = Workspace.activeStory.slides[slideNum]
     }
 
+
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
-
-        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
-
+        initializeViews()
         return rootView
     }
 
@@ -63,43 +60,85 @@ abstract class SlidePhaseFrag : Fragment() {
     override fun onResume() {
         super.onResume()
 
-        referenceAudioPlayer = AudioPlayer()
-        val referenceRecording = phaseType.getReferenceRecording(slideNum)
-        if (referenceRecording != null) {
-            referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
-        }
-
-        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-            referenceAudioPlayer.stopAudio()
-        })
-
         //If it is the local credits slide, do not show the audio stuff at all.
-        val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
-        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
-            refPlaybackHolder.visibility = View.GONE
-        }else{
-            refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+        if (Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS) {
+            val seekBar: ConstraintLayout = rootView.findViewById(R.id.seek_bar)
+            seekBar.visibility = View.GONE
+        } else {
+            refPlaybackSeekBar = rootView.findViewById(R.id.videoSeekBar)
             mSeekBarTimer = Timer()
             mSeekBarTimer.schedule(object : TimerTask() {
                 override fun run() {
                     activity!!.runOnUiThread{
                         refPlaybackProgress = referenceAudioPlayer.currentPosition
-                        refPlaybackSeekBar?.progress = refPlaybackProgress
+                        refPlaybackSeekBar.progress = refPlaybackProgress
                     }
                 }
-            },0,33)
+            }, 0, 33)
 
             setSeekBarListener()
         }
     }
 
+    protected fun setPic() {
+        PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNum)
+    }
+
+    // This is an alternative to onCreateView. The trouble with onCreateView is
+    // that we want to have a default view that gets inflated, but allow
+    // inheriting fragments to inflate a different view. Inheriting fragments
+    // should just override this function if they want to add extra
+    // initialization. They could also override both this function and
+    // onCreateView if they want to have a different layout get inflated.
+    protected open fun initializeViews() {
+        setPic()
+        val slideNumberText = rootView.findViewById<TextView>(R.id.slide_number_text)
+        slideNumberText.text = slideNum.toString()
+
+        referencePlayButton = rootView.findViewById(R.id.fragment_reference_audio_button)
+        referencePlayButton.setOnClickListener {
+            Log.e("@pwhite", "play button!")
+            if (referenceAudioPlayer.isAudioPlaying) {
+                stopSlidePlayBack()
+                refPlaybackProgress = referenceAudioPlayer.currentPosition
+                refPlaybackSeekBar.progress = refPlaybackProgress
+            } else {
+                if (referenceAudioPlayer.currentPosition == 0) {
+                    val referenceRecording = phaseType.getReferenceRecording(slideNum)
+                    if (referenceRecording != null) {
+                        referenceAudioPlayer = AudioPlayer()
+                        referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
+                        referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+
+                        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+                            referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                            referenceAudioPlayer.stopAudio()
+                        })
+                    } else {
+                        Snackbar.make(rootView, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+                onStartedSlidePlayBack()
+                referenceAudioPlayer.currentPosition = refPlaybackProgress
+                referenceAudioPlayer.resumeAudio()
+
+                referencePlayButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                when(phaseType) {
+                    PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+                    PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
+                    else -> {}
+                }
+            }
+        }
+    }
+
     private fun setSeekBarListener() {
         refPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
-        refPlaybackSeekBar?.max = refPlaybackDuration
+        refPlaybackSeekBar.max = refPlaybackDuration
         referenceAudioPlayer.currentPosition = refPlaybackProgress
-        refPlaybackSeekBar?.progress = refPlaybackProgress
-        refPlaybackSeekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+        refPlaybackSeekBar.progress = refPlaybackProgress
+        refPlaybackSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {
                 referenceAudioPlayer.currentPosition = refPlaybackProgress
                 if(wasAudioPlaying){
@@ -109,7 +148,7 @@ abstract class SlidePhaseFrag : Fragment() {
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
-                referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -136,24 +175,9 @@ abstract class SlidePhaseFrag : Fragment() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        referenceAudioPlayer.stopAudio()
-        referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-    }
-
-    /**
-     * This function allows the picture to scale with the phone's screen size.
-     *
-     * @param slideImage    The ImageView that will contain the picture.
-     */
-    protected fun setPic(slideImage: ImageView) {
-
-        PhaseBaseActivity.setPic(context!!, slideImage, slideNum)
-        //Set up the reference audio and slide number overlays
-        referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
-        setReferenceAudioButton()
-
-        val slideNumberText = rootView?.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText?.text = slideNum.toString()
+        if (::referencePlayButton.isInitialized) {
+            stopSlidePlayBack()
+        }
     }
 
     /**
@@ -183,39 +207,9 @@ abstract class SlidePhaseFrag : Fragment() {
         textView.text = ""
     }
 
-    private fun setReferenceAudioButton() {
-        referencePlayButton!!.setOnClickListener {
-            val referenceRecording = phaseType.getReferenceRecording(slideNum)
-            if (referenceRecording == null) {
-                //TODO make "no audio" string work for all phases
-                Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
-            } else {
-                //stop other playback streams.
-                if (referenceAudioPlayer.isAudioPlaying) {
-                    stopSlidePlayBack()
-                    refPlaybackProgress = referenceAudioPlayer.currentPosition
-                    refPlaybackSeekBar?.progress = refPlaybackProgress
-                } else {
-                    stopSlidePlayBack()
-                    onStartedSlidePlayBack()
-                    referenceAudioPlayer.currentPosition = refPlaybackProgress
-                    referenceAudioPlayer.resumeAudio()
-
-                    referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                    when(phaseType){
-                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
-                        else -> {}
-                    }
-                }
-            }
-        }
-    }
-
     protected fun stopSlidePlayBack() {
         referenceAudioPlayer.pauseAudio()
-        referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+        referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
     }
 
     open fun onStartedSlidePlayBack() {}

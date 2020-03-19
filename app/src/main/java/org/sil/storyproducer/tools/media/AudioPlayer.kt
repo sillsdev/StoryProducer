@@ -10,7 +10,7 @@ import java.io.IOException
 
 class AudioPlayer {
 
-    private var mPlayer: MediaPlayer
+    private var mPlayer: MediaPlayer = MediaPlayer()
     private var fileExists: Boolean = false
     private var onCompletionListenerPersist: MediaPlayer.OnCompletionListener? = null
 
@@ -47,27 +47,10 @@ class AudioPlayer {
     var isAudioPrepared: Boolean = false
         private set
 
-    /**
-     * Constructor for Audio Player, no params
-     */
-    init {
-        mPlayer = MediaPlayer()
-        mPlayer.setOnErrorListener { _, what, extra ->
-            Log.e("@pwhite", "media player error what = $what, extra = $extra")
-            false
-        }
-        fileExists = false
-    }
-
     fun setSource(context: Context, uri: Uri): Boolean {
         mPlayer.release()
         mPlayer = MediaPlayer()
         mPlayer.setOnCompletionListener(onCompletionListenerPersist)
-        Log.e("@pwhite", "setting source and error listener...uri = $uri")
-        mPlayer.setOnErrorListener { _, what, extra ->
-            Log.e("@pwhite", "media player error what = $what, extra = $extra")
-            false
-        }
         mPlayer.setDataSource(context, uri)
         fileExists = true
         isAudioPrepared = true

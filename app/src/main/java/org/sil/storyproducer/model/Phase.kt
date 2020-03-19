@@ -44,9 +44,9 @@ enum class PhaseType {
         val slide = Workspace.activeStory.slides[slideNum]
         return when (this) {
             PhaseType.DRAFT -> slide.narration
-            PhaseType.COMMUNITY_CHECK -> slide.communityCheckRecordings.selectedFile
-            PhaseType.CONSULTANT_CHECK -> slide.draftRecordings.selectedFile
-            PhaseType.DRAMATIZATION -> slide.draftRecordings.selectedFile
+            PhaseType.COMMUNITY_CHECK,
+            PhaseType.CONSULTANT_CHECK,
+            PhaseType.DRAMATIZATION,
             PhaseType.BACKT -> slide.draftRecordings.selectedFile
             else -> throw Exception("Unsupported stage to get a reference audio file for")
         }

@@ -35,15 +35,12 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
     private var tempPicFile: File? = null
 
-
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = super.onCreateView(inflater, container, savedInstanceState)
+    override fun initializeViews() {
+        super.initializeViews()
         if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
             setToolbar()
         }
         setupCameraAndEditButton()
-        return rootView
     }
 
     /**
@@ -55,7 +52,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         if(Workspace.activeStory.slides[slideNum].slideType in
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
-            val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
+            val imageFab: ImageView = rootView.findViewById<View>(R.id.insert_image_view) as ImageView
             imageFab.visibility = View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
@@ -82,10 +79,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
-            val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
+            val editBox = rootView.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
             editBox?.visibility = View.INVISIBLE
 
-            val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
+            val editFab = rootView.findViewById<View>(R.id.edit_text_view) as ImageView?
             editFab?.visibility = View.VISIBLE
             editFab?.setOnClickListener {
                 val editText = EditText(context)
@@ -106,7 +103,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
                             Workspace.activeSlide!!.translatedContent = editText.text.toString()
-                            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+                            setPic()
                         }.create()
 
                 dialog.show()
@@ -128,7 +125,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 copyToWorkspacePath(context!!, uri!!,
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
                 tempPicFile?.delete()
-                setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+                setPic()
             }
         }catch (e:Exception){
             Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
@@ -175,7 +172,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
         recordingToolbar.stopToolbarMedia()
     }
-    
+
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
     }

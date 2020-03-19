@@ -14,11 +14,9 @@ class DraftFrag : MultiRecordFrag() {
 
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
         super.onCreateView(inflater, container, savedInstanceState)
-        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
-        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
+        setScriptureText(rootView.findViewById(R.id.fragment_scripture_text))
+        setReferenceText(rootView.findViewById(R.id.fragment_reference_text))
 
         return rootView
     }

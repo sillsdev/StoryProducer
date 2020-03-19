@@ -19,32 +19,27 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class DramatizationFrag : MultiRecordFrag() {
     override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
-    private var slideText: EditText? = null
+    private lateinit var slideText: EditText
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
+        initializeViews()
 
-        setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
-        slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
-        slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+        slideText = rootView.findViewById(R.id.fragment_dramatization_edit_text)
+        slideText.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
-            if(Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-                setToolbar()
-            }
             closeKeyboardOnTouch(rootView)
-            rootView?.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
+            rootView.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
         } else {
-            PhaseBaseActivity.disableViewAndChildren(rootView!!)
+            PhaseBaseActivity.disableViewAndChildren(rootView)
         }
 
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
-            slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText.setTextSize(COMPLEX_UNIT_DIP,24f)
+            slideText.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
-
-        setupCameraAndEditButton()
 
         return rootView
     }
@@ -99,12 +94,12 @@ class DramatizationFrag : MultiRecordFrag() {
             imm.hideSoftInputFromWindow(viewToFocus.windowToken, 0)
             viewToFocus.requestFocus()
         }
-        if(slideText!!.visibility == View.VISIBLE) {
+        if(slideText.visibility == View.VISIBLE) {
             //Don't update with a press when in title and local credits slides.
-            val newText = slideText!!.text.toString()
+            val newText = slideText.text.toString()
             if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
                 Workspace.activeStory.slides[slideNum].translatedContent = newText
-                setPic(rootView!!.findViewById(R.id.fragment_image_view))
+                setPic()
             }
         }
     }
