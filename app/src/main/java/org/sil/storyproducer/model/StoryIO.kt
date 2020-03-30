@@ -1,16 +1,13 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.InputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
+import net.lingala.zip4j.ZipFile
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -79,14 +76,22 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
 }
 
 fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>){
+
+    //only work with zip files.
+    val extension = zipDocFile.name!!.substringAfterLast(".","")
+    val name = zipDocFile.name!!.substringBeforeLast(".","")
+    if (!(extension in arrayOf("zip","bloom","bloomd"))) return
+
+    val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
+    val zipFile = ZipFile(sourceFile.absolutePath)
     try
     {
-        val zipFile = File("${context.filesDir}/${zipDocFile.name!!}")
-        if(!zipFile.exists()){
-            val uri = getWorkspaceUri(zipDocFile.name!!)
-            if(uri != null){copyToFilesDir(context,uri,zipFile)}
-        }
-        val zis = ZipInputStream(zipFile.inputStream())
+        //copy file to internal files directory to perform the normal "File" opterations on.
+        val uri = getWorkspaceUri(zipDocFile.name!!)
+        if(uri != null){copyToFilesDir(context,uri,sourceFile)}
+
+        //Exctract to files/unzip
+        val fileHeaders = zipFile.fileHeaders
 
         val folderNames: MutableList<String> = mutableListOf()
         for (f in existingFolders){
@@ -97,24 +102,14 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolder
         val buffer = ByteArray(4192)
         var count : Int
 
-        while(true) {
+        for (f in fileHeaders){
 
-            zis.closeEntry() //close the last entry even if you continue.
-            val ze: ZipEntry? = zis.nextEntry
-            //if it's not a zip file, return false (didn't work).
-            if (ze == null) break
+            if (storyRelPathExists(context, f.fileName)) continue
 
-            val filename = ze.name ?: continue
-
-            //Only parse new root folders, not existing folders.
-            val folderName = filename.substring(0, filename.indexOf('/'))
-            if (folderName in folderNames) continue
-
-            if (storyRelPathExists(context, filename)) continue
-
-            val ostream = getChildOutputStream(context, filename) ?: continue
+            val ostream = getChildOutputStream(context, "$name/${f.fileName}") ?: continue
 
             // reading and writing
+            val zis = zipFile.getInputStream(f)
             count = zis.read(buffer)
             try {
                 while (count != -1) {
@@ -126,16 +121,16 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolder
                 }
             } catch (e: Exception) {
             }
-
             ostream.close()
+            zis.close()
         }
 
-        zis.close();
+        //delete copied zip file
     }
-    catch(e: Exception)
-    {
-        return
-    }
+    catch(e: Exception) { }
+    //delete copied and original zip file to save space
+    sourceFile.delete()
+    deleteWorkspaceFile(context,zipDocFile.name!!)
 
     return
 }

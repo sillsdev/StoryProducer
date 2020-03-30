@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.os.SystemClock
 import com.google.android.material.navigation.NavigationView
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -21,8 +20,7 @@ import android.view.View
 import android.webkit.WebView
 import android.widget.ProgressBar
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
@@ -30,6 +28,7 @@ import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.dpToPx
 import java.io.Serializable
 
 class MainActivity : AppCompatActivity(), Serializable {
@@ -59,8 +58,9 @@ class MainActivity : AppCompatActivity(), Serializable {
         val pb = findViewById<ProgressBar>(R.id.indeterminateBar)
         pb.visibility = View.VISIBLE
 
-        GlobalScope.async {
-            if(!Workspace.isInitialized) Workspace.initializeWorskpace(this@MainActivity.applicationContext)
+        GlobalScope.launch {
+            if(!Workspace.isInitialized)
+                Workspace.initializeWorskpace(this@MainActivity)
             runOnUiThread {
                 pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
@@ -90,20 +90,20 @@ class MainActivity : AppCompatActivity(), Serializable {
                 true
             }
             R.id.helpButton -> {
-                val alert = AlertDialog.Builder(this)
-                alert.setTitle("Story List Help")
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
                 val text = iStream.reader().use {
                         it.readText() }
 
-                wv.loadData(text,"text/html",null)
-                alert.setView(wv)
-                alert.setNegativeButton("Close") { dialog, _ ->
-                    dialog!!.dismiss()
-                }
-                alert.show()
+                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+                val dialog = AlertDialog.Builder(this)
+                    .setTitle("Story List Help")
+                    .setView(wv)
+                    .setNegativeButton("Close") { dialog, _ ->
+                        dialog!!.dismiss()
+                    }
+                dialog.show()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -144,6 +144,10 @@ class MainActivity : AppCompatActivity(), Serializable {
                     this.startActivity(intent)
                     this.finish()
                 }
+                R.id.nav_demo -> {
+                    Workspace.addDemoToWorkspace(this)
+                }
+
                 R.id.nav_stories -> {
                     // Current fragment
                 }

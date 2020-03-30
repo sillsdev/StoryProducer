@@ -11,6 +11,9 @@
             android:id="@+id/nav_workspace"
             android:title="@string/update_workspace" />
         <item
+            android:id="@+id/nav_demo"
+            android:title="@string/copy_demo" />
+        <item
             android:id="@+id/nav_license"
             android:title="@string/license_title" />
     </group>

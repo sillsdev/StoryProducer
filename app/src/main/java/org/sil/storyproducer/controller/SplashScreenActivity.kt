@@ -1,14 +1,10 @@
 package org.sil.storyproducer.controller
 
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
-import android.view.View
 import android.widget.TextView
 
 import org.sil.storyproducer.R
@@ -30,7 +26,7 @@ class SplashScreenActivity : AppCompatActivity() {
 
         Handler().postDelayed(Runnable {
             //do we have a workspace?
-            if (!Workspace.workspace.isDirectory) {
+            if (!Workspace.workdocfile.isDirectory) {
                 val intent = Intent(this@SplashScreenActivity, WorkspaceDialogUpdateActivity::class.java)
                 startActivity(intent)
                 return@Runnable

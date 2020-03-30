@@ -23,6 +23,14 @@
         android:layout_marginBottom="8dp"
         android:text="@string/update_workspace"
         android:layout_gravity="center" />
+    <Button
+        android:id="@+id/copy_demo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/copy_demo"
+        android:layout_gravity="center" />
 
 
 </LinearLayout>

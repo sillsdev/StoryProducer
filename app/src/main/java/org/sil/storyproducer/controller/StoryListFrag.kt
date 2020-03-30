@@ -3,6 +3,7 @@ package org.sil.storyproducer.controller
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.text.Html
@@ -20,17 +21,24 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
-
         if (Workspace.Stories.isEmpty()) {
             val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
-                    Html.fromHtml(getString(R.string.stories_not_found_body),0)
+                    if (Build.VERSION.SDK_INT >= 24){Html.fromHtml(getString(R.string.stories_not_found_body),0)}
+                            else{Html.fromHtml(getString(R.string.stories_not_found_body))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
                 val intent = Intent(activity, WorkspaceUpdateActivity::class.java)
                 activity?.startActivity(intent)
                 activity?.finish()
+            }
+            view.findViewById<Button>(R.id.copy_demo_button).setOnClickListener {
+                Workspace.addDemoToWorkspace(context!!)
+                val intent = Intent(activity!!.applicationContext, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                activity!!.startActivity(intent)
+                activity!!.finish()
             }
             return view
         }
