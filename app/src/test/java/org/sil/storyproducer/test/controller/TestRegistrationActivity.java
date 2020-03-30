@@ -30,7 +30,7 @@ public class TestRegistrationActivity {
         DocumentFile mockFile = Mockito.mock(DocumentFile.class);
         Mockito.when(mockFile.exists()).thenReturn(true);
         Mockito.when(mockFile.getUri()).thenReturn(Uri.parse("mock"));
-        Workspace.INSTANCE.setWorkspace(mockFile);
+        Workspace.INSTANCE.setWorkdocfile(mockFile);
 
         RegistrationActivity registrationActivity = Robolectric.buildActivity(RegistrationActivity.class).create().get();
 

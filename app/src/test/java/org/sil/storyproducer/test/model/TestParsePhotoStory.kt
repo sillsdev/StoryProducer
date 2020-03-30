@@ -1,13 +1,10 @@
 package org.sil.storyproducer.test.model
 
-import androidx.documentfile.provider.DocumentFile
-
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
-import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 
@@ -185,7 +182,7 @@ class TestParsePhotoStory {
             df = androidx.documentfile.provider.DocumentFile.fromFile(File("sampledata"))
         }
 
-        Workspace.workspace = df
+        Workspace.workdocfile = df
     }
 
 }
