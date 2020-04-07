@@ -251,6 +251,10 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
             }
         })
 
+        playButton.setOnClickListener {
+            playStoryAudio()
+        }
+
         val volumeSwitch = rootView.findViewById<Switch>(R.id.volumeSwitch)
         volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -356,11 +360,6 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         currentSlideIndex = 0
         //This gets the progress bar to show the right time.
         seekbarStartTime = System.currentTimeMillis()
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        val item = menu.getItem(0)
-        item.setIcon(R.drawable.ic_school_white_48dp)
     }
 
     /**

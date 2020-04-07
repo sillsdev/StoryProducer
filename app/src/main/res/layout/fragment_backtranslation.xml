@@ -41,14 +41,16 @@
             android:layout_width="240dp"
             android:layout_height="90dp"
             android:ems="10"
+            android:hint="@string/transcript_hint"
             android:gravity="start|top"
             android:inputType="textMultiLine" />
 
         <Button
             android:id="@+id/send_transcript_button"
-            android:layout_width="136dp"
-            android:layout_height="61dp"
-            android:text="Send Transcript" />
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/ic_send_black_24dp"
+            android:backgroundTint="@color/black" />
     </LinearLayout>
 
     <ImageView

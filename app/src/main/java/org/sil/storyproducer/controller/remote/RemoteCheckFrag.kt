@@ -127,18 +127,19 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
             }
         }
 
-        //set texts for this view
-        messageSent.setHint(R.string.message_hint)
-        messageSent.setHintTextColor(ContextCompat.getColor(context!!, R.color.black))
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
         sendMessageButton.setOnClickListener {
-            val storyId = Workspace.activeStory.remoteId ?: 0
-            val message = Message(slideNumber, storyId, false, false, Timestamp(0), messageSent.text.toString())
-            msgAdapter.addQueuedMessage(message)
-            launch {
-                Workspace.toSendMessageChannel.send(message)
+            val messageText = messageSent.text.toString()
+            if (messageText.length > 0) {
+                val storyId = Workspace.activeStory.remoteId ?: 0
+                val message = Message(slideNumber, storyId, false, false, Timestamp(0), messageText)
+                msgAdapter.addQueuedMessage(message)
+                launch {
+                    Workspace.toSendMessageChannel.send(message)
+                }
+                messageSent.setText("")
             }
         }
     }

@@ -39,8 +39,8 @@
     <string name="dramatization_title">Voice Studio</string>
     <string name="create_title">Finalize</string>
     <string name="share_title">Share</string>
-    <string name="whole_story_title">Whole Story Back Translation</string>
-    <string name="back_translation_title">Back Translation</string>
+    <string name="whole_story_title">Story Tell-Back</string>
+    <string name="back_translation_title">Slide Tell-Back</string>
     <string name="title_activity_story_templates">Story Templates</string>
 
     <!-- String names for registration -->
@@ -169,12 +169,12 @@
     <string name="backTranslation_play_draft">Play translated draft</string>
     <string name="backTranslation_no_backT_found">No Back Translation Found</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
-    <string name="backTranslation_hint">Message for consultant&#8230;</string>
+    <string name="transcript_hint">If requested, write a back translation here.</string>
 
     <!-- Remote Check Phase -->
     <string name="remote_check_title">Remote Check</string>
     <string name="messaging_bar_title">Messages for Slide</string>
-    <string name="message_hint">Enter Message</string>
+    <string name="message_hint">Write your message here</string>
     <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
     <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>

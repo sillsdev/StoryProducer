@@ -14,6 +14,7 @@ import android.support.v4.content.res.ResourcesCompat
 import android.support.v4.view.GravityCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
@@ -47,17 +48,18 @@ class PhaseBaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        super.setContentView(R.layout.phase_frame)
-
-        Log.e("@pwhite", "onCreate")
+        setContentView(R.layout.phase_frame)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
+        val actionbar: ActionBar = supportActionBar!!
+        actionbar.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
+        }
 
         supportActionBar?.title = ""
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,

@@ -34,6 +34,9 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
     private lateinit var greenCheckmark: VectorDrawableCompat
     private lateinit var grayCheckmark: VectorDrawableCompat
     private lateinit var yellowCheckmark: VectorDrawableCompat
+    private lateinit var uploadingIcon: VectorDrawableCompat
+    private lateinit var uploadedIcon: VectorDrawableCompat
+    private lateinit var notUploadedIcon: VectorDrawableCompat
     private lateinit var uploadAudioButton: ImageButton
     private lateinit var slideApprovedIndicator: ImageButton
     private lateinit var transcriptEditText: EditText
@@ -54,10 +57,13 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
+        notUploadedIcon = VectorDrawableCompat.create(resources, R.drawable.ic_cloud_upload_black_24dp, null)!!
+        uploadingIcon = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
+        uploadedIcon = VectorDrawableCompat.create(resources, R.drawable.ic_cloud_done_black_24dp, null)!!
         uploadAudioButton.background = when (slide.backTranslationUploadState) {
-            UploadState.UPLOADED -> greenCheckmark
-            UploadState.NOT_UPLOADED -> grayCheckmark
-            UploadState.UPLOADING -> yellowCheckmark
+            UploadState.UPLOADED -> uploadedIcon
+            UploadState.NOT_UPLOADED -> notUploadedIcon
+            UploadState.UPLOADING -> uploadingIcon
         }
 
         sendTranscriptButton.setOnClickListener {
@@ -84,7 +90,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
                     val audioRecording = slide.backTranslationRecordings.selectedFile
                     if (audioRecording != null) {
                         slide.backTranslationUploadState = UploadState.UPLOADING
-                        uploadAudioButton.background = yellowCheckmark
+                        uploadAudioButton.background = uploadingIcon
                         Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(context!!, audioRecording.fileName)
                         val audioBytes = IOUtils.toByteArray(input)
@@ -92,18 +98,18 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
                         sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_upload_audio), byteString, {
                             Toast.makeText(context, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
                             slide.backTranslationUploadState = UploadState.UPLOADED
-                            uploadAudioButton.background = greenCheckmark
+                            uploadAudioButton.background = uploadedIcon
                         }, {
                             //Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
                             slide.backTranslationUploadState = UploadState.NOT_UPLOADED
-                            uploadAudioButton.background = grayCheckmark
+                            uploadAudioButton.background = notUploadedIcon
                         })
                     } else {
                         Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
                     }
                 }
                 UploadState.UPLOADING -> {
-                    uploadAudioButton.background = yellowCheckmark
+                    uploadAudioButton.background = uploadingIcon
                     Toast.makeText(context!!, "Upload already in progress", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -114,12 +120,12 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
                 UploadState.UPLOADING -> {
                     slide.backTranslationUploadState = UploadState.NOT_UPLOADED
                     Toast.makeText(context!!, "Cancelling upload", Toast.LENGTH_SHORT).show()
-                    uploadAudioButton.background = grayCheckmark
+                    uploadAudioButton.background = notUploadedIcon
                 }
                 UploadState.UPLOADED -> {
                     slide.backTranslationUploadState = UploadState.NOT_UPLOADED
                     Toast.makeText(context!!, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
-                    uploadAudioButton.background = grayCheckmark
+                    uploadAudioButton.background = notUploadedIcon
                 }
                 UploadState.NOT_UPLOADED -> Toast.makeText(context!!, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
             }

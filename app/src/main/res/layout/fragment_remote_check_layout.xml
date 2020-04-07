@@ -71,7 +71,8 @@
             android:layout_weight="2"
             android:backgroundTint="@color/primaryDark"
             android:ems="10"
-            android:hint="@string/backTranslation_hint"
+            android:hint="@string/message_hint"
+            android:textColorHint="@color/gray"
             android:inputType="textCapSentences|textMultiLine"
             android:maxLength="10000"
             android:textColor="@color/black" />
@@ -82,7 +83,7 @@
             android:layout_height="36dp"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:background="@drawable/ic_message_white_24dp"
+            android:background="@drawable/ic_send_black_24dp"
             android:backgroundTint="@color/black"
             android:scaleType="fitCenter" />
     </LinearLayout>

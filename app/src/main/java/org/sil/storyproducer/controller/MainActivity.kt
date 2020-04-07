@@ -179,14 +179,11 @@ class MainActivity : AppCompatActivity(), Serializable {
     private fun setupDrawer() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
-        val actionbar: ActionBar? = supportActionBar
-        actionbar?.apply {
+        val actionbar: ActionBar = supportActionBar!!
+        actionbar.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp)
         }
-
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeButtonEnabled(true)
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)

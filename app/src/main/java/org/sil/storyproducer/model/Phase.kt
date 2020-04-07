@@ -34,7 +34,7 @@ enum class PhaseType {
             PhaseType.COMMUNITY_CHECK -> R.drawable.ic_people_white_48dp
             PhaseType.CONSULTANT_CHECK -> R.drawable.ic_school_white_48dp
             PhaseType.WHOLE_STORY -> R.drawable.ic_school_white_48dp
-            PhaseType.REMOTE_CHECK -> R.drawable.ic_school_white_48dp
+            PhaseType.REMOTE_CHECK -> R.drawable.ic_remote_check
             PhaseType.BACKT -> R.drawable.ic_headset_mic_white_48dp
             PhaseType.DRAMATIZATION -> R.drawable.ic_mic_box_48dp
         }
