@@ -143,6 +143,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
     private var isVolumeOn = true
 
     private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
+    private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
 
     private var currentSlideIndex: Int = 0
     private val translatedSlides: MutableList<DraftSlide> = ArrayList()
@@ -161,7 +162,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         seekBar = rootView.findViewById(R.id.videoSeekBar)
 
-        UploadAudioButtonManager(
+        uploadAudioButtonManager = UploadAudioButtonManager(
             context!!,
             rootView.findViewById(R.id.upload_audio_botton),
             { Workspace.activeStory.wholeStoryBackTranslationUploadState },
@@ -286,6 +287,11 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
                 draftPlayer.setStorySource(context!!, slide.filename)
             }
         }
+    }
+
+    override fun onStoppedToolbarRecording() {
+        Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
+        uploadAudioButtonManager.refreshBackground()
     }
 
     override fun onStoppedToolbarMedia() {
