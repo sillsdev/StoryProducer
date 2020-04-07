@@ -216,7 +216,8 @@ open class RecordingToolbar : Fragment(){
               if (!wasRecording) {
                   val recordingRelPath = assignNewAudioRelPath()
                   //we may be overwriting things in other phases, but we do not care.
-                  if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase == PhaseType.LEARN) {
+                  if (storyRelPathExists(activity!!, recordingRelPath) && 
+                      (Workspace.activePhase == PhaseType.LEARN || Workspace.activePhase == PhaseType.WHOLE_STORY)) {
                       val dialog = AlertDialog.Builder(activity!!)
                               .setTitle(activity!!.getString(R.string.overwrite))
                               .setMessage(activity!!.getString(R.string.learn_phase_overwrite))
