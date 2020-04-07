@@ -19,6 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
+import org.sil.storyproducer.controller.remote.UploadAudioButtonManager
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.model.Workspace
@@ -34,13 +35,8 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
     private lateinit var greenCheckmark: VectorDrawableCompat
     private lateinit var grayCheckmark: VectorDrawableCompat
     private lateinit var yellowCheckmark: VectorDrawableCompat
-    private lateinit var uploadingIcon: VectorDrawableCompat
-    private lateinit var uploadedIcon: VectorDrawableCompat
-    private lateinit var notUploadedIcon: VectorDrawableCompat
-    private lateinit var uploadAudioButton: ImageButton
     private lateinit var slideApprovedIndicator: ImageButton
-    private lateinit var transcriptEditText: EditText
-    private lateinit var sendTranscriptButton: Button
+    private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -49,23 +45,13 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
         initializeViews()
 
-        uploadAudioButton = rootView.findViewById(R.id.upload_audio_botton)
-        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
-        transcriptEditText = rootView.findViewById(R.id.transcript_edit_text)
-        sendTranscriptButton = rootView.findViewById(R.id.send_transcript_button)
 
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
-        notUploadedIcon = VectorDrawableCompat.create(resources, R.drawable.ic_cloud_upload_black_24dp, null)!!
-        uploadingIcon = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
-        uploadedIcon = VectorDrawableCompat.create(resources, R.drawable.ic_cloud_done_black_24dp, null)!!
-        uploadAudioButton.background = when (slide.backTranslationUploadState) {
-            UploadState.UPLOADED -> uploadedIcon
-            UploadState.NOT_UPLOADED -> notUploadedIcon
-            UploadState.UPLOADING -> uploadingIcon
-        }
 
+        val sendTranscriptButton: Button = rootView.findViewById(R.id.send_transcript_button)
+        val transcriptEditText: EditText = rootView.findViewById(R.id.transcript_edit_text)
         sendTranscriptButton.setOnClickListener {
             val text = transcriptEditText.text.toString()
             if (text.length > 0) {
@@ -77,60 +63,20 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             }
         }
 
+        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
         slideApprovedIndicator.background = if (slide.isApproved) {
             greenCheckmark
         } else {
             grayCheckmark
         }
 
-        uploadAudioButton.setOnClickListener {
-            when (slide.backTranslationUploadState) {
-                UploadState.UPLOADED -> Toast.makeText(context, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
-                UploadState.NOT_UPLOADED -> {
-                    val audioRecording = slide.backTranslationRecordings.selectedFile
-                    if (audioRecording != null) {
-                        slide.backTranslationUploadState = UploadState.UPLOADING
-                        uploadAudioButton.background = uploadingIcon
-                        Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
-                        val input = getStoryChildInputStream(context!!, audioRecording.fileName)
-                        val audioBytes = IOUtils.toByteArray(input)
-                        val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        sendSlideSpecificRequest(context!!, slideNum, getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(context, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
-                            slide.backTranslationUploadState = UploadState.UPLOADED
-                            uploadAudioButton.background = uploadedIcon
-                        }, {
-                            //Toast.makeText(context, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
-                            slide.backTranslationUploadState = UploadState.NOT_UPLOADED
-                            uploadAudioButton.background = notUploadedIcon
-                        })
-                    } else {
-                        Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                UploadState.UPLOADING -> {
-                    uploadAudioButton.background = uploadingIcon
-                    Toast.makeText(context!!, "Upload already in progress", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        uploadAudioButton.setOnLongClickListener {
-            when (slide.backTranslationUploadState) {
-                UploadState.UPLOADING -> {
-                    slide.backTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(context!!, "Cancelling upload", Toast.LENGTH_SHORT).show()
-                    uploadAudioButton.background = notUploadedIcon
-                }
-                UploadState.UPLOADED -> {
-                    slide.backTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(context!!, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
-                    uploadAudioButton.background = notUploadedIcon
-                }
-                UploadState.NOT_UPLOADED -> Toast.makeText(context!!, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
-            }
-            true
-        }
+        uploadAudioButtonManager = UploadAudioButtonManager(
+            context!!,
+            rootView.findViewById(R.id.upload_audio_botton),
+            { slide.backTranslationUploadState },
+            { slide.backTranslationUploadState = it },
+            { slide.backTranslationRecordings.selectedFile }, 
+            slideNum)
 
         setToolbar()
         return rootView
@@ -138,6 +84,10 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
+
+        if (::uploadAudioButtonManager.isInitialized) {
+            uploadAudioButtonManager.refreshBackground()
+        }
 
         approvalReceiveChannel = if (isVisibleToUser) {
             val sub = Workspace.approvalChannel.openSubscription()

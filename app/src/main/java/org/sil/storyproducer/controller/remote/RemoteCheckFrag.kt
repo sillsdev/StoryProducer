@@ -44,7 +44,7 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
     private lateinit var messageTitle: TextView
     private lateinit var sendMessageButton: Button
     private lateinit var messageSent: EditText
-    private lateinit var uploadAudioButton: ImageButton
+    private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var slideApprovedIndicator: ImageButton
     private var slideNumber: Int = 0
 
@@ -85,17 +85,20 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         sendMessageButton = rootView.findViewById<View>(R.id.button_send_msg) as Button
         messageSent = rootView.findViewById<View>(R.id.sendMessage) as EditText
 
-        uploadAudioButton = rootView.findViewById(R.id.upload_audio_botton)
         slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
+
         val slide = Workspace.activeStory.slides[slideNumber]
-        uploadAudioButton.background = when (slide.backTranslationUploadState) {
-            UploadState.UPLOADED -> greenCheckmark
-            UploadState.NOT_UPLOADED -> grayCheckmark
-            UploadState.UPLOADING -> yellowCheckmark
-        }
+        uploadAudioButtonManager = UploadAudioButtonManager(
+            context!!,
+            rootView.findViewById(R.id.upload_audio_botton),
+            { slide.backTranslationUploadState },
+            { slide.backTranslationUploadState = it },
+            { slide.backTranslationRecordings.selectedFile }, 
+            slideNumber)
+
         slideApprovedIndicator.background = if (slide.isApproved) {
             greenCheckmark
         } else {
@@ -146,6 +149,11 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
+
+        if (::uploadAudioButtonManager.isInitialized) {
+            uploadAudioButtonManager.refreshBackground()
+            Log.e("@pwhite", "remote check refreshing background of upload button")
+        }
 
         messageReceiveChannel = if (isVisibleToUser) {
             val sub = Workspace.messageChannel.openSubscription()

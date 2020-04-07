@@ -13,7 +13,11 @@ import org.sil.storyproducer.model.PhaseType
 
 class PagerBaseFragment : Fragment() {
 
-    lateinit var phaseType: PhaseType
+    private var viewIsPrepared = false
+
+    private lateinit var phaseType: PhaseType
+    private lateinit var mPagerAdapter: PagerAdapter
+    private lateinit var mViewPager: ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,11 +32,21 @@ class PagerBaseFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val rootView = inflater.inflate(R.layout.activity_pager_base, container, false)
-        val mPagerAdapter = PagerAdapter(childFragmentManager, phaseType)
-        val mViewPager = rootView.findViewById<ViewPager>(R.id.pager)
+        mPagerAdapter = PagerAdapter(childFragmentManager, phaseType)
+        mViewPager = rootView.findViewById<ViewPager>(R.id.pager)
         mViewPager.adapter = mPagerAdapter
         mViewPager.currentItem = Workspace.activeSlideNum
         mViewPager.addOnPageChangeListener(CircularViewPagerHandler(mViewPager))
+        viewIsPrepared = true
         return rootView
+    }
+
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+
+        if (viewIsPrepared) {
+            val page = mPagerAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem()) as Fragment
+            page.setUserVisibleHint(isVisibleToUser)
+        }
     }
 }

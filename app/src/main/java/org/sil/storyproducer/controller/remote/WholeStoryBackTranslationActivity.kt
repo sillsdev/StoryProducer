@@ -29,6 +29,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Recording
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -134,11 +135,6 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
     private lateinit var wholeStoryImageView: ImageView
     private lateinit var playButton: ImageButton
     private lateinit var seekBar: SeekBar
-    private lateinit var uploadButton: ImageButton
-
-    private lateinit var greenCheckmark: VectorDrawableCompat
-    private lateinit var grayCheckmark: VectorDrawableCompat
-    private lateinit var yellowCheckmark: VectorDrawableCompat
 
     private var mSeekBarTimer = Timer()
     private var draftPlayer: AudioPlayer = AudioPlayer()
@@ -164,71 +160,14 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         wholeStoryImageView = rootView.findViewById(R.id.fragment_image_view)
         playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         seekBar = rootView.findViewById(R.id.videoSeekBar)
-        uploadButton = rootView.findViewById(R.id.upload_audio_botton)
 
-        // TODO @pwhite: This state machine of switching between green, gray,
-        // and yellow checkmarks is the same between the whole story and single
-        // slide backtranslation, and perhaps even between text messages. It is likely worth abstracting this somehow.
-        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
-        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
-        yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
-        uploadButton.background = when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
-            UploadState.UPLOADED -> greenCheckmark
-            UploadState.NOT_UPLOADED -> grayCheckmark
-            UploadState.UPLOADING -> yellowCheckmark
-        }
-
-        uploadButton.setOnClickListener {
-            when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
-                UploadState.UPLOADED -> Toast.makeText(context!!, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
-                UploadState.NOT_UPLOADED -> {
-                    val audioRecording = Workspace.activeStory.wholeStoryBackTAudioFile
-                    if (audioRecording != null) {
-                        Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADING
-                        uploadButton.background = yellowCheckmark
-                        Toast.makeText(context!!, "Uploading audio", Toast.LENGTH_SHORT).show()
-                        val input = getStoryChildInputStream(context!!, audioRecording.fileName)
-                        val audioBytes = IOUtils.toByteArray(input)
-                        val byteString = android.util.Base64.encodeToString(audioBytes, android.util.Base64.DEFAULT)
-                        val slideCount = Workspace.activeStory.slides.size
-                        val js = HashMap<String, String>()
-                        js["IsWholeStory"] = "true"
-                        sendSlideSpecificRequest(context!!, slideCount, getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(context!!, R.string.audio_Sent, Toast.LENGTH_SHORT).show()
-                            Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.UPLOADED
-                            uploadButton.background = greenCheckmark
-                        }, {
-                            //Toast.makeText(context!!, R.string.audio_Send_Failed, Toast.LENGTH_SHORT).show()
-                            Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
-                            uploadButton.background = grayCheckmark
-                        }, js)
-                    } else {
-                        Toast.makeText(context!!, "No recording found", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                UploadState.UPLOADING -> {
-                    uploadButton.background = yellowCheckmark
-                    Toast.makeText(context!!, "Upload already in progress", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        uploadButton.setOnLongClickListener {
-            when (Workspace.activeStory.wholeStoryBackTranslationUploadState) {
-                UploadState.UPLOADING -> {
-                    Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(context!!, "Cancelling upload", Toast.LENGTH_SHORT).show()
-                    uploadButton.background = grayCheckmark
-                }
-                UploadState.UPLOADED -> {
-                    Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
-                    Toast.makeText(context!!, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
-                    uploadButton.background = grayCheckmark
-                }
-                UploadState.NOT_UPLOADED -> Toast.makeText(context!!, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
-            }
-            true
-        }
+        UploadAudioButtonManager(
+            context!!,
+            rootView.findViewById(R.id.upload_audio_botton),
+            { Workspace.activeStory.wholeStoryBackTranslationUploadState },
+            { Workspace.activeStory.wholeStoryBackTranslationUploadState = it },
+            { Workspace.activeStory.wholeStoryBackTAudioFile }, 
+            null)
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             var wasPlayingBeforeTouch = false
