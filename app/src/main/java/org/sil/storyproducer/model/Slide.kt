@@ -62,7 +62,10 @@ class Slide{
     var consultantCheckRecordings = RecordingList()
     var dramatizationRecordings = RecordingList()
     var backTranslationRecordings = RecordingList()
+
     var backTranslationUploadState = UploadState.NOT_UPLOADED
+    var backTranslationTranscript: String? = null
+    var backTranslationTranscriptIsDirty = false
 
     //consultant approval
     var isChecked: Boolean = false
