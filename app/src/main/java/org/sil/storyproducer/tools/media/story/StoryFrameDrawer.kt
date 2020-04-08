@@ -6,9 +6,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.file.getDownsample
-import org.sil.storyproducer.tools.file.getStoryImage
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder
 
@@ -158,7 +159,7 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         if(!bitmaps.containsKey(page.imRelPath)){
             val ds = getDownsample(context,page.imRelPath,mWidth*2, mHeight*2)
             downsamples[page.imRelPath] = ds
-            bitmaps[page.imRelPath] = getStoryImage(context,page.imRelPath,ds,true)
+            bitmaps[page.imRelPath] = SlideService(context).getImage(page.imRelPath, ds, true, Workspace.activeStory)
         }
         val bitmap = bitmaps[page.imRelPath]
         val downSample = downsamples[page.imRelPath]!!

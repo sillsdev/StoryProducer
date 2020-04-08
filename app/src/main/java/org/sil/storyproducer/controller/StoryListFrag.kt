@@ -5,16 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
-import org.sil.storyproducer.tools.file.getStoryImage
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.service.SlideService
 
 class StoryListFrag : androidx.fragment.app.Fragment() {
 
@@ -80,7 +79,7 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
             holder.txtTitle.text = story.title
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(getStoryImage(context,1,25,story))
+            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
             holder.txtSubTitle.text = story.slides[0].subtitle
         }
 
