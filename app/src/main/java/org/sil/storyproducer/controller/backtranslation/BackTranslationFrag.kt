@@ -1,12 +1,17 @@
 package org.sil.storyproducer.controller.backtranslation
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.support.graphics.drawable.VectorDrawableCompat
+import android.support.v4.content.ContextCompat
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import java.sql.Timestamp
 import kotlinx.coroutines.Dispatchers
@@ -50,18 +55,54 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
         yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
 
+        val whiteSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_white_24dp, null)!!
+        val blackSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_black_24dp, null)!!
         val sendTranscriptButton: Button = rootView.findViewById(R.id.send_transcript_button)
+
         val transcriptEditText: EditText = rootView.findViewById(R.id.transcript_edit_text)
+        val transcriptString = slide.backTranslationTranscript
+        if (transcriptString != null) {
+            transcriptEditText.setText(transcriptString)
+        }
+
+        if (slide.backTranslationTranscriptIsDirty) {
+            transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
+            sendTranscriptButton.background = whiteSendIcon
+        } else {
+            transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_sent));
+            sendTranscriptButton.background = blackSendIcon
+        }
+
         sendTranscriptButton.setOnClickListener {
             val text = transcriptEditText.text.toString()
-            if (text.length > 0) {
+            if (text.length > 0 && slide.backTranslationTranscriptIsDirty) {
                 val storyId = Workspace.activeStory.remoteId ?: 0
                 val message = Message(slideNum, storyId, false, true, Timestamp(0), text)
                 launch {
                     Workspace.toSendMessageChannel.send(message)
                 }
+
+                // Close the keyboard
+                val imm = context!!.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(rootView.windowToken, 0)
+                rootView.requestFocus()
+
+                transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_sent));
+                sendTranscriptButton.background = blackSendIcon;
+                slide.backTranslationTranscriptIsDirty = false
             }
         }
+
+        transcriptEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
+                transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
+                slide.backTranslationTranscript = text.toString()
+                sendTranscriptButton.background = whiteSendIcon;
+                slide.backTranslationTranscriptIsDirty = true
+            }
+        })
 
         slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
         slideApprovedIndicator.background = if (slide.isApproved) {
@@ -105,6 +146,4 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             null
         }
     }
-
-
 }

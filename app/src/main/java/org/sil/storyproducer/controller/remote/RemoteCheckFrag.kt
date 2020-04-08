@@ -107,15 +107,9 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
         messageTitle.text = "Messages for Slide $slideNumber"
 
-        closeKeyboardOnTouch(rootView)
+        rootView.setOnClickListener { closeKeyboard(rootView) }
 
         return rootView
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
-        val item = menu.getItem(0)
-        super.onCreateOptionsMenu(menu, inflater)
-        item.setIcon(R.drawable.ic_message_white_24dp)
     }
 
     override fun onStart() {
@@ -191,24 +185,9 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         saveSharedPreferenceMessageHistory()
     }
 
-    /**
-     * This function serves to stop the audio streams from continuing after dramatization has been
-     * put on stop.
-     */
     override fun onStop() {
         super.onStop()
         closeKeyboard(rootView)
-    }
-
-    /**
-     * This function will set a listener to the passed in view so that when the passed in view
-     * is touched the keyboard close function will be called see: [.closeKeyboard].
-     *
-     * @param touchedView The view that will have an on touch listener assigned so that a touch of
-     * the view will close the softkeyboard.
-     */
-    private fun closeKeyboardOnTouch(touchedView: View?) {
-        touchedView?.setOnClickListener { closeKeyboard(touchedView) }
     }
 
     /**

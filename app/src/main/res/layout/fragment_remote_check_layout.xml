@@ -84,7 +84,6 @@
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:background="@drawable/ic_send_black_24dp"
-            android:backgroundTint="@color/black"
             android:scaleType="fitCenter" />
     </LinearLayout>
 

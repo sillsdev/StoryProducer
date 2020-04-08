@@ -175,7 +175,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if (::referencePlayButton.isInitialized) {
+        if (::referencePlayButton.isInitialized && referenceAudioPlayer.isAudioPlaying) {
             stopSlidePlayBack()
         }
     }
