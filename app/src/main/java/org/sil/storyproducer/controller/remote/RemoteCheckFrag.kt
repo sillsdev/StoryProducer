@@ -27,6 +27,7 @@ import org.sil.storyproducer.controller.adapter.MessageAdapter
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.messaging.Approval
 import org.sil.storyproducer.model.messaging.Message
 
 /**
@@ -35,17 +36,13 @@ import org.sil.storyproducer.model.messaging.Message
 
 class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
-    private lateinit var greenCheckmark: VectorDrawableCompat
-    private lateinit var grayCheckmark: VectorDrawableCompat
-    private lateinit var yellowCheckmark: VectorDrawableCompat
-
     private lateinit var rootView: View
     private val storyName: String? = null
     private lateinit var messageTitle: TextView
     private lateinit var sendMessageButton: Button
     private lateinit var messageSent: EditText
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
-    private lateinit var slideApprovedIndicator: ImageButton
+    private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
     private var slideNumber: Int = 0
 
     private var resp: String? = null
@@ -85,11 +82,6 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         sendMessageButton = rootView.findViewById<View>(R.id.button_send_msg) as Button
         messageSent = rootView.findViewById<View>(R.id.sendMessage) as EditText
 
-        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
-        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
-        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
-        yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
-
         val slide = Workspace.activeStory.slides[slideNumber]
         uploadAudioButtonManager = UploadAudioButtonManager(
             context!!,
@@ -99,11 +91,12 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
             { slide.backTranslationRecordings.selectedFile }, 
             slideNumber)
 
-        slideApprovedIndicator.background = if (slide.isApproved) {
-            greenCheckmark
-        } else {
-            grayCheckmark
-        }
+        approvalIndicatorManager = ApprovalIndicatorManager(
+            context!!,
+            this,
+            rootView.findViewById(R.id.slide_approved_indicator),
+            slide,
+            slideNumber)
 
         messageTitle.text = "Messages for Slide $slideNumber"
 
@@ -123,6 +116,24 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
                 msgAdapter.add(message)
             }
         }
+
+        // There is a small race condition here. If a message is sent after we
+        // load all the messages from the workspace, but before we open the
+        // subscription, then it will not be displayed. However, this is not
+        // too significant because it will appear next time the fragment is
+        // recreated.
+        messageReceiveChannel = Workspace.messageChannel.openSubscription()
+        launch(Dispatchers.Main) {
+            for (message in messageReceiveChannel!!) {
+                msgAdapter.setQueuedMessages(Workspace.queuedMessages)
+                if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
+                    msgAdapter.add(message)
+                }
+                messagesView.setSelection(msgAdapter.messageHistory.size - 1)
+            }
+        }
+
+        approvalIndicatorManager.start()
 
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
@@ -146,26 +157,6 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
         if (::uploadAudioButtonManager.isInitialized) {
             uploadAudioButtonManager.refreshBackground()
-            Log.e("@pwhite", "remote check refreshing background of upload button")
-        }
-
-        messageReceiveChannel = if (isVisibleToUser) {
-            val sub = Workspace.messageChannel.openSubscription()
-            launch(Dispatchers.Main) {
-                for (message in sub) {
-                    Log.e("@pwhite", "got message $message, remoteId = ${Workspace.activeStory.remoteId}")
-                    msgAdapter.setQueuedMessages(Workspace.queuedMessages)
-                    if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
-                        Log.e("@pwhite", "adding message to adapter")
-                        msgAdapter.add(message)
-                    }
-                    messagesView.setSelection(msgAdapter.messageHistory.size - 1)
-                }
-            }
-            sub
-        } else {
-            messageReceiveChannel?.cancel()
-            null
         }
     }
 
@@ -174,7 +165,6 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
      */
     override fun onPause() {
         super.onPause()
-        closeKeyboard(rootView)
 
         //save message draft
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
@@ -187,7 +177,11 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
     override fun onStop() {
         super.onStop()
-        closeKeyboard(rootView)
+
+        approvalIndicatorManager.stop()
+
+        messageReceiveChannel?.cancel()
+        messageReceiveChannel = null
     }
 
     /**

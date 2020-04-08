@@ -173,7 +173,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
             button.setOnClickListener {
                 val passwordText = password.text.toString()
                 if (passwordText.contentEquals(PASSWORD)) {
-                    saveConsultantApproval()
+                    Workspace.activeStory.isApproved = true
                     dialog.dismiss()
                     launchDramatizationPhase()
                 } else {
@@ -184,13 +184,6 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
 
         passwordDialog.show()
         toggleKeyboard(true, password)
-    }
-
-    /**
-     * Updates the shared preference file to mark the story as approved
-     */
-    private fun saveConsultantApproval() {
-        Workspace.activeStory.isApproved = true
     }
 
     /**

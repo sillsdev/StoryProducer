@@ -25,6 +25,7 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.controller.remote.UploadAudioButtonManager
+import org.sil.storyproducer.controller.remote.ApprovalIndicatorManager
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.model.Workspace
@@ -37,11 +38,8 @@ import java.util.*
  */
 class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
-    private lateinit var greenCheckmark: VectorDrawableCompat
-    private lateinit var grayCheckmark: VectorDrawableCompat
-    private lateinit var yellowCheckmark: VectorDrawableCompat
-    private lateinit var slideApprovedIndicator: ImageButton
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
+    private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
     private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -50,10 +48,6 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         rootView = inflater.inflate(R.layout.fragment_backtranslation, container, false)
         initializeViews()
 
-
-        greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)!!
-        grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)!!
-        yellowCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_yellow, null)!!
 
         val whiteSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_white_24dp, null)!!
         val blackSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_black_24dp, null)!!
@@ -104,13 +98,6 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             }
         })
 
-        slideApprovedIndicator = rootView.findViewById(R.id.slide_approved_indicator)
-        slideApprovedIndicator.background = if (slide.isApproved) {
-            greenCheckmark
-        } else {
-            grayCheckmark
-        }
-
         uploadAudioButtonManager = UploadAudioButtonManager(
             context!!,
             rootView.findViewById(R.id.upload_audio_botton),
@@ -119,8 +106,27 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             { slide.backTranslationRecordings.selectedFile }, 
             slideNum)
 
+        approvalIndicatorManager = ApprovalIndicatorManager(
+            context!!,
+            this,
+            rootView.findViewById(R.id.slide_approved_indicator),
+            slide,
+            slideNum)
+
         setToolbar()
         return rootView
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        approvalIndicatorManager.start()
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        approvalIndicatorManager.stop()
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -128,22 +134,6 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
         if (::uploadAudioButtonManager.isInitialized) {
             uploadAudioButtonManager.refreshBackground()
-        }
-
-        approvalReceiveChannel = if (isVisibleToUser) {
-            val sub = Workspace.approvalChannel.openSubscription()
-            launch(Dispatchers.Main) {
-                for (approval in sub) {
-                    Log.e("@pwhite", "got approval $approval, remoteId = ${Workspace.activeStory.remoteId}")
-                    if (approval.slideNumber == slideNum && approval.storyId == Workspace.activeStory.remoteId) {
-                        slideApprovedIndicator.background = if (approval.approvalStatus) { greenCheckmark } else { grayCheckmark }
-                    }
-                }
-            }
-            sub
-        } else {
-            approvalReceiveChannel?.cancel()
-            null
         }
     }
 }
