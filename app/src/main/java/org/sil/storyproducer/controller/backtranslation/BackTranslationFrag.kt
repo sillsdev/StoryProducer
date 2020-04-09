@@ -31,12 +31,16 @@ import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Approval
 import org.sil.storyproducer.model.messaging.Message
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
+import org.sil.storyproducer.controller.dramatization.DramatizationRecordingToolbar
 import java.util.*
 
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
 class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
+
+    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
 
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var approvalIndicatorManager: ApprovalIndicatorManager

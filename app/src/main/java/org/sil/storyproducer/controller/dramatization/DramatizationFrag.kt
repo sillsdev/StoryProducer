@@ -50,6 +50,9 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     override fun onPause() {
         super.onPause()
+        // TODO @pwhite: These closekeyboard calls seem unnecessary, or at the
+        // every least should be done in fewer places. Perhaps somewhere in the
+        // viewpager.
         closeKeyboard(rootView)
     }
 
