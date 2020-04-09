@@ -1,36 +1,38 @@
 package org.sil.storyproducer.controller.phase
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.view.*
+import android.webkit.WebView
+import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import android.view.*
-import android.webkit.WebView
-import android.widget.*
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
-import org.sil.storyproducer.tools.file.getStoryImage
 import kotlin.math.max
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    lateinit var slideService: SlideService
+
     private var mDetector: GestureDetectorCompat? = null
     private var mDrawerList: ListView? = null
     private var mAdapter: ArrayAdapter<String>? = null
@@ -43,6 +45,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         super.setContentView(R.layout.phase_frame)
+        slideService = SlideService(this)
 
         //keeps the screen from going to sleep
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -264,11 +267,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
      */
     fun setPic(slideImage: ImageView, slideNum: Int) {
         val downSample = 2
-        var slidePicture: Bitmap = if (Workspace.activePhase.phaseType == PhaseType.LEARN || slideNum == 0) {
-            BitmapFactory.decodeResource(resources, R.drawable.greybackground)
-        } else {
-            getStoryImage(this, slideNum, downSample)
-        }
+        var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story)
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
