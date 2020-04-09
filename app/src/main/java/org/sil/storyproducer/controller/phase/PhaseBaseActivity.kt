@@ -267,7 +267,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
      */
     fun setPic(slideImage: ImageView, slideNum: Int) {
         val downSample = 2
-        var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story)
+        var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story, Workspace.activePhase.phaseType)
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
