@@ -127,16 +127,18 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
     val images = page.getElementsByAttributeValueContaining("class","bloom-imageContainer")
     if(images.size >= 1){
         val image = images[0]
-        slide.imageFile = image.attr("src")
-        if(slide.imageFile == ""){
-            //bloomd books store the image in a different location
-            slide.imageFile = image.attr("style")
-            //typical format: background-image:url('1.jpg')
-            slide.imageFile = slide.imageFile.substringAfter("'").substringBefore("'")
-        }
-        if(slide.imageFile == ""){
-            val src = image.getElementsByAttribute("src")
-            if(src.size >= 1) slide.imageFile = src[0].attr("src")
+        if (!slide.isFrontCover()) {
+            slide.imageFile = image.attr("src")
+            if (slide.imageFile == "") {
+                //bloomd books store the image in a different location
+                slide.imageFile = image.attr("style")
+                //typical format: background-image:url('1.jpg')
+                slide.imageFile = slide.imageFile.substringAfter("'").substringBefore("'")
+            }
+            if (slide.imageFile == "") {
+                val src = image.getElementsByAttribute("src")
+                if (src.size >= 1) slide.imageFile = src[0].attr("src")
+            }
         }
         BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
         slide.height = bmOptions.outHeight
