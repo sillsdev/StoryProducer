@@ -55,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:contentDescription="@string/sound_off"
+        android:checked="true"
         app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
         app:layout_constraintEnd_toStartOf="@id/volumeSwitch"
         app:layout_constraintHorizontal_bias="0.85"

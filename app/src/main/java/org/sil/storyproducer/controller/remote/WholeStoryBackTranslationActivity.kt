@@ -141,6 +141,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
     private var seekbarStartTime: Long = -1
 
     private var isVolumeOn = true
+    private var viewIsCreated = false
 
     private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
@@ -161,6 +162,18 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         wholeStoryImageView = rootView.findViewById(R.id.fragment_image_view)
         playButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         seekBar = rootView.findViewById(R.id.videoSeekBar)
+
+        playButton.setOnClickListener {
+            if (draftPlayer.isAudioPlaying) {
+                pauseStoryAudio()
+            } else {
+                // If the video is basically already finished, restart it.
+                if (seekBar.progress >= seekBar.max - 100) {
+                    seekBar.progress = 0
+                }
+                playStoryAudio()
+            }
+        }
 
         uploadAudioButtonManager = UploadAudioButtonManager(
             context!!,
@@ -187,16 +200,13 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
             }
 
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
-                setSlideFromSeekbar()
+                if (fromUser) {
+                    setSlideFromSeekbar()
+                }
             }
         })
 
-        playButton.setOnClickListener {
-            playStoryAudio()
-        }
-
         val volumeSwitch = rootView.findViewById<Switch>(R.id.volumeSwitch)
-        volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
             isVolumeOn = if (isChecked) {
                 draftPlayer.setVolume(1.0f)
@@ -207,10 +217,10 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
             }
         }
 
-        //get story audio duration
+        // Compute story audio duration
         var lastEndTime = 0
         Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
-            // Don't play the copyright translatedSlides.
+            // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
                 val filename = slide.draftRecordings.selectedFile?.fileName
                 if (filename != null) {
@@ -225,19 +235,19 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         seekBar.max = if (translatedSlides.isNotEmpty()) {
             val lastSlide = translatedSlides.last()
             lastSlide.startTime + lastSlide.duration
-            translatedSlides.last().startTime
         } else {
             0
         }
         seekBar.progress = 0
         setSlideFromSeekbar()
 
+        viewIsCreated = true
+
         return rootView
     }
 
     override fun onPause() {
         super.onPause()
-        pauseStoryAudio()
         draftPlayer.release()
     }
 
@@ -246,11 +256,11 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         draftPlayer = AudioPlayer()
         draftPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             if (draftPlayer.isAudioPrepared) {
-                if (currentSlideIndex >= translatedSlides.size - 1) { //is it the last slide?
-                    //at the end of video so special case
+                // If the video has reached the end, then pause; otherwise,
+                // just play the next slide.
+                if (currentSlideIndex >= translatedSlides.size - 1) {
                     pauseStoryAudio()
                 } else {
-                    //just play the next slide!
                     seekBar.progress = translatedSlides[currentSlideIndex + 1].startTime
                     playStoryAudio()
                 }
@@ -272,8 +282,13 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
                 }
             }
         }, 0, 33)
+    }
 
-        setSlideFromSeekbar()
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (viewIsCreated && !isVisibleToUser) {
+            pauseStoryAudio()
+        }
     }
 
     private fun setSlideFromSeekbar() {

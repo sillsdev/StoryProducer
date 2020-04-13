@@ -37,11 +37,12 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
     private lateinit var seekBar: SeekBar
 
     private var mSeekBarTimer = Timer()
-    private var narrationPlayer: AudioPlayer = AudioPlayer()
+    private var narrationAudioPlayer: AudioPlayer = AudioPlayer()
     private var seekbarStartTime: Long = -1
 
     private var isVolumeOn = true
-    private var isWatchedOnce = false
+    private var userHasBegunListening = false
+    private var viewIsCreated = false
 
     private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
 
@@ -67,11 +68,11 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         seekBar = rootView.findViewById(R.id.videoSeekBar)
 
         playButton.setOnClickListener {
-            if (narrationPlayer.isAudioPlaying) {
+            if (narrationAudioPlayer.isAudioPlaying) {
                 pauseStoryAudio()
             } else {
+                // If the video is basically already finished, restart it.
                 if (seekBar.progress >= seekBar.max - 100) {
-                    //reset the video to the beginning because they already finished it (within 100 ms)
                     seekBar.progress = 0
                 }
                 playStoryAudio()
@@ -80,7 +81,7 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
 
         seekBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             var wasPlayingBeforeTouch = false
-            override fun onStopTrackingTouch(sBar: SeekBar) {
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
                 if (wasPlayingBeforeTouch) {
                     // Always start at the beginning of the slide.
                     if (currentSlideIndex < slides.size) {
@@ -90,48 +91,32 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
                 }
             }
 
-            override fun onStartTrackingTouch(sBar: SeekBar) {
-                wasPlayingBeforeTouch = narrationPlayer.isAudioPlaying
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                wasPlayingBeforeTouch = narrationAudioPlayer.isAudioPlaying
             }
 
-            override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
-                setSlideFromSeekbar()
-                //if (fromUser) {
-                //    if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
-                //        //When recording, update the picture to the accurate location, preserving
-                //        seekbarStartTime = System.currentTimeMillis() - videoSeekBar!!.progress
-                //        setSlideFromSeekbar()
-                //    } else {
-                //        if (narrationPlayer.isAudioPlaying) {
-                //            pauseStoryAudio()
-                //            playStoryAudio()
-                //        } else {
-                //            setSlideFromSeekbar()
-                //        }
-                //        //always start at the beginning of the slide.
-                //        if (slideStartTimes.size > curPos)
-                //            videoSeekBar!!.progress = slideStartTimes[curPos]
-                //    }
-                //}
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                if (progress > 2000 || progress > seekBar.max - 100) {
+                    userHasBegunListening = true
+                }
+                if (fromUser) {
+                    setSlideFromSeekbar()
+                }
             }
         })
 
         val volumeSwitch = rootView.findViewById<Switch>(R.id.volumeSwitch)
-        volumeSwitch.isChecked = true
         volumeSwitch.setOnCheckedChangeListener { _, isChecked ->
             isVolumeOn = if (isChecked) {
-                narrationPlayer.setVolume(1.0f)
+                narrationAudioPlayer.setVolume(1.0f)
                 true
             } else {
-                narrationPlayer.setVolume(0.0f)
+                narrationAudioPlayer.setVolume(0.0f)
                 false
             }
         }
 
-        //has learn already been watched?
-        isWatchedOnce = Workspace.activeStory.learnAudioFile != null
-
-        //get story audio duration
+        // Compute story audio duration
         var lastEndTime = 0
         Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
             // Don't play the copyright slides.
@@ -149,35 +134,30 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         seekBar.max = if (slides.isNotEmpty()) {
             val lastSlide = slides.last()
             lastSlide.startTime + lastSlide.duration
-            slides.last().startTime
         } else {
             0
         }
         seekBar.progress = 0
         setSlideFromSeekbar()
 
-
-
+        viewIsCreated = true
         return rootView
     }
 
     override fun onPause() {
         super.onPause()
-        pauseStoryAudio()
-        narrationPlayer.release()
+        narrationAudioPlayer.release()
     }
-
     override fun onResume() {
         super.onResume()
-
-        narrationPlayer = AudioPlayer()
-        narrationPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-            if (narrationPlayer.isAudioPrepared) {
-                if (currentSlideIndex >= slides.size - 1) { //is it the last slide?
-                    //at the end of video so special case
+        narrationAudioPlayer = AudioPlayer()
+        narrationAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+            if (narrationAudioPlayer.isAudioPrepared) {
+                // If the video has reached the end, then pause; otherwise,
+                // just play the next slide.
+                if (currentSlideIndex >= slides.size - 1) {
                     pauseStoryAudio()
                 } else {
-                    //just play the next slide!
                     seekBar.progress = slides[currentSlideIndex + 1].startTime
                     playStoryAudio()
                 }
@@ -191,31 +171,39 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
                 learnActivity.runOnUiThread {
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
-                    } else if (narrationPlayer.isAudioPrepared) {
-                        seekBar.progress = slides[currentSlideIndex].startTime + narrationPlayer.currentPosition
+                    } else if (narrationAudioPlayer.isAudioPrepared) {
+                        seekBar.progress = slides[currentSlideIndex].startTime + narrationAudioPlayer.currentPosition
                     } else {
                         seekBar.progress = 0
                     }
                 }
             }
         }, 0, 33)
+    }
 
-        setSlideFromSeekbar()
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if (viewIsCreated) {
+            if (isVisibleToUser) {
+                showStartPracticeSnackBar()
+            } else {
+                pauseStoryAudio()
+            }
+        }
     }
 
     private fun setSlideFromSeekbar() {
         if (slides.isNotEmpty()) {
             val time = seekBar.progress
             var slideIndexBeforeSeekBar = slides.indexOfLast { it.startTime <= time }
-            if (slideIndexBeforeSeekBar != currentSlideIndex || !narrationPlayer.isAudioPrepared) {
+            if (slideIndexBeforeSeekBar != currentSlideIndex || !narrationAudioPlayer.isAudioPrepared) {
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = slides[currentSlideIndex]
                 PhaseBaseActivity.setPic(context!!, learnImageView, slide.slideNum)
-                narrationPlayer.setStorySource(context!!, slide.filename)
+                narrationAudioPlayer.setStorySource(context!!, slide.filename)
             }
         }
     }
-
 
     override fun onStoppedToolbarRecording() {
         makeLogIfNecessary(true)
@@ -238,8 +226,6 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         pauseStoryAudio()
         seekBar.progress = 0
         currentSlideIndex = 0
-
-        //This gets the progress bar to show the right time.
         seekbarStartTime = System.currentTimeMillis()
     }
 
@@ -263,35 +249,26 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         }
     }
 
-    /**
-     * Plays the audio
-     */
     internal fun playStoryAudio() {
         recordingToolbar.stopToolbarMedia()
         setSlideFromSeekbar()
-        narrationPlayer.pauseAudio()
+        narrationAudioPlayer.pauseAudio()
         markLogStart()
         seekbarStartTime = System.currentTimeMillis()
-        narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
-        narrationPlayer.playAudio()
+        narrationAudioPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f)
+        narrationAudioPlayer.playAudio()
         playButton.setImageResource(R.drawable.ic_pause_white_48dp)
     }
 
-    /**
-     * helper function for pausing the video
-     */
     private fun pauseStoryAudio() {
         makeLogIfNecessary()
-        narrationPlayer.pauseAudio()
+        narrationAudioPlayer.pauseAudio()
         playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp)
     }
 
-    /**
-     * Shows a snackbar at the bottom of the screen to notify the user that they should practice saying the story
-     */
     private fun showStartPracticeSnackBar() {
-        if (!isWatchedOnce) {
-            val snackbar = Snackbar.make(rootView.findViewById(R.id.drawer_layout),
+        if (!userHasBegunListening) {
+            val snackbar = Snackbar.make(activity!!.findViewById(R.id.drawer_layout),
                     R.string.learn_phase_practice, Snackbar.LENGTH_LONG)
             val snackBarView = snackbar.view
             snackBarView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.lightWhite, null))
@@ -299,6 +276,5 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
             textView.setTextColor(ResourcesCompat.getColor(resources, R.color.darkGray, null))
             snackbar.show()
         }
-        isWatchedOnce = true
     }
 }
