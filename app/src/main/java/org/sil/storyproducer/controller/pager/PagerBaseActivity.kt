@@ -24,8 +24,8 @@ class PagerBaseFragment : Fragment() {
 
         phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE, 0))
 
-        if (!phaseType.checkValidDisplaySlideNum(Workspace.activeSlideNum)) {
-            Workspace.activeSlideNum = 0
+        if (!phaseType.checkValidDisplaySlideNum(Workspace.activeStory.lastSlideNum)) {
+            Workspace.activeStory.lastSlideNum = 0
         }
 
     }
@@ -35,7 +35,7 @@ class PagerBaseFragment : Fragment() {
         mPagerAdapter = PagerAdapter(childFragmentManager, phaseType)
         mViewPager = rootView.findViewById<ViewPager>(R.id.pager)
         mViewPager.adapter = mPagerAdapter
-        mViewPager.currentItem = Workspace.activeSlideNum
+        mViewPager.currentItem = Workspace.activeStory.lastSlideNum
         mViewPager.addOnPageChangeListener(CircularViewPagerHandler(mViewPager))
         viewIsPrepared = true
         return rootView

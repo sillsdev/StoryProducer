@@ -43,13 +43,13 @@ fun assignNewAudioRelPath(): String {
 
 fun updateDisplayName(position: Int, newName: String) {
     //make sure to update the actual list, not a copy.
-    val recordings = Workspace.activePhase.getRecordings().getFiles()
+    val recordings = Workspace.activeStory.lastPhaseType.getRecordings().getFiles()
     recordings[position].displayName = newName
 }
 
 fun deleteAudioFileFromList(context: Context, pos: Int) {
     //make sure to update the actual list, not a copy.
-    val filenames = Workspace.activePhase.getRecordings()
+    val filenames = Workspace.activeStory.lastPhaseType.getRecordings()
     val filename = filenames.getFiles()[pos].fileName
     filenames.removeAt(pos)
     deleteStoryFile(context, filename)
@@ -61,18 +61,18 @@ fun createRecording(): Recording {
 
     //the extension is added in the "when" statement because wav files are easier to concatenate, so
     //they are used for the stages that do that.
-    return when (Workspace.activePhase) {
+    return when (Workspace.activeStory.lastPhaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> Recording(
-                "$PROJECT_DIR/${Workspace.activePhase.getShortName()}$AUDIO_EXT",
-                Workspace.activePhase.getDisplayName())
+                "$PROJECT_DIR/${Workspace.activeStory.lastPhaseType.getShortName()}$AUDIO_EXT",
+                Workspace.activeStory.lastPhaseType.getDisplayName())
         //Make new files every time.  Don't append.
         PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
         PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK,
         PhaseType.BACKT -> {
             //find the next number that is available for saving files at.
-            val names = Workspace.activePhase.getRecordings().getFiles().map { it.displayName }
-            val rNameNum = "${Workspace.activePhase.getDisplayName()} ([0-9]+)".toRegex()
+            val names = Workspace.activeStory.lastPhaseType.getRecordings().getFiles().map { it.displayName }
+            val rNameNum = "${Workspace.activeStory.lastPhaseType.getDisplayName()} ([0-9]+)".toRegex()
             var maxNum = 0
             for (n in names) {
                 try {
@@ -84,7 +84,7 @@ fun createRecording(): Recording {
                     Crashlytics.logException(e)
                 }
             }
-            val displayName = "${Workspace.activePhase.getDisplayName()} ${maxNum + 1}"
+            val displayName = "${Workspace.activeStory.lastPhaseType.getDisplayName()} ${maxNum + 1}"
             val fileName = "${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
             Recording(fileName, displayName)
         }
@@ -94,7 +94,7 @@ fun createRecording(): Recording {
 
 fun addRecording(recording: Recording) {
     //register it in the story data structure.
-    when (Workspace.activePhase) {
+    when (Workspace.activeStory.lastPhaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile = recording
         PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile = recording
         PhaseType.COMMUNITY_CHECK -> Workspace.activeSlide!!.communityCheckRecordings.add(recording)

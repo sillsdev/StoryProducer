@@ -138,8 +138,9 @@ class RecordingsListAdapter(private val recordings: RecordingList, private val l
         private var audioPos = -1
         private var embedded = false
         private var playbackListener: RecordingToolbar.ToolbarMediaListener? = null
-        private var slideNum: Int = Workspace.activeSlideNum
+        private var slideNum: Int = Workspace.activeStory.lastSlideNum
 
+        // TODO @pwhite: Can I remove this function?
         fun setSlideNum(mSlideNum: Int) {
             slideNum = mSlideNum
         }

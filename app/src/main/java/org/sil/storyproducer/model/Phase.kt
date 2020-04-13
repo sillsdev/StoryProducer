@@ -15,7 +15,7 @@ enum class PhaseType {
     WHOLE_STORY,
     REMOTE_CHECK;
 
-    fun getRecordings(slideNum: Int = Workspace.activeSlideNum): RecordingList {
+    fun getRecordings(slideNum: Int = Workspace.activeStory.lastSlideNum): RecordingList {
         return when (this) {
             PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
             PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
@@ -40,7 +40,7 @@ enum class PhaseType {
         }
     }
 
-    fun getReferenceRecording(slideNum: Int = Workspace.activeSlideNum): Recording? {
+    fun getReferenceRecording(slideNum: Int = Workspace.activeStory.lastSlideNum): Recording? {
         val slide = Workspace.activeStory.slides[slideNum]
         return when (this) {
             PhaseType.DRAFT -> slide.narration

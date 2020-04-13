@@ -12,7 +12,7 @@ class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.On
     private var mScrollState: Int = 0
 
     override fun onPageSelected(position: Int) {
-        Workspace.activeSlideNum = position
+        Workspace.activeStory.lastSlideNum = position
         Log.e("@pwhite", "switched sides $position")
     }
 
@@ -25,9 +25,9 @@ class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.On
 
     private fun handleSetNextItem() {
         val lastPosition = mViewPager.adapter!!.count - 1
-        if (Workspace.activeSlideNum == 0) {
+        if (Workspace.activeStory.lastSlideNum == 0) {
             mViewPager.setCurrentItem(lastPosition, false)
-        } else if (Workspace.activeSlideNum == lastPosition) {
+        } else if (Workspace.activeStory.lastSlideNum == lastPosition) {
             mViewPager.setCurrentItem(0, false)
         }
     }

@@ -15,6 +15,7 @@ import android.widget.Space
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.toJson
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
@@ -45,9 +46,9 @@ open class RecordingToolbar : Fragment(){
     protected lateinit var micButton: ImageButton
 
     open lateinit var toolbarMediaListener : ToolbarMediaListener
-    protected var voiceRecorder: AudioRecorder? = null
+    protected lateinit var voiceRecorder: AudioRecorder
     val isRecording : Boolean
-        get() {return voiceRecorder?.isRecording == true}
+        get() {return voiceRecorder.isRecording == true}
 
     private lateinit  var animationHandler: AnimationHandler
 
@@ -116,13 +117,13 @@ open class RecordingToolbar : Fragment(){
      * those.
      */
     open fun stopToolbarMedia() {
-        if (voiceRecorder?.isRecording == true) {
+        if (voiceRecorder.isRecording == true) {
             stopToolbarVoiceRecording()
         }
     }
 
     private fun stopToolbarVoiceRecording(){
-        voiceRecorder?.stop()
+        voiceRecorder.stop()
         
         animationHandler.stopAnimation()
 
@@ -130,19 +131,20 @@ open class RecordingToolbar : Fragment(){
         showInheritedToolbarButtons()
         
         toolbarMediaListener.onStoppedToolbarRecording()
+        Thread(Runnable { Workspace.activeStory.toJson(context!!) }).start()
     }
 
     protected fun recordAudio(recordingRelPath: String) {
         toolbarMediaListener.onStartedToolbarRecording()
 
-        voiceRecorder?.startNewRecording(recordingRelPath)
+        voiceRecorder.startNewRecording(recordingRelPath)
 
         if(isAnimationEnabled()){
             animationHandler.startAnimation()
         }
 
         //TODO: make this logging more robust and encapsulated
-        when(Workspace.activePhase){
+        when(Workspace.activeStory.lastPhaseType){
             PhaseType.DRAFT -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
             PhaseType.COMMUNITY_CHECK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
             else -> {}
@@ -209,7 +211,7 @@ open class RecordingToolbar : Fragment(){
 
     protected open fun micButtonOnClickListener(): View.OnClickListener{
           return View.OnClickListener {
-              val wasRecording = voiceRecorder?.isRecording == true
+              val wasRecording = voiceRecorder.isRecording == true
 
               stopToolbarMedia()
 
@@ -217,7 +219,7 @@ open class RecordingToolbar : Fragment(){
                   val recordingRelPath = assignNewAudioRelPath()
                   //we may be overwriting things in other phases, but we do not care.
                   if (storyRelPathExists(activity!!, recordingRelPath) && 
-                      (Workspace.activePhase == PhaseType.LEARN || Workspace.activePhase == PhaseType.WHOLE_STORY)) {
+                      (Workspace.activeStory.lastPhaseType == PhaseType.LEARN || Workspace.activeStory.lastPhaseType == PhaseType.WHOLE_STORY)) {
                       val dialog = AlertDialog.Builder(activity!!)
                               .setTitle(activity!!.getString(R.string.overwrite))
                               .setMessage(activity!!.getString(R.string.learn_phase_overwrite))

@@ -42,7 +42,7 @@ public class VerticalViewPager extends ViewPager {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         super.onInterceptTouchEvent(flipXY(ev));
         flipXY(ev);
-        if (Workspace.INSTANCE.getActivePhase() != PhaseType.REMOTE_CHECK || ev.getX() / getWidth() < 0.33) {
+        if (Workspace.INSTANCE.getActiveStory().getLastPhaseType() != PhaseType.REMOTE_CHECK || ev.getX() / getWidth() < 0.33) {
             return gestureDetector.onTouchEvent(ev);
         } else {
             return false;

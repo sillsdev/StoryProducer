@@ -82,7 +82,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
     override fun micButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
-            val wasRecording = voiceRecorder?.isRecording == true
+            val wasRecording = voiceRecorder.isRecording == true
 
             stopToolbarMedia()
 
@@ -114,7 +114,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
 
-            if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
+            if (isAppendingOn && (voiceRecorder.isRecording == true)) {
                 stopToolbarMedia()
                 try {
                     AudioRecorder.concatenateAudioFiles(appContext, getChosenRecording(phaseType, slideNum)!!.fileName, audioTempName)

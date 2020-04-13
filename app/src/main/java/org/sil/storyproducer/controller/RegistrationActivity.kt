@@ -28,7 +28,6 @@ import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
-import java.util.*
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -137,6 +136,9 @@ open class RegistrationActivity : AppCompatActivity() {
         // controls exist and thus don't need to walk the UI tree to find them.
 
         // NOW @pwhite: Add phone make, model and manufacturer as before.
+        val orthographySpinnerOptions = resources.getStringArray(R.array.orthography_list)
+        val communicationSpinnerOptions = resources.getStringArray(R.array.communication_list)
+        val locationTypeSpinnerOptions = resources.getStringArray(R.array.location_type_list)
 
         projectLanguageEditText = findViewById(R.id.input_language)
         projectLanguageEditText.setText(Workspace.registration.projectLanguage)
@@ -151,7 +153,8 @@ open class RegistrationActivity : AppCompatActivity() {
         projectMajorityLanguageEditText = findViewById(R.id.input_lwc)
         projectMajorityLanguageEditText.setText(Workspace.registration.projectMajorityLanguage)
         projectOrthographySpinner = findViewById(R.id.input_orthography)
-        projectOrthographySpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.projectOrthography))
+        projectOrthographySpinner.setSelection(
+            indexOfOrZero(orthographySpinnerOptions, Workspace.registration.projectOrthography))
 
         translatorNameEditText = findViewById(R.id.input_translator_name)
         translatorNameEditText.setText(Workspace.registration.translatorName)
@@ -164,7 +167,8 @@ open class RegistrationActivity : AppCompatActivity() {
         translatorEmailEditText = findViewById(R.id.input_translator_email)
         translatorEmailEditText.setText(Workspace.registration.translatorEmail)
         translatorCommunicationPreferenceSpinner = findViewById(R.id.input_translator_communication_preference)
-        translatorCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.translatorCommunicationPreference))
+        translatorCommunicationPreferenceSpinner.setSelection(
+            indexOfOrZero(communicationSpinnerOptions, Workspace.registration.translatorCommunicationPreference))
         translatorLocationEditText = findViewById(R.id.input_translator_location)
         translatorLocationEditText.setText(Workspace.registration.translatorLocation)
 
@@ -177,11 +181,13 @@ open class RegistrationActivity : AppCompatActivity() {
         consultantEmailEditText = findViewById(R.id.input_consultant_email)
         consultantEmailEditText.setText(Workspace.registration.consultantEmail)
         consultantCommunicationPreferenceSpinner = findViewById(R.id.input_consultant_communication_preference)
-        consultantCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.consultantCommunicationPreference))
+        consultantCommunicationPreferenceSpinner.setSelection(
+            indexOfOrZero(communicationSpinnerOptions, Workspace.registration.consultantCommunicationPreference))
         consultantLocationEditText = findViewById(R.id.input_consultant_location)
         consultantLocationEditText.setText(Workspace.registration.consultantLocation)
         consultantLocationTypeSpinner = findViewById(R.id.input_consultant_location_type)
-        consultantLocationTypeSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.consultantLocationType))
+        consultantLocationTypeSpinner.setSelection(
+            indexOfOrZero(locationTypeSpinnerOptions, Workspace.registration.consultantLocationType))
 
         trainerNameEditText = findViewById(R.id.input_trainer_name)
         trainerNameEditText.setText(Workspace.registration.trainerName)
@@ -192,7 +198,8 @@ open class RegistrationActivity : AppCompatActivity() {
         trainerEmailEditText = findViewById(R.id.input_trainer_email)
         trainerEmailEditText.setText(Workspace.registration.trainerEmail)
         trainerCommunicationPreferenceSpinner = findViewById(R.id.input_trainer_communication_preference)
-        trainerCommunicationPreferenceSpinner.setSelection(getSpinnerIndexFromString(Workspace.registration.trainerCommunicationPreference))
+        trainerCommunicationPreferenceSpinner.setSelection(
+            indexOfOrZero(communicationSpinnerOptions, Workspace.registration.trainerCommunicationPreference))
         trainerLocationEditText = findViewById(R.id.input_trainer_location)
         trainerLocationEditText.setText(Workspace.registration.trainerLocation)
 
@@ -235,8 +242,8 @@ open class RegistrationActivity : AppCompatActivity() {
                 archiveEmail2EditText,
                 archiveEmail3EditText)
 
-        //Initialize sectionViews[] with the integer id's of the various LinearLayouts
-        //Add the listeners to the LinearLayouts's header section.
+        // Initialize sectionViews[] with the integer id's of the various LinearLayouts
+        // Add the listeners to the LinearLayouts's header section.
 
         sectionViews = arrayOf(
                 findViewById(R.id.language_section),
@@ -254,6 +261,10 @@ open class RegistrationActivity : AppCompatActivity() {
         for (i in sectionViews.indices) {
             setAccordionListener(headerViews[i], sectionViews[i])
         }
+    }
+
+    fun indexOfOrZero(arr: Array<String>, string: String): Int {
+        return maxOf(0, arr.indexOf(string))
     }
 
     override fun onPause() {
@@ -340,36 +351,6 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     /**
-     * Finds the index of the spinner array given the string value
-     * @param value the value to look for
-     * @return index of the spinner array
-     */
-    private fun getSpinnerIndexFromString(value: String): Int {
-        var search = resources.getStringArray(R.array.orthography_list)
-
-        for (i in search.indices) {
-            if (value == search[i]) {
-                return i
-            }
-        }
-
-        search = resources.getStringArray(R.array.communication_list)
-        for (i in search.indices) {
-            if (value == search[i]) {
-                return i
-            }
-        }
-
-        search = resources.getStringArray(R.array.location_type_list)
-        for (i in search.indices) {
-            if (value == search[i]) {
-                return i
-            }
-        }
-        return -1
-    }
-
-    /**
      * Parse the text fields when the submit button has been clicked.
      *
      * @return true if all fields are filled in, false if any field is blank
@@ -391,7 +372,6 @@ open class RegistrationActivity : AppCompatActivity() {
                     return false
                 }
             }
-
         }
         return true
     }
@@ -445,7 +425,7 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.projectRegion = projectRegionEditText.text.toString()
         reg.projectCity = projectCityEditText.text.toString()
         reg.projectMajorityLanguage = projectMajorityLanguageEditText.text.toString()
-        reg.projectOrthography = projectOrthographySpinner.selectedItem.toString()
+        reg.projectOrthography = projectOrthographySpinner.selectedItem?.toString() ?: ""
 
         reg.translatorName = translatorNameEditText.text.toString()
         reg.translatorEducation = translatorEducationEditText.text.toString()
@@ -476,7 +456,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
         reg.save(this)
 
-        //Update workspace text
+        // Update workspace text
         Workspace.updateStoryLocalCredits(applicationContext)
     }
 
@@ -484,7 +464,7 @@ open class RegistrationActivity : AppCompatActivity() {
      * This function sets the click listeners to implement the accordion functionality
      * for each section of the registration page
      *
-     * @param headerView  a variable of type View denoting the field the user will click to open up
+     * @param headerView a variable of type View denoting the field the user will click to open up
      * a section of the registration
      * @param sectionView a variable of type View denoting the section that will open up
      */
@@ -530,7 +510,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     // TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
-                    //clicks on the splash screen
+                    // clicks on the splash screen
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
@@ -632,7 +612,6 @@ open class RegistrationActivity : AppCompatActivity() {
             Toast.makeText(this,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     companion object {
@@ -656,7 +635,7 @@ open class RegistrationActivity : AppCompatActivity() {
 open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //Now, let's find the workspace path.
+        // Now, let's find the workspace path.
         Workspace.initializeWorkspace(this)
         val dialog = AlertDialog.Builder(this)
                 .setTitle(Html.fromHtml("<b>${getString(R.string.update_workspace)}</b>"))
@@ -687,7 +666,6 @@ open class WorkspaceDialogUpdateActivity : AppCompatActivity() {
     companion object {
         private const val RQS_OPEN_DOCUMENT_TREE = 52
     }
-
 }
 
 class WorkspaceUpdateActivity : AppCompatActivity() {

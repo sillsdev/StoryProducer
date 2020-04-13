@@ -193,7 +193,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     private fun launchDramatizationPhase() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
         //Move to dramatization, slide 0.
-        Workspace.activeSlideNum = 0
+        Workspace.activeStory.lastSlideNum = 0
         // TODO @pwhite: implement jumpToPhase with viewpager
         //PhaseBaseActivity.jumpToPhase(Phase(PhaseType.DRAMATIZATION))
     }

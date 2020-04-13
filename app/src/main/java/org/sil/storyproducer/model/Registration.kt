@@ -106,7 +106,7 @@ class Registration {
 
                 archiveEmail1 = obj.optString("database_email_1", "")
                 archiveEmail2 = obj.optString("database_email_2", "")
-                archiveEmail3 = obj.optString("database_email_3", "")
+                archiveEmail3 = obj.optString("database_email_3", "SPapp_info@sil.org")
 
                 registrationComplete = obj.optBoolean("registration_complete", false)
                 registrationEmailSent = obj.optBoolean("registration_email_sent", false)

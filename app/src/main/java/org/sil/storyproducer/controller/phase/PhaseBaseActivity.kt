@@ -63,7 +63,7 @@ class PhaseBaseActivity : AppCompatActivity() {
 
         supportActionBar?.title = ""
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
-                Workspace.activePhase.getColor(), null)))
+                Workspace.activeStory.lastPhaseType.getColor(), null)))
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
@@ -77,13 +77,17 @@ class PhaseBaseActivity : AppCompatActivity() {
         val pagerAdapter = PagerAdapter(supportFragmentManager!!)
         mViewPager = findViewById(R.id.phase_pager)
         mViewPager.adapter = pagerAdapter
-        mViewPager.currentItem = Workspace.activePhaseIndex
+        var lastPhaseIndex = Workspace.phases.indexOf(Workspace.activeStory.lastPhaseType)
+        if (lastPhaseIndex == -1) {
+            lastPhaseIndex = 0;
+        }
+        mViewPager.currentItem = lastPhaseIndex
         mViewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
             }
 
             override fun onPageSelected(position: Int) {
-                Workspace.activePhaseIndex = position
+                Workspace.activeStory.lastPhaseType = Workspace.phases[position]
                 spinner?.setSelection(position)
             }
 
@@ -95,8 +99,6 @@ class PhaseBaseActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        story.lastSlideNum = Workspace.activeSlideNum
-        story.lastPhaseType = Workspace.activePhase
         Thread(Runnable { story.toJson(this) }).start()
     }
 
@@ -114,19 +116,19 @@ class PhaseBaseActivity : AppCompatActivity() {
 
         newSpinner.adapter = adapter
         // Set selection before listener so that the listener is not triggered at first.
-        newSpinner.setSelection(Workspace.activePhaseIndex)
+        val activePhaseIndex = Workspace.phases.indexOf(Workspace.activeStory.lastPhaseType)
+        newSpinner.setSelection(activePhaseIndex)
         newSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                Log.e("@pwhite", "switching to stage $position")
                 if (!isSettingSpinnerProgrammatically) {
                     mViewPager.currentItem = position
                 } else {
                     isSettingSpinnerProgrammatically = false
                 }
                 val item = menu.getItem(0)
-                item.setIcon(Workspace.activePhase.getIcon())
+                item.setIcon(Workspace.activeStory.lastPhaseType.getIcon())
                 supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
-                        Workspace.activePhase.getColor(), null)))
+                        Workspace.activeStory.lastPhaseType.getColor(), null)))
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -148,10 +150,10 @@ class PhaseBaseActivity : AppCompatActivity() {
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+                alert.setTitle("${Workspace.activeStory.lastPhaseType.getPrettyName()} Help")
 
                 val wv = WebView(this)
-                val iStream = assets.open(PhaseType.getHelpName(Workspace.activePhase))
+                val iStream = assets.open(PhaseType.getHelpName(Workspace.activeStory.lastPhaseType))
                 val text = iStream.reader().use {
                     it.readText()
                 }
@@ -171,7 +173,7 @@ class PhaseBaseActivity : AppCompatActivity() {
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val hsv: FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
-            Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
+            Color.colorToHSV(ContextCompat.getColor(this, Workspace.activeStory.lastPhaseType.getColor()), hsv)
             hsv[2] *= 0.8f
             window.statusBarColor = Color.HSVToColor(hsv)
         }
@@ -202,7 +204,7 @@ class PhaseBaseActivity : AppCompatActivity() {
                 val canvas = Canvas(slidePicture)
                 //only show the untranslated title in the Learn phase.
                 val tOverlay = Workspace.activeStory.slides[slideNum]
-                        .getOverlayText(false, Workspace.activePhase == PhaseType.LEARN)
+                        .getOverlayText(false, Workspace.activeStory.lastPhaseType == PhaseType.LEARN)
                 //if overlay is null, it will not write the text.
                 tOverlay?.setPadding(max(20, 20 + (canvas.width - width) / 2))
                 tOverlay?.draw(canvas)

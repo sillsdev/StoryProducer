@@ -43,27 +43,19 @@ object Workspace {
     val Stories: MutableList<Story> = mutableListOf()
     var storiesUpdated = false
     var registration: Registration = Registration()
-    var phases: List<PhaseType> = ArrayList()
-    var activePhaseIndex: Int = 0
+    val phases: List<PhaseType>
+        get() {
+            return when (registration.consultantLocationType) {
+                "Remote" -> PhaseType.getRemotePhases()
+                else -> PhaseType.getLocalPhases()
+            }
+        }
+        
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
-        set(value) {
-            field = value
-            //You are switching the active story.  Recall the last phase and slide.
-            activePhase = value.lastPhaseType
-            activeSlideNum = value.lastSlideNum
-        }
-    var activePhase: PhaseType
-        get() = phases[activePhaseIndex]
-        set(value) {
-            activePhaseIndex = phases.indexOf(value)
-            if (activePhaseIndex < 0 || activePhaseIndex >= phases.size) {
-                activePhaseIndex = 0
-            }
-        }
-
+   
     val activeDirRoot: String
         get() {
             return activeStory.title
@@ -72,22 +64,13 @@ object Workspace {
     val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
         get() {
-            return "${activePhase.getShortName()}$activeSlideNum"
-        }
-
-    var activeSlideNum: Int = 0
-        set(x) {
-            field = if (x >= 0 && x < activeStory.slides.size && activePhase.checkValidDisplaySlideNum(x)) {
-                x
-            } else {
-                0
-            }
+            return "${activeStory.lastPhaseType.getShortName()}${activeStory.lastSlideNum}"
         }
 
     val activeSlide: Slide?
         get() {
             if (activeStory.title == "") return null
-            return activeStory.slides[activeSlideNum]
+            return activeStory.slides[activeStory.lastSlideNum]
         }
 
     val messages = ArrayList<Message>()
@@ -278,12 +261,6 @@ object Workspace {
         }
         //sort by title.
         Stories.sortBy { it.title }
-        //update phases based upon registration selection
-        phases = when (registration.consultantLocationType) {
-            "Remote" -> PhaseType.getRemotePhases()
-            else -> PhaseType.getLocalPhases()
-        }
-        activePhaseIndex = 0
         updateStoryLocalCredits(context)
         storiesUpdated = true
     }
