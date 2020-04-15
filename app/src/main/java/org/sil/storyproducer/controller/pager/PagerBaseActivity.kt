@@ -31,6 +31,7 @@ class PagerBaseFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
         val rootView = inflater.inflate(R.layout.activity_pager_base, container, false)
         mPagerAdapter = PagerAdapter(childFragmentManager, phaseType)
         mViewPager = rootView.findViewById<ViewPager>(R.id.pager)
@@ -45,7 +46,9 @@ class PagerBaseFragment : Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
 
         if (viewIsPrepared) {
-            val page = mPagerAdapter.instantiateItem(mViewPager, mViewPager.getCurrentItem()) as Fragment
+            val itemIndex = Workspace.activeStory.lastSlideNum
+            mViewPager.currentItem = itemIndex
+            val page = mPagerAdapter.instantiateItem(mViewPager, itemIndex) as Fragment
             page.setUserVisibleHint(isVisibleToUser)
         }
     }

@@ -37,7 +37,6 @@ import kotlin.math.max
 
 class PhaseBaseActivity : AppCompatActivity() {
 
-
     private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mViewPager: ViewPager
     private var spinner: Spinner? = null

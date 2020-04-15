@@ -73,6 +73,5 @@ class ApprovalIndicatorManager(
 
     public fun stop() {
         approvalReceiveChannel?.cancel()
-        approvalReceiveChannel = null
     }
 }
