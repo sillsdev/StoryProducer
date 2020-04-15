@@ -79,7 +79,7 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
             holder.txtTitle.text = story.title
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
-            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
+            holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story, Workspace.activePhase.phaseType))
             holder.txtSubTitle.text = story.slides[0].subtitle
         }
 

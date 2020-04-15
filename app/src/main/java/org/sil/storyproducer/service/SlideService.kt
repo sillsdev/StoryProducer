@@ -4,17 +4,24 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 
 class SlideService(val context: Context) {
 
-    fun getImage(slideNum: Int, sampleSize: Int, story: Story): Bitmap {
-        if (story.title == "" || slideNum == 0) {
+    fun getImage(slideNum: Int, sampleSize: Int, story: Story, activePhase: PhaseType): Bitmap {
+        if (shouldShowDefaultImage(slideNum, story, activePhase)) {
             return genDefaultImage()
         } else {
             return getImage(story.slides[slideNum].imageFile, sampleSize, false, story)
         }
+    }
+
+    fun shouldShowDefaultImage(slideNum: Int, story: Story, activePhase: PhaseType): Boolean {
+        return story.title.isNullOrEmpty()
+                || story.slides.getOrNull(slideNum)?.imageFile.isNullOrEmpty()
+                || (activePhase == PhaseType.LEARN && slideNum == 0)
     }
 
     fun getImage(relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story): Bitmap {
