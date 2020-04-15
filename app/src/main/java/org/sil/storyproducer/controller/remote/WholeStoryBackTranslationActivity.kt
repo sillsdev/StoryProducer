@@ -305,6 +305,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
     }
 
     override fun onStoppedToolbarRecording() {
+        super.onStoppedToolbarRecording()
         Workspace.activeStory.wholeStoryBackTranslationUploadState = UploadState.NOT_UPLOADED
         uploadAudioButtonManager.refreshBackground()
     }

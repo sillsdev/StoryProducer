@@ -132,6 +132,12 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
         approvalIndicatorManager.stop()
     }
+    
+    override fun onStoppedToolbarRecording() {
+        super.onStoppedToolbarRecording()
+        slide.backTranslationUploadState = UploadState.NOT_UPLOADED
+        uploadAudioButtonManager.refreshBackground()
+    }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
