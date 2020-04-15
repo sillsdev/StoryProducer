@@ -51,6 +51,8 @@ class Slide{
     //consultant approval
     var isChecked: Boolean = false
 
+    fun isFrontCover() = slideType == SlideType.FRONTCOVER
+
     fun getOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {
         //There is no text overlay on normal slides or "no slides"
         if(!dispStory){
