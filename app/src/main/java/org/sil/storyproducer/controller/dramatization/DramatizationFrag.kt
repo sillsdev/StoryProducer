@@ -26,7 +26,7 @@ class DramatizationFrag : MultiRecordFrag() {
         initializeViews()
 
         slideText = rootView.findViewById(R.id.fragment_dramatization_edit_text)
-        slideText.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+        slideText.setText(Workspace.activeStory.slides[slideNumber].translatedContent, TextView.BufferType.EDITABLE)
 
         if (Workspace.activeStory.isApproved) {
             closeKeyboardOnTouch(rootView)
@@ -36,7 +36,7 @@ class DramatizationFrag : MultiRecordFrag() {
         }
 
         //Make the text bigger if it is the front Page.
-        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
+        if(Workspace.activeStory.slides[slideNumber].slideType == SlideType.FRONTCOVER){
             slideText.setTextSize(COMPLEX_UNIT_DIP,24f)
             slideText.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
@@ -100,8 +100,8 @@ class DramatizationFrag : MultiRecordFrag() {
         if(slideText.visibility == View.VISIBLE) {
             //Don't update with a press when in title and local credits slides.
             val newText = slideText.text.toString()
-            if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
-                Workspace.activeStory.slides[slideNum].translatedContent = newText
+            if (newText != Workspace.activeStory.slides[slideNumber].translatedContent) {
+                Workspace.activeStory.slides[slideNumber].translatedContent = newText
                 setPic()
             }
         }

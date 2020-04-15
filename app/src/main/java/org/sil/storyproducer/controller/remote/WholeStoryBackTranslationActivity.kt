@@ -130,7 +130,7 @@ fun sendSlideSpecificRequest(
 
 class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
-    class DraftSlide(val slideNum: Int, val duration: Int, val startTime: Int, val filename: String) {}
+    class DraftSlide(val slideNumber: Int, val duration: Int, val startTime: Int, val filename: String) {}
 
     private lateinit var wholeStoryImageView: ImageView
     private lateinit var playButton: ImageButton
@@ -219,7 +219,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
 
         // Compute story audio duration
         var lastEndTime = 0
-        Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
+        Workspace.activeStory.slides.forEachIndexed { slideNumber, slide ->
             // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
                 val filename = slide.draftRecordings.selectedFile?.fileName
@@ -227,7 +227,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
                     val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
                     val startTime = lastEndTime
                     lastEndTime = startTime + duration
-                    translatedSlides.add(DraftSlide(slideNum, duration, startTime, filename))
+                    translatedSlides.add(DraftSlide(slideNumber, duration, startTime, filename))
                 }
             }
         }
@@ -298,7 +298,7 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
             if (slideIndexBeforeSeekBar != currentSlideIndex || !draftPlayer.isAudioPrepared) {
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = translatedSlides[currentSlideIndex]
-                PhaseBaseActivity.setPic(context!!, wholeStoryImageView, slide.slideNum)
+                PhaseBaseActivity.setPic(context!!, wholeStoryImageView, slide.slideNumber)
                 draftPlayer.setStorySource(context!!, slide.filename)
             }
         }

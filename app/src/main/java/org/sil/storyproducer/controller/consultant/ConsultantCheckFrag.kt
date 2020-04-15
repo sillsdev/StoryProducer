@@ -66,7 +66,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
      * @param button the check button
      */
     private fun setCheckmarkButton(button: ImageButton) {
-        if (Workspace.activeStory.slides[slideNum].isChecked) {
+        if (Workspace.activeStory.slides[slideNumber].isChecked) {
             button.background = greenCheckmark
         } else {
             button.background = grayCheckmark
@@ -76,12 +76,12 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
                 Toast.makeText(context, "Story already approved", Toast.LENGTH_SHORT).show()
                 return@OnClickListener
             }
-            if (Workspace.activeStory.slides[slideNum].isChecked) {
+            if (Workspace.activeStory.slides[slideNumber].isChecked) {
                 button.background = grayCheckmark
-                Workspace.activeStory.slides[slideNum].isChecked = false
+                Workspace.activeStory.slides[slideNumber].isChecked = false
             } else {
                 button.background = greenCheckmark
-                Workspace.activeStory.slides[slideNum].isChecked = true
+                Workspace.activeStory.slides[slideNumber].isChecked = true
                 if (checkAllMarked()) {
                     showConsultantPasswordDialog()
                 }
@@ -108,11 +108,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
 
         val listView = dialogLayout!!.findViewById<ListView>(R.id.log_list_view)
-        val lla = LogListAdapter(context!!, slideNum)
+        val lla = LogListAdapter(context!!, slideNumber)
         listView.adapter = lla
         val tb = dialogLayout.findViewById<Toolbar>(R.id.toolbar2)
         //Note that user-facing slide number is 1-based while it is 0-based in code.
-        tb.title = context!!.getString(R.string.logging_slide_log_view_title, slideNum)
+        tb.title = context!!.getString(R.string.logging_slide_log_view_title, slideNumber)
         val exit = dialogLayout.findViewById<ImageButton>(R.id.exitButton)
         val learnCB = dialogLayout.findViewById<CheckBox>(R.id.LearnCheckBox)
         val draftCB = dialogLayout.findViewById<CheckBox>(R.id.DraftCheckBox)

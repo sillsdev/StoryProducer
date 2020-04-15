@@ -15,12 +15,12 @@ enum class PhaseType {
     WHOLE_STORY,
     REMOTE_CHECK;
 
-    fun getRecordings(slideNum: Int = Workspace.activeStory.lastSlideNum): RecordingList {
+    fun getRecordings(slideNumber: Int = Workspace.activeStory.lastSlideNum): RecordingList {
         return when (this) {
-            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings
-            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].communityCheckRecordings
-            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings
-            PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationRecordings
+            PhaseType.DRAFT -> Workspace.activeStory.slides[slideNumber].draftRecordings
+            PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNumber].communityCheckRecordings
+            PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNumber].dramatizationRecordings
+            PhaseType.BACKT -> Workspace.activeStory.slides[slideNumber].backTranslationRecordings
             else -> throw Exception("Unsupported phase to get a recordings list from")
         }
     }
@@ -40,8 +40,8 @@ enum class PhaseType {
         }
     }
 
-    fun getReferenceRecording(slideNum: Int = Workspace.activeStory.lastSlideNum): Recording? {
-        val slide = Workspace.activeStory.slides[slideNum]
+    fun getReferenceRecording(slideNumber: Int = Workspace.activeStory.lastSlideNum): Recording? {
+        val slide = Workspace.activeStory.slides[slideNumber]
         return when (this) {
             PhaseType.DRAFT -> slide.narration
             PhaseType.COMMUNITY_CHECK,
@@ -133,15 +133,15 @@ enum class PhaseType {
         return tempSlideNum
     }
 
-    fun checkValidDisplaySlideNum(slideNum: Int): Boolean {
+    fun checkValidDisplaySlideNum(slideNumber: Int): Boolean {
         // TODO @pwhite: This is a pretty pointless function; would it be
         // possible to remove it? It is used in two places. One is to do a
         // sanity check, so it would only return false in that usage if there
         // is a bug. The other usage is to reset the slide number when a stage
-        // is switch to that uses a different slideNum. It would be good to
+        // is switch to that uses a different slideNumber. It would be good to
         // rethink the usages and see if there is a simpler and less
         // error-prone way to verify that slide numbers are valid.
-        val slideType = Workspace.activeStory.slides[slideNum].slideType
+        val slideType = Workspace.activeStory.slides[slideNumber].slideType
         return when (this) {
             PhaseType.DRAMATIZATION -> slideType in arrayOf(
                     SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,

@@ -37,7 +37,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
     override fun initializeViews() {
         super.initializeViews()
-        if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
+        if (Workspace.activeStory.slides[slideNumber].slideType != SlideType.LOCALCREDITS) {
             setToolbar()
         }
         setupCameraAndEditButton()
@@ -49,7 +49,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      */
     fun setupCameraAndEditButton() {
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNum].slideType in
+        if(Workspace.activeStory.slides[slideNumber].slideType in
         arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
         {
             val imageFab: ImageView = rootView.findViewById<View>(R.id.insert_image_view) as ImageView
@@ -74,7 +74,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
 
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNum].slideType in
+        if(Workspace.activeStory.slides[slideNumber].slideType in
                 arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
         {
             //for these, use the edit text button instead of the text in the lower half.
@@ -121,9 +121,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 //copy image into workspace
                 var uri = data?.data
                 if (uri == null) uri = FileProvider.getUriForFile(context!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
-                Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}_Local.png"
+                Workspace.activeStory.slides[slideNumber].imageFile = "$PROJECT_DIR/${slideNumber}_Local.png"
                 copyToWorkspacePath(context!!, uri!!,
-                        "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
+                        "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNumber].imageFile}")
                 tempPicFile?.delete()
                 setPic()
             }
@@ -153,7 +153,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
     protected open fun setToolbar() {
         val bundle = Bundle()
-        bundle.putInt(SLIDE_NUM, slideNum)
+        bundle.putInt(SLIDE_NUM, slideNumber)
         bundle.putInt(PHASE_TYPE, phaseType.ordinal)
         recordingToolbar.arguments = bundle
         childFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()

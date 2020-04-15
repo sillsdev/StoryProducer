@@ -75,7 +75,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             val text = transcriptEditText.text.toString()
             if (text.length > 0 && slide.backTranslationTranscriptIsDirty) {
                 val storyId = Workspace.activeStory.remoteId ?: 0
-                val message = Message(slideNum, storyId, false, true, Timestamp(0), text)
+                val message = Message(slideNumber, storyId, false, true, Timestamp(0), text)
                 launch {
                     Workspace.toSendMessageChannel.send(message)
                 }
@@ -108,14 +108,14 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             { slide.backTranslationUploadState },
             { slide.backTranslationUploadState = it },
             { slide.backTranslationRecordings.selectedFile }, 
-            slideNum)
+            slideNumber)
 
         approvalIndicatorManager = ApprovalIndicatorManager(
             context!!,
             this,
             rootView.findViewById(R.id.slide_approved_indicator),
             slide,
-            slideNum)
+            slideNumber)
 
         setToolbar()
         return rootView

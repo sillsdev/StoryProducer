@@ -29,7 +29,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
         get() {
             return audioPlayer.isAudioPlaying
         }
-    protected var slideNum: Int = 0
+    protected var slideNumber: Int = 0
     protected lateinit var phaseType: PhaseType
 
     override fun onAttach(context: Context?) {
@@ -47,7 +47,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
 
         val bundleArguments = arguments
         if (bundleArguments != null) {
-            slideNum = bundleArguments.getInt(SLIDE_NUM)
+            slideNumber= bundleArguments.getInt(SLIDE_NUM)
             phaseType = PhaseType.ofInt(bundleArguments.getInt(PHASE_TYPE))
         }
 
@@ -102,7 +102,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
      * a playback file.
      */
     override fun updateInheritedToolbarButtonVisibility() {
-        if (getChosenRecording(phaseType, slideNum) != null) {
+        if (getChosenRecording(phaseType, slideNumber) != null) {
             showInheritedToolbarButtons()
         } else {
             hideInheritedToolbarButtons()
@@ -136,7 +136,7 @@ open class PlayBackRecordingToolbar : RecordingToolbar() {
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
-                if (audioPlayer.setStorySource(this.appContext, getChosenRecording(phaseType, slideNum)!!.fileName)) {
+                if (audioPlayer.setStorySource(this.appContext, getChosenRecording(phaseType, slideNumber)!!.fileName)) {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)

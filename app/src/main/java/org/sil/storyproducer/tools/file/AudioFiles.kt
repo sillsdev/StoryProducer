@@ -23,13 +23,13 @@ internal const val AUDIO_EXT = ".m4a"
  * @return the path generated, or an empty string if there is a failure.
  */
 
-fun getChosenRecording(phaseType: PhaseType, slideNum: Int): Recording? {
+fun getChosenRecording(phaseType: PhaseType, slideNumber: Int): Recording? {
     return when (phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
-        PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].draftRecordings.selectedFile
-        PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].dramatizationRecordings.selectedFile
-        PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].backTranslationRecordings.selectedFile
-        PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNum].backTranslationRecordings.selectedFile
+        PhaseType.DRAFT -> Workspace.activeStory.slides[slideNumber].draftRecordings.selectedFile
+        PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNumber].dramatizationRecordings.selectedFile
+        PhaseType.BACKT -> Workspace.activeStory.slides[slideNumber].backTranslationRecordings.selectedFile
+        PhaseType.COMMUNITY_CHECK -> Workspace.activeStory.slides[slideNumber].backTranslationRecordings.selectedFile
         PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile
         else -> throw Exception("Unsupported stage to get the audio file for")
     }

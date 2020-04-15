@@ -185,14 +185,14 @@ class PhaseBaseActivity : AppCompatActivity() {
          * This function allows the picture to scale with the phone's screen size.
          *
          * @param slideImage    The ImageView that will contain the picture.
-         * @param slideNum The slide number to grab the picture from the files.
+         * @param slideNumber The slide number to grab the picture from the files.
          */
-        fun setPic(context: Context, slideImage: ImageView, slideNum: Int) {
+        fun setPic(context: Context, slideImage: ImageView, slideNumber: Int) {
             val downSample = 2
-            var slidePicture: Bitmap = getStoryImage(context, slideNum, downSample)
+            var slidePicture: Bitmap = getStoryImage(context, slideNumber, downSample)
                     ?: genDefaultImage()
 
-            if (slideNum < Workspace.activeStory.slides.size) {
+            if (slideNumber < Workspace.activeStory.slides.size) {
                 //scale down image to not crash phone from memory error from displaying too large an image
                 //Get the height of the phone.
                 val scalingFactor = 0.4
@@ -203,7 +203,7 @@ class PhaseBaseActivity : AppCompatActivity() {
                 slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
                 val canvas = Canvas(slidePicture)
                 //only show the untranslated title in the Learn phase.
-                val tOverlay = Workspace.activeStory.slides[slideNum]
+                val tOverlay = Workspace.activeStory.slides[slideNumber]
                         .getOverlayText(false, Workspace.activeStory.lastPhaseType == PhaseType.LEARN)
                 //if overlay is null, it will not write the text.
                 tOverlay?.setPadding(max(20, 20 + (canvas.width - width) / 2))

@@ -23,8 +23,8 @@ import java.util.*
 
 class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
-    class DraftSlide(slideNum: Int, duration: Int, startTime: Int, filename: String) {
-        val slideNum: Int = slideNum
+    class DraftSlide(slideNumber: Int, duration: Int, startTime: Int, filename: String) {
+        val slideNumber: Int = slideNumber
         val duration: Int = duration
         val startTime: Int = startTime
         val filename: String = filename
@@ -118,7 +118,7 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
 
         // Compute story audio duration
         var lastEndTime = 0
-        Workspace.activeStory.slides.forEachIndexed { slideNum, slide ->
+        Workspace.activeStory.slides.forEachIndexed { slideNumber, slide ->
             // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
                 val filename = slide.narration?.fileName
@@ -126,7 +126,7 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
                     val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
                     val startTime = lastEndTime
                     lastEndTime = startTime + duration
-                    slides.add(DraftSlide(slideNum, duration, startTime, filename))
+                    slides.add(DraftSlide(slideNumber, duration, startTime, filename))
                 }
             }
         }
@@ -199,7 +199,7 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
             if (slideIndexBeforeSeekBar != currentSlideIndex || !narrationAudioPlayer.isAudioPrepared) {
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = slides[currentSlideIndex]
-                PhaseBaseActivity.setPic(context!!, learnImageView, slide.slideNum)
+                PhaseBaseActivity.setPic(context!!, learnImageView, slide.slideNumber)
                 narrationAudioPlayer.setStorySource(context!!, slide.filename)
             }
         }

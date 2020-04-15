@@ -31,15 +31,15 @@ abstract class SlidePhaseFrag : Fragment() {
     private var wasAudioPlaying = false
 
 
-    protected var slideNum: Int = 0 // gets overwritten
+    protected var slideNumber: Int = 0 // gets overwritten
     protected lateinit var phaseType: PhaseType
     protected lateinit var slide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        slideNum = arguments!!.getInt(SLIDE_NUM)
+        slideNumber = arguments!!.getInt(SLIDE_NUM)
         phaseType = PhaseType.ofInt(arguments!!.getInt(PHASE_TYPE))
-        slide = Workspace.activeStory.slides[slideNum]
+        slide = Workspace.activeStory.slides[slideNumber]
     }
 
 
@@ -61,7 +61,7 @@ abstract class SlidePhaseFrag : Fragment() {
         super.onResume()
 
         //If it is the local credits slide, do not show the audio stuff at all.
-        if (Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS) {
+        if (Workspace.activeStory.slides[slideNumber].slideType == SlideType.LOCALCREDITS) {
             val seekBar: ConstraintLayout = rootView.findViewById(R.id.seek_bar)
             seekBar.visibility = View.GONE
         } else {
@@ -81,7 +81,7 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     protected fun setPic() {
-        PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNum)
+        PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNumber)
     }
 
     // This is an alternative to onCreateView. The trouble with onCreateView is
@@ -93,7 +93,7 @@ abstract class SlidePhaseFrag : Fragment() {
     protected open fun initializeViews() {
         setPic()
         val slideNumberText = rootView.findViewById<TextView>(R.id.slide_number_text)
-        slideNumberText.text = slideNum.toString()
+        slideNumberText.text = slideNumber.toString()
 
         referencePlayButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         referencePlayButton.setOnClickListener {
@@ -104,7 +104,7 @@ abstract class SlidePhaseFrag : Fragment() {
                 refPlaybackSeekBar.progress = refPlaybackProgress
             } else {
                 if (referenceAudioPlayer.currentPosition == 0) {
-                    val referenceRecording = phaseType.getReferenceRecording(slideNum)
+                    val referenceRecording = phaseType.getReferenceRecording(slideNumber)
                     if (referenceRecording != null) {
                         referenceAudioPlayer = AudioPlayer()
                         referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)

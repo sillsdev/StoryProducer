@@ -23,7 +23,7 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar, phaseType)
         dispList?.embedList(rootView!! as ViewGroup)
-        dispList?.setSlideNum(slideNum)
+        dispList?.setSlideNum(slideNumber)
         //This enables the "onStartedToolbarMedia" to be invoked.
         dispList?.setParentFragment(this)
         dispList?.show()

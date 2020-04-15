@@ -45,11 +45,11 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String) {
     }
 }
 
-fun getStoryImage(context: Context, slideNum: Int = Workspace.activeStory.lastSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
-    return if (story.title == "" || slideNum == story.slides.size) {
+fun getStoryImage(context: Context, slideNumber: Int = Workspace.activeStory.lastSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
+    return if (story.title == "" || slideNumber == story.slides.size) {
         null
     } else {
-        getStoryImage(context, story.slides[slideNum].imageFile, sampleSize, false, story)
+        getStoryImage(context, story.slides[slideNumber].imageFile, sampleSize, false, story)
     }
 }
 
