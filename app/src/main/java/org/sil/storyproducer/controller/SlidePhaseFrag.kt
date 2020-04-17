@@ -24,10 +24,10 @@ abstract class SlidePhaseFrag : Fragment() {
     protected var referenceAudioPlayer: AudioPlayer = AudioPlayer()
     protected lateinit var referencePlayButton: ImageButton
     protected lateinit var refPlaybackSeekBar: SeekBar
+    private lateinit var seekBar: ConstraintLayout
     private var mSeekBarTimer = Timer()
 
     private var refPlaybackProgress = 0
-    private var refPlaybackDuration = 0
     private var wasAudioPlaying = false
 
 
@@ -56,30 +56,6 @@ abstract class SlidePhaseFrag : Fragment() {
         item.setIcon(R.drawable.ic_mic_white_48dp)
     }
 
-
-    override fun onResume() {
-        super.onResume()
-
-        //If it is the local credits slide, do not show the audio stuff at all.
-        if (Workspace.activeStory.slides[slideNumber].slideType == SlideType.LOCALCREDITS) {
-            val seekBar: ConstraintLayout = rootView.findViewById(R.id.seek_bar)
-            seekBar.visibility = View.GONE
-        } else {
-            refPlaybackSeekBar = rootView.findViewById(R.id.videoSeekBar)
-            mSeekBarTimer = Timer()
-            mSeekBarTimer.schedule(object : TimerTask() {
-                override fun run() {
-                    activity!!.runOnUiThread{
-                        refPlaybackProgress = referenceAudioPlayer.currentPosition
-                        refPlaybackSeekBar.progress = refPlaybackProgress
-                    }
-                }
-            }, 0, 33)
-
-            setSeekBarListener()
-        }
-    }
-
     protected open fun setPic() {
         PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNumber)
     }
@@ -92,12 +68,15 @@ abstract class SlidePhaseFrag : Fragment() {
     // onCreateView if they want to have a different layout get inflated.
     protected open fun initializeViews() {
         setPic()
+        
+        refPlaybackSeekBar = rootView.findViewById(R.id.videoSeekBar)
+        seekBar = rootView.findViewById(R.id.seek_bar)
+        
         val slideNumberText = rootView.findViewById<TextView>(R.id.slide_number_text)
         slideNumberText.text = slideNumber.toString()
 
         referencePlayButton = rootView.findViewById(R.id.fragment_reference_audio_button)
         referencePlayButton.setOnClickListener {
-            Log.e("@pwhite", "play button!")
             if (referenceAudioPlayer.isAudioPlaying) {
                 stopSlidePlayBack()
                 refPlaybackProgress = referenceAudioPlayer.currentPosition
@@ -108,6 +87,8 @@ abstract class SlidePhaseFrag : Fragment() {
                     if (referenceRecording != null) {
                         referenceAudioPlayer = AudioPlayer()
                         referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
+                        refPlaybackSeekBar.max = referenceAudioPlayer.audioDurationInMilliseconds
+                        refPlaybackSeekBar.progress = refPlaybackProgress
                         referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
 
                         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
@@ -134,15 +115,13 @@ abstract class SlidePhaseFrag : Fragment() {
     }
 
     private fun setSeekBarListener() {
-        refPlaybackDuration = referenceAudioPlayer.audioDurationInMilliseconds
-        refPlaybackSeekBar.max = refPlaybackDuration
         referenceAudioPlayer.currentPosition = refPlaybackProgress
-        refPlaybackSeekBar.progress = refPlaybackProgress
         refPlaybackSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {
                 referenceAudioPlayer.currentPosition = refPlaybackProgress
                 if(wasAudioPlaying){
                     referenceAudioPlayer.resumeAudio()
+                    referencePlayButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
                 }
             }
             override fun onStartTrackingTouch(sBar: SeekBar) {
@@ -150,6 +129,7 @@ abstract class SlidePhaseFrag : Fragment() {
                 referenceAudioPlayer.pauseAudio()
                 referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
             }
+            
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
                     refPlaybackProgress = progress
@@ -157,27 +137,42 @@ abstract class SlidePhaseFrag : Fragment() {
             }
         })
     }
-    /**
-     * This function serves to stop the audio streams from continuing after the draft has been
-     * put on pause.
-     */
-    override fun onPause() {
-        super.onPause()
-        refPlaybackProgress = referenceAudioPlayer.currentPosition
-        mSeekBarTimer.cancel()
-        referenceAudioPlayer.release()
-    }
 
     /**
      * This function serves to handle page changes and stops the audio streams from
      * continuing.
      */
-
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if (::referencePlayButton.isInitialized && referenceAudioPlayer.isAudioPlaying) {
-            stopSlidePlayBack()
+        if (::rootView.isInitialized) {
+            if (isVisibleToUser) {
+                if (referenceAudioPlayer.isAudioPlaying) {
+                    stopSlidePlayBack()
+                }
+            
+                // If it is the local credits slide, do not show the audio stuff at all.
+                if (Workspace.activeStory.slides[slideNumber].slideType == SlideType.LOCALCREDITS) {
+                    seekBar.visibility = View.GONE
+                } else {
+                    mSeekBarTimer = Timer()
+                    mSeekBarTimer.schedule(object : TimerTask() {
+                        override fun run() {
+                            activity?.runOnUiThread{
+                                refPlaybackProgress = referenceAudioPlayer.currentPosition
+                                refPlaybackSeekBar.progress = refPlaybackProgress
+                            }
+                        }
+                    }, 0, 33)
+
+                    setSeekBarListener()
+                }
+            } else {
+                refPlaybackProgress = referenceAudioPlayer.currentPosition
+                mSeekBarTimer.cancel()
+                referenceAudioPlayer.release()
+            }
         }
+
     }
 
     /**

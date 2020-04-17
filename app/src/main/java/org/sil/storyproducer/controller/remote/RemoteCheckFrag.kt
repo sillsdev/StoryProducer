@@ -77,12 +77,11 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
                 Settings.Secure.ANDROID_ID)
         prefsEditor.putString("PhoneId", phoneId).apply()
 
-        slideNumber = this.arguments!!.getInt(SLIDE_NUM)
-        
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false)
+        
         initializeViews()
 
         messageTitle = rootView.findViewById<View>(R.id.messaging_title) as TextView
@@ -91,7 +90,6 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
         sendMessageButton = rootView.findViewById<View>(R.id.button_send_msg) as Button
         messageSent = rootView.findViewById<View>(R.id.sendMessage) as EditText
 
-        val slide = Workspace.activeStory.slides[slideNumber]
         uploadAudioButtonManager = UploadAudioButtonManager(
             context!!,
             rootView.findViewById(R.id.upload_audio_botton),
