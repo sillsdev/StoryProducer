@@ -1,5 +1,12 @@
 package org.sil.storyproducer.controller.remote
 
+import android.graphics.Canvas
+import org.sil.storyproducer.model.PhaseType
+import android.graphics.Color
+import org.sil.storyproducer.tools.BitmapScaler
+import org.sil.storyproducer.tools.file.genDefaultImage
+import org.sil.storyproducer.tools.file.getStoryImage
+import android.graphics.Bitmap
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
@@ -24,26 +31,27 @@ import kotlinx.coroutines.MainScope
 import org.json.JSONObject
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.adapter.MessageAdapter
+import org.sil.storyproducer.controller.phase.PhaseBaseActivity
+import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.UploadState
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.messaging.Approval
 import org.sil.storyproducer.model.messaging.Message
+import kotlin.math.max
 
 /**
  * Created by annmcostantino on 2/19/2018.
  */
 
-class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
+class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
 
-    private lateinit var rootView: View
     private val storyName: String? = null
     private lateinit var messageTitle: TextView
     private lateinit var sendMessageButton: Button
     private lateinit var messageSent: EditText
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
-    private var slideNumber: Int = 0
 
     private var resp: String? = null
 
@@ -56,8 +64,8 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
 
     private var messageReceiveChannel: ReceiveChannel<Message>? = null
 
-    override fun onCreate(savedState: Bundle?) {
-        super.onCreate(savedState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         successToast = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_sent, Toast.LENGTH_SHORT)
         noConnection = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_no_connection, Toast.LENGTH_SHORT)
         unknownError = Toast.makeText(activity!!.applicationContext, R.string.remote_check_msg_failed, Toast.LENGTH_SHORT)
@@ -70,11 +78,12 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         prefsEditor.putString("PhoneId", phoneId).apply()
 
         slideNumber = this.arguments!!.getInt(SLIDE_NUM)
-
+        
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_remote_check_layout, container, false)
+        initializeViews()
 
         messageTitle = rootView.findViewById<View>(R.id.messaging_title) as TextView
         messagesView = rootView.findViewById<View>(R.id.message_history) as ListView
@@ -103,6 +112,33 @@ class RemoteCheckFrag : Fragment(), CoroutineScope by MainScope() {
         rootView.setOnClickListener { closeKeyboard(rootView) }
 
         return rootView
+    }
+
+    override fun setPic() {
+        val slideImage = rootView.findViewById<ImageView>(R.id.fragment_image_view)
+        var slidePicture: Bitmap = getStoryImage(context!!, slideNumber, 2) ?: genDefaultImage()
+
+        if (slideNumber < Workspace.activeStory.slides.size) {
+            //scale down image to not crash phone from memory error from displaying too large an image
+            //Get the height of the phone.
+            val scalingFactor = 0.4
+            val height = (context!!.resources.displayMetrics.heightPixels * scalingFactor * 0.3).toInt()
+            val width = (context!!.resources.displayMetrics.widthPixels * 0.3).toInt()
+
+            slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
+            slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+            val canvas = Canvas(slidePicture)
+            //only show the untranslated title in the Learn phase.
+            val tOverlay = Workspace.activeStory.slides[slideNumber]
+                    .getOverlayText(false, Workspace.activeStory.lastPhaseType == PhaseType.LEARN)
+            //if overlay is null, it will not write the text.
+            tOverlay?.setPadding(max(20, 20 + (canvas.width - width) / 2))
+            tOverlay?.draw(canvas)
+        }
+        //Set the height of the image view
+        slideImage.requestLayout()
+
+        slideImage.setImageBitmap(slidePicture)
     }
 
     override fun onStart() {

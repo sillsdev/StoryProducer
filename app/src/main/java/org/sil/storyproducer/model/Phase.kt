@@ -48,6 +48,7 @@ enum class PhaseType {
             PhaseType.CONSULTANT_CHECK,
             PhaseType.DRAMATIZATION,
             PhaseType.BACKT -> slide.draftRecordings.selectedFile
+            PhaseType.REMOTE_CHECK -> slide.draftRecordings.selectedFile
             else -> throw Exception("Unsupported stage to get a reference audio file for")
         }
     }

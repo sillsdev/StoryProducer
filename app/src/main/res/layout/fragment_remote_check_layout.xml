@@ -15,6 +15,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
+        
+        <ImageView
+            android:id="@+id/fragment_image_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/story_picture"
+            android:scaleType="centerCrop" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/upload_audio_botton"
@@ -29,6 +36,12 @@
             android:layout_alignParentStart="true" />
     </LinearLayout>
 
+    <include
+        android:id="@+id/seek_bar"
+        layout="@layout/play_seek_number_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+        
     <LinearLayout
         android:id="@+id/messaging_bar"
         android:layout_width="match_parent"

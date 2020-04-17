@@ -80,7 +80,7 @@ abstract class SlidePhaseFrag : Fragment() {
         }
     }
 
-    protected fun setPic() {
+    protected open fun setPic() {
         PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNumber)
     }
 
