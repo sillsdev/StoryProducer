@@ -12,6 +12,8 @@ import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
+import org.sil.storyproducer.viewmodel.SlideViewModel
+import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import java.util.*
 
 /**
@@ -31,12 +33,12 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
 
     protected var slideNum: Int = 0 //gets overwritten
-    protected lateinit var slide: Slide
+    protected lateinit var viewModel: SlideViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         slideNum = this.arguments!!.getInt(SLIDE_NUM)
-        slide = Workspace.activeStory.slides[slideNum]
+        viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
         setHasOptionsMenu(true)
     }
 
@@ -151,51 +153,6 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         slideNumberText?.text = slideNum.toString()
     }
 
-    /**
-     * Sets the main text of the layout.
-     *
-     * @param textView The text view that will be filled with the verse's text.
-     */
-    protected fun setScriptureText(textView: TextView) {
-        textView.text = when (slide.slideType) {
-            SlideType.FRONTCOVER ->  buildTitleIdeas()
-            else -> slide.content
-        }
-    }
-
-    private fun buildTitleIdeas(): String {
-        return slide
-                .content
-                .split(SCRIPTURE_REFERENCE)
-                .firstOrNull()
-                .orEmpty()
-    }
-
-    /**
-     * This function sets the reference text.
-     *
-     * @param textView The view that will be populated with the reference text.
-     */
-    protected fun setReferenceText(textView: TextView) {
-        when (slide.slideType) {
-            SlideType.FRONTCOVER -> arrayOf(buildScriptureReference(), slide.reference, slide.subtitle, slide.title)
-            else -> arrayOf(slide.reference, slide.subtitle, slide.title)
-        }.also {
-            textView.text = it.filterNot { it.isEmpty() }.firstOrNull().orEmpty()
-        }
-    }
-
-    private fun buildScriptureReference(): String {
-        return slide
-                .content
-                .split(SCRIPTURE_REFERENCE)
-                .getOrNull(1)
-                .orEmpty()
-                .split("\n")
-                .filterNot { it.trim().isEmpty() }
-                .joinToString(" ")
-    }
-
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
@@ -231,11 +188,5 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     }
 
     open fun onStartedSlidePlayBack() {}
-
-    companion object {
-
-        const val SCRIPTURE_REFERENCE = "Scripture Reference:"
-
-    }
 
 }

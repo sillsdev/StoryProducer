@@ -2,12 +2,9 @@ package org.sil.storyproducer.model
 
 import android.graphics.Rect
 import android.net.Uri
-import android.text.Layout
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -52,44 +49,6 @@ class Slide{
     var isChecked: Boolean = false
 
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
-
-    fun getOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {
-        //There is no text overlay on normal slides or "no slides"
-        if(!dispStory){
-            if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
-        }
-        val tOverlay = when(slideType) {
-            SlideType.FRONTCOVER -> getFrontCoverOverlayText(origTitle)
-            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
-                    "This video is licensed under a Creative Commons Attribution" +
-                    "-NonCommercial-ShareAlike 4.0 International License " +
-                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}")
-            else -> TextOverlay(translatedContent)
-        }
-        val fontSize : Int = when(slideType){
-            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
-            SlideType.LOCALCREDITS -> 14
-            SlideType.COPYRIGHT -> 12
-            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
-        }
-        tOverlay.setFontSize(fontSize)
-
-        if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
-            tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
-        return tOverlay
-    }
-
-    private fun getFrontCoverOverlayText(origTitle: Boolean): TextOverlay {
-        return if (origTitle) TextOverlay(getFrontCoverTitle()) else TextOverlay(translatedContent)
-    }
-
-    internal fun getFrontCoverTitle(): String {
-        return content.split("\n")
-                .elementAtOrNull(1).orEmpty().trim()                    // The 'first title idea' is the text we want to show.
-                .let { "\\[[^\\]]*\\]?".toRegex().replace(it, "") }     // Drop any content within square brackets.
-                .let { "[\\.].*".toRegex().replace(it, "") }            // When it ends in a period, drop the period.
-                .let { "\\s+".toRegex().replace(it, " ") }              // Make all double spaces one space.
-    }
 
     companion object
 }

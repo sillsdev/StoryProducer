@@ -8,20 +8,17 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.arthenica.mobileffmpeg.Config
+import com.arthenica.mobileffmpeg.FFmpeg
+import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
+import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import java.io.Closeable
 import java.io.File
-import com.arthenica.mobileffmpeg.FFmpeg
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.Statistics
-import com.arthenica.mobileffmpeg.StatisticsCallback
-import com.crashlytics.android.Crashlytics
-import org.sil.storyproducer.controller.MainActivity
-
 
 
 /**
@@ -186,7 +183,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
 
-            val overlayText = slide.getOverlayText(mIncludeText)
+            val overlayText = SlideViewModelBuilder(slide).buildOverlayText(mIncludeText)
 
             //error
             var duration = 5000000L  // 5 seconds, microseconds.
