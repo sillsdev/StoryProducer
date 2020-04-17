@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 
@@ -17,15 +18,11 @@ class DraftFrag : MultiRecordFrag() {
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // The last two arguments ensure LayoutParams are inflated
-        // properly.
-        super.onCreateView(inflater, container, savedInstanceState)
-        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
-        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
-
-        return rootView
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return super.onCreateView(inflater, container, savedInstanceState)?.apply {
+            findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
+            findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
+        }
     }
 
 }
