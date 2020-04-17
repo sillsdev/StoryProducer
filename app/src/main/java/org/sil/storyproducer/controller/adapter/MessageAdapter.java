@@ -62,15 +62,21 @@ public class MessageAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return messages.size() + queuedMessages.size();
+        if (queuedMessages.size() == 0) {
+            return messages.size();
+        } else {
+            return messages.size() + queuedMessages.size() + 1;
+        }
     }
 
     @Override
     public Object getItem(int i) {
         if (i < messages.size()) {
             return messages.get(i);
+        } else if (i == messages.size()) {
+            return null;
         } else {
-            return queuedMessages.get(i - messages.size());
+            return queuedMessages.get(i - messages.size() - 1);
         }
     }
 
@@ -83,27 +89,31 @@ public class MessageAdapter extends BaseAdapter {
     @Override
     public View getView(int i, View convertView, ViewGroup viewGroup) {
         MessageViewHolder holder = new MessageViewHolder();
-        LayoutInflater messageInflater = (LayoutInflater) con.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) con.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 
         Message message;
         if (i < messages.size()) {
             message = messages.get(i);
             if (message.isTranscript()) {
-                convertView = messageInflater.inflate(R.layout.phone_back_translation_message_layout, null);
+                convertView = inflater.inflate(R.layout.phone_back_translation_message_layout, null);
             } else if (message.isConsultant()) {
-                convertView = messageInflater.inflate(R.layout.rocc_message_layout, null);
+                convertView = inflater.inflate(R.layout.rocc_message_layout, null);
             } else {
-                convertView = messageInflater.inflate(R.layout.phone_message_layout, null);
+                convertView = inflater.inflate(R.layout.phone_message_layout, null);
             }
+            holder.messageBody = convertView.findViewById(R.id.message_body);
+            convertView.setTag(holder);
+            holder.messageBody.setText(message.getMessage());
+        } else if (i == messages.size()) {
+           convertView = inflater.inflate(R.layout.unread_messages_divider_layout, null);
         } else {
-            message = queuedMessages.get(i - messages.size());
-            convertView = messageInflater.inflate(R.layout.phone_queued_message_layout, null);
+            message = queuedMessages.get(i - messages.size() - 1);
+            convertView = inflater.inflate(R.layout.phone_queued_message_layout, null);
+            holder.messageBody = convertView.findViewById(R.id.message_body);
+            convertView.setTag(holder);
+            holder.messageBody.setText(message.getMessage());
         }
 
-        // from phone; on right
-        holder.messageBody = convertView.findViewById(R.id.message_body);
-        convertView.setTag(holder);
-        holder.messageBody.setText(message.getMessage());
         return convertView;
     }
 }

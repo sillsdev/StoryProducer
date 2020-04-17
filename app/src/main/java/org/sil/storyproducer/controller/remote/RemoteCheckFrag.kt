@@ -159,6 +159,7 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
         messageReceiveChannel = Workspace.messageChannel.openSubscription()
         launch(Dispatchers.Main) {
             for (message in messageReceiveChannel!!) {
+                Log.e("@pwhite", "got message!")
                 msgAdapter.setQueuedMessages(Workspace.queuedMessages)
                 if (message.slideNumber == slideNumber && message.storyId == Workspace.activeStory.remoteId) {
                     msgAdapter.add(message)
