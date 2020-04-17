@@ -11,6 +11,8 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.support.graphics.drawable.VectorDrawableCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
@@ -173,6 +175,9 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
         //load saved message draft and load saved message adapter
         val prefs = activity!!.getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         messageSent.setText(prefs.getString(storyName + slideNumber + TO_SEND_MESSAGE, ""))
+        
+        val whiteSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_white_24dp, null)!!
+        val blackSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_black_24dp, null)!!
         sendMessageButton.setOnClickListener {
             val messageText = messageSent.text.toString()
             if (messageText.length > 0) {
@@ -183,8 +188,17 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
                     Workspace.toSendMessageChannel.send(message)
                 }
                 messageSent.setText("")
+                sendMessageButton.background = blackSendIcon;
             }
         }
+        
+        messageSent.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
+                sendMessageButton.background = whiteSendIcon;
+            }
+        })
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {

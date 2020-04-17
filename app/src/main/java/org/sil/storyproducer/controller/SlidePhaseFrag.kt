@@ -60,6 +60,26 @@ abstract class SlidePhaseFrag : Fragment() {
         PhaseBaseActivity.setPic(context!!, rootView.findViewById<View>(R.id.fragment_image_view) as ImageView, slideNumber)
     }
 
+    private fun setupAudioPlayer(): Boolean {
+        val referenceRecording = phaseType.getReferenceRecording(slideNumber)
+        referenceAudioPlayer = AudioPlayer()
+        if (referenceRecording != null) {
+            referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
+            refPlaybackSeekBar.max = referenceAudioPlayer.audioDurationInMilliseconds
+            refPlaybackSeekBar.progress = refPlaybackProgress
+            
+            referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+
+            referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
+                referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                referenceAudioPlayer.stopAudio()
+            })
+            return true
+        } else {
+            return false
+        }
+    }
+
     // This is an alternative to onCreateView. The trouble with onCreateView is
     // that we want to have a default view that gets inflated, but allow
     // inheriting fragments to inflate a different view. Inheriting fragments
@@ -83,32 +103,22 @@ abstract class SlidePhaseFrag : Fragment() {
                 refPlaybackSeekBar.progress = refPlaybackProgress
             } else {
                 if (referenceAudioPlayer.currentPosition == 0) {
-                    val referenceRecording = phaseType.getReferenceRecording(slideNumber)
-                    if (referenceRecording != null) {
-                        referenceAudioPlayer = AudioPlayer()
-                        referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
-                        refPlaybackSeekBar.max = referenceAudioPlayer.audioDurationInMilliseconds
-                        refPlaybackSeekBar.progress = refPlaybackProgress
-                        referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-
-                        referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
-                            referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
-                            referenceAudioPlayer.stopAudio()
-                        })
-                    } else {
+                    if (!setupAudioPlayer()) {
                         Snackbar.make(rootView, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
                     }
                 }
-                onStartedSlidePlayBack()
-                referenceAudioPlayer.currentPosition = refPlaybackProgress
-                referenceAudioPlayer.resumeAudio()
+                if (referenceAudioPlayer.isAudioPrepared) {
+                    onStartedSlidePlayBack()
+                    referenceAudioPlayer.currentPosition = refPlaybackProgress
+                    referenceAudioPlayer.resumeAudio()
 
-                referencePlayButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
-                when(phaseType) {
-                    PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
-                    PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
-                    else -> {}
+                    referencePlayButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                    when(phaseType) {
+                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
+                        else -> {}
+                    }
                 }
             }
         }
@@ -126,8 +136,10 @@ abstract class SlidePhaseFrag : Fragment() {
             }
             override fun onStartTrackingTouch(sBar: SeekBar) {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
-                referenceAudioPlayer.pauseAudio()
-                referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                if (wasAudioPlaying) {
+                    referenceAudioPlayer.pauseAudio()
+                    referencePlayButton.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                }
             }
             
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -150,6 +162,8 @@ abstract class SlidePhaseFrag : Fragment() {
                     stopSlidePlayBack()
                 }
             
+                setupAudioPlayer()
+                
                 // If it is the local credits slide, do not show the audio stuff at all.
                 if (Workspace.activeStory.slides[slideNumber].slideType == SlideType.LOCALCREDITS) {
                     seekBar.visibility = View.GONE
@@ -166,6 +180,7 @@ abstract class SlidePhaseFrag : Fragment() {
 
                     setSeekBarListener()
                 }
+
             } else {
                 refPlaybackProgress = referenceAudioPlayer.currentPosition
                 mSeekBarTimer.cancel()
