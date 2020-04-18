@@ -3,11 +3,9 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
@@ -39,7 +37,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     if(tPages.size == 0) return null
     val titlePage = tPages[0]
     val screen_only = soup.getElementsByAttributeValueContaining("class", "screen-only")
-    slides.add(FrontCoverSlideBuilder().build(context, story, storyPath, titlePage, screen_only))
+    slides.add(BloomFrontCoverSlideBuilder().build(context, storyPath, titlePage, screen_only))
 
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
@@ -48,7 +46,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         if(page.attr("class").contains("numberedPage")){
             slide = Slide()
             slide.slideType = SlideType.NUMBEREDPAGE
-            if(! parsePage(context, story, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
+            if(! parsePage(context, false, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
             //get scripture reference, if there is one.
             val ref = page.getElementsByAttributeValueContaining("class","bloom-translationGroup")
             if(ref.size >= 1){
@@ -97,7 +95,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 //Image and transition pattern
 val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
 
-fun parsePage(context: Context, story: Story, page: Element, slide: Slide, storyPath: DocumentFile): Boolean {
+fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Element, slide: Slide, storyPath: DocumentFile): Boolean {
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
 
@@ -128,7 +126,7 @@ fun parsePage(context: Context, story: Story, page: Element, slide: Slide, story
     val images = page.getElementsByAttributeValueContaining("class","bloom-imageContainer")
     if(images.size >= 1){
         val image = images[0]
-        if (!slide.isFrontCover() || story.frontCoverGraphic.startsWith("front")) {
+        if (!slide.isFrontCover() || frontCoverGraphicProvided) {
             slide.imageFile = image.attr("src")
             if (slide.imageFile == "") {
                 //bloomd books store the image in a different location

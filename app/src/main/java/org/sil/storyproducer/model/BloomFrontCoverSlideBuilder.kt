@@ -5,9 +5,9 @@ import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-class FrontCoverSlideBuilder {
+class BloomFrontCoverSlideBuilder {
 
-    fun build(context: Context, story: Story, storyPath: DocumentFile, titlePage: Element, screen_only: Elements): Slide {
+    fun build(context: Context, storyPath: DocumentFile, titlePage: Element, screen_only: Elements): Slide {
         val slide = Slide()
         slide.slideType = SlideType.FRONTCOVER
 
@@ -16,11 +16,12 @@ class FrontCoverSlideBuilder {
             val tgroup = screen_only[3].getElementsByAttributeValueContaining("class", "bloom-translationGroup")
             if (tgroup.size >= 1) {
                 slide.content = tgroup[0].wholeText().trim().replace("\\s*\\n\\s*".toRegex(), "\n")
-                story.frontCoverGraphic = FrontCoverContent(slide.content).graphic ?: story.frontCoverGraphic
             }
         }
 
-        parsePage(context, story, titlePage, slide, storyPath)
+        val frontCoverGraphicProvided = FrontCoverContent(slide.content).graphic.orEmpty().startsWith("front")
+
+        parsePage(context, frontCoverGraphicProvided, titlePage, slide, storyPath)
 
         val smallCoverCredits = titlePage.getElementsByAttributeValueContaining("data-book", "smallCoverCredits")
         for (credit in smallCoverCredits) {

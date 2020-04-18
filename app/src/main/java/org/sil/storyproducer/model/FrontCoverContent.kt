@@ -9,6 +9,7 @@ class FrontCoverContent(
             .map { keywordOf(it) to valueOf(it) }
 
     val graphic: String? = firstValueWithKeyword(GRAPHIC)
+            ?.let { if (it.startsWith("gray") || it.startsWith("front")) it else null }
 
     val scriptureReference: String? = firstValueWithKeyword(SCRIPTURE_REFERENCE)
 
