@@ -17,10 +17,10 @@ class BloomFrontCoverSlideBuilderTest {
                     "Graphic=gray\n" +
                     "ScriptureReference=Matt 14.22-33; Mk 6.45-50; John 6.15-20\n" +
                     "TitleIdeasHeading=Title ideas:\n" +
-                    "TitleIdea=Jesus walked on the water.\n" +
+                    "TitleIdea=\"Jesus walked on the water.\"\n" +
                     "TitleIdea=Jesus stopped a storm.\n" +
                     "TitleIdea=Jesus’s disciples understand who he is.\n" +
-                    "TitleIdea=Is Jesus God?"
+                    "TitleIdea='Is Jesus God?'"
         }
 
         Assert.assertEquals(

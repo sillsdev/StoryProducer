@@ -24,9 +24,11 @@ class FrontCoverContent(
             .firstOrNull { it.first.equals(keyword, true) }
             ?.second
 
-    fun keywordOf(parts: List<String>): String = parts.getOrNull(0).orEmpty().trim().trim('\u200C')
+    fun keywordOf(parts: List<String>): String = parts.getOrNull(0).orEmpty().trim()
+            .trim('\u200C')
 
-    fun valueOf(parts: List<String>): String = parts.getOrNull(1).orEmpty().trim().trim('\u200C')
+    fun valueOf(parts: List<String>): String = parts.getOrNull(1).orEmpty().trim()
+            .trim('\u200C', '"', '\'')
 
     companion object {
 
