@@ -22,7 +22,6 @@ class Story(var title: String, val slides: List<Slide>){
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
-    var frontCoverGraphic: String = "gray-background"
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
