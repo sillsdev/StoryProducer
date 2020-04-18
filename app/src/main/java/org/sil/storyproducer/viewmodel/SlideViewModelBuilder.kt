@@ -34,11 +34,8 @@ class SlideViewModelBuilder(
     }
 
     fun buildScriptureReference(): String {
-        return when (slide.slideType) {
-            SlideType.FRONTCOVER -> arrayOf(frontCoverContent.scriptureReference, slide.reference, slide.subtitle, slide.title)
-            else -> arrayOf(slide.reference, slide.subtitle, slide.title)
-        }
-                .firstOrNull { !it.isNullOrEmpty() }
+        return arrayOf(slide.reference, slide.subtitle, slide.title)
+                .firstOrNull { it.isNotEmpty() }
                 .orEmpty()
     }
 
