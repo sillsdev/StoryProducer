@@ -34,6 +34,7 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
         return inflater.inflate(R.layout.fragment_consultant_check, container, false)?.apply {
+            this@ConsultantCheckFrag.rootView = this
             setPic(findViewById<View>(R.id.fragment_image_view) as ImageView)
             findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
             findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
