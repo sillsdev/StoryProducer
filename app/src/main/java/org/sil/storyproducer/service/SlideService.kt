@@ -10,18 +10,17 @@ import org.sil.storyproducer.tools.file.getStoryChildInputStream
 
 class SlideService(val context: Context) {
 
-    fun getImage(slideNum: Int, sampleSize: Int, story: Story, activePhase: PhaseType): Bitmap {
-        if (shouldShowDefaultImage(slideNum, story, activePhase)) {
+    fun getImage(slideNum: Int, sampleSize: Int, story: Story): Bitmap {
+        if (shouldShowDefaultImage(slideNum, story)) {
             return genDefaultImage()
         } else {
             return getImage(story.slides[slideNum].imageFile, sampleSize, false, story)
         }
     }
 
-    fun shouldShowDefaultImage(slideNum: Int, story: Story, activePhase: PhaseType): Boolean {
+    fun shouldShowDefaultImage(slideNum: Int, story: Story): Boolean {
         return story.title.isNullOrEmpty()
                 || story.slides.getOrNull(slideNum)?.imageFile.isNullOrEmpty()
-                || (activePhase == PhaseType.LEARN && slideNum == 0)
     }
 
     fun getImage(relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story): Bitmap {

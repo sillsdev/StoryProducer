@@ -11,7 +11,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Story
 
@@ -37,35 +36,21 @@ class SlideServiceTest {
     fun testShouldShowDefaultImage_WhenStoryIsMissing() {
         `when`(story.title).thenReturn("")
 
-        assertTrue(slideService.shouldShowDefaultImage(1, story, PhaseType.LEARN))
+        assertTrue(slideService.shouldShowDefaultImage(1, story))
     }
 
     @Test
-    fun testShouldShowDefaultImage_ForTheFirstSlideInLearnPhase() {
+    fun testNotShouldShowDefaultImage_WhenImageFileExists() {
         `when`(fontCoverSlide.imageFile).thenReturn("0_Local.jpg")
 
-        assertTrue(slideService.shouldShowDefaultImage(0, story, PhaseType.LEARN))
+        assertFalse(slideService.shouldShowDefaultImage(0, story))
     }
 
     @Test
-    fun testShouldNotShowDefaultImageForSecondSlideInLearnPhase() {
-        `when`(slide1.imageFile).thenReturn("1.jpg")
-
-        assertFalse(slideService.shouldShowDefaultImage(1, story, PhaseType.LEARN))
-    }
-
-    @Test
-    fun testNotShouldShowDefaultImage_ForTheFirstSlideInDraftPhaseWhenImageFileExists() {
-        `when`(fontCoverSlide.imageFile).thenReturn("0_Local.jpg")
-
-        assertFalse(slideService.shouldShowDefaultImage(0, story, PhaseType.DRAFT))
-    }
-
-    @Test
-    fun testNotShouldShowDefaultImage_ForTheFirstSlideInDraftPhaseWhenImageFileDoesNotExist() {
+    fun testNotShouldShowDefaultImage_WhenImageFileDoesNotExist() {
         `when`(fontCoverSlide.imageFile).thenReturn("")
 
-        assertTrue(slideService.shouldShowDefaultImage(0, story, PhaseType.DRAFT))
+        assertTrue(slideService.shouldShowDefaultImage(0, story))
     }
 
 }
