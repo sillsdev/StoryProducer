@@ -32,13 +32,11 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val soup = Jsoup.parse(htmlText)
 
     //add the title slide
-    var slide = Slide()
-    val tPages = soup.getElementsByAttributeValueContaining("class","outsideFrontCover")
-    if(tPages.size == 0) return null
-    val titlePage = tPages[0]
-    val screen_only = soup.getElementsByAttributeValueContaining("class", "screen-only")
-    slides.add(BloomFrontCoverSlideBuilder().build(context, storyPath, titlePage, screen_only))
+    BloomFrontCoverSlideBuilder().build(context, storyPath, soup)?.also {
+        slides.add(it)
+    } ?: return null
 
+    var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
     for(page in pages){
