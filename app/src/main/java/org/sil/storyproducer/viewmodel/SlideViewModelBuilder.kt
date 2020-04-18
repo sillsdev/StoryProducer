@@ -1,7 +1,10 @@
 package org.sil.storyproducer.viewmodel
 
 import android.text.Layout
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.Slide
+import org.sil.storyproducer.model.SlideType
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.text.SimpleDateFormat
 import java.util.*
@@ -9,8 +12,6 @@ import java.util.*
 class SlideViewModelBuilder(
         val slide: Slide
 ) {
-
-    val frontCoverContent by lazy { FrontCoverContent(slide.content) }
 
     fun build(): SlideViewModel {
         return SlideViewModel(
@@ -21,16 +22,7 @@ class SlideViewModelBuilder(
     }
 
     fun buildScriptureText(): String {
-        return when (slide.slideType) {
-            SlideType.FRONTCOVER -> buildFrontCoverTitleIdeas()
-            else -> slide.content
-        }
-    }
-
-    internal fun buildFrontCoverTitleIdeas(): String {
-        return frontCoverContent.run {
-            "$titleIdeasHeading\n${titleIdeas.joinToString("\n")}"
-        }
+        return slide.content
     }
 
     fun buildScriptureReference(): String {
@@ -77,8 +69,8 @@ class SlideViewModelBuilder(
     }
 
     internal fun getFrontCoverTitle(): String {
-        return frontCoverContent
-                .titleIdeas.firstOrNull().orEmpty()                     // The 'first title idea' is the text we want to show.
+        return slide.content.split("\n")
+                .elementAtOrNull(1).orEmpty().trim()                    // The 'first title idea' is the text we want to show.
                 .let { "\\[[^\\]]*\\]?".toRegex().replace(it, "") }     // Drop any content within square brackets.
                 .let { "[\\.].*".toRegex().replace(it, "") }            // When it ends in a period, drop the period.
                 .let { "\\s+".toRegex().replace(it, " ") }              // Make all double spaces one space.

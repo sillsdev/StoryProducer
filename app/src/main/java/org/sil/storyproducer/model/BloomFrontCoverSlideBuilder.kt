@@ -12,15 +12,17 @@ class BloomFrontCoverSlideBuilder {
         slide.slideType = SlideType.FRONTCOVER
 
         //get title ideas - the 4th element, if there is one.
+        var content = ""
         if (screen_only.size == 4) {
             val tgroup = screen_only[3].getElementsByAttributeValueContaining("class", "bloom-translationGroup")
             if (tgroup.size >= 1) {
-                slide.content = tgroup[0].wholeText().trim().replace("\\s*\\n\\s*".toRegex(), "\n")
+                content = tgroup[0].wholeText().trim().replace("\\s*\\n\\s*".toRegex(), "\n")
             }
         }
 
-        val frontCoverContent = FrontCoverContent(slide.content)
+        val frontCoverContent = FrontCoverContent(content)
         val frontCoverGraphicProvided = frontCoverContent.graphic.orEmpty().startsWith("front")
+        slide.content = buildTitleIdeas(frontCoverContent)
         slide.reference = frontCoverContent.scriptureReference.orEmpty()
 
         parsePage(context, frontCoverGraphicProvided, titlePage, slide, storyPath)
@@ -35,6 +37,12 @@ class BloomFrontCoverSlideBuilder {
         }
 
         return slide
+    }
+
+    internal fun buildTitleIdeas(frontCoverContent: FrontCoverContent): String {
+        return frontCoverContent.run {
+            "$titleIdeasHeading\n${titleIdeas.joinToString("\n")}"
+        }
     }
 
 }
