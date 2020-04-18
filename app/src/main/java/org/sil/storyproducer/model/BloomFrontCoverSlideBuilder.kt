@@ -19,7 +19,9 @@ class BloomFrontCoverSlideBuilder {
             }
         }
 
-        val frontCoverGraphicProvided = FrontCoverContent(slide.content).graphic.orEmpty().startsWith("front")
+        val frontCoverContent = FrontCoverContent(slide.content)
+        val frontCoverGraphicProvided = frontCoverContent.graphic.orEmpty().startsWith("front")
+        slide.reference = frontCoverContent.scriptureReference.orEmpty()
 
         parsePage(context, frontCoverGraphicProvided, titlePage, slide, storyPath)
 
