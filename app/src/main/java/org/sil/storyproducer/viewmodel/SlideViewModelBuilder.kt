@@ -69,10 +69,13 @@ class SlideViewModelBuilder(
     }
 
     internal fun getFrontCoverTitle(): String {
-        return slide.content.split("\n")
+        return slide.content
+                .replace("Title ideas:", "Title ideas:\n")
+                .split("\n")
+                .filterNot { it.isEmpty() }
                 .elementAtOrNull(1).orEmpty().trim()                    // The 'first title idea' is the text we want to show.
                 .let { "\\[[^\\]]*\\]?".toRegex().replace(it, "") }     // Drop any content within square brackets.
-                .let { "[\\.].*".toRegex().replace(it, "") }            // When it ends in a period, drop the period.
+                .let { "[\\.\\!\\?].*".toRegex().replace(it, "") }      // remove everything after a .!? if there is one
                 .let { "\\s+".toRegex().replace(it, " ") }              // Make all double spaces one space.
     }
 
