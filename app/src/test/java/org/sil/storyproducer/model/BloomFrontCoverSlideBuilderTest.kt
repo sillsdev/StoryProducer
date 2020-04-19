@@ -29,7 +29,7 @@ class BloomFrontCoverSlideBuilderTest {
                         "Jesus stopped a storm.\n" +
                         "Jesus’s disciples understand who he is.\n" +
                         "Is Jesus God?",
-                builder.buildTitleIdeas(FrontCoverContent(slide.content))
+                builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
 
@@ -52,7 +52,7 @@ class BloomFrontCoverSlideBuilderTest {
                         "Jesus stopped a storm.\n" +
                         "Jesus’s disciples understand who he is.\n" +
                         "Is Jesus God?",
-                builder.buildTitleIdeas(FrontCoverContent(slide.content))
+                builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
 
@@ -75,7 +75,7 @@ class BloomFrontCoverSlideBuilderTest {
                         "Jesus stopped a storm.\n" +
                         "Jesus’s disciples understand who he is.\n" +
                         "Is Jesus God?",
-                builder.buildTitleIdeas(FrontCoverContent(slide.content))
+                builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
 
@@ -88,7 +88,7 @@ class BloomFrontCoverSlideBuilderTest {
                     "TitleIdeasHeading= Title ideas:\n" +
                     "TitleIdea=The true story / account about how God created / made the earth and the first people.\n" +
                     "TitleIdea2=God created everything\n" +
-                    "TitleIdea = The beginning"
+                    "TitleIdea     = The beginning"
         }
 
         Assert.assertEquals(
@@ -96,7 +96,7 @@ class BloomFrontCoverSlideBuilderTest {
                         "The true story / account about how God created / made the earth and the first people.\n" +
                         "God created everything\n" +
                         "The beginning",
-                builder.buildTitleIdeas(FrontCoverContent(slide.content))
+                builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
 
@@ -117,7 +117,7 @@ class BloomFrontCoverSlideBuilderTest {
                         "The true story / account about how God created / made the earth and the first people.\n" +
                         "God created everything\n" +
                         "The beginning",
-                builder.buildTitleIdeas(FrontCoverContent(slide.content))
+                builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
 

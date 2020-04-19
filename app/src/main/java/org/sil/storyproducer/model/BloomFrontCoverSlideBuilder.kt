@@ -7,34 +7,44 @@ import org.jsoup.nodes.Element
 
 class BloomFrontCoverSlideBuilder {
 
+    lateinit var context: Context
+
     fun build(context: Context, file: DocumentFile, html: Document): Slide? {
+        this.context = context
         return html.getElementsByAttributeValueContaining(CLASS, OUTSIDE_FRONT_COVER).firstOrNull()?.let {
-            buildSlide(context, file, html, it)
+            buildSlide(file, html, it)
         }
     }
 
-    private fun buildSlide(context: Context, file: DocumentFile, html: Document, outsideFrontCover: Element): Slide {
-        val slide = Slide()
-        slide.slideType = SlideType.FRONTCOVER
-
+    private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element): Slide {
+        val subtitle = buildSubtitle(outsideFrontCover).orEmpty()
         val content = buildContent(html)
-        val frontCoverContent = FrontCoverContent(content)
-        val frontCoverGraphicProvided = frontCoverContent.graphic.orEmpty().startsWith("front")
-        slide.content = buildTitleIdeas(frontCoverContent)
-        slide.reference = frontCoverContent.scriptureReference.orEmpty()
+        val frontCoverContent = FrontCoverContent(content, file.name.orEmpty(), subtitle)
 
-        parsePage(context, frontCoverGraphicProvided, outsideFrontCover, slide, file)
+        return buildSlide(file, outsideFrontCover, subtitle, frontCoverContent)
+    }
 
+    private fun buildSlide(file: DocumentFile, outsideFrontCover: Element, slideSubtitle: String, frontCoverContent: FrontCoverContent): Slide {
+        return Slide().apply {
+            slideType = SlideType.FRONTCOVER
+            subtitle = slideSubtitle
+            content = buildTitleIdeas(frontCoverContent)
+            reference = frontCoverContent.scriptureReference
+            parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file)
+        }
+    }
+
+    internal fun buildSubtitle(outsideFrontCover: Element): String? {
         val smallCoverCredits = outsideFrontCover.getElementsByAttributeValueContaining(DATA_BOOK, SMALL_COVER_CREDITS)
         for (credit in smallCoverCredits) {
             credit.children().firstOrNull()?.wholeText()?.also {
                 if (it.isNotEmpty()) {
-                    slide.subtitle = it
+                    return it
                 }
             }
         }
 
-        return slide
+        return null
     }
 
     internal fun buildContent(html: Document): String {
