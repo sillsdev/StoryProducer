@@ -49,7 +49,6 @@ import kotlin.math.max
 class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
 
     private val storyName: String? = null
-    private lateinit var messageTitle: TextView
     private lateinit var sendMessageButton: Button
     private lateinit var messageSent: EditText
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
@@ -86,7 +85,6 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
         
         initializeViews()
 
-        messageTitle = rootView.findViewById<View>(R.id.messaging_title) as TextView
         messagesView = rootView.findViewById<View>(R.id.message_history) as ListView
 
         sendMessageButton = rootView.findViewById<View>(R.id.button_send_msg) as Button
@@ -106,8 +104,6 @@ class RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
             rootView.findViewById(R.id.slide_approved_indicator),
             slide,
             slideNumber)
-
-        messageTitle.text = "Messages for Slide $slideNumber"
 
         rootView.setOnClickListener { closeKeyboard(rootView) }
 

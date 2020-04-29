@@ -19,6 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.PHASE_TYPE
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -49,8 +50,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      */
     fun setupCameraAndEditButton() {
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNumber].slideType in
-        arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
+        if(Workspace.activeStory.slides[slideNumber].slideType in arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG) 
+           && phaseType != PhaseType.BACKT)
         {
             val imageFab: ImageView = rootView.findViewById<View>(R.id.insert_image_view) as ImageView
             imageFab.visibility = View.VISIBLE
@@ -71,12 +72,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
                 startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
             }
-        }
 
-        // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNumber].slideType in
-                arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
-        {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
@@ -146,7 +142,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                recordingToolbar.stopToolbarMedia()
+                if (Workspace.activeStory.slides[slideNumber].slideType != SlideType.LOCALCREDITS) {
+                    recordingToolbar.stopToolbarMedia()
+                }
             }
         }
     }

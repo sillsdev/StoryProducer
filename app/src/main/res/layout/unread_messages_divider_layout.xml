@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:text="messages not yet sent"
+        android:text="internet seems to be gone - messages will be sent when internet connection is regained"
         android:textColor="#ffffff" />
 
     <View

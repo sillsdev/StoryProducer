@@ -272,6 +272,9 @@ class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.T
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 currentActivity.runOnUiThread {
+                    if (recordingToolbar.isRecording) {
+                        setSlideFromSeekbar()
+                    }
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
                     } else if (draftPlayer.isAudioPrepared) {

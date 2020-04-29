@@ -60,7 +60,7 @@ class Registration {
 
     var archiveEmail1 = ""
     var archiveEmail2 = ""
-    var archiveEmail3 = ""
+    var archiveEmail3 = "SPapp_info@sil.org"
 
     var registrationComplete = false
     var registrationEmailSent = false
@@ -106,7 +106,10 @@ class Registration {
 
                 archiveEmail1 = obj.optString("database_email_1", "")
                 archiveEmail2 = obj.optString("database_email_2", "")
-                archiveEmail3 = obj.optString("database_email_3", "SPapp_info@sil.org")
+                archiveEmail3 = obj.optString("database_email_3", "")
+                if (archiveEmail3 == "") {
+                    archiveEmail3 = "SPapp_info@sil.org"
+                }
 
                 registrationComplete = obj.optBoolean("registration_complete", false)
                 registrationEmailSent = obj.optBoolean("registration_email_sent", false)

@@ -59,7 +59,7 @@ open class RecordingToolbar : Fragment(){
         // an implementor of ToolbarMediaListener. It would be better to have a
         // settable listener, so that the toolbar can be used in more
         // situations. In other words, this is an unnecessary coupling. It also
-        // is confusing because there is no indication at the use-site, that
+        // is confusing because there is no indication at the use-site that
         // the listener is being attached, so this is less clear.
         toolbarMediaListener = try {
             context as ToolbarMediaListener

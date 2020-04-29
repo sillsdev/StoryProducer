@@ -169,6 +169,9 @@ class LearnFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener 
         mSeekBarTimer.schedule(object : TimerTask() {
             override fun run() {
                 learnActivity.runOnUiThread {
+                    if (recordingToolbar.isRecording) {
+                        setSlideFromSeekbar()
+                    }
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
                     } else if (narrationAudioPlayer.isAudioPrepared) {

@@ -99,6 +99,7 @@ object Workspace {
             BuildConfig.ROCC_WEBSOCKETS_PREFIX
         }
         val projectId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+        Log.e("@pwhite", "Getting websocket URL: $baseUrl/phone/$projectId")
         return "$baseUrl/phone/$projectId"
     }
 
@@ -113,9 +114,6 @@ object Workspace {
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
-        val client = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-        client.connect()
-        messageClient = client
         GlobalScope.launch {
             for (message in messageChannel.openSubscription()) {
                 messages.add(message)
@@ -155,7 +153,7 @@ object Workspace {
                     oldClient.close()
                 }
                 Log.e("@pwhite", "Restarting websocket.")
-                val newClient =  MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
                 newClient.connectBlocking()
                 messageClient = newClient
             }
@@ -179,7 +177,8 @@ object Workspace {
                         queuedMessages.remove()
                     }
                 } catch (ex: Exception) {
-                    Log.e("@pwhite", "websocket iteration failed: ${ex}. Closing old websocket.")
+                    Log.e("@pwhite", "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket.")
+                    ex.printStackTrace();
                     reconnect()
                     delay(5000)
                 }
