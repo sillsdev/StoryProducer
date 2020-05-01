@@ -49,6 +49,7 @@ class Slide{
     var isChecked: Boolean = false
 
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
+    fun isNumberedPage() = slideType == SlideType.NUMBEREDPAGE
 
     companion object
 }
