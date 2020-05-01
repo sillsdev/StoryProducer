@@ -16,7 +16,6 @@ internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 class Story(var title: String, val slides: List<Slide>){
 
     var isApproved: Boolean = false
-
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
     var activityLogs: MutableList<LogEntry> = ArrayList()
