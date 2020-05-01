@@ -39,18 +39,11 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
-    for(page in pages){
-        //slide type
-        if(page.attr("class").contains("numberedPage")){
-            slide = Slide()
-            slide.slideType = SlideType.NUMBEREDPAGE
-            if(! parsePage(context, false, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
-            //get scripture reference, if there is one.
-            val ref = page.getElementsByAttributeValueContaining("class","bloom-translationGroup")
-            if(ref.size >= 1){
-                slide.reference = ref[0].wholeText().trim().replace("\\s+".toRegex()," ")
+    for (page in pages) {
+        if (page.attr("class").contains("numberedPage")) {
+            NumberedPageSlideBuilder().build(context, storyPath, page)?.also {
+                slides.add(it)
             }
-            slides.add(slide)
         }
     }
 
@@ -105,7 +98,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
         return false
     }
 
-    if (!slide.isFrontCover()) {
+    if (!slide.isFrontCover() && !slide.isNumberedPage()) {
         slide.content = ""
         for (a in audios) {
             slide.content += a.wholeText()
