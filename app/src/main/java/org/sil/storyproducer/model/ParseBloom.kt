@@ -3,11 +3,9 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Rect
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
@@ -29,18 +27,16 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
-
+    val story = Story(storyPath.name!!, slides)
 
     val soup = Jsoup.parse(htmlText)
 
     //add the title slide
-    var slide = Slide()
-    val tPages = soup.getElementsByAttributeValueContaining("class","outsideFrontCover")
-    if(tPages.size == 0) return null
-    val titlePage = tPages[0]
-    val screen_only = soup.getElementsByAttributeValueContaining("class", "screen-only")
-    slides.add(buildTitleSlide(context, storyPath, titlePage, screen_only))
+    BloomFrontCoverSlideBuilder().build(context, storyPath, soup)?.also {
+        slides.add(it)
+    } ?: return null
 
+    var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
     for(page in pages){
@@ -48,7 +44,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         if(page.attr("class").contains("numberedPage")){
             slide = Slide()
             slide.slideType = SlideType.NUMBEREDPAGE
-            if(! parsePage(context, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
+            if(! parsePage(context, false, page, slide,storyPath)) continue //if the page was not parsed correctly, don't add it.
             //get scripture reference, if there is one.
             val ref = page.getElementsByAttributeValueContaining("class","bloom-translationGroup")
             if(ref.size >= 1){
@@ -91,30 +87,31 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
         slides.add(slide)
     }
 
-    return Story(storyPath.name!!,slides)
+    return story
 }
 
 //Image and transition pattern
 val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
 
-fun parsePage(context: Context, page: Element, slide: Slide, storyPath: DocumentFile): Boolean{
-
+fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Element, slide: Slide, storyPath: DocumentFile): Boolean {
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
+
     //narration
-    val audios = page.getElementsByAttributeValueContaining("class","audio-sentence")
-    slide.content = ""
-    if(audios.size >= 1){
+    val audios = page.getElementsByAttributeValueContaining("class", "audio-sentence")
+    if (audios.size >= 1) {
         slide.narrationFile = "audio/${audios[0].id()}.mp3"
-    }else{
+    } else {
         return false
     }
-    for(a in audios){
-        slide.content += a.wholeText()
-    }
 
-    //cleanup whitespace
-    slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(),"\n")
+    if (!slide.isFrontCover()) {
+        slide.content = ""
+        for (a in audios) {
+            slide.content += a.wholeText()
+        }
+        slide.content = slide.content.trim().replace("\\s*\\n\\s*".toRegex(), "\n")
+    }
 
     //soundtrack
     val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
@@ -127,7 +124,7 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
     val images = page.getElementsByAttributeValueContaining("class","bloom-imageContainer")
     if(images.size >= 1){
         val image = images[0]
-        if (!slide.isFrontCover()) {
+        if (!slide.isFrontCover() || frontCoverGraphicProvided) {
             slide.imageFile = image.attr("src")
             if (slide.imageFile == "") {
                 //bloomd books store the image in a different location
@@ -172,28 +169,3 @@ fun parsePage(context: Context, page: Element, slide: Slide, storyPath: Document
     return true
 }
 
-fun buildTitleSlide(context: Context, storyPath: DocumentFile, titlePage: Element, screen_only: Elements): Slide {
-    val slide = Slide()
-    slide.slideType = SlideType.FRONTCOVER
-    parsePage(context, titlePage, slide, storyPath)
-    slide.title = slide.content
-
-    //get title ideas - the 4th element, if there is one.
-    if (screen_only.size == 4) {
-        val tgroup = screen_only[3].getElementsByAttributeValueContaining("class", "bloom-translationGroup")
-        if (tgroup.size >= 1) {
-            slide.content = tgroup[0].wholeText().trim().replace("\\s*\\n\\s*".toRegex(), "\n")
-        }
-    }
-
-    val smallCoverCredits = titlePage.getElementsByAttributeValueContaining("data-book", "smallCoverCredits")
-    for (credit in smallCoverCredits) {
-        credit.children().firstOrNull()?.wholeText()?.also {
-            if (it.isNotEmpty()) {
-                slide.subtitle = it
-            }
-        }
-    }
-
-    return slide
-}

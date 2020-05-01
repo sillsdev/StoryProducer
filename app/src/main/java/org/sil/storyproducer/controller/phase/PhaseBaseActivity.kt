@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.phase
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -22,11 +21,15 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.*
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.model.toJson
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
+import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import kotlin.math.max
 
 abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
@@ -267,7 +270,7 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
      */
     fun setPic(slideImage: ImageView, slideNum: Int) {
         val downSample = 2
-        var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story, Workspace.activePhase.phaseType)
+        var slidePicture: Bitmap = slideService.getImage(slideNum, downSample, story)
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
@@ -283,9 +286,8 @@ abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelect
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
         //only show the untranslated title in the Learn phase.
-        val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.LEARN)
-            Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
-        else Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
+        val slideViewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
+        val tOverlay = slideViewModel.overlayText
         //if overlay is null, it will not write the text.
         tOverlay?.setPadding(max(20, 20 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
