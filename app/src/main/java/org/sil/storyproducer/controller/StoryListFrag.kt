@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
@@ -28,9 +29,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
                             else{Html.fromHtml(getString(R.string.stories_not_found_body))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
-                val intent = Intent(activity, WorkspaceUpdateActivity::class.java)
-                activity?.startActivity(intent)
-                activity?.finish()
+                (activity as BaseActivity).updateTemplatesFolder()
             }
             view.findViewById<Button>(R.id.copy_demo_button).setOnClickListener {
                 Workspace.addDemoToWorkspace(context!!)

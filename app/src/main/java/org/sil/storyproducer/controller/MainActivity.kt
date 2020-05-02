@@ -6,32 +6,34 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
-import com.google.android.material.navigation.NavigationView
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
 import android.widget.ProgressBar
+import androidx.appcompat.app.ActionBar
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
-import org.sil.storyproducer.tools.dpToPx
 import java.io.Serializable
 
-class MainActivity : AppCompatActivity(), Serializable {
+class MainActivity : BaseActivity(), Serializable {
     private var mDrawerLayout: DrawerLayout? = null
 
     private val receiver = object : BroadcastReceiver() {
@@ -140,9 +142,7 @@ class MainActivity : AppCompatActivity(), Serializable {
             val intent: Intent
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
-                    intent = Intent(this, WorkspaceUpdateActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
+                    showSelectTemplatesFolderDialog()
                 }
                 R.id.nav_demo -> {
                     Workspace.addDemoToWorkspace(this)
@@ -184,5 +184,32 @@ class MainActivity : AppCompatActivity(), Serializable {
                 }.create()
         dialog.show()
     }
+
+    private fun showSelectTemplatesFolderDialog() {
+        AlertDialog.Builder(this)
+                .setTitle(buildSelectTemplatesTitle())
+                .setMessage(buildSelectTemplatesMessage())
+                .setPositiveButton(R.string.ok) { _, _ -> updateTemplatesFolder() }
+                .setNegativeButton(R.string.cancel, null)
+                .create()
+                .show()
+    }
+
+    private fun buildSelectTemplatesTitle(): Spanned {
+        val title = "<b>${getString(R.string.update_workspace)}</b>"
+        return if (Build.VERSION.SDK_INT >= 24) {
+            Html.fromHtml(title,0)
+        } else {
+            Html.fromHtml(title) }
+    }
+
+    private fun buildSelectTemplatesMessage(): Spanned {
+        val message = getString(R.string.workspace_selection_help)
+        return if (Build.VERSION.SDK_INT >= 24) {
+            Html.fromHtml(message, 0)
+        } else {
+            Html.fromHtml(message) }
+    }
+
 }
 
