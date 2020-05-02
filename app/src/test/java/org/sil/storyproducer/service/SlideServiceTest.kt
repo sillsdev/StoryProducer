@@ -26,8 +26,6 @@ class SlideServiceTest {
 
     @Before
     fun before() {
-        MockitoAnnotations.initMocks(this)
-
         `when`(story.title).thenReturn("story title")
         `when`(story.slides).thenReturn(listOf(fontCoverSlide, slide1))
     }

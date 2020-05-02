@@ -7,48 +7,35 @@ import android.net.Uri
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 
-class SelectTemplatesFolderController(val view: BaseActivityView, val context: Context) {
+class SelectTemplatesFolderController(val view: BaseActivityView, val context: Context, val workspace: Workspace) {
 
     fun openDocumentTree(request: Int) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(URI_PERMISSION_FLAGS)
         view.startActivityForResult(intent, request)
     }
 
-    fun onActivityResult(request: Int, result: Int, data: Intent?) {
-        if (shouldSetupWorkspace(request, result)) {
-            data?.data?.also { setupWorkspace(request, it) }
-        }
-
-        if (shouldShowRegistration(request)) {
-            view.showRegistration()
+    fun onFolderSelected(request: Int, result: Int, data: Intent?) {
+        data?.data?.also { uri ->
+            if (shouldSetupWorkspace(result, uri)) {
+                setupWorkspace(request, uri)
+                view.showRegistration()
+            }
         }
     }
 
-    protected fun setupWorkspace(request: Int, uri: Uri) {
-        if (shouldClearWorkspace(request)) {
-            Workspace.clearWorkspace()
-        }
+    fun shouldSetupWorkspace(result: Int, uri: Uri?): Boolean {
+        return result == Activity.RESULT_OK
+                && !workspace.workdocfile.uri?.lastPathSegment.orEmpty().equals(uri?.lastPathSegment)
+    }
 
-        Workspace.setupWorkspacePath(context, uri)
+    internal fun setupWorkspace(request: Int, uri: Uri) {
+        workspace.setupWorkspacePath(context, uri)
 
         view.takePersistableUriPermission(uri)
 
         if (shouldAddDemoToWorkspace(request)) {
-            Workspace.addDemoToWorkspace(context)
+            workspace.addDemoToWorkspace(context)
         }
-    }
-
-    fun shouldSetupWorkspace(request: Int, result: Int): Boolean {
-        return SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)
-                && result == Activity.RESULT_OK
-    }
-
-    fun shouldShowRegistration(request: Int): Boolean {
-        return true
-    }
-
-    fun shouldClearWorkspace(request: Int): Boolean {
-        return request == UPDATE_TEMPLATES_FOLDER
     }
 
     fun shouldAddDemoToWorkspace(request: Int): Boolean {

@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
-import android.text.Spanned
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -183,32 +180,6 @@ class MainActivity : BaseActivity(), Serializable {
                     startActivity(homeIntent)
                 }.create()
         dialog.show()
-    }
-
-    private fun showSelectTemplatesFolderDialog() {
-        AlertDialog.Builder(this)
-                .setTitle(buildSelectTemplatesTitle())
-                .setMessage(buildSelectTemplatesMessage())
-                .setPositiveButton(R.string.ok) { _, _ -> updateTemplatesFolder() }
-                .setNegativeButton(R.string.cancel, null)
-                .create()
-                .show()
-    }
-
-    private fun buildSelectTemplatesTitle(): Spanned {
-        val title = "<b>${getString(R.string.update_workspace)}</b>"
-        return if (Build.VERSION.SDK_INT >= 24) {
-            Html.fromHtml(title,0)
-        } else {
-            Html.fromHtml(title) }
-    }
-
-    private fun buildSelectTemplatesMessage(): Spanned {
-        val message = getString(R.string.workspace_selection_help)
-        return if (Build.VERSION.SDK_INT >= 24) {
-            Html.fromHtml(message, 0)
-        } else {
-            Html.fromHtml(message) }
     }
 
 }
