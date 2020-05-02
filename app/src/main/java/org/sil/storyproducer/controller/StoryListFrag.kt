@@ -29,7 +29,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
                             else{Html.fromHtml(getString(R.string.stories_not_found_body))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
-                (activity as BaseActivity).updateTemplatesFolder()
+                (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
             }
             view.findViewById<Button>(R.id.copy_demo_button).setOnClickListener {
                 Workspace.addDemoToWorkspace(context!!)

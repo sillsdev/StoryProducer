@@ -32,7 +32,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.finish()
             }
             2 -> {
-                activity.updateTemplatesFolder()
+                activity.showSelectTemplatesFolderDialog()
             }
             3 -> {
                 Workspace.addDemoToWorkspace(activity)
