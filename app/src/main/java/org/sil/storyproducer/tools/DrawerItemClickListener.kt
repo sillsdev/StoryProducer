@@ -2,16 +2,15 @@ package org.sil.storyproducer.tools
 
 import android.app.AlertDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.WorkspaceUpdateActivity
 import org.sil.storyproducer.model.Workspace
 
-class DrawerItemClickListener(private val activity: AppCompatActivity) : AdapterView.OnItemClickListener {
+class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.OnItemClickListener {
 
     override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
         selectItem(position)
@@ -33,9 +32,7 @@ class DrawerItemClickListener(private val activity: AppCompatActivity) : Adapter
                 activity.finish()
             }
             2 -> {
-                intent = Intent(activity, WorkspaceUpdateActivity::class.java)
-                activity.startActivity(intent)
-                activity.finish()
+                activity.updateTemplatesFolder()
             }
             3 -> {
                 Workspace.addDemoToWorkspace(activity)

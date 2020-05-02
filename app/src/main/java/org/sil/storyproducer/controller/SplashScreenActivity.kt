@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.widget.TextView
 
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.WorkspaceDialogUpdateActivity
 import org.sil.storyproducer.model.Workspace
 
 class SplashScreenActivity : AppCompatActivity() {

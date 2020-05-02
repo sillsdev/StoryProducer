@@ -21,6 +21,7 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
 import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -32,7 +33,7 @@ import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import kotlin.math.max
 
-abstract class PhaseBaseActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
     lateinit var slideService: SlideService
 
