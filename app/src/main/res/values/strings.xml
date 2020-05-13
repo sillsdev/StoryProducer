@@ -93,7 +93,10 @@
         for story templates does not contain usable templates.  Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
-    <string name="workspace_selection_help">Would you like to use the internal demo or select the appropriate
+    <string name="use_internal_demo_or_select_template_folder">Would you like to use the internal demo or select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
+        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>?</string>
+    <string name="workspace_selection_help">Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
         normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>?</string>
 
