@@ -6,6 +6,7 @@ import android.graphics.Rect
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
@@ -28,6 +29,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val story = Story(storyPath.name!!, slides)
+    story.importAppVersion = BuildConfig.VERSION_NAME
 
     val soup = Jsoup.parse(htmlText)
 
