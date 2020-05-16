@@ -73,7 +73,7 @@ class BloomFrontCoverSlideBuilder {
     internal fun buildNarrationFile(file: DocumentFile, html: Document): String? {
         return fourthPageOfTranslationInstructions(html)
                 ?.children()
-                ?.firstOrNull()
+                ?.find { it.wholeText().contains(TITLE_IDEA_1) }
                 ?.children()
                 ?.find { it.wholeText().startsWith(TITLE_IDEA_1) }
                 ?.children()
