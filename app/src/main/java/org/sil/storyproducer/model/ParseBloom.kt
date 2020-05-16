@@ -90,12 +90,15 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
 
-    //narration
     val audios = page.getElementsByAttributeValueContaining("class", "audio-sentence")
-    if (audios.size >= 1) {
-        slide.narrationFile = "audio/${audios[0].id()}.mp3"
-    } else {
-        return false
+
+    //narration
+    if (slide.narrationFile.isEmpty()) {
+        if (audios.size >= 1) {
+            slide.narrationFile = "audio/${audios[0].id()}.mp3"
+        } else {
+            return false
+        }
     }
 
     if (!slide.isFrontCover() && !slide.isNumberedPage()) {

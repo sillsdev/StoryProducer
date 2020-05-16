@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.sil.storyproducer.tools.file.storyRelPathExists
 
 class BloomFrontCoverSlideBuilder {
 
@@ -21,14 +22,15 @@ class BloomFrontCoverSlideBuilder {
         val content = buildContent(html)
         val frontCoverContent = FrontCoverContent(content, file.name.orEmpty(), subtitle)
 
-        return buildSlide(file, outsideFrontCover, subtitle, frontCoverContent)
+        return buildSlide(file, html, outsideFrontCover, subtitle, frontCoverContent)
     }
 
-    private fun buildSlide(file: DocumentFile, outsideFrontCover: Element, slideSubtitle: String, frontCoverContent: FrontCoverContent): Slide {
+    private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element, slideSubtitle: String, frontCoverContent: FrontCoverContent): Slide {
         return Slide().apply {
             slideType = SlideType.FRONTCOVER
             subtitle = slideSubtitle
             content = buildTitleIdeas(frontCoverContent)
+            narrationFile = buildNarrationFile(file, html).orEmpty()
             reference = frontCoverContent.scriptureReference
             parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file)
         }
@@ -68,6 +70,19 @@ class BloomFrontCoverSlideBuilder {
         }
     }
 
+    internal fun buildNarrationFile(file: DocumentFile, html: Document): String? {
+        return fourthPageOfTranslationInstructions(html)
+                ?.children()
+                ?.firstOrNull()
+                ?.children()
+                ?.find { it.wholeText().startsWith(TITLE_IDEA_1) }
+                ?.children()
+                ?.firstOrNull()
+                ?.id()
+                ?.let { "audio/$it.mp3" }
+                ?.let { if (storyRelPathExists(context, it, file.name!!)) it else null }
+    }
+
     companion object {
 
         const val CLASS = "class"
@@ -76,6 +91,7 @@ class BloomFrontCoverSlideBuilder {
         const val SMALL_COVER_CREDITS = "smallCoverCredits"
         const val SCREEN_ONLY = "screen-only"
         const val BLOOM_TRANSLATION_GROUP = "bloom-translationGroup"
+        const val TITLE_IDEA_1 = "TitleIdea1"
 
     }
 
