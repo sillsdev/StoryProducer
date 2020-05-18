@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
@@ -43,6 +44,7 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
+    Log.d("StoryIO", "parse story: ${storyPath?.uri}")
     var story: Story?
     //Check if path is path
     if(!storyPath.isDirectory) return null
@@ -75,12 +77,12 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     return null
 }
 
-fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>){
+fun unzipIfZipped(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
 
     //only work with zip files.
     val extension = zipDocFile.name!!.substringAfterLast(".","")
     val name = zipDocFile.name!!.substringBeforeLast(".","")
-    if (!(extension in arrayOf("zip","bloom","bloomd"))) return
+    if (!(extension in arrayOf("zip","bloom","bloomd"))) return zipDocFile.name
 
     val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
@@ -132,5 +134,5 @@ fun unzipIfNewFolders(context: Context, zipDocFile: DocumentFile, existingFolder
     sourceFile.delete()
     deleteWorkspaceFile(context,zipDocFile.name!!)
 
-    return
+    return name
 }

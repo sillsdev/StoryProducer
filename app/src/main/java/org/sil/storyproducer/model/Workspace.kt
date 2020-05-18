@@ -133,35 +133,26 @@ object Workspace{
     }
 
     fun updateStories(context: Context) {
-        Timber.d("updateStories at ${workdocfile?.uri}")
-        if(workdocfile.isDirectory) {
-            Stories.removeAll(Stories)
-            Stories.addAll(buildStories(context))
+        Stories.removeAll(Stories)
+
+        if (workdocfile.isDirectory) {
+            for (storyPath in workdocfile.listFiles()) {
+                buildStory(context, storyPath)?.also {
+                    Stories.add(it)
+                }
+            }
         }
-        Stories.sortBy{it.title}
+
+        Stories.sortBy { it.title }
         phases = buildPhases()
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
     }
 
-    private fun buildStories(context: Context): List<Story> {
-        val stories = mutableListOf<Story>()
-        val files = workdocfile.listFiles()
-        for (storyPath in files) {
-            unzipIfNewFolders(context, storyPath, files)
-        }
-        val newFiles = workdocfile.listFiles()
-        for (storyPath in newFiles) {
-            if (storyPath in files) continue
-            if (storyPath.isDirectory) {
-                val story = parseStoryIfPresent(context, storyPath)
-                if (story != null) {
-                    stories.add(story)
-                }
-            }
-        }
-
-        return stories
+    private fun buildStory(context: Context, storyPath: DocumentFile): Story? {
+        return unzipIfZipped(context, storyPath, workdocfile.listFiles())
+                ?.let { storyFolder -> workdocfile.listFiles().find { it.name == storyFolder } }
+                ?.let { parseStoryIfPresent(context, it) }
     }
 
     private fun buildPhases(): List<Phase> {
