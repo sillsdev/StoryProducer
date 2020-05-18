@@ -131,11 +131,10 @@ object Workspace{
     }
 
     fun storyPaths(): List<DocumentFile> {
-        return workdocfile.listFiles().filter(::isStory)
-    }
-
-    private fun isStory(file: DocumentFile): Boolean {
-        return  file.isDirectory || isZipped(file)
+        val workspaceFiles = workdocfile.listFiles()
+        val directories = workspaceFiles.filter { it.isDirectory }
+        val bloomFiles = workspaceFiles.filter { isZipped(it) }
+        return directories.plus(bloomFiles)
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
