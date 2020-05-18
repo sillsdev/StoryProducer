@@ -16,20 +16,28 @@ open class BaseController(
 ) {
 
     protected val subscriptions = CompositeDisposable()
+    private var cancelUpdate = false
+
+    fun cancelUpdate() {
+        cancelUpdate = true
+        view.showCancellingReadingTemplatesDialog()
+    }
 
     fun updateStories() {
         Workspace.Stories.clear()
         val storyPaths = Workspace.storyPaths()
         if (storyPaths.size > 0) {
-            view.showReadingTemplatesDialog(storyPaths.size)
+            view.showReadingTemplatesDialog(this)
             updateStory(storyPaths, 0)
         }
     }
 
     fun updateStory(storyPaths: List<DocumentFile>, index: Int) {
+        val storyPath = storyPaths.get(index)
+        view.updateReadingTemplatesDialog(index + 1, storyPaths.size, storyPath.name.orEmpty())
         subscriptions.add(
                 Single.fromCallable {
-                    Workspace.buildStory(context, storyPaths.get(index))?.also {
+                    Workspace.buildStory(context, storyPath)?.also {
                         Workspace.Stories.add(it)
                     }
                 }
@@ -40,23 +48,25 @@ open class BaseController(
     }
 
     private fun onUpdateStorySuccess(storyPaths: List<DocumentFile>, index: Int) {
-        view.updateReadingTemplatesDialog(index + 1, storyPaths.size)
-
         val nextIndex = index + 1
-        if (nextIndex < storyPaths.size) {
+        if (!cancelUpdate && nextIndex < storyPaths.size) {
             updateStory(storyPaths, nextIndex)
         } else {
-            Workspace.Stories.sortBy { it.title }
-            Workspace.phases = Workspace.buildPhases()
-            Workspace.activePhaseIndex = 0
-            Workspace.updateStoryLocalCredits(context)
+            onStoriesUpdated()
+        }
+    }
 
-            view.hideReadingTemplatesDialog()
-            if (Workspace.registration.complete) {
-                view.showMain()
-            } else {
-                view.showRegistration()
-            }
+    private fun onStoriesUpdated() {
+        Workspace.Stories.sortBy { it.title }
+        Workspace.phases = Workspace.buildPhases()
+        Workspace.activePhaseIndex = 0
+        Workspace.updateStoryLocalCredits(context)
+
+        view.hideReadingTemplatesDialog()
+        if (Workspace.registration.complete) {
+            view.showMain()
+        } else {
+            view.showRegistration()
         }
     }
 
