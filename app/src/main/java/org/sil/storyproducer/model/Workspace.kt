@@ -133,43 +133,43 @@ object Workspace{
     }
 
     fun updateStories(context: Context) {
-        //Iterate external files directories.
-        //for all files in the workspace, see if they are folders that have templates.
         Timber.d("updateStories at ${workdocfile?.uri}")
         if(workdocfile.isDirectory) {
-            //find all stories
             Stories.removeAll(Stories)
-            val files = workdocfile.listFiles()
-            for (storyPath in files) {
-                Timber.d("storyPath: $storyPath")
-                //TODO - check storyPath.name against titles.
-                unzipIfNewFolders(context, storyPath, files)
-                //deleteWorkspaceFile(context, storyPath!!.name!!)
-            }
-            //After you unzipped the files, see if there are any new templates that we can read in.
-            val newFiles = workdocfile.listFiles()
-            for (storyPath in newFiles) {
-                Timber.d("new storyPath: $storyPath")
-                if (storyPath in files) continue
-                //only read in new folders.
-                if (storyPath.isDirectory) {
-                    Timber.d("parse story at $storyPath")
-                    val story = parseStoryIfPresent(context, storyPath)
-                    if (story != null) {
-                        Stories.add(story)
-                    }
+            Stories.addAll(buildStories(context))
+        }
+        Stories.sortBy{it.title}
+        phases = buildPhases()
+        activePhaseIndex = 0
+        updateStoryLocalCredits(context)
+    }
+
+    private fun buildStories(context: Context): List<Story> {
+        val stories = mutableListOf<Story>()
+        val files = workdocfile.listFiles()
+        for (storyPath in files) {
+            unzipIfNewFolders(context, storyPath, files)
+        }
+        val newFiles = workdocfile.listFiles()
+        for (storyPath in newFiles) {
+            if (storyPath in files) continue
+            if (storyPath.isDirectory) {
+                val story = parseStoryIfPresent(context, storyPath)
+                if (story != null) {
+                    stories.add(story)
                 }
             }
         }
-        //sort by title.
-        Stories.sortBy{it.title}
+
+        return stories
+    }
+
+    private fun buildPhases(): List<Phase> {
         //update phases based upon registration selection
-        phases = when(registration.getString("consultant_location_type")) {
+        return when(registration.getString("consultant_location_type")) {
             "remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
-        activePhaseIndex = 0
-        updateStoryLocalCredits(context)
     }
 
     fun deleteVideo(context: Context, path: String){
