@@ -7,7 +7,11 @@ import android.net.Uri
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 
-class SelectTemplatesFolderController(val view: BaseActivityView, val context: Context, val workspace: Workspace) {
+class SelectTemplatesFolderController(
+        view: BaseActivityView,
+        context: Context,
+        val workspace: Workspace
+) : BaseController(view, context) {
 
     fun openDocumentTree(request: Int) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(URI_PERMISSION_FLAGS)
@@ -18,7 +22,7 @@ class SelectTemplatesFolderController(val view: BaseActivityView, val context: C
         data?.data?.also { uri ->
             if (shouldSetupWorkspace(result, uri)) {
                 setupWorkspace(request, uri)
-                view.showRegistration()
+                updateStories()
             }
         }
     }
@@ -29,9 +33,9 @@ class SelectTemplatesFolderController(val view: BaseActivityView, val context: C
     }
 
     internal fun setupWorkspace(request: Int, uri: Uri) {
-        workspace.setupWorkspacePath(context, uri)
-
         view.takePersistableUriPermission(uri)
+
+        workspace.setupWorkspacePath(context, uri)
 
         if (shouldAddDemoToWorkspace(request)) {
             workspace.addDemoToWorkspace(context)

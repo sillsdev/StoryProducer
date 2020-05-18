@@ -8,7 +8,9 @@ import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
 import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER
@@ -17,14 +19,24 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companio
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
+import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     lateinit var selectTemplatesFolderController: SelectTemplatesFolderController
 
+    private var readingTemplatesDialog: AlertDialog? = null
+    protected val subscriptions = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Timber.tag(javaClass.simpleName).v("onCreate")
         selectTemplatesFolderController = SelectTemplatesFolderController(this, this, Workspace)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.tag(javaClass.simpleName).v("onResume")
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
@@ -54,9 +66,29 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         )
     }
 
+    override fun showMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
     override fun showRegistration() {
         startActivity(Intent(this, RegistrationActivity::class.java))
         finish()
+    }
+
+    override fun showReadingTemplatesDialog() {
+        readingTemplatesDialog = AlertDialog.Builder(this)
+                .setTitle("Reading Story Producer Templates")
+                .setMessage("0 of 7 templates complete.")
+                .setNegativeButton(R.string.cancel, null)
+                .create()
+
+        readingTemplatesDialog?.show()
+    }
+
+    override fun hideReadingTemplatesDialog() {
+        readingTemplatesDialog?.dismiss()
+        readingTemplatesDialog = null
     }
 
     fun showSelectTemplatesFolderDialog() {
