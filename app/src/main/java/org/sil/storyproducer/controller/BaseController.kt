@@ -29,6 +29,8 @@ open class BaseController(
         if (storyPaths.size > 0) {
             view.showReadingTemplatesDialog(this)
             updateStory(storyPaths, 0)
+        } else {
+            onStoriesUpdated()
         }
     }
 
@@ -52,17 +54,21 @@ open class BaseController(
         if (!cancelUpdate && nextIndex < storyPaths.size) {
             updateStory(storyPaths, nextIndex)
         } else {
-            onStoriesUpdated()
+            onLastStoryUpdated()
         }
     }
 
-    private fun onStoriesUpdated() {
+    private fun onLastStoryUpdated() {
         Workspace.Stories.sortBy { it.title }
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
         Workspace.updateStoryLocalCredits(context)
 
         view.hideReadingTemplatesDialog()
+        onStoriesUpdated()
+    }
+
+    private fun onStoriesUpdated() {
         if (Workspace.registration.complete) {
             view.showMain()
         } else {
