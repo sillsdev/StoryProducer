@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.content.Context
+import androidx.documentfile.provider.DocumentFile
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,25 +18,49 @@ open class BaseController(
     protected val subscriptions = CompositeDisposable()
 
     fun updateStories() {
-        view.showReadingTemplatesDialog()
-        subscriptions.add(
-                Single.fromCallable { Workspace.updateStories(context) }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ onUpdateStoriesSuccess() }, ::onUpdateStoriesError)
-        )
-    }
-
-    private fun onUpdateStoriesSuccess() {
-        view.hideReadingTemplatesDialog()
-        if (Workspace.registration.complete) {
-            view.showMain()
-        } else {
-            view.showRegistration()
+        Workspace.Stories.clear()
+        val storyPaths = Workspace.storyPaths()
+        if (storyPaths.size > 0) {
+            view.showReadingTemplatesDialog(storyPaths.size)
+            updateStory(storyPaths, 0)
         }
     }
 
-    private fun onUpdateStoriesError(th: Throwable) {
+    fun updateStory(storyPaths: List<DocumentFile>, index: Int) {
+        subscriptions.add(
+                Single.fromCallable {
+                    Workspace.buildStory(context, storyPaths.get(index))?.also {
+                        Workspace.Stories.add(it)
+                    }
+                }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({ onUpdateStorySuccess(storyPaths, index) }, ::onUpdateStoryError)
+        )
+    }
+
+    private fun onUpdateStorySuccess(storyPaths: List<DocumentFile>, index: Int) {
+        view.updateReadingTemplatesDialog(index + 1, storyPaths.size)
+
+        val nextIndex = index + 1
+        if (nextIndex < storyPaths.size) {
+            updateStory(storyPaths, nextIndex)
+        } else {
+            Workspace.Stories.sortBy { it.title }
+            Workspace.phases = Workspace.buildPhases()
+            Workspace.activePhaseIndex = 0
+            Workspace.updateStoryLocalCredits(context)
+
+            view.hideReadingTemplatesDialog()
+            if (Workspace.registration.complete) {
+                view.showMain()
+            } else {
+                view.showRegistration()
+            }
+        }
+    }
+
+    private fun onUpdateStoryError(th: Throwable) {
         view.hideReadingTemplatesDialog()
         Timber.e(th)
     }

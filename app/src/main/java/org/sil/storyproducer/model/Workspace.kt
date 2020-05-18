@@ -32,7 +32,6 @@ object Workspace{
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
-        private set
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
@@ -125,37 +124,27 @@ object Workspace{
                 }
             }
         }
-        updateStories(context)
     }
 
     fun clearWorkspace(){
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun updateStories(context: Context) {
-        Stories.removeAll(Stories)
-
-        if (workdocfile.isDirectory) {
-            for (storyPath in workdocfile.listFiles()) {
-                buildStory(context, storyPath)?.also {
-                    Stories.add(it)
-                }
-            }
-        }
-
-        Stories.sortBy { it.title }
-        phases = buildPhases()
-        activePhaseIndex = 0
-        updateStoryLocalCredits(context)
+    fun storyPaths(): List<DocumentFile> {
+        return workdocfile.listFiles().filter(::isStory)
     }
 
-    private fun buildStory(context: Context, storyPath: DocumentFile): Story? {
+    private fun isStory(file: DocumentFile): Boolean {
+        return  file.isDirectory || isZipped(file)
+    }
+
+    fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         return unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> workdocfile.listFiles().find { it.name == storyFolder } }
                 ?.let { parseStoryIfPresent(context, it) }
     }
 
-    private fun buildPhases(): List<Phase> {
+    fun buildPhases(): List<Phase> {
         //update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
             "remote" -> Phase.getRemotePhases()

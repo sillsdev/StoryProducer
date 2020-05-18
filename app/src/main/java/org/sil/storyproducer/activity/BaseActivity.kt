@@ -76,14 +76,18 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         finish()
     }
 
-    override fun showReadingTemplatesDialog() {
+    override fun showReadingTemplatesDialog(total: Int) {
         readingTemplatesDialog = AlertDialog.Builder(this)
                 .setTitle("Reading Story Producer Templates")
-                .setMessage("0 of 7 templates complete.")
+                .setMessage("0 of $total templates complete.")
                 .setNegativeButton(R.string.cancel, null)
                 .create()
 
         readingTemplatesDialog?.show()
+    }
+
+    override fun updateReadingTemplatesDialog(complete: Int, total: Int) {
+        readingTemplatesDialog?.setMessage("$complete of $total templates complete.")
     }
 
     override fun hideReadingTemplatesDialog() {

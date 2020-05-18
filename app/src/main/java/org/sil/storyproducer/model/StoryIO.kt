@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
+import net.lingala.zip4j.ZipFile
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
-import net.lingala.zip4j.ZipFile
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -77,19 +77,24 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     return null
 }
 
-fun unzipIfZipped(context: Context, zipDocFile: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
+fun isZipped(file: DocumentFile): Boolean {
+    return file.name!!.substringAfterLast(".","").let {
+        arrayOf("zip","bloom","bloomd").contains(it)
+    }
+}
+
+fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
 
     //only work with zip files.
-    val extension = zipDocFile.name!!.substringAfterLast(".","")
-    val name = zipDocFile.name!!.substringBeforeLast(".","")
-    if (!(extension in arrayOf("zip","bloom","bloomd"))) return zipDocFile.name
+    val name = file.name!!.substringBeforeLast(".","")
+    if (!isZipped(file)) return file.name
 
-    val sourceFile = File("${context.filesDir}/${zipDocFile.name!!}")
+    val sourceFile = File("${context.filesDir}/${file.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
     try
     {
         //copy file to internal files directory to perform the normal "File" opterations on.
-        val uri = getWorkspaceUri(zipDocFile.name!!)
+        val uri = getWorkspaceUri(file.name!!)
         if(uri != null){copyToFilesDir(context,uri,sourceFile)}
 
         //Exctract to files/unzip
@@ -132,7 +137,7 @@ fun unzipIfZipped(context: Context, zipDocFile: DocumentFile, existingFolders: A
     catch(e: Exception) { }
     //delete copied and original zip file to save space
     sourceFile.delete()
-    deleteWorkspaceFile(context,zipDocFile.name!!)
+    deleteWorkspaceFile(context,file.name!!)
 
     return name
 }

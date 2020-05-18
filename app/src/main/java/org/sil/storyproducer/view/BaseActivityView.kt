@@ -9,7 +9,8 @@ interface BaseActivityView {
     fun showMain()
     fun showRegistration()
     fun takePersistableUriPermission(uri: Uri)
-    fun showReadingTemplatesDialog()
+    fun showReadingTemplatesDialog(total: Int)
+    fun updateReadingTemplatesDialog(complete: Int, total: Int)
     fun hideReadingTemplatesDialog()
 
 }
