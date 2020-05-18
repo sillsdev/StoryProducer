@@ -13,6 +13,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -26,10 +27,8 @@ object Workspace{
         set(value) {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
-            storiesUpdated = false
         }
     val Stories: MutableList<Story> = mutableListOf()
-    var storiesUpdated = false
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
@@ -80,23 +79,21 @@ object Workspace{
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorskpace(activity: Activity) {
+        Timber.d("initializeWorskpace")
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(activity,Uri.parse(prefs!!.getString("workspace","")))
+        setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
     }
 
-    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
-        params.putString("phone_id", Secure.getString(context.contentResolver,
-                Secure.ANDROID_ID))
-        params.putString("story_number", activeStory.titleNumber)
-        params.putString("ethnolog", registration.getString("ethnologue", " "))
-        params.putString("lwc", registration.getString("lwc", " "))
-        params.putString("translator_email", registration.getString("translator_email", " "))
-        params.putString("trainer_email", registration.getString("trainer_email", " "))
-        params.putString("consultant_email", registration.getString("consultant_email", " "))
-        firebaseAnalytics.logEvent(eventName, params)
+    fun setupWorkspacePath(context: Context, uri: Uri) {
+        Timber.d("setupWorkspacePath")
+        try {
+            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+            registration.load(context)
+        } catch (e: Exception) {
+        }
     }
 
     fun addDemoToWorkspace(context: Context){
@@ -128,15 +125,6 @@ object Workspace{
                 }
             }
         }
-        storiesUpdated = false
-        updateStories(context)
-    }
-
-    fun setupWorkspacePath(context: Context, uri: Uri){
-        try {
-            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
-            registration.load(context)
-        } catch ( e : Exception) {}
         updateStories(context)
     }
 
@@ -144,15 +132,16 @@ object Workspace{
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    private fun updateStories(context: Context) {
+    fun updateStories(context: Context) {
         //Iterate external files directories.
         //for all files in the workspace, see if they are folders that have templates.
-        if(storiesUpdated) return
+        Timber.d("updateStories at ${workdocfile?.uri}")
         if(workdocfile.isDirectory) {
             //find all stories
             Stories.removeAll(Stories)
             val files = workdocfile.listFiles()
             for (storyPath in files) {
+                Timber.d("storyPath: $storyPath")
                 //TODO - check storyPath.name against titles.
                 unzipIfNewFolders(context, storyPath, files)
                 //deleteWorkspaceFile(context, storyPath!!.name!!)
@@ -160,9 +149,11 @@ object Workspace{
             //After you unzipped the files, see if there are any new templates that we can read in.
             val newFiles = workdocfile.listFiles()
             for (storyPath in newFiles) {
+                Timber.d("new storyPath: $storyPath")
                 if (storyPath in files) continue
                 //only read in new folders.
                 if (storyPath.isDirectory) {
+                    Timber.d("parse story at $storyPath")
                     val story = parseStoryIfPresent(context, storyPath)
                     if (story != null) {
                         Stories.add(story)
@@ -179,7 +170,6 @@ object Workspace{
         }
         activePhaseIndex = 0
         updateStoryLocalCredits(context)
-        storiesUpdated = true
     }
 
     fun deleteVideo(context: Context, path: String){
@@ -245,6 +235,19 @@ object Workspace{
         //there was a successful phase change!
         return true
     }
+
+    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
+        params.putString("phone_id", Secure.getString(context.contentResolver,
+                Secure.ANDROID_ID))
+        params.putString("story_number", activeStory.titleNumber)
+        params.putString("ethnolog", registration.getString("ethnologue", " "))
+        params.putString("lwc", registration.getString("lwc", " "))
+        params.putString("translator_email", registration.getString("translator_email", " "))
+        params.putString("trainer_email", registration.getString("trainer_email", " "))
+        params.putString("consultant_email", registration.getString("consultant_email", " "))
+        firebaseAnalytics.logEvent(eventName, params)
+    }
+
 }
 
 

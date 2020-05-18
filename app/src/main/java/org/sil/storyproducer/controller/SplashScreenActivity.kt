@@ -2,18 +2,24 @@ package org.sil.storyproducer.controller
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Handler
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
-
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.activity.WorkspaceDialogUpdateActivity
 import org.sil.storyproducer.model.Workspace
+import timber.log.Timber
 
-class SplashScreenActivity : AppCompatActivity() {
+class SplashScreenActivity : BaseActivity() {
+
+    lateinit var controller: SplashScreenController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        controller = SplashScreenController(this, this)
         setContentView(R.layout.activity_splash_screen)
 
         try {
@@ -23,30 +29,26 @@ class SplashScreenActivity : AppCompatActivity() {
             e.printStackTrace()
         }
 
+        if (!Workspace.isInitialized) {
+            initWorkspace()
+        }
+    }
+
+    fun initWorkspace() {
         Workspace.initializeWorskpace(this)
 
-        Handler().postDelayed(Runnable {
-            //do we have a workspace?
-            if (!Workspace.workdocfile.isDirectory) {
-                val intent = Intent(this@SplashScreenActivity, WorkspaceDialogUpdateActivity::class.java)
-                startActivity(intent)
-                return@Runnable
-            }
-            // Checks registration file to see if email has been sent and launches registration if it hasn't
-            if (!Workspace.registration.complete) {
-                val intent = Intent(this@SplashScreenActivity, RegistrationActivity::class.java)
-                startActivity(intent)
-                return@Runnable
-            }
-
-            val intent = Intent(this@SplashScreenActivity, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        }, TIME_OUT.toLong())
+        if (Workspace.workdocfile.isDirectory) {
+            controller.updateStories()
+        } else {
+            showSelectTemplatesFolder()
+        }
     }
 
-    companion object {
-        //Time in ms for splash screen to be shown
-        private val TIME_OUT = 300
+
+
+    private fun showSelectTemplatesFolder() {
+        startActivity(Intent(this, WorkspaceDialogUpdateActivity::class.java))
+        finish()
     }
+
 }
