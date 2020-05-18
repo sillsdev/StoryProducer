@@ -10,6 +10,7 @@ import android.text.Spanned
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.BaseController
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
@@ -26,6 +27,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     lateinit var selectTemplatesFolderController: SelectTemplatesFolderController
 
     private var readingTemplatesDialog: AlertDialog? = null
+    private var cancellingReadingTemplatesDialog: AlertDialog? = null
     protected val subscriptions = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,23 +78,34 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         finish()
     }
 
-    override fun showReadingTemplatesDialog(total: Int) {
+    override fun showReadingTemplatesDialog(controller: BaseController) {
         readingTemplatesDialog = AlertDialog.Builder(this)
                 .setTitle("Reading Story Producer Templates")
-                .setMessage("0 of $total templates complete.")
-                .setNegativeButton(R.string.cancel, null)
+                .setMessage("")
+                .setNegativeButton(R.string.cancel) { d, i -> controller.cancelUpdate() }
                 .create()
 
         readingTemplatesDialog?.show()
     }
 
-    override fun updateReadingTemplatesDialog(complete: Int, total: Int) {
-        readingTemplatesDialog?.setMessage("$complete of $total templates complete.")
+    override fun showCancellingReadingTemplatesDialog() {
+        cancellingReadingTemplatesDialog = AlertDialog.Builder(this)
+                .setTitle("Reading Story Producer Templates")
+                .setMessage("Cancelling ...")
+                .create()
+
+        cancellingReadingTemplatesDialog?.show()
+    }
+
+    override fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String) {
+        readingTemplatesDialog?.setMessage("Reading $current of $total templates:\n\n$currentTemplate")
     }
 
     override fun hideReadingTemplatesDialog() {
         readingTemplatesDialog?.dismiss()
         readingTemplatesDialog = null
+        cancellingReadingTemplatesDialog?.dismiss()
+        cancellingReadingTemplatesDialog = null
     }
 
     fun showSelectTemplatesFolderDialog() {

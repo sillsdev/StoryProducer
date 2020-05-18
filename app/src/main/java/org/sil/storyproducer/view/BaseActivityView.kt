@@ -2,6 +2,7 @@ package org.sil.storyproducer.view
 
 import android.content.Intent
 import android.net.Uri
+import org.sil.storyproducer.controller.BaseController
 
 interface BaseActivityView {
 
@@ -9,8 +10,9 @@ interface BaseActivityView {
     fun showMain()
     fun showRegistration()
     fun takePersistableUriPermission(uri: Uri)
-    fun showReadingTemplatesDialog(total: Int)
-    fun updateReadingTemplatesDialog(complete: Int, total: Int)
+    fun showReadingTemplatesDialog(controller: BaseController)
+    fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String)
     fun hideReadingTemplatesDialog()
+    fun showCancellingReadingTemplatesDialog()
 
 }
