@@ -25,34 +25,50 @@ open class BaseController(
 
     fun updateStories() {
         Workspace.Stories.clear()
-        val storyPaths = Workspace.storyPaths()
-        if (storyPaths.size > 0) {
-            view.showReadingTemplatesDialog(this)
-            updateStory(storyPaths, 0)
+
+        val storyDirectories = Workspace.storyDirectories()
+        val storyBloomFiles = Workspace.storyBloomFiles()
+
+
+        storyDirectories.forEach {
+            Workspace.buildStory(context, it)?.also {
+                Workspace.Stories.add(it)
+            }
+        }
+
+        if (storyBloomFiles.size > 0) {
+            updateStoriesAsync(storyDirectories.size, storyBloomFiles)
         } else {
             onStoriesUpdated()
         }
     }
 
-    fun updateStory(storyPaths: List<DocumentFile>, index: Int) {
-        val storyPath = storyPaths.get(index)
-        view.updateReadingTemplatesDialog(index + 1, storyPaths.size, storyPath.name.orEmpty())
+    fun updateStoriesAsync(storyDirectoriesCount: Int, bloomFiles: List<DocumentFile>) {
+        val current = storyDirectoriesCount + 1
+        val total = storyDirectoriesCount + bloomFiles.size
+        view.showReadingTemplatesDialog(this)
+        updateStoryAsync(bloomFiles, 0, current, total)
+    }
+
+    fun updateStoryAsync(bloomFiles: List<DocumentFile>, index: Int, current: Int, total: Int) {
+        val bloomFile = bloomFiles.get(index)
+        view.updateReadingTemplatesDialog(current, total, bloomFile.name.orEmpty())
         subscriptions.add(
                 Single.fromCallable {
-                    Workspace.buildStory(context, storyPath)?.also {
+                    Workspace.buildStory(context, bloomFile)?.also {
                         Workspace.Stories.add(it)
                     }
                 }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe({ onUpdateStorySuccess(storyPaths, index) }, ::onUpdateStoryError)
+                        .subscribe({ onUpdateStoryAsyncSuccess(bloomFiles, index, current, total) }, ::onUpdateStoryError)
         )
     }
 
-    private fun onUpdateStorySuccess(storyPaths: List<DocumentFile>, index: Int) {
+    private fun onUpdateStoryAsyncSuccess(bloomFiles: List<DocumentFile>, index: Int, current: Int, total: Int) {
         val nextIndex = index + 1
-        if (!cancelUpdate && nextIndex < storyPaths.size) {
-            updateStory(storyPaths, nextIndex)
+        if (!cancelUpdate && nextIndex < bloomFiles.size) {
+            updateStoryAsync(bloomFiles, nextIndex, current + 1, total)
         } else {
             onLastStoryUpdated()
         }

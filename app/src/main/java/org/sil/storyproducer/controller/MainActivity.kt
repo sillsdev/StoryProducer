@@ -12,7 +12,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.WebView
-import android.widget.ProgressBar
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -31,6 +30,7 @@ import org.sil.storyproducer.tools.Network.VolleySingleton
 import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
+
     private var mDrawerLayout: DrawerLayout? = null
 
     private val receiver = object : BroadcastReceiver() {
@@ -53,15 +53,12 @@ class MainActivity : BaseActivity(), Serializable {
         setContentView(R.layout.activity_main)
         setupDrawer()
 
-        //Display a "progress bar" while loading all the template files.  Remove it when your done.
-        val pb = findViewById<ProgressBar>(R.id.indeterminateBar)
-        pb.visibility = View.VISIBLE
+        if (!Workspace.isInitialized) {
+            initWorkspace()
+        }
 
         GlobalScope.launch {
-            if(!Workspace.isInitialized)
-                Workspace.initializeWorskpace(this@MainActivity)
             runOnUiThread {
-                pb.visibility = View.GONE
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
