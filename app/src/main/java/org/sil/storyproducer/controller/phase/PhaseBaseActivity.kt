@@ -51,9 +51,6 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         super.setContentView(R.layout.phase_frame)
         slideService = SlideService(this)
 
-        //keeps the screen from going to sleep
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(mActionBarToolbar)
         supportActionBar?.title = ""

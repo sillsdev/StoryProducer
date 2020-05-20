@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
@@ -24,7 +25,7 @@ import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
-    lateinit var selectTemplatesFolderController: SelectTemplatesFolderController
+    lateinit var controller: SelectTemplatesFolderController
 
     private var readingTemplatesDialog: AlertDialog? = null
     private var cancellingReadingTemplatesDialog: AlertDialog? = null
@@ -32,8 +33,9 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(FLAG_KEEP_SCREEN_ON)
         Timber.tag(javaClass.simpleName).v("onCreate")
-        selectTemplatesFolderController = SelectTemplatesFolderController(this, this, Workspace)
+        controller = SelectTemplatesFolderController(this, this, Workspace)
     }
 
     override fun onResume() {
@@ -45,20 +47,35 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         super.onActivityResult(request, result, data)
 
         if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
-            selectTemplatesFolderController.onFolderSelected(request, result, data)
+            controller.onFolderSelected(request, result, data)
         }
     }
 
+    fun initWorkspace() {
+        Workspace.initializeWorskpace(this)
+
+        if (Workspace.workdocfile.isDirectory) {
+            controller.updateStories()
+        } else {
+            showSelectTemplatesFolder()
+        }
+    }
+
+    private fun showSelectTemplatesFolder() {
+        startActivity(Intent(this, WorkspaceDialogUpdateActivity::class.java))
+        finish()
+    }
+
     fun selectTemplatesFolder() {
-        selectTemplatesFolderController.openDocumentTree(SELECT_TEMPLATES_FOLDER)
+        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER)
     }
 
     fun selectTemplatesFolderAndAddDemo() {
-        selectTemplatesFolderController.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
+        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
     }
 
     fun updateTemplatesFolder() {
-        selectTemplatesFolderController.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
+        controller.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
     }
 
     override fun takePersistableUriPermission(uri: Uri) {
@@ -80,9 +97,10 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showReadingTemplatesDialog(controller: BaseController) {
         readingTemplatesDialog = AlertDialog.Builder(this)
-                .setTitle("Reading Story Producer Templates")
+                .setTitle(R.string.scanning_sp_templates)
                 .setMessage("")
                 .setNegativeButton(R.string.cancel) { d, i -> controller.cancelUpdate() }
+                .setCancelable(false)
                 .create()
 
         readingTemplatesDialog?.show()
@@ -90,8 +108,8 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showCancellingReadingTemplatesDialog() {
         cancellingReadingTemplatesDialog = AlertDialog.Builder(this)
-                .setTitle("Reading Story Producer Templates")
-                .setMessage("Cancelling ...")
+                .setTitle(R.string.scanning_sp_templates)
+                .setMessage(R.string.cancelling)
                 .create()
 
         cancellingReadingTemplatesDialog?.show()
