@@ -20,16 +20,11 @@ class SelectTemplatesFolderController(
 
     fun onFolderSelected(request: Int, result: Int, data: Intent?) {
         data?.data?.also { uri ->
-            if (shouldSetupWorkspace(result, uri)) {
+            if (result == Activity.RESULT_OK) {
                 setupWorkspace(request, uri)
                 updateStories()
             }
         }
-    }
-
-    fun shouldSetupWorkspace(result: Int, uri: Uri?): Boolean {
-        return result == Activity.RESULT_OK
-                //&& !workspace.workdocfile.uri?.lastPathSegment.orEmpty().equals(uri?.lastPathSegment)
     }
 
     internal fun setupWorkspace(request: Int, uri: Uri) {
