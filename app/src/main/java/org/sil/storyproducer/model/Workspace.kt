@@ -26,14 +26,11 @@ object Workspace{
         set(value) {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
-            storiesUpdated = false
         }
     val Stories: MutableList<Story> = mutableListOf()
-    var storiesUpdated = false
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
-        private set
     var isInitialized = false
     var prefs: SharedPreferences? = null
 
@@ -82,21 +79,17 @@ object Workspace{
     fun initializeWorskpace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(activity,Uri.parse(prefs!!.getString("workspace","")))
+        setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
     }
 
-    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
-        params.putString("phone_id", Secure.getString(context.contentResolver,
-                Secure.ANDROID_ID))
-        params.putString("story_number", activeStory.titleNumber)
-        params.putString("ethnolog", registration.getString("ethnologue", " "))
-        params.putString("lwc", registration.getString("lwc", " "))
-        params.putString("translator_email", registration.getString("translator_email", " "))
-        params.putString("trainer_email", registration.getString("trainer_email", " "))
-        params.putString("consultant_email", registration.getString("consultant_email", " "))
-        firebaseAnalytics.logEvent(eventName, params)
+    fun setupWorkspacePath(context: Context, uri: Uri) {
+        try {
+            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+            registration.load(context)
+        } catch (e: Exception) {
+        }
     }
 
     fun addDemoToWorkspace(context: Context){
@@ -128,58 +121,36 @@ object Workspace{
                 }
             }
         }
-        storiesUpdated = false
-        updateStories(context)
-    }
-
-    fun setupWorkspacePath(context: Context, uri: Uri){
-        try {
-            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
-            registration.load(context)
-        } catch ( e : Exception) {}
-        updateStories(context)
     }
 
     fun clearWorkspace(){
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    private fun updateStories(context: Context) {
-        //Iterate external files directories.
-        //for all files in the workspace, see if they are folders that have templates.
-        if(storiesUpdated) return
-        if(workdocfile.isDirectory) {
-            //find all stories
-            Stories.removeAll(Stories)
-            val files = workdocfile.listFiles()
-            for (storyPath in files) {
-                //TODO - check storyPath.name against titles.
-                unzipIfNewFolders(context, storyPath, files)
-                //deleteWorkspaceFile(context, storyPath!!.name!!)
-            }
-            //After you unzipped the files, see if there are any new templates that we can read in.
-            val newFiles = workdocfile.listFiles()
-            for (storyPath in newFiles) {
-                if (storyPath in files) continue
-                //only read in new folders.
-                if (storyPath.isDirectory) {
-                    val story = parseStoryIfPresent(context, storyPath)
-                    if (story != null) {
-                        Stories.add(story)
-                    }
-                }
-            }
-        }
-        //sort by title.
-        Stories.sortBy{it.title}
+    fun storyFiles(): List<DocumentFile> {
+        return storyDirectories().plus(storyBloomFiles())
+    }
+
+    private fun storyDirectories(): List<DocumentFile> {
+        return workdocfile.listFiles().filter { it.isDirectory }
+    }
+
+    private fun storyBloomFiles(): List<DocumentFile> {
+        return workdocfile.listFiles().filter { isZipped(it) }
+    }
+
+    fun buildStory(context: Context, storyPath: DocumentFile): Story? {
+        return unzipIfZipped(context, storyPath, workdocfile.listFiles())
+                ?.let { storyFolder -> workdocfile.listFiles().find { it.name == storyFolder } }
+                ?.let { parseStoryIfPresent(context, it) }
+    }
+
+    fun buildPhases(): List<Phase> {
         //update phases based upon registration selection
-        phases = when(registration.getString("consultant_location_type")) {
+        return when(registration.getString("consultant_location_type")) {
             "remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
-        activePhaseIndex = 0
-        updateStoryLocalCredits(context)
-        storiesUpdated = true
     }
 
     fun deleteVideo(context: Context, path: String){
@@ -245,6 +216,19 @@ object Workspace{
         //there was a successful phase change!
         return true
     }
+
+    fun logEvent(context: Context, eventName: String, params: Bundle = Bundle()){
+        params.putString("phone_id", Secure.getString(context.contentResolver,
+                Secure.ANDROID_ID))
+        params.putString("story_number", activeStory.titleNumber)
+        params.putString("ethnolog", registration.getString("ethnologue", " "))
+        params.putString("lwc", registration.getString("lwc", " "))
+        params.putString("translator_email", registration.getString("translator_email", " "))
+        params.putString("trainer_email", registration.getString("trainer_email", " "))
+        params.putString("consultant_email", registration.getString("consultant_email", " "))
+        firebaseAnalytics.logEvent(eventName, params)
+    }
+
 }
 
 
