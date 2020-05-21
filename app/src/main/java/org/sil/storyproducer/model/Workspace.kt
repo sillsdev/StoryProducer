@@ -13,7 +13,6 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
-import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -78,7 +77,6 @@ object Workspace{
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorskpace(activity: Activity) {
-        Timber.d("initializeWorskpace")
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
@@ -87,7 +85,6 @@ object Workspace{
     }
 
     fun setupWorkspacePath(context: Context, uri: Uri) {
-        Timber.d("setupWorkspacePath")
         try {
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
@@ -130,11 +127,15 @@ object Workspace{
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun storyDirectories(): List<DocumentFile> {
+    fun storyFiles(): List<DocumentFile> {
+        return storyDirectories().plus(storyBloomFiles())
+    }
+
+    private fun storyDirectories(): List<DocumentFile> {
         return workdocfile.listFiles().filter { it.isDirectory }
     }
 
-    fun storyBloomFiles(): List<DocumentFile> {
+    private fun storyBloomFiles(): List<DocumentFile> {
         return workdocfile.listFiles().filter { isZipped(it) }
     }
 

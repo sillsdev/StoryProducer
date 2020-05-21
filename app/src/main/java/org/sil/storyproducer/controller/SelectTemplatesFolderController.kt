@@ -29,7 +29,7 @@ class SelectTemplatesFolderController(
 
     fun shouldSetupWorkspace(result: Int, uri: Uri?): Boolean {
         return result == Activity.RESULT_OK
-                && !workspace.workdocfile.uri?.lastPathSegment.orEmpty().equals(uri?.lastPathSegment)
+                //&& !workspace.workdocfile.uri?.lastPathSegment.orEmpty().equals(uri?.lastPathSegment)
     }
 
     internal fun setupWorkspace(request: Int, uri: Uri) {

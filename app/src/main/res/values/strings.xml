@@ -241,7 +241,7 @@
     <!-- app menus -->
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
-    <string name="scanning_sp_templates">scanning SP templates</string>
+    <string name="scanning_sp_templates">DEBUG MODE!!!! scanning SP templates</string>
     <string name="update_workspace">Select \'SP Templates\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>

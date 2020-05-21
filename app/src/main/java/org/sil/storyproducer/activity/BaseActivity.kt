@@ -116,7 +116,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     override fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String) {
-        readingTemplatesDialog?.setMessage("Reading $current of $total templates:\n\n$currentTemplate")
+        readingTemplatesDialog?.setMessage("$current of $total templates:\n\n$currentTemplate")
     }
 
     override fun hideReadingTemplatesDialog() {
