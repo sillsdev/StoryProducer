@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.crashlytics.android.Crashlytics
 import com.squareup.moshi.Moshi
@@ -44,7 +43,6 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
-    Log.d("StoryIO", "parse story: ${storyPath?.uri}")
     var story: Story?
     //Check if path is path
     if(!storyPath.isDirectory) return null
