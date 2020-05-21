@@ -41,7 +41,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 val version = activity.packageManager.getPackageInfo(activity.packageName, 0).versionName
                 val message = activity.getString(R.string.license_body)
                 val dialog = AlertDialog.Builder(activity)
-                        .setTitle(activity.getString(R.string.license_title))
+                        .setTitle(activity.getString(R.string.about_title))
                         .setMessage("version: $version\n\n$message")
                         .setPositiveButton(activity.getString(R.string.ok)) { _, _ -> }.create()
                 dialog.show()
