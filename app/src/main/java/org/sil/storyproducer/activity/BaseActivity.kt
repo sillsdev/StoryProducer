@@ -7,8 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.BaseController
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER
@@ -17,34 +21,61 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companio
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
+import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
-    lateinit var selectTemplatesFolderController: SelectTemplatesFolderController
+    lateinit var controller: SelectTemplatesFolderController
+
+    private var readingTemplatesDialog: AlertDialog? = null
+    private var cancellingReadingTemplatesDialog: AlertDialog? = null
+    protected val subscriptions = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        selectTemplatesFolderController = SelectTemplatesFolderController(this, this, Workspace)
+        window.addFlags(FLAG_KEEP_SCREEN_ON)
+        Timber.tag(javaClass.simpleName).v("onCreate")
+        controller = SelectTemplatesFolderController(this, this, Workspace)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Timber.tag(javaClass.simpleName).v("onResume")
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
         super.onActivityResult(request, result, data)
 
         if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
-            selectTemplatesFolderController.onFolderSelected(request, result, data)
+            controller.onFolderSelected(request, result, data)
         }
     }
 
+    fun initWorkspace() {
+        Workspace.initializeWorskpace(this)
+
+        if (Workspace.workdocfile.isDirectory) {
+            controller.updateStories()
+        } else {
+            showSelectTemplatesFolder()
+        }
+    }
+
+    private fun showSelectTemplatesFolder() {
+        startActivity(Intent(this, WorkspaceDialogUpdateActivity::class.java))
+        finish()
+    }
+
     fun selectTemplatesFolder() {
-        selectTemplatesFolderController.openDocumentTree(SELECT_TEMPLATES_FOLDER)
+        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER)
     }
 
     fun selectTemplatesFolderAndAddDemo() {
-        selectTemplatesFolderController.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
+        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
     }
 
     fun updateTemplatesFolder() {
-        selectTemplatesFolderController.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
+        controller.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
     }
 
     override fun takePersistableUriPermission(uri: Uri) {
@@ -54,9 +85,45 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         )
     }
 
+    override fun showMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
     override fun showRegistration() {
         startActivity(Intent(this, RegistrationActivity::class.java))
         finish()
+    }
+
+    override fun showReadingTemplatesDialog(controller: BaseController) {
+        readingTemplatesDialog = AlertDialog.Builder(this)
+                .setTitle(R.string.scanning_sp_templates)
+                .setMessage("")
+                .setNegativeButton(R.string.cancel) { d, i -> controller.cancelUpdate() }
+                .setCancelable(false)
+                .create()
+
+        readingTemplatesDialog?.show()
+    }
+
+    override fun showCancellingReadingTemplatesDialog() {
+        cancellingReadingTemplatesDialog = AlertDialog.Builder(this)
+                .setTitle(R.string.scanning_sp_templates)
+                .setMessage(R.string.cancelling)
+                .create()
+
+        cancellingReadingTemplatesDialog?.show()
+    }
+
+    override fun updateReadingTemplatesDialog(current: Int, total: Int, currentTemplate: String) {
+        readingTemplatesDialog?.setMessage("$current of $total templates\n\n$currentTemplate")
+    }
+
+    override fun hideReadingTemplatesDialog() {
+        readingTemplatesDialog?.dismiss()
+        readingTemplatesDialog = null
+        cancellingReadingTemplatesDialog?.dismiss()
+        cancellingReadingTemplatesDialog = null
     }
 
     fun showSelectTemplatesFolderDialog() {
