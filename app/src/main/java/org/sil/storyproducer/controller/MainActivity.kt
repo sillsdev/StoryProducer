@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.webkit.WebView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
@@ -150,12 +149,12 @@ class MainActivity : BaseActivity(), Serializable {
                     this.startActivity(intent)
                     this.finish()
                 }
-                R.id.nav_license -> {
+                R.id.nav_about -> {
                     val version = packageManager.getPackageInfo(packageName, 0).versionName
                     val message = getString(R.string.license_body)
                     val dialog = AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.license_title))
-                            .setMessage("version: $version\n\n$message")
+                            .setTitle(getString(R.string.about_title))
+                            .setMessage("app version: $version\nprefer .bloom templates\n\n$message")
                             .setPositiveButton(getString(R.string.ok)) { _, _ -> }.create()
                     dialog.show()
                 }
