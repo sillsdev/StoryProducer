@@ -2,7 +2,6 @@ package org.sil.storyproducer.controller
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -30,13 +29,6 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
                 (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
-            }
-            view.findViewById<Button>(R.id.copy_demo_button).setOnClickListener {
-                Workspace.addDemoToWorkspace(context!!)
-                val intent = Intent(activity!!.applicationContext, MainActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                activity!!.startActivity(intent)
-                activity!!.finish()
             }
             return view
         }
