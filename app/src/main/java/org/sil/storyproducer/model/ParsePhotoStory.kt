@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
@@ -82,7 +83,9 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     //add as second last slide
     slides.add(slides.size-1,slide)
 
-    return Story(storyPath.name!!,slides)
+    return Story(storyPath.name!!,slides).apply {
+        importAppVersion = BuildConfig.VERSION_NAME
+    }
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
