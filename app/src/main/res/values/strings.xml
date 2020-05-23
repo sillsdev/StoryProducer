@@ -91,7 +91,7 @@
     <string name="stories_not_found_title">No stories found!</string>
     <string name="stories_not_found_body">No story templates found! The currently selected folder
         for story templates does not contain usable templates.  Select the appropriate
-        \'&lt;font size=\"20\" color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
+        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
     <string name="use_internal_demo_or_select_template_folder">Would you like to use the internal demo or select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
