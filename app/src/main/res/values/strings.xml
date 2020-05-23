@@ -91,7 +91,7 @@
     <string name="stories_not_found_title">No stories found!</string>
     <string name="stories_not_found_body">No story templates found! The currently selected folder
         for story templates does not contain usable templates.  Select the appropriate
-        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
+        \'&lt;font size=\"20\" color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
     <string name="use_internal_demo_or_select_template_folder">Would you like to use the internal demo or select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
@@ -248,7 +248,9 @@
 
     <!-- About -->
     <string name="about">About</string>
+    <string name="license">License</string>
     <string name="about_title">About Story Producer</string>
+    <string name="app_version">app version: %1$s</string>
     <string name="prefer_bloom_templates">prefer .bloom templates</string>
     <string name="license_body">This software is jointly copyrighted © 2020, SIL International and
                                 Cedarville University. It is released under the following license:

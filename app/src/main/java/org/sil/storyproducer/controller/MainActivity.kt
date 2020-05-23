@@ -7,10 +7,13 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.text.Spanned
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.webkit.WebView
+import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -124,43 +127,49 @@ class MainActivity : BaseActivity(), Serializable {
         //Lock from opening with left swipe
         mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener { menuItem ->
-            // set item as selected to persist highlight
-            menuItem.isChecked = true
-            // close drawer when item is tapped
-            mDrawerLayout!!.closeDrawers()
+        navigationView.setNavigationItemSelectedListener(::onNavigationItemSelected)
+    }
 
-            // Add code here to update the UI based on the item selected
-            // For example, swap UI fragments here
-            val intent: Intent
-            when (menuItem.itemId) {
-                R.id.nav_workspace -> {
-                    showSelectTemplatesFolderDialog()
-                }
-                R.id.nav_demo -> {
-                    Workspace.addDemoToWorkspace(this)
-                }
+    private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        mDrawerLayout?.closeDrawers()
 
-                R.id.nav_stories -> {
-                    // Current fragment
-                }
-                R.id.nav_registration -> {
-                    intent = Intent(this, RegistrationActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-                R.id.nav_about -> {
-                    val version = packageManager.getPackageInfo(packageName, 0).versionName
-                    val message = getString(R.string.license_body)
-                    val dialog = AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.about_title))
-                            .setMessage("app version: $version\nprefer .bloom templates\n\n$message")
-                            .setPositiveButton(getString(R.string.ok)) { _, _ -> }.create()
-                    dialog.show()
-                }
+        when (menuItem.itemId) {
+            R.id.nav_workspace -> {
+                showSelectTemplatesFolderDialog()
+            }
+            R.id.nav_demo -> {
+                Workspace.addDemoToWorkspace(this)
             }
 
-            true
+            R.id.nav_stories -> {
+                // Current fragment
+            }
+            R.id.nav_registration -> {
+                showRegistration()
+            }
+            R.id.nav_about -> {
+                showAboutDialog()
+            }
+        }
+
+        return true
+    }
+
+    private fun showAboutDialog() {
+        AlertDialog.Builder(this)
+                .setTitle(getString(R.string.about_title))
+                .setView(buildAboutDialogView())
+                .setPositiveButton(getString(R.string.ok), null)
+                .create()
+                .show()
+    }
+
+    private fun buildAboutDialogView(): View {
+        val versionName = packageManager.getPackageInfo(packageName, 0).versionName
+
+        return layoutInflater.inflate(R.layout.dialog_about, null).apply {
+            findViewById<TextView>(R.id.appVersion)
+                    .setText(getString(R.string.app_version, versionName))
         }
     }
 
