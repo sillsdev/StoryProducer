@@ -246,9 +246,11 @@
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
 
-    <!-- license -->
-    <string name="license_title">License</string>
-    <string name="license_body">This software is jointly copyrighted © 2018, SIL International and
+    <!-- About -->
+    <string name="about">About</string>
+    <string name="about_title">About Story Producer</string>
+    <string name="prefer_bloom_templates">prefer .bloom templates</string>
+    <string name="license_body">This software is jointly copyrighted © 2020, SIL International and
                                 Cedarville University. It is released under the following license:
                                 Permission is hereby granted, free of charge, to any person lawfully
                                 obtaining a copy of this software and associated documentation files
