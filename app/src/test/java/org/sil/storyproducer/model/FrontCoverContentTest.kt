@@ -10,9 +10,8 @@ class FrontCoverContentTest {
 
     @Test
     fun testDefaultValues() {
-        val content = ""
+        val frontCoverContent = FrontCoverContent(null, "Story Title", "Scripture Reference", "en")
 
-        val frontCoverContent = FrontCoverContent(content, "Story Title", "Scripture Reference")
         Assert.assertEquals("gray-background", frontCoverContent.graphic)
         Assert.assertEquals("Scripture Reference", frontCoverContent.scriptureReference)
         Assert.assertEquals("Title ideas:", frontCoverContent.titleIdeasHeading)
