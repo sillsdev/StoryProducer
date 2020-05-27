@@ -1,17 +1,21 @@
 package org.sil.storyproducer.model
 
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
+
 class FrontCoverContent(
-        val content: String,
+        val content: Elements?,
         val storyTitle: String,
-        val storyScriptureReference: String
+        storyScriptureReference: String,
+        lang: String
 ) {
 
-    val lines: List<Pair<String, String>> = content.split("\n")
-            .map { it.split("=")  }
+    val lines: List<Pair<String, String>> = content.orEmpty()
+            .filter { it.attr("lang") == lang }
             .map { keywordOf(it) to valueOf(it) }
 
     val graphic: String = firstValueWithKeyword(GRAPHIC)
-            ?.let { if (it.startsWith("gray") || it.startsWith("front")) it else null }
+            ?.let { if (it.startsWith(GRAY) || it.startsWith(FRONT)) it else null }
             ?: DEFAULT_GRAPHIC
 
     val scriptureReference: String = firstValueWithKeyword(SCRIPTURE_REFERENCE)
@@ -26,22 +30,33 @@ class FrontCoverContent(
             .map { it.second }
             .ifEmpty { listOf(storyTitle) }
 
-    fun firstValueWithKeyword(keyword: String): String? = lines
+
+
+    private fun firstValueWithKeyword(keyword: String): String? = lines
             .firstOrNull { it.first.equals(keyword, true) }
             ?.second
 
-    fun keywordOf(parts: List<String>): String = parts.getOrNull(0).orEmpty().trim()
+    private fun keywordOf(element: Element): String = element.attributes().find { it.key == DATA_BOOK }
+            ?.value
+            .orEmpty()
+            .trim()
             .trim('\u200C')
 
-    fun valueOf(parts: List<String>): String = parts.getOrNull(1).orEmpty().trim()
+    private fun valueOf(element: Element): String = element.wholeText()
+            .trim()
             .trim('\u200C', '"', '\'')
 
     companion object {
 
-        const val GRAPHIC = "Graphic"
-        const val SCRIPTURE_REFERENCE = "ScriptureReference"
-        const val TITLE_IDEAS_HEADING = "TitleIdeasHeading"
-        const val TITLE_IDEA = "TitleIdea"
+        const val DATA_BOOK = "data-book"
+        const val LANG = "lang"
+        const val GRAPHIC = "spGraphic"
+        const val SCRIPTURE_REFERENCE = "spReference"
+        const val TITLE_IDEAS_HEADING = "spTitleIdeasHeading"
+        const val TITLE_IDEA = "spTitleIdea"
+
+        const val GRAY = "gray"
+        const val FRONT = "front"
 
         const val DEFAULT_GRAPHIC = "gray-background"
         const val DEFAULT_TITLE_IDEAS_HEADING = "Title ideas:"

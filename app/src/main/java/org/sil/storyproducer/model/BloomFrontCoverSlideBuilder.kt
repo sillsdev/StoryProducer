@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import org.sil.storyproducer.tools.file.storyRelPathExists
 
 class BloomFrontCoverSlideBuilder {
@@ -18,19 +19,16 @@ class BloomFrontCoverSlideBuilder {
     }
 
     private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element): Slide {
-        val subtitle = buildSubtitle(outsideFrontCover).orEmpty()
-        val content = buildContent(html)
-        val frontCoverContent = FrontCoverContent(content, file.name.orEmpty(), subtitle)
+        val slideSubtitle = buildSubtitle(outsideFrontCover).orEmpty()
+        val slideContent = buildContent(html)
+        val lang = getContentLanguage(html)
+        val frontCoverContent = FrontCoverContent(slideContent, file.name.orEmpty(), slideSubtitle, lang)
 
-        return buildSlide(file, html, outsideFrontCover, subtitle, frontCoverContent)
-    }
-
-    private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element, slideSubtitle: String, frontCoverContent: FrontCoverContent): Slide {
         return Slide().apply {
             slideType = SlideType.FRONTCOVER
             subtitle = slideSubtitle
             content = buildTitleIdeas(frontCoverContent)
-            narrationFile = buildNarrationFile(file, html).orEmpty()
+            narrationFile = buildNarrationFile(file, html, lang).orEmpty()
             reference = frontCoverContent.scriptureReference
             parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file)
         }
@@ -49,19 +47,13 @@ class BloomFrontCoverSlideBuilder {
         return null
     }
 
-    internal fun buildContent(html: Document): String {
-        return fourthPageOfTranslationInstructions(html)
-                ?.wholeText()
-                .orEmpty()
-                .trim()
-                .replace("\\s*\\n\\s*".toRegex(), "\n")
+    internal fun buildContent(html: Document): Elements? {
+        return bloomDataDiv(html)
+                ?.children()
     }
 
-    internal fun fourthPageOfTranslationInstructions(html: Document): Element? {
-        return html.getElementsByAttributeValueContaining(CLASS, SCREEN_ONLY)
-                .getOrNull(3)
-                ?.getElementsByAttributeValueContaining(CLASS, BLOOM_TRANSLATION_GROUP)
-                ?.firstOrNull()
+    internal fun bloomDataDiv(html: Document): Element? {
+        return html.getElementById(BLOOM_DATA_DIV)
     }
 
     internal fun buildTitleIdeas(frontCoverContent: FrontCoverContent): String {
@@ -70,14 +62,21 @@ class BloomFrontCoverSlideBuilder {
         }
     }
 
-    internal fun buildNarrationFile(file: DocumentFile, html: Document): String? {
-        return fourthPageOfTranslationInstructions(html)
+    internal fun getContentLanguage(html: Document): String {
+        return bloomDataDiv(html)
                 ?.children()
-                ?.find { it.wholeText().contains(TITLE_IDEA_1) }
+                ?.find { it.attr(DATA_BOOK) == CONTENT_LANGUAGE_1 }                         // <div data-book="contentLanguage1"
+                ?.wholeText()
+                ?.trim()
+                ?: "*"
+    }
+
+    internal fun buildNarrationFile(file: DocumentFile, html: Document, lang: String): String? {
+        return bloomDataDiv(html)
                 ?.children()
-                ?.find { it.wholeText().startsWith(TITLE_IDEA_1) }
-                ?.children()
-                ?.firstOrNull()
+                ?.find { it.attr(DATA_BOOK) == TITLE_IDEA_1 && it.attr(LANG) == lang }      // <div data-book="spTitleIdea1" lang="*">
+                ?.children()?.firstOrNull()                                                 // <p>
+                ?.children()?.firstOrNull()                                                 // <span>
                 ?.id()
                 ?.let { "audio/$it.mp3" }
                 ?.let { if (storyRelPathExists(context, it, file.name!!)) it else null }
@@ -89,9 +88,10 @@ class BloomFrontCoverSlideBuilder {
         const val DATA_BOOK = "data-book"
         const val OUTSIDE_FRONT_COVER = "outsideFrontCover"
         const val SMALL_COVER_CREDITS = "smallCoverCredits"
-        const val SCREEN_ONLY = "screen-only"
-        const val BLOOM_TRANSLATION_GROUP = "bloom-translationGroup"
-        const val TITLE_IDEA_1 = "TitleIdea1"
+        const val BLOOM_DATA_DIV = "bloomDataDiv"
+        const val CONTENT_LANGUAGE_1 = "contentLanguage1"
+        const val TITLE_IDEA_1 = "spTitleIdea1"
+        const val LANG = "lang"
 
     }
 
