@@ -10,6 +10,7 @@ class BloomFrontCoverSlideBuilderTest {
 
     val builder = BloomFrontCoverSlideBuilder()
 
+    /*
     @Test
     fun testBuildFrontCoverTitleIdeas() {
         val slide = Slide().apply {
@@ -120,6 +121,7 @@ class BloomFrontCoverSlideBuilderTest {
                 builder.buildTitleIdeas(FrontCoverContent(slide.content, "", ""))
         )
     }
+     */
 
 
 }
