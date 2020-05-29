@@ -7,7 +7,9 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
@@ -150,6 +152,24 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
             Html.fromHtml(message, 0)
         } else {
             Html.fromHtml(message) }
+    }
+
+    fun showAboutDialog() {
+        AlertDialog.Builder(this)
+                .setTitle(getString(R.string.about_title))
+                .setView(buildAboutDialogView())
+                .setPositiveButton(getString(R.string.ok), null)
+                .create()
+                .show()
+    }
+
+    private fun buildAboutDialogView(): View {
+        val versionName = packageManager.getPackageInfo(packageName, 0).versionName
+
+        return layoutInflater.inflate(R.layout.dialog_about, null).apply {
+            findViewById<TextView>(R.id.appVersion)
+                    .setText(getString(R.string.app_version, versionName))
+        }
     }
 
 }
