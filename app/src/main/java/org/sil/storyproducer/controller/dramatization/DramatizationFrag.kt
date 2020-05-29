@@ -20,6 +20,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 class DramatizationFrag : MultiRecordFrag() {
     override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
     private lateinit var slideText: EditText
+    private var isInitialized = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
@@ -28,18 +29,15 @@ class DramatizationFrag : MultiRecordFrag() {
         slideText = rootView.findViewById(R.id.fragment_dramatization_edit_text)
         slideText.setText(Workspace.activeStory.slides[slideNumber].translatedContent, TextView.BufferType.EDITABLE)
 
-        if (Workspace.activeStory.isApproved) {
-            closeKeyboardOnTouch(rootView)
-            rootView.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
-        } else {
-            PhaseBaseActivity.disableViewAndChildren(rootView)
-        }
+        updateLockStatus()
 
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNumber].slideType == SlideType.FRONTCOVER){
             slideText.setTextSize(COMPLEX_UNIT_DIP,24f)
             slideText.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
         }
+
+        isInitialized = true
 
         return rootView
     }
@@ -71,6 +69,10 @@ class DramatizationFrag : MultiRecordFrag() {
                 closeKeyboard(rootView)
             }
         }
+
+        if (isInitialized) {
+            updateLockStatus()
+        }
     }
 
     /**
@@ -82,6 +84,15 @@ class DramatizationFrag : MultiRecordFrag() {
      */
     private fun closeKeyboardOnTouch(touchedView: View?) {
         touchedView?.setOnClickListener { closeKeyboard(touchedView) }
+    }
+
+    private fun updateLockStatus() {
+        if (Workspace.activeStory.isApproved) {
+            closeKeyboardOnTouch(rootView)
+            rootView.findViewById<View>(R.id.lock_overlay)?.visibility = View.INVISIBLE
+        } else {
+            PhaseBaseActivity.disableViewAndChildren(rootView)
+        }
     }
 
     /**
