@@ -7,11 +7,11 @@ class FrontCoverContent(
         val content: Elements?,
         val storyTitle: String,
         storyScriptureReference: String,
-        lang: String
+        val lang: String
 ) {
 
     val lines: List<Pair<String, String>> = content.orEmpty()
-            .filter { it.attr("lang") == lang }
+            .filter(::byLang)
             .map { keywordOf(it) to valueOf(it) }
 
     val graphic: String = firstValueWithKeyword(GRAPHIC)
@@ -45,6 +45,11 @@ class FrontCoverContent(
     private fun valueOf(element: Element): String = element.wholeText()
             .trim()
             .trim('\u200C', '"', '\'')
+
+    private fun byLang(element: Element): Boolean {
+        return element.attr(LANG) == lang
+                || (element.attr(LANG) == "*" && element.attr(DATA_BOOK) == GRAPHIC)
+    }
 
     companion object {
 
