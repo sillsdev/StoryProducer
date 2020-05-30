@@ -7,13 +7,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Bundle
-import android.text.Spanned
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.webkit.WebView
-import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
@@ -153,24 +150,6 @@ class MainActivity : BaseActivity(), Serializable {
         }
 
         return true
-    }
-
-    private fun showAboutDialog() {
-        AlertDialog.Builder(this)
-                .setTitle(getString(R.string.about_title))
-                .setView(buildAboutDialogView())
-                .setPositiveButton(getString(R.string.ok), null)
-                .create()
-                .show()
-    }
-
-    private fun buildAboutDialogView(): View {
-        val versionName = packageManager.getPackageInfo(packageName, 0).versionName
-
-        return layoutInflater.inflate(R.layout.dialog_about, null).apply {
-            findViewById<TextView>(R.id.appVersion)
-                    .setText(getString(R.string.app_version, versionName))
-        }
     }
 
     override fun onBackPressed() {
