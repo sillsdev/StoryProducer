@@ -70,7 +70,7 @@ open class BaseController(
     }
 
     private fun onLastStoryUpdated() {
-        Workspace.Stories.sortBy { it.title }
+        Workspace.sortStoriesByTitle()
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
         Workspace.updateStoryLocalCredits(context)
