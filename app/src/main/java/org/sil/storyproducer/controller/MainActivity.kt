@@ -30,6 +30,8 @@ import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
 
+    lateinit var storyList: StoryListFrag
+
     private var mDrawerLayout: DrawerLayout? = null
 
     private val receiver = object : BroadcastReceiver() {
@@ -49,6 +51,7 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        storyList = StoryListFrag()
         setContentView(R.layout.activity_main)
         setupDrawer()
 
@@ -58,7 +61,7 @@ class MainActivity : BaseActivity(), Serializable {
 
         GlobalScope.launch {
             runOnUiThread {
-                supportFragmentManager.beginTransaction().add(R.id.fragment_container, StoryListFrag()).commit()
+                supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
         }
@@ -136,6 +139,7 @@ class MainActivity : BaseActivity(), Serializable {
             }
             R.id.nav_demo -> {
                 Workspace.addDemoToWorkspace(this)
+                storyList.notifyDataSetChanged()
             }
 
             R.id.nav_stories -> {

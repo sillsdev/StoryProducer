@@ -92,10 +92,9 @@ object Workspace{
         }
     }
 
-    fun addDemoToWorkspace(context: Context){
-        //check if there are any files in there.  If not, add the demo
-        if(!workspaceRelPathExists(context,DEMO_FOLDER)){
-            //folder is not there, add the demo.
+    fun addDemoToWorkspace(context: Context) {
+        //check if the demo folder already exists in the Workspace.  If not, add the demo
+        if (!workspaceRelPathExists(context,DEMO_FOLDER)) {
             val assetManager = context.assets
             var files: MutableList<String>? = null
             try {
@@ -120,7 +119,18 @@ object Workspace{
                     Log.e("workspace", "Failed to copy demo asset file: $filename", e)
                 }
             }
+
+            pathOf(DEMO_FOLDER)?.also { path ->
+                buildStory(context, path)?.also { story ->
+                    Stories.add(story)
+                    sortStoriesByTitle()
+                }
+            }
         }
+    }
+
+    fun pathOf(name: String): DocumentFile? {
+        return workdocfile.listFiles().find { it.name == name }
     }
 
     fun clearWorkspace(){
@@ -141,7 +151,7 @@ object Workspace{
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         return unzipIfZipped(context, storyPath, workdocfile.listFiles())
-                ?.let { storyFolder -> workdocfile.listFiles().find { it.name == storyFolder } }
+                ?.let { storyFolder -> pathOf(storyFolder) }
                 ?.let { parseStoryIfPresent(context, it) }
     }
 
@@ -227,6 +237,10 @@ object Workspace{
         params.putString("trainer_email", registration.getString("trainer_email", " "))
         params.putString("consultant_email", registration.getString("consultant_email", " "))
         firebaseAnalytics.logEvent(eventName, params)
+    }
+
+    fun sortStoriesByTitle() {
+        Stories.sortBy { it.title }
     }
 
 }
