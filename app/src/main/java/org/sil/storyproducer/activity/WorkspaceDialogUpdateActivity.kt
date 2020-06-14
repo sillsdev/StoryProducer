@@ -20,6 +20,7 @@ class WorkspaceDialogUpdateActivity : BaseActivity() {
                 .setMessage(buildMessage())
                 .setPositiveButton(R.string.use_internal_demo) { _, _ -> showCreateAndSelectFolderDialog() }
                 .setNegativeButton(R.string.update_workspace) { _, _ -> selectTemplatesFolder() }
+                .setCancelable(false)
                 .create()
                 .show()
     }
@@ -29,6 +30,7 @@ class WorkspaceDialogUpdateActivity : BaseActivity() {
                 .setTitle(buildTitle())
                 .setMessage(R.string.please_create_and_then_select_folder)
                 .setPositiveButton(R.string.ok) { _, _ -> selectTemplatesFolderAndAddDemo() }
+                .setCancelable(false)
                 .create()
                 .show()
     }
