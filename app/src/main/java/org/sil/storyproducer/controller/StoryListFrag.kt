@@ -17,6 +17,8 @@ import org.sil.storyproducer.service.SlideService
 
 class StoryListFrag : androidx.fragment.app.Fragment() {
 
+    lateinit var adapter: ListAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
@@ -35,7 +37,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
 
         val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
 
-        val adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
+        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
 
         val listView = lfview.findViewById<ListView>(R.id.story_list_view)
         // Assign adapter to ListView
@@ -45,6 +47,10 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
 
         return lfview
+    }
+
+    fun notifyDataSetChanged() {
+        adapter.notifyDataSetChanged()
     }
 
 }
