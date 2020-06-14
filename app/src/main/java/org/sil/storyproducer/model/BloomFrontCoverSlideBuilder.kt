@@ -79,7 +79,7 @@ class BloomFrontCoverSlideBuilder {
                 ?.children()?.firstOrNull()                                                 // <span>
                 ?.id()
                 ?.let { "audio/$it.mp3" }
-                ?.let { if (storyRelPathExists(context, it, file.name!!)) it else null }
+                ?.let { if (storyRelPathExists(context, it, file.name.orEmpty())) it else null }
     }
 
     companion object {

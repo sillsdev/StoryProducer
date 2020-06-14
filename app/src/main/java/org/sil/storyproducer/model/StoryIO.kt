@@ -75,20 +75,22 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     return null
 }
 
-fun isZipped(file: DocumentFile): Boolean {
-    return file.name!!.substringAfterLast(".","").let {
-        arrayOf("zip","bloom","bloomd").contains(it)
-    }
+fun isZipped(fileName: String?): Boolean {
+    return fileName?.substringAfterLast(".", "")?.let {
+        arrayOf("zip", "bloom", "bloomd").contains(it)
+    } == true
 }
 
 fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
+    //only unzip zipped files.
+    if (!isZipped(file.name)) {
+        return file.name
+    }
 
-    //only work with zip files.
     val name = file.name!!.substringBeforeLast(".","")
-    if (!isZipped(file)) return file.name
-
     val sourceFile = File("${context.filesDir}/${file.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
+
     try
     {
         //copy file to internal files directory to perform the normal "File" opterations on.
