@@ -146,7 +146,7 @@ object Workspace{
     }
 
     private fun storyBloomFiles(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { isZipped(it) }
+        return workdocfile.listFiles().filter { isZipped(it.name) }
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
