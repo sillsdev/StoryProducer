@@ -21,22 +21,14 @@ class NumberedPageSlideBuilder : SlideBuilder() {
                 .filter { it.attr(LANG) == lang }
 
         if (!bloomEditables.isEmpty()) {
-            slide.content = buildContent(bloomEditables.firstOrNull())
-            slide.reference = buildScriptureReference(bloomEditables.lastOrNull())
+            slide.content = textOf(bloomEditables.firstOrNull())
+            slide.reference = textOf(bloomEditables.lastOrNull())
         }
 
         return slide
     }
 
-    private fun buildContent(bloomEditable: Element?): String {
-        return bloomEditable
-                ?.wholeText()
-                ?.trim()
-                .orEmpty()
-                .replace("\\s*\\n\\s*".toRegex(), "\n")
-    }
-
-    private fun buildScriptureReference(bloomEditable: Element?): String {
+    private fun textOf(bloomEditable: Element?): String {
         return bloomEditable
                 ?.wholeText()
                 ?.trim()
