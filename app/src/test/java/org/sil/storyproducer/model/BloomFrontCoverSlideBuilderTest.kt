@@ -47,13 +47,15 @@ class BloomFrontCoverSlideBuilderTest {
             </body>
         """.trimIndent()
 
+        val slide = builder.build(context, file, Jsoup.parse(text))
+
         assertEquals(
                 "Title ideas:\n" +
                         "Jesus walked on the water.\n" +
                         "Jesus stopped a storm.\n" +
                         "Jesus’s disciples understand who he is.\n" +
                         "Is Jesus God?",
-                builder.build(context, file, Jsoup.parse(text))?.content
+              slide?.content
         )
     }
 

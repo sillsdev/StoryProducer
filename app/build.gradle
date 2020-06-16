@@ -10,7 +10,7 @@ android {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 15
+        versionCode 17
         versionName '3.0.1'
         vectorDrawables.useSupportLibrary = true
 
