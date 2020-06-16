@@ -7,9 +7,11 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.sil.storyproducer.tools.file.storyRelPathExists
 
-class BloomFrontCoverSlideBuilder {
+class BloomFrontCoverSlideBuilder : SlideBuilder() {
 
     lateinit var context: Context
+
+    var lang = "*"
 
     fun build(context: Context, file: DocumentFile, html: Document): Slide? {
         this.context = context
@@ -21,7 +23,7 @@ class BloomFrontCoverSlideBuilder {
     private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element): Slide {
         val slideSubtitle = buildSubtitle(outsideFrontCover).orEmpty()
         val slideContent = buildContent(html)
-        val lang = getContentLanguage(html)
+        lang = getContentLanguage(html)
         val frontCoverContent = FrontCoverContent(slideContent, file.name.orEmpty(), slideSubtitle, lang)
 
         return Slide().apply {
@@ -68,7 +70,7 @@ class BloomFrontCoverSlideBuilder {
                 ?.find { it.attr(DATA_BOOK) == CONTENT_LANGUAGE_1 }                         // <div data-book="contentLanguage1"
                 ?.wholeText()
                 ?.trim()
-                ?: "*"
+                ?: lang
     }
 
     internal fun buildNarrationFile(file: DocumentFile, html: Document, lang: String): String? {
@@ -91,7 +93,6 @@ class BloomFrontCoverSlideBuilder {
         const val BLOOM_DATA_DIV = "bloomDataDiv"
         const val CONTENT_LANGUAGE_1 = "contentLanguage1"
         const val TITLE_IDEA_1 = "spTitleIdea1"
-        const val LANG = "lang"
 
     }
 
