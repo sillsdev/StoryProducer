@@ -22,7 +22,7 @@ class NumberedPageSlideBuilder : SlideBuilder() {
 
         if (!bloomEditables.isEmpty()) {
             slide.content = textOf(bloomEditables.firstOrNull())
-            slide.reference = textOf(bloomEditables.lastOrNull())
+            slide.reference = textOf(bloomEditables.getOrNull(1))
         }
 
         return slide
