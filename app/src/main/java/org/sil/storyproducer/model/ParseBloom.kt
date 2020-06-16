@@ -34,16 +34,19 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val soup = Jsoup.parse(htmlText)
 
     //add the title slide
-    BloomFrontCoverSlideBuilder().build(context, storyPath, soup)?.also {
+    val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder()
+    frontCoverSlideBuilder.build(context, storyPath, soup)?.also {
         slides.add(it)
     } ?: return null
+
+    val lang = frontCoverSlideBuilder.lang
 
     var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
     for (page in pages) {
         if (page.attr("class").contains("numberedPage")) {
-            NumberedPageSlideBuilder().build(context, storyPath, page)?.also {
+            NumberedPageSlideBuilder().build(context, storyPath, page, lang)?.also {
                 slides.add(it)
             }
         }

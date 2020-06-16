@@ -5,16 +5,9 @@ import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 
-class NumberedPageSlideBuilder {
+class NumberedPageSlideBuilder : SlideBuilder() {
 
-    lateinit var context: Context
-
-    fun build(context: Context, file: DocumentFile, page: Element): Slide? {
-        this.context = context
-        return buildSlide(file, page)
-    }
-
-    private fun buildSlide(file: DocumentFile, page: Element): Slide? {
+    fun build(context: Context, file: DocumentFile, page: Element, lang: String): Slide? {
         val slide = Slide()
         slide.slideType = SlideType.NUMBEREDPAGE
 
@@ -22,7 +15,9 @@ class NumberedPageSlideBuilder {
             return null
         }
 
-        page.getElementsByAttributeValueContaining("class", "audio-sentence").also {
+        page.getElementsByAttributeValueContaining("class", BLOOM_EDITABLE)
+                .filter { it.attr(LANG) == lang }
+                .also {
             slide.content = buildContent(it)
             slide.reference = buildScriptureReference(it)
         }
@@ -30,22 +25,28 @@ class NumberedPageSlideBuilder {
         return slide
     }
 
-    private fun buildContent(audioSentences: Elements): String {
-        return audioSentences
-                .getOrNull(0)
+    private fun buildContent(bloomEditables: List<Element>): String {
+        return bloomEditables
+                .getOrNull(bloomEditables.size - 2)
                 ?.wholeText()
+                ?.trim()
                 .orEmpty()
-                .trim()
                 .replace("\\s*\\n\\s*".toRegex(), "\n")
     }
 
-    private fun buildScriptureReference(audioSentences: Elements): String {
-        return audioSentences
-                .getOrNull(1)
+    private fun buildScriptureReference(bloomEditables: List<Element>): String {
+        return bloomEditables
+                .lastOrNull()
                 ?.wholeText()
+                ?.trim()
                 .orEmpty()
-                .trim()
                 .replace("\\s*\\n\\s*".toRegex(), "\n")
+    }
+
+    companion object {
+
+        const val BLOOM_EDITABLE = "bloom-editable"
+
     }
 
 }
