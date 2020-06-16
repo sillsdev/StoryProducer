@@ -3,18 +3,10 @@ package org.sil.storyproducer.model
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
-class NumberedPageSlideBuilder {
+class NumberedPageSlideBuilder : SlideBuilder() {
 
-    lateinit var context: Context
-
-    fun build(context: Context, file: DocumentFile, page: Element): Slide? {
-        this.context = context
-        return buildSlide(file, page)
-    }
-
-    private fun buildSlide(file: DocumentFile, page: Element): Slide? {
+    fun build(context: Context, file: DocumentFile, page: Element, lang: String): Slide? {
         val slide = Slide()
         slide.slideType = SlideType.NUMBEREDPAGE
 
@@ -22,30 +14,34 @@ class NumberedPageSlideBuilder {
             return null
         }
 
-        page.getElementsByAttributeValueContaining("class", "audio-sentence").also {
-            slide.content = buildContent(it)
-            slide.reference = buildScriptureReference(it)
+        val bloomEditables = page.getElementsByAttributeValueContaining("class", BLOOM_TRANSLATION_GROUP)
+                .filter { !it.hasClass(BLOOM_IMAGE_DESCRIPTION) }
+                .map { it.getElementsByAttributeValueContaining("class", BLOOM_EDITABLE) }
+                .flatten()
+                .filter { it.attr(LANG) == lang }
+
+        if (!bloomEditables.isEmpty()) {
+            slide.content = textOf(bloomEditables.firstOrNull())
+            slide.reference = textOf(bloomEditables.getOrNull(1))
         }
 
         return slide
     }
 
-    private fun buildContent(audioSentences: Elements): String {
-        return audioSentences
-                .getOrNull(0)
+    private fun textOf(bloomEditable: Element?): String {
+        return bloomEditable
                 ?.wholeText()
+                ?.trim()
                 .orEmpty()
-                .trim()
                 .replace("\\s*\\n\\s*".toRegex(), "\n")
     }
 
-    private fun buildScriptureReference(audioSentences: Elements): String {
-        return audioSentences
-                .getOrNull(1)
-                ?.wholeText()
-                .orEmpty()
-                .trim()
-                .replace("\\s*\\n\\s*".toRegex(), "\n")
+    companion object {
+
+        const val BLOOM_EDITABLE = "bloom-editable"
+        const val BLOOM_TRANSLATION_GROUP = "bloom-translationGroup"
+        const val BLOOM_IMAGE_DESCRIPTION = "bloom-imageDescription"
+
     }
 
 }
