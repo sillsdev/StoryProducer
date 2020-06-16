@@ -3,7 +3,6 @@ package org.sil.storyproducer.model
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 
 class NumberedPageSlideBuilder : SlideBuilder() {
 
@@ -15,28 +14,30 @@ class NumberedPageSlideBuilder : SlideBuilder() {
             return null
         }
 
-        page.getElementsByAttributeValueContaining("class", BLOOM_EDITABLE)
+        val bloomEditables = page.getElementsByAttributeValueContaining("class", BLOOM_TRANSLATION_GROUP)
+                .filter { !it.hasClass(BLOOM_IMAGE_DESCRIPTION) }
+                .map { it.getElementsByAttributeValueContaining("class", BLOOM_EDITABLE) }
+                .flatten()
                 .filter { it.attr(LANG) == lang }
-                .also {
-            slide.content = buildContent(it)
-            slide.reference = buildScriptureReference(it)
+
+        if (!bloomEditables.isEmpty()) {
+            slide.content = buildContent(bloomEditables.firstOrNull())
+            slide.reference = buildScriptureReference(bloomEditables.lastOrNull())
         }
 
         return slide
     }
 
-    private fun buildContent(bloomEditables: List<Element>): String {
-        return bloomEditables
-                .getOrNull(bloomEditables.size - 2)
+    private fun buildContent(bloomEditable: Element?): String {
+        return bloomEditable
                 ?.wholeText()
                 ?.trim()
                 .orEmpty()
                 .replace("\\s*\\n\\s*".toRegex(), "\n")
     }
 
-    private fun buildScriptureReference(bloomEditables: List<Element>): String {
-        return bloomEditables
-                .lastOrNull()
+    private fun buildScriptureReference(bloomEditable: Element?): String {
+        return bloomEditable
                 ?.wholeText()
                 ?.trim()
                 .orEmpty()
@@ -46,6 +47,8 @@ class NumberedPageSlideBuilder : SlideBuilder() {
     companion object {
 
         const val BLOOM_EDITABLE = "bloom-editable"
+        const val BLOOM_TRANSLATION_GROUP = "bloom-translationGroup"
+        const val BLOOM_IMAGE_DESCRIPTION = "bloom-imageDescription"
 
     }
 
