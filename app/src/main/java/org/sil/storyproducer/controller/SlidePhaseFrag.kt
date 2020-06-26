@@ -14,6 +14,7 @@ import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.viewmodel.SlideViewModel
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -37,8 +38,12 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        slideNum = this.arguments!!.getInt(SLIDE_NUM)
-        viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
+        try {
+            slideNum = this.arguments!!.getInt(SLIDE_NUM)
+            viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
+        } catch (ex: Exception) {
+            Timber.e(ex)
+        }
         setHasOptionsMenu(true)
     }
 
