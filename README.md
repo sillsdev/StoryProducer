@@ -99,15 +99,3 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 6. The "Run" tool window shows the results of the tests.
 *Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
 
-## Signing App for Release
-
-* Location of Keystore: ***REMOVED***
-* Password: ***REMOVED***
-* Alias: StoryProducer
-* Password: ***REMOVED***
-* First and Last Name: John Lambert
-* Organizational Unit: LS Dev
-* Organization: SIL International
-* City or Locality: Dallas
-* State or Province: TX
-* Country Code (XX): 1
