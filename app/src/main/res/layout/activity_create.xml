@@ -29,7 +29,8 @@
             android:ems="10"
             android:hint="@string/export_custom_title"
             android:inputType="textMultiLine|textCapWords"
-            android:maxLines="4"/>
+            android:maxLines="4"
+            android:importantForAutofill="no" />
 
         <TextView
             android:layout_width="match_parent"
@@ -71,6 +72,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_include_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/export_local_credits_header"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <Button
+            android:id="@+id/button_local_credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/export_local_credits_unchanged"/>
 
         <Button
             android:id="@+id/button_export_start"

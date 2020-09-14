@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.export
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import org.sil.storyproducer.R
@@ -30,6 +32,7 @@ class CreateActivity : PhaseBaseActivity() {
     private lateinit var mButtonStart: Button
     private lateinit var mButtonCancel: Button
     private lateinit var mProgressBar: ProgressBar
+    private lateinit var mButtonCredits: Button
 
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
@@ -155,7 +158,6 @@ class CreateActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     private fun setupViews() {
-
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
@@ -182,12 +184,17 @@ class CreateActivity : PhaseBaseActivity() {
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
+        mButtonCredits = findViewById(R.id.button_local_credits)
         setOnClickListeners()
 
         mProgressBar = findViewById(R.id.progress_bar_export)
         mProgressBar.max = PROGRESS_MAX
         mProgressBar.progress = 0
 
+        // Safety check to ensure that the credits exist
+        if(Workspace.activeStory.localCredits.isEmpty()){
+            Workspace.activeStory.localCredits = getString(R.string.LC_starting_text)
+        }
     }
 
     /**
@@ -209,6 +216,34 @@ class CreateActivity : PhaseBaseActivity() {
             lockButtons()
         }
 
+        mButtonCredits.setOnClickListener{
+            if(!buttonLocked) {
+                val editText = EditText(this)
+                editText.id = R.id.edit_text_input
+
+                // Programmatically set layout properties for edit text field
+                val params = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT)
+                // Apply layout properties
+                editText.layoutParams = params
+                editText.minLines = 5
+                editText.setText(Workspace.activeStory.localCredits)
+
+                val dialog = AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.enter_text))
+                        .setView(editText)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .setPositiveButton(getString(R.string.save)) { _, _ ->
+                            if(editText.text.toString().isNotEmpty()) {
+                                Workspace.activeStory.localCredits = editText.text.toString()
+                            }
+                        }.create()
+
+                dialog.show()
+            }
+            lockButtons()
+        }
     }
 
     /**
