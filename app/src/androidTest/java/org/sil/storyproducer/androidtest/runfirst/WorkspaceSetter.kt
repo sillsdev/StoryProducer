@@ -4,6 +4,12 @@ import android.app.Application
 
 import android.content.Intent
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
@@ -52,9 +58,7 @@ class WorkspaceSetter {
 
         launchStoryProducerApp(device)
 
-        if (isWorkspacePickerDisplayed(device)) {
-            selectStoryProducerWorkspace(device)
-        }
+        selectStoryProducerWorkspace(device)
     }
 
     private fun launchStoryProducerApp(device: UiDevice) {
@@ -65,17 +69,18 @@ class WorkspaceSetter {
 
         val context = getApplicationContext<Application>()
         val launchIntent = context.packageManager.getLaunchIntentForPackage(APP_PACKAGE_NAME)
-        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        launchIntent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         context.startActivity(launchIntent)
         device.wait(Until.hasObject(By.pkg(APP_PACKAGE_NAME).depth(0)), TIMEOUT_DURATION)
     }
 
-    private fun isWorkspacePickerDisplayed(device: UiDevice): Boolean {
-        val selectTemplateAlert = device.findObject(By.res("android:id/alertTitle").text("Select 'SP Templates' folder"))
-        return selectTemplateAlert != null
-    }
-
     private fun selectStoryProducerWorkspace(device: UiDevice) {
+        // Select the "Select Location" button
+        onView(withId(android.R.id.button1))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+
         device.findObject(By.res("android:id/button1").text("OK")).click()
         device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)
         device.findObject(By.desc("More options")).click()

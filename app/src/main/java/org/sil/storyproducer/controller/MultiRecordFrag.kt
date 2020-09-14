@@ -78,9 +78,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
 
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNum].slideType in
-                arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
-        {
+        val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
+        if(slideType in arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS)) {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
@@ -99,14 +98,27 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 // Apply layout properties
                 editText.layoutParams = params
                 editText.minLines = 5
-                editText.text.insert(0,Workspace.activeSlide!!.translatedContent)
+
+                // If it is the credit slide, then use the localCredits instead of translatedContent
+                if(slideType.equals(SlideType.LOCALCREDITS)) {
+                    editText.text.insert(0, Workspace.activeStory.localCredits)
+                } else {
+                    editText.text.insert(0, Workspace.activeSlide!!.translatedContent)
+                }
 
                 val dialog = AlertDialog.Builder(context)
                         .setTitle(getString(R.string.enter_text))
                         .setView(editText)
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
-                            Workspace.activeSlide!!.translatedContent = editText.text.toString()
+                            if(slideType.equals(SlideType.LOCALCREDITS)) {
+                                if(Workspace.activeStory.localCredits.isNotEmpty()) {
+                                    Workspace.activeStory.localCredits = editText.text.toString()
+                                }
+                            } else {
+                                Workspace.activeSlide!!.translatedContent = editText.text.toString()
+                            }
+
                             setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
                         }.create()
 

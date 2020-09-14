@@ -1,11 +1,11 @@
 package org.sil.storyproducer.controller.export
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
@@ -70,8 +70,9 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
+        var mOpenVideoFolder : Button = findViewById(R.id.open_videos_folder)
 
-        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
         for (i in 0 until presentVideos.size){
             if(presentVideos[i] in story.outputVideos){
@@ -82,6 +83,19 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             mNoVideosText!!.visibility = View.GONE
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
+
+        mOpenVideoFolder.setOnClickListener {
+            val chooser = Intent(Intent.ACTION_GET_CONTENT)
+            chooser.addCategory(Intent.CATEGORY_OPENABLE)
+            chooser.setDataAndType(Workspace.workdocfile.uri, "*/*")
+
+            try {
+                startActivityForResult(chooser, 1)
+            } catch (ex: ActivityNotFoundException) {
+                Toast.makeText(this, "Please install a File Manager.",
+                        Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     /**
@@ -90,7 +104,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
     //TODO: cleanup
     override fun refreshViews() {
 
-        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
         for (i in 0 until presentVideos.size){
             if(presentVideos[i] in story.outputVideos){
@@ -101,7 +115,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         val toRemove = mutableListOf<Int>()
         for (i in 0 until story.outputVideos.size){
             if(story.outputVideos[i] !in presentVideos){
-                toRemove.add(0,i) //add at beginning
+                toRemove.add(0, i) //add at beginning
             }
         }
         for (i in toRemove){

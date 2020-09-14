@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 
 import com.squareup.moshi.JsonClass
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
 import java.util.*
 
@@ -23,6 +24,7 @@ class Story(var title: String, val slides: List<Slide>){
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
     var importAppVersion = ""
+    var localCredits = ""
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
