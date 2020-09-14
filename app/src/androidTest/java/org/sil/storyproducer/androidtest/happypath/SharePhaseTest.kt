@@ -54,6 +54,22 @@ class SharePhaseTest : PhaseTestBase() {
         onView(withText(CoreMatchers.containsString(videoFilename))).check(matches(isDisplayed()))
     }
 
+    @Test
+    fun test_openVideosFolder() {
+        Intents.init()
+        val openVideosButton = onView(
+                Matchers.allOf(withId(R.id.open_videos_folder),
+                        withText(Constants.resources.getString(R.string.open_videos_folder)),
+                        isDisplayed()))
+        openVideosButton.perform(ViewActions.click())
+        Thread.sleep(durationToWaitWhenSwipingBetweenSlides)
+        Intents.release()
+
+        // Programmatically Press the Back Button so that it will return to StoryProducer
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        device.pressBack()
+    }
+
     private fun copySampleVideoToExportDirectory(videoFilename: String) {
         try {
             val sampleVideo = File(Constants.espressoResourceDirectory + File.separator + videoFilename)

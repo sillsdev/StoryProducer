@@ -21,7 +21,9 @@ object Constants {
 
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
-    const val nameOfTestStory = "Lost Coin"
+    // FIXME: Need to add Lost Coin back, but it needs to have a credit slide
+//    const val nameOfTestStory = "Lost Coin"
+    const val nameOfTestStory = "Unlocked demo story Storm"
 
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
