@@ -4,6 +4,7 @@ package org.sil.storyproducer.model
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
+import org.sil.storyproducer.tools.media.story.toInt
 import java.util.*
 
 internal const val PROJECT_DIR = "project"
@@ -25,6 +26,10 @@ class Story(var title: String, var slides: List<Slide>){
     var lastSlideNum: Int = 0
     var importAppVersion = ""
     var localCredits = ""
+    var inProgress : Boolean = false;
+    var isComplete: Boolean = false;
+
+
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
@@ -41,6 +46,21 @@ class Story(var title: String, var slides: List<Slide>){
         } else {
             "N/A"
         }
+    }
+
+    val storyType: String get(){
+        val number = titleNumber.matches("ddd".toRegex()).toInt()
+
+        if(number <100){
+            return "other"
+        }
+        else if(number <200){
+            return "OT"
+        }
+        else if(number < 300){
+            return "NT"
+        }
+        return "other"
     }
 
     fun addVideo(video: String){

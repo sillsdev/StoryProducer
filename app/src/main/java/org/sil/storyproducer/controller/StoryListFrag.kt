@@ -9,13 +9,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.FragmentManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
 
-class StoryListFrag : androidx.fragment.app.Fragment() {
+class StoryListFrag(var TabNum: Int): androidx.fragment.app.Fragment() {
 
     lateinit var adapter: ListAdapter
 
@@ -35,16 +36,31 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
             return view
         }
 
-        val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
+        val layoutName: Int = if(TabNum==0){
+             R.layout.filter_toolbar
+         }
+         else{
+             R.layout.activity_list_view
+         }
+        val listViewID: Int = if(TabNum==0){
+            R.id.filterStoryList
+        }
+        else{
+            R.id.story_list_view
+        }
+        //lfview created the fragment of the stories list item
+        val lfview = inflater.inflate(layoutName, container, false)
 
-        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
+        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)// Workspace.Stories.filter( follow example)
 
-        val listView = lfview.findViewById<ListView>(R.id.story_list_view)
+        val listView = lfview.findViewById<ListView>(listViewID)
         // Assign adapter to ListView
         listView.adapter = adapter
 
         //TODO remove "switchtostory" call.  That is still from the old template way.
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
+
+
 
         return lfview
     }

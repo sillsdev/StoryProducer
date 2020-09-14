@@ -15,7 +15,11 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabItem
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
@@ -34,6 +38,11 @@ class MainActivity : BaseActivity(), Serializable {
 
     private var mDrawerLayout: DrawerLayout? = null
 
+    //Filter variables starts.
+    lateinit var filterTabs: TabLayout
+    lateinit var pageAdapter: FilterPageAdapter
+
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (!ConnectivityStatus.isConnected(context)) {
@@ -51,21 +60,17 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        storyList = StoryListFrag()
+
         setContentView(R.layout.activity_main)
         setupDrawer()
+        setupFilter()
 
-        if (!Workspace.isInitialized) {
-            initWorkspace()
-        }
+        if (!Workspace.isInitialized) {initWorkspace()}
 
-        GlobalScope.launch {
-            runOnUiThread {
-                supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
-                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-            }
-        }
+
+
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_with_help, menu)
@@ -106,6 +111,33 @@ class MainActivity : BaseActivity(), Serializable {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun addList() {
+        GlobalScope.launch {
+            runOnUiThread {
+                supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
+                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+            }
+        }
+    }
+
+    private fun setupFilter(/*Have variable for tab selected*/) {
+        filterTabs = findViewById(R.id.Filter_Tabs)
+        pageAdapter = FilterPageAdapter(filterTabs.tabCount, supportFragmentManager)
+
+
+        filterTabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab){
+                storyList = pageAdapter.getItem(tab.position)
+                addList()
+
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab){
+
+            }
+            override fun onTabReselected(tab:TabLayout.Tab){}
+        })
     }
 
     /**
