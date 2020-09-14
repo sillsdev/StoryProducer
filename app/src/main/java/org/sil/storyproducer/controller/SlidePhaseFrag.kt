@@ -80,6 +80,11 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
             refPlaybackHolder.visibility = View.GONE
+
+            // Initialize the Credits
+            if(Workspace.activeStory.localCredits == "") {
+                Workspace.activeStory.localCredits = getString(R.string.LC_starting_text)
+            }
         }else{
             refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
             mSeekBarTimer = Timer()

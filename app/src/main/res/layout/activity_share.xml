@@ -21,19 +21,20 @@
 
             <TextView
                 android:id="@+id/dumbphone_3gp"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                android:text="@string/export_dumbphone"
-                android:drawableEnd="@drawable/ic_dumbphone"/>
+                android:drawableEnd="@drawable/ic_dumbphone"
+                android:text="@string/export_dumbphone" />
 
             <TextView
                 android:id="@+id/smartphone_mp4"
-                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                android:text="@string/export_smartphone"
-                android:drawableEnd="@drawable/ic_smartphone_white_24dp"/>
+                android:drawableEnd="@drawable/ic_smartphone_white_24dp"
+                android:text="@string/export_smartphone" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -48,7 +49,9 @@
             <ListView
                 android:id="@+id/videos_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="604dp">
+
+            </ListView>
 
             <TextView
                 android:id="@+id/no_videos_text"
@@ -58,7 +61,22 @@
                 android:layout_margin="@dimen/nav_drawer_margin"
                 android:text="@string/no_videos"
                 android:textSize="@dimen/large_text" />
+
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/open_videos_folder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:text="@string/open_videos_folder" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <RelativeLayout

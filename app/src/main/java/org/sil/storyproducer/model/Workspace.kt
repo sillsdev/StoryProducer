@@ -173,7 +173,7 @@ object Workspace{
             for(slide in story.slides){
                 if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
                     if(slide.translatedContent == ""){
-                        slide.translatedContent = context.getString(R.string.LC_starting_text)
+                        slide.translatedContent = activeStory.localCredits
                     }
                 }
             }
@@ -182,15 +182,18 @@ object Workspace{
 
     fun isLocalCreditsChanged(context: Context) : Boolean {
         //if there are no local credits, let them make the video.
-        var isChanged = true
+//        var isChanged = true
+//        val orgLCText = context.getString(R.string.LC_starting_text)
+//        for(slide in activeStory.slides){
+//            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
+//                isChanged = (slide.translatedContent != orgLCText)
+//                break
+//            }
+//        }
+//        return isChanged
+
         val orgLCText = context.getString(R.string.LC_starting_text)
-        for(slide in activeStory.slides){
-            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                isChanged = (slide.translatedContent != orgLCText)
-                break
-            }
-        }
-        return isChanged
+        return activeStory.localCredits != orgLCText
     }
 
     fun getSongFilename() : String{

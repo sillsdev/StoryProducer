@@ -45,7 +45,7 @@ class SlideViewModelBuilder(
         }
         val tOverlay = when(slide.slideType) {
             SlideType.FRONTCOVER -> getFrontCoverOverlayText(origTitle)
-            SlideType.LOCALCREDITS -> TextOverlay("${slide.translatedContent}\n" +
+            SlideType.LOCALCREDITS -> TextOverlay("${Workspace.activeStory.localCredits}\n" +
                     "This video is licensed under a Creative Commons Attribution" +
                     "-NonCommercial-ShareAlike 4.0 International License " +
                     "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}")
