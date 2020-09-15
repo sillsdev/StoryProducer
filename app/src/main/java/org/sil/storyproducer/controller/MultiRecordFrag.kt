@@ -112,7 +112,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
                             if(slideType.equals(SlideType.LOCALCREDITS)) {
-                                if(Workspace.activeStory.localCredits.isNotEmpty()) {
+                                if(editText.text.toString().isNotEmpty()) {
                                     Workspace.activeStory.localCredits = editText.text.toString()
                                 }
                             } else {
