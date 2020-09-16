@@ -207,7 +207,7 @@
     <string name="export_dumbphone">(3gp) is for </string>
     <string name="export_smartphone">(mp4) is for </string>
 
-    <string name="export_local_credits_unchanged">Update Local Credits - last slide in Studio</string>
+    <string name="export_local_credits_unchanged">Edit Local Credits</string>
     <string name="export_no_filename">Type a Short Story Title, above</string>
     <string name="export_local_song_unrecorded">Record local song first.</string>
 

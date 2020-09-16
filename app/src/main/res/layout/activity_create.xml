@@ -8,12 +8,25 @@
     android:layout_margin="8dp"
     tools:context="org.sil.storyproducer.controller.export.CreateActivity">
 
-
     <LinearLayout
         android:id="@+id/layout_export_configuration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/export_local_credits_header"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <Button
+            android:id="@+id/button_local_credits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:text="@string/export_local_credits_unchanged"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -66,26 +79,11 @@
             android:checked="true"
             android:text="@string/export_include_KBFX" />
 
-
         <CheckBox
             android:id="@+id/checkbox_export_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_include_text" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/export_local_credits_header"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-        <Button
-            android:id="@+id/button_local_credits"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:text="@string/export_local_credits_unchanged"/>
 
         <Button
             android:id="@+id/button_export_start"
