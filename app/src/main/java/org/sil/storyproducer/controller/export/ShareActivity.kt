@@ -87,6 +87,8 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         mOpenVideoFolder.setOnClickListener {
             val chooser = Intent(Intent.ACTION_GET_CONTENT)
             chooser.addCategory(Intent.CATEGORY_OPENABLE)
+
+            // FIXME: not opening the right folder and it is not allowing copy/moving
             chooser.setDataAndType(Workspace.workdocfile.uri, "*/*")
 
             try {
