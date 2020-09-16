@@ -19,6 +19,7 @@ import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.stripForFilename
 
+
 class CreateActivity : PhaseBaseActivity() {
 
     private lateinit var mEditTextTitle: EditText
@@ -162,13 +163,14 @@ class CreateActivity : PhaseBaseActivity() {
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener( object: TextWatcher {
+        mEditTextTitle.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
-                if(temp != s.toString()){
-                    s!!.replace(0,s.length,temp)
+                if (temp != s.toString()) {
+                    s!!.replace(0, s.length, temp)
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -238,6 +240,11 @@ class CreateActivity : PhaseBaseActivity() {
                             if(editText.text.toString().isNotEmpty()) {
                                 Workspace.activeStory.localCredits = editText.text.toString()
                             }
+
+                            // Hide the Keyboard Programmatically
+                            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+
                         }.create()
 
                 dialog.show()
@@ -249,7 +256,7 @@ class CreateActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements(currentCheckbox : CheckBox? = null) {
+    private fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
@@ -286,7 +293,7 @@ class CreateActivity : PhaseBaseActivity() {
         //Check if there is a song to play
         if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
             //you have to have a song to include it!
-            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.export_local_song_unrecorded), Toast.LENGTH_SHORT).show()
             mCheckboxSong.isChecked = false
         }
     }
@@ -325,20 +332,20 @@ class CreateActivity : PhaseBaseActivity() {
     private fun tryStartExport() {
         //If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanged),Toast.LENGTH_LONG).show()
+            Toast.makeText(this, this.resources.getText(
+                    R.string.export_local_credits_unchanged), Toast.LENGTH_LONG).show()
             return
         }
 
         //If there is no title, don't make video
         if(mEditTextTitle.text.toString() == ""){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_no_filename),Toast.LENGTH_LONG).show()
+            Toast.makeText(this, this.resources.getText(
+                    R.string.export_no_filename), Toast.LENGTH_LONG).show()
             return
         }
 
         //Else, check if the file already exists...
-        if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
+        if (workspaceRelPathExists(this, "$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
