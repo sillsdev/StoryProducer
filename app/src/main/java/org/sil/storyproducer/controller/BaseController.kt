@@ -73,7 +73,6 @@ open class BaseController(
         Workspace.sortStoriesByTitle()
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
-        Workspace.updateStoryLocalCredits(context)
 
         view.hideReadingTemplatesDialog()
         onStoriesUpdated()
