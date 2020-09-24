@@ -144,7 +144,7 @@ class Phase(val phaseType: PhaseType) {
         val validSlideTypes = when(phaseType){
             PhaseType.DRAMATIZATION -> arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.LOCALSONG)
             else -> arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
@@ -163,7 +163,7 @@ class Phase(val phaseType: PhaseType) {
         return when(phaseType){
             PhaseType.DRAMATIZATION -> slideType in arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.LOCALSONG)
             else -> slideType in arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)

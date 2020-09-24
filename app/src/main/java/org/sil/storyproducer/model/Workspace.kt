@@ -168,18 +168,6 @@ object Workspace{
         deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
     }
 
-    fun updateStoryLocalCredits(context: Context) {
-        for(story in Stories){
-            for(slide in story.slides){
-                if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                    if(slide.translatedContent == ""){
-                        slide.translatedContent = activeStory.localCredits
-                    }
-                }
-            }
-        }
-    }
-
     fun isLocalCreditsChanged(context: Context) : Boolean {
         val orgLCText = context.getString(R.string.LC_starting_text)
         return activeStory.localCredits != orgLCText

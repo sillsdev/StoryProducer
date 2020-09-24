@@ -46,13 +46,6 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <ListView
-                android:id="@+id/videos_list"
-                android:layout_width="match_parent"
-                android:layout_height="604dp">
-
-            </ListView>
-
             <TextView
                 android:id="@+id/no_videos_text"
                 android:layout_width="wrap_content"
@@ -62,18 +55,28 @@
                 android:text="@string/no_videos"
                 android:textSize="@dimen/large_text" />
 
+            <ListView
+                android:id="@+id/videos_list"
+                android:layout_width="match_parent"
+                android:layout_height="604dp">
+
+            </ListView>
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="5dp"
             android:orientation="horizontal">
 
             <Button
                 android:id="@+id/open_videos_folder"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal|center_vertical"
+                android:background="@drawable/button"
                 android:text="@string/open_videos_folder" />
         </LinearLayout>
 

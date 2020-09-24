@@ -75,14 +75,6 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     //add as second last slide
     slides.add(slides.size-1,slide)
 
-    //Add the Local credits slide
-    slide = Slide()
-    slide.slideType = SlideType.LOCALCREDITS
-    slide.content = context.getString(R.string.LC_prompt)
-    slide.musicFile = MUSIC_NONE
-    //add as second last slide
-    slides.add(slides.size-1,slide)
-
     return Story(storyPath.name!!,slides).apply {
         importAppVersion = BuildConfig.VERSION_NAME
     }
