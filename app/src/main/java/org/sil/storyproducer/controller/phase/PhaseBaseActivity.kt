@@ -67,7 +67,12 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum
         story.lastPhaseType = Workspace.activePhase.phaseType
-        Thread(Runnable{story.toJson(this)}).start()
+
+        // Issue #503, it is possible for the user to change workspaces causing a rouge story
+        // to save. Instead, ensure that the story exists in the current workspace before saving.
+        if(Workspace.Stories.contains(story)) {
+            Thread(Runnable { story.toJson(this) }).start()
+        }
     }
 
     //Override setContentView to coerce into child view.
