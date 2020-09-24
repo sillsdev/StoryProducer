@@ -169,6 +169,14 @@ class CreateActivity : PhaseBaseActivity() {
                 if (temp != s.toString()) {
                     s!!.replace(0, s.length, temp)
                 }
+
+                // Update check mark icon
+                val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+                if(temp.isEmpty()) {
+                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_grey_outline_24)
+                } else {
+                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -194,8 +202,20 @@ class CreateActivity : PhaseBaseActivity() {
         mProgressBar.progress = 0
 
         // Safety check to ensure that the credits exist
-        if(Workspace.activeStory.localCredits.isEmpty()){
+        if(Workspace.activeStory.localCredits.isEmpty()) {
             Workspace.activeStory.localCredits = getString(R.string.LC_starting_text)
+        }
+
+        // Update the check mark if the file name has previously been changed
+        if(mEditTextTitle.text.toString().isNotEmpty()) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+        }
+
+        // Update the check mark if the credits have previously been changed
+        if(Workspace.isLocalCreditsChanged(this)) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_local_credits) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
         }
     }
 
@@ -237,8 +257,19 @@ class CreateActivity : PhaseBaseActivity() {
                         .setView(editText)
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
+                            val checkMarkIcon = findViewById<View>(R.id.checkmark_local_credits) as ImageView
                             if(editText.text.toString().isNotEmpty()) {
                                 Workspace.activeStory.localCredits = editText.text.toString()
+
+                                if(Workspace.isLocalCreditsChanged(this)) {
+                                    Toast.makeText(this, "Local Credits Changed!", Toast.LENGTH_LONG)
+                                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+                                }
+                            }
+
+                            if(!Workspace.isLocalCreditsChanged(this)) {
+                                Toast.makeText(this, "Local Credits Unchanged!", Toast.LENGTH_LONG)
+                                checkMarkIcon.setImageResource(R.drawable.ic_check_circle_grey_outline_24)
                             }
 
                             // Hide the Keyboard Programmatically
@@ -290,9 +321,9 @@ class CreateActivity : PhaseBaseActivity() {
             }
         }
 
-        //Check if there is a song to play
+        // Check if there is a song to play
         if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
-            //you have to have a song to include it!
+            // you have to have a song to include it!
             Toast.makeText(this, getString(R.string.export_local_song_unrecorded), Toast.LENGTH_SHORT).show()
             mCheckboxSong.isChecked = false
         }
@@ -327,24 +358,30 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
         mEditTextTitle.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
+
+        // Update the check mark if the file name has previously been changed
+        if(mEditTextTitle.text.toString().isNotEmpty()) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+        }
     }
 
     private fun tryStartExport() {
-        //If the credits are unchanged, don't make the video.
+        // If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
             Toast.makeText(this, this.resources.getText(
                     R.string.export_local_credits_unchanged), Toast.LENGTH_LONG).show()
             return
         }
 
-        //If there is no title, don't make video
+        // If there is no title, don't make video
         if(mEditTextTitle.text.toString() == ""){
             Toast.makeText(this, this.resources.getText(
                     R.string.export_no_filename), Toast.LENGTH_LONG).show()
             return
         }
 
-        //Else, check if the file already exists...
+        // Else, check if the file already exists...
         if (workspaceRelPathExists(this, "$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
