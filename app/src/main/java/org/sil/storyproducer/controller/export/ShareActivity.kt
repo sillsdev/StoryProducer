@@ -1,7 +1,7 @@
 package org.sil.storyproducer.controller.export
 
-import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -10,8 +10,9 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.UriUtils
 import org.sil.storyproducer.tools.file.getChildDocuments
-
+import org.sil.storyproducer.tools.file.getWorkspaceUri
 
 /**
  * Created by annmcostantino on 10/1/2017.
@@ -34,8 +35,6 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
      * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
      * @return Array list of video paths
      */
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
@@ -85,18 +84,21 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         videosAdapter!!.setVideoPaths(exportedVideos)
 
         mOpenVideoFolder.setOnClickListener {
-            val chooser = Intent(Intent.ACTION_GET_CONTENT)
-            chooser.addCategory(Intent.CATEGORY_OPENABLE)
 
-            // FIXME: not opening the right folder and it is not allowing copy/moving
-            chooser.setDataAndType(Workspace.workdocfile.uri, "*/*")
+            val videoContentUri  = getWorkspaceUri("$VIDEO_DIR/")
+            var videoFileUri = UriUtils.getPathFromUri(this, videoContentUri!!)
 
-            try {
-                startActivityForResult(chooser, 1)
-            } catch (ex: ActivityNotFoundException) {
-                Toast.makeText(this, "Please install a File Manager.",
-                        Toast.LENGTH_SHORT).show()
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(Uri.parse(videoFileUri), "resource/folder")
+
+            if (intent.resolveActivityInfo(packageManager, 0) != null) {
+                startActivity(intent);
+            } else {
+                // if you reach this place, it means there is no any file
+                // explorer app installed on your device
+                Toast.makeText(this, "No File Manager Installed!", Toast.LENGTH_LONG).show()
             }
+
         }
     }
 
@@ -130,4 +132,5 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
     }
+
 }
