@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.export
 
-import android.content.Intent
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,6 +14,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.UriUtils
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getWorkspaceUri
+
 
 /**
  * Created by annmcostantino on 10/1/2017.
@@ -69,7 +71,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
-        var mOpenVideoFolder : Button = findViewById(R.id.open_videos_folder)
+        var mOpenVideoPath : Button = findViewById(R.id.open_videos_path)
 
         val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
@@ -83,22 +85,18 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
 
-        mOpenVideoFolder.setOnClickListener {
+        mOpenVideoPath.setOnClickListener {
 
             val videoContentUri  = getWorkspaceUri("$VIDEO_DIR/")
-            var videoFileUri = UriUtils.getPathFromUri(this, videoContentUri!!)
+            var videoFileUriStr = UriUtils.getPathFromUri(this, videoContentUri!!)
+            var videoFileUri = Uri.parse(videoFileUriStr)
 
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(Uri.parse(videoFileUri), "resource/folder")
-
-            if (intent.resolveActivityInfo(packageManager, 0) != null) {
-                startActivity(intent);
-            } else {
-                // if you reach this place, it means there is no any file
-                // explorer app installed on your device
-                Toast.makeText(this, "No File Manager Installed!", Toast.LENGTH_LONG).show()
-            }
-
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setMessage("Using a file manager app, video files can be accessed at: ${videoFileUri.path}")
+                    .setCancelable(false)
+                    .setPositiveButton("OK") { _, _ -> }
+            val alert: AlertDialog = builder.create()
+            alert.show()
         }
     }
 
