@@ -1,4 +1,4 @@
-package org.sil.storyproducer.androidtest.runfirst
+package org.sil.storyproducer.androidtest._runfirst
 
 import android.app.Application
 
