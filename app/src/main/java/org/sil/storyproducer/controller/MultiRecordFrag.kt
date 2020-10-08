@@ -132,7 +132,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             }
         }catch (e:Exception){
             Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 
