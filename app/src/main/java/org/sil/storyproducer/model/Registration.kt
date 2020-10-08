@@ -1,7 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONException
 import org.json.JSONObject
 import org.sil.storyproducer.tools.file.getChildOutputStream
@@ -22,7 +22,7 @@ class Registration{
             try {
                 jsonData = JSONObject(regString)
             } catch (e: JSONException) {
-                Crashlytics.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
                 jsonData = JSONObject()
             }
         }
@@ -32,9 +32,9 @@ class Registration{
         if(oStream != null) {
             try {
                 oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
-            }catch(e:Exception){
-                Crashlytics.logException(e)
-            }finally {
+            } catch(e:Exception){
+                FirebaseCrashlytics.getInstance().recordException(e)
+            } finally {
                 oStream.close()
             }
         }

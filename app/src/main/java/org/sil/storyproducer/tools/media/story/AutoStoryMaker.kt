@@ -10,7 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
@@ -130,7 +130,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
             copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
             Workspace.activeStory.addVideo(video3gpPath)
-        }catch(e:Exception){Crashlytics.logException(e)}
+        } catch(e:Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
 
         video3gpFile.delete()
     }
