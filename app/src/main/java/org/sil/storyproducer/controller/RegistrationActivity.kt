@@ -20,7 +20,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.sil.storyproducer.R
@@ -569,7 +569,7 @@ open class RegistrationActivity : AppCompatActivity() {
             reg.save(this)
             Log.i("Finished sending email", "")
         } catch (ex: android.content.ActivityNotFoundException) {
-            Crashlytics.logException(ex)
+            FirebaseCrashlytics.getInstance().recordException(ex)
             Toast.makeText(this,
                     "There is no email client installed.", Toast.LENGTH_SHORT).show()
         }
