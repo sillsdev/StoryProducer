@@ -1,7 +1,6 @@
 package org.sil.storyproducer.controller.export
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -89,6 +88,15 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
 
             val videoContentUri  = getWorkspaceUri("$VIDEO_DIR/")
             var videoFileUriStr = UriUtils.getPathFromUri(this, videoContentUri!!)
+
+            // At this point the videoFileUriStr will look something like this: /storage/emulated/0/
+            // This is the actual path. However, it needs be changed to the SD Card (/sdcard/)
+            // which is a symbolic link to the emulated storage path.
+            // sdcard/: Is a symlink to...
+            //      /storage/sdcard0 (Android 4.0+)
+            // In Story Producer, the version will never be less than Android 4.0
+            videoFileUriStr = videoFileUriStr.replace("/storage/emulated/", "/storage/sdcard")
+
             var videoFileUri = Uri.parse(videoFileUriStr)
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
