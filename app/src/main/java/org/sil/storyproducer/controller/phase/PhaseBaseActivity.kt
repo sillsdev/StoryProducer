@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.model.Phase
@@ -67,7 +67,12 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum
         story.lastPhaseType = Workspace.activePhase.phaseType
-        Thread(Runnable{story.toJson(this)}).start()
+
+        // Issue #503, it is possible for the user to change workspaces causing a rouge story
+        // to save. Instead, ensure that the story exists in the current workspace before saving.
+        if(Workspace.Stories.contains(story)) {
+            Thread(Runnable { story.toJson(this) }).start()
+        }
     }
 
     //Override setContentView to coerce into child view.
@@ -119,7 +124,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         if(pos >= 0 && pos < Workspace.phases.size){
             jumpToPhase(Workspace.phases[pos])
         }else{
-            Crashlytics.log("tyring to select phase index $pos that is out of bounds:${Workspace.phases.size}")
+            FirebaseCrashlytics.getInstance().log("tyring to select phase index $pos that is out of bounds:${Workspace.phases.size}")
         }
     }
 

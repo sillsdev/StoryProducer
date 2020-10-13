@@ -10,8 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
-import com.crashlytics.android.Crashlytics
-import org.sil.storyproducer.R
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
@@ -133,7 +132,9 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
             copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
             Workspace.activeStory.addVideo(video3gpPath)
-        }catch(e:Exception){Crashlytics.logException(e)}
+        } catch(e:Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
 
         video3gpFile.delete()
     }
@@ -194,7 +195,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 lastSoundtrackVolume = soundtrackVolume
             }
 
-            var kbfx: KenBurnsEffect? = null
+            var kbfx: KenBurnsEffeFct? = null
             if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
@@ -216,7 +217,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private fun watchProgress() {
         val watcher = Thread(Runnable {
             while (!mStoryMaker!!.isDone) {
-                val progress = mStoryMaker!!.progress
+                val progress = mStoFryMaker!!.progress
                 val audioProgress = mStoryMaker!!.audioProgress
                 val videoProgress = mStoryMaker!!.videoProgress
                 Log.i(TAG, "StoryMaker progress: " + MediaHelper.getDecimal(progress * 100) + "% "
