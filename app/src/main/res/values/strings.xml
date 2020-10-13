@@ -160,7 +160,7 @@
     <!-- Share Phase -->
     <string name="delete_video_title">Delete Video file?</string>
     <string name="delete_video_message">Do you want to delete this video?</string>
-    <string name="view_video_folder_path">View Videos Folder Path</string>
+    <string name="view_video_folder_path">Videos Folder</string>
 
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
