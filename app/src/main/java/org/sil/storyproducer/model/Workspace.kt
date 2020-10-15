@@ -168,29 +168,9 @@ object Workspace{
         deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
     }
 
-    fun updateStoryLocalCredits(context: Context) {
-        for(story in Stories){
-            for(slide in story.slides){
-                if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                    if(slide.translatedContent == ""){
-                        slide.translatedContent = context.getString(R.string.LC_starting_text)
-                    }
-                }
-            }
-        }
-    }
-
     fun isLocalCreditsChanged(context: Context) : Boolean {
-        //if there are no local credits, let them make the video.
-        var isChanged = true
         val orgLCText = context.getString(R.string.LC_starting_text)
-        for(slide in activeStory.slides){
-            if(slide.slideType == SlideType.LOCALCREDITS) { //local credits
-                isChanged = (slide.translatedContent != orgLCText)
-                break
-            }
-        }
-        return isChanged
+        return activeStory.localCredits != orgLCText
     }
 
     fun getSongFilename() : String{

@@ -38,9 +38,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-            setToolbar()
-        }
+
+        setToolbar()
 
         setupCameraAndEditButton()
 
@@ -78,9 +77,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
 
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNum].slideType in
-                arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
-        {
+        val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
+        if(slideType in arrayOf(SlideType.FRONTCOVER)) {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
@@ -99,7 +97,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 // Apply layout properties
                 editText.layoutParams = params
                 editText.minLines = 5
-                editText.text.insert(0,Workspace.activeSlide!!.translatedContent)
+
+                editText.text.insert(0, Workspace.activeSlide!!.translatedContent)
 
                 val dialog = AlertDialog.Builder(context)
                         .setTitle(getString(R.string.enter_text))

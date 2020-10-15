@@ -1,16 +1,18 @@
 package org.sil.storyproducer.controller.export
 
+import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.UriUtils
 import org.sil.storyproducer.tools.file.getChildDocuments
+import org.sil.storyproducer.tools.file.getWorkspaceUri
 
 
 /**
@@ -34,8 +36,6 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
      * Returns the the video paths that are saved in preferences and then checks to see that they actually are files that exist
      * @return Array list of video paths
      */
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share)
@@ -70,8 +70,9 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
+        var mOpenVideoPath : Button = findViewById(R.id.open_videos_path)
 
-        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
         for (i in 0 until presentVideos.size){
             if(presentVideos[i] in story.outputVideos){
@@ -82,6 +83,31 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             mNoVideosText!!.visibility = View.GONE
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
+
+        mOpenVideoPath.setOnClickListener {
+
+            val videoContentUri  = getWorkspaceUri("$VIDEO_DIR/")
+            var videoFileUriStr = UriUtils.getPathFromUri(this, videoContentUri!!)
+
+            // At this point the videoFileUriStr will look something like this: /storage/emulated/0/
+            // This is the actual path. However, it needs be changed to the SD Card (/sdcard/)
+            // which is a symbolic link to the emulated storage path.
+            // sdcard/: Is a symlink to...
+            //      /storage/sdcard0 (Android 4.0+)
+            // In Story Producer, the version will never be less than Android 4.0
+            // We will instead show it as an optional [sdcard]
+            // The below code will change: /storage/emulated/0/ to /storage/[sdcard]/
+            videoFileUriStr = videoFileUriStr.replace(Regex("(storage\\/emulated\\/)\\d+"), "storage/[sdcard]")
+
+            var videoFileUri = Uri.parse(videoFileUriStr)
+
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setMessage("Using a file manager app, video files can be accessed at: ${videoFileUri.path}")
+                    .setCancelable(false)
+                    .setPositiveButton("OK") { _, _ -> }
+            val alert: AlertDialog = builder.create()
+            alert.show()
+        }
     }
 
     /**
@@ -90,7 +116,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
     //TODO: cleanup
     override fun refreshViews() {
 
-        val presentVideos = getChildDocuments(this,VIDEO_DIR)
+        val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
         for (i in 0 until presentVideos.size){
             if(presentVideos[i] in story.outputVideos){
@@ -101,7 +127,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         val toRemove = mutableListOf<Int>()
         for (i in 0 until story.outputVideos.size){
             if(story.outputVideos[i] !in presentVideos){
-                toRemove.add(0,i) //add at beginning
+                toRemove.add(0, i) //add at beginning
             }
         }
         for (i in toRemove){
@@ -114,4 +140,5 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
     }
+
 }
