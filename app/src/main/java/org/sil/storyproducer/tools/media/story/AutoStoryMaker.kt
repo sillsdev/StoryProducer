@@ -195,7 +195,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 lastSoundtrackVolume = soundtrackVolume
             }
 
-            var kbfx: KenBurnsEffeFct? = null
+            var kbfx: KenBurnsEffect? = null
             if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
                 kbfx = KenBurnsEffect.fromSlide(slide)
             }
@@ -217,7 +217,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
     private fun watchProgress() {
         val watcher = Thread(Runnable {
             while (!mStoryMaker!!.isDone) {
-                val progress = mStoFryMaker!!.progress
+                val progress = mStoryMaker!!.progress
                 val audioProgress = mStoryMaker!!.audioProgress
                 val videoProgress = mStoryMaker!!.videoProgress
                 Log.i(TAG, "StoryMaker progress: " + MediaHelper.getDecimal(progress * 100) + "% "
