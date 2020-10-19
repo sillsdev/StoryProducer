@@ -10,7 +10,7 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -106,7 +106,6 @@ fun getDownsample(context: Context, relPath: String,
     }
     return ds
 }
-
 
 fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
     val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
