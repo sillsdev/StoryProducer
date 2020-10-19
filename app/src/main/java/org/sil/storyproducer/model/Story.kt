@@ -15,6 +15,7 @@ internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 @JsonClass(generateAdapter = true)
 class Story(var title: String, val slides: List<Slide>){
 
+    var importAppVersion: String = ""
     var isApproved: Boolean = false
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
@@ -22,7 +23,20 @@ class Story(var title: String, val slides: List<Slide>){
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
-    var importAppVersion = ""
+    var fullVideo: String = ""
+    var isVideoStory = false
+    var localCredits = ""
+    val numSlides : Int get() {
+        var num = 0
+        for(slide in slides) {
+            if(slide.slideType == SlideType.NUMBEREDPAGE || slide.slideType == SlideType.FRONTCOVER) {
+                num++
+            }
+        }
+        return num
+    }
+
+    var phases: List<Phase> = ArrayList()
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
@@ -42,7 +56,7 @@ class Story(var title: String, val slides: List<Slide>){
     }
 
     fun addVideo(video: String){
-        if(!(video in outputVideos)){
+        if(video !in outputVideos){
             outputVideos.add(video)
             outputVideos.sort()
         }

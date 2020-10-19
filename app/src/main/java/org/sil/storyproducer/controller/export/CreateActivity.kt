@@ -29,7 +29,7 @@ class CreateActivity : PhaseBaseActivity() {
     private lateinit var mCheckboxSong: CheckBox
     private lateinit var mButtonStart: Button
     private lateinit var mButtonCancel: Button
-    private lateinit var mProgressBar: ProgressBar
+    lateinit var mProgressBar: ProgressBar
 
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
@@ -214,7 +214,7 @@ class CreateActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements(currentCheckbox : CheckBox? = null) {
+    fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
@@ -371,7 +371,7 @@ class CreateActivity : PhaseBaseActivity() {
         private val TAG = "CreateActivity"
 
         private val BUTTON_LOCK_DURATION_MS: Long = 1000
-        private val PROGRESS_MAX = 1000
+        val PROGRESS_MAX = 1000
 
         private val PREF_FILE = "Export_Config"
 
@@ -384,6 +384,6 @@ class CreateActivity : PhaseBaseActivity() {
 
         @Volatile
         private var buttonLocked = false
-        private val storyMakerLock = Any()
+        val storyMakerLock = Any()
     }
 }
