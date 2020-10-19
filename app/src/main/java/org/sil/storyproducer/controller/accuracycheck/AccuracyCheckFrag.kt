@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.accuracycheck
+package org.sil.storyproducer.controller.consultant
 
 import android.content.Context
 import android.os.Bundle
@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
+import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
@@ -30,17 +31,30 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
-            this@AccuracyCheckFrag.rootView = this
-            setPic(findViewById<View>(R.id.fragment_image_view) as ImageView)
-            findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
-            findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
-            setCheckmarkButton(findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)
-            setLogsButton(findViewById<View>(R.id.concheck_logs_button) as ImageButton)
-        }
+        // The last two arguments ensure LayoutParams are inflated
+        // properly.
+        rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
+        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
+        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
+        setCheckmarkButton(rootView!!.findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)
+        setLogsButton(rootView!!.findViewById<View>(R.id.concheck_logs_button) as ImageButton)
+
+        return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        storyPlayer = SlidePlayerFrag()
+        storyPlayer?.startSlide = slideNum
+        storyPlayer?.slideRange = 1
+        storyPlayer?.phaseType = Workspace.activePhase.phaseType
+        var transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
     /**
@@ -55,11 +69,19 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                referenceAudioPlayer.stopAudio()
+                storyPlayer?.stop()
             }
         }
     }
 
+    /**
+     * This function stops any of the media playback.
+     */
+    override fun stopPlayBack() {
+        if(storyPlayer != null) {
+            storyPlayer?.stop()
+        }
+    }
 
     /**
      * Sets on click listener for consultant to check off the slide and approve

@@ -16,17 +16,6 @@
         tools:ignore="MissingConstraints" />
 
     <ImageView
-        android:id="@+id/fragment_image_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:contentDescription="@string/story_picture"
-        android:scaleType="centerCrop"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
         android:id="@+id/insert_image_view"
         android:contentDescription="@string/edit_image"
         android:layout_width="wrap_content"
@@ -55,15 +44,6 @@
         android:src="@drawable/ic_edit_white_24dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/seek_bar"
-        layout="@layout/play_seek_number_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

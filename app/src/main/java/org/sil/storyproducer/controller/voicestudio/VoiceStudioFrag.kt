@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
@@ -23,8 +24,6 @@ class VoiceStudioFrag : MultiRecordFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
-
-        setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView)
         slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
         slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
 
@@ -45,6 +44,19 @@ class VoiceStudioFrag : MultiRecordFrag() {
         setupCameraAndEditButton()
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+//        storyPlayer = if(Workspace.activeStory.isVideoStory) VideoPlayerFrag() else SlidePlayerFrag()
+        storyPlayer = SlidePlayerFrag()
+        // FIXME: change above
+        storyPlayer?.startSlide = slideNum
+        storyPlayer?.slideRange = 1
+        storyPlayer?.phaseType = Workspace.activePhase.phaseType
+        var transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
     /**
@@ -102,7 +114,6 @@ class VoiceStudioFrag : MultiRecordFrag() {
             val newText = slideText!!.text.toString()
             if (newText != Workspace.activeStory.slides[slideNum].translatedContent) {
                 Workspace.activeStory.slides[slideNum].translatedContent = newText
-                setPic(rootView!!.findViewById(R.id.fragment_image_view))
             }
         }
     }

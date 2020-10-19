@@ -77,8 +77,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
 
         // display the image selection button, if on the title slide
-        val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
-        if(slideType in arrayOf(SlideType.FRONTCOVER)) {
+        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER)
+        {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
@@ -106,7 +106,6 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                         .setNegativeButton(getString(R.string.cancel), null)
                         .setPositiveButton(getString(R.string.save)) { _, _ ->
                             Workspace.activeSlide!!.translatedContent = editText.text.toString()
-                            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
                         }.create()
 
                 dialog.show()
@@ -128,11 +127,16 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 copyToWorkspacePath(context!!, uri!!,
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
                 tempPicFile?.delete()
-                setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
             }
         }catch (e:Exception){
             Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
             FirebaseCrashlytics.getInstance().recordException(e)
+        }
+    }
+
+    override fun stopPlayBack() {
+        if(storyPlayer != null) {
+            storyPlayer?.stop()
         }
     }
 
@@ -166,15 +170,14 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     override fun onStartedToolbarMedia() {
         super.onStartedToolbarMedia()
 
-        stopSlidePlayBack()
+        stopPlayBack()
     }
 
     override fun onStartedSlidePlayBack() {
         super.onStartedSlidePlayBack()
-
         recordingToolbar.stopToolbarMedia()
     }
-    
+
     companion object {
         private const val ACTIVITY_SELECT_IMAGE = 53
     }
