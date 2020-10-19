@@ -11,7 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -118,11 +118,11 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         }
         catch (e: IllegalStateException) {
             Toast.makeText(activity, "IllegalStateException!", Toast.LENGTH_SHORT).show()
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
         catch (e: IOException) {
             Toast.makeText(activity, "IOException!", Toast.LENGTH_SHORT).show()
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 
@@ -135,7 +135,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             isRecording = false
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
-            Crashlytics.logException(stopException)
+            FirebaseCrashlytics.getInstance().recordException(stopException)
         } catch (e: InterruptedException) {
             Log.e(AUDIO_RECORDER, "Voice recorder interrupted!", e)
         }

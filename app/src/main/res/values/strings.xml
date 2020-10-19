@@ -176,7 +176,7 @@
     <!-- Share Phase -->
     <string name="delete_video_title">Delete Video file?</string>
     <string name="delete_video_message">Do you want to delete this video?</string>
-
+    <string name="view_video_folder_path">Videos Folder</string>
 
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
@@ -217,7 +217,7 @@
 
     <!-- Export Phase -->
     <string name="export_title_header">Text in Filename</string>
-    <string name="export_custom_title">Short Story Name</string>
+    <string name="Text_In_Filename_Placeholder">Type Your Local Short Story Title Here</string>
     <string name="export_options_header">Options</string>
     <string name="export_include_soundtrack">Include Background Music (Fx)</string>
     <string name="export_include_pictures">Include Pictures (Px)</string>
@@ -227,7 +227,8 @@
     <string name="export_dumbphone">(3gp) is for </string>
     <string name="export_smartphone">(mp4) is for </string>
 
-    <string name="export_local_credits_unchanged">Update Local Credits - last slide in Studio</string>
+    <string name="export_local_credits_unchanged">Edit Local Credits</string>
+    <string name="local_credits_check_mark_description">check mark indicating if the local credits have been updated</string>
     <string name="export_no_filename">Type a Short Story Title, above</string>
     <string name="export_local_song_unrecorded">Record local song first.</string>
 
@@ -244,6 +245,7 @@
     <!-- Local Credits -->
     <string name="LC_starting_text">Language:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
     <string name="LC_prompt">Local Credits will be added during voice acting.</string>
+    <string name="export_local_credits_header">Local Credits</string>
 
     <!-- Local Song -->
     <string name="LS_prompt">Make a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>

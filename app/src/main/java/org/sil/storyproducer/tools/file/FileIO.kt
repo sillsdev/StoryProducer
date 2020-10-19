@@ -9,7 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -39,7 +39,7 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
         iStream.close()
         iStream.close()
     } catch (e: Exception) {
-        Crashlytics.logException(e)
+        FirebaseCrashlytics.getInstance().recordException(e)
     }
 }
 
@@ -64,7 +64,7 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
         iStream.close()
         iStream.close()
     } catch (e: Exception) {
-        Crashlytics.logException(e)
+        FirebaseCrashlytics.getInstance().recordException(e)
     }
 }
 
@@ -214,7 +214,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             uri = newUri
         }
     } catch (e: Exception){
-        Crashlytics.logException(e)
+        FirebaseCrashlytics.getInstance().recordException(e)
         return null
     }
     //create the file if it is needed

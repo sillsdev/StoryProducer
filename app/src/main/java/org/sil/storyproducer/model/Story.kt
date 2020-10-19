@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 
 import com.squareup.moshi.JsonClass
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
 import java.util.*
 
@@ -77,4 +78,3 @@ class Story(var title: String, val slides: List<Slide>){
 }
 
 fun emptyStory() : Story {return Story("",ArrayList())}
-

@@ -1,5 +1,6 @@
 package org.sil.storyproducer.controller.export
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
@@ -7,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import org.sil.storyproducer.R
@@ -16,6 +18,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.stripForFilename
+
 
 class CreateActivity : PhaseBaseActivity() {
 
@@ -155,18 +158,26 @@ class CreateActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     private fun setupViews() {
-
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener( object: TextWatcher {
+        mEditTextTitle.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
-                if(temp != s.toString()){
-                    s!!.replace(0,s.length,temp)
+                if (temp != s.toString()) {
+                    s!!.replace(0, s.length, temp)
+                }
+
+                // Update check mark icon
+                val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+                if(temp.isEmpty()) {
+                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_grey_outline_24)
+                } else {
+                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
                 }
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -182,12 +193,29 @@ class CreateActivity : PhaseBaseActivity() {
 
         mButtonStart = findViewById(R.id.button_export_start)
         mButtonCancel = findViewById(R.id.button_export_cancel)
+        mButtonCredits = findViewById(R.id.button_local_credits)
         setOnClickListeners()
 
         mProgressBar = findViewById(R.id.progress_bar_export)
         mProgressBar.max = PROGRESS_MAX
         mProgressBar.progress = 0
 
+        // Safety check to ensure that the credits exist
+        if(Workspace.activeStory.localCredits.isEmpty()) {
+            Workspace.activeStory.localCredits = getString(R.string.LC_starting_text)
+        }
+
+        // Update the check mark if the file name has previously been changed
+        if(mEditTextTitle.text.toString().isNotEmpty()) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+        }
+
+        // Update the check mark if the credits have previously been changed
+        if(Workspace.isLocalCreditsChanged(this)) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_local_credits) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+        }
     }
 
     /**
@@ -209,6 +237,50 @@ class CreateActivity : PhaseBaseActivity() {
             lockButtons()
         }
 
+        mButtonCredits.setOnClickListener{
+            if(!buttonLocked) {
+                val editText = EditText(this)
+                editText.id = R.id.edit_text_input
+
+                // Programmatically set layout properties for edit text field
+                val params = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT)
+                // Apply layout properties
+                editText.layoutParams = params
+                editText.minLines = 5
+                editText.setText(Workspace.activeStory.localCredits)
+
+                val dialog = AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.enter_text))
+                        .setView(editText)
+                        .setNegativeButton(getString(R.string.cancel), null)
+                        .setPositiveButton(getString(R.string.save)) { _, _ ->
+                            val checkMarkIcon = findViewById<View>(R.id.checkmark_local_credits) as ImageView
+                            if(editText.text.toString().isNotEmpty()) {
+                                Workspace.activeStory.localCredits = editText.text.toString()
+
+                                if(Workspace.isLocalCreditsChanged(this)) {
+                                    Toast.makeText(this, "Local Credits Changed!", Toast.LENGTH_LONG)
+                                    checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+                                }
+                            }
+
+                            if(!Workspace.isLocalCreditsChanged(this)) {
+                                Toast.makeText(this, "Local Credits Unchanged!", Toast.LENGTH_LONG)
+                                checkMarkIcon.setImageResource(R.drawable.ic_check_circle_grey_outline_24)
+                            }
+
+                            // Hide the Keyboard Programmatically
+                            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
+
+                        }.create()
+
+                dialog.show()
+            }
+            lockButtons()
+        }
     }
 
     /**
@@ -248,10 +320,10 @@ class CreateActivity : PhaseBaseActivity() {
             }
         }
 
-        //Check if there is a song to play
+        // Check if there is a song to play
         if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
-            //you have to have a song to include it!
-            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            // you have to have a song to include it!
+            Toast.makeText(this, getString(R.string.export_local_song_unrecorded), Toast.LENGTH_SHORT).show()
             mCheckboxSong.isChecked = false
         }
     }
@@ -285,25 +357,31 @@ class CreateActivity : PhaseBaseActivity() {
         mCheckboxKBFX.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_KBFX, true)
         mCheckboxSong.isChecked = prefs.getBoolean(PREF_KEY_INCLUDE_SONG, true)
         mEditTextTitle.setText(prefs.getString("$PREF_KEY_SHORT_NAME ${Workspace.activeStory.shortTitle}", ""))
+
+        // Update the check mark if the file name has previously been changed
+        if(mEditTextTitle.text.toString().isNotEmpty()) {
+            val checkMarkIcon = findViewById<View>(R.id.checkmark_file_name) as ImageView
+            checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
+        }
     }
 
     private fun tryStartExport() {
-        //If the credits are unchanged, don't make the video.
+        // If the credits are unchanged, don't make the video.
         if(!Workspace.isLocalCreditsChanged(this)){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_local_credits_unchanged),Toast.LENGTH_LONG).show()
+            Toast.makeText(this, this.resources.getText(
+                    R.string.export_local_credits_unchanged), Toast.LENGTH_LONG).show()
             return
         }
 
-        //If there is no title, don't make video
+        // If there is no title, don't make video
         if(mEditTextTitle.text.toString() == ""){
-            Toast.makeText(this,this.resources.getText(
-                    R.string.export_no_filename),Toast.LENGTH_LONG).show()
+            Toast.makeText(this, this.resources.getText(
+                    R.string.export_no_filename), Toast.LENGTH_LONG).show()
             return
         }
 
-        //Else, check if the file already exists...
-        if (workspaceRelPathExists(this,"$VIDEO_DIR/$mOutputPath")) {
+        // Else, check if the file already exists...
+        if (workspaceRelPathExists(this, "$VIDEO_DIR/$mOutputPath")) {
             val dialog = android.app.AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))

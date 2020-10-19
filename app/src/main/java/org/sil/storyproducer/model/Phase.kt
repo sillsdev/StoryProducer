@@ -35,7 +35,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.LEARN -> R.drawable.ic_ear_speak
             PhaseType.DRAFT -> R.drawable.ic_mic_white_48dp
             PhaseType.CREATE -> R.drawable.ic_video_call_white_48dp
-            PhaseType.SHARE -> R.drawable.ic_share_white_48dp
+            PhaseType.SHARE -> R.drawable.ic_share_icon_v2_white
             PhaseType.COMMUNITY_CHECK -> R.drawable.ic_people_white_48dp
             PhaseType.CONSULTANT_CHECK -> R.drawable.ic_school_white_48dp
             PhaseType.WHOLE_STORY -> R.drawable.ic_school_white_48dp
@@ -148,7 +148,7 @@ class Phase(val phaseType: PhaseType) {
         val validSlideTypes = when(phaseType){
             PhaseType.DRAMATIZATION -> arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.LOCALSONG)
             else -> arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
@@ -167,7 +167,7 @@ class Phase(val phaseType: PhaseType) {
         return when(phaseType){
             PhaseType.DRAMATIZATION -> slideType in arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG,SlideType.LOCALCREDITS)
+                    SlideType.LOCALSONG)
             else -> slideType in arrayOf(
                     SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
                     SlideType.LOCALSONG)
