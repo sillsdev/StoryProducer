@@ -99,6 +99,9 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             // The below code will change: /storage/emulated/0/ to /storage/[sdcard]/
             videoFileUriStr = videoFileUriStr.replace(Regex("(storage\\/emulated\\/)\\d+"), "storage/[sdcard]")
 
+            // Also, the SD-Card could show up as /storage/####-####/ where # is a hexidecimal value
+            videoFileUriStr = videoFileUriStr.replace(Regex("(storage)\\/[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"), "storage/[sdcard]")
+
             var videoFileUri = Uri.parse(videoFileUriStr)
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
