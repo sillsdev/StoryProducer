@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
+import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -19,8 +21,6 @@ class CommunityCheckFrag : MultiRecordFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_community_check, container, false)
-
-        setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
@@ -32,6 +32,17 @@ class CommunityCheckFrag : MultiRecordFrag() {
         setupCameraAndEditButton()
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        storyPlayer = SlidePlayerFrag()
+        storyPlayer?.startSlide = slideNum
+        storyPlayer?.slideRange = 1
+        storyPlayer?.phaseType = Workspace.activePhase.phaseType
+        var transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
     override fun onPause() {
