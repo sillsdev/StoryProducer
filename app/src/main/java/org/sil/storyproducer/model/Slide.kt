@@ -2,9 +2,11 @@ package org.sil.storyproducer.model
 
 import android.graphics.Rect
 import android.net.Uri
+import android.text.Layout
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
+import org.sil.storyproducer.tools.media.graphics.TextOverlay
 import java.util.*
 
 /**
@@ -19,8 +21,27 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
+    val simpleContent: String
+    get() {
+        //Remove all newlines
+        var temp = "[\\r\\n]+".toRegex().replace(content,"")
+        //Remove anything that is surrounded by "[]"
+        temp = "\\[[^\\]]*\\]?".toRegex().replace(temp,"")
+        //remove everything before a : if there is one
+        temp =  ".*\\:".toRegex().replace(temp,"")
+        //remove everything after a .!? if there is one
+        temp =  "[\\.\\!\\?].*".toRegex().replace(temp,"")
+        //Make all double spaces one space.
+        return "\\s+".toRegex().replace(temp," ")
+    }
+
     var imageFile = ""
     var textFile = ""
+    var videoFile = ""
+    var audioPosition = 0
+    var startTime:Int = 0
+    var endTime:Int = 0
+    var finalVideoFile = ""
 
     //TODO initialize to no crop and no motion from picture size
     var width: Int = 0
@@ -50,6 +71,35 @@ class Slide{
 
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
     fun isNumberedPage() = slideType == SlideType.NUMBEREDPAGE
+    fun getOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {
+        //There is no text overlay on normal slides or "no slides"
+        if(!dispStory){
+            if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
+        }
+        val tOverlay = when(slideType) {
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(simpleContent) else TextOverlay(translatedContent)
+
+            else -> TextOverlay(translatedContent)
+        }
+        val fontSize : Int = when(slideType){
+            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            SlideType.COPYRIGHT -> 16
+            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 16
+            else -> 16
+        }
+        tOverlay.setFontSize(fontSize)
+        if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
+            tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+        return tOverlay
+    }
+
+    fun getFinalFile(): String {
+        return if(chosenDramatizationFile == ""){
+            chosenDraftFile.substringAfter("|")
+        } else{
+            chosenDramatizationFile.substringAfter("|")
+        }
+    }
 
     companion object
 }
