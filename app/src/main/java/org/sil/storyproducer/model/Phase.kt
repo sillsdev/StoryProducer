@@ -57,6 +57,10 @@ class Phase (val phaseType: PhaseType) {
         }
     }
 
+    fun getReferenceAudioFile(slide : Slide) : String {
+        return getReferenceAudioFile(Workspace.activeStory.slides.indexOf(slide))
+    }
+
     /**
      * Get the color associated with a phase
      * @return color

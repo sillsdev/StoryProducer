@@ -33,7 +33,6 @@ class FinalizeActivity : PhaseBaseActivity() {
     private lateinit var mButtonStart: Button
     private lateinit var mButtonCancel: Button
     private lateinit var mProgressBar: ProgressBar
-    private lateinit var mButtonCredits: Button
 
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
@@ -105,7 +104,7 @@ class FinalizeActivity : PhaseBaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_finalize)
+        setContentView(R.layout.activity_create)
         setupViews()
         invalidateOptionsMenu()
         if (Workspace.activeStory.isApproved) {
@@ -159,11 +158,12 @@ class FinalizeActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     private fun setupViews() {
+
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener(object : TextWatcher {
+        mEditTextTitle.addTextChangedListener( object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
                 if (temp != s.toString()) {
@@ -287,7 +287,7 @@ class FinalizeActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
+    fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
@@ -450,7 +450,7 @@ class FinalizeActivity : PhaseBaseActivity() {
         private val TAG = "FinalizeActivity"
 
         private val BUTTON_LOCK_DURATION_MS: Long = 1000
-        private val PROGRESS_MAX = 1000
+        val PROGRESS_MAX = 1000
 
         private val PREF_FILE = "Export_Config"
 
@@ -463,6 +463,6 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         @Volatile
         private var buttonLocked = false
-        private val storyMakerLock = Any()
+        val storyMakerLock = Any()
     }
 }
