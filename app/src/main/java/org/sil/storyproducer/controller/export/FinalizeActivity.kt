@@ -35,6 +35,7 @@ class FinalizeActivity : PhaseBaseActivity() {
     private lateinit var mCheckboxSong: CheckBox
     private lateinit var mButtonStart: Button
     private lateinit var mButtonCancel: Button
+    private lateinit var mButtonCredits: Button
     lateinit var mProgressBar: ProgressBar
     private lateinit var mButtonCredits: Button
 

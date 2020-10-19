@@ -149,8 +149,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         }
     }
 
-
-        /**
+    /**
      * Checks each slide of the story to see if all slides have been approved
      * @return true if all approved, otherwise false
      */
