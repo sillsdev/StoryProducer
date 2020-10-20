@@ -4,12 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
-import org.sil.storyproducer.model.SLIDE_NUM
-import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 
 /**
