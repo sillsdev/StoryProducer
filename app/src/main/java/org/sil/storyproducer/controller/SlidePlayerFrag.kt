@@ -176,7 +176,7 @@ class SlidePlayerFrag : StoryPlayerFrag() {
                             2
                     ) + " " + (firstSlideNum) + "-" + (currentSlideIndex)
                 }
-                //format duration:
+                // format duration:
                 val secUnit = mResources.getString(R.string.SECONDS_ABBREVIATION)
                 val minUnit = mResources.getString(R.string.MINUTES_ABBREVIATION)
                 if (durationPlayed < 1000) {
@@ -199,7 +199,7 @@ class SlidePlayerFrag : StoryPlayerFrag() {
                 org.sil.storyproducer.model.logging.saveLog(getString(R.string.DRAFT_PLAYBACK), firstSlideNum, currentSlideIndex)
             }
             else -> {
-                //Do nothing!
+                // Do nothing!
             }
         }
     }
@@ -267,29 +267,29 @@ class SlidePlayerFrag : StoryPlayerFrag() {
         val downSample = 2
         var slidePicture: Bitmap = getStoryImage(context!!, slideNum, downSample)
 
-        //scale down image to not crash phone from memory error from displaying too large an image
-        //Get the height of the phone.
+        // Scale down image to not crash phone from memory error from displaying too large an image
+        // Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
         var height = phoneProperties.heightPixels
         val scalingFactor = 0.4
         height = (height * scalingFactor).toInt()
         val width = phoneProperties.widthPixels
 
-        //scale bitmap
+        // scale bitmap
         slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
 
-        //draw the text overlay
+        // draw the text overlay
         slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
-        //only show the untranslated title in the Learn phase.
+        // only show the untranslated title in the Learn phase.
         val tOverlay = if (Workspace.activePhase.phaseType == PhaseType.LEARN)
             Workspace.activeStory.slides[slideNum].getOverlayText(false, true)
         else Workspace.activeStory.slides[slideNum].getOverlayText(false, false)
-        //if overlay is null, it will not write the text.
+        // if overlay is null, it will not write the text.
         tOverlay?.setPadding(max(20, 20 + (canvas.width - phoneProperties.widthPixels) / 2))
         tOverlay?.draw(canvas)
 
-        //Set the height of the image view
+        // Set the height of the image view
         slideView!!.requestLayout()
 
         slideView!!.setImageBitmap(slidePicture)
