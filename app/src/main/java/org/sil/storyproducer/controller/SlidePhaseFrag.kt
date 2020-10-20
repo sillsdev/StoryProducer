@@ -25,7 +25,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
     protected var storyPlayer : StoryPlayerFrag? = null
 
-    protected var slideNum: Int = 0 //gets overwritten
+    protected var slideNum: Int = 0 // gets overwritten
     protected lateinit var slide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +40,6 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         // The last two arguments ensure LayoutParams are inflated
         // properly.
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
-
-//        setPic(rootView!!.findViewById<View>(R.id.fragment_image_view) as ImageView)
 
         return rootView
     }
@@ -74,22 +72,6 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 //        referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
 //    }
 
-//    /**
-//     * This function allows the picture to scale with the phone's screen size.
-//     *
-//     * @param slideImage    The ImageView that will contain the picture.
-//     */
-//    protected fun setPic(slideImage: ImageView) {
-//
-//        (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
-//        //Set up the reference audio and slide number overlays
-//        referencePlayButton = rootView?.findViewById(R.id.fragment_reference_audio_button)
-//        setReferenceAudioButton()
-//
-//        val slideNumberText = rootView?.findViewById<TextView>(R.id.slide_number_text)
-//        slideNumberText?.text = slideNum.toString()
-//    }
-
     /**
      * Sets the main text of the layout.
      *
@@ -113,7 +95,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                 return
             }
         }
-        //There is no reference text.
+        // There is no reference text.
         textView.text = ""
     }
 

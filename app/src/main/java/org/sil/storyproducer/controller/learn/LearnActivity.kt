@@ -1,28 +1,17 @@
 package org.sil.storyproducer.controller.learn
 
-import android.media.MediaPlayer
 import android.os.Bundle
+import android.widget.Switch
+import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
-import android.view.View
-import android.widget.*
-import android.widget.SeekBar.OnSeekBarChangeListener
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.logging.saveLearnLog
-import org.sil.storyproducer.tools.file.getStoryUri
-import org.sil.storyproducer.tools.file.storyRelPathExists
-import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
-import java.util.*
-import kotlin.math.min
 
 class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
     lateinit var audioSwitch : Switch
@@ -43,6 +32,8 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                 storyPlayer.mute()
             }
         }
+
+        showStartPracticeSnackBar()
 
         setToolbar()
         invalidateOptionsMenu()
