@@ -19,6 +19,8 @@ import org.sil.storyproducer.tools.media.graphics.KenBurnsEffect
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import java.io.Closeable
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -143,9 +145,22 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
         var lastSoundtrack = ""
         var lastSoundtrackVolume = 0.0f
+        val slides = Workspace.activeStory.slides.toCollection(mutableListOf())
         var iSlide = 0
-        while (iSlide < (Workspace.activeStory.slides.size)) {
-            val slide = Workspace.activeStory.slides[iSlide++]
+
+        // Create Local Credits Slide
+        var slide = Slide()
+        slide.slideType = SlideType.COPYRIGHT
+        slide.content = Workspace.activeStory.localCredits + "\n" +
+                    "This video is licensed under a Creative Commons Attribution" +
+                    "-NonCommercial-ShareAlike 4.0 International License " +
+                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
+        slide.translatedContent = slide.content
+        slide.musicFile = MUSIC_NONE
+        slides.add(slide)
+
+        while (iSlide < slides.size) {
+            val slide = slides[iSlide++]
 
             //Check if the song slide should be included
             if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue

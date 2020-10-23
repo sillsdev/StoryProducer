@@ -59,13 +59,6 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     slide.musicFile = MUSIC_NONE
     slides.add(slide)
 
-    //Add the Local credits slide
-    slide = Slide()
-    slide.slideType = SlideType.LOCALCREDITS
-    slide.content = context.getString(R.string.LC_prompt)
-    slide.musicFile = MUSIC_NONE
-    slides.add(slide)
-
     //Before the first page is the bloomDataDiv stuff.  Get the originalAcknowledgments.
     //If they are there, append to the end of the slides.
     val mOrgAckns = soup.getElementsByAttributeValueMatching("class","(?=.*bloom-translationGroup)(?=.*originalAcknowledgments)")

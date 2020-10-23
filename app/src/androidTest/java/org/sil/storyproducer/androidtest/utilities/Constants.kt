@@ -1,4 +1,9 @@
 package org.sil.storyproducer.androidtest.utilities
+
+import android.content.Context
+import android.content.res.Resources
+import androidx.test.InstrumentationRegistry
+
 object Constants {
     // The duration for which a clip  gets played should be shorter than the
     // corresponding duration for which a clip gets recorded.
@@ -17,14 +22,16 @@ object Constants {
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
     const val nameOfTestStory = "Lost Coin"
+
     const val nameOfTestStoryDirectory = "a000 Lost Coin Eng"
     const val nameOfSampleExportVideo = "LostCoinSample.mp4"
 
     val storageRoots = arrayOf(
             "mnt/sdcard",
             "storage/removable_SD Card",
-            "storage")
-    var storage = storageRoots[0]
+            "storage",
+            "mnt/SDCARD")
+    var storage = storageRoots[3]
     val workspaceDirectory : String
         get() {return "$storage/SPWorkspace"}
     val espressoResourceDirectory : String
@@ -32,14 +39,16 @@ object Constants {
     val exportedVideosDirectory : String
         get() {return "$workspaceDirectory/videos"}
 
+    val resources: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+
     object Phase {
         const val learn = "Learn"
-        const val translate = "Translate"
+        const val translate = "Translate + Revise"
         const val communityWork = "Community Work"
         const val accuracyCheck = "Accuracy Check"
         const val voiceStudio = "Voice Studio"
         const val finalize = "Finalize"
         const val share = "Share"
     }
-}
 
+}

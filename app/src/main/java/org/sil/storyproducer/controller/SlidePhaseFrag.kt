@@ -76,24 +76,18 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
             referenceAudioPlayer.stopAudio()
         })
 
-        //If it is the local credits slide, do not show the audio stuff at all.
-        val refPlaybackHolder: ConstraintLayout = rootView!!.findViewById(R.id.seek_bar)
-        if(Workspace.activeStory.slides[slideNum].slideType == SlideType.LOCALCREDITS){
-            refPlaybackHolder.visibility = View.GONE
-        }else{
-            refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
-            mSeekBarTimer = Timer()
-            mSeekBarTimer.schedule(object : TimerTask() {
-                override fun run() {
-                    activity!!.runOnUiThread{
-                        refPlaybackProgress = referenceAudioPlayer.currentPosition
-                        refPlaybackSeekBar?.progress = refPlaybackProgress
-                    }
+        refPlaybackSeekBar = rootView!!.findViewById(R.id.videoSeekBar)
+        mSeekBarTimer = Timer()
+        mSeekBarTimer.schedule(object : TimerTask() {
+            override fun run() {
+                activity!!.runOnUiThread{
+                    refPlaybackProgress = referenceAudioPlayer.currentPosition
+                    refPlaybackSeekBar?.progress = refPlaybackProgress
                 }
-            },0,33)
+            }
+        },0,33)
 
-            setSeekBarListener()
-        }
+        setSeekBarListener()
     }
 
     private fun setSeekBarListener() {

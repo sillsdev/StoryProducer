@@ -1,19 +1,29 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import androidx.test.espresso.Espresso
+import android.content.Intent
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
+import org.hamcrest.*
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
+import org.sil.storyproducer.androidtest.utilities.Constants.durationToWaitWhenSwipingBetweenSlides
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 import java.io.File
+
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -28,7 +38,7 @@ class SharePhaseTest : PhaseTestBase() {
             approveSlides()
         }, Constants.Phase.share)
 
-        Espresso.onView(withText(org.sil.storyproducer.R.string.no_videos)).check(matches(isDisplayed()))
+        onView(withText(org.sil.storyproducer.R.string.no_videos)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -41,7 +51,7 @@ class SharePhaseTest : PhaseTestBase() {
         Workspace.activeStory.addVideo(videoFilename)
         PhaseNavigator.selectPhase(Constants.Phase.share)
 
-        Espresso.onView(withText(CoreMatchers.containsString(videoFilename))).check(matches(isDisplayed()))
+        onView(withText(CoreMatchers.containsString(videoFilename))).check(matches(isDisplayed()))
     }
 
     private fun copySampleVideoToExportDirectory(videoFilename: String) {
@@ -54,4 +64,5 @@ class SharePhaseTest : PhaseTestBase() {
             Assert.fail("Failed to copy sample video to exported videos directory for test.")
         }
     }
+
 }
