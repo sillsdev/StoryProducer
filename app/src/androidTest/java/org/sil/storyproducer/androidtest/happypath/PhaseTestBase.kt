@@ -11,7 +11,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace

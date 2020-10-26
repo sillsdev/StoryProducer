@@ -19,7 +19,7 @@ import org.hamcrest.Matcher
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants

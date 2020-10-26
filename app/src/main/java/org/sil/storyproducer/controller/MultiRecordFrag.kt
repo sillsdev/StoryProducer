@@ -14,8 +14,8 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.BuildConfig
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.BuildConfig
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType

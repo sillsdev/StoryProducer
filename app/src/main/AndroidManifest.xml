@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.sil.storyproducer">
+    package="org.sil.storyproducer.film">
 
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name=".App"
+        android:name="org.sil.storyproducer.App"
         android:allowBackup="true"
         android:icon="@mipmap/logo_new_splash"
         android:roundIcon="@mipmap/logo_new_splash"
@@ -25,7 +25,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.sil.storyproducer.fileprovider"
+            android:authorities="org.sil.storyproducer.film.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -35,13 +35,13 @@
 
         <!-- Pager Base -->
         <activity
-            android:name=".controller.pager.PagerBaseActivity"
+            android:name="org.sil.storyproducer.controller.pager.PagerBaseActivity"
             android:label="Pager Base"
             android:screenOrientation="portrait" />
 
         <!-- Splash Screen -->
         <activity
-            android:name=".controller.SplashScreenActivity"
+            android:name="org.sil.storyproducer.controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
             android:screenOrientation="portrait">
@@ -53,34 +53,34 @@
         </activity>
         <!-- Story List Page -->
         <activity
-            android:name=".controller.MainActivity"
+            android:name="org.sil.storyproducer.controller.MainActivity"
             android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait" />
         <!-- Registration -->
         <activity
-            android:name=".controller.RegistrationActivity"
+            android:name="org.sil.storyproducer.controller.RegistrationActivity"
             android:screenOrientation="portrait" />
+<!--        <activity-->
+<!--            android:name="org.sil.storyproducer.controller.WorkspaceUpdateActivity"-->
+<!--            android:screenOrientation="portrait" />-->
         <activity
-            android:name=".controller.WorkspaceUpdateActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".activity.WorkspaceDialogUpdateActivity"
+            android:name="org.sil.storyproducer.activity.WorkspaceDialogUpdateActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
-            android:name=".controller.learn.LearnActivity"
+            android:name="org.sil.storyproducer.controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".controller.remote.WholeStoryBackTranslationActivity"
+            android:name="org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
-            android:name=".controller.export.CreateActivity"
+            android:name="org.sil.storyproducer.controller.export.CreateActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <!-- Share -->
         <activity
-            android:name=".controller.export.ShareActivity"
+            android:name="org.sil.storyproducer.controller.export.ShareActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
     </application>

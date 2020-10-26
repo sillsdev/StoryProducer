@@ -3,7 +3,7 @@ package org.sil.storyproducer.service
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream

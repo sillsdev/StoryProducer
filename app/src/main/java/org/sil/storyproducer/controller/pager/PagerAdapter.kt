@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
 import org.sil.storyproducer.controller.draft.DraftFrag
 import org.sil.storyproducer.controller.dramatization.DramatizationFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
+import org.sil.storyproducer.controller.review.ReviewAdjustFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -44,6 +45,9 @@ class PagerAdapter(fm: FragmentManager) : androidx.fragment.app.FragmentStatePag
 //            }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
+            }
+            PhaseType.REVIEW_ADJUST -> {
+                fragment = ReviewAdjustFrag()
             }
             else -> {
                 fragment = DraftFrag()

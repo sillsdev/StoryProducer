@@ -5,9 +5,10 @@ import android.widget.Switch
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.StoryPlayerFrag
+import org.sil.storyproducer.controller.VideoPlayerFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -51,9 +52,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     public override fun onResume() {
         super.onResume()
 
-//        storyPlayer = if(Workspace.activeStory.isVideoStory) VideoPlayerFrag() else SlidePlayerFrag()
-        storyPlayer = SlidePlayerFrag()
-        // FIXME: add film back in
+        storyPlayer = if(Workspace.activeStory.isVideoStory) {
+            VideoPlayerFrag()
+        } else {
+            SlidePlayerFrag()
+        }
         storyPlayer.startSlide = 0
         storyPlayer.slideRange = Workspace.activeStory.numSlides
         storyPlayer.phaseType = Workspace.activePhase.phaseType
