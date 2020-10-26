@@ -1,71 +1,52 @@
-package org.sil.storyproducer.androidtest.happypath.share
+package org.sil.storyproducer.androidtest.happypath
 
+import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.UiDevice
 import org.hamcrest.*
 import org.junit.Assert
-import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.SharedBase
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.Constants
+import org.sil.storyproducer.androidtest.utilities.Constants.durationToWaitWhenSwipingBetweenSlides
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 import java.io.File
 
 
-class SharePhaseBase(sharedBase: SharedBase) : PhaseTestBase() {
-
-    val base = sharedBase
-
+@LargeTest
+@RunWith(AndroidJUnit4::class)
+class SharePhaseTest : PhaseTestBase() {
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.share, base)
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.share)
     }
 
+    @Test
     fun when_thereAreNoExportedVideos_should_showNoVideosMessage() {
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
         }, Constants.Phase.share)
 
-        // Remove newly created video from the list
-//        val deleteButton = onView(
-//                Matchers.allOf(withId(R.id.file_delete_button),
-//                        childAtPosition(withParent(withId(R.id.videos_list)), 3), isDisplayed()))
-//        deleteButton.perform(click())
-//
-//        val confirmDelete = onView(Matchers.allOf(withId(android.R.id.button1), withText("Yes")))
-//        confirmDelete.perform(ViewActions.scrollTo(), click())
-//        Thread.sleep(500)
-
-        onView(withText(R.string.no_videos)).check(matches(isDisplayed()))
+        onView(withText(org.sil.storyproducer.R.string.no_videos)).check(matches(isDisplayed()))
     }
 
-    private fun childAtPosition(
-            parentMatcher: Matcher<View>, position: Int): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
-        }
-    }
-
+    @Test
     fun when_aVideoHasBeenExported_should_showItInTheList() {
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
         }, Constants.Phase.finalize)
-        val videoFilename = base.getExportVideoName()
+        val videoFilename = Constants.nameOfSampleExportVideo
         copySampleVideoToExportDirectory(videoFilename)
         Workspace.activeStory.addVideo(videoFilename)
         PhaseNavigator.selectPhase(Constants.Phase.share)

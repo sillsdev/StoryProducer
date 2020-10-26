@@ -1,14 +1,20 @@
-package org.sil.storyproducer.androidtest.happypath.finalize
+package org.sil.storyproducer.androidtest.happypath
 
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
+import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matchers
 import org.junit.Assert
-import org.sil.storyproducer.androidtest.happypath.SwipablePhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.SharedBase
+import org.junit.Test
+import org.junit.runner.RunWith
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
@@ -16,17 +22,37 @@ import org.sil.storyproducer.model.Workspace
 import java.io.File
 import java.util.*
 
-class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBase) {
-
+@LargeTest
+@RunWith(AndroidJUnit4::class)
+class FinalizePhaseTest : SwipablePhaseTestBase() {
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.finalize, base)
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.finalize)
     }
 
-    fun test_updateLocalCredits() {
+    @Test
+    fun when_createVideoButtonPressedWithDefaultOptions_should_produceVideoFileWithMp4Extension() {
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
         }, Constants.Phase.finalize)
+        PhaseNavigator.doInPhase(Constants.Phase.voiceStudio, {
+            Espresso.onView(allOf(withId(R.id.phase_frame))).perform(swipeRight())
+            Thread.sleep(Constants.durationToWaitWhenSwipingBetweenSlides)
+            Espresso.onView(allOf(withId(R.id.edit_text_view), isDisplayed())).perform(click())
+            Espresso.onView(allOf(withId(R.id.edit_text_input), isDisplayed())).perform(clearText()).perform(typeText("created by Espresso!"))
+            Espresso.onView(withText("SAVE")).perform(click())
+        }, Constants.Phase.finalize)
 
+        val videoTitle = generateUniqueVideoTitle()
+        Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
+        Espresso.closeSoftKeyboard()
+        // click the create video button
+        Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
+        // verify that the expected video file exists on disk
+        waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
+    }
+
+    @Test
+    fun updateLocalCredits() {
         // Local Credits Constant
         val credits : String = Constants.resources.getString(R.string.LC_starting_text)
         val newText : String = "Edited By Espresso!"
@@ -43,7 +69,6 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         updateLocalCredits.perform(click())
         onView(withId(R.id.edit_text_input)).perform(replaceText(""))
         saveButton.perform(click())
-        Thread.sleep(500)
 
         // Ensure that the local credits can't be erased
         assert(credits == Workspace.activeStory.localCredits)
@@ -52,29 +77,14 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         // Update the text to newText
         onView(withId(R.id.edit_text_input)).perform(replaceText(newText))
         saveButton.perform(click())
-        Thread.sleep(500)
 
         assert(Workspace.activeStory.localCredits == newText)
     }
 
-    // Will fail if updateLocalCredits() doesn't work correctly.
-    fun when_createVideoButtonPressedWithDefaultOptions_should_produceVideoFileWithMp4Extension() {
-        PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
-            approveSlides()
-        }, Constants.Phase.finalize)
-
-        val videoTitle = generateUniqueVideoTitle()
-        Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
-        Espresso.closeSoftKeyboard()
-        // click the create video button
-        Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
-        // verify that the expected video file exists on disk
-        waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
-    }
 
     private fun generateUniqueVideoTitle(): String {
         val currentDate = Date()
-        return base.getStoryName() + currentDate.time.toString()
+        return Constants.nameOfTestStory + currentDate.time.toString()
     }
 
     private fun waitForVideoToExist(videoTitle: String, timeout: Long) {

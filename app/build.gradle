@@ -7,7 +7,7 @@ apply plugin: 'com.google.gms.google-services'
 def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properties')
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion '29.0.2'
     defaultConfig {
         applicationId "org.sil.storyproducer"
@@ -111,7 +111,7 @@ dependencies {
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
     implementation 'org.apache.commons:commons-io:1.3.2'
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.arthenica:mobile-ffmpeg-full:4.2.LTS'
+    implementation 'com.arthenica:mobile-ffmpeg-full:4.3.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.google.firebase:firebase-analytics:17.6.0'
     implementation 'com.google.firebase:firebase-crashlytics:17.2.2'

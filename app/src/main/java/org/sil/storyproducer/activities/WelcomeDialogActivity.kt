@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 
 /**
  * Activity creates the welcome screen dialog, used when the Workspace's project directory
