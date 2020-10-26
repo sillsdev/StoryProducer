@@ -2,7 +2,7 @@ package org.sil.storyproducer.controller.voicestudio
 
 import android.view.View
 import android.widget.ImageButton
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.getChosenFilename

@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -233,6 +233,6 @@ open class RecordingToolbar : Fragment(){
      * UI testing more difficult.
      */
     private fun isAnimationEnabled(): Boolean {
-        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
+        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(R.string.recording_toolbar_disable_animation), false)
     }
 }

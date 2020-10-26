@@ -6,7 +6,7 @@ import android.view.*
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.snackbar.Snackbar
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.logging.saveLog

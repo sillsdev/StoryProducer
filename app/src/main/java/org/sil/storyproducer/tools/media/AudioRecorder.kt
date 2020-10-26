@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor

@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
+import org.sil.storyproducer.controller.VideoPlayerFrag
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -32,9 +33,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        storyPlayer = if(Workspace.activeStory.isVideoStory) VideoPlayerFrag() else SlidePlayerFrag()
-        storyPlayer = SlidePlayerFrag()
-        // FIXME: change above
+        storyPlayer = if(Workspace.activeStory.isVideoStory) VideoPlayerFrag() else SlidePlayerFrag()
         storyPlayer?.startSlide = slideNum
         storyPlayer?.slideRange = 1
         storyPlayer?.phaseType = Workspace.activePhase.phaseType

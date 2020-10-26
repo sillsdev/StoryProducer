@@ -17,7 +17,7 @@ import org.hamcrest.*
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.Constants.durationToWaitWhenSwipingBetweenSlides
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator

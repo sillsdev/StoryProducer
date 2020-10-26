@@ -12,7 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
-import org.sil.storyproducer.R;
+import org.sil.storyproducer.film.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 

@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
@@ -170,7 +170,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        password.id = org.sil.storyproducer.R.id.password_text_field;
+        password.id = R.id.password_text_field;
 
         // Programmatically set layout properties for edit text field
         val params = LinearLayout.LayoutParams(

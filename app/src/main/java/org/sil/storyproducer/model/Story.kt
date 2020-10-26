@@ -77,4 +77,3 @@ class Story(var title: String, val slides: List<Slide>){
 }
 
 fun emptyStory() : Story {return Story("",ArrayList())}
-
