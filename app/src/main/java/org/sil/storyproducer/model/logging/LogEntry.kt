@@ -2,7 +2,7 @@ package org.sil.storyproducer.model.logging
 
 import android.content.Context
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace

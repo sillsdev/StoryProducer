@@ -17,7 +17,11 @@ import com.crashlytics.android.Crashlytics
 import org.sil.storyproducer.R
 >>>>>>> UI Updates for #419 and backend fixes for local credits
 import org.sil.storyproducer.model.*
+<<<<<<< HEAD
 import org.sil.storyproducer.R
+=======
+import org.sil.storyproducer.model.VIDEO_DIR
+>>>>>>> Video and Slide work independently
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -135,7 +139,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                     "-f 3gp -vcodec $VIDEO_3GP_CODEC -framerate $VIDEO_3GP_FRAMERATE -vf " +
                     "scale=${VIDEO_3GP_WIDTH}x$VIDEO_3GP_HEIGHT -acodec $VIDEO_3GP_AUDIO" +
                     " -b:v $VIDEO_3GP_BITRATE " + video3gpFile.absolutePath)
-            Log.w(TAG,FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
+            Log.w(TAG,Config.getLastCommandOutput() ?: "No FFMPEG output")
             copyToWorkspacePath(context,Uri.fromFile(video3gpFile),"$VIDEO_DIR/$video3gpPath")
             Workspace.activeStory.addVideo(video3gpPath)
         } catch(e:Exception) {

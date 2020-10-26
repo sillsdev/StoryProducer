@@ -2,10 +2,10 @@ package org.sil.storyproducer.tools.media
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.net.Uri
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
-import java.io.IOException
 
 class AudioPlayer {
 
@@ -154,6 +154,19 @@ class AudioPlayer {
      */
     fun setVolume(volume: Float) {
         mPlayer.setVolume(volume, volume)
+    }
+
+    /**
+     * sets the tempo of the audio playback
+     * @param tempo the speed at which to play the audio
+     */
+    fun setTempo(tempo: Double) {
+        if(isAudioPrepared) {
+            val params = PlaybackParams()
+            params.speed = tempo.toFloat()
+            mPlayer.playbackParams = params
+            mPlayer.pause()
+        }
     }
 
     companion object {

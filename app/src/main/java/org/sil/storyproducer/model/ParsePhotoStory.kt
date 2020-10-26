@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Rect
 import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
-import org.sil.storyproducer.BuildConfig
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.BuildConfig
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
@@ -17,6 +17,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     //See if there is an xml photostory file there
     val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
+    var fullVideoString = ""
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
@@ -50,6 +51,11 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
                 }
                 slides.add(slide)
             }
+            "Video" -> {
+                fullVideoString = parser.getAttributeValue(null, "path")
+                parser.nextTag()
+                parser.require(XmlPullParser.END_TAG, null, "Video")
+            }
             else -> {
                 skipToNextTag(parser)
             }
@@ -75,9 +81,11 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     //add as second last slide
     slides.add(slides.size-1,slide)
 
-    return Story(storyPath.name!!,slides).apply {
-        importAppVersion = BuildConfig.VERSION_NAME
-    }
+    var ret = Story(storyPath.name!!,slides)
+    ret.fullVideo = fullVideoString
+    ret.importAppVersion = BuildConfig.VERSION_NAME
+    ret.isVideoStory = fullVideoString != ""
+    return ret
 }
 
 @Throws(XmlPullParserException::class, IOException::class)
@@ -100,6 +108,12 @@ private fun parseSlideXML(parser: XmlPullParser): Slide {
                 parseImage(slide, parser)
 
             }
+            "Video" -> {
+                parseVideo(slide,parser)
+            }
+            "TimeStamp" -> {
+                parseTimeStamp(slide,parser)
+            }
             else -> {
                 skipToNextTag(parser)
             }
@@ -114,7 +128,27 @@ private fun parseNarration(slide: Slide, parser: XmlPullParser) {
     parser.nextTag()
     parser.require(XmlPullParser.END_TAG, null, "Narration")
 }
+private fun parseVideo(slide: Slide, parser: XmlPullParser) {
+    slide.videoFile = parser.getAttributeValue(null, "path")
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "Video")
+}
+private fun parseTimeStamp(slide: Slide, parser: XmlPullParser) {
+    var useMillis = parser.getAttributeValue(null, "useMillis")
+    val start = parser.getAttributeValue(null, "start").toInt()
+    val end = parser.getAttributeValue(null, "end").toInt()
+    if(useMillis=="false"){
+        slide.startTime = start*1000
+        slide.endTime = end*1000
+    }
+    else{
+        slide.startTime = start
+        slide.endTime = end
+    }
 
+    parser.nextTag()
+    parser.require(XmlPullParser.END_TAG, null, "TimeStamp")
+}
 private fun parseImage(slide: Slide, parser: XmlPullParser) {
     slide.imageFile = parser.getAttributeValue(null, "path")
     slide.textFile = slide.imageFile.replace(Regex("""\..+$"""), ".txt")

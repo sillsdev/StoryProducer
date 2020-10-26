@@ -23,7 +23,7 @@ import org.junit.runners.MethodSorters
 import junit.framework.Assert.assertTrue
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants

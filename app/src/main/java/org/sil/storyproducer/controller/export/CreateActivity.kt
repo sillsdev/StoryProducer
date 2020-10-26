@@ -11,12 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
+import org.sil.storyproducer.tools.media.Producer
+import org.sil.storyproducer.tools.media.film.FilmProducer
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.stripForFilename
 
 
@@ -51,39 +54,39 @@ class CreateActivity : PhaseBaseActivity() {
 
     private var mProgressUpdater: Thread? = null
 
-    private val PROGRESS_UPDATER = Runnable {
-        var isDone = false
-        while (!isDone) {
-            try {
-                Thread.sleep(100)
-            } catch (e: InterruptedException) {
-                //If progress updater is interrupted, just stop.
-                return@Runnable
-            }
-
-            var progress: Double
-            synchronized(storyMakerLock) {
-                //Stop if storyMaker was cancelled by someone else.
-                if (storyMaker == null) {
-                    updateProgress(0)
-                    return@Runnable
-                }
-
-                progress = storyMaker!!.progress
-                isDone = storyMaker!!.isDone
-            }
-            updateProgress((progress * PROGRESS_MAX).toInt())
-        }
-        val isSuccess = storyMaker!!.isSuccess
-
-        runOnUiThread {
-            stopExport()
-            if(isSuccess)
-                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
-            else
-                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
-        }
-    }
+//    private val PROGRESS_UPDATER = Runnable {
+//        var isDone = false
+//        while (!isDone) {
+//            try {
+//                Thread.sleep(100)
+//            } catch (e: InterruptedException) {
+//                //If progress updater is interrupted, just stop.
+//                return@Runnable
+//            }
+//
+//            var progress: Double
+//            synchronized(storyMakerLock) {
+//                //Stop if storyMaker was cancelled by someone else.
+//                if (storyMaker == null) {
+//                    updateProgress(0)
+//                    return@Runnable
+//                }
+//
+//                progress = storyMaker!!.progress
+//                isDone = storyMaker!!.isDone
+//            }
+//            updateProgress((progress * PROGRESS_MAX).toInt())
+//        }
+//        val isSuccess = storyMaker!!.isSuccess
+//
+//        runOnUiThread {
+//            stopExport()
+//            if(isSuccess)
+//                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+//            else
+//                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
+//        }
+//    }
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -102,8 +105,9 @@ class CreateActivity : PhaseBaseActivity() {
         }
     }
 
-    private var storyMaker: AutoStoryMaker? = null
+//    private var storyMaker: AutoStoryMaker? = null
 
+    private lateinit var producer: Producer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
@@ -113,15 +117,26 @@ class CreateActivity : PhaseBaseActivity() {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.layout_export_configuration)
-            PhaseBaseActivity.disableViewAndChildren(mainLayout)
+            disableViewAndChildren(mainLayout)
         }
     }
 
+    override fun onStart(){
+        super.onStart()
+        producer = if(Workspace.activeStory.isVideoStory){
+            FilmProducer(this, mOutputPath)
+        }else{
+            val storyMaker = AutoStoryMaker(this)
+            SlideProducer(storyMaker,this)
+        }
+    }
     override fun onResume() {
         super.onResume()
         loadPreferences()
         toggleVisibleElements()
-        watchProgress()
+        if(producer.isActive){
+            watchProgress()
+        }
 
         //attach the listeners after everything else is setup.
         mCheckboxPictures.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxPictures) }
@@ -131,9 +146,10 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     override fun onPause() {
-        mProgressUpdater!!.interrupt()
+        if(producer.isActive) {
+            mProgressUpdater!!.interrupt()
+        }
         savePreferences()
-
         super.onPause()
     }
 
@@ -234,8 +250,10 @@ class CreateActivity : PhaseBaseActivity() {
 
         mButtonCancel.setOnClickListener {
             if (!buttonLocked) {
-                stopExport()
+//                stopExport()
+                showCreationElements()
             }
+            producer.isActive = false
             lockButtons()
         }
 
@@ -292,7 +310,7 @@ class CreateActivity : PhaseBaseActivity() {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
-            if (storyMaker != null) {
+            if (producer.isActive) {
 
                 visibilityPreExport = View.GONE
                 visibilityWhileExport = View.VISIBLE
@@ -303,14 +321,82 @@ class CreateActivity : PhaseBaseActivity() {
         mLayoutCancel.visibility = visibilityWhileExport
         mButtonStart.visibility = visibilityPreExport
 
-        if (mCheckboxPictures.isChecked) {
-            mCheckboxKBFX.visibility = View.VISIBLE
-            mCheckboxText.visibility = View.VISIBLE
-        }else{
+        if(Workspace.activeStory.isVideoStory){
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
             mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
+        }
+
+
+        if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
+            if(currentCheckbox == mCheckboxText){
+                mCheckboxKBFX.isChecked = false
+            }else{
+                mCheckboxText.isChecked = false
+            }
+        }
+
+        //Check if there is a song to play
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong.isChecked = false
+        }
+    }
+    fun showCreationElements(currentCheckbox : CheckBox? = null) {
+        var visibilityPreExport = View.VISIBLE
+        var visibilityWhileExport = View.GONE
+
+        mLayoutConfiguration.visibility = visibilityPreExport
+        mLayoutCancel.visibility = visibilityWhileExport
+        mButtonStart.visibility = visibilityPreExport
+
+        if(Workspace.activeStory.isVideoStory){
+            mCheckboxKBFX.visibility = View.GONE
+            mCheckboxKBFX.isChecked = false
+            mCheckboxText.visibility = View.GONE
+            mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
+        }
+
+
+        if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
+            if(currentCheckbox == mCheckboxText){
+                mCheckboxKBFX.isChecked = false
+            }else{
+                mCheckboxText.isChecked = false
+            }
+        }
+
+        //Check if there is a song to play
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong.isChecked = false
+        }
+    }
+    fun showProgressElements(currentCheckbox : CheckBox? = null) {
+        val visibilityPreExport = View.GONE
+        val visibilityWhileExport = View.VISIBLE
+
+        mLayoutConfiguration.visibility = visibilityPreExport
+        mLayoutCancel.visibility = visibilityWhileExport
+        mButtonStart.visibility = visibilityPreExport
+
+        if(Workspace.activeStory.isVideoStory){
+            mCheckboxKBFX.visibility = View.GONE
+            mCheckboxKBFX.isChecked = false
+            mCheckboxText.visibility = View.GONE
+            mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
         }
 
 
@@ -398,35 +484,30 @@ class CreateActivity : PhaseBaseActivity() {
 
     private fun startExport() {
         savePreferences()
-        synchronized(storyMakerLock) {
-            storyMaker = AutoStoryMaker(this)
-
-            storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
-            storyMaker!!.mIncludePictures = mCheckboxPictures.isChecked
-            storyMaker!!.mIncludeText = mCheckboxText.isChecked
-            storyMaker!!.mIncludeKBFX = mCheckboxKBFX.isChecked
-            storyMaker!!.mIncludeSong = mCheckboxSong.isChecked
-
-            storyMaker!!.videoRelPath = mOutputPath
+        producer.isActive = false
+        if(!Workspace.activeStory.isVideoStory){
+            val storyMaker = AutoStoryMaker(this)
+            storyMaker.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
+            storyMaker.mIncludePictures = true
+            storyMaker.mIncludeText = mCheckboxText.isChecked
+            storyMaker.mIncludeKBFX = mCheckboxKBFX.isChecked
+            storyMaker.mIncludeSong = mCheckboxSong.isChecked
+            storyMaker.videoRelPath = mOutputPath
+            producer = SlideProducer(storyMaker,this)
+        }else{
+            producer = FilmProducer(this, mOutputPath)
         }
-
-        storyMaker!!.start()
-        watchProgress()
-    }
-
-    private fun stopExport() {
+        producer.start()
         synchronized(storyMakerLock) {
-            if (storyMaker != null) {
-                storyMaker!!.close()
-                storyMaker = null
-            }
+            watchProgress()
         }
         //update the list view
         toggleVisibleElements()
     }
 
     private fun watchProgress() {
-        mProgressUpdater = Thread(PROGRESS_UPDATER)
+        showProgressElements()
+        mProgressUpdater = Thread(producer.progressUpdater)
         mProgressUpdater!!.start()
         toggleVisibleElements()
     }

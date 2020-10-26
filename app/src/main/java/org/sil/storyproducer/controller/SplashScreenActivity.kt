@@ -3,7 +3,7 @@ package org.sil.storyproducer.controller
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.TextView
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.activity.BaseActivity
 import org.sil.storyproducer.model.Workspace
 

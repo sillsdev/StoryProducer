@@ -2,7 +2,7 @@ package org.sil.storyproducer.tools.toolbar
 
 import android.view.View
 import android.widget.ImageButton
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 
 /**

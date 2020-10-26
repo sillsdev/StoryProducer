@@ -2,7 +2,7 @@ package org.sil.storyproducer.model
 
 
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.R
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.logging.LogEntry
 import java.util.*
 
