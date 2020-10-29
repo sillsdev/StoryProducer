@@ -1,19 +1,19 @@
 package org.sil.storyproducer.controller
 
+// import com.crashlytics.android.Crashlytics
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.core.content.FileProvider
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import com.crashlytics.android.Crashlytics
+import androidx.core.content.FileProvider
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -133,7 +133,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             }
         }catch (e:Exception){
             Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
-            Crashlytics.logException(e)
+            // Crashlytics.logException(e)
         }
     }
 
