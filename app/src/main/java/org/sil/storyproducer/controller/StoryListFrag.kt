@@ -26,7 +26,7 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
             val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
-                    if (Build.VERSION.SDK_INT >= 24){Html.fromHtml(getString(R.string.stories_not_found_body),0)}
+                    if (Build.VERSION.SDK_INT >= 24){Html.fromHtml(getString(R.string.stories_not_found_body), 0)}
                             else{Html.fromHtml(getString(R.string.stories_not_found_body))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
@@ -83,7 +83,7 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
         return row
     }
 
-    internal class FileHolder(view : View){
+    internal class FileHolder(view: View){
         var imgIcon: ImageView = view.findViewById(R.id.story_list_image)
         var txtTitle: TextView = view.findViewById(R.id.story_list_title)
         var txtSubTitle: TextView = view.findViewById(R.id.story_list_subtitle)

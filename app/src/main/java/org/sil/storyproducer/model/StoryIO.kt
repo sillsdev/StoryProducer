@@ -2,7 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
 import org.sil.storyproducer.tools.file.*
@@ -56,14 +56,14 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     try {
         story = parsePhotoStoryXML(context, storyPath)
     } catch (e : Exception){
-        Crashlytics.logException(e)
+        FirebaseCrashlytics.getInstance().recordException(e)
         story = null
     }
     if(story == null){
         try {
             story = parseBloomHTML(context, storyPath)
         } catch (e : Exception){
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
             story = null
         }
     }

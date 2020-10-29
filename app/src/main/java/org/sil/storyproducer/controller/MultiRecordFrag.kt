@@ -13,7 +13,11 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+<<<<<<< HEAD
 import androidx.core.content.FileProvider
+=======
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+>>>>>>> da9f85279735c007ee928d988ffe883f6998f364
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PROJECT_DIR
@@ -38,9 +42,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
     override fun onCreateView(inflater: LayoutInflater,
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        if (Workspace.activeStory.slides[slideNum].slideType != SlideType.LOCALCREDITS) {
-            setToolbar()
-        }
+
+        setToolbar()
 
         setupCameraAndEditButton()
 
@@ -78,9 +81,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         }
 
         // display the image selection button, if on the title slide
-        if(Workspace.activeStory.slides[slideNum].slideType in
-                arrayOf(SlideType.FRONTCOVER,SlideType.LOCALCREDITS))
-        {
+        val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
+        if(slideType in arrayOf(SlideType.FRONTCOVER)) {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
@@ -99,7 +101,8 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 // Apply layout properties
                 editText.layoutParams = params
                 editText.minLines = 5
-                editText.text.insert(0,Workspace.activeSlide!!.translatedContent)
+
+                editText.text.insert(0, Workspace.activeSlide!!.translatedContent)
 
                 val dialog = AlertDialog.Builder(context)
                         .setTitle(getString(R.string.enter_text))
@@ -133,7 +136,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             }
         }catch (e:Exception){
             Toast.makeText(context,"Error",Toast.LENGTH_SHORT).show()
+<<<<<<< HEAD
             // Crashlytics.logException(e)
+=======
+            FirebaseCrashlytics.getInstance().recordException(e)
+>>>>>>> da9f85279735c007ee928d988ffe883f6998f364
         }
     }
 

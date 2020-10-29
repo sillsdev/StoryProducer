@@ -8,28 +8,87 @@
     android:layout_margin="8dp"
     tools:context="org.sil.storyproducer.controller.export.CreateActivity">
 
-
     <LinearLayout
         android:id="@+id/layout_export_configuration"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/export_title_header"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+            android:gravity="center"
+            android:paddingBottom="5dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/export_local_credits_header"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/button_local_credits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/button"
+                    android:gravity="center"
+                    android:text="@string/export_local_credits_unchanged" />
+
+                <ImageView
+                    android:id="@+id/checkmark_local_credits"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_gravity="center|center_horizontal"
+                    android:contentDescription="@string/local_credits_check_mark_description"
+                    app:srcCompat="@drawable/ic_check_circle_grey_outline_24" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:layout_weight="1"
+                android:gravity="start|center_vertical"
+                android:text="@string/export_title_header"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+            <ImageView
+                android:id="@+id/checkmark_file_name"
+                android:layout_width="6dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|start"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_check_circle_grey_outline_24" />
+
+        </LinearLayout>
 
         <EditText
             android:id="@+id/editText_export_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/export_custom_title"
+            android:hint="@string/Text_In_Filename_Placeholder"
             android:inputType="textMultiLine|textCapWords"
-            android:maxLines="4"/>
+            android:maxLines="4"
+            android:importantForAutofill="no" />
 
         <TextView
             android:layout_width="match_parent"
@@ -65,19 +124,28 @@
             android:checked="true"
             android:text="@string/export_include_KBFX" />
 
-
         <CheckBox
             android:id="@+id/checkbox_export_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/export_include_text" />
 
-        <Button
-            android:id="@+id/button_export_start"
-            android:layout_marginTop="20dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/export_start"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:gravity="center|center_vertical"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_export_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/button"
+                android:text="@string/export_start" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
