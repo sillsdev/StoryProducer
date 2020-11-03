@@ -121,7 +121,7 @@ class SlidePlayerFrag : StoryPlayerFrag() {
 
         val audioFile = Workspace.activePhase.getReferenceAudioFile(storySlidePosition)
         if(audioFile != "") {
-            audioPlayer.setStorySource(applicationContext!!, Workspace.activePhase.getReferenceAudioFile(storySlidePosition))
+            audioPlayer.setStorySource(applicationContext!!, audioFile)
         }
         audioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             if(currentSlideIndex < slideEndTimes!!.size - 1) {

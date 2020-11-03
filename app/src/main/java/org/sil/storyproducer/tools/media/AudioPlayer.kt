@@ -72,11 +72,11 @@ class AudioPlayer {
         }
         return fileExists
     }
+
     /**
-     * set the audio file from the worskspace data
+     * set the audio file from the workspace data
      * @return true if the file exists, false if it does not.
      */
-
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
         val uri: Uri = getStoryUri(relPath,storyName) ?: return false
@@ -170,7 +170,6 @@ class AudioPlayer {
     }
 
     companion object {
-
         private val TAG = "AudioPlayer"
     }
 }

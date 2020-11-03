@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.media.MediaPlayer
+import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
@@ -15,6 +16,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
+
 
 class VideoPlayerFrag : StoryPlayerFrag() {
 
@@ -60,7 +62,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
         }
     }
 
-    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_video_player, container, false)
     }
 
@@ -73,7 +75,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
         slideNumber = view.findViewById(R.id.video_player_slide_number)
 
         videoStart = Workspace.activeStory.slides[startSlide].startTime
-        videoEnd = Workspace.activeStory.slides[startSlide+slideRange-1].endTime
+        videoEnd = Workspace.activeStory.slides[startSlide + slideRange - 1].endTime
         slideNumber!!.text = startSlide.toString()
 
         seekBar.max = videoEnd - videoStart
@@ -115,8 +117,8 @@ class VideoPlayerFrag : StoryPlayerFrag() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(sBar: SeekBar) {}
             override fun onStartTrackingTouch(sBar: SeekBar) {}
-            override fun onProgressChanged(bar : SeekBar?, progress : Int, fromUser : Boolean) {
-                if(fromUser) {
+            override fun onProgressChanged(bar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
                     seek(progress)
                 }
             }
@@ -124,7 +126,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
         // seek bar on end listener
 
         // prepare the video
-        val videoUri =  getStoryUri(Workspace.activeStory.fullVideo)
+        val videoUri = getStoryUri(Workspace.activeStory.fullVideo)
         videoView.setVideoURI(videoUri)
         videoView.seekTo(videoStart)
     }
@@ -181,7 +183,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
         return videoView.duration
     }
 
-    override fun saveLog(pauseTime : Long) {
+    override fun saveLog(pauseTime: Long) {
         val durationPlayed = (pauseTime - startTime)
         if (durationPlayed<100 || startTime<0 || pauseTime <0){
             return
@@ -197,8 +199,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
 
                 if (durationPlayed < 1000) {
                     ret += " (<1 $secUnit)"
-                }
-                else {
+                } else {
                     val roundedSecs = (durationPlayed / 1000.0 + 0.5).toInt()
                     val mins = roundedSecs / 60
                     var minString = ""
@@ -207,7 +208,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
                     }
                     ret += " (" + minString + roundedSecs % 60 + " " + secUnit + ")"
                 }
-                saveLog(ret,0,Workspace.activeStory.numSlides - 1)
+                saveLog(ret, 0, Workspace.activeStory.numSlides - 1)
             }
             PhaseType.DRAFT -> {
                 saveLog(getString(R.string.LWC_PLAYBACK) + " Slide " + startSlide.toString())

@@ -38,6 +38,14 @@ class Story(var title: String, val slides: List<Slide>){
 
     var phases: List<Phase> = ArrayList()
 
+    fun getPhaseNames() : List<String> {
+        val list = mutableListOf<String>()
+        for(phase in phases) {
+            list.add(phase.getPrettyName())
+        }
+        return list
+    }
+
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
         return if(match != null){
