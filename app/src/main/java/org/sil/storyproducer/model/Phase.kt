@@ -74,6 +74,7 @@ class Phase(val phaseType: PhaseType) {
             PhaseType.CONSULTANT_CHECK -> "Accuracy Check"
             PhaseType.WHOLE_STORY -> "Whole Story"
             PhaseType.REMOTE_CHECK -> "Remote Check"
+            PhaseType.REVIEW_ADJUST -> "Review + Adjust"
             PhaseType.BACKT -> "Back Translation"
             PhaseType.DRAMATIZATION -> "Voice Studio"
             else -> phaseType.toString().toLowerCase()

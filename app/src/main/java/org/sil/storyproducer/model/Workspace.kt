@@ -15,8 +15,6 @@ import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import java.io.File
 import java.io.IOException
-import java.util.*
-
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
@@ -29,7 +27,6 @@ object Workspace{
         }
     val Stories: MutableList<Story> = mutableListOf()
     var registration: Registration = Registration()
-    var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
@@ -45,7 +42,7 @@ object Workspace{
         set(value){
             field = value
             activePhaseIndex = -1
-            for((i,p) in phases.withIndex()){
+            for((i,p) in activeStory.phases.withIndex()){
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
@@ -155,17 +152,22 @@ object Workspace{
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
-        return unzipIfZipped(context, storyPath, workdocfile.listFiles())
+        val story = unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> pathOf(storyFolder) }
                 ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
                 ?.let { story -> migrateStory(context, story) }
+//                ?.let { parseStoryIfPresent(context, it) }
+//        if (story != null) {
+//            story.phases = buildPhases(story)
+//        }
+        return story;
     }
 
-    fun buildPhases(): List<Phase> {
-        //update phases based upon registration selection
+    fun buildPhases(story : Story): List<Phase> {
+        // update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases(activeStory.isVideoStory)
-            else -> Phase.getLocalPhases(activeStory.isVideoStory)
+            "remote" -> Phase.getRemotePhases(story.isVideoStory)
+            else -> Phase.getLocalPhases(story.isVideoStory)
         }
     }
 
@@ -191,12 +193,12 @@ object Workspace{
 
     fun goToNextPhase() : Boolean {
         if(activePhaseIndex == -1) return false //phases not initizialized
-        if(activePhaseIndex >= phases.size - 1) {
-            activePhaseIndex = phases.size - 1
+        if(activePhaseIndex >= activeStory.phases.size - 1) {
+            activePhaseIndex = activeStory.phases.size - 1
             return false
         }
         activePhaseIndex++
-        activePhase = phases[activePhaseIndex]
+        activePhase = activeStory.phases[activePhaseIndex]
         //there was a successful phase change!
         return true
     }
@@ -208,7 +210,7 @@ object Workspace{
             return false
         }
         activePhaseIndex--
-        activePhase = phases[activePhaseIndex]
+        activePhase = activeStory.phases[activePhaseIndex]
         //there was a successful phase change!
         return true
     }
