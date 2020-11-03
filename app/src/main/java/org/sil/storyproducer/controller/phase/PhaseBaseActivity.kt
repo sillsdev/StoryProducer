@@ -11,17 +11,20 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.webkit.WebView
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.Spinner
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.film.R
 import org.sil.storyproducer.activity.BaseActivity
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -32,6 +35,7 @@ import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import kotlin.math.max
+
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
@@ -99,15 +103,9 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
-        val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
-            //remote
-            ArrayAdapter.createFromResource(this,
-                    R.array.remote_phases_menu_array, android.R.layout.simple_spinner_item)
-        } else {
-            //local
-            ArrayAdapter.createFromResource(this,
-                    R.array.local_phases_menu_array, android.R.layout.simple_spinner_item)
-        }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item,
+                Workspace.activeStory.getPhaseNames())
+
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
         spinner.adapter = adapter
@@ -121,10 +119,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
     override fun onItemSelected(parent: AdapterView<*>, view: View,
                                 pos: Int, id: Long) {
-        if(pos >= 0 && pos < Workspace.phases.size){
-            jumpToPhase(Workspace.phases[pos])
+        if(pos >= 0 && pos < Workspace.activeStory.phases.size){
+            jumpToPhase(Workspace.activeStory.phases[pos])
         }else{
-            FirebaseCrashlytics.getInstance().log("tyring to select phase index $pos that is out of bounds:${Workspace.phases.size}")
+            FirebaseCrashlytics.getInstance().log("trying to select phase index $pos that is out of bounds:${Workspace.activeStory.phases.size}")
         }
     }
 
@@ -155,9 +153,9 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                if(mDrawerLayout!!.isDrawerOpen(GravityCompat.START)){
+                if (mDrawerLayout!!.isDrawerOpen(GravityCompat.START)) {
                     mDrawerLayout!!.closeDrawer(GravityCompat.START)
-                }else{
+                } else {
                     mDrawerLayout!!.openDrawer(GravityCompat.START)
                 }
                 true
@@ -172,9 +170,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
                 val text = iStream.reader().use {
-                    it.readText() }
+                    it.readText()
+                }
 
-                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+                wv.loadDataWithBaseURL(null, text, "text/html", null, null)
                 alert.setView(wv)
                 alert.setNegativeButton("Close") { dialog, _ ->
                     dialog!!.dismiss()
@@ -258,7 +257,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
     private fun setupStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val hsv : FloatArray = floatArrayOf(0.0f,0.0f,0.0f)
+            val hsv : FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
             Color.colorToHSV(ContextCompat.getColor(this, Workspace.activePhase.getColor()), hsv)
             hsv[2] *= 0.8f
             window.statusBarColor = Color.HSVToColor(hsv)

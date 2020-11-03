@@ -41,6 +41,8 @@ class ReviewAdjustFrag : MultiRecordFrag() {
     lateinit var trackImageView : ImageView
     lateinit var videoView : VideoView
     lateinit var playPauseButton : ImageButton
+    lateinit var leftNarrationMove : ImageButton
+    lateinit var rightNarrationMove : ImageButton
 
     var canvasWidth = 1
     var canvasHeight = 1
@@ -125,6 +127,11 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         setup(view)
     }
 
+    override fun onStop() {
+        super.onStop()
+        otherAudio.release()
+    }
+
     fun setup(view: View){
         currentSlide = Workspace.activeStory.slides[slideNum]
         tempo = calculateStoryTempo(context!!, context!!.filesDir)
@@ -182,8 +189,9 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         otherAudio.setSource(context!!, getStoryUri(Workspace.activePhase.getReferenceAudioFile(slideNum))!!)
         otherAudio.setTempo(tempo)
 
-        view.findViewById<ImageButton>(R.id.film_studio_narration_move_left).setOnClickListener {
-            if(narrationClip.startPosition - STEP_AMOUNT >= 0) {
+        leftNarrationMove = view.findViewById<ImageButton>(R.id.film_studio_narration_move_left)
+        leftNarrationMove.setOnClickListener {
+            if(!playing && narrationClip.startPosition - STEP_AMOUNT >= 0) {
                 narrationClip.startPosition -= STEP_AMOUNT
                 currentSlide.audioPosition = narrationClip.startPosition
                 narrationClip.visualStartPosition = scaleToVisualSpace(narrationClip.startPosition)
@@ -191,9 +199,10 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             }
         }
 
-        view.findViewById<ImageButton>(R.id.film_studio_narration_move_right).setOnClickListener {
+        rightNarrationMove = view.findViewById<ImageButton>(R.id.film_studio_narration_move_right)
+        rightNarrationMove.setOnClickListener {
             val maxDuration = max(narrationClip.duration, videoClip.duration)
-            if(narrationClip.startPosition + narrationClip.duration + STEP_AMOUNT <= maxDuration) {
+            if(!playing && narrationClip.startPosition + narrationClip.duration + STEP_AMOUNT <= maxDuration) {
                 narrationClip.startPosition += STEP_AMOUNT
                 currentSlide.audioPosition = narrationClip.startPosition
                 narrationClip.visualStartPosition = scaleToVisualSpace(narrationClip.startPosition)
@@ -238,6 +247,10 @@ class ReviewAdjustFrag : MultiRecordFrag() {
     private fun play() {
         activity!!.runOnUiThread {
             playPauseButton.setImageResource(R.drawable.ic_stop_white_48dp)
+
+            // Disable the left and right buttons
+            leftNarrationMove.alpha = 0.4f
+            rightNarrationMove.alpha = 0.4f
         }
         playing = true
         videoView.start()
@@ -254,6 +267,10 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         activity!!.runOnUiThread {
             playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48dp)
             updateTrackPositions()
+
+            // Enable the left and right buttons
+            leftNarrationMove.alpha = 1f
+            rightNarrationMove.alpha = 1f
         }
     }
 
