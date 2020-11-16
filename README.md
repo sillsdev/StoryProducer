@@ -25,6 +25,28 @@ Translate and produce stories (starting with templates in a major language made 
 * FINALIZE/CREATE new videos
 * SHARE the videos
 
+## Creating a signed APK
+
+To install onto a device, an APK needs to be signed. When uploading to Google Play, it has to be signed by the same
+keystore that was used on the initial upload. For testing on a device using side loading, it can be signed with any
+keystore. We do not want to check in a keystore to the repo, so developers can either download a pre-made set of files or
+create their own.
+
+To download pre-made set of files:
+* run these commands in the root directory
+    * `curl "https://sil-storyproducer-resources.s3.amazonaws.com/dev/dev-keystore.jks" -o "dev-keystore.jks"`
+    * `curl "https://sil-storyproducer-resources.s3.amazonaws.com/dev/keystore.properties" -o "keystore.properties"`
+
+To create the set of files:
+* [create a keystore](https://stackoverflow.com/questions/3997748/how-can-i-create-a-keystore) (a .jks file) and
+save in the root directory.
+* create keystore.properties with the values:
+    * storeFile=<keystore-filename>.jks
+    * storePassword=<store-password>
+    * keyAlias=<key-alias>
+    * keyPassword=<key-password>
+* run `gradle clean assembleRelease`
+
 ## Installing the application
 * Minimum Requirements:  
     * Android 5.x.x; Android 8 is required to create 3GP output videos
