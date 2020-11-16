@@ -4,6 +4,8 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.gms.google-services'
 
+def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properties')
+
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.2'
@@ -21,8 +23,28 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    signingConfigs {
+        if (keystorePropertiesFile.isFile()) {
+            logger.lifecycle("keystore.properties exists. Sign APK.")
+            def keystoreProperties = new Properties()
+            keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+        else
+        {
+            logger.lifecycle("keystore.properties not found. Unable to sign APK.")
+        }
+    }
     buildTypes {
         release {
+            if (keystorePropertiesFile.isFile()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -47,6 +69,7 @@ android {
         }
     }
 }
+
 
 repositories {
     mavenCentral()
