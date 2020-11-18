@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 29
         versionCode 17
-        versionName '3.0.2.0001'
+        versionName '3.0.2'
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -38,6 +38,19 @@ android {
         else
         {
             logger.lifecycle("keystore.properties not found. Unable to sign APK.")
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            def versionPart = variant.name;
+            if (variant.name == "release") {
+                if (keystorePropertiesFile.isFile()) {
+                    versionPart = variant.versionName;
+                } else {
+                    versionPart = versionPart + "-not-signed";
+                }
+            }
+            outputFileName = "SP-${versionPart}.apk"
         }
     }
     buildTypes {
