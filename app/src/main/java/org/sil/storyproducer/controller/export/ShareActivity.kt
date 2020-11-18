@@ -105,7 +105,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             var videoFileUri = Uri.parse(videoFileUriStr)
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setMessage("Using a file manager app, video files can be accessed at: ${videoFileUri.path}")
+            builder.setMessage("${getString(R.string.view_video_folder_message)} ${videoFileUri.path}")
                     .setCancelable(false)
                     .setPositiveButton("OK") { _, _ -> }
             val alert: AlertDialog = builder.create()
