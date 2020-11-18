@@ -151,9 +151,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
         slide.content = Workspace.activeStory.localCredits + "\n" +
-                    "This video is licensed under a Creative Commons Attribution" +
-                    "-NonCommercial-ShareAlike 4.0 International License " +
-                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
+                    context.getString(R.string.license_attribution) + 
+                    "${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
         slide.translatedContent = slide.content
         slide.musicFile = MUSIC_NONE
         slides.add(slide)
