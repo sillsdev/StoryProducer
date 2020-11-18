@@ -2,7 +2,7 @@ package org.sil.storyproducer.tools.file
 
 
 import android.content.Context
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -128,7 +128,7 @@ fun createRecordingCombinedName() : String {
                         maxNum = max(maxNum, num.groupValues[1].toInt())
                 }catch(e: Exception){
                     //If there is a crash (such as a bad int parse) just keep going.
-                    Crashlytics.logException(e)
+                    FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
             "${Workspace.activePhase.getDisplayName()} ${maxNum+1}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
