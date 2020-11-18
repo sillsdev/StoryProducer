@@ -262,13 +262,13 @@ class CreateActivity : PhaseBaseActivity() {
                                 Workspace.activeStory.localCredits = editText.text.toString()
 
                                 if(Workspace.isLocalCreditsChanged(this)) {
-                                    Toast.makeText(this, "Local Credits Changed!", Toast.LENGTH_LONG)
+                                    Toast.makeText(this, getString(R.string.local_credits_changed), Toast.LENGTH_LONG)
                                     checkMarkIcon.setImageResource(R.drawable.ic_check_circle_outline_24)
                                 }
                             }
 
                             if(!Workspace.isLocalCreditsChanged(this)) {
-                                Toast.makeText(this, "Local Credits Unchanged!", Toast.LENGTH_LONG)
+                                Toast.makeText(this, getString(R.string.local_credits_unchanged), Toast.LENGTH_LONG)
                                 checkMarkIcon.setImageResource(R.drawable.ic_check_circle_grey_outline_24)
                             }
 
