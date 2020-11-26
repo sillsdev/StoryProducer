@@ -43,7 +43,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all {
             def versionPart = variant.name;
-            if (variant.name == "release") {
+            if (variant.name != "debug") {
                 if (keystorePropertiesFile.isFile()) {
                     versionPart = variant.versionName;
                 } else {
@@ -63,6 +63,16 @@ android {
         }
         debug {
             versionNameSuffix ".debug"
+        }
+        continuous {
+            initWith release
+            applicationIdSuffix ".ci"
+            println "Using ci/google-services.json"
+            copy {
+                from 'ci'
+                include '*.json'
+                into '.'
+            }
         }
     }
     productFlavors {
