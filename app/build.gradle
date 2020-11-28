@@ -60,19 +60,15 @@ android {
             }
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
         }
         debug {
             versionNameSuffix ".debug"
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
         }
         continuous {
             initWith release
             applicationIdSuffix ".ci"
-            println "Using ci/google-services.json"
-            copy {
-                from 'ci'
-                include '*.json'
-                into '.'
-            }
         }
     }
     productFlavors {
