@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "330300578161",
+    "firebase_url": "https://storyproducer-52e13.firebaseio.com",
+    "project_id": "storyproducer-52e13",
+    "storage_bucket": "storyproducer-52e13.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:330300578161:android:31950a0a5399676e",
+        "android_client_info": {
+          "package_name": "org.sil.storyproducer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "330300578161-qmmv0thtc025b42tbdqpc62ur52epe92.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.sil.storyproducer",
+            "certificate_hash": "cc8b1d51bba2b65e7ab6ce9fc83e25966a5c609f"
+          }
+        },
+        {
+          "client_id": "330300578161-kfj18tj7e82d7tu12eor4jlrvmcj3tli.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcNywfP74zdkZQwzNANn8R1nMZpJIcnFQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "330300578161-kfj18tj7e82d7tu12eor4jlrvmcj3tli.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
