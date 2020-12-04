@@ -55,7 +55,8 @@ class Slide{
 }
 
 enum class SlideType {
-    NONE, FRONTCOVER, NUMBEREDPAGE, LOCALSONG, COPYRIGHT, ENDPAGE
+    // LOCALCREDITS is obsolete but provided for reading projects from v3.0.2 or earlier
+    NONE, FRONTCOVER, NUMBEREDPAGE, LOCALSONG, LOCALCREDITS, COPYRIGHT, ENDPAGE
 }
 
 const val MUSIC_NONE = "noSoundtrack"

@@ -49,6 +49,7 @@ class SlideViewModelBuilder(
         }
         val fontSize : Int = when(slide.slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            SlideType.LOCALCREDITS -> 0 // Not used, but needs to be here to cov
             SlideType.COPYRIGHT -> 12
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
         }
