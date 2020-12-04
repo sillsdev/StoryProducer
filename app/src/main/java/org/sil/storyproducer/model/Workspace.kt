@@ -152,7 +152,8 @@ object Workspace{
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         return unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> pathOf(storyFolder) }
-                ?.let { parseStoryIfPresent(context, it) }
+                ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
+                ?.let { story -> migrateStory(context, story) }
     }
 
     fun buildPhases(): List<Phase> {
