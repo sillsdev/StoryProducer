@@ -79,11 +79,11 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
 fun migrateStory(context: Context, story: Story): Story? {
     // Migrate the LOCALCREDITS slide data (present up to v3.0.2) to
     // the property on the Story
-    for (i in 1..story.slides.count()) {
-        var slide = story.slides[i]
+    for (i in 0..story.slides.count()-1) {
+        val slide = story.slides[i]
         if (slide.slideType == SlideType.LOCALCREDITS) {
             // Remove the LOCALCREDITS slide
-            var newSlides = story.slides.toMutableList()
+            val newSlides = story.slides.toMutableList()
             newSlides.removeAt(i)
             story.slides = newSlides
 
