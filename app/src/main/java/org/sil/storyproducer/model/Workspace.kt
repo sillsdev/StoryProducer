@@ -76,7 +76,7 @@ object Workspace{
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(activity: Activity) {
+    fun initializeWorkspace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
@@ -86,9 +86,25 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri) {
         try {
+            val outputDir: File = context.cacheDir
+            val outputFile = File.createTempFile("prefix", ".tmp", outputDir)
+            var newDoc : DocumentFile = DocumentFile.fromFile(outputFile)
+
+            // Issue 539 - Create a temporary file to become the new workspace
+            // Reset Story info to detach from old Story
+            workdocfile = newDoc
+
+            Stories.clear()
+            activeStory = emptyStory()
+
+            // Initiate new workspace
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
+
+            newDoc.delete()
+            outputFile.delete()
         } catch (e: Exception) {
+            Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
         }
     }
 

@@ -54,7 +54,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     fun initWorkspace() {
-        Workspace.initializeWorskpace(this)
+        Workspace.initializeWorkspace(this)
 
         if (Workspace.workdocfile.isDirectory) {
             controller.updateStories()
