@@ -89,7 +89,7 @@ object Workspace{
             // Issue 539 - Reset Story info to detach from old Story
             activeStory = emptyStory()
 
-            // Initiate new workspace
+            // Initiate new workspace path
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch (e: Exception) {
