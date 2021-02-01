@@ -105,9 +105,10 @@
         3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">SP Templates&lt;/font> folder&lt;br>&lt;br>
         After you have prepared the \'SP Templates\' folder, proceed:
     </string>
-    <string name="workspace_selection_help">On the next screen - &lt;br/&gt;SELECT the appropriate
-        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
-        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>.</string>
+    <string name="workspace_selection_help">
+        On the next screen is a \'folder picker\'.&lt;br>
+        Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder, then tap &lt;b>SELECT&lt;/b> at the bottom.
+    </string>
 
     <string-array name="orthography_list">
         <item>None</item>
