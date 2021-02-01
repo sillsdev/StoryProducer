@@ -96,12 +96,14 @@
     <string name="welcome_screen_select_template_folder">
         Story Producer is different from typical apps.
         You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.
-        (If your SD card has already been prepared, skip down to SELECT ‘SP TEMPLATES‘ FOLDER)&lt;br>&lt;br>
-        To prepare your SD card, go &lt;a href="https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit">HERE&lt;/a> for detailed instructions, OR follow these summary instructions:&lt;br>
+        &lt;font color=\"gray\">(If your SD card has already been prepared, skip down to \"Select \'SP Templates\' Folder\")&lt;/font>&lt;br>&lt;br>
+        To prepare your SD card&#8230;&lt;br>
+        \t\tGo &lt;a href="https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit">HERE&lt;/a> for detailed instructions&lt;br>
+        \t\tOR follow these summary instructions:&lt;br>
         1. Use Google Drive and download story templates from &lt;a href="https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing">HERE&lt;/a>&lt;br>
         2. Use a Files app to create a folder on the SD card, and name it &lt;font color=\"green\">SP Templates&lt;/font>&lt;br>
         3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">SP Templates&lt;/font> folder&lt;br>&lt;br>
-        After you have prepared the ‘SP Templates’ folder, proceed:
+        After you have prepared the \'SP Templates\' folder, proceed:
     </string>
     <string name="workspace_selection_help">On the next screen - &lt;br/&gt;SELECT the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
