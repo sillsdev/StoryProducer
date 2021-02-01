@@ -72,10 +72,6 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         controller.openDocumentTree(SELECT_TEMPLATES_FOLDER)
     }
 
-    fun selectTemplatesFolderAndAddDemo() {
-        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
-    }
-
     fun updateTemplatesFolder() {
         controller.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
     }
