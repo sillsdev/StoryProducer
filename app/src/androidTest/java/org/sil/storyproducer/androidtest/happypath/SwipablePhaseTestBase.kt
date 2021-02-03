@@ -42,7 +42,7 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
     }
 
     protected fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(org.sil.storyproducer.R.id.slide_number_text)
+        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(R.id.slide_number_text)
         return Integer.parseInt(slideNumberTextView!!.text.toString())
     }
 

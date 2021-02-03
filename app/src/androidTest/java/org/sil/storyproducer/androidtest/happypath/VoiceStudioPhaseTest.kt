@@ -151,7 +151,7 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
     }
 
     private fun getCurrentSlideAudioProgress(): Int {
-        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
+        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(R.id.videoSeekBar)
         return progressBar!!.progress
     }
 
