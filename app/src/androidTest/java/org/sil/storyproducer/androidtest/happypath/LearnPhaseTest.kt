@@ -16,6 +16,7 @@ import junit.framework.Assert.assertTrue
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
+import org.sil.storyproducer.film.R
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -27,15 +28,15 @@ class LearnPhaseTest : PhaseTestBase() {
 
     @Test
     fun should_BeAbleToUsePlayButton() {
-        val learnPhaseVideoSeekBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
+        val learnPhaseVideoSeekBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(R.id.videoSeekBar)
         // check progress of seek bar
         val firstProgress = learnPhaseVideoSeekBar!!.progress
         // click play button
-        onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
+        onView(withId(R.id.fragment_reference_audio_button)).perform(click())
         // wait a few seconds for narration to play and story to move to next slide
         Thread.sleep(Constants.durationToPlayNarration)
         // click pause button
-        onView(withId(org.sil.storyproducer.R.id.fragment_reference_audio_button)).perform(click())
+        onView(withId(R.id.fragment_reference_audio_button)).perform(click())
         // check progress of seek bar
         val secondProgress = learnPhaseVideoSeekBar.progress
         //assert(secondProgress > firstProgress)
@@ -47,10 +48,10 @@ class LearnPhaseTest : PhaseTestBase() {
         // disable the color-changing recording toolbar because it trips up Espresso
         disableCustomAnimations()
         // check whether the triangle Play button exists. If so, there is a previous recording.
-        val trianglePlayButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.play_recording_button)
+        val trianglePlayButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(R.id.play_recording_button)
 
         // click 'mic' button to start recording
-        onView(allOf(isDisplayed(), withId(org.sil.storyproducer.R.id.start_recording_button))).perform(click())
+        onView(allOf(isDisplayed(), withId(R.id.start_recording_button))).perform(click())
         // if 'Overwrite' dialog box pops up, click 'YES'
         if (trianglePlayButton?.visibility == VISIBLE) {
             onView(withText("YES")).perform(click())
@@ -58,19 +59,19 @@ class LearnPhaseTest : PhaseTestBase() {
         // wait a few seconds
         Thread.sleep(Constants.durationToRecordLearnClip)
         // click button to stop recording
-        onView(allOf(isDisplayed(), withId(org.sil.storyproducer.R.id.start_recording_button))).perform(click())
+        onView(allOf(isDisplayed(), withId(R.id.start_recording_button))).perform(click())
         // re-enable the color-changing recording toolbar
         enableCustomAnimations()
     }
 
     private fun enableCustomAnimations() {
         val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation))
+        preferencesEditor.remove(mActivityTestRule.activity.resources.getString(R.string.recording_toolbar_disable_animation))
     }
 
     private fun disableCustomAnimations() {
         val preferencesEditor = PreferenceManager.getDefaultSharedPreferences(ActivityAccessor.getCurrentActivity()).edit()
-        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), true)
+        preferencesEditor.putBoolean(mActivityTestRule.activity.resources.getString(R.string.recording_toolbar_disable_animation), true)
         preferencesEditor.commit()
     }
 

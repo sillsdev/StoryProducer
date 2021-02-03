@@ -38,7 +38,7 @@ class SharePhaseTest : PhaseTestBase() {
             approveSlides()
         }, Constants.Phase.share)
 
-        onView(withText(org.sil.storyproducer.R.string.no_videos)).check(matches(isDisplayed()))
+        onView(withText(R.string.no_videos)).check(matches(isDisplayed()))
     }
 
     @Test

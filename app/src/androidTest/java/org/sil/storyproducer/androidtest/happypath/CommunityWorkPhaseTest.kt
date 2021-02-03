@@ -70,7 +70,7 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
             ActivityAccessor.getCurrentActivity()!!.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recordings_list)!!.childCount
 
     private fun getCurrentSlideAudioProgress(): Int {
-        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
+        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(R.id.videoSeekBar)
         return progressBar!!.progress
     }
 
