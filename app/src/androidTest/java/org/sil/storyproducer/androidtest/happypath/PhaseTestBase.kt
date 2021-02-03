@@ -104,7 +104,7 @@ open abstract class PhaseTestBase {
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
+        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(R.id.list_recordings_button)
         return showRecordingsListButton?.visibility != View.INVISIBLE
     }
 
