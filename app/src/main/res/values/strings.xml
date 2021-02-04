@@ -95,7 +95,7 @@
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
     <string name="welcome_screen_select_template_folder">
         Story Producer is different from typical apps.
-        You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.
+        You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.&lt;br>
         &lt;font color=\"gray\">(If your SD card has already been prepared, skip down to \"Select \'SP Templates\' Folder\")&lt;/font>&lt;br>&lt;br>
         To prepare your SD card&#8230;&lt;br>
         \t\tGo &lt;a href="https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit">HERE&lt;/a> for detailed instructions&lt;br>
@@ -103,13 +103,14 @@
         1. Use Google Drive and download story templates from &lt;a href="https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing">HERE&lt;/a>&lt;br>
         2. Use a Files app to create a folder on the SD card, and name it &lt;font color=\"green\">SP Templates&lt;/font>&lt;br>
         3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">SP Templates&lt;/font> folder&lt;br>&lt;br>
-        After you have prepared the \'SP Templates\' folder, proceed:
+        After you have prepared the &lt;font color=\"green\">SP Templates&lt;/font> folder, proceed:
     </string>
     <string name="workspace_selection_help">
+        &lt;font color=\"gray\">Tell the Story Producer app where to find story templates.&lt;/font>&lt;br>&lt;br>
         On the next screen is a \'folder picker\'.&lt;br>
-        Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder, then tap &lt;b>SELECT&lt;/b> at the bottom.
+        Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder (on the &lt;font color=\"green\">SD Card&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
     </string>
-
+    <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
