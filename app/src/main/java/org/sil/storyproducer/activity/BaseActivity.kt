@@ -70,6 +70,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun selectTemplatesFolder() {
         controller.openDocumentTree(SELECT_TEMPLATES_FOLDER)
+        // showSelectTemplatesFolderDialog()
     }
 
     fun updateTemplatesFolder() {

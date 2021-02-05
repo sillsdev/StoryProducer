@@ -37,7 +37,8 @@ class WorkspaceDialogUpdateActivity : BaseActivity() {
 
         val selectTemplatesButton = view.findViewById<Button>(R.id.select_templates_button);
         selectTemplatesButton.setOnClickListener {
-            selectTemplatesFolder()
+            //selectTemplatesFolder()
+            showSelectTemplatesFolderDialog()
         }
 
         AlertDialog.Builder(this)
