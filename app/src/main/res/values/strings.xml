@@ -107,7 +107,7 @@
     </string>
     <string name="workspace_selection_help">
         &lt;font color=\"gray\">Tell the Story Producer app where to find story templates.&lt;/font>&lt;br>&lt;br>
-        On the next screen is a \'folder picker\'.&lt;br>
+        The next screen will be a \'folder picker\'.&lt;br>
         Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder (on the &lt;font color=\"green\">SD Card&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
     </string>
     <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
