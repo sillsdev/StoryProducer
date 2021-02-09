@@ -28,11 +28,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-<<<<<<< HEAD
-		android:authorities="${applicationId}.fileprovider"
-=======
-            android:authorities="org.sil.storyproducer.film.fileprovider"
->>>>>>> Video and Slide work independently
+		    android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
