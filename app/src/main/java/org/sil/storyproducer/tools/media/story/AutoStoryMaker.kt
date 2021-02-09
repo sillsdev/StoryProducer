@@ -10,18 +10,10 @@ import android.util.Log
 import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
-<<<<<<< HEAD
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-=======
-import com.crashlytics.android.Crashlytics
-import org.sil.storyproducer.R
->>>>>>> UI Updates for #419 and backend fixes for local credits
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.*
-<<<<<<< HEAD
-import org.sil.storyproducer.R
-=======
 import org.sil.storyproducer.model.VIDEO_DIR
->>>>>>> Video and Slide work independently
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -162,14 +154,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
         slide.content = Workspace.activeStory.localCredits + "\n" +
-<<<<<<< HEAD
-                    context.getString(R.string.license_attribution) + 
+                    context.getString(R.string.license_attribution) +
                     "${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
-=======
-                    "This video is licensed under a Creative Commons Attribution" +
-                    "-NonCommercial-ShareAlike 4.0 International License " +
-                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
->>>>>>> UI Updates for #419 and backend fixes for local credits
         slide.translatedContent = slide.content
         slide.musicFile = MUSIC_NONE
         slides.add(slide)
