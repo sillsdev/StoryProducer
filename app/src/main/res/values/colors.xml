@@ -13,11 +13,11 @@
     <color name="black_semi_transparent">#80000000</color>
     <color name="transparent">#00000000</color>
     <color name="learn_phase">#2AA198</color>
-    <color name="draft_phase">#DC322F</color>
-    <color name="comunity_check_phase">#859900</color>
-    <color name="consultant_check_phase">#268DB2</color>
-    <color name="dramatization_phase">#D33682</color>
-    <color name="create_phase">#6C71C4</color>
+    <color name="translate_revise_phase">#DC322F</color>
+    <color name="comunity_work_phase">#859900</color>
+    <color name="accuracy_check_phase">#268DB2</color>
+    <color name="voice_studio_phase">#D33682</color>
+    <color name="finalize_phase">#6C71C4</color>
     <color name="share_phase">#CB4B16</color>
     <color name="black_overlay">#66000000</color>
     <color name="whole_story_phase">#811000</color>

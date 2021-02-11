@@ -3,7 +3,7 @@ package org.sil.storyproducer.tools
 import android.content.Intent
 import android.view.View
 import android.widget.AdapterView
-import org.sil.storyproducer.activity.BaseActivity
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Workspace
 

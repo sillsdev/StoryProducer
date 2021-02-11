@@ -170,7 +170,7 @@ public class RemoteCheckFrag extends Fragment {
     }
 
     /**
-     * This function serves to stop the audio streams from continuing after dramatization has been
+     * This function serves to stop the audio streams from continuing after voicestudio has been
      * put on stop.
      */
     @Override

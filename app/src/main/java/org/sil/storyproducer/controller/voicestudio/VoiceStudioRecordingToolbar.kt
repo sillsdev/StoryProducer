@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.dramatization
+package org.sil.storyproducer.controller.voicestudio
 
 import android.view.View
 import android.widget.ImageButton
@@ -20,7 +20,7 @@ import java.io.FileNotFoundException
  * together. A fifth button is added for sending the finished recording to a web server (not
  * currently implemented).
  */
-class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
+class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
     

@@ -33,11 +33,11 @@
 
     <!-- Phases -->
     <string name="learn_title">Learn</string>
-    <string name="draft_title">Translate + Revise</string>
-    <string name="community_check_title">Community Work</string>
-    <string name="consultant_check_title">Accuracy Check</string>
-    <string name="dramatization_title">Voice Studio</string>
-    <string name="create_title">Finalize</string>
+    <string name="translate_revise_title">Translate + Revise</string>
+    <string name="community_work_title">Community Work</string>
+    <string name="accuracy_check_title">Accuracy Check</string>
+    <string name="voice_studio_title">Voice Studio</string>
+    <string name="finalize_title">Finalize</string>
     <string name="share_title">Share</string>
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
@@ -159,14 +159,14 @@
     <string name="learn_phase_practice">Retell the whole story in your language!</string>
     <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
 
-    <!-- Draft Phase -->
-    <string name="draft_playback_no_lwc_audio">Could not find narration audio</string>
-    <string name="draft_playback_lwc_audio">Playing narration audio</string>
-    <string name="draft_play_narration_audio">Play narration audio</string>
+    <!-- Translate + Revise Phase -->
+    <string name="translate_revise_playback_no_lwc_audio">Could not find narration audio</string>
+    <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>
+    <string name="translate_revise_play_narration_audio">Play narration audio</string>
 
-    <!-- Dramatization phase -->
-    <string name="dramatization_edit_text_hint">Write story text for videos with included text.</string>
-    <string name="dramatization_edit_title_text_hint">Write story title to show for all videos made.</string>
+    <!-- Voice Studio Phase -->
+    <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>
+    <string name="voice_studio_edit_title_text_hint">Write story title to show for all videos made.</string>
 
     <!-- Share Phase -->
     <string name="delete_video_title">Delete Video file?</string>

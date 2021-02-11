@@ -12,7 +12,7 @@
         android:layout_height="@dimen/reference_audio_button"
         android:layout_gravity="center"
         android:background="@drawable/ic_play_arrow_white_36dp"
-        android:contentDescription="@string/draft_play_narration_audio"
+        android:contentDescription="@string/translate_revise_play_narration_audio"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/videoSeekBar" />

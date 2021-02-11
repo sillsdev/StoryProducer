@@ -4,7 +4,6 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.*
 import android.widget.*
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
@@ -156,7 +155,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
                 //TODO make "no audio" string work for all phases
-                Snackbar.make(rootView!!, R.string.draft_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(rootView!!, R.string.translate_revise_playback_no_lwc_audio, Snackbar.LENGTH_SHORT).show()
             } else {
                 //stop other playback streams.
                 if (referenceAudioPlayer.isAudioPlaying) {
@@ -170,10 +169,10 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                     referenceAudioPlayer.resumeAudio()
 
                     referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
-                    Toast.makeText(context, R.string.draft_playback_lwc_audio, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.translate_revise_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.TRANSLATE_REVISE -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
+                        PhaseType.COMMUNITY_WORK -> saveLog(activity!!.getString(R.string.DRAFT_PLAYBACK))
                         else -> {}
                     }
                 }

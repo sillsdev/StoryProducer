@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="8dp"
-    tools:context="org.sil.storyproducer.controller.export.CreateActivity">
+    tools:context="org.sil.storyproducer.controller.export.FinalizeActivity">
 
     <LinearLayout
         android:id="@+id/layout_export_configuration"

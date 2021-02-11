@@ -3,9 +3,7 @@ package org.sil.storyproducer.tools.toolbar
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
@@ -144,8 +142,8 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
                     
                     //TODO: make this logging more robust and encapsulated
                     when (Workspace.activePhase.phaseType){
-                        PhaseType.DRAFT -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
+                        PhaseType.TRANSLATE_REVISE -> saveLog(appContext.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.COMMUNITY_WORK-> saveLog(appContext.getString(R.string.COMMENT_PLAYBACK))
                         else ->{}
                     }
                 } else {

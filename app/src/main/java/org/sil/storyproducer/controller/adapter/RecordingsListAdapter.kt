@@ -3,10 +3,7 @@ package org.sil.storyproducer.controller.adapter
 import android.app.AlertDialog
 import android.content.Context
 import android.media.MediaPlayer
-import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.appcompat.widget.Toolbar
 import android.view.LayoutInflater
@@ -235,8 +232,8 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
                     audioPlayer.setStorySource(context, getRecordedAudioFiles()[pos])
                     audioPlayer.playAudio()
                     when (Workspace.activePhase.phaseType) {
-                        PhaseType.DRAFT -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
-                        PhaseType.COMMUNITY_CHECK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
+                        PhaseType.TRANSLATE_REVISE -> saveLog(context.getString(R.string.DRAFT_PLAYBACK))
+                        PhaseType.COMMUNITY_WORK -> saveLog(context.getString(R.string.COMMENT_PLAYBACK))
                         else -> {
                         }
                     }

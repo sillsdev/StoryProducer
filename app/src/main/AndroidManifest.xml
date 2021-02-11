@@ -67,7 +67,7 @@
             android:name=".controller.WorkspaceUpdateActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.WorkspaceDialogUpdateActivity"
+            android:name=".activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
@@ -78,7 +78,7 @@
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
-            android:name=".controller.export.CreateActivity"
+            android:name=".controller.export.FinalizeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <!-- Share -->

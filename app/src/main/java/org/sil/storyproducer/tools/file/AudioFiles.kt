@@ -34,9 +34,9 @@ fun getChosenDisplayName(slideNum: Int = Workspace.activeSlideNum): String {
 fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
     return when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
-        PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-        PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
-        PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+        PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
+        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
+        PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
         else -> ""
     }
 }
@@ -49,9 +49,9 @@ fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
     val combName = if(index < 0 || index >= nameSize) "" else Workspace.activePhase.getCombNames(slideNum)!![index]
 
     when(Workspace.activePhase.phaseType){
-        PhaseType.DRAFT -> Workspace.activeStory.slides[slideNum].chosenDraftFile = combName
-        PhaseType.DRAMATIZATION -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = combName
-        PhaseType.BACKT -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
+        PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile = combName
+        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile = combName
+        PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
         else -> return
     }
     return
@@ -112,14 +112,14 @@ fun createRecordingCombinedName() : String {
     return when(Workspace.activePhase.phaseType) {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
-            "${Workspace.activePhase.getDisplayName()}|$PROJECT_DIR/${Workspace.activePhase.getShortName()}$AUDIO_EXT"
+            "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
-        PhaseType.DRAFT, PhaseType.COMMUNITY_CHECK,
-        PhaseType.DRAMATIZATION, PhaseType.CONSULTANT_CHECK -> {
+        PhaseType.TRANSLATE_REVISE, PhaseType.COMMUNITY_WORK,
+        PhaseType.VOICE_STUDIO, PhaseType.ACCURACY_CHECK -> {
             //find the next number that is available for saving files at.
             val names = getRecordedDisplayNames()
-            val rNameNum = "${Workspace.activePhase.getDisplayName()} ([0-9]+)".toRegex()
+            val rNameNum = "${Workspace.activePhase.getDirectorySafeName()} ([0-9]+)".toRegex()
             var maxNum = 0
             for (n in names!!){
                 try {
@@ -131,7 +131,7 @@ fun createRecordingCombinedName() : String {
                     FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
-            "${Workspace.activePhase.getDisplayName()} ${maxNum+1}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
+            "${Workspace.activePhase.getDirectorySafeName()} ${maxNum+1}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
         }
         else -> {""}
     }
@@ -145,18 +145,18 @@ fun addCombinedName(name:String){
         PhaseType.WHOLE_STORY -> {Workspace.activeStory.wholeStoryBackTAudioFile = name}
         //multiple files, no distinction.
         //Add to beginning of list
-        PhaseType.COMMUNITY_CHECK -> {
-            Workspace.activeSlide!!.communityCheckAudioFiles.add(0,name)
+        PhaseType.COMMUNITY_WORK -> {
+            Workspace.activeSlide!!.communityWorkAudioFiles.add(0,name)
         }
-        PhaseType.CONSULTANT_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(0,name)}
+        PhaseType.ACCURACY_CHECK -> {Workspace.activeSlide!!.accuracyCheckAudioFiles.add(0,name)}
         //multiple files, one chosen.
-        PhaseType.DRAFT ->{
-            Workspace.activeSlide!!.draftAudioFiles.add(0,name)
-            Workspace.activeSlide!!.chosenDraftFile = name
+        PhaseType.TRANSLATE_REVISE ->{
+            Workspace.activeSlide!!.translateReviseAudioFiles.add(0,name)
+            Workspace.activeSlide!!.chosenTranslateReviseFile = name
         }
-        PhaseType.DRAMATIZATION -> {
-            Workspace.activeSlide!!.dramatizationAudioFiles.add(0,name)
-            Workspace.activeSlide!!.chosenDramatizationFile = name
+        PhaseType.VOICE_STUDIO -> {
+            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0,name)
+            Workspace.activeSlide!!.chosenVoiceStudioFile = name
         }
         else -> {}
     }

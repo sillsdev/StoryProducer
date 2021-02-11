@@ -166,10 +166,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
             val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = Story.getFilename(slide.chosenDramatizationFile)
+            var audio = Story.getFilename(slide.chosenVoiceStudioFile)
             //fallback to draft audio
             if (audio == "") {
-                audio = Story.getFilename(slide.chosenDraftFile)
+                audio = Story.getFilename(slide.chosenTranslateReviseFile)
             }
             //fallback to LWC audio
             if (audio == "") {

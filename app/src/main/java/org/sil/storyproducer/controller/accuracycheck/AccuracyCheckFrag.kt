@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.consultant
+package org.sil.storyproducer.controller.accuracycheck
 
 import android.content.Context
 import android.os.Bundle
@@ -23,7 +23,7 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-class ConsultantCheckFrag : SlidePhaseFrag() {
+class AccuracyCheckFrag : SlidePhaseFrag() {
 
     var logDialog: AlertDialog? = null
     var greenCheckmark: VectorDrawableCompat ?= null
@@ -33,8 +33,8 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        return inflater.inflate(R.layout.fragment_consultant_check, container, false)?.apply {
-            this@ConsultantCheckFrag.rootView = this
+        return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
+            this@AccuracyCheckFrag.rootView = this
             setPic(findViewById<View>(R.id.fragment_image_view) as ImageView)
             findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
             findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
@@ -194,14 +194,14 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     }
 
     /**
-     * Launches the dramatization phase for the story and starts back at first slide
+     * Launches the voicestudio phase for the story and starts back at first slide
      * TODO: moving back to first slide is currently broken
      */
     private fun launchDramatizationPhase() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
-        //Move to dramatization, slide 0.
+        //Move to voicestudio, slide 0.
         Workspace.activeSlideNum = 0
-        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.DRAMATIZATION))
+        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.VOICE_STUDIO))
     }
 
     /**

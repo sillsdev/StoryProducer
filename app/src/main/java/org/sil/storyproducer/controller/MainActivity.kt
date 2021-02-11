@@ -19,7 +19,7 @@ import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
-import org.sil.storyproducer.activity.BaseActivity
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -90,7 +90,7 @@ class MainActivity : BaseActivity(), Serializable {
             R.id.helpButton -> {
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(PhaseType.STORY_LIST))
+                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.STORY_LIST))
                 val text = iStream.reader().use {
                         it.readText() }
 
