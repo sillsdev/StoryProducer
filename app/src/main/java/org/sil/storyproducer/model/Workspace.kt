@@ -1,12 +1,15 @@
 package org.sil.storyproducer.model
 
+import WordLinkCSVReader
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
@@ -15,13 +18,22 @@ import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import java.io.File
 import java.io.IOException
+import java.io.InputStreamReader
 import java.util.*
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
+internal const val PHASE = "Phase"
 
-object Workspace{
+// constants for wordlinks feature
+internal const val WORDLINKS_DIR = "wordlinks"
+internal const val WORDLINKS_CSV_FILE = "wordlinks.csv"
+internal const val WORDLINKS_JSON_FILE = "wordlinks.json"
+internal const val WORDLINKS_CLICKED_TERM = "ClickedTerm"
+internal const val WORDLINKS_SLIDE_NUM = "CurrentSlideNum"
+
+object Workspace {
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
@@ -33,6 +45,12 @@ object Workspace{
     var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
+
+    // word links
+    lateinit var activeWordLink: WordLink
+    var termToWordLinkMap: MutableMap<String, WordLink> = mutableMapOf()
+    var termFormToTermMap: MutableMap<String, String> = mutableMapOf()
+    var WLSTree = WLSTree()
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -50,12 +68,30 @@ object Workspace{
             }
         }
     val activeDirRoot: String
-    get(){return activeStory.title }
+    get() {
+        return if (activePhase.phaseType == PhaseType.WORDLINK) {
+            WORDLINKS_DIR
+        } else {
+            activeStory.title
+        }
+    }
 
-    val activeDir: String = PROJECT_DIR
+    val activeDir: String
+    get() {
+        return if (activePhase.phaseType == PhaseType.WORDLINK) {
+            activeWordLink.term
+        } else {
+            PROJECT_DIR
+        }
+    }
+
     val activeFilenameRoot: String
     get() {
-        return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
+        return if(activePhase.phaseType == PhaseType.WORDLINK) {
+            activeWordLink.term
+        } else {
+            return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
+        }
     }
 
     var activeSlideNum: Int = -1
@@ -94,6 +130,57 @@ object Workspace{
             registration.load(context)
         } catch (e: Exception) {
             Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
+        }
+    }
+
+    private fun importWordLinks(context: Context) {
+        val wordLinksDir = workdocfile.findFile(WORDLINKS_DIR)
+        // check that word links directory exists
+        if (wordLinksDir != null) {
+            importWordLinksFromCSV(context, wordLinksDir)
+            // importKeytermsFromJsonFiles(context, keytermsDirectory)
+            mapTermFormsToTerms()
+            buildWLSTree()
+        }
+    }
+
+    private fun importWordLinksFromCSV(context: Context, wordLinksDir: DocumentFile){
+        val wordLinksFile = wordLinksDir.findFile(WORDLINKS_CSV_FILE)
+        if (wordLinksFile != null) {
+            try {
+                // open a raw file descriptor to access data under the URI
+                context.contentResolver.openFileDescriptor(wordLinksFile.uri, "r").use { pfd ->
+                    ParcelFileDescriptor.AutoCloseInputStream(pfd).use { inputStream ->
+                        InputStreamReader(inputStream).use { streamReader ->
+                            WordLinkCSVReader(streamReader).use { wordLinkCSVReader ->
+                                val wordLinks = wordLinkCSVReader.readAll()
+                                wordLinks.forEach { wl ->
+                                    termToWordLinkMap[wl.term] = wl
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (exception: Exception) {
+                Toast.makeText(context, "Parsing wordlinks CSV file failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun mapTermFormsToTerms() {
+        for (wl in termToWordLinkMap.values) {
+            val term = wl.term
+            termFormToTermMap[term.toLowerCase()] = term
+            for (termForm in wl.termForms) {
+                termFormToTermMap[termForm.toLowerCase()] = term
+            }
+        }
+    }
+
+    private fun buildWLSTree() {
+        for (termForm in termFormToTermMap.keys) {
+            WLSTree.insertTerm(termForm)
         }
     }
 

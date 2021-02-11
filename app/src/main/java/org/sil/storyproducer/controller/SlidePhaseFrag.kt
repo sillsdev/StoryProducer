@@ -2,6 +2,8 @@ package org.sil.storyproducer.controller
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
 import com.google.android.material.snackbar.Snackbar
@@ -33,6 +35,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
 
     protected var slideNum: Int = 0 //gets overwritten
+    protected lateinit var slide: Slide
     protected lateinit var viewModel: SlideViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,6 +43,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         try {
             slideNum = this.arguments!!.getInt(SLIDE_NUM)
             viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
+            slide = Workspace.activeStory.slides[slideNum]
         } catch (ex: Exception) {
             Timber.e(ex)
         }
@@ -186,5 +190,33 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     }
 
     open fun onStartedSlidePlayBack() {}
+
+    /**
+     * Sets the main text of the layout.
+     * The text will be ran through and checked if any of the words are a wordlink.
+     * These matching strings will be turned into a link that can be clicked to open WordLinkActivity, showing the user more about the wordlink.
+     *
+     * @param textView The text view that will be filled with the verse's text.
+     */
+    protected fun setScriptureText(textView: TextView) {
+        val phrases = Workspace.WLSTree.splitOnWordLinks(slide.content)
+        textView.text = phrases.fold(SpannableStringBuilder()) {
+            result, phrase -> result.append(stringToWordLink(phrase, activity))
+        }
+        // this method provides cursor positioning, scrolling and text selection functionality
+        textView.movementMethod = LinkMovementMethod.getInstance()
+    }
+
+    protected fun setReferenceText(textView: TextView) {
+        val titleNamePriority = arrayOf(slide.reference, slide.subtitle, slide.title)
+        for (title in titleNamePriority) {
+            if (title != "") {
+                textView.text = title
+                return
+            }
+        }
+        //There is no reference text.
+        textView.text = ""
+    }
 
 }

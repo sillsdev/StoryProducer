@@ -248,7 +248,7 @@ class Phase (val phaseType: PhaseType) {
          * get the filename for the HTML help doc
          * @return String
          */
-        fun getHelpDocFile(phase: PhaseType) : String {
+        fun getHelpName(phase: PhaseType) : String {
             return "${phase.name.toLowerCase()}.html"
         }
     }

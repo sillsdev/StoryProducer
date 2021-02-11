@@ -14,6 +14,8 @@
     <color name="transparent">#00000000</color>
     <color name="learn_phase">#2AA198</color>
     <color name="translate_revise_phase">#DC322F</color>
+    <color name="wordlink_phase">#91602F</color>
+    <color name="wordlink_phase_secondary">#7E5329</color>
     <color name="comunity_work_phase">#859900</color>
     <color name="accuracy_check_phase">#268DB2</color>
     <color name="voice_studio_phase">#D33682</color>
