@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.community
+package org.sil.storyproducer.controller.communitywork
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,12 +13,12 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * Fragment for the community check view. The purpose of this phase is for the community to make
  * sure the draft is okay and leave any comments should they feel the need
  */
-class CommunityCheckFrag : MultiRecordFrag() {
+class CommunityWorkFrag : MultiRecordFrag() {
     override var recordingToolbar: RecordingToolbar = RecordingToolbar()
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.fragment_community_check, container, false)
+        rootView = inflater.inflate(R.layout.fragment_community_work, container, false)
 
         setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()

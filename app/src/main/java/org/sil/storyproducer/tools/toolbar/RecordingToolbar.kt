@@ -136,8 +136,8 @@ open class RecordingToolbar : Fragment(){
 
         //TODO: make this logging more robust and encapsulated
         when(Workspace.activePhase.phaseType){
-            PhaseType.DRAFT -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
-            PhaseType.COMMUNITY_CHECK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
+            PhaseType.TRANSLATE_REVISE -> saveLog(activity?.getString(R.string.DRAFT_RECORDING)!!)
+            PhaseType.COMMUNITY_WORK -> saveLog(activity?.getString(R.string.COMMENT_RECORDING)!!)
             else -> {}
         }
 

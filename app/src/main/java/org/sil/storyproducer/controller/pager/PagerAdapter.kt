@@ -3,11 +3,10 @@ package org.sil.storyproducer.controller.pager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import org.sil.storyproducer.controller.community.CommunityCheckFrag
-import org.sil.storyproducer.controller.consultant.ConsultantCheckFrag
-import org.sil.storyproducer.controller.draft.DraftFrag
-import org.sil.storyproducer.controller.dramatization.DramatizationFrag
+import org.sil.storyproducer.controller.communitywork.CommunityWorkFrag
+import org.sil.storyproducer.controller.accuracycheck.AccuracyCheckFrag
+import org.sil.storyproducer.controller.translaterevise.TranslateReviseFrag
+import org.sil.storyproducer.controller.voicestudio.VoiceStudioFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -27,26 +26,26 @@ class PagerAdapter(fm: FragmentManager) : androidx.fragment.app.FragmentStatePag
         val fragment: Fragment
         val passedArgs = Bundle()
         when (Workspace.activePhase.phaseType) {
-            PhaseType.DRAFT -> {
-                fragment = DraftFrag()
+            PhaseType.TRANSLATE_REVISE -> {
+                fragment = TranslateReviseFrag()
             }
-            PhaseType.COMMUNITY_CHECK -> {
-                fragment = CommunityCheckFrag()
+            PhaseType.COMMUNITY_WORK -> {
+                fragment = CommunityWorkFrag()
             }
-            PhaseType.CONSULTANT_CHECK -> {
-                fragment = ConsultantCheckFrag()
+            PhaseType.ACCURACY_CHECK -> {
+                fragment = AccuracyCheckFrag()
             }
-            PhaseType.DRAMATIZATION -> {
-                fragment = DramatizationFrag()
+            PhaseType.VOICE_STUDIO -> {
+                fragment = VoiceStudioFrag()
             }
-//            PhaseType.BACKT -> {
+//            PhaseType.BACK_T -> {
 //                fragment = BackTranslationFrag()
 //            }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()
             }
             else -> {
-                fragment = DraftFrag()
+                fragment = TranslateReviseFrag()
             }
         }
         passedArgs.putInt(SLIDE_NUM, i)
