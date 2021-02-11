@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/draft_phase"
+                android:background="@color/translate_revise_phase"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 >
@@ -70,14 +70,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:checked="true"
-                    android:text="@string/draft_title" />
+                    android:text="@string/translate_revise_title" />
             </FrameLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.85"
-                android:background="@color/comunity_check_phase"
+                android:background="@color/comunity_work_phase"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 >
@@ -88,7 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:checked="true"
-                    android:text="@string/community_check_title" />
+                    android:text="@string/community_work_title" />
             </FrameLayout>
 
         </LinearLayout>

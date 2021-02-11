@@ -61,7 +61,7 @@ object Workspace{
     val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
     get() {
-        return "${activePhase.getShortName()}${ Workspace.activeSlideNum }"
+        return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
     }
 
     var activeSlideNum: Int = -1
@@ -188,8 +188,8 @@ object Workspace{
     fun getSongFilename() : String{
         for (s in activeStory.slides){
             if(s.slideType == SlideType.LOCALSONG){
-                if(s.chosenDramatizationFile != "") return s.chosenDramatizationFile
-                if(s.chosenDraftFile != "") return s.chosenDraftFile
+                if(s.chosenVoiceStudioFile != "") return s.chosenVoiceStudioFile
+                if(s.chosenTranslateReviseFile != "") return s.chosenTranslateReviseFile
             }
         }
         return ""

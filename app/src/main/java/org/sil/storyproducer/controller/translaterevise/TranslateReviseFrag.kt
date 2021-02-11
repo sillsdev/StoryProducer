@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.draft
+package org.sil.storyproducer.controller.translaterevise
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,7 @@ import org.sil.storyproducer.controller.MultiRecordFrag
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-class DraftFrag : MultiRecordFrag() {
+class TranslateReviseFrag : MultiRecordFrag() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
