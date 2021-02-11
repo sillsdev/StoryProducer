@@ -13,7 +13,6 @@ import android.view.*
 import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -21,7 +20,7 @@ import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.GravityCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.activity.BaseActivity
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -167,10 +166,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
                 val text = iStream.reader().use {
                     it.readText() }
 

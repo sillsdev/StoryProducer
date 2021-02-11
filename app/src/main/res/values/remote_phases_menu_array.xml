@@ -2,13 +2,13 @@
 <resources>
     <string-array name="remote_phases_menu_array">
         <item>@string/learn_title</item>
-        <item>@string/draft_title</item>
-        <item>@string/community_check_title</item>
+        <item>@string/translate_revise_title</item>
+        <item>@string/community_work_title</item>
         <item>@string/whole_story_title</item>
         <item>@string/back_translation_title</item>
         <item>@string/remote_check_title</item>
-        <item>@string/dramatization_title</item>
-        <item>@string/create_title</item>
+        <item>@string/voice_studio_title</item>
+        <item>@string/finalize_title</item>
         <item>@string/share_title</item>
     </string-array>
 </resources>

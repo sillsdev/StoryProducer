@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.dramatization
+package org.sil.storyproducer.controller.voicestudio
 
 import android.app.Activity
 import android.os.Bundle
@@ -17,8 +17,8 @@ import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class DramatizationFrag : MultiRecordFrag() {
-    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
+class VoiceStudioFrag : MultiRecordFrag() {
+    override var recordingToolbar: RecordingToolbar = VoiceStudioRecordingToolbar()
     private var slideText: EditText? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -39,7 +39,7 @@ class DramatizationFrag : MultiRecordFrag() {
         //Make the text bigger if it is the front Page.
         if(Workspace.activeStory.slides[slideNum].slideType == SlideType.FRONTCOVER){
             slideText?.setTextSize(COMPLEX_UNIT_DIP,24f)
-            slideText?.hint = context!!.getString(R.string.dramatization_edit_title_text_hint)
+            slideText?.hint = context!!.getString(R.string.voice_studio_edit_title_text_hint)
         }
 
         setupCameraAndEditButton()
@@ -48,7 +48,7 @@ class DramatizationFrag : MultiRecordFrag() {
     }
 
     /**
-     * This function serves to stop the audio streams from continuing after dramatization has been
+     * This function serves to stop the audio streams from continuing after voicestudio has been
      * put on pause.
      */
     override fun onPause() {
