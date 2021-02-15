@@ -5,6 +5,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -73,6 +74,27 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
         return story
     }
     return null
+}
+
+fun migrateStory(context: Context, story: Story): Story? {
+    // Migrate the LOCALCREDITS slide data (present up to v3.0.2) to
+    // the property on the Story
+    for (i in 0..story.slides.count()-1) {
+        val slide = story.slides[i]
+        if (slide.slideType == SlideType.LOCALCREDITS) {
+            // Remove the LOCALCREDITS slide
+            val newSlides = story.slides.toMutableList()
+            newSlides.removeAt(i)
+            story.slides = newSlides
+
+            // Update the property if it is different from the obsolete starting text
+            if (slide.translatedContent != context.getString(R.string.LC_obsolete_starting_text)) {
+                story.localCredits = slide.translatedContent
+            }
+            break
+        }
+    }
+    return story
 }
 
 fun isZipped(fileName: String?): Boolean {

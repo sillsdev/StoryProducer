@@ -1,0 +1,15 @@
+language: android
+os: linux
+dist: trusty
+
+android:
+  components:
+    - build-tools-29.0.2
+    - android-29
+
+script:
+  - echo "Travis branch is $TRAVIS_BRANCH"
+  - echo "Travis branch is in pull request $TRAVIS_PULL_REQUEST"
+  - curl -s "https://sil-storyproducer-resources.s3.amazonaws.com/dev/dev-keystore.jks" -o "dev-keystore.jks"
+  - curl -s "https://sil-storyproducer-resources.s3.amazonaws.com/dev/keystore.properties" -o "keystore.properties"
+  - ./gradlew test

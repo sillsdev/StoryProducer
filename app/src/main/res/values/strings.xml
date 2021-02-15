@@ -109,13 +109,24 @@
         for story templates does not contain usable templates.  Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
-    <string name="use_internal_demo_or_select_template_folder">Would you like to use the internal demo or select the appropriate
-        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
-        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>?</string>
-    <string name="workspace_selection_help">On the next screen - &lt;br/&gt;SELECT the appropriate
-        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder -
-        normally found on the &lt;b>&lt;font color=\"green\">SD card&lt;/font>&lt;/b>.</string>
-
+    <string name="welcome_screen_select_template_folder">
+        Story Producer is different from typical apps.
+        You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.&lt;br>
+        &lt;font color=\"gray\">(If your SD card has already been prepared, skip down to \"Select \'SP Templates\' Folder\")&lt;/font>&lt;br>&lt;br>
+        To prepare your SD card&#8230;&lt;br>
+        \t\tGo &lt;a href="https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit">HERE&lt;/a> for detailed instructions&lt;br>
+        \t\tOR follow these summary instructions:&lt;br>
+        1. Use Google Drive and download story templates from &lt;a href="https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing">HERE&lt;/a>&lt;br>
+        2. Use a Files app to create a folder on the SD card, and name it &lt;font color=\"green\">SP Templates&lt;/font>&lt;br>
+        3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">SP Templates&lt;/font> folder&lt;br>&lt;br>
+        After you have prepared the &lt;font color=\"green\">SP Templates&lt;/font> folder, proceed:
+    </string>
+    <string name="workspace_selection_help">
+        &lt;font color=\"gray\">Tell the Story Producer app where to find story templates.&lt;/font>&lt;br>&lt;br>
+        The next screen will be a \'folder picker\'.&lt;br>
+        Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder (on the &lt;font color=\"green\">SD Card&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
+    </string>
+    <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
     <string-array name="orthography_list">
         <item>None</item>
         <item>Trial</item>
@@ -178,6 +189,7 @@
     <string name="delete_video_title">Delete Video file?</string>
     <string name="delete_video_message">Do you want to delete this video?</string>
     <string name="view_video_folder_path">Videos Folder</string>
+    <string name="view_video_folder_message">Using a file manager app, video files can be accessed at:</string>
 
     <!-- Whole Story Back Translation phase -->
     <string name="wsbt_alert_title">Finish Draft Phase</string>
@@ -244,9 +256,13 @@
     <string name="title_activity_splash_screen">Story Producer</string>
 
     <!-- Local Credits -->
-    <string name="LC_starting_text">Language:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_starting_text">Local Contact (phone/email):\nLanguage:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
     <string name="LC_prompt">Local Credits will be added during voice acting.</string>
     <string name="export_local_credits_header">Local Credits</string>
+    <string name="license_attribution">This video is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License ©</string>
+    <string name="local_credits_changed">Local Credits Changed!</string>
+    <string name="local_credits_unchanged">Local Credits Unchanged!</string>
 
     <!-- Local Song -->
     <string name="LS_prompt">Make a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>

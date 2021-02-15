@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -153,9 +154,8 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         var slide = Slide()
         slide.slideType = SlideType.COPYRIGHT
         slide.content = Workspace.activeStory.localCredits + "\n" +
-                    "This video is licensed under a Creative Commons Attribution" +
-                    "-NonCommercial-ShareAlike 4.0 International License " +
-                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
+                    context.getString(R.string.license_attribution) +
+                    "${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}"
         slide.translatedContent = slide.content
         slide.musicFile = MUSIC_NONE
         slides.add(slide)

@@ -54,7 +54,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     fun initWorkspace() {
-        Workspace.initializeWorskpace(this)
+        Workspace.initializeWorkspace(this)
 
         if (Workspace.workdocfile.isDirectory) {
             controller.updateStories()
@@ -70,10 +70,6 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun selectTemplatesFolder() {
         controller.openDocumentTree(SELECT_TEMPLATES_FOLDER)
-    }
-
-    fun selectTemplatesFolderAndAddDemo() {
-        controller.openDocumentTree(SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
     }
 
     fun updateTemplatesFolder() {

@@ -23,9 +23,12 @@
         tools:replace="android:icon,android:roundIcon"
         >
 
+        <meta-data android:name="firebase_analytics_collection_deactivated"
+                   android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="org.sil.storyproducer.film.fileprovider"
+		        android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

@@ -14,7 +14,7 @@ internal val RE_DISPLAY_NAME = "([^|]+)[|.]".toRegex()
 internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
-class Story(var title: String, val slides: List<Slide>){
+class Story(var title: String, var slides: List<Slide>){
 
     var importAppVersion: String = ""
     var isApproved: Boolean = false

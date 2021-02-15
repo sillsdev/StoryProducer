@@ -73,7 +73,7 @@ object Workspace{
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorskpace(activity: Activity) {
+    fun initializeWorkspace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
@@ -83,9 +83,14 @@ object Workspace{
 
     fun setupWorkspacePath(context: Context, uri: Uri) {
         try {
+            // Issue 539 - Reset Story info to detach from current Story, if any
+            activeStory = emptyStory()
+
+            // Initiate new workspace path
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
         } catch (e: Exception) {
+            Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
         }
     }
 
@@ -149,10 +154,12 @@ object Workspace{
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         val story = unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> pathOf(storyFolder) }
-                ?.let { parseStoryIfPresent(context, it) }
-        if (story != null) {
-            story.phases = buildPhases(story)
-        }
+                ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
+                ?.let { story -> migrateStory(context, story) }
+//                ?.let { parseStoryIfPresent(context, it) }
+//        if (story != null) {
+//            story.phases = buildPhases(story)
+//        }
         return story;
     }
 
@@ -225,5 +232,3 @@ object Workspace{
     }
 
 }
-
-
