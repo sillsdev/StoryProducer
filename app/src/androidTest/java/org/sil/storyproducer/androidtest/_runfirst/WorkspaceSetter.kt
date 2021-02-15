@@ -51,6 +51,7 @@ class WorkspaceSetter {
      * Depending on your device/emulator, you may need to modify the INTERNAL_STORAGE_BUTTON_TEXT
      * string.
      */
+    companion object {
     @Test
     @SdkSuppress(minSdkVersion = 18)
     fun setWorkspaceSoOtherTestsRunCorrectly() {
@@ -106,4 +107,5 @@ class WorkspaceSetter {
     private fun getDirectoryNameFromFullPath(fullPath: String): String {
         return fullPath.split('/').last()
     }
+        }
 }

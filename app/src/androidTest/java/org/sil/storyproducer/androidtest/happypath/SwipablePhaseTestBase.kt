@@ -7,11 +7,15 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.CoreMatchers
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.Constants
 
-open abstract class SwipablePhaseTestBase : PhaseTestBase() {
+abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
+
+    val base = sharedBase
+
     protected fun testSwipingBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
         var nextSlideNumber = originalSlideNumber + 1
@@ -42,12 +46,12 @@ open abstract class SwipablePhaseTestBase : PhaseTestBase() {
     }
 
     protected fun findCurrentSlideNumber(): Int {
-        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(R.id.slide_number_text)
+        val slideNumberTextView = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatTextView>(base.getSlideNumberId())
         return Integer.parseInt(slideNumberTextView!!.text.toString())
     }
 
     private fun expectToBeOnSlide(originalSlideNumber: Int) {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.slide_number_text), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
+        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(base.getSlideNumberId()), ViewMatchers.withText(originalSlideNumber.toString()))).check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
     }
 
     private fun expectToBeOnPhase(phase: String) {

@@ -1,9 +1,6 @@
-package org.sil.storyproducer.androidtest.happypath
+package org.sil.storyproducer.androidtest.happypath.community
 
 import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.recyclerview.widget.RecyclerView
-import android.view.View.INVISIBLE
-import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
@@ -16,26 +13,25 @@ import org.hamcrest.CoreMatchers.allOf
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
+import org.sil.storyproducer.androidtest.happypath.SwipablePhaseTestBase
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
-@LargeTest
-@RunWith(AndroidJUnit4::class)
-class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
+class CommunityWorkPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase) {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.communityWork)
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.communityWork, base)
     }
 
-    @Test
     fun should_BeAbleToSwipeBetweenSlides() {
         testSwipingBetweenSlides()
     }
 
-    @Test
     fun should_BeAbleToPlayTranslationOfASlide() {
         makeSureAnAudioClipIsAvailable(Constants.Phase.communityWork)
 
@@ -47,7 +43,6 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
         Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
     }
 
-    @Test
     fun should_BeAbleToRecordFeedback() {
         var originalNumberOfRecordings = getCurrentNumberOfRecordings()
 
@@ -61,7 +56,6 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
         Assert.assertEquals("Expected an additional feedback recording to exist", originalNumberOfRecordings + 1, finalNumberOfRecordings)
     }
 
-    @Test
     fun should_beAbleToSwipeToNextPhase() {
         testSwipingToNextPhase(Constants.Phase.accuracyCheck)
     }
@@ -69,16 +63,4 @@ class CommunityWorkPhaseTest : SwipablePhaseTestBase() {
     private fun getCurrentNumberOfRecordings() =
             ActivityAccessor.getCurrentActivity()!!.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recordings_list)!!.childCount
 
-    private fun getCurrentSlideAudioProgress(): Int {
-        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(R.id.videoSeekBar)
-        return progressBar!!.progress
-    }
-
-    private fun pressMicButton() {
-        onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-    }
-
-    private fun pressPlayPauseButton() {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
-    }
 }
