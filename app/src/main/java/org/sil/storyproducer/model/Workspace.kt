@@ -157,9 +157,9 @@ object Workspace{
                 ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
                 ?.let { story -> migrateStory(context, story) }
 //                ?.let { parseStoryIfPresent(context, it) }
-//        if (story != null) {
-//            story.phases = buildPhases(story)
-//        }
+        if (story != null) {
+            story.phases = buildPhases(story)
+        }
         return story;
     }
 
