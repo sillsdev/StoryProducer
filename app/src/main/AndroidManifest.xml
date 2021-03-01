@@ -88,7 +88,7 @@
             android:windowSoftInputMode="stateHidden" />
         <!-- WordLink -->
         <activity
-            android:name=".controller.wordlink.WordLinkActivity"
+            android:name=".controller.wordlink.WordLinksActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <!-- Keyterm List -->

@@ -5,7 +5,7 @@
             android:id="@+id/nav_stories"
             android:title="@string/title_activity_story_templates" />
         <item
-            android:id="@+id/nav_wordlink_list"
+            android:id="@+id/nav_word_link_list"
             android:title="@string/title_activity_wordlink_list" />
         <item
             android:id="@+id/nav_registration"

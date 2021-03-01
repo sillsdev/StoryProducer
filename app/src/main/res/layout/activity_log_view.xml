@@ -77,7 +77,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.85"
-                android:background="@color/comunity_work_phase"
+                android:background="@color/community_work_phase"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 >

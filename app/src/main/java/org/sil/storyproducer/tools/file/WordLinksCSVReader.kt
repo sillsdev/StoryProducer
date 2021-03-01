@@ -8,7 +8,7 @@ import java.io.Reader
  * @since 3.1
  * @authors Aaron Cannon, Jake Allinson
  */
-class WordLinkCSVReader(reader: Reader): AutoCloseable {
+class WordLinksCSVReader(reader: Reader): AutoCloseable {
     private val csvReader = CSVReader(reader)
 
     init {

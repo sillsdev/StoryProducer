@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.wordlink.WordLinkListActivity
-import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -143,7 +142,7 @@ class MainActivity : BaseActivity(), Serializable {
                 Workspace.addDemoToWorkspace(this)
                 storyList.notifyDataSetChanged()
             }
-            R.id.nav_wordlink_list -> {
+            R.id.nav_word_link_list -> {
                 intent = Intent(this, WordLinkListActivity::class.java)
                 this.startActivity(intent)
             }

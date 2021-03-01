@@ -194,7 +194,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     /**
      * Sets the main text of the layout.
      * The text will be ran through and checked if any of the words are a wordlink.
-     * These matching strings will be turned into a link that can be clicked to open WordLinkActivity, showing the user more about the wordlink.
+     * These matching strings will be turned into a link that can be clicked to open WordLinksActivity, showing the user more about the wordlink.
      *
      * @param textView The text view that will be filled with the verse's text.
      */

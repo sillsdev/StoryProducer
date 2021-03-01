@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.PhaseType
@@ -144,7 +145,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
             slideNum = mSlideNum
         }
 
-        fun setParentFragment(parentFragment: androidx.fragment.app.Fragment){
+        fun setParentFragment(parentFragment: Fragment?){
             try{
                 playbackListener = parentFragment as RecordingToolbar.ToolbarMediaListener
             }

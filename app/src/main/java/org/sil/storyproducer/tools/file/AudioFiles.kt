@@ -3,10 +3,8 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
 import java.util.*
 import kotlin.math.max
 
@@ -34,13 +32,9 @@ fun getChosenDisplayName(slideNum: Int = Workspace.activeSlideNum): String {
 fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
     return when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
-<<<<<<< HEAD
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
         PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
-=======
-        PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenDraftFile
-        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile
->>>>>>> Initial dump of WL code from Keyterm Tracker
+        PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
         else -> ""
     }
@@ -54,13 +48,9 @@ fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
     val combName = if(index < 0 || index >= nameSize) "" else Workspace.activePhase.getCombNames(slideNum)!![index]
 
     when(Workspace.activePhase.phaseType){
-<<<<<<< HEAD
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile = combName
         PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile = combName
-=======
-        PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenDraftFile = combName
-        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenDramatizationFile = combName
->>>>>>> Initial dump of WL code from Keyterm Tracker
+        PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile = combName
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
         else -> return
     }
@@ -121,12 +111,16 @@ fun createRecordingCombinedName() : String {
     //they are used for the stages that do that.
     return when(Workspace.activePhase.phaseType) {
         //just one file.  Overwrite when you re-record.
-        PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
+        PhaseType.LEARN,
+        PhaseType.WHOLE_STORY -> {
             "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
-        PhaseType.TRANSLATE_REVISE, PhaseType.COMMUNITY_WORK,
-        PhaseType.VOICE_STUDIO, PhaseType.ACCURACY_CHECK -> {
+        PhaseType.TRANSLATE_REVISE,
+        PhaseType.WORD_LINKS,
+        PhaseType.COMMUNITY_WORK,
+        PhaseType.VOICE_STUDIO,
+        PhaseType.ACCURACY_CHECK -> {
             //find the next number that is available for saving files at.
             val names = getRecordedDisplayNames()
             val rNameNum = "${Workspace.activePhase.getDirectorySafeName()} ([0-9]+)".toRegex()
@@ -158,7 +152,6 @@ fun addCombinedName(name:String){
         PhaseType.COMMUNITY_WORK -> {
             Workspace.activeSlide!!.communityWorkAudioFiles.add(0,name)
         }
-<<<<<<< HEAD
         PhaseType.ACCURACY_CHECK -> {Workspace.activeSlide!!.accuracyCheckAudioFiles.add(0,name)}
         //multiple files, one chosen.
         PhaseType.TRANSLATE_REVISE ->{
@@ -166,19 +159,12 @@ fun addCombinedName(name:String){
             Workspace.activeSlide!!.chosenTranslateReviseFile = name
         }
         PhaseType.VOICE_STUDIO -> {
-            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0,name)
+            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0, name)
             Workspace.activeSlide!!.chosenVoiceStudioFile = name
-=======
-        PhaseType.ACCURACY_CHECK -> {Workspace.activeSlide!!.consultantCheckAudioFiles.add(0,name)}
-        //multiple files, one chosen.
-        PhaseType.TRANSLATE_REVISE ->{
-            Workspace.activeSlide!!.translateReviseAudioFiles.add(0,name)
-            Workspace.activeSlide!!.chosenDraftFile = name
         }
-        PhaseType.VOICE_STUDIO -> {
-            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0,name)
-            Workspace.activeSlide!!.chosenDramatizationFile = name
->>>>>>> Initial dump of WL code from Keyterm Tracker
+        PhaseType.WORD_LINKS -> {
+            Workspace.activeWordLink.wordLinkRecordings.add(0, WordLinkRecording(name))
+            Workspace.activeWordLink.chosenWordLinkFile = name
         }
         else -> {}
     }

@@ -17,33 +17,43 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.dpToPx
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 import org.sil.storyproducer.model.*
+import org.sil.storyproducer.tools.file.toJson
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
 
-class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
+/**
+ * This activity shows information about the active Word Link so the user can learn more
+ * about the word as well as record an audio translation
+ *
+ * @since 3.0.4
+ */
+class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
-    // private lateinit var recordingToolbar : WordLinkRecordingToolbar
+    private lateinit var recordingToolbar : WordLinksRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal
     lateinit var bottomSheet: ConstraintLayout
     private val wordLinkHistory: Stack<String> = Stack()
 
-    // TODO Refactor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wordlink)
-        Workspace.activePhase = Phase(PhaseType.WORDLINK)
-        val term = intent.getStringExtra("ClickedTerm")
-        Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[term.toLowerCase()]]!!
-        wordLinkHistory.push(term)
+
+        Workspace.activePhase = Phase(PhaseType.WORD_LINKS)
+        val clickedTerm = intent.getStringExtra(WORD_LINKS_CLICKED_TERM)
+        Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[clickedTerm.toLowerCase()]]!!
+        wordLinkHistory.push(clickedTerm)
 
         setupStatusBar()
-        setupToolbar(getApplicationContext())
-        // setupBottomSheet()
+        setupToolbar(applicationContext)
+        setupBottomSheet()
         setupNoteView()
-        // setupRecordingList()
+        setupRecordingList()
 
         // Keeps keyboard from automatically popping up on opening activity
         this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
@@ -58,34 +68,34 @@ class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMe
         }
     }
 
-    private fun setupToolbar(context: Context){
+    private fun setupToolbar(context: Context) {
         val toolbar: androidx.appcompat.widget.Toolbar? = findViewById(R.id.wordlink_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(context,
                 Workspace.activePhase.getColor())))
     }
 
-//    private fun setupBottomSheet(){
-//        bottomSheet = findViewById(R.id.bottom_sheet)
-//
-//        from(bottomSheet).isFitToContents = false
-//        from(bottomSheet).peekHeight = dpToPx(48, this)
-//
-//        if(Workspace.activeWordLink.wordLinkRecordings.isNotEmpty()){
-//            from(bottomSheet).state = STATE_EXPANDED
-//        }
-//        else {
-//            from(bottomSheet).state = STATE_COLLAPSED
-//        }
-//    }
+    private fun setupBottomSheet() {
+        bottomSheet = findViewById(R.id.bottom_sheet)
 
-//    private fun setupRecordingList(){
-//        displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
-//        displayList.embedList(findViewById(android.R.id.content))
-//        displayList.setParentFragment(null)
-//        displayList.show()
-//    }
-//
+        from(bottomSheet).isFitToContents = false
+        from(bottomSheet).peekHeight = dpToPx(48, this)
+
+        if(Workspace.activeWordLink.wordLinkRecordings.isNotEmpty()){
+            from(bottomSheet).state = STATE_EXPANDED
+        }
+        else {
+            from(bottomSheet).state = STATE_COLLAPSED
+        }
+    }
+
+    private fun setupRecordingList() {
+        displayList = RecordingsListAdapter.RecordingsListModal(this, recordingToolbar)
+        displayList.embedList(findViewById(android.R.id.content))
+        displayList.setParentFragment(null)
+        displayList.show()
+    }
+
     /**
      * Updates the textViews with the current wordlink information
      */
@@ -136,13 +146,14 @@ class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMe
             result, alternateRendering -> "$result\u2022 $alternateRendering\n"
         }.removeSuffix("\n")
 
-//        val bundle = Bundle()
-//        bundle.putInt(WORDLINKS_SLIDE_NUM, 0)
-//        recordingToolbar = KeytermRecordingToolbar()
-//        recordingToolbar.arguments = bundle
-//        supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
+        // set up the toolbar
+        val bundle = Bundle()
+        bundle.putInt(WORD_LINKS_SLIDE_NUM, 0)
+        recordingToolbar = WordLinksRecordingToolbar()
+        recordingToolbar.arguments = bundle
+        supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
     }
-//
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_wordlink_view, menu)
         return true
@@ -151,7 +162,7 @@ class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMe
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.closeWordLink -> {
-                // saveKeyterm()
+                saveWordLink()
                 if(intent.hasExtra(PHASE)) {
                     Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
                 }
@@ -160,7 +171,7 @@ class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMe
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getPrettyName()} Help")
+                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
 
                 val wv = WebView(this)
                 val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
@@ -181,67 +192,67 @@ class WordLinkActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMe
             }
         }
     }
-//
-//    override fun onStoppedToolbarRecording() {
-//        val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
-//        recordingExpandableListView.adapter?.notifyDataSetChanged()
-//        if(from(bottomSheet).state == STATE_COLLAPSED) {
-//            from(bottomSheet).state = STATE_EXPANDED
-//        }
-//        recordingExpandableListView.smoothScrollToPosition(0)
-//    }
-//
-//    override fun onStartedToolbarMedia() {
-//        displayList.stopAudio()
-//    }
-//
-//    override fun onStartedToolbarRecording() {
-//        super.onStartedToolbarRecording()
-//        displayList.resetRecordingList()
-//    }
-//
+
+    override fun onStoppedToolbarRecording() {
+        val recordingExpandableListView = findViewById<RecyclerView>(R.id.recordings_list)
+        recordingExpandableListView.adapter?.notifyDataSetChanged()
+        if(from(bottomSheet).state == STATE_COLLAPSED) {
+            from(bottomSheet).state = STATE_EXPANDED
+        }
+        recordingExpandableListView.smoothScrollToPosition(0)
+    }
+
+    override fun onStartedToolbarMedia() {
+        displayList.stopAudio()
+    }
+
+    override fun onStartedToolbarRecording() {
+        super.onStartedToolbarRecording()
+        displayList.resetRecordingList()
+    }
+
     /**
      * When the back button is pressed, the bottom sheet will close if currently opened or return to
-     * the previous keyterm or close the activity if there is no previous keyterm to return to
+     * the previous word link or close the activity if there is no previous word link to return to
      */
     override fun onBackPressed() {
-//        if( from(bottomSheet).state == STATE_EXPANDED){
-//            from(bottomSheet).state = STATE_COLLAPSED
-//        }
-//        else {
-//            saveKeyterm()
-//            keytermHistory.pop()
-//            if (keytermHistory.isEmpty()) {
-//                if(intent.hasExtra(PHASE)) {
-//                    Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
-//                }
+        if( from(bottomSheet).state == STATE_EXPANDED){
+            from(bottomSheet).state = STATE_COLLAPSED
+        }
+        else {
+            saveWordLink()
+            wordLinkHistory.pop()
+            if (wordLinkHistory.isEmpty()) {
+                if(intent.hasExtra(PHASE)) {
+                    Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
+                }
                 super.onBackPressed()
                 finish()
-//            } else {
-//                Workspace.activeKeyterm = Workspace.termToKeyterm[Workspace.termFormToTerm[keytermHistory.peek().toLowerCase()]]!!
-//                setupNoteView()
-//                setupRecordingList()
-//            }
-//        }
+            } else {
+                Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[wordLinkHistory.peek().toLowerCase()]]!!
+                setupNoteView()
+                setupRecordingList()
+            }
+        }
     }
 
     fun replaceActivityWordLink(term: String) {
-        // saveWordLink()
-        // Set keyterm from link as active keyterm
+        saveWordLink()
+        // Set word link from link as active word link
         Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[term.toLowerCase()]]!!
-        //Add new keyterm fragments to stack
+        // Add new word link fragments to stack
         wordLinkHistory.push(term)
         setupNoteView()
-        //setupRecordingList()
-        //from(bottomSheet).state = STATE_COLLAPSED
+        setupRecordingList()
+        from(bottomSheet).state = STATE_COLLAPSED
     }
-//
-//    /**
-//     * Saves the active keyterm to the workspace and exports an up-to-date json file for all keyterms
-//     **/
-//    private fun saveWordLink () {
-//        Workspace.termToKeyterm[Workspace.activeKeyterm.term] = Workspace.activeKeyterm
-//        val keytermList = KeytermList(Workspace.termToKeyterm.values.toList())
-//        Thread(Runnable{ let { keytermList.toJson(it) } }).start()
-//    }
+
+    /**
+     * Saves the active word link to the workspace and exports an up-to-date json file for all word links
+     **/
+    private fun saveWordLink() {
+        Workspace.termToWordLinkMap[Workspace.activeWordLink.term] = Workspace.activeWordLink
+        val wordLinkList = WordLinkList(Workspace.termToWordLinkMap.values.toList())
+        Thread(Runnable{ let { wordLinkList.toJson(it) } }).start()
+    }
 }

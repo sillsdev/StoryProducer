@@ -7,7 +7,7 @@ package org.sil.storyproducer.model
  *
  * In this class a word refers to a consecutive string of letters, or any individual non-letter symbol.
  *
- * When building the WLSTree (WordLink Search Tree) all starting words of wordlinks that are the same would get combined into a single node.
+ * When building the WordLinkSearchTree (WordLink Search Tree) all starting words of wordlinks that are the same would get combined into a single node.
  * The children of that node would be all the possible next words that could come after the starting word to make up a wordlinks.
  * When searching we would traverse this tree word by word as long as we get words that match.
  * This will get us the longest match - the longest possible wordlinks from a given list of words.
@@ -15,7 +15,7 @@ package org.sil.storyproducer.model
  * @since 3.1
  * @authors Aaron Cannon, Jake Allinson
  */
-class WLSTree {
+class WordLinkSearchTree {
     private val root: WordNode = WordNode()
 
     /**

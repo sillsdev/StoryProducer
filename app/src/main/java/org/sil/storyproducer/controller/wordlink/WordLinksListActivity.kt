@@ -3,13 +3,13 @@ package org.sil.storyproducer.controller.wordlink
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -19,11 +19,9 @@ import com.google.android.material.navigation.NavigationView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.WorkspaceUpdateActivity
-import org.sil.storyproducer.model.WORDLINKS_CLICKED_TERM
+import org.sil.storyproducer.model.WORD_LINKS_CLICKED_TERM
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.Workspace.termFormToTermMap
 import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 
 class WordLinkListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
@@ -60,23 +58,23 @@ class WordLinkListActivity : AppCompatActivity(), SearchView.OnQueryTextListener
         return true
     }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return when (item.itemId) {
-//            android.R.id.home -> {
-//                mDrawerLayout!!.openDrawer(GravityCompat.START)
-//                true
-//            }
-//            R.id.helpButton -> {
-//                val alert = AlertDialog.Builder(this)
-//                        .setTitle(getString(R.string.help))
-//                        .setMessage("Keyterm List Help")
-//                        .create()
-//                alert.show()
-//                true
-//            }
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                mDrawerLayout!!.openDrawer(GravityCompat.START)
+                true
+            }
+            R.id.helpButton -> {
+                val alert = AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.help))
+                        .setMessage(R.string.wordlink_list_help)
+                        .create()
+                alert.show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
     override fun onQueryTextSubmit(p0: String?): Boolean {
         return false
     }
@@ -128,9 +126,9 @@ class WordLinkListActivity : AppCompatActivity(), SearchView.OnQueryTextListener
                     this.startActivity(intent)
                     this.finish()
                 }
-//                R.id.nav_keyterm_list -> {
-//                    // Current fragment
-//                }
+                R.id.nav_word_link_list -> {
+                    // Current fragment
+                }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
                     this.startActivity(intent)
@@ -167,9 +165,9 @@ class WordLinkListAdapter(private val wordLinkTerms: Array<String>, private val 
         val term = wordLinkTerms[position]
         wordLinkListViewHolder.item.findViewById<TextView>(android.R.id.text1).text = term
         wordLinkListViewHolder.item.setOnClickListener {
-            val intent = Intent(context , WordLinkActivity::class.java)
+            val intent = Intent(context , WordLinksActivity::class.java)
             intent.putExtra(PHASE, Workspace.activePhase.phaseType)
-            intent.putExtra(WORDLINKS_CLICKED_TERM, term)
+            intent.putExtra(WORD_LINKS_CLICKED_TERM, term)
             context.startActivity(intent)
         }
     }
