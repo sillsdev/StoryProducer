@@ -18,7 +18,6 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.Producer
 import org.sil.storyproducer.tools.media.film.FilmProducer
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.stripForFilename
 
@@ -104,8 +103,6 @@ class CreateActivity : PhaseBaseActivity() {
         }
     }
 
-//    private var storyMaker: AutoStoryMaker? = null
-
     private lateinit var producer: Producer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,8 +122,7 @@ class CreateActivity : PhaseBaseActivity() {
         producer = if(Workspace.activeStory.isVideoStory){
             FilmProducer(this, mOutputPath)
         }else{
-            val storyMaker = AutoStoryMaker(this)
-            SlideProducer(storyMaker,this)
+            SlideProducer(this)
         }
     }
     override fun onResume() {
@@ -485,14 +481,14 @@ class CreateActivity : PhaseBaseActivity() {
         savePreferences()
         producer.isActive = false
         if(!Workspace.activeStory.isVideoStory){
-            val storyMaker = AutoStoryMaker(this)
+            val storyMaker = SlideProducer(this)
             storyMaker.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
             storyMaker.mIncludePictures = true
             storyMaker.mIncludeText = mCheckboxText.isChecked
             storyMaker.mIncludeKBFX = mCheckboxKBFX.isChecked
             storyMaker.mIncludeSong = mCheckboxSong.isChecked
             storyMaker.videoRelPath = mOutputPath
-            producer = SlideProducer(storyMaker,this)
+            producer = storyMaker
         }else{
             producer = FilmProducer(this, mOutputPath)
         }
@@ -509,10 +505,6 @@ class CreateActivity : PhaseBaseActivity() {
         mProgressUpdater = Thread(producer.progressUpdater)
         mProgressUpdater!!.start()
         toggleVisibleElements()
-    }
-
-    private fun updateProgress(progress: Int) {
-        runOnUiThread { mProgressBar.progress = progress }
     }
 
     /**

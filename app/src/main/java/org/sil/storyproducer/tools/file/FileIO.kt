@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -20,11 +19,13 @@ import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
 
-
-fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
-//    var iStream: AutoCloseInputStream = null
+/**
+ * Copies the specified file to a destination file in the current workspace.
+ *
+ * Returns true if successful, false otherwise
+ */
+fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String) : Boolean {
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
@@ -38,8 +39,11 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
         }
         iStream.close()
         iStream.close()
+
+        return true
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
+        return false
     }
 }
 
@@ -50,7 +54,6 @@ fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sa
 
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
@@ -247,7 +250,6 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
                 childUri, "r") ?: return null
         return ParcelFileDescriptor.AutoCloseInputStream(pfd)

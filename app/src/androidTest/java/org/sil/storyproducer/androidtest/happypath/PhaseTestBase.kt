@@ -8,7 +8,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers
 import org.junit.*
-import org.sil.storyproducer.androidtest._runfirst.WorkspaceSetter
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.androidtest.utilities.*
@@ -31,6 +30,10 @@ abstract class PhaseTestBase() {
 //        @JvmStatic
         @BeforeClass
         fun revertWorkspaceToCleanState(sharedBase: SharedBase) {
+        if(!Constants.workspaceIsInitialized) {
+            WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
+            Constants.workspaceIsInitialized = true
+        }
 //            WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
             checkSDCardType()
             copyFreshTestStoryToWorkspace(sharedBase)

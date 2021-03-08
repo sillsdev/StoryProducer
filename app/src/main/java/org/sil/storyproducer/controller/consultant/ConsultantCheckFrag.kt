@@ -14,6 +14,7 @@ import android.widget.*
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
+import org.sil.storyproducer.controller.VideoPlayerFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
@@ -49,7 +50,11 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = SlidePlayerFrag()
+        storyPlayer = if(Workspace.activeStory.isVideoStory) {
+            VideoPlayerFrag()
+        } else {
+            SlidePlayerFrag()
+        }
         storyPlayer?.startSlide = slideNum
         storyPlayer?.slideRange = 1
         storyPlayer?.phaseType = Workspace.activePhase.phaseType

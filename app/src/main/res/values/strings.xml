@@ -227,6 +227,7 @@
     <!-- Review Phase -->
     <string name="audio_duration">"Narration Duration"</string>
     <string name="video_duration">"Clip Duration"</string>
+    <string name="no_audio_exists">"No Audio Exists"</string>
 
     <!-- Export Phase -->
     <string name="export_title_header">Text in Filename</string>

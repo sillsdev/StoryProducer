@@ -2,6 +2,8 @@ package org.sil.storyproducer.androidtest.happypath.finalize
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.CoreMatchers.allOf
@@ -66,15 +68,20 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         val videoTitle = generateUniqueVideoTitle()
         Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
         Espresso.closeSoftKeyboard()
+
+        var videoCreationIdling = VideoCreationIdlingResource()
+        IdlingRegistry.getInstance().register(videoCreationIdling)
         // click the create video button
         Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
         // verify that the expected video file exists on disk
         waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
+
+        IdlingRegistry.getInstance().unregister(videoCreationIdling)
     }
 
     private fun generateUniqueVideoTitle(): String {
         val currentDate = Date()
-        return base.getStoryName() + currentDate.time.toString()
+        return base.getStoryName().replace(" ", "_") + currentDate.time.toString()
     }
 
     private fun waitForVideoToExist(videoTitle: String, timeout: Long) {
@@ -99,4 +106,5 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         }
         return false
     }
+
 }

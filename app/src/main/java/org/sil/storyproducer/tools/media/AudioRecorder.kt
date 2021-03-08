@@ -17,7 +17,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 import org.sil.storyproducer.tools.file.getStoryUri
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
@@ -70,7 +70,7 @@ abstract class AudioRecorder(val activity: Activity) {
 
 
             val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-            val audioFormat = AutoStoryMaker.generateAudioFormat()
+            val audioFormat = SlideProducer.generateAudioFormat()
             val pages: MutableList<StoryPage> = mutableListOf()
 
             var duration = MediaHelper.getAudioDuration(context, getStoryUri(orgAudioRelPath)!!)

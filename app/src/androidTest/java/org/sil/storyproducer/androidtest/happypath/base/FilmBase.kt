@@ -4,11 +4,11 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.sil.storyproducer.film.R
 
-open class PhotoBase : SharedBase {
+open class FilmBase : SharedBase {
 
-    private val nameOfTestStory = "Lost Coin"
-    private val nameOfTestStoryDirectory = "002 Lost Coin"
-    private val nameOfSampleExportVideo = "LostCoinSample.mp4"
+    private val nameOfTestStory = "Prophets Story"
+    private val nameOfTestStoryDirectory = "033 Prophets Story (no LWC)"
+    private val nameOfSampleExportVideo = "Prophets_Story.mp4"
 
     override fun getStoryName() : String {
         return nameOfTestStory
@@ -23,15 +23,15 @@ open class PhotoBase : SharedBase {
     }
 
     override fun getSlideNumberId() : Int {
-        return R.id.slide_player_slide_number
+        return R.id.video_player_slide_number
     }
 
     override fun getPlayerSeekbarId(): Int {
-        return R.id.slide_player_seekbar
+        return R.id.video_player_seekbar
     }
 
     override fun getPlaybackButtonId(): Int {
-        return R.id.slide_player_playback_button
+        return R.id.video_player_play_pause_button
     }
 
 }

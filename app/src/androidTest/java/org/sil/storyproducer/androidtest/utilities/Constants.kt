@@ -4,6 +4,10 @@ import android.content.res.Resources
 import androidx.test.InstrumentationRegistry
 
 object Constants {
+
+    // DO NOT CHANGE THIS VALUE
+    var workspaceIsInitialized = false
+
     // The duration for which a clip  gets played should be shorter than the
     // corresponding duration for which a clip gets recorded.
     // Durations are in milliseconds
@@ -19,27 +23,6 @@ object Constants {
     const val durationToWaitWhenSwipingBetweenSlides: Long = 200 //Swipe.FAST = 100 * 2
 
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
-
-
-//    const val nameOfTestStory = "Lost Coin"
-//    const val nameOfTestStoryDirectory = "002 Lost Coin"
-//    const val nameOfSampleExportVideo = "LostCoinSample.mp4"
-//
-//    const val photoStoryName = "Lost Coin"
-//    const val photoStoryDirectoryName = "002 Lost Coin"
-//    const val photoStoryExportVideoName = "LostCoinSample.mp4"
-//
-//    const val bloomStoryName = "Lost Coin"
-//    const val bloomStoryDirectoryName = "002 Lost Coin.bloom"
-//    const val bloomStoryExportVideoName = "LostCoinSample.mp4"
-//
-//    const val filmStoryName = "Prophets Story"
-//    const val filmStoryDirectoryName = "033 Prophets Story (no LWC)"
-//    const val filmStoryExportVideoName = "ProphetsStory.mp4"
-
-    enum class TestingTypes {
-        PHOTO, BLOOM, FILM
-    }
 
     val storageRoots = arrayOf(
             "mnt/sdcard",

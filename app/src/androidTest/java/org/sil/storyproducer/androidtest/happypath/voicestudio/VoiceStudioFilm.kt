@@ -6,13 +6,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.PhotoBase
-import org.sil.storyproducer.androidtest.happypath.base.annotation.PhotoTest
+import org.sil.storyproducer.androidtest.happypath.base.FilmBase
+import org.sil.storyproducer.androidtest.happypath.base.annotation.FilmTest
 
 @LargeTest
-@PhotoTest
+@FilmTest
 @RunWith(AndroidJUnit4::class)
-class VoiceStudioPhoto() : PhotoBase() {
+class VoiceStudioFilm() : FilmBase() {
     private var base: VoiceStudioPhaseBase = VoiceStudioPhaseBase(this)
 
     @Before
@@ -22,8 +22,8 @@ class VoiceStudioPhoto() : PhotoBase() {
     }
 
     @Test
-    fun should_beAbleToSwipeToNextPhase() {
-        base.should_beAbleToSwipeToNextPhase()
+    fun should_beAbleToSwipeToNextPhaseForVideo() {
+        base.should_beAbleToSwipeToNextPhaseForVideo()
     }
 
     @Test

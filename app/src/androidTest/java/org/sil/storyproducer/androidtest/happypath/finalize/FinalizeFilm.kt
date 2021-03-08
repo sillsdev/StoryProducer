@@ -6,13 +6,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.PhotoBase
-import org.sil.storyproducer.androidtest.happypath.base.annotation.PhotoTest
+import org.sil.storyproducer.androidtest.happypath.base.FilmBase
+import org.sil.storyproducer.androidtest.happypath.base.annotation.FilmTest
 
 @LargeTest
-@PhotoTest
+@FilmTest
 @RunWith(AndroidJUnit4::class)
-class FinalizePhoto() : PhotoBase() {
+class FinalizeFilm() : FilmBase() {
     private var base: FinalizePhaseBase = FinalizePhaseBase(this)
 
     @Before
