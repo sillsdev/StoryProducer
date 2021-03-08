@@ -7,10 +7,7 @@ import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.VideoView
+import android.widget.*
 import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.model.Slide
@@ -18,10 +15,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.media.film.calculateStoryTempo
-import org.sil.storyproducer.tools.media.film.copyM4aStreamToMp4File
-import org.sil.storyproducer.tools.media.film.generateWaveformImage
-import org.sil.storyproducer.tools.media.film.getMp4Length
+import org.sil.storyproducer.tools.media.film.*
 import java.io.File
 import kotlin.math.max
 
@@ -132,7 +126,7 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         otherAudio.release()
     }
 
-    fun setup(view: View){
+    fun setup(view: View) {
         currentSlide = Workspace.activeStory.slides[slideNum]
         tempo = calculateStoryTempo(context!!, context!!.filesDir)
 
@@ -149,35 +143,40 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             // The video clip will always have the full width of the canvas
             videoClip.visualWidth = canvasWidth
 
-            try {
-                val aFile = File(context!!.getExternalFilesDir("ReviewPhase"), "audio.mp4")
-                aFile.createNewFile()
-                copyM4aStreamToMp4File(getStoryChildInputStream(context!!, slide.getFinalFile()), aFile)
-                // Make sure to scale based on the tempo
-                narrationClip.duration = (getMp4Length(aFile) / tempo).toInt()
-
-                val wfFile = File(context!!.getExternalFilesDir("ReviewPhase"), "wf.png")
-                wfFile.createNewFile()
-                generateWaveformImage(aFile, wfFile)
-                waveform = BitmapFactory.decodeFile(wfFile.absolutePath)
-                aFile.delete()
-            } catch (e : Exception) {
-                // Couldn't get the narration duration (likely it doesn't exist)
-                // Set the clip as non-existent
-                narrationClip.exists = false
-            }
-            narrationClip.startPosition = currentSlide.audioPosition
-
             narrationClip.visualWidth = scaleToVisualSpace(narrationClip.duration)
             narrationClip.visualStartPosition = scaleToVisualSpace(currentSlide.audioPosition)
 
             maxDuration = max(narrationClip.duration, videoClip.duration)
 
             isTrackViewInitialized = true
-            if(narrationClip.exists) {
-                updateTrackPositions()
-            }
+
+            updateTrackPositions()
         }
+        try {
+            val aFile = File(context!!.getExternalFilesDir("ReviewPhase"), "audio.mp4")
+            aFile.createNewFile()
+            copyM4aStreamToMp4File(getStoryChildInputStream(context!!, slide.getFinalFile()), aFile)
+            // Make sure to scale based on the tempo
+            narrationClip.duration = (getMp4Length(aFile) / tempo).toInt()
+
+            if(narrationClip.duration == 0) {
+                narrationClip.exists = false
+            }
+
+            val wfFile = File(context!!.getExternalFilesDir("ReviewPhase"), "wf.png")
+            wfFile.createNewFile()
+            // If narrationClip doesn't exist, then wfFile will be empty and will show nothing
+            if(narrationClip.exists) {
+                generateWaveformImage(aFile, wfFile)
+            }
+            waveform = BitmapFactory.decodeFile(wfFile.absolutePath)
+            aFile.delete()
+        } catch (e : Exception) {
+            // Couldn't get the narration duration (likely it doesn't exist)
+            // Set the clip as non-existent
+            narrationClip.exists = false
+        }
+        narrationClip.startPosition = currentSlide.audioPosition
 
         videoView = view.findViewById(R.id.film_studio_video_view)
         videoView.setVideoURI(getStoryUri(Workspace.activeStory.fullVideo))
@@ -217,6 +216,18 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             } else {
                 play()
             }
+        }
+
+        // If there is no audio, then disable all the elements.
+        if(!narrationClip.exists) {
+            // Disable Buttons
+            playPauseButton.isEnabled = false
+            rightNarrationMove.isEnabled = false
+            leftNarrationMove.isEnabled = false
+
+            playPauseButton.alpha = 0.4f
+            rightNarrationMove.alpha = 0.4f
+            leftNarrationMove.alpha = 0.4f
         }
     }
 
@@ -293,16 +304,14 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             var scaleMetrics = resources.displayMetrics.density
             paint.textSize = 16 * scaleMetrics
 
-            paint.color = if (narrationClip.exists) {
-                Color.LTGRAY
-            } else {
-                Color.BLACK
-            }
+            paint.color = Color.LTGRAY
             val imageLocation = RectF(narrationClip.visualStartPosition.toFloat(), 0.0f,
                     narrationClip.visualWidth.toFloat() + narrationClip.visualStartPosition,
                     canvasHeight / 2.0f - 10)
 
-            canvas.drawBitmap(waveform, null, imageLocation, paint)
+            if(::waveform.isInitialized) {
+                canvas.drawBitmap(waveform, null, imageLocation, paint)
+            }
             paint.color = Color.WHITE
 
             paint.color = if (videoClip.exists) {
@@ -313,13 +322,20 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             var clipDurationBoxTop = canvasHeight / 2 + 10
             canvas.drawRect(Rect(0, clipDurationBoxTop, canvasWidth, canvasHeight), paint)
             paint.color = Color.WHITE
-            var clipDurationTextSize = paint.measureText(getString(R.string.video_duration))
-            canvas.drawText(getString(R.string.video_duration), canvasWidth / 2.0f - clipDurationTextSize / 2, (clipDurationBoxTop / 2.0f) + clipDurationBoxTop, paint)
 
-            paint.color = Color.RED
-            val tickPosition = scaleToVisualSpace(currentPlaybackPosition)
-            val tickWidth = 5
-            canvas.drawRect(Rect(tickPosition, 0, tickPosition + tickWidth, canvasHeight), paint)
+            if(narrationClip.exists) {
+                var clipDurationTextSize = paint.measureText(getString(R.string.video_duration))
+                canvas.drawText(getString(R.string.video_duration), canvasWidth / 2.0f - clipDurationTextSize / 2, (clipDurationBoxTop / 2.0f) + clipDurationBoxTop, paint)
+
+                // Draw Playback Line
+                paint.color = Color.RED
+                val tickPosition = scaleToVisualSpace(currentPlaybackPosition)
+                val tickWidth = 5
+                canvas.drawRect(Rect(tickPosition, 0, tickPosition + tickWidth, canvasHeight), paint)
+            } else {
+                var clipDurationTextSize = paint.measureText(getString(R.string.no_audio_exists))
+                canvas.drawText(getString(R.string.no_audio_exists), canvasWidth / 2.0f - clipDurationTextSize / 2, (clipDurationBoxTop / 2.0f) + clipDurationBoxTop, paint)
+            }
 
             trackImageView.setImageBitmap(content)
         }

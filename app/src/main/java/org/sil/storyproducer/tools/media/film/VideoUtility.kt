@@ -6,22 +6,19 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import com.arthenica.mobileffmpeg.Config
-import com.arthenica.mobileffmpeg.FFmpeg
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
-import org.sil.storyproducer.tools.media.sound.FFmpegReturn
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.util.*
 
-private val VIDEO_MP4_WIDTH = 1280
-private val VIDEO_MP4_HEIGHT = 720
+private const val VIDEO_MP4_WIDTH = 1280
+private const val VIDEO_MP4_HEIGHT = 720
 
-private val MAX_VIDEO_TEMPO = 1.3
+private const val MAX_VIDEO_TEMPO = 1.3
 
 /**
  * @author DSHADE
@@ -60,11 +57,10 @@ fun getMp4Length(file: File): Int {
         return 0
     }
 
-    var mmr = MediaMetadataRetriever()
-    var fis = FileInputStream(file)
+    val mmr = MediaMetadataRetriever()
+    val fis = FileInputStream(file)
     mmr.setDataSource(fis.fd)
-    var duration = Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
-    return duration
+    return Integer.parseInt(mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
 }
 
 /**
@@ -100,16 +96,12 @@ fun copyM4aStreamToMp4File(m4a: InputStream?, mp4: File): Boolean{
  * @param outputFile the destination; a file designating the destination of the program
  */
 fun getFileFromInputStream(inputStream: InputStream, outputFile: File){
-    if(inputStream == null){
-        errorMessage("There was a problem with the Input Stream")
-        return
-    }
-    val ostream = FileOutputStream(outputFile)
+    val outStream = FileOutputStream(outputFile)
     val data = ByteArray(inputStream.available())
     inputStream.read(data)
-    ostream.write(data)
+    outStream.write(data)
     inputStream.close()
-    ostream.close()
+    outStream.close()
 }
 
 /**
@@ -131,7 +123,7 @@ fun calculateStoryTempo(context: Context, parentDir: File, deleteFiles: Boolean 
             copyM4aStreamToMp4File(getStoryChildInputStream(context, slide.getFinalFile()), audioFile)
 
             val videoDuration = slide.endTime - slide.startTime
-            var narrationDuration = getMp4Length(audioFile)
+            val narrationDuration = getMp4Length(audioFile)
 
             var newTempo = 1.0
             if (narrationDuration > videoDuration) {
@@ -161,10 +153,18 @@ fun calculateStoryTempo(context: Context, parentDir: File, deleteFiles: Boolean 
  * @param directory where any temp files should be placed
  */
 fun prepareAudio(audioFile: File, length: Int, placeAt: Int, storyTempo: Double, directory: File?){
-    val audioLength = getMp4Length(audioFile) / storyTempo
+    var audioLength = getMp4Length(audioFile) / storyTempo
 
     val audioTemp = File(directory, "audio-tmp.mp4")
     audioTemp.createNewFile()
+
+    // If length is 0, then the audioFile contains an invalid mp4.
+    // This can happen if the user doesn't add audio for a section.
+    if(audioLength == 0.0) {
+        generateSilence(length, audioFile)
+        audioLength = getMp4Length(audioFile).toDouble()
+    }
+
     changeTempo(audioFile, storyTempo, audioTemp)
 
     audioTemp.copyTo(audioFile, true)
@@ -218,7 +218,8 @@ fun generateVideoFiles(context: Context, fullVideo: File, storyTempo: Double): L
         if(slide.slideType == SlideType.NUMBEREDPAGE || slide.slideType == SlideType.FRONTCOVER) {
             val audioFile = File(context.filesDir, "tmp-audio.mp4")
             audioFile.createNewFile()
-            copyM4aStreamToMp4File(getStoryChildInputStream(context, slide.chosenDramatizationFile.substringAfter("|")), audioFile)
+            copyM4aStreamToMp4File(getStoryChildInputStream(context,
+                    slide.chosenDramatizationFile.substringAfter("|")), audioFile)
             val narrationDuration = getMp4Length(audioFile)
             val videoDuration = slide.endTime - slide.startTime
             val adjustedNarrationDuration = narrationDuration / storyTempo
@@ -274,8 +275,8 @@ fun generateSilence(duration: Int, output: File): FFmpegReturn {
      *   -t { seconds }     Tells ffmpeg to only go for the specified number of seconds
      *   -vn                Tells ffmpeg to use not use a video stream in the output file
      */
-    val command = "-y -f lavfi -i aevalsrc=0 -t ${seconds} -vn ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    val command = "-y -f lavfi -i aevalsrc=0 -t $seconds -vn ${output.absolutePath}"
+    return FFmpegReturn(command)
 }
 
 /**
@@ -298,7 +299,7 @@ fun generateWaveformImage(input: File, output: File): FFmpegReturn {
      *          colors=#ffffff - sets the color of the waveform to white
      */
     val command = "-y -i ${input.absolutePath} -filter_complex:a \"showwavespic=s=640x120:colors=#ffffff\" ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -322,7 +323,7 @@ fun createVideoStillShotFromImage(input: File, milliseconds: Int, output: File):
      *   { outputPath }     The path for the resultant video
      */
     val command = "-y -loop 1 -i ${input.absolutePath} -t $seconds -an ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -342,7 +343,7 @@ fun extractFrameAt(input: File, millisecond: Int, output: File) : FFmpegReturn {
      */
     val second = millisecond / 1000.0
     val command = "-ss $second -i ${input.absolutePath} -frames:v 1 ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -367,7 +368,7 @@ fun changeTempo(input: File, tempo: Double, output: File): FFmpegReturn {
      */
     val tempoString = String.format("%.9f", tempo)
     val command = "-y -i ${input.absoluteFile} -ac 1 -filter:a atempo=$tempoString -vn ${output.absoluteFile}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -388,7 +389,7 @@ fun trimDurationToMillis(input: File, millis: Int, output: File): FFmpegReturn {
      */
     val seconds = millis / 1000.0
     val command = "-i ${input.absolutePath} -t $seconds -c copy ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -409,7 +410,7 @@ fun moveStartToMillis(input: File, millis: Int, output: File): FFmpegReturn {
      */
     val seconds = millis / 1000.0
     val command = "-i ${input.absolutePath} -ss $seconds -c copy ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -430,7 +431,7 @@ fun removeAudioStream(input: File, output: File): FFmpegReturn {
      *   { outputPath }     Specifies the output path
      */
     val command = "-i ${input.absolutePath} -vcodec copy -an ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -489,7 +490,7 @@ fun concatenateVideoFiles(files: List<File>, output: File): FFmpegReturn {
 
     val command = "$inputValues $filter -map \"[out]\" -r 30 -q:v 1 ${output.absolutePath}"
 
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -513,7 +514,7 @@ fun concatenateAudioFiles(files: List<File>, output: File): FFmpegReturn {
 
     val command = "$inputValues $filter -map \"[out]\" ${output.absolutePath}"
 
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -533,7 +534,7 @@ fun addAudioToVideo(videoFile: File, audioFile: File, output: File) : FFmpegRetu
      *   { outputPath }     Specifies the output path
      */
     val command = "-i ${videoFile.absolutePath} -i ${audioFile.absolutePath} -c copy -map 0:v:0 -map 1:a:0 ${output.absolutePath}"
-    return FFmpegReturn(FFmpeg.execute(command), Config.getLastCommandOutput())
+    return FFmpegReturn(command)
 }
 
 /**
@@ -557,7 +558,7 @@ fun createVideo(audioFiles: List<File>, videoFiles: List<File>, directory: File?
         concatenatedAudio.createNewFile()
         val audioReturn = concatenateAudioFiles(audioFiles, concatenatedAudio)
 
-        addAudioToVideo(concatenatedVideo, concatenatedAudio, output)
+        val audioVideoReturn = addAudioToVideo(concatenatedVideo, concatenatedAudio, output)
 
         concatenatedVideo.delete()
         concatenatedAudio.delete()
@@ -579,7 +580,7 @@ fun createVideo(audioFiles: List<File>, videoFiles: List<File>, directory: File?
 fun createCredits(creditString: String, output: File){
     val lines = LinkedList<String>()
     var copy = creditString;
-    while(copy.length>0){
+    while(copy.isNotEmpty()){
         if(copy.contains('\n')){
             var short = copy.substring(0,copy.indexOf('\n'))
             val tempLength = short.length

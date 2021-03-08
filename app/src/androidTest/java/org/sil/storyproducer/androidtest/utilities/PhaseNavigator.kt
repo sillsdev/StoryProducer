@@ -2,6 +2,8 @@ package org.sil.storyproducer.androidtest.utilities
 
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.NoMatchingViewException
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -18,11 +20,9 @@ object PhaseNavigator {
     }
 
     fun navigateFromRegistrationScreenToPhase(phaseName: String, sharedBase: SharedBase) {
-        skipRegistration()
-
-        // Wait for the dialog to close
-//        onView(withText(R.string.scanning_sp_templates)).check(doesNotExist());
-        Thread.sleep(500)
+        if(isRegistrationDisplayed()) {
+            skipRegistration()
+        }
 
         clickOnStory(sharedBase.getStoryName())
         selectPhase(phaseName)
@@ -35,11 +35,27 @@ object PhaseNavigator {
     }
 
     fun skipRegistration() {
-        Espresso.onView(ViewMatchers.withText("Skip Registration")).perform(ViewActions.click())
+        Espresso.onView(ViewMatchers.withText(R.string.bypass_button_text)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(android.R.id.button1)).perform(ViewActions.scrollTo(), ViewActions.click())
     }
 
     private fun clickOnStory(storyName: String) {
         Espresso.onView(ViewMatchers.withText(CoreMatchers.containsString(storyName))).perform(ViewActions.scrollTo(), ViewActions.click())
+    }
+
+    private fun isRegistrationDisplayed() : Boolean {
+        return onView(withText(R.string.bypass_button_text)).isDisplayed()
+    }
+
+    fun ViewInteraction.isDisplayed(): Boolean {
+        return try {
+            check(matches(ViewMatchers.isDisplayed()))
+            true
+        } catch (e: NoMatchingViewException) {
+            false
+        }
+    }
+    fun ViewInteraction.isNotDisplayed() : Boolean {
+        return !this.isDisplayed()
     }
 }

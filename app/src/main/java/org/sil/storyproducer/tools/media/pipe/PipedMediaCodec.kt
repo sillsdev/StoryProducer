@@ -20,13 +20,13 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
 
     protected abstract val componentName: String
 
-    internal var mThread: Thread? = null
+    private var mThread: Thread? = null
 
     @Volatile
     protected var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
 
     protected var mCodec: MediaCodec? = null
-    protected var outputBufferId: Int = 0
+    private var outputBufferId: Int = 0
     private var mOutputFormat: MediaFormat? = null
 
     private val mBuffersBeforeFormat = LinkedList<MediaBuffer>()
@@ -210,6 +210,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
         //Shutdown MediaCodec
         if (mCodec != null) {
             try {
+                mCodec!!.flush()
                 mCodec!!.stop()
             } catch (e: IllegalStateException) {
                 Log.w(TAG, "$componentName: Failed to stop MediaCodec!", e)

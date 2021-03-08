@@ -6,13 +6,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.PhotoBase
-import org.sil.storyproducer.androidtest.happypath.base.annotation.PhotoTest
+import org.sil.storyproducer.androidtest.happypath.base.ImageBase
+import org.sil.storyproducer.androidtest.happypath.base.annotation.ImageTest
 
 @LargeTest
-@PhotoTest
+@ImageTest
 @RunWith(AndroidJUnit4::class)
-class TranslatePhoto : PhotoBase() {
+class TranslateImage : ImageBase() {
     private var base: TranslatePhaseBase = TranslatePhaseBase(this)
 
     @Before
