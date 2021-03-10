@@ -28,7 +28,12 @@ class Registration{
         }
     }
     fun save(context: Context){
-        val oStream = getChildOutputStream(context,REGISTRATION_FILENAME,"")
+        // 03/08/2021 - DKH  Fix file corruption in registration.json file (see issue 549)
+        // Since we are not saving anything in the current registration file, truncate the file
+        // to eliminate all data.  Previously, the file was open with default mode of "w" which
+        // preserved all the data in the file. If the new file is smaller in size,
+        // there are garbage characters left.
+        val oStream = getChildOutputStream(context,REGISTRATION_FILENAME,"","wt")
         if(oStream != null) {
             try {
                 oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
