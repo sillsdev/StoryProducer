@@ -52,6 +52,27 @@ fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sa
     return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
 }
 
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    try{
+        if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    }catch(e: Exception){
+        return genDefaultImage() //something is wrong, just give the default image.
+    }
+    val options = BitmapFactory.Options()
+    options.inSampleSize = sampleSize
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
+}
+
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
+}
+
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
     try {
         val ipfd = context.contentResolver.openFileDescriptor(
