@@ -5,11 +5,11 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -82,29 +82,14 @@ fun getDownsample(context: Context, relPath: String,
     return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
 }
 
-fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
-    try{
-        if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
-    }catch(e: Exception){
-        return genDefaultImage() //something is wrong, just give the default image.
-    }
-    val options = BitmapFactory.Options()
-    options.inSampleSize = sampleSize
-    if(useAllPixels) options.inTargetDensity=1
-    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
-    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
-    return bmp
-}
-
-fun genDefaultImage(): Bitmap {
-    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
-    pic!!.eraseColor(Color.DKGRAY)
-    return pic
-}
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
     if (dirRoot == "") return null
-    return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
+    // DKH-Updated 03/04/2021 to fix Issue #549: Lost data during story creation for Android 10 & 11
+    // Specify "truncate file" on open which will start with zero data in the file.
+    // Previously, data was not truncated which would leave garbage characters at the EOF when
+    // writing a smaller file.  Garbage data caused story.json file corruption.
+    // FIX - Added the ability to pass mode to getChildOutputStream.  Pass mode of write/truncate ("wt")
+    return getChildOutputStream(context, "$dirRoot/$relPath", mimeType,"wt")
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
@@ -153,8 +138,15 @@ fun getText(context: Context, relPath: String) : String? {
     return null
 }
 
-fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-    val pfd = getPFD(context, relPath, mimeType,"w")
+// DKH-Updated 03/04/2021 to fix Issue #549: Lost data during story creation for Android 10 & 11
+// Expose mode to calling interfaces.  This allows caller to truncate the target (relPath) on an open
+// Before change, mode was hardwired to "w".  On a "w" open, all the data from the previous writes to
+// the file is still present. If the new file is smaller in size, there are garbage characters left
+// from the previous file open/write/close operations.
+// Other calling interfaces will see no change since the default to mode is "w" (as before).
+// To get file truncation, use "wt" as the mode argument.
+fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "", mode: String = "w") : OutputStream? {
+    val pfd = getPFD(context, relPath, mimeType, mode)
     var oStream: OutputStream? = null
     try {
         oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
@@ -250,6 +242,7 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
+        //TODO Why is DocumentsContract.isDocument not working right?
         val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
                 childUri, "r") ?: return null
         return ParcelFileDescriptor.AutoCloseInputStream(pfd)
