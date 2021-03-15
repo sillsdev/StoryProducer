@@ -3,6 +3,8 @@ package org.sil.storyproducer.tools.media.film
 import android.util.Log
 import com.arthenica.mobileffmpeg.Config.*
 import com.arthenica.mobileffmpeg.FFmpeg
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class FFmpegReturn(commandStr : String) {
 
@@ -20,8 +22,12 @@ class FFmpegReturn(commandStr : String) {
         if (returnCode == RETURN_CODE_SUCCESS) {
             Log.i(TAG, "Command execution completed successfully.")
         } else {
-            Log.e(TAG, String.format("Command execution failed returnCode: %d command: %s\n\nLast Output:\n%s", returnCode, commandStr, lastCommandOutput))
+            var logErr = String.format("Command execution failed returnCode: %d command: %s\n\nLast Output:\n%s", returnCode, commandStr, lastCommandOutput)
+            Log.e(TAG, logErr)
+            FirebaseCrashlytics.getInstance().recordException(FFmpegException(logErr))
         }
     }
 
 }
+
+class FFmpegException(message: String) : Exception(message)
