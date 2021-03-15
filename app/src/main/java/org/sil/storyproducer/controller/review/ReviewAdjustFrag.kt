@@ -1,5 +1,7 @@
 package org.sil.storyproducer.controller.review
 
+import RepeatListener
+import android.annotation.SuppressLint
 import android.graphics.*
 import android.os.Bundle
 import android.os.Handler
@@ -8,14 +10,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import org.sil.storyproducer.film.R
 import org.sil.storyproducer.controller.MultiRecordFrag
+import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.media.film.*
+import org.sil.storyproducer.tools.media.film.calculateStoryTempo
+import org.sil.storyproducer.tools.media.film.copyM4aStreamToMp4File
+import org.sil.storyproducer.tools.media.film.generateWaveformImage
+import org.sil.storyproducer.tools.media.film.getMp4Length
 import java.io.File
 import kotlin.math.max
 
@@ -126,6 +131,7 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         otherAudio.release()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     fun setup(view: View) {
         currentSlide = Workspace.activeStory.slides[slideNum]
         tempo = calculateStoryTempo(context!!, context!!.filesDir)
@@ -189,17 +195,17 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         otherAudio.setTempo(tempo)
 
         leftNarrationMove = view.findViewById<ImageButton>(R.id.film_studio_narration_move_left)
-        leftNarrationMove.setOnClickListener {
+        leftNarrationMove.setOnTouchListener(RepeatListener(400, 100, View.OnClickListener {
             if(!playing && narrationClip.startPosition - STEP_AMOUNT >= 0) {
                 narrationClip.startPosition -= STEP_AMOUNT
                 currentSlide.audioPosition = narrationClip.startPosition
                 narrationClip.visualStartPosition = scaleToVisualSpace(narrationClip.startPosition)
                 updateTrackPositions()
             }
-        }
+        }))
 
         rightNarrationMove = view.findViewById<ImageButton>(R.id.film_studio_narration_move_right)
-        rightNarrationMove.setOnClickListener {
+        rightNarrationMove.setOnTouchListener(RepeatListener(400, 100, View.OnClickListener {
             val maxDuration = max(narrationClip.duration, videoClip.duration)
             if(!playing && narrationClip.startPosition + narrationClip.duration + STEP_AMOUNT <= maxDuration) {
                 narrationClip.startPosition += STEP_AMOUNT
@@ -207,7 +213,7 @@ class ReviewAdjustFrag : MultiRecordFrag() {
                 narrationClip.visualStartPosition = scaleToVisualSpace(narrationClip.startPosition)
                 updateTrackPositions()
             }
-        }
+        }))
 
         playPauseButton = view.findViewById(R.id.video_player_play_pause_button)
         playPauseButton.setOnClickListener {

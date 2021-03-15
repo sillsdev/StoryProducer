@@ -3,6 +3,7 @@ package org.sil.storyproducer.androidtest.happypath.reviewadjust
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import org.hamcrest.CoreMatchers
@@ -51,6 +52,9 @@ class ReviewAdjustPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(shared
             rightArrow.perform(click())
             leftArrow.perform(click())
         }
+
+        rightArrow.perform(longClick())
+        leftArrow.perform(longClick())
 
         // Test Playing Audio Again
         pressPlayPauseButton()
