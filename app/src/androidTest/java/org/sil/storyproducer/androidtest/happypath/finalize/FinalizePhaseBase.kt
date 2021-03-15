@@ -71,12 +71,15 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
 
         var videoCreationIdling = VideoCreationIdlingResource()
         IdlingRegistry.getInstance().register(videoCreationIdling)
-        // click the create video button
-        Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
-        // verify that the expected video file exists on disk
-        waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
 
-        IdlingRegistry.getInstance().unregister(videoCreationIdling)
+        try {
+            // click the create video button
+            Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
+            // verify that the expected video file exists on disk
+            waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
+        } finally {
+            IdlingRegistry.getInstance().unregister(videoCreationIdling)
+        }
     }
 
     private fun generateUniqueVideoTitle(): String {

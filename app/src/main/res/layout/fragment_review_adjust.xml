@@ -71,7 +71,7 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <ImageButton
-        android:id="@+id/film_studio_play_pause_button"
+        android:id="@+id/video_player_play_pause_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00000000"

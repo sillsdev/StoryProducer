@@ -30,11 +30,10 @@ abstract class PhaseTestBase() {
 //        @JvmStatic
         @BeforeClass
         fun revertWorkspaceToCleanState(sharedBase: SharedBase) {
-        if(!Constants.workspaceIsInitialized) {
-            WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
-            Constants.workspaceIsInitialized = true
-        }
-//            WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
+            if(!Constants.workspaceIsInitialized) {
+                WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
+                Constants.workspaceIsInitialized = true
+            }
             checkSDCardType()
             copyFreshTestStoryToWorkspace(sharedBase)
             deleteExportedVideos()

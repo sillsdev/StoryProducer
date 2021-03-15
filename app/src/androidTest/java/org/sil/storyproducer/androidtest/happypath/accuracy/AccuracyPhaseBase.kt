@@ -19,7 +19,7 @@ class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase
     }
 
     fun shouldBeAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
     fun shouldBeAbleToPlayRecordedAudioForSpecificSlide() {

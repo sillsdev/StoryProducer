@@ -209,7 +209,7 @@ class ReviewAdjustFrag : MultiRecordFrag() {
             }
         }
 
-        playPauseButton = view.findViewById(R.id.film_studio_play_pause_button)
+        playPauseButton = view.findViewById(R.id.video_player_play_pause_button)
         playPauseButton.setOnClickListener {
             if(playing) {
                 stop()

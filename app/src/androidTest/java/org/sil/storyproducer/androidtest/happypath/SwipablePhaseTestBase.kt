@@ -14,9 +14,9 @@ import org.sil.storyproducer.androidtest.utilities.Constants
 
 abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
 
-    val base = sharedBase
+    protected val base = sharedBase
 
-    protected fun testSwipingBetweenSlides() {
+    protected fun test_swipingBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
         var nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
@@ -26,7 +26,7 @@ abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
         expectToBeOnSlide(originalSlideNumber)
     }
 
-    protected fun testSwipingToNextPhase(nameOfNextPhase: String) {
+    protected fun test_swipingToNextPhase(nameOfNextPhase: String) {
         swipeUpOnSlide()
         expectToBeOnPhase(nameOfNextPhase)
     }

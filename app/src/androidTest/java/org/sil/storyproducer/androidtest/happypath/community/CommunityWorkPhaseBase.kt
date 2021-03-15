@@ -29,7 +29,7 @@ class CommunityWorkPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(share
     }
 
     fun should_BeAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
     fun should_BeAbleToPlayTranslationOfASlide() {
@@ -57,7 +57,7 @@ class CommunityWorkPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(share
     }
 
     fun should_beAbleToSwipeToNextPhase() {
-        testSwipingToNextPhase(Constants.Phase.accuracyCheck)
+        test_swipingToNextPhase(Constants.Phase.accuracyCheck)
     }
 
     private fun getCurrentNumberOfRecordings() =

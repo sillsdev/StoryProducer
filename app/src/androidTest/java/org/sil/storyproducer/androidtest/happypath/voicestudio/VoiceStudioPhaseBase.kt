@@ -26,11 +26,11 @@ class VoiceStudioPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedB
     }
 
     fun should_beAbleToSwipeToNextPhase() {
-        testSwipingToNextPhase(Constants.Phase.finalize)
+        test_swipingToNextPhase(Constants.Phase.finalize)
     }
 
     fun should_beAbleToSwipeToNextPhaseForVideo() {
-        testSwipingToNextPhase(Constants.Phase.reviewAdjust)
+        test_swipingToNextPhase(Constants.Phase.reviewAdjust)
     }
 
     fun should_beAbleToPlaySlideAudio() {
@@ -52,7 +52,7 @@ class VoiceStudioPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedB
     }
 
     fun should_beAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
     fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
