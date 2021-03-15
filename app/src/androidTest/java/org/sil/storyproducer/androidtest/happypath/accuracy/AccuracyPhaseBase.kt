@@ -40,7 +40,7 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
 
     @Test
     fun shouldBeAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
     @Test

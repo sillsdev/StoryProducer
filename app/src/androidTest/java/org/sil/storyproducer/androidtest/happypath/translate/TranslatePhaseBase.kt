@@ -26,11 +26,11 @@ class TranslatePhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBas
     }
 
     fun should_BeAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
     fun should_beAbleToSwipeToNextPhase() {
-        testSwipingToNextPhase(Constants.Phase.communityWork)
+        test_swipingToNextPhase(Constants.Phase.communityWork)
     }
 
     fun should_BeAbleToPlayNarrationOfASlide() {
@@ -41,6 +41,7 @@ class TranslatePhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBas
         val endingProgress = getCurrentSlideAudioProgress()
         Assert.assertTrue("Expected playback progress to increase with time.", endingProgress > originalProgress)
     }
+
 
     fun should_BeAbleToRecordTranslationForASlide() {
         // The "pulsing" animation on the recording toolbar causes the

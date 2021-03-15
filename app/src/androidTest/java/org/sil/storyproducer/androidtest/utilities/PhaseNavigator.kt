@@ -12,6 +12,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import org.hamcrest.CoreMatchers
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.film.R
+import java.lang.RuntimeException
 
 object PhaseNavigator {
     fun selectPhase(phaseTitle: String) {
@@ -51,7 +52,7 @@ object PhaseNavigator {
         return try {
             check(matches(ViewMatchers.isDisplayed()))
             true
-        } catch (e: NoMatchingViewException) {
+        } catch (e: RuntimeException) {
             false
         }
     }

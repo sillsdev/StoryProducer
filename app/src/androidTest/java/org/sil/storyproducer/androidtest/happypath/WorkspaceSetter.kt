@@ -50,7 +50,6 @@ private const val REGISTRATION_SCREEN_CONTAINER = "org.sil.storyproducer:id/regi
  * Depending on your device/emulator, you may need to modify the INTERNAL_STORAGE_BUTTON_TEXT
  * string.
  */
-@RunWith(AndroidJUnit4::class)
 class WorkspaceSetter {
 
     @Rule
