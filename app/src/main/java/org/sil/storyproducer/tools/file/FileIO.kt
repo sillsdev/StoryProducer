@@ -65,12 +65,40 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
 fun getDownsample(context: Context, relPath: String,
                          dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
                          story: Story = Workspace.activeStory): Int{
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
-    if(iStream.available() == 0) return 1
-    val options = BitmapFactory.Options()
-    options.inJustDecodeBounds = true
-    BitmapFactory.decodeStream(iStream, null, options)
-    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
+
+    // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Producer crashes in Finalize
+    //                         phase and no video is produced
+    // This routine is called for every slide in a story during FINALIZE.  "relPath" is the name of
+    // the image file for the slide (e.g., "1.jpg") but some slides images are optional such as the title
+    // slide and the song slide.  "relPath" for a slide without an image is passed as "" (empty string).
+    // Which  means open the root directory in getStoryChildInputStream
+    // Before the fix, iStream.available was called on an empty string file.  Previous to Android 11,
+    // iStream.available() return a zero when called on an empty string file.
+    // For Android 11, iStream.available() on an empty string file throws an exception which
+    // was not caught by this routine.
+    // For issue 548, check for an empty string and return
+    // a default value of 1 if there is an empty string.  According to the documentation,
+    // iStream.available() can throw an exception, so a try/catch was added.
+    // restructure routine for better flow
+    var ds:Int = 1
+    if(relPath != "") { // return ds default value
+        val iStream = getStoryChildInputStream(context, relPath, story.title)
+        if(iStream != null) { // could not assign an iStream to the file, return ds default value
+            try {
+                if (iStream.available() != 0) {  // if a throw or file is empty, return default value
+                    // got data in the file, so process it
+                    val options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    BitmapFactory.decodeStream(iStream, null, options)
+                    ds = max(1, min(options.outHeight / dstHeight, options.outWidth / dstWidth))
+                }
+            } catch (e: Exception) {
+                // iStream.available can throw, so catch it here
+                // return ds default value
+            }
+        }
+    }
+    return ds
 }
 
 
