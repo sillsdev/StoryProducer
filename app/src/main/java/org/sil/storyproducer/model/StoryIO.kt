@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
@@ -9,6 +10,8 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
+
+class StoryIOException(message: String) : Exception(message)
 
 fun Story.toJson(context: Context){
     val moshi = Moshi
@@ -27,7 +30,8 @@ fun Story.toJson(context: Context){
     }
 }
 
-fun storyFromJson(context: Context, storyTitle: String): Story?{
+@Throws(StoryIOException::class)
+fun storyFromJson(context: Context, storyTitle: String): Story? {
     try {
         val moshi = Moshi
                 .Builder()
@@ -39,41 +43,54 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
                 ?: return null
         return adapter.fromJson(fileContents)
     } catch (e: Exception) {
-        return null
+        throw StoryIOException("StoryIO: storyFromJson() parse exception from moshi")
     }
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
+/**
+ * Attempt to parse a story from directory. A null Story is returned in the case of a parse error or non-template directory
+ *
+ * @return Story
+ */
+fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
+    if(!storyPath.isDirectory || storyPath.name == WORD_LINKS_DIR) return null
+
     var story: Story?
-    //Check if path is path
-    if(!storyPath.isDirectory) return null
-    //make a project directory if there is none.
     if (storyRelPathExists(context,PROJECT_DIR,storyPath.name!!)) {
-        //parse the project file, if there is one.
-        story = storyFromJson(context, storyPath.name!!)
-        //if there is a story from the file, do not try to read any templates, just return.
-        if(story != null) return story
-    }
-    try {
-        story = parsePhotoStoryXML(context, storyPath)
-    } catch (e : Exception){
-        FirebaseCrashlytics.getInstance().recordException(e)
-        story = null
-    }
-    if(story == null){
+        // project directory exists, so working on a JSON template
         try {
-            story = parseBloomHTML(context, storyPath)
+            story = storyFromJson(context, storyPath.name!!)
+            return story
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return null
+        }
+    } else {
+        // no project directory exists, so working on an XML or BLOOM template
+        // will need to save to JSON
+        try {
+            // TODO: should not return null, throw exception
+            story = parsePhotoStoryXML(context, storyPath)
         } catch (e : Exception){
             FirebaseCrashlytics.getInstance().recordException(e)
-            story = null
+            return null
         }
+        if(story == null) {
+            try {
+                // TODO: should not return null, throw exception
+                story = parseBloomHTML(context, storyPath)
+            } catch (e : Exception){
+                FirebaseCrashlytics.getInstance().recordException(e)
+                return null
+            }
+        }
+        // write this story to JSON
+        if (story != null) {
+            story.toJson(context)
+            return story
+        }
+        return null
     }
-    //write the story (if it is not null) to json.
-    if(story != null) {
-        story.toJson(context)
-        return story
-    }
-    return null
 }
 
 fun migrateStory(context: Context, story: Story): Story? {

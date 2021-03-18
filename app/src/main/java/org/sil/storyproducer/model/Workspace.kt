@@ -21,6 +21,8 @@ import java.util.*
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
 
+internal const val WORD_LINKS_DIR = "wordlinks"
+
 object Workspace{
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
