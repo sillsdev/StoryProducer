@@ -45,6 +45,8 @@ open class BaseController(
         view.updateReadingTemplatesDialog(current, total, file.name.orEmpty())
         subscriptions.add(
                 Single.fromCallable {
+                    // if it (story) is null, template folder is ignored
+                    // this could be caused by a parse error in StoryIO or a non-project directory
                     Workspace.buildStory(context, file)?.also {
                         Workspace.Stories.add(it)
                     }
