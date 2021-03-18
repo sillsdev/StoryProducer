@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: a consise Title
+title: a concise Title
 labels: ''
 assignees: ''
 
@@ -25,8 +25,7 @@ As expected: __
 Expected: __
 **Unexpectedly**, __
 
-__
-
+---
 *The sections above are all that's needed for a request. The following sections are filled out and groomed by the development team before work begins...*
 ## TO DO: 
 See the [SPEC DOC](url)
