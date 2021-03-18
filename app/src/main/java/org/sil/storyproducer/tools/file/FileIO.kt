@@ -81,9 +81,9 @@ fun getDownsample(context: Context, relPath: String,
     // iStream.available() can throw an exception, so a try/catch was added.
     // restructure routine for better flow
     var ds:Int = 1
-    if(relPath != "") { // return ds default value
+    if(relPath != "") { // If empty string: return ds default value
         val iStream = getStoryChildInputStream(context, relPath, story.title)
-        if(iStream != null) { // could not assign an iStream to the file, return ds default value
+        if(iStream != null) { // If null: could not assign an iStream to the file, return ds default value
             try {
                 if (iStream.available() != 0) {  // if a throw or file is empty, return default value
                     // got data in the file, so process it
