@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
-title: a concise Title
+title: A concise Title
 labels: ''
 assignees: ''
 
