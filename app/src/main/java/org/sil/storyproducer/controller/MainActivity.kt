@@ -11,19 +11,24 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.storylist.StoryPageAdapter
+import org.sil.storyproducer.controller.storylist.StoryPageFragment
+import org.sil.storyproducer.controller.storylist.StoryPageTab
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -34,14 +39,9 @@ import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
 
-    lateinit var storyList: StoryListFrag
-
     private var mDrawerLayout: DrawerLayout? = null
-
-    //Filter variables starts.
-    lateinit var filterTabs: TabLayout
-    lateinit var pageAdapter: FilterPageAdapter
-
+    lateinit var storyPageViewPager : ViewPager2
+    lateinit var storyPageTabLayout : TabLayout
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -60,15 +60,11 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         setContentView(R.layout.activity_main)
         setupDrawer()
-        setupFilter()
+        setupStoryPages()
 
         if (!Workspace.isInitialized) {initWorkspace()}
-
-
-
     }
 
 
@@ -84,6 +80,7 @@ class MainActivity : BaseActivity(), Serializable {
         Workspace.activeStory = story
         val intent = Intent(this.applicationContext, Workspace.activePhase.getTheClass())
         startActivity(intent)
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -113,31 +110,31 @@ class MainActivity : BaseActivity(), Serializable {
         }
     }
 
-    private fun addList() {
-        GlobalScope.launch {
-            runOnUiThread {
-                supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
-                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
-            }
+    override fun onDestroy() {
+        super.onDestroy()
+        storyPageViewPager.unregisterOnPageChangeCallback(storyPageChangeCallback)
+    }
+
+    var storyPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            Log.i("MainActivity Story Page", "Selected Tab: $position")
         }
     }
 
-    private fun setupFilter(/*Have variable for tab selected*/) {
-        filterTabs = findViewById(R.id.Filter_Tabs)
-        pageAdapter = FilterPageAdapter(filterTabs.tabCount, supportFragmentManager)
+    private fun setupStoryPages() {
+        storyPageViewPager = findViewById(R.id.storyPageViewPager)
+        storyPageViewPager.offscreenPageLimit = StoryPageTab.values().size
+        storyPageTabLayout = findViewById(R.id.tabLayout)
 
+        val storyPageAdapter = StoryPageAdapter(this, StoryPageTab.values().size)
+        storyPageViewPager.adapter = storyPageAdapter
 
-        filterTabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab){
-                storyList = pageAdapter.getItem(tab.position)
-                addList()
+        storyPageViewPager.registerOnPageChangeCallback(storyPageChangeCallback)
 
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab){
-
-            }
-            override fun onTabReselected(tab:TabLayout.Tab){}
-        })
+        // Sets the Tab Names from the list of StoryPageTabs
+        TabLayoutMediator(storyPageTabLayout, storyPageViewPager) { tab, position ->
+            tab.text = getString(StoryPageTab.values()[position].tabNameId)
+        }.attach()
     }
 
     /**
@@ -171,7 +168,8 @@ class MainActivity : BaseActivity(), Serializable {
             }
             R.id.nav_demo -> {
                 Workspace.addDemoToWorkspace(this)
-                storyList.notifyDataSetChanged()
+//                storyList.notifyDataSetChanged()
+                // FILTER TODO: notify the current story lists, this needs to be added back in
             }
 
             R.id.nav_stories -> {

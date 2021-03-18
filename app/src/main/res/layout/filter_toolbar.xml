@@ -2,66 +2,44 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/FilterToolbarChips">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/filter_toolbar"
+    <com.google.android.material.chip.ChipGroup xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/filter_group"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@color/lightDarkGrey"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" />
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:singleSelection="false">
 
-    <CheckBox
-        android:id="@+id/OtherCheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="25dp"
-        android:text="Other" />
-
-    <CheckBox
-        android:id="@+id/OTcheckBox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="25dp"
-        android:layout_toEndOf="@+id/OtherCheckBox"
-        android:text="OT" />
-
-    <CheckBox
-        android:id="@+id/NTcheckBox"
-        android:layout_width="65dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="25dp"
-        android:layout_toEndOf="@+id/OTcheckBox"
-        android:text="NT" />
-
-        <CheckBox
-            android:id="@+id/FilmcheckBox"
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.MaterialComponents.Chip.Filter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="25dp"
-            android:layout_toEndOf="@+id/NTcheckBox"
-            android:text="Film" />
+            android:checked="true"
+            android:text="@string/film_toolbar"/>
 
-    </RelativeLayout>
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/ot_toolbar"/>
 
-    <ListView
-        android:id="@+id/filterStoryList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/nt_toolbar"/>
+
+        <com.google.android.material.chip.Chip
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/other_toolbar"/>
+
+    </com.google.android.material.chip.ChipGroup>
+
 </LinearLayout>

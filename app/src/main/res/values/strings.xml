@@ -264,6 +264,17 @@
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
 
+    <!-- Main Story Page -->
+    <string name="all_stories_tab">All Stories</string>
+    <string name="in_progress_tab">In Progress</string>
+    <string name="completed_tab">Completed</string>
+
+    <!-- Filter Toolbar -->
+    <string name="film_toolbar">Film</string>
+    <string name="nt_toolbar">NT</string>
+    <string name="ot_toolbar">OT</string>
+    <string name="other_toolbar">Other</string>
+
     <!-- About -->
     <string name="about">About</string>
     <string name="license">License</string>

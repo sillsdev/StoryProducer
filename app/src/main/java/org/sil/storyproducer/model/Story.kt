@@ -4,7 +4,6 @@ package org.sil.storyproducer.model
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
-import org.sil.storyproducer.tools.media.story.toInt
 import java.util.*
 
 internal const val PROJECT_DIR = "project"
@@ -15,7 +14,11 @@ internal val RE_DISPLAY_NAME = "([^|]+)[|.]".toRegex()
 internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
-class Story(var title: String, var slides: List<Slide>){
+class Story(var title: String, var slides: List<Slide>) {
+
+    enum class StoryType {
+        OLD_TESTAMENT, NEW_TESTAMENT, OTHER
+    }
 
     var isApproved: Boolean = false
     var learnAudioFile = ""
@@ -26,10 +29,22 @@ class Story(var title: String, var slides: List<Slide>){
     var lastSlideNum: Int = 0
     var importAppVersion = ""
     var localCredits = ""
-    var inProgress : Boolean = false;
-    var isComplete: Boolean = false;
 
-
+    // FILTER TODO: make transient, also make sure values are correct
+    val type : StoryType
+        get() {
+            return try {
+                // Get number from story
+                val storyNumber = shortTitle.split(" ")[0].toInt()
+                when {
+                    storyNumber < 200 -> StoryType.OLD_TESTAMENT
+                    storyNumber < 300 -> StoryType.NEW_TESTAMENT
+                    else -> StoryType.OTHER
+                }
+            } catch(e : NumberFormatException) {
+                StoryType.OTHER
+            }
+        }
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
@@ -46,21 +61,6 @@ class Story(var title: String, var slides: List<Slide>){
         } else {
             "N/A"
         }
-    }
-
-    val storyType: String get(){
-        val number = titleNumber.matches("ddd".toRegex()).toInt()
-
-        if(number <100){
-            return "other"
-        }
-        else if(number <200){
-            return "OT"
-        }
-        else if(number < 300){
-            return "NT"
-        }
-        return "other"
     }
 
     fun addVideo(video: String){
