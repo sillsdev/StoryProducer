@@ -1,8 +1,8 @@
 ---
 name: Usability Defect report
 about: Create a report to help us improve
-title: a consise Title for the Usability Defect
-labels: usability defect
+title: A consise Title for the Usability Defect
+labels: "Usability Defect"
 assignees: ''
 
 ---
@@ -33,17 +33,17 @@ Add any other context about the problem here.
 
 ---
 *The sections above are all that's needed for a report. The following sections are filled out and groomed by the development team before work begins...*
-## TO DO: 
+## To Do: 
 * Do __
 * Do __
 
-## ACCEPTANCE
+## Acceptance
 [steps to verify that the fix works as expected]
 
-## TESTING IDEAS
+## Testing Ideas
 *[Tips for the testers. If you include detailed steps, use the 'Steps to Reproduce' format.]*
 __
 
-## ORIGINAL REPORT FROM __
+## Original Report from __
 > indented quoted text
 > is good but optional
