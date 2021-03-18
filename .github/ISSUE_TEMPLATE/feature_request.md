@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-## USER STORY
+## User Story
 **As a [choose: local translator / trainer / tech support / admin], I need to __ in order to __.**
 
 **Is your feature request related to a problem or rationale?** Please describe.
@@ -16,8 +16,8 @@ assignees: ''
 
 Describe alternatives you've considered, and/or additional context: __
 
-## STEPS TO REPRODUCE
-*[If not a defect, delete this section.]*
+## Steps to Reproduce
+*[If not related to a defect, delete this section.]*
 
 1. I did __
 As expected: __
@@ -27,19 +27,19 @@ Expected: __
 
 ---
 *The sections above are all that's needed for a request. The following sections are filled out and groomed by the development team before work begins...*
-## TO DO: 
+## To Do: 
 See the [SPEC DOC](url)
 In summary:
 * Do __
 * Do __
 
-## ACCEPTANCE
+## Acceptance
 [steps to verify that the new feature works as expected]
 
-## TESTING IDEAS
+## Testing Ideas
 *[Tips for the testers. If you include detailed steps, use the 'Steps to Reproduce' format (and past tense).]*
 __
 
-## ORIGINAL REPORT FROM __
+## Original Report from __
 > indented quoted text
 > is good but optional
