@@ -143,8 +143,7 @@ class MainActivity : BaseActivity(), Serializable {
                 storyList.notifyDataSetChanged()
             }
             R.id.nav_word_link_list -> {
-                intent = Intent(this, WordLinkListActivity::class.java)
-                this.startActivity(intent)
+                showWordLinksList()
             }
             R.id.nav_stories -> {
                 // Current fragment

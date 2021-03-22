@@ -174,7 +174,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
                 alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpName(Workspace.activePhase.phaseType))
+                val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
                 val text = iStream.reader().use {
                     it.readText()
                 }
