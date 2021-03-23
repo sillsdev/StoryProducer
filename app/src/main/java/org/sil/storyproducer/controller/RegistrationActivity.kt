@@ -5,18 +5,24 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Secure
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GravityCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -24,6 +30,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Phase
+import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import java.util.*
@@ -90,6 +98,10 @@ open class RegistrationActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_registration)
+        val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(mActionBarToolbar)
+        setSupportActionBar(mActionBarToolbar)
+        supportActionBar?.setTitle(R.string.registration_title)
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
@@ -111,6 +123,34 @@ open class RegistrationActivity : AppCompatActivity() {
         addSubmitButtonSave()
         addRegistrationSkip()
         addEthnologueQuestion()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_with_help, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.helpButton -> {
+                val alert = AlertDialog.Builder(this)
+                alert.setTitle("${Phase(PhaseType.REGISTRATION).getDisplayName()} Help")
+
+                val wv = WebView(this)
+                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.REGISTRATION))
+                val text = iStream.reader().use {
+                    it.readText() }
+
+                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+                alert.setView(wv)
+                alert.setNegativeButton("Close") { dialog, _ ->
+                    dialog!!.dismiss()
+                }
+                alert.show()
+                true
+            }
+            else -> { true } // should never happen
+        }
     }
 
     /**

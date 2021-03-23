@@ -63,7 +63,7 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getColor() : Int {
         return when(phaseType){
-            PhaseType.LEARN -> R.color.learn_phase
+            PhaseType.LEARN            -> R.color.learn_phase
             PhaseType.TRANSLATE_REVISE -> R.color.translate_revise_phase
             PhaseType.COMMUNITY_WORK   -> R.color.comunity_work_phase
             PhaseType.WHOLE_STORY      -> R.color.whole_story_phase
@@ -102,6 +102,7 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getDisplayName() : String {
         return when (phaseType) {
+            PhaseType.REGISTRATION     -> "Registration"
             PhaseType.LEARN            -> "Learn"
             PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
             PhaseType.COMMUNITY_WORK   -> "Community Work"

@@ -32,6 +32,7 @@
 
 
     <!-- Phases -->
+    <string name="registration_title">Registration</string>
     <string name="learn_title">Learn</string>
     <string name="translate_revise_title">Translate + Revise</string>
     <string name="community_work_title">Community Work</string>
@@ -46,7 +47,7 @@
     <!-- String names for registration -->
     <string name="registration_language_header">Language Information</string>
     <string name="registration_translator_header">Translator Information</string>
-    <string name="registration_consultant_header">Consultant Information</string>
+    <string name="registration_accuracy_check_header">Accuracy Checker Info</string>
     <string name="registration_trainer_header">Trainer Information</string>
     <string name="registration_archive_header">Archive Information</string>
     <string name="language_hint">Language (being translated into)</string>
