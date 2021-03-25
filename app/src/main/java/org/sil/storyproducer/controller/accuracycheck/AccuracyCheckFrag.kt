@@ -25,7 +25,7 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-class ConsultantCheckFrag : SlidePhaseFrag() {
+class AccuracyCheckFrag : SlidePhaseFrag() {
 
     var logDialog: AlertDialog? = null
     var greenCheckmark: VectorDrawableCompat ?= null
@@ -220,14 +220,14 @@ class ConsultantCheckFrag : SlidePhaseFrag() {
     }
 
     /**
-     * Launches the dramatization phase for the story and starts back at first slide
+     * Launches the voicestudio phase for the story and starts back at first slide
      * TODO: moving back to first slide is currently broken
      */
     private fun launchDramatizationPhase() {
         Toast.makeText(context, "Congrats!", Toast.LENGTH_SHORT).show()
-        //Move to dramatization, slide 0.
+        //Move to voicestudio, slide 0.
         Workspace.activeSlideNum = 0
-        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.DRAMATIZATION))
+        (activity as PhaseBaseActivity).jumpToPhase(Phase(PhaseType.VOICE_STUDIO))
     }
 
     /**

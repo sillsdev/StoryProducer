@@ -2,17 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.crashlytics'
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
     buildToolsVersion '29.0.2'
     defaultConfig {
-        applicationId "org.sil.storyproducer.film"
+        applicationId "org.sil.storyproducer"
         minSdkVersion 24
-        targetSdkVersion 30
-        versionCode 17
-        versionName '3.0.4_FP'
+        targetSdkVersion 29
+        versionCode 22
+        versionName '3.0.4.0001'
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -102,4 +101,3 @@ dependencies {
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
 }
-

@@ -24,23 +24,45 @@ class SlideService(val context: Context) {
     }
 
     fun getImage(relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story): Bitmap {
-        val iStream = getStoryChildInputStream(context, relPath, story.title)
-        if (iStream === null || iStream.available() == 0) {
-            return genDefaultImage()
-        }
+        // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Producer crashes in Finalize
+        //                         phase and no video is produced
+        // This routine is called for every slide in a story during FINALIZE.  "relPath" is the name of
+        // the image file for the slide (e.g., "1.jpg") but some slides images are optional such as the title
+        // slide and the song slide.  "relPath" for a slide without an image is passed as "" (empty string).
+        // Which  means open the root directory in getStoryChildInputStream
+        // Before the fix, iStream.available was called on an empty string file.  Previous to Android 11,
+        // iStream.available() return a zero when called on an empty string file.
+        // For Android 11, iStream.available() on an empty string file throws an exception which
+        // was not caught by this routine.
+        // For issue 548, check for an empty string and return a default image
+        // According to the documentation,
+        // iStream.available() can throw an exception, so a try/catch was added.
+        // restructure routine for better flow
+        if(relPath != "") {
+            val iStream = getStoryChildInputStream(context, relPath, story.title)
 
-        val options = BitmapFactory.Options()
-        options.inSampleSize = sampleSize
-        if (useAllPixels) {
-            options.inTargetDensity = 1
-        }
+            try {
+                if (iStream !== null && iStream.available() != 0) {
+                    // The stream is valid and there is data, so do the processing
+                    val options = BitmapFactory.Options()
+                    options.inSampleSize = sampleSize
+                    if (useAllPixels) {
+                        options.inTargetDensity = 1
+                    }
 
-        val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
-        if (useAllPixels) {
-            bmp.density = Bitmap.DENSITY_NONE
-        }
+                    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+                    if (useAllPixels) {
+                        bmp.density = Bitmap.DENSITY_NONE
+                    }
 
-        return bmp
+                    return bmp
+                }
+            } catch (e: Exception) {
+                // can be throw by iSteam.available
+                // return default image on exception
+            }
+        }
+        return genDefaultImage()
     }
 
     fun genDefaultImage(): Bitmap {

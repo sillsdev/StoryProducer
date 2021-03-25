@@ -13,7 +13,7 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-class DraftFrag : MultiRecordFrag() {
+class TranslateReviseFrag : MultiRecordFrag() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

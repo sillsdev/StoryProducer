@@ -2,7 +2,6 @@ package org.sil.storyproducer.model
 
 
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.film.R
 import org.sil.storyproducer.model.logging.LogEntry
 import java.util.*
 
@@ -14,7 +13,7 @@ internal val RE_DISPLAY_NAME = "([^|]+)[|.]".toRegex()
 internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
-class Story(var title: String, var slides: List<Slide>){
+class Story(var title: String, val slides: List<Slide>){
 
     var importAppVersion: String = ""
     var isApproved: Boolean = false

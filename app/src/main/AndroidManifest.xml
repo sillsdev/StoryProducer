@@ -67,7 +67,10 @@
 <!--            android:name="org.sil.storyproducer.controller.WorkspaceUpdateActivity"-->
 <!--            android:screenOrientation="portrait" />-->
         <activity
-            android:name="org.sil.storyproducer.activity.WorkspaceDialogUpdateActivity"
+            android:name=".controller.WorkspaceUpdateActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
@@ -78,7 +81,7 @@
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
-            android:name="org.sil.storyproducer.controller.export.CreateActivity"
+            android:name=".controller.export.FinalizeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <!-- Share -->

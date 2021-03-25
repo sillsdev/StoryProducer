@@ -55,8 +55,6 @@ class FilmProducer(override var parent: CreateActivity, override var title: Stri
         dir.mkdirs()
         var audioList:LinkedList<File> = LinkedList<File>()
 
-//        val storyTempo = calculateStoryTempo(parent.baseContext, dir, false)
-
         // Step 1: Prepare the audio
         Workspace.activeStory.slides.forEachIndexed { index, slide ->
             if(slide.slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.FRONTCOVER)){

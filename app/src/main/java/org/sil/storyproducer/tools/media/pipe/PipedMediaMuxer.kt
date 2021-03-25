@@ -193,7 +193,7 @@ class PipedMediaMuxer
             private set
 
         override fun run() {
-            var buffer: ByteBuffer
+            var buffer: ByteBuffer?
             val info = MediaCodec.BufferInfo()
             try {
                 while (!mSource.isDone && mComponentState != PipedMediaSource.State.CLOSED) {

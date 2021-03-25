@@ -9,8 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import org.sil.storyproducer.film.R
-import org.sil.storyproducer.activity.BaseActivity
+import org.sil.storyproducer.R
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService

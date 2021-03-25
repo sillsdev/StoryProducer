@@ -73,6 +73,32 @@ fun genDefaultImage(): Bitmap {
     return pic
 }
 
+fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+    if(story.title == "") return genDefaultImage()
+    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
+}
+
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    try{
+        if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    }catch(e: Exception){
+        return genDefaultImage() //something is wrong, just give the default image.
+    }
+    val options = BitmapFactory.Options()
+    options.inSampleSize = sampleSize
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
+}
+
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
+}
+
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
     try {
         val ipfd = context.contentResolver.openFileDescriptor(
@@ -95,14 +121,62 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
 fun getDownsample(context: Context, relPath: String,
                          dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
                          story: Story = Workspace.activeStory): Int{
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
-    if(iStream.available() == 0) return 1
-    val options = BitmapFactory.Options()
-    options.inJustDecodeBounds = true
-    BitmapFactory.decodeStream(iStream, null, options)
-    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
+
+    // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Producer crashes in Finalize
+    //                         phase and no video is produced
+    // This routine is called for every slide in a story during FINALIZE.  "relPath" is the name of
+    // the image file for the slide (e.g., "1.jpg") but some slides images are optional such as the title
+    // slide and the song slide.  "relPath" for a slide without an image is passed as "" (empty string).
+    // Which  means open the root directory in getStoryChildInputStream
+    // Before the fix, iStream.available was called on an empty string file.  Previous to Android 11,
+    // iStream.available() return a zero when called on an empty string file.
+    // For Android 11, iStream.available() on an empty string file throws an exception which
+    // was not caught by this routine.
+    // For issue 548, check for an empty string and return
+    // a default value of 1 if there is an empty string.  According to the documentation,
+    // iStream.available() can throw an exception, so a try/catch was added.
+    // restructure routine for better flow
+    var ds:Int = 1
+    if(relPath != "") { // If empty string: return ds default value
+        val iStream = getStoryChildInputStream(context, relPath, story.title)
+        if(iStream != null) { // If null: could not assign an iStream to the file, return ds default value
+            try {
+                if (iStream.available() != 0) {  // if a throw or file is empty, return default value
+                    // got data in the file, so process it
+                    val options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    BitmapFactory.decodeStream(iStream, null, options)
+                    ds = max(1, min(options.outHeight / dstHeight, options.outWidth / dstWidth))
+                }
+            } catch (e: Exception) {
+                // iStream.available can throw, so catch it here
+                // return ds default value
+            }
+        }
+    }
+    return ds
 }
 
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    try{
+        if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    }catch(e: Exception){
+        return genDefaultImage() //something is wrong, just give the default image.
+    }
+    val options = BitmapFactory.Options()
+    options.inSampleSize = sampleSize
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
+}
+
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
+}
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
     if (dirRoot == "") return null
     // DKH-Updated 03/04/2021 to fix Issue #549: Lost data during story creation for Android 10 & 11
@@ -263,7 +337,6 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
                 childUri, "r") ?: return null
         return ParcelFileDescriptor.AutoCloseInputStream(pfd)

@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.film
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color

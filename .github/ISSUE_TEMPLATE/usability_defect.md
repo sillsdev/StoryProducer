@@ -1,25 +1,25 @@
 ---
-name: Bug report
-about: Create a bug report to help us improve
-title: A consise Title for the Bug Report
-labels: bug
+name: Usability Defect report
+about: Create a report to help us improve
+title: A consise Title for the Usability Defect
+labels: "Usability Defect"
 assignees: ''
 
 ---
 **User Story: As a [choose: local translator / trainer / tech support / admin], I need to __ in order to __.**
 
-**Describe the bug**
-A clear and concise description of what the bug or defect is. What is not working as expected?
+**Describe the defect**
+A clear and concise description of what the usability defect or confusion is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
-2. Click on '....' As expected: __
+2. Click on '....'
 3. Scroll down to '....'
-4. **Unexpectedly**, see error/defect
+4. See usabilty defect
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Proposed behavior**
+A clear and concise description of what should change to improve usability.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.

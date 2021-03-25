@@ -22,7 +22,7 @@ import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.stripForFilename
 
 
-class CreateActivity : PhaseBaseActivity() {
+class FinalizeActivity : PhaseBaseActivity() {
 
     private lateinit var mEditTextTitle: EditText
     private lateinit var mLayoutConfiguration: View
@@ -171,11 +171,12 @@ class CreateActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     private fun setupViews() {
+
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener(object : TextWatcher {
+        mEditTextTitle.addTextChangedListener( object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
                 if (temp != s.toString()) {
@@ -520,7 +521,7 @@ class CreateActivity : PhaseBaseActivity() {
     }
 
     companion object {
-        private val TAG = "CreateActivity"
+        private val TAG = "FinalizeActivity"
 
         private val BUTTON_LOCK_DURATION_MS: Long = 1000
         val PROGRESS_MAX = 1000

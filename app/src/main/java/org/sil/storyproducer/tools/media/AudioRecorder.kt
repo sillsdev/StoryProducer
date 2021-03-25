@@ -197,4 +197,3 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         }
     }
 }
-
