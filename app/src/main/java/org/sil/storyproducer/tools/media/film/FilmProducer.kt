@@ -55,7 +55,7 @@ class FilmProducer(override var parent: CreateActivity, override var title: Stri
         dir.mkdirs()
         var audioList:LinkedList<File> = LinkedList<File>()
 
-        val storyTempo = calculateStoryTempo(parent.baseContext, dir, false)
+//        val storyTempo = calculateStoryTempo(parent.baseContext, dir, false)
 
         // Step 1: Prepare the audio
         Workspace.activeStory.slides.forEachIndexed { index, slide ->
@@ -63,8 +63,9 @@ class FilmProducer(override var parent: CreateActivity, override var title: Stri
                 val audioFile = File(dir, "audio$index$MP4_EXT")
                 val length = slide.endTime - slide.startTime
                 val position = slide.audioPosition
+                val slideTempo = calculateSlideTempo(parent.baseContext, dir, slide, false)
                 try{
-                    prepareAudio(audioFile, length, position, storyTempo, dir)
+                    prepareAudio(audioFile, length, position, slideTempo, dir)
                     audioList.add(audioFile)
                 }
                 catch(e:AudioTooLongException){
@@ -90,10 +91,11 @@ class FilmProducer(override var parent: CreateActivity, override var title: Stri
         removeAudioStream(videoFile, videoWithoutAudio)
         videoFile.delete()
 
-        videoList = generateVideoFiles(parent, videoWithoutAudio, storyTempo)
+        videoList = generateVideoFiles(parent, videoWithoutAudio)
         val creditsImage = File(dir,"outputCredits.jpg")
         val internationalCreditsImage = File(dir,"outputInternationalCredits.jpg")
         createCredits(Workspace.activeStory.localCredits,creditsImage)
+
         var commons = parent.baseContext.getString(R.string.license_attribution) +
                 SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)
         createCredits(commons,internationalCreditsImage)

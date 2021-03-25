@@ -1,11 +1,12 @@
 package org.sil.storyproducer.tools.media.film
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.media.MediaMetadataRetriever
+import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
@@ -105,44 +106,39 @@ fun getFileFromInputStream(inputStream: InputStream, outputFile: File){
 }
 
 /**
- * Gets the uniform tempo that this story should use for the audio.
- *
+ * Gets the tempo that this slide should use for the audio.
  * @param context an app context is necessary to get the Story's recordings
  * @param parentDir the directory to which to write files
  * @param deleteFiles this function creates (possibly) temporary files to calculate the
  *                      tempo. If the user would like to use those files, they can set
  *                      this flag to false. Else, the function will delete the files.
- * @return a Double in the range [1.0, 1.5] representing the tempo to for the audio
+ *
+ * @return a Double in the range [1.0, MAX_VIDEO_TEMPO] representing the tempo to for the audio
  */
-fun calculateStoryTempo(context: Context, parentDir: File, deleteFiles: Boolean = true): Double {
-    var speedFactor = 1.0
-    Workspace.activeStory.slides.forEachIndexed { index, slide ->
-        if(slide.slideType == SlideType.NUMBEREDPAGE || slide.slideType == SlideType.FRONTCOVER) {
-            val audioFile = File(parentDir, "audio$index.mp4")
-            audioFile.createNewFile()
-            copyM4aStreamToMp4File(getStoryChildInputStream(context, slide.getFinalFile()), audioFile)
+fun calculateSlideTempo(context: Context, parentDir: File, slide : Slide,
+                        deleteFiles: Boolean = true): Double {
+    var newTempo = 1.0
 
-            val videoDuration = slide.endTime - slide.startTime
-            val narrationDuration = getMp4Length(audioFile)
+    if(slide.slideType == SlideType.NUMBEREDPAGE || slide.slideType == SlideType.FRONTCOVER) {
+        val audioFile = File(parentDir, "audio.mp4")
+        audioFile.createNewFile()
+        copyM4aStreamToMp4File(getStoryChildInputStream(context, slide.getFinalFile()), audioFile)
 
-            var newTempo = 1.0
-            if (narrationDuration > videoDuration) {
-                newTempo = narrationDuration.toDouble() / videoDuration.toDouble()
-                if (newTempo > MAX_VIDEO_TEMPO) {
-                    newTempo = MAX_VIDEO_TEMPO
-                }
-            }
+        val videoDuration = slide.endTime - slide.startTime
+        val narrationDuration = getMp4Length(audioFile)
 
-            if (newTempo > speedFactor) {
-                speedFactor = newTempo
-            }
-
-            if (deleteFiles) {
-                audioFile.delete()
+        if (narrationDuration > videoDuration) {
+            newTempo = narrationDuration.toDouble() / videoDuration.toDouble()
+            if (newTempo > MAX_VIDEO_TEMPO) {
+                newTempo = MAX_VIDEO_TEMPO
             }
         }
+        if (deleteFiles) {
+            audioFile.delete()
+        }
     }
-    return speedFactor
+
+    return newTempo
 }
 
 /**
@@ -208,9 +204,9 @@ fun prepareAudio(audioFile: File, length: Int, placeAt: Int, storyTempo: Double,
  * @param storyTempo how fast the audio will be sped up
  * @return a linked list containing all of the video clips that comprise the whole
  */
-fun generateVideoFiles(context: Context, fullVideo: File, storyTempo: Double): LinkedList<File> {
+fun generateVideoFiles(context: Context, fullVideo: File): LinkedList<File> {
     val dir = fullVideo.parentFile
-    var videos: LinkedList<File> = LinkedList()
+    val videos: LinkedList<File> = LinkedList()
     var remainingVideo = fullVideo
     var previousCutTime = 0.0
 
@@ -222,7 +218,8 @@ fun generateVideoFiles(context: Context, fullVideo: File, storyTempo: Double): L
                     slide.chosenDramatizationFile.substringAfter("|")), audioFile)
             val narrationDuration = getMp4Length(audioFile)
             val videoDuration = slide.endTime - slide.startTime
-            val adjustedNarrationDuration = narrationDuration / storyTempo
+            val slideTempo = calculateSlideTempo(context, dir!!, slide, false)
+            val adjustedNarrationDuration = narrationDuration / slideTempo
             audioFile.delete()
 
             if (adjustedNarrationDuration > videoDuration) {
@@ -578,24 +575,21 @@ fun createVideo(audioFiles: List<File>, videoFiles: List<File>, directory: File?
  * @param output the file to save the credits image to
  */
 fun createCredits(creditString: String, output: File){
-    val lines = LinkedList<String>()
-    var copy = creditString;
-    while(copy.isNotEmpty()){
-        if(copy.contains('\n')){
-            var short = copy.substring(0,copy.indexOf('\n'))
-            val tempLength = short.length
-            while(short.length>34){
-                if(short.contains(':'))
-                    lines.add(short.substring(0,short.indexOf(':')+1))
-                short = short.substring(short.indexOf(':')+1)
-            }
-            lines.add(short)
-            copy = copy.substring(copy.indexOf('\n')+1)
-        }else{
-            lines.add(copy)
-            copy = ""
+
+    // Split Credit String by newline
+    var lines = ArrayList<String>()
+    for(line in creditString.split("\n")) {
+
+        // Limit the amount of chars in the local credits
+        if(line.contains(":") && line.length > 34) {
+            val newLines = line.split(":").toMutableList();
+            newLines[0] += ":";
+            lines.addAll(newLines)
+        } else {
+            lines.add(line)
         }
     }
+
     val lineHeight = VIDEO_MP4_HEIGHT/lines.size
     val bitmap = Bitmap.createBitmap(VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT,Bitmap.Config.ARGB_8888)
     val canvas = Canvas(bitmap)

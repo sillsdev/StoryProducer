@@ -7,20 +7,23 @@ import android.content.pm.PackageManager
 import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.film.R
+import org.sil.storyproducer.model.PROJECT_DIR
+import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.copyToWorkspacePath
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
-import org.sil.storyproducer.tools.file.getStoryUri
+import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.media.film.FFmpegReturn
+import org.sil.storyproducer.tools.media.film.copyM4aStreamToMp4File
 import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
+import java.io.FileDescriptor
 import java.io.IOException
 
 
@@ -38,6 +41,7 @@ internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
  */
 
 private const val AUDIO_RECORDER = "audio_recorder"
+private const val DECIBEL_MAX = -60
 
 abstract class AudioRecorder(val activity: Activity) {
     var isRecording = false
@@ -89,6 +93,47 @@ abstract class AudioRecorder(val activity: Activity) {
                     "${Workspace.activeDirRoot}/$orgAudioRelPath")
             File(tempDestPath).delete()
         }
+
+        fun removeIntroAndOutroSilence(context: Context, inputOutput : File) : FFmpegReturn {
+
+//            val tempDestPath  = "${Workspace.activeDirRoot}/project/removedIntroAndOutroSilenceOutput.mp3"
+
+            val localWorkspaceFile = File("${Workspace.activeDirRoot}${inputOutput.absolutePath}")
+//
+//            val file = File(context!!.getExternalFilesDir("AudioRecorder"), "temp.mp3")
+//            file.createNewFile()
+
+
+//            var newTempFile = File(context.filesDir,"temp.mp3")
+//            copyToWorkspacePath(context, Uri.fromFile(fullPath),"$PROJECT_DIR/temp.mp3")
+//            val str = "${Workspace.activeDirRoot}$PROJECT_DIR/temp.mp3";
+//            val output = File(fullPath)
+
+            val filesDir = context.filesDir
+            val audioFileOld = File(filesDir, "old.mp3")
+            audioFileOld.createNewFile()
+
+            val audioFileNew = File(filesDir, "new.mp3")
+            audioFileNew.createNewFile()
+
+            val workspaceUri = getWorkspaceUri(localWorkspaceFile.absolutePath)!!
+            copyToFilesDir(context, workspaceUri, audioFileOld)
+
+//            val test = getChosenFilename();
+
+            val command = "-y -i ${audioFileOld.absolutePath} -af 'silenceremove=start_periods=1:start_duration=1:" +
+                    "start_threshold=${DECIBEL_MAX}dB:detection=peak,aformat=dblp,areverse," +
+                    "silenceremove=start_periods=1:start_duration=1:start_threshold=${DECIBEL_MAX}dB:" +
+                    "detection=peak,aformat=dblp,areverse' ${audioFileNew.absolutePath}"
+            try {
+                return FFmpegReturn(command)
+            } finally {
+                copyToWorkspacePath(context, Uri.fromFile(audioFileNew),
+                        "${Workspace.activeDirRoot}/${getChosenFilename()}")
+                audioFileNew.delete()
+                audioFileOld.delete()
+            }
+        }
     }
 }
 
@@ -96,6 +141,8 @@ abstract class AudioRecorder(val activity: Activity) {
 class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
+
+    private lateinit var relPath : String
 
     private fun initRecorder(){
         mRecorder.release()
@@ -110,6 +157,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     override fun startNewRecording(relPath: String){
         initRecorder()
+        this.relPath = relPath
         mRecorder.setOutputFile(getStoryFileDescriptor(activity, relPath,"","w"))
         isRecording = true
         try{
@@ -126,6 +174,13 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         }
     }
 
+    /**
+     * Cleans the audio file by removing the beginning and ending silence
+     */
+    private fun cleanAudioFile() {
+        // Convert FileDescriptor to file
+    }
+
     override fun stop() {
         if(!isRecording) return
         try {
@@ -133,6 +188,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.reset()
             mRecorder.release()
             isRecording = false
+            cleanAudioFile()
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
             FirebaseCrashlytics.getInstance().recordException(stopException)

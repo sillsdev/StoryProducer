@@ -193,12 +193,11 @@ class PipedMediaMuxer
             private set
 
         override fun run() {
-            var buffer: ByteBuffer?
+            var buffer: ByteBuffer
             val info = MediaCodec.BufferInfo()
             try {
                 while (!mSource.isDone && mComponentState != PipedMediaSource.State.CLOSED) {
                     buffer = mSource.getBuffer(info)
-                    if(buffer == null) continue
 
                     if (MediaHelper.VERBOSE)
                         Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "

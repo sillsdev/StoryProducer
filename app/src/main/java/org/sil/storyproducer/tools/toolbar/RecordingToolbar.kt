@@ -20,6 +20,7 @@ import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+import java.io.File
 
 /**
  * A class responsible for controlling the media and appearance of a recording toolbar.
@@ -49,6 +50,7 @@ open class RecordingToolbar : Fragment(){
         get() {return voiceRecorder?.isRecording == true}
 
     private lateinit  var animationHandler: AnimationHandler
+    private lateinit var recordingRelPath : String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -123,6 +125,8 @@ open class RecordingToolbar : Fragment(){
         showInheritedToolbarButtons()
         
         toolbarMediaListener.onStoppedToolbarRecording()
+
+        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
     }
 
     protected fun recordAudio(recordingRelPath: String) {
@@ -207,7 +211,7 @@ open class RecordingToolbar : Fragment(){
               stopToolbarMedia()
 
               if (!wasRecording) {
-                  val recordingRelPath = assignNewAudioRelPath()
+                  recordingRelPath = assignNewAudioRelPath()
                   //we may be overwriting things in other phases, but we do not care.
                   if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
                       val dialog = AlertDialog.Builder(activity!!)
