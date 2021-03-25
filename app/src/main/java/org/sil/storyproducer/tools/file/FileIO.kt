@@ -112,7 +112,7 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
 }
 
 fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-    return getChildOutputStream(context, "$WORD_LINKS_DIR/$relPath", mimeType)
+    return getChildOutputStream(context, "$WORD_LINKS_DIR/$relPath", mimeType, "wt")
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{

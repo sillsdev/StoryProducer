@@ -78,9 +78,15 @@ fun assignNewAudioRelPath() : String {
 }
 
 fun updateDisplayName(position:Int, newName:String) {
-    //make sure to update the actual list, not a copy.
+    // make sure to update the actual list, not a copy.
     val filenames = Workspace.activePhase.getCombNames() ?: return
-    filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+    if (Workspace.activePhase.phaseType == PhaseType.WORD_LINKS) {
+        // getCombNames() for WORD_LINKS creates a shallow copy
+        //  so the recording needs to be found by position and updated
+        Workspace.activeWordLink.wordLinkRecordings[position].audioRecordingFilename = "$newName|${Story.getFilename(filenames[position])}"
+    } else {
+        filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+    }
 }
 
 fun deleteAudioFileFromList(context: Context, pos: Int) {
