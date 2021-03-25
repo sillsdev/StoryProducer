@@ -126,7 +126,7 @@
 
     <string-array name="location_type_list">
         <item>Local</item>
-        <item>Remote</item>
+        <!--<item>Remote</item>-->
     </string-array>
 
     <!--Navigation Drawer Labels (Main Activity) -->
