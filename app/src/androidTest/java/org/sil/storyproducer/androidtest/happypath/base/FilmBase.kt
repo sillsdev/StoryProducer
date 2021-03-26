@@ -1,8 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath.base
 
-import org.junit.Before
-import org.junit.BeforeClass
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 
 open class FilmBase : SharedBase {
 

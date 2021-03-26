@@ -6,8 +6,8 @@ import android.graphics.Rect
 import androidx.documentfile.provider.DocumentFile
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
-import org.sil.storyproducer.film.BuildConfig
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.BuildConfig
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 import org.sil.storyproducer.tools.file.getText

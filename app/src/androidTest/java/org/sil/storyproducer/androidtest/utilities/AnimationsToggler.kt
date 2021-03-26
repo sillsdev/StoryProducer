@@ -1,8 +1,7 @@
 package org.sil.storyproducer.androidtest.utilities
 
-import android.app.Activity
 import android.preference.PreferenceManager
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 
 object AnimationsToggler {
 

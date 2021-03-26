@@ -1,7 +1,6 @@
 package org.sil.storyproducer.tools.media.film
 
 import android.content.Context
-import android.media.MediaMetadataRetriever
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -216,7 +215,7 @@ fun generateVideoFiles(context: Context, fullVideo: File): LinkedList<File> {
             val audioFile = File(context.filesDir, "tmp-audio.mp4")
             audioFile.createNewFile()
             copyM4aStreamToMp4File(getStoryChildInputStream(context,
-                    slide.chosenDramatizationFile.substringAfter("|")), audioFile)
+                    slide.chosenVoiceStudioFile.substringAfter("|")), audioFile)
             val narrationDuration = getMp4Length(audioFile)
             val videoDuration = slide.endTime - slide.startTime
             val slideTempo = calculateSlideTempo(context, dir!!, slide, false)

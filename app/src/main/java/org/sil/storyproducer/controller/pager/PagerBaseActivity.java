@@ -3,7 +3,7 @@ package org.sil.storyproducer.controller.pager;
 import android.os.Bundle;
 import androidx.viewpager.widget.ViewPager;
 
-import org.sil.storyproducer.film.R;
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.model.Workspace;
 

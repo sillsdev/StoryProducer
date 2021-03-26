@@ -1,20 +1,8 @@
 package org.sil.storyproducer.androidtest.happypath.translate
 
-import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
-import org.hamcrest.CoreMatchers.*
-import org.junit.runner.RunWith
-import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import org.junit.*
 import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.SwipablePhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.film.R
-import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator

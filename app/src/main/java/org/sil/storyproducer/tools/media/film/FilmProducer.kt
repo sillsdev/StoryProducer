@@ -2,8 +2,8 @@ package org.sil.storyproducer.tools.media.film
 
 import android.net.Uri
 import android.widget.Toast
-import org.sil.storyproducer.controller.export.CreateActivity
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.controller.export.FinalizeActivity
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -14,7 +14,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class FilmProducer(override var parent: CreateActivity, override var title: String) : Producer, Thread() {
+class FilmProducer(override var parent: FinalizeActivity, override var title: String) : Producer, Thread() {
     override var isActive: Boolean = false
     var slidesCompleted = 0
     var isDone: Boolean = false
@@ -25,11 +25,11 @@ class FilmProducer(override var parent: CreateActivity, override var title: Stri
         var isDone = false
         var progress = 0
         while (!isDone) {
-            synchronized(CreateActivity.storyMakerLock) {
+            synchronized(FinalizeActivity.storyMakerLock) {
                 isDone = this.isDone
                 progress = this.progress
             }
-            updateProgress((progress.toDouble()/100 * CreateActivity.PROGRESS_MAX).toInt())
+            updateProgress((progress.toDouble()/100 * FinalizeActivity.PROGRESS_MAX).toInt())
         }
         parent.runOnUiThread {
             parent.showCreationElements()

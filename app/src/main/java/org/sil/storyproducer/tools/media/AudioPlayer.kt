@@ -36,10 +36,10 @@ class AudioPlayer {
      */
     val isAudioPlaying: Boolean
         get() {
-            try {
-                return mPlayer.isPlaying
+            return try {
+                mPlayer.isPlaying
             } catch (e: IllegalStateException) {
-                return false
+                false
             }
 
         }

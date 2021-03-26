@@ -9,7 +9,7 @@ import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers
 import org.junit.*
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace

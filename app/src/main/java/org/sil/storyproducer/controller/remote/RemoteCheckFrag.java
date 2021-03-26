@@ -35,7 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.sil.storyproducer.film.R;
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
 import org.sil.storyproducer.model.messaging.Message;
 import org.sil.storyproducer.tools.Network.VolleySingleton;

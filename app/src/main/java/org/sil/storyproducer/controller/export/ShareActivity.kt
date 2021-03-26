@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.widget.*
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace

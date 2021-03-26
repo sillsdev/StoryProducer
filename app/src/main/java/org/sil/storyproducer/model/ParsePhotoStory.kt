@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Rect
 import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
-import org.sil.storyproducer.film.BuildConfig
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.BuildConfig
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser

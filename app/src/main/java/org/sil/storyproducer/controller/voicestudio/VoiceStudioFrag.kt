@@ -10,7 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.VideoPlayerFrag

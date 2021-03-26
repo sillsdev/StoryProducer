@@ -12,18 +12,14 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.film.R
-import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.VIDEO_DIR
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.film.FFmpegReturn
-import org.sil.storyproducer.tools.media.film.copyM4aStreamToMp4File
 import org.sil.storyproducer.tools.media.story.SlideProducer
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
-import java.io.FileDescriptor
 import java.io.IOException
 
 
@@ -72,7 +68,6 @@ abstract class AudioRecorder(val activity: Activity) {
 
             val tempDestPath  = "${context.filesDir}/temp.mp4"
 
-
             val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
             val audioFormat = SlideProducer.generateAudioFormat()
             val pages: MutableList<StoryPage> = mutableListOf()
@@ -96,30 +91,17 @@ abstract class AudioRecorder(val activity: Activity) {
 
         fun removeIntroAndOutroSilence(context: Context, inputOutput : File) : FFmpegReturn {
 
-//            val tempDestPath  = "${Workspace.activeDirRoot}/project/removedIntroAndOutroSilenceOutput.mp3"
-
             val localWorkspaceFile = File("${Workspace.activeDirRoot}${inputOutput.absolutePath}")
-//
-//            val file = File(context!!.getExternalFilesDir("AudioRecorder"), "temp.mp3")
-//            file.createNewFile()
-
-
-//            var newTempFile = File(context.filesDir,"temp.mp3")
-//            copyToWorkspacePath(context, Uri.fromFile(fullPath),"$PROJECT_DIR/temp.mp3")
-//            val str = "${Workspace.activeDirRoot}$PROJECT_DIR/temp.mp3";
-//            val output = File(fullPath)
 
             val filesDir = context.filesDir
-            val audioFileOld = File(filesDir, "old.mp3")
+            val audioFileOld = File(filesDir, "old.m4a")
             audioFileOld.createNewFile()
 
-            val audioFileNew = File(filesDir, "new.mp3")
+            val audioFileNew = File(filesDir, "new.m4a")
             audioFileNew.createNewFile()
 
             val workspaceUri = getWorkspaceUri(localWorkspaceFile.absolutePath)!!
             copyToFilesDir(context, workspaceUri, audioFileOld)
-
-//            val test = getChosenFilename();
 
             val command = "-y -i ${audioFileOld.absolutePath} -af 'silenceremove=start_periods=1:start_duration=1:" +
                     "start_threshold=${DECIBEL_MAX}dB:detection=peak,aformat=dblp,areverse," +
@@ -174,13 +156,6 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         }
     }
 
-    /**
-     * Cleans the audio file by removing the beginning and ending silence
-     */
-    private fun cleanAudioFile() {
-        // Convert FileDescriptor to file
-    }
-
     override fun stop() {
         if(!isRecording) return
         try {
@@ -188,7 +163,6 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.reset()
             mRecorder.release()
             isRecording = false
-            cleanAudioFile()
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()
             FirebaseCrashlytics.getInstance().recordException(stopException)

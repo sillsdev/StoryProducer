@@ -10,7 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.VideoView
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -89,6 +89,7 @@ class VideoPlayerFrag : StoryPlayerFrag() {
                 if(audioFile != "") {
                     mp.setVolume(0f, 0f)
                     audioPlayer.setStorySource(context!!, audioFile)
+                    audioPlayer.seekTo(-1000)
                     narrationLength = MediaHelper.getAudioDuration(
                             context!!,
                             getStoryUri(audioFile)!!
@@ -210,10 +211,10 @@ class VideoPlayerFrag : StoryPlayerFrag() {
                 }
                 saveLog(ret, 0, Workspace.activeStory.numSlides - 1)
             }
-            PhaseType.DRAFT -> {
+            PhaseType.TRANSLATE_REVISE -> {
                 saveLog(getString(R.string.LWC_PLAYBACK) + " Slide " + startSlide.toString())
             }
-            PhaseType.COMMUNITY_CHECK -> {
+            PhaseType.COMMUNITY_WORK -> {
                 saveLog(getString(R.string.DRAFT_PLAYBACK) + " Slide " + startSlide.toString())
             }
             else -> {

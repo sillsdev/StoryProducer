@@ -102,10 +102,10 @@ class Slide{
     }
 
     fun getFinalFile(): String {
-        return if(chosenDramatizationFile == ""){
-            chosenDraftFile.substringAfter("|")
+        return if(chosenVoiceStudioFile == ""){
+            chosenTranslateReviseFile.substringAfter("|")
         } else{
-            chosenDramatizationFile.substringAfter("|")
+            chosenVoiceStudioFile.substringAfter("|")
         }
     }
 

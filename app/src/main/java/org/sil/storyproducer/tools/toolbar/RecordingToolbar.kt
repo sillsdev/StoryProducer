@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -126,7 +126,7 @@ open class RecordingToolbar : Fragment(){
         
         toolbarMediaListener.onStoppedToolbarRecording()
 
-        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
+//        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
     }
 
     protected fun recordAudio(recordingRelPath: String) {

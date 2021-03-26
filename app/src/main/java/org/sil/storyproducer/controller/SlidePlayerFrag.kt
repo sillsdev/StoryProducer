@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.Toast
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
@@ -192,10 +192,10 @@ class SlidePlayerFrag : StoryPlayerFrag() {
                 }
                 org.sil.storyproducer.model.logging.saveLog(ret, firstSlideNum, currentSlideIndex)
             }
-            PhaseType.DRAFT -> {
+            PhaseType.TRANSLATE_REVISE -> {
                 org.sil.storyproducer.model.logging.saveLog(getString(R.string.LWC_PLAYBACK), firstSlideNum, currentSlideIndex)
             }
-            PhaseType.COMMUNITY_CHECK -> {
+            PhaseType.COMMUNITY_WORK -> {
                 org.sil.storyproducer.model.logging.saveLog(getString(R.string.DRAFT_PLAYBACK), firstSlideNum, currentSlideIndex)
             }
             else -> {

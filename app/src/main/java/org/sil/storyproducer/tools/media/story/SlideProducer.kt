@@ -10,8 +10,8 @@ import android.widget.Toast
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.controller.export.CreateActivity
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.export.FinalizeActivity
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
@@ -25,7 +25,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SlideProducer(override var parent:CreateActivity): Producer, Thread(), Closeable {
+class SlideProducer(override var parent:FinalizeActivity): Producer, Thread(), Closeable {
     override var isActive: Boolean = false
     override var title:String = ""
 
@@ -73,11 +73,11 @@ class SlideProducer(override var parent:CreateActivity): Producer, Thread(), Clo
         var isDone = false
         var progress = 0.0
         while (!isDone) {
-            synchronized(CreateActivity.storyMakerLock) {
+            synchronized(FinalizeActivity.storyMakerLock) {
                 isDone = this.isDone
                 progress = this.progress
             }
-            updateProgress((progress * CreateActivity.PROGRESS_MAX).toInt())
+            updateProgress((progress * FinalizeActivity.PROGRESS_MAX).toInt())
         }
         parent.runOnUiThread {
             parent.showCreationElements()
@@ -90,7 +90,7 @@ class SlideProducer(override var parent:CreateActivity): Producer, Thread(), Clo
     }
 
     private fun stopExport() {
-        synchronized(CreateActivity.storyMakerLock) {
+        synchronized(FinalizeActivity.storyMakerLock) {
             this.close()
         }
         //update the list view
@@ -201,10 +201,10 @@ class SlideProducer(override var parent:CreateActivity): Producer, Thread(), Clo
             if(slide.slideType == SlideType.LOCALSONG && !mIncludeSong) continue
 
             val image = if (mIncludePictures) slide.imageFile else ""
-            var audio = Story.getFilename(slide.chosenDramatizationFile)
+            var audio = Story.getFilename(slide.chosenVoiceStudioFile)
             //fallback to draft audio
             if (audio == "") {
-                audio = Story.getFilename(slide.chosenDraftFile)
+                audio = Story.getFilename(slide.chosenTranslateReviseFile)
             }
             //fallback to LWC audio
             if (audio == "") {

@@ -3,7 +3,7 @@ package org.sil.storyproducer.controller
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.tools.media.AudioPlayer
 

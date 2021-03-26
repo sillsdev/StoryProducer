@@ -3,9 +3,9 @@ package org.sil.storyproducer.controller.pager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import org.sil.storyproducer.controller.communitywork.CommunityWorkFrag
-import org.sil.storyproducer.controller.accuracycheck.AccuracyCheckFrag
-import org.sil.storyproducer.controller.translaterevise.TranslateReviseFrag
+import org.sil.storyproducer.controller.community.CommunityWorkFrag
+import org.sil.storyproducer.controller.consultant.AccuracyCheckFrag
+import org.sil.storyproducer.controller.draft.TranslateReviseFrag
 import org.sil.storyproducer.controller.voicestudio.VoiceStudioFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.review.ReviewAdjustFrag

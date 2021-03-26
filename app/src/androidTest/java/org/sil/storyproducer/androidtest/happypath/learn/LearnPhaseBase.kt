@@ -3,25 +3,18 @@ package org.sil.storyproducer.androidtest.happypath.learn
 import androidx.appcompat.widget.AppCompatSeekBar
 import android.view.View.VISIBLE
 import android.widget.ImageButton
-import androidx.preference.PreferenceManager
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.CoreMatchers.*
 import junit.framework.Assert.assertTrue
-import org.hamcrest.CoreMatchers
 import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-import org.sil.storyproducer.film.R
-import kotlin.concurrent.thread
+import org.sil.storyproducer.R
 
 class LearnPhaseBase(sharedBase: SharedBase) : PhaseTestBase() {
 

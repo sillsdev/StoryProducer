@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.VideoPlayerFrag
@@ -38,7 +38,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
 
         // The last two arguments ensure LayoutParams are inflated
         // properly.
-        rootView = inflater.inflate(R.layout.fragment_consultant_check, container, false)
+        rootView = inflater.inflate(R.layout.fragment_accuracy_check, container, false)
         setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
         setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
         setCheckmarkButton(rootView!!.findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)

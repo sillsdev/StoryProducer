@@ -2,17 +2,12 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.app.Application
 import android.content.Intent
-import android.view.View
-import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.UiController
-import androidx.test.espresso.ViewAction
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.RootMatchers.isDialog
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import androidx.test.rule.GrantPermissionRule
@@ -20,16 +15,14 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import junit.framework.TestCase.assertNotNull
-import org.hamcrest.Matcher
 import org.junit.Rule
-import org.junit.runner.RunWith
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isNotDisplayed
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 
 
-private const val APP_PACKAGE_NAME = "org.sil.storyproducer.film"
+private const val APP_PACKAGE_NAME = "org.sil.storyproducer"
 private const val TIMEOUT_DURATION = 5000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
 //private const val INTERNAL_STORAGE_BUTTON_TEXT = "Android SDK built for x86"

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.VideoPlayerFrag
@@ -21,7 +21,7 @@ class CommunityWorkFrag : MultiRecordFrag() {
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        rootView = inflater.inflate(R.layout.fragment_community_check, container, false)
+        rootView = inflater.inflate(R.layout.fragment_community_work, container, false)
         setToolbar()
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)

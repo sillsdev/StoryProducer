@@ -41,7 +41,7 @@ object Constants {
 
     object Phase {
         const val learn = "Learn"
-        const val translate = "Translate"
+        const val translate = "Translate + Revise"
         const val communityWork = "Community Work"
         const val accuracyCheck = "Accuracy Check"
         const val voiceStudio = "Voice Studio"

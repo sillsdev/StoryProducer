@@ -3,15 +3,13 @@ package org.sil.storyproducer.androidtest.happypath.share
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.*
 import org.junit.Assert
 import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace

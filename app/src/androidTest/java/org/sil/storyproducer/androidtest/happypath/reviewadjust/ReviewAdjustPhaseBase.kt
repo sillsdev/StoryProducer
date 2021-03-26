@@ -1,7 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath.reviewadjust
 
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.matcher.ViewMatchers
@@ -9,15 +8,13 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import org.hamcrest.CoreMatchers
 import org.junit.Assert
 import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.SwipablePhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.Constants.durationToPlayTranslatedClip
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isDisplayed
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isNotDisplayed
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 
 class ReviewAdjustPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase) {
 

@@ -3,7 +3,6 @@ package org.sil.storyproducer.androidtest.happypath.finalize
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.CoreMatchers.allOf
@@ -11,7 +10,7 @@ import org.hamcrest.Matchers
 import org.junit.Assert
 import org.sil.storyproducer.androidtest.happypath.SwipablePhaseTestBase
 import org.sil.storyproducer.androidtest.happypath.base.SharedBase
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace

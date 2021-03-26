@@ -11,7 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
@@ -106,7 +106,7 @@ class FinalizeActivity : PhaseBaseActivity() {
     private lateinit var producer: Producer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create)
+        setContentView(R.layout.activity_finalize)
         setupViews()
         invalidateOptionsMenu()
         if (Workspace.activeStory.isApproved) {

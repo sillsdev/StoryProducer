@@ -5,7 +5,7 @@ import android.widget.Switch
 import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePlayerFrag
 import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.controller.VideoPlayerFrag

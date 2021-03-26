@@ -11,16 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.AudioPlayer
-import org.sil.storyproducer.tools.media.film.calculateStoryTempo
-import org.sil.storyproducer.tools.media.film.copyM4aStreamToMp4File
-import org.sil.storyproducer.tools.media.film.generateWaveformImage
-import org.sil.storyproducer.tools.media.film.getMp4Length
+import org.sil.storyproducer.tools.media.film.*
 import java.io.File
 import kotlin.math.max
 

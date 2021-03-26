@@ -9,7 +9,7 @@ import android.provider.Settings.Secure
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.deleteWorkspaceFile
 import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists

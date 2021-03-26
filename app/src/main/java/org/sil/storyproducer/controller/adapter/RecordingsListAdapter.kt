@@ -13,7 +13,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import org.sil.storyproducer.film.R
+import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.Modal
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace

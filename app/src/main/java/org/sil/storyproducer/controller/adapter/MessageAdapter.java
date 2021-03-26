@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import org.sil.storyproducer.film.R;
+import org.sil.storyproducer.R;
 import org.sil.storyproducer.model.messaging.Message;
 
 import java.util.ArrayList;
