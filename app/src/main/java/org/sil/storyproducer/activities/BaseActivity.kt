@@ -19,7 +19,7 @@ import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
-import org.sil.storyproducer.controller.wordlink.WordLinkListActivity
+import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
@@ -89,7 +89,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     fun showWordLinksList() {
-        startActivity(Intent(this, WordLinkListActivity::class.java))
+        startActivity(Intent(this, WordLinksListActivity::class.java))
         finish()
     }
 

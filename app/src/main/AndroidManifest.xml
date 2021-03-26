@@ -93,7 +93,7 @@
             android:windowSoftInputMode="adjustResize" />
         <!-- WordLinks List -->
         <activity
-            android:name=".controller.wordlink.WordLinkListActivity"
+            android:name=".controller.wordlink.WordLinksListActivity"
             android:screenOrientation="portrait" />
     </application>
 

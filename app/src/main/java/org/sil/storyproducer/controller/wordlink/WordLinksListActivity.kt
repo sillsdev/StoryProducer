@@ -24,7 +24,12 @@ import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 
-class WordLinkListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+/**
+ * This activity shows all Word Links, clickable to go to the WordLinksActivity
+ *
+ * @since 3.0.4
+ */
+class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
     private var mDrawerLayout: DrawerLayout? = null
