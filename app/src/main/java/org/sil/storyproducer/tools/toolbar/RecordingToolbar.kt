@@ -126,7 +126,7 @@ open class RecordingToolbar : Fragment(){
         
         toolbarMediaListener.onStoppedToolbarRecording()
 
-//        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
+        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
     }
 
     protected fun recordAudio(recordingRelPath: String) {
