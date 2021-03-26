@@ -24,15 +24,18 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.finish()
             }
             1 -> {
-                activity.showRegistration()
+                activity.showWordLinksList()
             }
             2 -> {
-                activity.showSelectTemplatesFolderDialog()
+                activity.showRegistration()
             }
             3 -> {
-                Workspace.addDemoToWorkspace(activity)
+                activity.showSelectTemplatesFolderDialog()
             }
             4 -> {
+                Workspace.addDemoToWorkspace(activity)
+            }
+            5 -> {
                 activity.showAboutDialog()
             }
         }
