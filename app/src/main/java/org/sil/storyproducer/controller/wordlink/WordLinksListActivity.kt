@@ -26,8 +26,6 @@ import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 
 /**
  * This activity shows all Word Links, clickable to go to the WordLinksActivity
- *
- * @since 3.0.4
  */
 class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
 
@@ -139,18 +137,6 @@ class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
                     this.startActivity(intent)
                     this.finish()
                 }
-                R.id.nav_workspace -> {
-                    intent = Intent(this, RegistrationActivity.WorkspaceUpdateActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
-                }
-//                R.id.nav_license -> {
-//                    val dialog = AlertDialog.Builder(this)
-//                            .setTitle(this.getString(R.string.license_title))
-//                            .setMessage(this.getString(R.string.license_body))
-//                            .setPositiveButton(this.getString(R.string.ok)) { _, _ -> }.create()
-//                    dialog.show()
-//                }
             }
             true
         }

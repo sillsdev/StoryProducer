@@ -30,8 +30,6 @@ import java.util.*
 /**
  * This activity shows information about the active Word Link so the user can learn more
  * about the word as well as record an audio translation
- *
- * @since 3.0.4
  */
 class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
 

@@ -11,9 +11,6 @@ package org.sil.storyproducer.model
  * The children of that node would be all the possible next words that could come after the starting word to make up a wordlinks.
  * When searching we would traverse this tree word by word as long as we get words that match.
  * This will get us the longest match - the longest possible wordlinks from a given list of words.
- *
- * @since 3.1
- * @authors Aaron Cannon, Jake Allinson
  */
 class WordLinkSearchTree {
     private val root: WordNode = WordNode()
