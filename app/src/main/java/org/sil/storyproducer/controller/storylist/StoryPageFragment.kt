@@ -22,7 +22,8 @@ import kotlin.collections.HashMap
 
 class StoryPageFragment : Fragment() {
 
-    private lateinit var storyPageTab : StoryPageTab
+    lateinit var storyPageTab : StoryPageTab
+    private lateinit var listView: ListView
 
     companion object {
         const val ARG_POSITION = "position"
@@ -59,12 +60,12 @@ class StoryPageFragment : Fragment() {
             return view
         }
 
-        val lfview = inflater.inflate(R.layout.story_list_container, container, false)
+        var lfview = inflater.inflate(R.layout.story_list_container, container, false)
 
         // Apply the Stories to the Story List View
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList() as MutableList<Story>)
 
-        val listView = lfview.findViewById<ListView>(R.id.story_list_view)
+        listView = lfview.findViewById<ListView>(R.id.story_list_view)
 
         listView.onItemClickListener = AdapterView.OnItemClickListener {_, _, position, _ ->
             (activity as MainActivity).switchToStory(storyPageTab.getStoryList()[position])
@@ -76,13 +77,19 @@ class StoryPageFragment : Fragment() {
         return lfview
     }
 
+    fun updateStoryList(storyList : List<Story>) {
+        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList as MutableList<Story>)
+        listView.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
     fun notifyDataSetChanged() {
         adapter.notifyDataSetChanged()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(storyPageTab.hasFilterToolbar) {
-            val childFragment: Fragment = FilterToolbarFrag()
+            val childFragment: Fragment = FilterToolbarFrag(this)
             val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
             transaction.replace(R.id.filter_container, childFragment).commit()
         }

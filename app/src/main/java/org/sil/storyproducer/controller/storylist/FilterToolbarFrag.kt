@@ -11,9 +11,12 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Story
 
 
-class FilterToolbarFrag: Fragment() {
+class FilterToolbarFrag(storyPageFrag : StoryPageFragment): Fragment() {
+
+    val storyPageFrag = storyPageFrag
 
     lateinit var filterChipGroup : ChipGroup
 
@@ -32,7 +35,7 @@ class FilterToolbarFrag: Fragment() {
         return toolbarView
     }
 
-    private fun registerFilterChanged() {
+    private fun registerFilterChanged(): MutableList<CharSequence> {
         // FILTER TODO: This needs to actually send data back to the StoryPageFragment
         val ids = filterChipGroup.checkedChipIds
 
@@ -47,8 +50,12 @@ class FilterToolbarFrag: Fragment() {
         } else {
             "No Choice"
         }
+        val newList = storyPageFrag.storyPageTab.getStoryList().filter { story -> titles.contains(story.type.getFilterName(story.type, context!!)) }
+
+        storyPageFrag.updateStoryList(newList)
 
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
+        return titles
     }
 
 }
