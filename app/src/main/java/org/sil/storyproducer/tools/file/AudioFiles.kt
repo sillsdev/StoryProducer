@@ -33,8 +33,8 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
     return when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
-        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
         PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile
+        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
         else -> ""
     }
@@ -49,8 +49,8 @@ fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
 
     when(Workspace.activePhase.phaseType){
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile = combName
-        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile = combName
         PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile = combName
+        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile = combName
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
         else -> return
     }
@@ -89,24 +89,48 @@ fun updateDisplayName(position:Int, newName:String) {
     }
 }
 
-fun deleteAudioFileFromList(context: Context, pos: Int) {
-    //make sure to update the actual list, not a copy.
-    val filenames = Workspace.activePhase.getCombNames() ?: return
-    val filename = Story.getFilename(filenames[pos])
-    if(getChosenCombName() == filenames[pos]){
-        //the chosen filename was deleted!  Make it some other selection.
-        filenames.removeAt(pos)
-        if(filenames.size == 0) {
-            //If there is only 1 left, the resulting index will be -1, or no chosen filename.
+/**
+ * function implements deleteAudioFileFromList() for WordLinks
+ *  necessary because WL recordings are WordLinkRecordings, not just string file names as with other phases
+ */
+fun deleteWLAudioFileFromList(context: Context, pos: Int) {
+    val recordings = Workspace.activeWordLink.wordLinkRecordings
+    val fileLocation = Story.getFilename(recordings[pos].audioRecordingFilename)
+    val filename = recordings[pos].audioRecordingFilename
+
+    recordings.removeAt(pos)
+    if (getChosenCombName() == filename) {
+        // current chosen WL has been deleted, shift the file index
+        if (recordings.size == 0) {
             setChosenFileIndex(-1)
-        }else{
+        }else {
             setChosenFileIndex(0)
         }
-    }else{
-        //just delete the file index.
-        filenames.removeAt(pos)
     }
-    deleteStoryFile(context,filename)
+    // delete the WL recording file
+    deleteStoryFile(context, fileLocation)
+}
+
+
+/**
+ * function removes file from list of recordings by position
+ */
+fun deleteAudioFileFromList(context: Context, pos: Int) {
+    val recordings = Workspace.activePhase.getCombNames() ?: return
+    val fileLocation = Story.getFilename(recordings[pos])
+    val filename = recordings[pos]
+
+    recordings.removeAt(pos)
+    if (getChosenCombName() == filename) {
+        // current chosen WL has been deleted, shift the file index
+        if (recordings.size == 0) {
+            setChosenFileIndex(-1)
+        }else {
+            setChosenFileIndex(0)
+        }
+    }
+    // delete the recording file
+    deleteStoryFile(context, fileLocation)
 }
 
 fun createRecordingCombinedName() : String {

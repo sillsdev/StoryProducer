@@ -245,7 +245,11 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         }
 
         override fun onDeleteClick(name: String, pos: Int){
-            deleteAudioFileFromList(context,pos)
+            if (Workspace.activePhase.phaseType == PhaseType.WORD_LINKS) {
+                deleteWLAudioFileFromList(context, pos)
+            } else {
+                deleteAudioFileFromList(context,pos)
+            }
             displayNames.removeAt(pos)
             recyclerView?.adapter!!.notifyDataSetChanged()
             if ("${Workspace.activeDir}/$name" == getChosenDisplayName()) {
