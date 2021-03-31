@@ -3,6 +3,7 @@ package org.sil.storyproducer.tools.media.pipe;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 
+import org.jetbrains.annotations.NotNull;
 import org.sil.storyproducer.tools.media.MediaHelper;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.io.IOException;
 public class PipedMediaDecoder extends PipedMediaCodecByteBufferDest {
     private static final String TAG = "PipedMediaDecoder";
     @Override
-    protected String getComponentName() {
+    protected @NotNull String getComponentName() {
         return TAG;
     }
 

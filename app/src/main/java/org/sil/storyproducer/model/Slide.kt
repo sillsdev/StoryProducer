@@ -7,7 +7,7 @@ import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
+import org.sil.storyproducer.tools.media.imagestory.graphics.TextOverlay
 import java.util.*
 
 /**
@@ -22,7 +22,7 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
-    val simpleContent: String
+    private val simpleContent: String
     get() {
         //Remove all newlines
         var temp = "[\\r\\n]+".toRegex().replace(content,"")
@@ -101,13 +101,17 @@ class Slide{
         return tOverlay
     }
 
-    fun getFinalFile(): String {
+    fun getFinalFileString(): String {
         return if(chosenVoiceStudioFile == ""){
             chosenTranslateReviseFile.substringAfter("|")
         } else{
             chosenVoiceStudioFile.substringAfter("|")
         }
     }
+//
+//    fun getFinalFile() : File {
+//        return File(getFinalFileString());
+//    }
 
     companion object
 }

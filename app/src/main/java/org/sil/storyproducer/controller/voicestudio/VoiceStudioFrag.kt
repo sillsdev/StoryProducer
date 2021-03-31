@@ -8,12 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.SlidePlayerFrag
-import org.sil.storyproducer.controller.VideoPlayerFrag
+import org.sil.storyproducer.controller.ImageStoryPlayerFrag
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
@@ -50,11 +49,11 @@ class VoiceStudioFrag : MultiRecordFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isVideoStory) VideoPlayerFrag() else SlidePlayerFrag()
+        storyPlayer = if(Workspace.activeStory.isVideoStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
         storyPlayer?.startSlide = slideNum
         storyPlayer?.slideRange = 1
         storyPlayer?.phaseType = Workspace.activePhase.phaseType
-        var transaction = childFragmentManager.beginTransaction()
+        val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 

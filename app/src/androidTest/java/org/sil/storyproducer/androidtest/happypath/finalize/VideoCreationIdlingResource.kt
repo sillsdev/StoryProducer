@@ -3,7 +3,7 @@ package org.sil.storyproducer.androidtest.happypath.finalize
 import androidx.test.espresso.IdlingResource
 import org.sil.storyproducer.androidtest.utilities.Constants
 
-class VideoCreationIdlingResource() : IdlingResource {
+class VideoCreationIdlingResource : IdlingResource {
     private var callback : IdlingResource.ResourceCallback? = null
     private var startTime = System.currentTimeMillis()
 

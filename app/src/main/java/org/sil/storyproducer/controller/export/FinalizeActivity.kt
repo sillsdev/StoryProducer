@@ -17,8 +17,8 @@ import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import org.sil.storyproducer.tools.media.Producer
-import org.sil.storyproducer.tools.media.film.FilmProducer
-import org.sil.storyproducer.tools.media.story.SlideProducer
+import org.sil.storyproducer.tools.media.filmstory.FilmStoryProducer
+import org.sil.storyproducer.tools.media.imagestory.SlideProducer
 import org.sil.storyproducer.tools.stripForFilename
 
 
@@ -120,7 +120,7 @@ class FinalizeActivity : PhaseBaseActivity() {
     override fun onStart(){
         super.onStart()
         producer = if(Workspace.activeStory.isVideoStory){
-            FilmProducer(this, mOutputPath)
+            FilmStoryProducer(this, mOutputPath)
         }else{
             SlideProducer(this)
         }
@@ -344,8 +344,8 @@ class FinalizeActivity : PhaseBaseActivity() {
         }
     }
     fun showCreationElements(currentCheckbox : CheckBox? = null) {
-        var visibilityPreExport = View.VISIBLE
-        var visibilityWhileExport = View.GONE
+        val visibilityPreExport = View.VISIBLE
+        val visibilityWhileExport = View.GONE
 
         mLayoutConfiguration.visibility = visibilityPreExport
         mLayoutCancel.visibility = visibilityWhileExport
@@ -377,7 +377,7 @@ class FinalizeActivity : PhaseBaseActivity() {
             mCheckboxSong.isChecked = false
         }
     }
-    fun showProgressElements(currentCheckbox : CheckBox? = null) {
+    private fun showProgressElements(currentCheckbox : CheckBox? = null) {
         val visibilityPreExport = View.GONE
         val visibilityWhileExport = View.VISIBLE
 
@@ -466,7 +466,7 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         // Else, check if the file already exists...
         if (workspaceRelPathExists(this, "$VIDEO_DIR/$mOutputPath")) {
-            val dialog = android.app.AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
                     .setNegativeButton(getString(R.string.no), null)
@@ -491,7 +491,7 @@ class FinalizeActivity : PhaseBaseActivity() {
             storyMaker.videoRelPath = mOutputPath
             producer = storyMaker
         }else{
-            producer = FilmProducer(this, mOutputPath)
+            producer = FilmStoryProducer(this, mOutputPath)
         }
         producer.start()
         synchronized(storyMakerLock) {
@@ -521,19 +521,19 @@ class FinalizeActivity : PhaseBaseActivity() {
     }
 
     companion object {
-        private val TAG = "FinalizeActivity"
+        private const val TAG = "FinalizeActivity"
 
-        private val BUTTON_LOCK_DURATION_MS: Long = 1000
-        val PROGRESS_MAX = 1000
+        private const val BUTTON_LOCK_DURATION_MS: Long = 1000
+        const val PROGRESS_MAX = 1000
 
-        private val PREF_FILE = "Export_Config"
+        private const val PREF_FILE = "Export_Config"
 
-        private val PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music"
-        private val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
-        private val PREF_KEY_INCLUDE_TEXT = "include_text"
-        private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
-        private val PREF_KEY_INCLUDE_SONG = "include_song"
-        private val PREF_KEY_SHORT_NAME = "short_name"
+        private const val PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music"
+        private const val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
+        private const val PREF_KEY_INCLUDE_TEXT = "include_text"
+        private const val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
+        private const val PREF_KEY_INCLUDE_SONG = "include_song"
+        private const val PREF_KEY_SHORT_NAME = "short_name"
 
         @Volatile
         private var buttonLocked = false

@@ -15,7 +15,7 @@ open class BaseController(
         val context: Context
 ) {
 
-    protected val subscriptions = CompositeDisposable()
+    private val subscriptions = CompositeDisposable()
     private var cancelUpdate = false
 
     fun cancelUpdate() {
@@ -28,20 +28,20 @@ open class BaseController(
 
         val storyFiles = Workspace.storyFiles()
 
-        if (storyFiles.size > 0) {
+        if (storyFiles.isNotEmpty()) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)
         } else {
             onStoriesUpdated()
         }
     }
 
-    fun updateStoriesAsync(current: Int, total: Int, files: List<DocumentFile>) {
+    private fun updateStoriesAsync(current: Int, total: Int, files: List<DocumentFile>) {
         view.showReadingTemplatesDialog(this)
         updateStoryAsync(files, 0, current, total)
     }
 
-    fun updateStoryAsync(files: List<DocumentFile>, index: Int, current: Int, total: Int) {
-        val file = files.get(index)
+    private fun updateStoryAsync(files: List<DocumentFile>, index: Int, current: Int, total: Int) {
+        val file = files[index]
         view.updateReadingTemplatesDialog(current, total, file.name.orEmpty())
         subscriptions.add(
                 Single.fromCallable {

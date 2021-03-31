@@ -25,7 +25,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.network.VolleySingleton
 import java.util.*
 
 /**
@@ -212,7 +212,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 textFieldView = currentView.editText
                 if (textFieldView != null) {
                     storedValue = getStoredValueForView(textFieldView)
-                    if (!storedValue.isEmpty()) {
+                    if (storedValue.isNotEmpty()) {
                         textFieldView.setText(storedValue)
                     }
                     inputFieldsList.add(textFieldView)
@@ -220,7 +220,7 @@ open class RegistrationActivity : AppCompatActivity() {
             } else if (currentView is Spinner) {
                 spinnerView = currentView
                 storedValue = getStoredValueForView(spinnerView)
-                if (!storedValue.isEmpty()) {
+                if (storedValue.isNotEmpty()) {
                     storedSpinnerIndex = getSpinnerIndexFromString(storedValue)
                     if (storedSpinnerIndex >= 0) {
                         spinnerView.setSelection(storedSpinnerIndex)
@@ -335,7 +335,7 @@ open class RegistrationActivity : AppCompatActivity() {
         js["TrainerPhone"] = reg.getString("trainer_phone", " ")
 
         Log.i("LOG_VOLLEY", js.toString())
-        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_register_phone), Response.Listener { response ->
+        val req = object : StringRequest(Method.POST, getString(R.string.url_register_phone), Response.Listener { response ->
             Log.i("LOG_VOLEY", response)
             resp = response
         }, Response.ErrorListener { error ->
@@ -397,11 +397,11 @@ open class RegistrationActivity : AppCompatActivity() {
 
         }
         // Create timestamp for when the data was submitted
-        day = Integer.toString(calendar.get(Calendar.DAY_OF_MONTH))
-        month = Integer.toString(calendar.get(Calendar.MONTH) + 1)
-        year = Integer.toString(calendar.get(Calendar.YEAR))
-        hour = Integer.toString(calendar.get(Calendar.HOUR_OF_DAY))
-        min = Integer.toString(calendar.get(Calendar.MINUTE))
+        day = calendar.get(Calendar.DAY_OF_MONTH).toString()
+        month = (calendar.get(Calendar.MONTH) + 1).toString()
+        year = calendar.get(Calendar.YEAR).toString()
+        hour = calendar.get(Calendar.HOUR_OF_DAY).toString()
+        min = calendar.get(Calendar.MINUTE).toString()
         if (min.length < 2) {
             min = "0$min"
         }
@@ -576,11 +576,11 @@ open class RegistrationActivity : AppCompatActivity() {
     companion object {
 
 
-        val EMAIL_SENT = "registration_email_sent"
+        const val EMAIL_SENT = "registration_email_sent"
 
-        private val ID_PREFIX = "org.sil.storyproducer:id/input_"
-        private val SHOW_KEYBOARD = true
-        private val CLOSE_KEYBOARD = false
+        private const val ID_PREFIX = "org.sil.storyproducer:id/input_"
+        private const val SHOW_KEYBOARD = true
+        private const val CLOSE_KEYBOARD = false
 
         //private static boolean isRemoteConsultant = false;
         //public static boolean haveRemoteConsultant(){ return isRemoteConsultant;}

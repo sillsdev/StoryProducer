@@ -21,7 +21,7 @@ import java.util.List;
 public class MessageAdapter extends BaseAdapter {
 
     List<Message> messages = new ArrayList<>();
-    Context con;
+    final Context con;
     int lastID = -1;
 
     public MessageAdapter(Context context){

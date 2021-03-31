@@ -44,7 +44,7 @@ class PipedMediaExtractor
 
         mExtractor = MediaExtractor()
 
-        var descriptor = getStoryFileDescriptor(context, mPath,"","r")
+        val descriptor = getStoryFileDescriptor(context, mPath,"","r")
         mExtractor!!.setDataSource(descriptor!!)
 
         var foundTrack = false
@@ -140,6 +140,6 @@ class PipedMediaExtractor
     }
 
     companion object {
-        private val TAG = "PipedMediaExtractor"
+        private const val TAG = "PipedMediaExtractor"
     }
 }

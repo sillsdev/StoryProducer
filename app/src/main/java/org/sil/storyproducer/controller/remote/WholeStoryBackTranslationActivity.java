@@ -5,18 +5,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Switch;
 
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,9 +34,9 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     private boolean backgroundAudioExists;
 
     private int slideNumber = 0;
-    private int CONTENT_SLIDE_COUNT = 0;
+    private final int CONTENT_SLIDE_COUNT = 0;
     private String storyName;
-    private boolean isVolumeOn = true;
+    private final boolean isVolumeOn = true;
     private List<Integer> backgroundAudioJumps;
 
     //recording toolbar vars
@@ -47,8 +44,8 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
     //private RecordingToolbar recordingToolbar;
 
     private boolean isFirstTime = true;         //used to know if it is the first time the activity is started up for playing the vid
-    private int startPos = -1;
-    private long startTime = -1;
+    private final int startPos = -1;
+    private final long startTime = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,19 +115,16 @@ public class WholeStoryBackTranslationActivity extends PhaseBaseActivity {
         super.onStart();
         //create audio players
         narrationPlayer = new AudioPlayer();
-        narrationPlayer.onPlayBackStop(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                slideNumber++;         //move to the next slide
-                if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
-                    playVideo();
-                } else {                            //at the end of video so special case
-                    //makeLogIfNecessary(true);
+        narrationPlayer.onPlayBackStop(mp -> {
+            slideNumber++;         //move to the next slide
+            if(slideNumber < CONTENT_SLIDE_COUNT) {     //not at the end of video
+                playVideo();
+            } else {                            //at the end of video so special case
+                //makeLogIfNecessary(true);
 
-                    videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
-                    playButton.setImageResource(R.drawable.ic_play_circle_outline_white_36dp);
-                    setPic(wStoryImageView);     //sets the pic to the end image
-                }
+                videoSeekBar.setProgress(CONTENT_SLIDE_COUNT);
+                playButton.setImageResource(R.drawable.ic_play_circle_outline_white_36dp);
+                setPic(wStoryImageView);     //sets the pic to the end image
             }
         });
         //recordingToolbar.hideFloatingActionButton();

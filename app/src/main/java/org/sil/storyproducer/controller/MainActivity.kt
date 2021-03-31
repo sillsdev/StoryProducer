@@ -24,13 +24,13 @@ import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.Network.ConnectivityStatus
-import org.sil.storyproducer.tools.Network.VolleySingleton
+import org.sil.storyproducer.tools.network.ConnectivityStatus
+import org.sil.storyproducer.tools.network.VolleySingleton
 import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
 
-    lateinit var storyList: StoryListFrag
+    private lateinit var storyList: StoryListFrag
 
     private var mDrawerLayout: DrawerLayout? = null
 
@@ -125,7 +125,7 @@ class MainActivity : BaseActivity(), Serializable {
 
         mDrawerLayout = findViewById(R.id.drawer_layout)
         //Lock from opening with left swipe
-        mDrawerLayout!!.setDrawerLockMode(androidx.drawerlayout.widget.DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+        mDrawerLayout!!.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(::onNavigationItemSelected)
     }

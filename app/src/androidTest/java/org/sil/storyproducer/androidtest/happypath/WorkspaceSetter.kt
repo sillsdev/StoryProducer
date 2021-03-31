@@ -76,7 +76,7 @@ class WorkspaceSetter {
 
             // If the welcome dialog does not display, then the workspace has already been initialized.
             // This means, that we need to ensure that the workspace is set to the testing directory
-            var welcomeScreenButton = onView(withId(R.id.select_templates_button))
+            val welcomeScreenButton = onView(withId(R.id.select_templates_button))
             if(welcomeScreenButton.isNotDisplayed()) {
                 return
             }
@@ -85,7 +85,7 @@ class WorkspaceSetter {
             onView(withId(R.id.select_templates_button))
                     .inRoot(isDialog())
                     .check(matches(isDisplayed()))
-                    .perform(click());
+                    .perform(click())
 
             device.findObject(By.res("android:id/button1").text("OK")).click()
             device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)

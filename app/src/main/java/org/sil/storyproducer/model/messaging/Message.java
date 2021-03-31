@@ -5,8 +5,8 @@ package org.sil.storyproducer.model.messaging;
  */
 
 public class Message {
-    private boolean fromPhone;
-    private String message;
+    private final boolean fromPhone;
+    private final String message;
 
     public Message(boolean b, String m){
         fromPhone = b;

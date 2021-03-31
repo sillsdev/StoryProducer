@@ -29,7 +29,7 @@ import java.io.File
 /**
  * The fragment for the Draft view. This is where a user can draft out the story slide by slide
  */
-abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
+abstract class MultiRecordFrag : StoryPhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
     protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
 
     private var tempPicFile: File? = null

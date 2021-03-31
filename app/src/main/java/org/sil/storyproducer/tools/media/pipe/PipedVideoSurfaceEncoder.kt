@@ -1,19 +1,15 @@
 package org.sil.storyproducer.tools.media.pipe
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.media.*
-import android.media.MediaCodecInfo.CodecCapabilities.*
+import android.media.MediaCodec
+import android.media.MediaFormat
 import android.os.Build
-import androidx.core.math.MathUtils
 import android.view.Surface
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.media.pipe.PipedVideoSurfaceEncoder.Source
 import org.sil.storyproducer.tools.selectCodec
 import java.io.IOException
 import java.util.*
-import java.nio.ByteBuffer
-import kotlin.math.max
 
 
 /**
@@ -134,7 +130,7 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
     }
 
     companion object {
-        private val TAG = "PipedVideoSurfaceEnc"
+        private const val TAG = "PipedVideoSurfaceEnc"
 
     }
 }

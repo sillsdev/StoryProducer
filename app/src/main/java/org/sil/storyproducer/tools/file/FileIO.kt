@@ -110,7 +110,7 @@ fun getDownsample(context: Context, relPath: String,
     // a default value of 1 if there is an empty string.  According to the documentation,
     // iStream.available() can throw an exception, so a try/catch was added.
     // restructure routine for better flow
-    var ds:Int = 1
+    var ds = 1
     if(relPath != "") { // If empty string: return ds default value
         val iStream = getStoryChildInputStream(context, relPath, story.title)
         if(iStream != null) { // If null: could not assign an iStream to the file, return ds default value
@@ -316,5 +316,5 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     return false
 }
 
-val DEFAULT_WIDTH: Int = 1500
-val DEFAULT_HEIGHT: Int = 1125
+const val DEFAULT_WIDTH: Int = 1500
+const val DEFAULT_HEIGHT: Int = 1125

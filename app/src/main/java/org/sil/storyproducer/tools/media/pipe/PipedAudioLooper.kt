@@ -102,6 +102,6 @@ class PipedAudioLooper
     }
 
     companion object {
-        private val TAG = "PipedAudioLooper"
+        private const val TAG = "PipedAudioLooper"
     }
 }

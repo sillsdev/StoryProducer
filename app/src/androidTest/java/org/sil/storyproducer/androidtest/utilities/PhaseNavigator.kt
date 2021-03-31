@@ -14,7 +14,7 @@ import java.lang.RuntimeException
 
 object PhaseNavigator {
     fun selectPhase(phaseTitle: String) {
-        Espresso.onView(ViewMatchers.withId(R.id.toolbar)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(R.id.toolbar)).perform(ViewActions.click())
         Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
     }
 
@@ -34,12 +34,12 @@ object PhaseNavigator {
     }
 
     fun skipRegistration() {
-        Espresso.onView(ViewMatchers.withText(R.string.bypass_button_text)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withId(android.R.id.button1)).perform(ViewActions.scrollTo(), ViewActions.click())
+        onView(withText(R.string.bypass_button_text)).perform(ViewActions.click())
+        onView(ViewMatchers.withId(android.R.id.button1)).perform(ViewActions.scrollTo(), ViewActions.click())
     }
 
     private fun clickOnStory(storyName: String) {
-        Espresso.onView(ViewMatchers.withText(CoreMatchers.containsString(storyName))).perform(ViewActions.scrollTo(), ViewActions.click())
+        onView(withText(CoreMatchers.containsString(storyName))).perform(ViewActions.scrollTo(), ViewActions.click())
     }
 
     private fun isRegistrationDisplayed() : Boolean {

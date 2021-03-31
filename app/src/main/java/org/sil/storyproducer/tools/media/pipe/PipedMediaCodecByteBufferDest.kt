@@ -67,6 +67,6 @@ abstract class PipedMediaCodecByteBufferDest : PipedMediaCodec(), PipedMediaByte
     }
 
     companion object {
-        private val TAG = "PipedMediaCodecBBDest"
+        private const val TAG = "PipedMediaCodecBBDest"
     }
 }

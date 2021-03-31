@@ -39,7 +39,7 @@ import kotlin.math.max
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
-    lateinit var slideService: SlideService
+    private lateinit var slideService: SlideService
 
     private var mDetector: GestureDetectorCompat? = null
     private var mDrawerList: ListView? = null

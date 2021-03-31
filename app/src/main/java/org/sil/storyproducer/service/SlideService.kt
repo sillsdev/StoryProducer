@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 
@@ -19,7 +18,7 @@ class SlideService(val context: Context) {
     }
 
     fun shouldShowDefaultImage(slideNum: Int, story: Story): Boolean {
-        return story.title.isNullOrEmpty()
+        return story.title.isEmpty()
                 || story.slides.getOrNull(slideNum)?.imageFile.isNullOrEmpty()
     }
 
@@ -65,7 +64,7 @@ class SlideService(val context: Context) {
         return genDefaultImage()
     }
 
-    fun genDefaultImage(): Bitmap {
+    private fun genDefaultImage(): Bitmap {
         return BitmapFactory.decodeResource(context.resources, R.drawable.greybackground)
     }
 

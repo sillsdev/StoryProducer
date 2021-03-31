@@ -170,6 +170,6 @@ class AudioPlayer {
     }
 
     companion object {
-        private val TAG = "AudioPlayer"
+        private const val TAG = "AudioPlayer"
     }
 }

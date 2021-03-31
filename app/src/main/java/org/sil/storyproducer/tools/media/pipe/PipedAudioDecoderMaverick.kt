@@ -8,6 +8,7 @@ import org.sil.storyproducer.tools.media.MediaHelper
 
 import java.io.IOException
 import java.nio.ByteBuffer
+import kotlin.math.abs
 
 /**
  *
@@ -67,7 +68,7 @@ class PipedAudioDecoderMaverick
         decoder.addSource(extractor)
         decoder.setup()
 
-        if (Math.abs(mVolumeModifier - 1) < 0.001) {
+        if (abs(mVolumeModifier - 1) < 0.001) {
             mSource = PipedAudioResampler.correctSampling(decoder, mSampleRate, mChannelCount)
         } else {
             val resampler = PipedAudioResampler(mSampleRate, mChannelCount)
@@ -88,6 +89,6 @@ class PipedAudioDecoderMaverick
     }
 
     companion object {
-        private val TAG = "PipedAudioMaverick"
+        private const val TAG = "PipedAudioMaverick"
     }
 }

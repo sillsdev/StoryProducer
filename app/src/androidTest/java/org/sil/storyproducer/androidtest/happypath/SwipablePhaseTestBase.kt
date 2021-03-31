@@ -2,13 +2,12 @@ package org.sil.storyproducer.androidtest.happypath
 
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.test.espresso.Espresso
-import androidx.test.espresso.action.GeneralSwipeAction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import org.hamcrest.CoreMatchers
-import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.Constants
 
@@ -18,7 +17,7 @@ abstract class SwipablePhaseTestBase(sharedBase: SharedBase) : PhaseTestBase() {
 
     protected fun test_swipingBetweenSlides() {
         val originalSlideNumber = findCurrentSlideNumber()
-        var nextSlideNumber = originalSlideNumber + 1
+        val nextSlideNumber = originalSlideNumber + 1
         expectToBeOnSlide(originalSlideNumber)
         swipeLeftOnSlide()
         expectToBeOnSlide(nextSlideNumber)

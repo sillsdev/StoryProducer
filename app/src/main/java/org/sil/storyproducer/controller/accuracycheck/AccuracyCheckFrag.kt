@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.consultant
+package org.sil.storyproducer.controller.accuracycheck
 
 import android.content.Context
 import android.os.Bundle
@@ -12,9 +12,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.SlidePhaseFrag
-import org.sil.storyproducer.controller.SlidePlayerFrag
-import org.sil.storyproducer.controller.VideoPlayerFrag
+import org.sil.storyproducer.controller.StoryPhaseFrag
+import org.sil.storyproducer.controller.ImageStoryPlayerFrag
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
@@ -25,11 +25,11 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-class AccuracyCheckFrag : SlidePhaseFrag() {
+class AccuracyCheckFrag : StoryPhaseFrag() {
 
-    var logDialog: AlertDialog? = null
-    var greenCheckmark: VectorDrawableCompat ?= null
-    var grayCheckmark: VectorDrawableCompat ?= null
+    private var logDialog: AlertDialog? = null
+    private var greenCheckmark: VectorDrawableCompat ?= null
+    private var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -51,14 +51,14 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         super.onViewCreated(view, savedInstanceState)
 
         storyPlayer = if(Workspace.activeStory.isVideoStory) {
-            VideoPlayerFrag()
+            FilmStoryPlayerFrag()
         } else {
-            SlidePlayerFrag()
+            ImageStoryPlayerFrag()
         }
         storyPlayer?.startSlide = slideNum
         storyPlayer?.slideRange = 1
         storyPlayer?.phaseType = Workspace.activePhase.phaseType
-        var transaction = childFragmentManager.beginTransaction()
+        val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
@@ -130,7 +130,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     }
 
     private fun makeLogView() {
-        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(context!!)
+        val alertDialog = AlertDialog.Builder(context!!)
         val linf = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
 
@@ -174,7 +174,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        password.id = R.id.password_text_field;
+        password.id = R.id.password_text_field
 
         // Programmatically set layout properties for edit text field
         val params = LinearLayout.LayoutParams(
@@ -246,8 +246,8 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     }
 
     companion object {
-        val CONSULTANT_PREFS = "Consultant_Checks"
-        val IS_CONSULTANT_APPROVED = "isApproved"
-        private val PASSWORD = "appr00ved"
+        const val CONSULTANT_PREFS = "Consultant_Checks"
+        const val IS_CONSULTANT_APPROVED = "isApproved"
+        private const val PASSWORD = "appr00ved"
     }
 }

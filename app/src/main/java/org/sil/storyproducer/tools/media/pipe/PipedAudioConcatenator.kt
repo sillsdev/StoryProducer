@@ -380,6 +380,6 @@ class PipedAudioConcatenator
 
 
     companion object {
-        private val TAG = "PipedAudioConcatenator"
+        private const val TAG = "PipedAudioConcatenator"
     }
 }

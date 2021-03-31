@@ -12,7 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner
 @RunWith(MockitoJUnitRunner::class)
 class NumberedPageSlideBuilderTest {
 
-    val builder = NumberedPageSlideBuilder()
+    private val builder = NumberedPageSlideBuilder()
 
     @Mock lateinit var context: Context
     @Mock lateinit var file: DocumentFile

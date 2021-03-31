@@ -2,8 +2,8 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.graphics.Rect
-import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
+import androidx.documentfile.provider.DocumentFile
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
@@ -11,9 +11,9 @@ import org.sil.storyproducer.tools.file.getStoryText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
-fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
+fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
     val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
@@ -74,14 +74,14 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     slides.last().musicFile = MUSIC_NONE
 
     //Add the song slide
-    var slide = Slide()
+    val slide = Slide()
     slide.slideType = SlideType.LOCALSONG
     slide.content = context.getString(R.string.LS_prompt)
     slide.musicFile = MUSIC_NONE
     //add as second last slide
     slides.add(slides.size-1,slide)
 
-    var ret = Story(storyPath.name!!,slides)
+    val ret = Story(storyPath.name!!,slides)
     ret.fullVideo = fullVideoString
     ret.importAppVersion = BuildConfig.VERSION_NAME
     ret.isVideoStory = fullVideoString != ""
@@ -134,7 +134,7 @@ private fun parseVideo(slide: Slide, parser: XmlPullParser) {
     parser.require(XmlPullParser.END_TAG, null, "Video")
 }
 private fun parseTimeStamp(slide: Slide, parser: XmlPullParser) {
-    var useMillis = parser.getAttributeValue(null, "useMillis")
+    val useMillis = parser.getAttributeValue(null, "useMillis")
     val start = parser.getAttributeValue(null, "start").toInt()
     val end = parser.getAttributeValue(null, "end").toInt()
     if(useMillis=="false"){

@@ -66,7 +66,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         finish()
     }
 
-    fun updateTemplatesFolder() {
+    private fun updateTemplatesFolder() {
         controller.openDocumentTree(UPDATE_TEMPLATES_FOLDER)
     }
 
@@ -157,8 +157,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         val versionName = packageManager.getPackageInfo(packageName, 0).versionName
 
         return layoutInflater.inflate(R.layout.dialog_about, null).apply {
-            findViewById<TextView>(R.id.appVersion)
-                    .setText(getString(R.string.app_version, versionName))
+            findViewById<TextView>(R.id.appVersion).text = getString(R.string.app_version, versionName)
         }
     }
 

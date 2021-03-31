@@ -30,7 +30,7 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
 
         // Local Credits Constant
         val credits : String = Constants.resources.getString(R.string.LC_starting_text)
-        val newText : String = "Edited By Espresso!"
+        val newText = "Edited By Espresso!"
 
         assert(Workspace.activeStory.localCredits.isNotEmpty())
         Workspace.activeStory.localCredits = credits
@@ -65,15 +65,15 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
         }, Constants.Phase.finalize)
 
         val videoTitle = generateUniqueVideoTitle()
-        Espresso.onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
+        onView(allOf(withId(R.id.editText_export_title), isDisplayed())).perform(clearText()).perform((typeText(videoTitle)))
         Espresso.closeSoftKeyboard()
 
-        var videoCreationIdling = VideoCreationIdlingResource()
+        val videoCreationIdling = VideoCreationIdlingResource()
         IdlingRegistry.getInstance().register(videoCreationIdling)
 
         try {
             // click the create video button
-            Espresso.onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
+            onView(allOf(withId(R.id.button_export_start), isDisplayed())).perform(click())
             // verify that the expected video file exists on disk
             waitForVideoToExist(videoTitle, Constants.durationToWaitForVideoExport)
         } finally {

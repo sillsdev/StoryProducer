@@ -33,7 +33,7 @@ class PipedMediaMuxer
     private var mMuxer: MediaMuxer? = null
 
     @Volatile
-    protected var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
+    private var mComponentState: PipedMediaSource.State = PipedMediaSource.State.UNINITIALIZED
 
     private var mAudioSource: PipedMediaByteBufferSource? = null
     private var mAudioTrackIndex = -1
@@ -199,6 +199,8 @@ class PipedMediaMuxer
                 while (!mSource.isDone && mComponentState != PipedMediaSource.State.CLOSED) {
                     buffer = mSource.getBuffer(info)
 
+                    if(buffer == null) continue
+
                     if (MediaHelper.VERBOSE)
                         Log.v(TAG, "[track " + mTrackIndex + "] writing output buffer of size "
                                 + info.size + " for time " + info.presentationTimeUs)
@@ -265,7 +267,7 @@ class PipedMediaMuxer
     }
 
     companion object {
-        private val TAG = "PipedMediaMuxer"
+        private const val TAG = "PipedMediaMuxer"
 
         private val audioLock = Any()
         private val videoLock = Any()

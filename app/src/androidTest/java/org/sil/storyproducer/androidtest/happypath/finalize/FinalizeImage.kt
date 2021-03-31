@@ -12,7 +12,7 @@ import org.sil.storyproducer.androidtest.happypath.base.annotation.ImageTest
 @LargeTest
 @ImageTest
 @RunWith(AndroidJUnit4::class)
-class FinalizeImage() : ImageBase() {
+class FinalizeImage : ImageBase() {
     private var base: FinalizePhaseBase = FinalizePhaseBase(this)
 
     @Before

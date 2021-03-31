@@ -6,20 +6,20 @@ import android.widget.TextView
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.SlidePlayerFrag
+import org.sil.storyproducer.controller.ImageStoryPlayerFrag
 import org.sil.storyproducer.controller.StoryPlayerFrag
-import org.sil.storyproducer.controller.VideoPlayerFrag
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 
 class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
-    lateinit var audioSwitch : Switch
+    private lateinit var audioSwitch : Switch
     private var isWatchedOnce = false
 
     private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
-    lateinit var storyPlayer : StoryPlayerFrag
+    private lateinit var storyPlayer : StoryPlayerFrag
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
 
         storyPlayer.stop()
         // Remove the story player so that we can add it in when we switch phases
-        var fragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.remove(storyPlayer).commit()
     }
 
@@ -53,14 +53,14 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         super.onResume()
 
         storyPlayer = if(Workspace.activeStory.isVideoStory) {
-            VideoPlayerFrag()
+            FilmStoryPlayerFrag()
         } else {
-            SlidePlayerFrag()
+            ImageStoryPlayerFrag()
         }
         storyPlayer.startSlide = 0
         storyPlayer.slideRange = Workspace.activeStory.numSlides
         storyPlayer.phaseType = Workspace.activePhase.phaseType
-        var fragmentTransaction = supportFragmentManager.beginTransaction()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.activity_learn, storyPlayer).commit()
     }
 
@@ -68,7 +68,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         val bundle = Bundle()
         bundle.putInt(SLIDE_NUM, 0)
         recordingToolbar.arguments = bundle
-        supportFragmentManager?.beginTransaction()?.replace(R.id.toolbar_for_recording_toolbar, recordingToolbar)?.commit()
+        supportFragmentManager.beginTransaction().replace(R.id.toolbar_for_recording_toolbar, recordingToolbar).commit()
 
         recordingToolbar.keepToolbarVisible()
     }

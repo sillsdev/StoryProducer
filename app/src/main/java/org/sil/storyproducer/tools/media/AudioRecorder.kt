@@ -15,20 +15,19 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.media.film.FFmpegReturn
-import org.sil.storyproducer.tools.media.story.SlideProducer
-import org.sil.storyproducer.tools.media.story.StoryMaker
-import org.sil.storyproducer.tools.media.story.StoryPage
+import org.sil.storyproducer.tools.media.imagestory.SlideProducer
+import org.sil.storyproducer.tools.media.imagestory.StoryMaker
+import org.sil.storyproducer.tools.media.imagestory.StoryPage
 import java.io.File
 import java.io.IOException
 
 
 //See https://developer.android.com/guide/topics/media/media-formats.html for supported formats.
-internal val OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4
-internal val AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC
-internal val SAMPLE_RATE = 44100
-internal val BIT_DEPTH = 16
-internal val AUDIO_CHANNELS = 1
+internal const val OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4
+internal const val AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC
+internal const val SAMPLE_RATE = 44100
+internal const val BIT_DEPTH = 16
+internal const val AUDIO_CHANNELS = 1
 //Set bit rate to exact spec of Android doc or to SAMPLE_RATE * BIT_DEPTH.
 internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
 
@@ -37,7 +36,7 @@ internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
  */
 
 private const val AUDIO_RECORDER = "audio_recorder"
-private const val DECIBEL_MAX = -65
+private const val DECIBEL_MAX = -100
 
 abstract class AudioRecorder(val activity: Activity) {
     var isRecording = false

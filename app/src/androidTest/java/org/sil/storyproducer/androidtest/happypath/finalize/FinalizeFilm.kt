@@ -12,7 +12,7 @@ import org.sil.storyproducer.androidtest.happypath.base.annotation.FilmTest
 @LargeTest
 @FilmTest
 @RunWith(AndroidJUnit4::class)
-class FinalizeFilm() : FilmBase() {
+class FinalizeFilm : FilmBase() {
     private var base: FinalizePhaseBase = FinalizePhaseBase(this)
 
     @Before

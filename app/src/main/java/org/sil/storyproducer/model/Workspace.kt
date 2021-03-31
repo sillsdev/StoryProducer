@@ -29,7 +29,7 @@ object Workspace{
     var registration: Registration = Registration()
     var activePhaseIndex: Int = -1
     var isInitialized = false
-    var prefs: SharedPreferences? = null
+    private var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -49,10 +49,10 @@ object Workspace{
     val activeDirRoot: String
     get(){return activeStory.title }
 
-    val activeDir: String = PROJECT_DIR
+    const val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
     get() {
-        return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
+        return "${activePhase.getFileSafeName()}$activeSlideNum"
     }
 
     var activeSlideNum: Int = -1
@@ -71,7 +71,7 @@ object Workspace{
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
-    val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
+    private const val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorkspace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
@@ -131,7 +131,7 @@ object Workspace{
         }
     }
 
-    fun pathOf(name: String): DocumentFile? {
+    private fun pathOf(name: String): DocumentFile? {
         return workdocfile.listFiles().find { it.name == name }
     }
 
@@ -158,10 +158,10 @@ object Workspace{
         if (story != null) {
             story.phases = buildPhases(story)
         }
-        return story;
+        return story
     }
 
-    fun buildPhases(story : Story): List<Phase> {
+    private fun buildPhases(story : Story): List<Phase> {
         // update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
             "remote" -> Phase.getRemotePhases(story.isVideoStory)

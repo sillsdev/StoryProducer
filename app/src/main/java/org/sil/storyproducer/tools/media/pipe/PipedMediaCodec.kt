@@ -222,6 +222,6 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
     }
 
     companion object {
-        private val TAG = "PipedMediaCodec"
+        private const val TAG = "PipedMediaCodec"
     }
 }

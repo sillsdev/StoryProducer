@@ -7,7 +7,7 @@ import org.sil.storyproducer.model.Workspace
 /**
  * Class that implements the ViewPager.OnPageChangeListener to give the view pager circular functionality
  */
-class CircularViewPagerHandler(private val mViewPager: androidx.viewpager.widget.ViewPager) : androidx.viewpager.widget.ViewPager.OnPageChangeListener {
+class CircularViewPagerHandler(private val mViewPager: ViewPager) : ViewPager.OnPageChangeListener {
     private var mScrollState: Int = 0
 
     override fun onPageSelected(position: Int) {
@@ -15,7 +15,7 @@ class CircularViewPagerHandler(private val mViewPager: androidx.viewpager.widget
     }
 
     override fun onPageScrollStateChanged(state: Int) {
-        if (state == androidx.viewpager.widget.ViewPager.SCROLL_STATE_IDLE && mScrollState != androidx.viewpager.widget.ViewPager.SCROLL_STATE_SETTLING) {
+        if (state == ViewPager.SCROLL_STATE_IDLE && mScrollState != ViewPager.SCROLL_STATE_SETTLING) {
             handleSetNextItem()
         }
         mScrollState = state

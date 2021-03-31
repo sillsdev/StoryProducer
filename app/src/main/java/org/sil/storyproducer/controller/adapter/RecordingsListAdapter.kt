@@ -22,7 +22,7 @@ import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
-class RecordingsListAdapter(val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
+class RecordingsListAdapter(private val values: MutableList<String>?, private val listeners: ClickListeners) : RecyclerView.Adapter<RecordingsListAdapter.ViewHolder>() {
 
     interface ClickListeners {
         fun onRowClick(pos: Int)
@@ -132,7 +132,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         private var rootView: ViewGroup? = null
         private var dialog: AlertDialog? = null
         private var displayNames: MutableList<String> = mutableListOf()
-        internal var recyclerView: androidx.recyclerview.widget.RecyclerView? = null
+        private var recyclerView: RecyclerView? = null
         private val audioPlayer: AudioPlayer = AudioPlayer()
         private var currentPlayingButton: ImageButton? = null
         private var audioPos = -1
@@ -199,7 +199,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
         fun resetRecordingList() {
             //only update if there was a change.
             val newNames = getRecordedDisplayNames(slideNum) ?:  mutableListOf()
-            if(!displayNames.equals(newNames)) {
+            if(displayNames != newNames) {
                 displayNames = newNames
                 recyclerView?.adapter = RecordingsListAdapter(displayNames, this)
             }

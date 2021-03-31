@@ -12,7 +12,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
  * is added that can bring up a modal listing the audio recording created with this toolbar.
  */
 open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
-    protected lateinit var multiRecordButton: ImageButton
+    private lateinit var multiRecordButton: ImageButton
 
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()

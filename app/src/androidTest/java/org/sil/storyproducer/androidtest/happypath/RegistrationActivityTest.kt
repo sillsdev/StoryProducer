@@ -15,7 +15,7 @@ import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 
 @ImageTest
 @RunWith(AndroidJUnit4::class)
-class RegistrationActivityTest() : PhaseTestBase() {
+class RegistrationActivityTest : PhaseTestBase() {
     override fun navigateToPhase() {
         // This function is intentionally empty, since
         // this test verifies the registration screen, which

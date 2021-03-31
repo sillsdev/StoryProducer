@@ -44,7 +44,7 @@ fun saveLearnLog(context: Context, startSlide: Int, endSlide: Int, duration: Lon
         val mins = roundedSecs / 60
         var minString = ""
         if (mins > 0) {
-            minString = mins.toString() + " " + minUnit + " "
+            minString = "$mins $minUnit "
         }
         ret += " (" + minString + roundedSecs % 60 + " " + secUnit + ")"
     }

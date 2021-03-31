@@ -4,14 +4,14 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.preference.*
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
@@ -20,7 +20,6 @@ import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
-import java.io.File
 
 /**
  * A class responsible for controlling the media and appearance of a recording toolbar.
@@ -126,7 +125,8 @@ open class RecordingToolbar : Fragment(){
         
         toolbarMediaListener.onStoppedToolbarRecording()
 
-        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
+        // Temporarily removed.
+//        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
     }
 
     protected fun recordAudio(recordingRelPath: String) {

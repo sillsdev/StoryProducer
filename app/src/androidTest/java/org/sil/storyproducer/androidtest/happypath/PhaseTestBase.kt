@@ -15,7 +15,7 @@ import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
 import java.io.File
 
-abstract class PhaseTestBase() {
+abstract class PhaseTestBase {
 
     @Rule
     @JvmField
@@ -95,7 +95,7 @@ abstract class PhaseTestBase() {
 
     abstract fun navigateToPhase()
 
-    protected fun launchActivityAndBypassWorkspacePicker() {
+    private fun launchActivityAndBypassWorkspacePicker() {
         mActivityTestRule.launchActivity(null)
     }
 
