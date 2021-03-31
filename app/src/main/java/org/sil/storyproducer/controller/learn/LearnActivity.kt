@@ -52,7 +52,7 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     public override fun onResume() {
         super.onResume()
 
-        storyPlayer = if(Workspace.activeStory.isVideoStory) {
+        storyPlayer = if(Workspace.activeStory.isFilmStory) {
             FilmStoryPlayerFrag()
         } else {
             ImageStoryPlayerFrag()

@@ -84,7 +84,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     val ret = Story(storyPath.name!!,slides)
     ret.fullVideo = fullVideoString
     ret.importAppVersion = BuildConfig.VERSION_NAME
-    ret.isVideoStory = fullVideoString != ""
+    ret.isFilmStory = fullVideoString != ""
     return ret
 }
 

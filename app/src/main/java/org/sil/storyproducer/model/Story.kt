@@ -24,7 +24,7 @@ class Story(var title: String, var slides: List<Slide>){
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
     var fullVideo: String = ""
-    var isVideoStory = false
+    var isFilmStory = false
     var localCredits = ""
     val numSlides : Int get() {
         var num = 0

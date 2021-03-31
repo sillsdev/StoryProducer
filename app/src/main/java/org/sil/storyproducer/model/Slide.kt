@@ -22,7 +22,7 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
-    private val simpleContent: String
+    val simpleContent: String
     get() {
         //Remove all newlines
         var temp = "[\\r\\n]+".toRegex().replace(content,"")

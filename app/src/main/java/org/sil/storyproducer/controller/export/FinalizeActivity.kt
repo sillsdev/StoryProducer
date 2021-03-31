@@ -119,7 +119,7 @@ class FinalizeActivity : PhaseBaseActivity() {
 
     override fun onStart(){
         super.onStart()
-        producer = if(Workspace.activeStory.isVideoStory){
+        producer = if(Workspace.activeStory.isFilmStory){
             FilmStoryProducer(this, mOutputPath)
         }else{
             SlideProducer(this)
@@ -317,7 +317,7 @@ class FinalizeActivity : PhaseBaseActivity() {
         mLayoutCancel.visibility = visibilityWhileExport
         mButtonStart.visibility = visibilityPreExport
 
-        if(Workspace.activeStory.isVideoStory){
+        if(Workspace.activeStory.isFilmStory){
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
@@ -351,7 +351,7 @@ class FinalizeActivity : PhaseBaseActivity() {
         mLayoutCancel.visibility = visibilityWhileExport
         mButtonStart.visibility = visibilityPreExport
 
-        if(Workspace.activeStory.isVideoStory){
+        if(Workspace.activeStory.isFilmStory){
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
@@ -385,7 +385,7 @@ class FinalizeActivity : PhaseBaseActivity() {
         mLayoutCancel.visibility = visibilityWhileExport
         mButtonStart.visibility = visibilityPreExport
 
-        if(Workspace.activeStory.isVideoStory){
+        if(Workspace.activeStory.isFilmStory){
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
@@ -481,7 +481,7 @@ class FinalizeActivity : PhaseBaseActivity() {
     private fun startExport() {
         savePreferences()
         producer.isActive = false
-        if(!Workspace.activeStory.isVideoStory){
+        if(!Workspace.activeStory.isFilmStory){
             val storyMaker = SlideProducer(this)
             storyMaker.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
             storyMaker.mIncludePictures = true

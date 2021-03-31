@@ -50,7 +50,7 @@ class AccuracyCheckFrag : StoryPhaseFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isVideoStory) {
+        storyPlayer = if(Workspace.activeStory.isFilmStory) {
             FilmStoryPlayerFrag()
         } else {
             ImageStoryPlayerFrag()

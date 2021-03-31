@@ -164,8 +164,8 @@ object Workspace{
     private fun buildPhases(story : Story): List<Phase> {
         // update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases(story.isVideoStory)
-            else -> Phase.getLocalPhases(story.isVideoStory)
+            "remote" -> Phase.getRemotePhases(story.isFilmStory)
+            else -> Phase.getLocalPhases(story.isFilmStory)
         }
     }
 

@@ -82,6 +82,7 @@ class Phase (val phaseType: PhaseType) {
 
     /**
      * Get path of audio file needed by slide, based on the current phase (narration or a draft)
+     * @param slideNum
      * @return String
      */
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
@@ -98,12 +99,14 @@ class Phase (val phaseType: PhaseType) {
         return Story.getFilename(filename)
     }
 
+    /**
+     * Get path of audio file needed by slide, based on the current phase (narration or a draft)
+     * @param slide
+     * @return String
+     */
     fun getReferenceAudioFile(slide : Slide) : String {
         return getReferenceAudioFile(Workspace.activeStory.slides.indexOf(slide))
     }
-
-
-    // TODO: refactor (see Issues #546 & #547)
 
     /**
      * Get name for phase to be displayed in UI alert dialog with help docs
@@ -231,8 +234,8 @@ class Phase (val phaseType: PhaseType) {
     }
 
     companion object {
-        fun getLocalPhases(isVideoStory : Boolean) : List<Phase> {
-            if(isVideoStory) {
+        fun getLocalPhases(isFilmStory : Boolean) : List<Phase> {
+            if(isFilmStory) {
                 return listOf(
                         Phase(PhaseType.LEARN),
                         Phase(PhaseType.TRANSLATE_REVISE),
@@ -254,8 +257,8 @@ class Phase (val phaseType: PhaseType) {
             }
         }
 
-        fun getRemotePhases(isVideoStory : Boolean) : List<Phase> {
-            if(isVideoStory) {
+        fun getRemotePhases(isFilmStory : Boolean) : List<Phase> {
+            if(isFilmStory) {
                 return listOf(
                         Phase(PhaseType.LEARN),
                         Phase(PhaseType.TRANSLATE_REVISE),

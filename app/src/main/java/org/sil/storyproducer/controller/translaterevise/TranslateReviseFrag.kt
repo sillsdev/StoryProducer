@@ -33,7 +33,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isVideoStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
+        storyPlayer = if(Workspace.activeStory.isFilmStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
         storyPlayer?.startSlide = slideNum
         storyPlayer?.slideRange = 1
         storyPlayer?.phaseType = Workspace.activePhase.phaseType
