@@ -36,7 +36,6 @@ internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
  */
 
 private const val AUDIO_RECORDER = "audio_recorder"
-private const val DECIBEL_MAX = -100
 
 abstract class AudioRecorder(val activity: Activity) {
     var isRecording = false
@@ -86,39 +85,6 @@ abstract class AudioRecorder(val activity: Activity) {
             copyToWorkspacePath(context, Uri.fromFile(File(tempDestPath)),
                     "${Workspace.activeDirRoot}/$orgAudioRelPath")
             File(tempDestPath).delete()
-        }
-
-        /**
-         * Removes the intro and outro silence from the audio recording.
-         * This helps clean up the audio and makes the recording as short as possible
-         */
-        fun removeIntroAndOutroSilence(context: Context, inputOutput : File) : FFmpegReturn {
-
-            val localWorkspaceFile = File("${Workspace.activeDirRoot}${inputOutput.absolutePath}")
-
-            val filesDir = context.filesDir
-            val audioFileOld = File(filesDir, "old.m4a")
-            audioFileOld.createNewFile()
-
-            val audioFileNew = File(filesDir, "new.m4a")
-            audioFileNew.createNewFile()
-
-            val workspaceUri = getWorkspaceUri(localWorkspaceFile.absolutePath)!!
-            copyToFilesDir(context, workspaceUri, audioFileOld)
-
-            val command = "-y -i ${audioFileOld.absolutePath} -af 'silenceremove=start_periods=1:start_duration=0.1:" +
-                    "start_threshold=${DECIBEL_MAX}dB:detection=peak,aformat=dblp,areverse," +
-                    "silenceremove=start_periods=1:start_duration=0.1:start_threshold=${DECIBEL_MAX}dB:" +
-                    "detection=peak,aformat=dblp,areverse' ${audioFileNew.absolutePath}"
-
-            try {
-                return FFmpegReturn(command)
-            } finally {
-                copyToWorkspacePath(context, Uri.fromFile(audioFileNew),
-                        "${Workspace.activeDirRoot}/${getChosenFilename()}")
-                audioFileNew.delete()
-                audioFileOld.delete()
-            }
         }
     }
 }

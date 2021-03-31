@@ -124,9 +124,6 @@ open class RecordingToolbar : Fragment(){
         showInheritedToolbarButtons()
         
         toolbarMediaListener.onStoppedToolbarRecording()
-
-        // Temporarily removed.
-//        AudioRecorder.removeIntroAndOutroSilence(context!!, File(recordingRelPath))
     }
 
     protected fun recordAudio(recordingRelPath: String) {
