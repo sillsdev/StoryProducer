@@ -55,7 +55,7 @@ class FilterToolbarFrag(storyPageFrag : StoryPageFragment): Fragment() {
         storyPageFrag.updateStoryList(newList)
 
         //For debug only
-        //.makeText(context, text, Toast.LENGTH_SHORT).show()
+        //Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
         return titles
     }
 

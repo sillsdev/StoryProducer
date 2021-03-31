@@ -16,6 +16,7 @@ enum class StoryPageTab(val tabNameId: Int,
     IN_PROGRESS(R.string.in_progress_tab, false) {
         override fun getStoryList(): List<Story> {
             return Workspace.Stories.filter { story -> story.inProgress && !story.isComplete }
+
         }
     },
 
