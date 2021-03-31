@@ -58,11 +58,11 @@ class Story(var title: String, var slides: List<Slide>) {
         get() {
             return try {
                 // Get number from story
-                val storyNumber = shortTitle.split(" ")[0].toInt()
-                when {
-                    storyNumber < 100 -> StoryType.OTHER
-                    storyNumber < 200 -> StoryType.OLD_TESTAMENT
-                    storyNumber < 300 -> StoryType.NEW_TESTAMENT
+                val storyNumber = title.split("")[1].toInt()
+                when (storyNumber) {
+                    0 -> StoryType.OTHER
+                    1 -> StoryType.OLD_TESTAMENT
+                    2 -> StoryType.NEW_TESTAMENT
                     else -> StoryType.OTHER
                 }
             } catch(e : NumberFormatException) {

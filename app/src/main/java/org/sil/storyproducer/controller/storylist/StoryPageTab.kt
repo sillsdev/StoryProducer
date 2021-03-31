@@ -15,13 +15,13 @@ enum class StoryPageTab(val tabNameId: Int,
 
     IN_PROGRESS(R.string.in_progress_tab, false) {
         override fun getStoryList(): List<Story> {
-            return Workspace.Stories.filter { story -> story.inProgress }
+            return Workspace.Stories.filter { story -> story.inProgress && !story.isComplete }
         }
     },
 
     COMPLETED(R.string.completed_tab, false) {
         override fun getStoryList(): List<Story> {
-            return Workspace.Stories.filter { story -> story.isApproved }
+            return Workspace.Stories.filter { story -> story.isComplete }
         }
     };
 
