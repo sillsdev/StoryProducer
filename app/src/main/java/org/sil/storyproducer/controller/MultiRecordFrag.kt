@@ -27,10 +27,10 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.io.File
 
 /**
- * The fragment for the Draft view. This is where a user can draft out the story slide by slide
+ * The fragment for the translate + revise view. This is where a user can draft out the story slide by slide
  */
 abstract class MultiRecordFrag : StoryPhaseFrag(), PlayBackRecordingToolbar.ToolbarMediaListener {
-    protected open var recordingToolbar: RecordingToolbar = MultiRecordRecordingToolbar()
+    protected open lateinit var recordingToolbar: RecordingToolbar
 
     private var tempPicFile: File? = null
 
@@ -39,12 +39,15 @@ abstract class MultiRecordFrag : StoryPhaseFrag(), PlayBackRecordingToolbar.Tool
                               container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
 
+        recordingToolbar = MultiRecordRecordingToolbar(storyPlayer)
+
         setToolbar()
 
         setupCameraAndEditButton()
 
         return rootView
     }
+
 
     /**
      * Setup camera button for updating background image

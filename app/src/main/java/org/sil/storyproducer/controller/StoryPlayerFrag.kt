@@ -24,7 +24,7 @@ abstract class StoryPlayerFrag : Fragment() {
     /**
      * Plays the story
      */
-    open fun play(){
+    open fun play() {
         seek(0)
         startTime = System.currentTimeMillis()
         playing = true

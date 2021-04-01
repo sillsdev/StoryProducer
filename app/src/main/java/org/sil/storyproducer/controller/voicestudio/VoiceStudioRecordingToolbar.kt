@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageButton
 import org.sil.storyproducer.R
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.tools.file.assignNewAudioRelPath
 import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.getTempAppendAudioRelPath
@@ -20,7 +21,7 @@ import java.io.FileNotFoundException
  * together. A fifth button is added for sending the finished recording to a web server (not
  * currently implemented).
  */
-class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
+class VoiceStudioRecordingToolbar(storyPlayerFrag: StoryPlayerFrag?): MultiRecordRecordingToolbar(storyPlayerFrag) {
     private lateinit var checkButton: ImageButton
     private lateinit var sendAudioButton: ImageButton
     

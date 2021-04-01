@@ -195,8 +195,9 @@ class ReviewAdjustFrag : MultiRecordFrag() {
         }
         videoView.seekTo(currentSlide.startTime)
 
-        otherAudio.setSource(context!!, getStoryUri(Workspace.activePhase.getReferenceAudioFile(slideNum))!!)
+        otherAudio.setSource(context!!, getStoryUri(currentSlide.getFinalFileString())!!)
         otherAudio.setTempo(tempo)
+        otherAudio.setVolume(1f)
 
         leftNarrationMove = view.findViewById(R.id.film_studio_narration_move_left)
         leftNarrationMove.setOnTouchListener(RepeatListener(400, 100, View.OnClickListener {

@@ -3,6 +3,7 @@ package org.sil.storyproducer.tools.toolbar
 import android.view.View
 import android.widget.ImageButton
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
 
 /**
@@ -11,7 +12,7 @@ import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
  * This class extends both recording and playback functionality of its base classes. A third button
  * is added that can bring up a modal listing the audio recording created with this toolbar.
  */
-open class MultiRecordRecordingToolbar: PlayBackRecordingToolbar() {
+open class MultiRecordRecordingToolbar(storyPlayerFrag: StoryPlayerFrag?): PlayBackRecordingToolbar(storyPlayerFrag) {
     private lateinit var multiRecordButton: ImageButton
 
     override fun setupToolbarButtons() {

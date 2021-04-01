@@ -27,16 +27,13 @@ class TranslateReviseFrag : MultiRecordFrag() {
         super.onCreateView(inflater, container, savedInstanceState)
         setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
         setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
+
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isFilmStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
-        storyPlayer?.startSlide = slideNum
-        storyPlayer?.slideRange = 1
-        storyPlayer?.phaseType = Workspace.activePhase.phaseType
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }

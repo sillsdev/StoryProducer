@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
+import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -21,7 +23,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer
  * This class extends the recording functionality of its base class. A playback button is added to
  * the UI in addition to the recording button.
  */
-open class PlayBackRecordingToolbar: RecordingToolbar() {
+open class PlayBackRecordingToolbar(private val storyPlayerFrag: StoryPlayerFrag?): RecordingToolbar(storyPlayerFrag) {
     private lateinit var playButton: ImageButton
 
     override lateinit var toolbarMediaListener: RecordingToolbar.ToolbarMediaListener
@@ -79,6 +81,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
 
     private fun stopToolbarAudioPlaying()   {
         audioPlayer.stopAudio()
+        storyPlayerFrag?.stop()
 
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
 
@@ -131,12 +134,18 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
             val wasPlaying = audioPlayer.isAudioPlaying
 
             stopToolbarMedia()
+            storyPlayerFrag?.stop()
 
             if (!wasPlaying) {
                 (toolbarMediaListener as ToolbarMediaListener).onStartedToolbarPlayBack()
 
                 if (audioPlayer.setStorySource(this.appContext, getChosenFilename())) {
                     audioPlayer.playAudio()
+
+                    if(storyPlayerFrag is FilmStoryPlayerFrag) {
+                        storyPlayerFrag.mute()
+                        storyPlayerFrag.play()
+                    }
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
                     

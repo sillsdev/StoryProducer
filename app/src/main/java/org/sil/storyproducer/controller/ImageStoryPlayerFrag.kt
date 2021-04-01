@@ -79,9 +79,10 @@ class ImageStoryPlayerFrag : StoryPlayerFrag() {
             if(playing) {
                 stop()
             } else {
-                play()
                 if(Workspace.activePhase.getReferenceAudioFile(storySlidePosition) == "") {
                     Toast.makeText(context!!, "No narration found!", Toast.LENGTH_SHORT).show()
+                } else {
+                    play()
                 }
             }
         }

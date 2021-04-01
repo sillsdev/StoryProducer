@@ -13,6 +13,8 @@ import android.widget.Space
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
+import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -38,7 +40,7 @@ import org.sil.storyproducer.tools.media.AudioRecorderMP4
  * this class and other classes that use it so as to limit coupling. This involves the
  * ToolbarMediaListener interface that other classes can extend.
  */
-open class RecordingToolbar : Fragment(){
+open class RecordingToolbar(private val storyPlayerFrag: StoryPlayerFrag?) : Fragment() {
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
@@ -122,14 +124,21 @@ open class RecordingToolbar : Fragment(){
 
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showInheritedToolbarButtons()
-        
+
         toolbarMediaListener.onStoppedToolbarRecording()
+
+        storyPlayerFrag?.stop()
     }
 
     protected fun recordAudio(recordingRelPath: String) {
         toolbarMediaListener.onStartedToolbarRecording()
 
         voiceRecorder?.startNewRecording(recordingRelPath)
+
+        if(storyPlayerFrag is FilmStoryPlayerFrag) {
+            storyPlayerFrag.mute()
+            storyPlayerFrag.play()
+        }
 
         if(isAnimationEnabled()){
             animationHandler.startAnimation()

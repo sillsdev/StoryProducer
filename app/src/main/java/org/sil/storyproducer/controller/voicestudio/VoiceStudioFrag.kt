@@ -19,13 +19,15 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 class VoiceStudioFrag : MultiRecordFrag() {
-    override var recordingToolbar: RecordingToolbar = VoiceStudioRecordingToolbar()
+    override lateinit var recordingToolbar: RecordingToolbar
     private var slideText: EditText? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_dramatization, container, false)
         slideText = rootView?.findViewById(R.id.fragment_dramatization_edit_text)
         slideText?.setText(Workspace.activeStory.slides[slideNum].translatedContent, TextView.BufferType.EDITABLE)
+
+        recordingToolbar = VoiceStudioRecordingToolbar(storyPlayer)
 
         if (Workspace.activeStory.isApproved) {
             setToolbar()
@@ -49,10 +51,6 @@ class VoiceStudioFrag : MultiRecordFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isFilmStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
-        storyPlayer?.startSlide = slideNum
-        storyPlayer?.slideRange = 1
-        storyPlayer?.phaseType = Workspace.activePhase.phaseType
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }

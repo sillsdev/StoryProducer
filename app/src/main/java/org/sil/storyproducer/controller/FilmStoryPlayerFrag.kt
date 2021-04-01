@@ -109,6 +109,9 @@ class FilmStoryPlayerFrag : StoryPlayerFrag() {
             if(playing) {
                 stop()
             } else {
+                if(Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE) {
+                    videoAudio.setVolume(1f, 1f)
+                }
                 play()
             }
         }
@@ -154,9 +157,14 @@ class FilmStoryPlayerFrag : StoryPlayerFrag() {
     }
 
     override fun stop() {
-        super.stop()
-        videoView.seekTo(videoStart)
-        videoView.pause()
+        if(::videoView.isInitialized) {
+            super.stop()
+            videoView.seekTo(videoStart)
+            videoView.pause()
+
+            // Unmute the Audio File, not the video which contains original translation.
+            super.unmute()
+        }
     }
 
     override fun mute() {

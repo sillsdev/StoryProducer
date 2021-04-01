@@ -50,14 +50,6 @@ class AccuracyCheckFrag : StoryPhaseFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isFilmStory) {
-            FilmStoryPlayerFrag()
-        } else {
-            ImageStoryPlayerFrag()
-        }
-        storyPlayer?.startSlide = slideNum
-        storyPlayer?.slideRange = 1
-        storyPlayer?.phaseType = Workspace.activePhase.phaseType
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }

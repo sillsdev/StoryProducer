@@ -18,8 +18,8 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     private lateinit var audioSwitch : Switch
     private var isWatchedOnce = false
 
-    private var recordingToolbar: PlayBackRecordingToolbar = PlayBackRecordingToolbar()
     private lateinit var storyPlayer : StoryPlayerFrag
+    private lateinit var recordingToolbar: PlayBackRecordingToolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +33,17 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                 storyPlayer.mute()
             }
         }
+
+        storyPlayer = if(Workspace.activeStory.isFilmStory) {
+            FilmStoryPlayerFrag()
+        } else {
+            ImageStoryPlayerFrag()
+        }
+        storyPlayer.startSlide = 0
+        storyPlayer.slideRange = Workspace.activeStory.numSlides
+        storyPlayer.phaseType = Workspace.activePhase.phaseType
+
+        recordingToolbar = PlayBackRecordingToolbar(storyPlayer)
 
         showStartPracticeSnackBar()
 
@@ -52,14 +63,6 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
     public override fun onResume() {
         super.onResume()
 
-        storyPlayer = if(Workspace.activeStory.isFilmStory) {
-            FilmStoryPlayerFrag()
-        } else {
-            ImageStoryPlayerFrag()
-        }
-        storyPlayer.startSlide = 0
-        storyPlayer.slideRange = Workspace.activeStory.numSlides
-        storyPlayer.phaseType = Workspace.activePhase.phaseType
         val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.activity_learn, storyPlayer).commit()
     }

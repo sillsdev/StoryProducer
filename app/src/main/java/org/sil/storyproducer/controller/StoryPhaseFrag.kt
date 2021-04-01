@@ -19,10 +19,12 @@ abstract class StoryPhaseFrag : Fragment() {
     protected lateinit var slide: Slide
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        super.onCreate(null)
         slideNum = this.arguments!!.getInt(SLIDE_NUM)
         slide = Workspace.activeStory.slides[slideNum]
         setHasOptionsMenu(true)
+
+        createStoryPlayer()
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -32,6 +34,13 @@ abstract class StoryPhaseFrag : Fragment() {
         rootView = inflater.inflate(R.layout.fragment_slide, container, false)
 
         return rootView
+    }
+
+    protected fun createStoryPlayer() {
+        storyPlayer = if(Workspace.activeStory.isFilmStory) FilmStoryPlayerFrag() else ImageStoryPlayerFrag()
+        storyPlayer?.startSlide = slideNum
+        storyPlayer?.slideRange = 1
+        storyPlayer?.phaseType = Workspace.activePhase.phaseType
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller.community
+package org.sil.storyproducer.controller.communitywork
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,10 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
-import org.sil.storyproducer.controller.ImageStoryPlayerFrag
-import org.sil.storyproducer.controller.FilmStoryPlayerFrag
 import org.sil.storyproducer.controller.adapter.RecordingsListAdapter
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 
 /**
@@ -17,7 +14,7 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityWorkFrag : MultiRecordFrag() {
-    override var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    override var recordingToolbar: RecordingToolbar = RecordingToolbar(storyPlayer)
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -38,14 +35,6 @@ class CommunityWorkFrag : MultiRecordFrag() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        storyPlayer = if(Workspace.activeStory.isFilmStory) {
-            FilmStoryPlayerFrag()
-        } else {
-            ImageStoryPlayerFrag()
-        }
-        storyPlayer?.startSlide = slideNum
-        storyPlayer?.slideRange = 1
-        storyPlayer?.phaseType = Workspace.activePhase.phaseType
         val transaction = childFragmentManager.beginTransaction()
         transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
