@@ -1,4 +1,4 @@
-package org.sil.storyproducer.controller
+package org.sil.storyproducer.controller.storylist
 
 import android.app.Activity
 import android.content.Context
@@ -9,25 +9,50 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
+import java.util.*
+import kotlin.collections.HashMap
 
-class StoryListFrag : androidx.fragment.app.Fragment() {
+class StoryPageFragment : Fragment() {
+
+    lateinit var storyPageTab : StoryPageTab
+    private lateinit var listView: ListView
+
+    companion object {
+        const val ARG_POSITION = "position"
+
+        fun getInstance(position: Int): Fragment {
+            val storyPageFragment = StoryPageFragment()
+            val bundle = Bundle()
+            bundle.putInt(ARG_POSITION, position)
+            storyPageFragment.arguments = bundle
+            return storyPageFragment
+        }
+    }
 
     lateinit var adapter: ListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
 
-        if (Workspace.Stories.isEmpty()) {
+        val position = requireArguments().getInt(ARG_POSITION)
+        storyPageTab = StoryPageTab.values()[position]
+
+        if (storyPageTab.getStoryList().isEmpty()) {
             val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
-                    if (Build.VERSION.SDK_INT >= 24){Html.fromHtml(getString(R.string.stories_not_found_body), 0)}
-                            else{Html.fromHtml(getString(R.string.stories_not_found_body))}
+                    if (Build.VERSION.SDK_INT >= 24){
+                        Html.fromHtml(getString(R.string.stories_not_found_body), 0)}
+                    else{
+                        Html.fromHtml(getString(R.string.stories_not_found_body))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
                 (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
@@ -35,22 +60,39 @@ class StoryListFrag : androidx.fragment.app.Fragment() {
             return view
         }
 
-        val lfview = inflater.inflate(R.layout.activity_list_view, container, false)
+        var lfview = inflater.inflate(R.layout.story_list_container, container, false)
 
-        adapter = ListAdapter(context!!, R.layout.story_list_item, Workspace.Stories)
+        // Apply the Stories to the Story List View
+        adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList() as MutableList<Story>)
 
-        val listView = lfview.findViewById<ListView>(R.id.story_list_view)
+        listView = lfview.findViewById<ListView>(R.id.story_list_view)
+
+        listView.onItemClickListener = AdapterView.OnItemClickListener {_, _, position, _ ->
+            (activity as MainActivity).switchToStory(storyPageTab.getStoryList()[position])
+        }
+
         // Assign adapter to ListView
         listView.adapter = adapter
-
-        //TODO remove "switchtostory" call.  That is still from the old template way.
-        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ -> (activity as MainActivity).switchToStory(Workspace.Stories[position]) }
 
         return lfview
     }
 
+    fun updateStoryList(storyList : List<Story>) {
+        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList as MutableList<Story>)
+        listView.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
     fun notifyDataSetChanged() {
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if(storyPageTab.hasFilterToolbar) {
+            val childFragment: Fragment = FilterToolbarFrag(this)
+            val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
+            transaction.replace(R.id.filter_container, childFragment).commit()
+        }
     }
 
 }

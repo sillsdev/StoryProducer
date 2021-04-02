@@ -1,6 +1,7 @@
 package org.sil.storyproducer.model
 
 
+import android.content.Context
 import com.squareup.moshi.JsonClass
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
@@ -14,7 +15,20 @@ internal val RE_DISPLAY_NAME = "([^|]+)[|.]".toRegex()
 internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
-class Story(var title: String, var slides: List<Slide>){
+class Story(var title: String, var slides: List<Slide>) {
+
+    enum class StoryType {
+        OLD_TESTAMENT, NEW_TESTAMENT, OTHER;
+
+        fun getFilterName(type: StoryType, context : Context): String {
+            return when(type){
+                OLD_TESTAMENT -> context.getString(R.string.ot_toolbar)
+                NEW_TESTAMENT -> context.getString(R.string.nt_toolbar)
+                OTHER -> context.getString(R.string.other_toolbar)
+                else -> "Empty"
+            }
+        }
+    }
 
     var isApproved: Boolean = false
     var learnAudioFile = ""
@@ -25,6 +39,36 @@ class Story(var title: String, var slides: List<Slide>){
     var lastSlideNum: Int = 0
     var importAppVersion = ""
     var localCredits = ""
+    var inProgress: Boolean = false
+        get() {
+            for(slide in slides){
+                if(slide.translateReviseAudioFiles.isNotEmpty()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    var isComplete: Boolean = false
+        get() {
+            return outputVideos.isNotEmpty()
+        }
+
+    // FILTER TODO: make transient, also make sure values are correct
+    val type : StoryType
+        get() {
+            return try {
+                // Get number from story
+                val storyNumber = title.split("")[1].toInt()
+                when (storyNumber) {
+                    0 -> StoryType.OTHER
+                    1 -> StoryType.OLD_TESTAMENT
+                    2 -> StoryType.NEW_TESTAMENT
+                    else -> StoryType.OTHER
+                }
+            } catch(e : NumberFormatException) {
+                StoryType.OTHER
+            }
+        }
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
