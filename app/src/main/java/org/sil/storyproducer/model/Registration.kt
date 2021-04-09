@@ -7,7 +7,7 @@ import org.json.JSONObject
 import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.getText
 
-val REGISTRATION_FILENAME = "registration.json"
+const val REGISTRATION_FILENAME = "registration.json"
 
 class Registration{
     private var jsonData: JSONObject = JSONObject()
@@ -56,7 +56,7 @@ class Registration{
         return regString
     }
 
-    fun getBoolean(name: String, default: Boolean = false) : Boolean {
+    private fun getBoolean(name: String, default: Boolean = false) : Boolean {
         var regVal = default
         try {
             regVal = jsonData.getBoolean(name)

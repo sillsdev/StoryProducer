@@ -2,7 +2,6 @@ package org.sil.storyproducer.model
 
 
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.R
 import org.sil.storyproducer.model.logging.LogEntry
 import java.util.*
 
@@ -16,6 +15,7 @@ internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 @JsonClass(generateAdapter = true)
 class Story(var title: String, var slides: List<Slide>){
 
+    var importAppVersion: String = ""
     var isApproved: Boolean = false
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
@@ -23,8 +23,28 @@ class Story(var title: String, var slides: List<Slide>){
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
-    var importAppVersion = ""
+    var fullVideo: String = ""
+    var isFilmStory = false
     var localCredits = ""
+    val numSlides : Int get() {
+        var num = 0
+        for(slide in slides) {
+            if(slide.slideType == SlideType.NUMBEREDPAGE || slide.slideType == SlideType.FRONTCOVER) {
+                num++
+            }
+        }
+        return num
+    }
+
+    var phases: List<Phase> = ArrayList()
+
+    fun getPhaseNames() : List<String> {
+        val list = mutableListOf<String>()
+        for(phase in phases) {
+            list.add(phase.getDisplayName())
+        }
+        return list
+    }
 
     val shortTitle: String get() {
         val match = RE_TITLE_NUMBER.find(title)
@@ -44,7 +64,7 @@ class Story(var title: String, var slides: List<Slide>){
     }
 
     fun addVideo(video: String){
-        if(!(video in outputVideos)){
+        if(video !in outputVideos){
             outputVideos.add(video)
             outputVideos.sort()
         }
@@ -65,4 +85,3 @@ class Story(var title: String, var slides: List<Slide>){
 }
 
 fun emptyStory() : Story {return Story("",ArrayList())}
-

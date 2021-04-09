@@ -18,6 +18,7 @@
     <color name="accuracy_check_phase">#268DB2</color>
     <color name="voice_studio_phase">#D33682</color>
     <color name="finalize_phase">#6C71C4</color>
+    <color name="review_phase">#D4AF37</color>
     <color name="share_phase">#CB4B16</color>
     <color name="black_overlay">#66000000</color>
     <color name="whole_story_phase">#811000</color>

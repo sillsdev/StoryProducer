@@ -25,21 +25,20 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.sil.storyproducer.R;
 import org.sil.storyproducer.controller.adapter.MessageAdapter;
 import org.sil.storyproducer.model.messaging.Message;
-import org.sil.storyproducer.tools.Network.VolleySingleton;
-import org.sil.storyproducer.tools.Network.paramStringRequest;
+import org.sil.storyproducer.tools.network.VolleySingleton;
+import org.sil.storyproducer.tools.network.paramStringRequest;
 import org.sil.storyproducer.tools.media.AudioPlayer;
 
 import java.io.File;
@@ -65,7 +64,7 @@ public class RemoteCheckFrag extends Fragment {
     private String storyName;
     private AudioPlayer draftPlayer;
     private boolean draftAudioExists;
-    private File backTranslationRecordingFile = null;
+    private final File backTranslationRecordingFile = null;
     private TextView messageTitle;
     private Button sendMessageButton;
     private EditText messageSent;
@@ -119,7 +118,7 @@ public class RemoteCheckFrag extends Fragment {
         return rootView;
     }
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, @NotNull MenuInflater inflater) {
         MenuItem item =  menu.getItem(0);
         super.onCreateOptionsMenu(menu, inflater);
         item.setIcon(R.drawable.ic_message_white_24dp);
@@ -144,12 +143,7 @@ public class RemoteCheckFrag extends Fragment {
         if(msgAdapter.getCount() > 0) {
             messagesView.setSelection(msgAdapter.getCount());
         }
-        sendMessageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage();
-            }
-        });
+        sendMessageButton.setOnClickListener(v -> sendMessage());
     }
 
     /**
@@ -188,12 +182,7 @@ public class RemoteCheckFrag extends Fragment {
      */
     private void closeKeyboardOnTouch(final View touchedView) {
         if (touchedView != null) {
-            touchedView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    closeKeyboard(touchedView);
-                }
-            });
+            touchedView.setOnClickListener(v -> closeKeyboard(touchedView));
         }
     }
 
@@ -251,7 +240,7 @@ public class RemoteCheckFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         final SharedPreferences.Editor prefsEditor = prefs.edit();
         String phone_id = prefs.getString(getString(R.string.PhoneId), "");
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
 
 
         //Get msg for current slide
@@ -264,60 +253,53 @@ public class RemoteCheckFrag extends Fragment {
         // js.put("StoryTitle" , StoryState.getStoryName());
         js.put("SlideNumber", Integer.toString(slideNumber));
 
-        paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.i("LOG_VOLLEY_MSG", response.toString());
-                resp = response;
+        paramStringRequest req = new paramStringRequest(Request.Method.POST, getString(R.string.url_send_message), js, response -> {
+            Log.i("LOG_VOLLEY_MSG", response.toString());
+            resp = response;
 
-                try {
-                    obj = new JSONObject(response);
-                }
-                catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-                try {
-                    resp = obj.getString("Success");
-
-                }
-                catch(JSONException e){
-                    e.printStackTrace();
-                }
-                if(resp != null){
-                    if(resp == "true"){
-                        //set text back to blank
-                        prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
-                        prefsEditor.apply();
-                        messageSent.setText("");
-                        successToast.show();
-
-                        //pull new messages from the server
-                        getMessages();
-                    }
-                    else{
-                        unknownError.show();
-                    }
-                }
+            try {
+                obj = new JSONObject(response);
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY_MSG_ERR", error.toString());
-                Log.e("LOG_VOLLEY", "HIT ERROR");
-                //Save the message to send next time
-                prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
-                prefsEditor.apply();
+            catch(JSONException e){
+                e.printStackTrace();
+            }
 
-                if(error instanceof NoConnectionError || error instanceof NetworkError
-                        || error instanceof AuthFailureError){
-                    noConnection.show();
+            try {
+                resp = obj.getString("Success");
+
+            }
+            catch(JSONException e){
+                e.printStackTrace();
+            }
+            if(resp != null){
+                if(resp == "true"){
+                    //set text back to blank
+                    prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, "");
+                    prefsEditor.apply();
+                    messageSent.setText("");
+                    successToast.show();
+
+                    //pull new messages from the server
+                    getMessages();
                 }
-                else {
+                else{
                     unknownError.show();
                 }
             }
+        }, error -> {
+            Log.e("LOG_VOLLEY_MSG_ERR", error.toString());
+            Log.e("LOG_VOLLEY", "HIT ERROR");
+            //Save the message to send next time
+            prefsEditor.putString(storyName + slideNumber + TO_SEND_MESSAGE, messageSent.getText().toString());
+            prefsEditor.apply();
 
+            if(error instanceof NoConnectionError || error instanceof NetworkError
+                    || error instanceof AuthFailureError){
+                noConnection.show();
+            }
+            else {
+                unknownError.show();
+            }
         }) {
             @Override
             protected Map<String, String> getParams()
@@ -335,7 +317,7 @@ public class RemoteCheckFrag extends Fragment {
         final SharedPreferences prefs = getActivity().getSharedPreferences(R_CONSULTANT_PREFS, Context.MODE_PRIVATE);
         String phone_id = prefs.getString(getString(R.string.PhoneId), "");
 
-        js = new HashMap<String,String>();
+        js = new HashMap<>();
         js.put("Key", getString(R.string.api_token));
         js.put("PhoneId", phone_id);
         //FIXME
@@ -344,69 +326,61 @@ public class RemoteCheckFrag extends Fragment {
         js.put("LastId", Integer.toString(msgAdapter.getLastID()));
 
 
-        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_messages), new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                //returns messages array IsTranslator: boolean + Message: String
-                //returns LastId: Integer
-                try {
-                    obj = new JSONObject(response);
-                }
-                catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-                JSONArray msgs = null;
-
-                try {
-                    msgs = obj.getJSONArray("Messages");
-                    int id = obj.getInt("LastId");
-                    if(id!= -1) {
-                        msgAdapter.setLastID(id);
-                    }
-
-                }
-                catch(JSONException e){
-                    e.printStackTrace();
-                }
-
-
-                //get all msgs and store into shared preferences
-                if(msgs != null) {
-                    for (int j = 0; j < msgs.length(); j++) {
-
-                        try {
-                            JSONObject currMsg = msgs.getJSONObject(j);
-                            int num = currMsg.getInt("IsTranslator");
-                            boolean isFromTranslator = (num == 1);
-                            String msg = currMsg.getString("Message");
-                            Message m = new Message(isFromTranslator, msg);
-                            msgAdapter.add(m);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    if (messagesView != null) {
-                        if (msgAdapter.getCount() > 0) {
-                            messagesView.setSelection(msgAdapter.getCount());
-                        }
-                    }
-                }
-
-                Log.i("LOG_VOLLEY", response.toString());
-
-                resp  = response;
+        StringRequest req = new StringRequest(Request.Method.POST, getString(R.string.url_get_messages), response -> {
+            //returns messages array IsTranslator: boolean + Message: String
+            //returns LastId: Integer
+            try {
+                obj = new JSONObject(response);
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("LOG_VOLLEY", error.toString());
-                Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIVE MSG");
-                //testErr = error.toString();
+            catch(JSONException e){
+                e.printStackTrace();
+            }
+
+            JSONArray msgs = null;
+
+            try {
+                msgs = obj.getJSONArray("Messages");
+                int id = obj.getInt("LastId");
+                if(id!= -1) {
+                    msgAdapter.setLastID(id);
+                }
 
             }
+            catch(JSONException e){
+                e.printStackTrace();
+            }
+
+
+            //get all msgs and store into shared preferences
+            if(msgs != null) {
+                for (int j = 0; j < msgs.length(); j++) {
+
+                    try {
+                        JSONObject currMsg = msgs.getJSONObject(j);
+                        int num = currMsg.getInt("IsTranslator");
+                        boolean isFromTranslator = (num == 1);
+                        String msg = currMsg.getString("Message");
+                        Message m = new Message(isFromTranslator, msg);
+                        msgAdapter.add(m);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (messagesView != null) {
+                    if (msgAdapter.getCount() > 0) {
+                        messagesView.setSelection(msgAdapter.getCount());
+                    }
+                }
+            }
+
+            Log.i("LOG_VOLLEY", response.toString());
+
+            resp  = response;
+        }, error -> {
+            Log.e("LOG_VOLLEY", error.toString());
+            Log.e("LOG_VOLLEY", "HIT ERROR IN RECEIVE MSG");
+            //testErr = error.toString();
 
         }) {
             @Override

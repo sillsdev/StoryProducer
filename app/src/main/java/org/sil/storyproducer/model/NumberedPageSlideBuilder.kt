@@ -20,7 +20,7 @@ class NumberedPageSlideBuilder : SlideBuilder() {
                 .flatten()
                 .filter { it.attr(LANG) == lang }
 
-        if (!bloomEditables.isEmpty()) {
+        if (bloomEditables.isNotEmpty()) {
             slide.content = textOf(bloomEditables.firstOrNull())
             slide.reference = textOf(bloomEditables.getOrNull(1))
         }

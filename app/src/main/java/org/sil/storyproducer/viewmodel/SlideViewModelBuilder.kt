@@ -5,9 +5,7 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Slide
 import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.media.graphics.TextOverlay
-import java.text.SimpleDateFormat
-import java.util.*
+import org.sil.storyproducer.tools.media.imagestory.graphics.TextOverlay
 
 class SlideViewModelBuilder(
         val slide: Slide
@@ -21,21 +19,21 @@ class SlideViewModelBuilder(
         )
     }
 
-    fun buildScriptureText(): String {
+    private fun buildScriptureText(): String {
         return slide.content
     }
 
-    fun buildScriptureReference(): String {
+    private fun buildScriptureReference(): String {
         return arrayOf(slide.reference, slide.subtitle, slide.title)
                 .firstOrNull { it.isNotEmpty() }
                 .orEmpty()
     }
 
-    fun buildOverlayText(): TextOverlay? {
+    private fun buildOverlayText(): TextOverlay? {
         return if (Workspace.activePhase.phaseType == PhaseType.LEARN)
-            buildOverlayText(false, true)
+            buildOverlayText(dispStory = false, origTitle = true)
         else
-            buildOverlayText(false, false)
+            buildOverlayText(dispStory = false, origTitle = false)
     }
 
     fun buildOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {

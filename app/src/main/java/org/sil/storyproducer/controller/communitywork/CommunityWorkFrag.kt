@@ -14,13 +14,11 @@ import org.sil.storyproducer.tools.toolbar.RecordingToolbar
  * sure the draft is okay and leave any comments should they feel the need
  */
 class CommunityWorkFrag : MultiRecordFrag() {
-    override var recordingToolbar: RecordingToolbar = RecordingToolbar()
+    override var recordingToolbar: RecordingToolbar = RecordingToolbar(storyPlayer)
     private var dispList : RecordingsListAdapter.RecordingsListModal? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         rootView = inflater.inflate(R.layout.fragment_community_work, container, false)
-
-        setPic(rootView!!.findViewById(R.id.fragment_image_view))
         setToolbar()
         dispList = RecordingsListAdapter.RecordingsListModal(context!!, recordingToolbar)
         dispList?.embedList(rootView!! as ViewGroup)
@@ -32,6 +30,13 @@ class CommunityWorkFrag : MultiRecordFrag() {
         setupCameraAndEditButton()
 
         return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
     override fun onPause() {

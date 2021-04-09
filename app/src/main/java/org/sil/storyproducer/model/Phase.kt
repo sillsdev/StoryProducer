@@ -28,6 +28,7 @@ enum class PhaseType {
     @Json(name="REMOTE_CHECK") REMOTE_CHECK,
     @Json(name="CONSULTANT_CHECK") ACCURACY_CHECK,
     @Json(name="DRAMATIZATION") VOICE_STUDIO,
+    @Json(name="REVIEW_ADJUST") REVIEW_ADJUST,
     @Json(name="CREATE") FINALIZE,
     @Json(name="SHARE") SHARE
 }
@@ -52,6 +53,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.ACCURACY_CHECK   -> R.drawable.ic_school_white_48dp
             PhaseType.VOICE_STUDIO     -> R.drawable.ic_mic_box_48dp
             PhaseType.FINALIZE         -> R.drawable.ic_video_call_white_48dp
+            PhaseType.REVIEW_ADJUST    -> R.drawable.ic_compare_arrows_white_48dp
             PhaseType.SHARE            -> R.drawable.ic_share_icon_v2_white
             else -> R.drawable.ic_mic_white_48dp
         }
@@ -71,6 +73,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK     -> R.color.remote_check_phase
             PhaseType.ACCURACY_CHECK   -> R.color.accuracy_check_phase
             PhaseType.VOICE_STUDIO     -> R.color.voice_studio_phase
+            PhaseType.REVIEW_ADJUST    -> R.color.review_phase
             PhaseType.FINALIZE         -> R.color.finalize_phase
             PhaseType.SHARE            -> R.color.share_phase
             else -> R.color.black
@@ -79,22 +82,31 @@ class Phase (val phaseType: PhaseType) {
 
     /**
      * Get path of audio file needed by slide, based on the current phase (narration or a draft)
+     * @param slideNum
      * @return String
      */
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         val filename = when (phaseType){
             PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].narrationFile
+            PhaseType.LEARN            -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.COMMUNITY_WORK   -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.BACK_T           -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.ACCURACY_CHECK   -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.VOICE_STUDIO     -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
+            PhaseType.REVIEW_ADJUST    -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             else -> ""
         }
         return Story.getFilename(filename)
     }
 
-
-     // TODO: refactor (see Issues #546 & #547)
+    /**
+     * Get path of audio file needed by slide, based on the current phase (narration or a draft)
+     * @param slide
+     * @return String
+     */
+    fun getReferenceAudioFile(slide : Slide) : String {
+        return getReferenceAudioFile(Workspace.activeStory.slides.indexOf(slide))
+    }
 
     /**
      * Get name for phase to be displayed in UI alert dialog with help docs
@@ -110,6 +122,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK     -> "Remote Check"
             PhaseType.ACCURACY_CHECK   -> "Accuracy Check"
             PhaseType.VOICE_STUDIO     -> "Voice Studio"
+            PhaseType.REVIEW_ADJUST    -> "Review + Adjust"
             PhaseType.FINALIZE         -> "Finalize"
             PhaseType.SHARE            -> "Share"
             else -> phaseType.toString().toLowerCase()
@@ -169,6 +182,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.REMOTE_CHECK     -> PagerBaseActivity::class.java
             PhaseType.ACCURACY_CHECK   -> PagerBaseActivity::class.java
             PhaseType.VOICE_STUDIO     -> PagerBaseActivity::class.java
+            PhaseType.REVIEW_ADJUST    -> PagerBaseActivity::class.java
             PhaseType.FINALIZE         -> FinalizeActivity::class.java
             PhaseType.SHARE            -> ShareActivity::class.java
         }
@@ -220,28 +234,54 @@ class Phase (val phaseType: PhaseType) {
     }
 
     companion object {
-        fun getLocalPhases() : List<Phase> {
-            return listOf(
-                    Phase(PhaseType.LEARN),
-                    Phase(PhaseType.TRANSLATE_REVISE),
-                    Phase(PhaseType.COMMUNITY_WORK),
-                    Phase(PhaseType.ACCURACY_CHECK),
-                    Phase(PhaseType.VOICE_STUDIO),
-                    Phase(PhaseType.FINALIZE),
-                    Phase(PhaseType.SHARE))
+        fun getLocalPhases(isFilmStory : Boolean) : List<Phase> {
+            if(isFilmStory) {
+                return listOf(
+                        Phase(PhaseType.LEARN),
+                        Phase(PhaseType.TRANSLATE_REVISE),
+                        Phase(PhaseType.COMMUNITY_WORK),
+                        Phase(PhaseType.ACCURACY_CHECK),
+                        Phase(PhaseType.VOICE_STUDIO),
+                        Phase(PhaseType.REVIEW_ADJUST),
+                        Phase(PhaseType.FINALIZE),
+                        Phase(PhaseType.SHARE))
+            } else {
+                return listOf(
+                        Phase(PhaseType.LEARN),
+                        Phase(PhaseType.TRANSLATE_REVISE),
+                        Phase(PhaseType.COMMUNITY_WORK),
+                        Phase(PhaseType.ACCURACY_CHECK),
+                        Phase(PhaseType.VOICE_STUDIO),
+                        Phase(PhaseType.FINALIZE),
+                        Phase(PhaseType.SHARE))
+            }
         }
 
-        fun getRemotePhases() : List<Phase> {
-            return listOf(
-                    Phase(PhaseType.LEARN),
-                    Phase(PhaseType.TRANSLATE_REVISE),
-                    Phase(PhaseType.COMMUNITY_WORK),
-                    Phase(PhaseType.WHOLE_STORY),
-                    Phase(PhaseType.BACK_T),
-                    Phase(PhaseType.REMOTE_CHECK),
-                    Phase(PhaseType.VOICE_STUDIO),
-                    Phase(PhaseType.FINALIZE),
-                    Phase(PhaseType.SHARE))
+        fun getRemotePhases(isFilmStory : Boolean) : List<Phase> {
+            if(isFilmStory) {
+                return listOf(
+                        Phase(PhaseType.LEARN),
+                        Phase(PhaseType.TRANSLATE_REVISE),
+                        Phase(PhaseType.COMMUNITY_WORK),
+                        Phase(PhaseType.WHOLE_STORY),
+                        Phase(PhaseType.BACK_T),
+                        Phase(PhaseType.REMOTE_CHECK),
+                        Phase(PhaseType.VOICE_STUDIO),
+                        Phase(PhaseType.REVIEW_ADJUST),
+                        Phase(PhaseType.FINALIZE),
+                        Phase(PhaseType.SHARE))
+            } else {
+                return listOf(
+                        Phase(PhaseType.LEARN),
+                        Phase(PhaseType.TRANSLATE_REVISE),
+                        Phase(PhaseType.COMMUNITY_WORK),
+                        Phase(PhaseType.WHOLE_STORY),
+                        Phase(PhaseType.BACK_T),
+                        Phase(PhaseType.REMOTE_CHECK),
+                        Phase(PhaseType.VOICE_STUDIO),
+                        Phase(PhaseType.FINALIZE),
+                        Phase(PhaseType.SHARE))
+            }
         }
 
         /**

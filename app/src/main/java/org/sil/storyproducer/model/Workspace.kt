@@ -15,8 +15,6 @@ import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
 import java.io.File
 import java.io.IOException
-import java.util.*
-
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
@@ -29,10 +27,9 @@ object Workspace{
         }
     val Stories: MutableList<Story> = mutableListOf()
     var registration: Registration = Registration()
-    var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
     var isInitialized = false
-    var prefs: SharedPreferences? = null
+    private var prefs: SharedPreferences? = null
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -45,17 +42,17 @@ object Workspace{
         set(value){
             field = value
             activePhaseIndex = -1
-            for((i,p) in phases.withIndex()){
+            for((i,p) in activeStory.phases.withIndex()){
                 if(p.phaseType == value.phaseType) activePhaseIndex = i
             }
         }
     val activeDirRoot: String
     get(){return activeStory.title }
 
-    val activeDir: String = PROJECT_DIR
+    const val activeDir: String = PROJECT_DIR
     val activeFilenameRoot: String
     get() {
-        return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
+        return "${activePhase.getFileSafeName()}$activeSlideNum"
     }
 
     var activeSlideNum: Int = -1
@@ -74,7 +71,7 @@ object Workspace{
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
-    val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
+    private const val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
     fun initializeWorkspace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
@@ -134,7 +131,7 @@ object Workspace{
         }
     }
 
-    fun pathOf(name: String): DocumentFile? {
+    private fun pathOf(name: String): DocumentFile? {
         return workdocfile.listFiles().find { it.name == name }
     }
 
@@ -155,17 +152,20 @@ object Workspace{
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
-        return unzipIfZipped(context, storyPath, workdocfile.listFiles())
+        val story = unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> pathOf(storyFolder) }
-                ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
-                ?.let { story -> migrateStory(context, story) }
+                ?.let { parseStoryIfPresent(context, it) }
+        if (story != null) {
+            story.phases = buildPhases(story)
+        }
+        return story
     }
 
-    fun buildPhases(): List<Phase> {
-        //update phases based upon registration selection
+    private fun buildPhases(story : Story): List<Phase> {
+        // update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases()
-            else -> Phase.getLocalPhases()
+            "remote" -> Phase.getRemotePhases(story.isFilmStory)
+            else -> Phase.getLocalPhases(story.isFilmStory)
         }
     }
 
@@ -191,12 +191,12 @@ object Workspace{
 
     fun goToNextPhase() : Boolean {
         if(activePhaseIndex == -1) return false //phases not initizialized
-        if(activePhaseIndex >= phases.size - 1) {
-            activePhaseIndex = phases.size - 1
+        if(activePhaseIndex >= activeStory.phases.size - 1) {
+            activePhaseIndex = activeStory.phases.size - 1
             return false
         }
         activePhaseIndex++
-        activePhase = phases[activePhaseIndex]
+        activePhase = activeStory.phases[activePhaseIndex]
         //there was a successful phase change!
         return true
     }
@@ -208,7 +208,7 @@ object Workspace{
             return false
         }
         activePhaseIndex--
-        activePhase = phases[activePhaseIndex]
+        activePhase = activeStory.phases[activePhaseIndex]
         //there was a successful phase change!
         return true
     }
@@ -230,5 +230,3 @@ object Workspace{
     }
 
 }
-
-

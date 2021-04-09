@@ -28,7 +28,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-		android:authorities="${applicationId}.fileprovider"
+		        android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -38,13 +38,13 @@
 
         <!-- Pager Base -->
         <activity
-            android:name=".controller.pager.PagerBaseActivity"
+            android:name="org.sil.storyproducer.controller.pager.PagerBaseActivity"
             android:label="Pager Base"
             android:screenOrientation="portrait" />
 
         <!-- Splash Screen -->
         <activity
-            android:name=".controller.SplashScreenActivity"
+            android:name="org.sil.storyproducer.controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
             android:screenOrientation="portrait">
@@ -61,11 +61,9 @@
             android:screenOrientation="portrait" />
         <!-- Registration -->
         <activity
-            android:name=".controller.RegistrationActivity"
+            android:name="org.sil.storyproducer.controller.RegistrationActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".controller.WorkspaceUpdateActivity"
-            android:screenOrientation="portrait" />
+
         <activity
             android:name=".activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" />

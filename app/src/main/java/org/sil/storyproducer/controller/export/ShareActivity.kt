@@ -44,7 +44,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.main_linear_layout)
-            PhaseBaseActivity.disableViewAndChildren(mainLayout)
+            disableViewAndChildren(mainLayout)
         }
         initView()
         runOnUiThread{
@@ -70,7 +70,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         mVideosListView = findViewById(R.id.videos_list)!!
         mVideosListView!!.adapter = videosAdapter
         mNoVideosText = findViewById(R.id.no_videos_text)
-        var mOpenVideoPath : Button = findViewById(R.id.open_videos_path)
+        val mOpenVideoPath : Button = findViewById(R.id.open_videos_path)
 
         val presentVideos = getChildDocuments(this, VIDEO_DIR)
         val exportedVideos : MutableList<String> = ArrayList()
@@ -102,7 +102,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             // Also, the SD-Card could show up as /storage/####-####/ where # is a hexidecimal value
             videoFileUriStr = videoFileUriStr.replace(Regex("(storage)\\/[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"), "storage/[sdcard]")
 
-            var videoFileUri = Uri.parse(videoFileUriStr)
+            val videoFileUri = Uri.parse(videoFileUriStr)
 
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setMessage("${getString(R.string.view_video_folder_message)} ${videoFileUri.path}")

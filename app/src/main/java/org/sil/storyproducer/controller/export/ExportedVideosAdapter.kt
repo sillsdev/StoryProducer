@@ -26,7 +26,7 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
 
     fun setVideoPaths(paths: List<String>) {
         val tempVideos : MutableList<String> = ArrayList()
-        for (i in 0 until paths.size){
+        for (i in paths.indices){
             if(paths[i] in Workspace.activeStory.outputVideos){
                 tempVideos.add(paths[i])
             }
@@ -82,7 +82,7 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
     }
 
     private fun showPlayVideoChooser(path: String) {
-        val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
+        val videoIntent = Intent(Intent.ACTION_VIEW)
         val uri = getWorkspaceUri("$VIDEO_DIR/$path")
         //TODO fix this so it actually plays.  Why not?
         videoIntent.setDataAndNormalize(uri!!)
@@ -94,8 +94,8 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
     private fun showShareFileChooser(path: String, fileName: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "video/*"
-        shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
-        shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, fileName)
+        shareIntent.putExtra(Intent.EXTRA_TITLE, fileName)
         val uri = getWorkspaceUri("$VIDEO_DIR/$path")
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18

@@ -1,12 +1,9 @@
 package org.sil.storyproducer.tools.media.pipe
 
 import android.media.MediaCodec
-import android.media.MediaCodecList
 import android.media.MediaFormat
-
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.selectCodec
-
 import java.io.IOException
 
 /**
@@ -60,6 +57,6 @@ class PipedMediaEncoder(private val mConfigureFormat: MediaFormat) : PipedMediaC
     }
 
     companion object {
-        private val TAG = "PipedMediaEncoder"
+        private const val TAG = "PipedMediaEncoder"
     }
 }

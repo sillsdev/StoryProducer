@@ -12,7 +12,9 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.SlidePhaseFrag
+import org.sil.storyproducer.controller.StoryPhaseFrag
+import org.sil.storyproducer.controller.ImageStoryPlayerFrag
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.Phase
@@ -23,24 +25,33 @@ import org.sil.storyproducer.model.Workspace
 /**
  * The fragment for the Consultant check view. The consultant can check that the draft is ok
  */
-class AccuracyCheckFrag : SlidePhaseFrag() {
+class AccuracyCheckFrag : StoryPhaseFrag() {
 
-    var logDialog: AlertDialog? = null
-    var greenCheckmark: VectorDrawableCompat ?= null
-    var grayCheckmark: VectorDrawableCompat ?= null
+    private var logDialog: AlertDialog? = null
+    private var greenCheckmark: VectorDrawableCompat ?= null
+    private var grayCheckmark: VectorDrawableCompat ?= null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
 
-        return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
-            this@AccuracyCheckFrag.rootView = this
-            setPic(findViewById<View>(R.id.fragment_image_view) as ImageView)
-            findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
-            findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
-            setCheckmarkButton(findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)
-            setLogsButton(findViewById<View>(R.id.concheck_logs_button) as ImageButton)
-        }
+        // The last two arguments ensure LayoutParams are inflated
+        // properly.
+        rootView = inflater.inflate(R.layout.fragment_accuracy_check, container, false)
+        setScriptureText(rootView!!.findViewById<View>(R.id.fragment_scripture_text) as TextView)
+        setReferenceText(rootView!!.findViewById<View>(R.id.fragment_reference_text) as TextView)
+        setCheckmarkButton(rootView!!.findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)
+        setLogsButton(rootView!!.findViewById<View>(R.id.concheck_logs_button) as ImageButton)
+
+        return rootView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val transaction = childFragmentManager.beginTransaction()
+        transaction.replace(R.id.phase_player, storyPlayer!!).commit()
     }
 
     /**
@@ -55,11 +66,19 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         if (this.isVisible) {
             // If we are becoming invisible, then...
             if (!isVisibleToUser) {
-                referenceAudioPlayer.stopAudio()
+                storyPlayer?.stop()
             }
         }
     }
 
+    /**
+     * This function stops any of the media playback.
+     */
+    override fun stopPlayBack() {
+        if(storyPlayer != null) {
+            storyPlayer?.stop()
+        }
+    }
 
     /**
      * Sets on click listener for consultant to check off the slide and approve
@@ -103,7 +122,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     }
 
     private fun makeLogView() {
-        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(context!!)
+        val alertDialog = AlertDialog.Builder(context!!)
         val linf = context!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val dialogLayout = linf.inflate(R.layout.activity_log_view, null)
 
@@ -127,8 +146,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         }
     }
 
-
-        /**
+    /**
      * Checks each slide of the story to see if all slides have been approved
      * @return true if all approved, otherwise false
      */
@@ -148,7 +166,7 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     private fun showConsultantPasswordDialog() {
         val password = EditText(context)
         password.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-        password.id = org.sil.storyproducer.R.id.password_text_field;
+        password.id = R.id.password_text_field
 
         // Programmatically set layout properties for edit text field
         val params = LinearLayout.LayoutParams(
@@ -220,8 +238,8 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     }
 
     companion object {
-        val CONSULTANT_PREFS = "Consultant_Checks"
-        val IS_CONSULTANT_APPROVED = "isApproved"
-        private val PASSWORD = "appr00ved"
+        const val CONSULTANT_PREFS = "Consultant_Checks"
+        const val IS_CONSULTANT_APPROVED = "isApproved"
+        private const val PASSWORD = "appr00ved"
     }
 }

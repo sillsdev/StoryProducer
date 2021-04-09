@@ -15,15 +15,15 @@ import java.text.DecimalFormat
  */
 object MediaHelper {
     /** lots of logging?  */
-    val VERBOSE = false
-    val DEBUG = false
+    const val VERBOSE = false
+    const val DEBUG = false
 
     //Note: Perhaps this max size should be increased in the future.
     /** the maximum size of input buffers; currently used to prevent buffer overflow  */
-    val MAX_INPUT_BUFFER_SIZE = 128 * 1024
-    val TIMEOUT_USEC: Long = 10000
+    const val MAX_INPUT_BUFFER_SIZE = 128 * 1024
+    const val TIMEOUT_USEC: Long = 10000
 
-    val MIMETYPE_RAW_AUDIO = "audio/raw"
+    const val MIMETYPE_RAW_AUDIO = "audio/raw"
 
 
     private val form2Dec = DecimalFormat("#0.00")
@@ -39,7 +39,7 @@ object MediaHelper {
         try {
             mmr.setDataSource(context, uri)
             val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-            return (Integer.parseInt(durationStr) * 1000).toLong()
+            return (Integer.parseInt(durationStr!!) * 1000).toLong()
         } catch (e: Exception) {
             //I don't know what happened, but lets not stop everything.
         }
@@ -86,7 +86,7 @@ object MediaHelper {
      * @param mime
      * @return
      */
-    fun getTypeFromMime(mime: String): MediaType {
+    private fun getTypeFromMime(mime: String): MediaType {
         if (mime.startsWith("video")) {
             return MediaType.VIDEO
         } else if (mime.startsWith("audio")) {

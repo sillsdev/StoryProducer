@@ -43,7 +43,7 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
     }
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
+fun parseStoryIfPresent(context: Context, storyPath: DocumentFile): Story? {
     var story: Story?
     //Check if path is path
     if(!storyPath.isDirectory) return null
@@ -103,7 +103,7 @@ fun isZipped(fileName: String?): Boolean {
     } == true
 }
 
-fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
+fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<DocumentFile?>): String? {
     //only unzip zipped files.
     if (!isZipped(file.name)) {
         return file.name

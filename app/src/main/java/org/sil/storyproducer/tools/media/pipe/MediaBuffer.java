@@ -8,8 +8,8 @@ import java.nio.ByteBuffer;
  * Thin wrapper for a {@link ByteBuffer} and {@link MediaCodec.BufferInfo} pair
  */
 public class MediaBuffer {
-    public ByteBuffer buffer;
-    public MediaCodec.BufferInfo info;
+    public final ByteBuffer buffer;
+    public final MediaCodec.BufferInfo info;
 
     public MediaBuffer(ByteBuffer buffer, MediaCodec.BufferInfo info) {
         this.buffer = buffer;

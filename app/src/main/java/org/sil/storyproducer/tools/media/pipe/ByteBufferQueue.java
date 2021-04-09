@@ -99,7 +99,7 @@ public class ByteBufferQueue {
         try {
             while(mb == null) {
                 mb = mFilledBuffers.poll(1, TimeUnit.SECONDS);
-                if(MediaHelper.INSTANCE.getVERBOSE() && mb == null) {
+                if(MediaHelper.VERBOSE && mb == null) {
                     Log.d(TAG, "filled buffer unavailable");
                 }
             }

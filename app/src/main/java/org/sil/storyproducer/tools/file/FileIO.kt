@@ -5,11 +5,11 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -19,11 +19,13 @@ import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
 
-
-fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
-//    var iStream: AutoCloseInputStream = null
+/**
+ * Copies the specified file to a destination file in the current workspace.
+ *
+ * Returns true if successful, false otherwise
+ */
+fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String) : Boolean {
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
@@ -37,14 +39,42 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
         }
         iStream.close()
         iStream.close()
+
+        return true
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
+        return false
     }
+}
+
+fun getStoryImage(context: Context, slideNum: Int = Workspace.activeSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap {
+    if(story.title == "") return genDefaultImage()
+    return getStoryImage(context,story.slides[slideNum].imageFile,sampleSize,false,story)
+}
+
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap {
+    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return genDefaultImage()
+    try{
+        if(iStream.available() == 0) return genDefaultImage() //something is wrong, just give the default image.
+    }catch(e: Exception){
+        return genDefaultImage() //something is wrong, just give the default image.
+    }
+    val options = BitmapFactory.Options()
+    options.inSampleSize = sampleSize
+    if(useAllPixels) options.inTargetDensity=1
+    val bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+    if(useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+    return bmp
+}
+
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH,DEFAULT_HEIGHT,Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
 }
 
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val ipfd = context.contentResolver.openFileDescriptor(
                 sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
@@ -80,7 +110,7 @@ fun getDownsample(context: Context, relPath: String,
     // a default value of 1 if there is an empty string.  According to the documentation,
     // iStream.available() can throw an exception, so a try/catch was added.
     // restructure routine for better flow
-    var ds:Int = 1
+    var ds = 1
     if(relPath != "") { // If empty string: return ds default value
         val iStream = getStoryChildInputStream(context, relPath, story.title)
         if(iStream != null) { // If null: could not assign an iStream to the file, return ds default value
@@ -100,7 +130,6 @@ fun getDownsample(context: Context, relPath: String,
     }
     return ds
 }
-
 
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
     if (dirRoot == "") return null
@@ -262,7 +291,6 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
-        //TODO Why is DocumentsContract.isDocument not working right?
         val pfd: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(
                 childUri, "r") ?: return null
         return ParcelFileDescriptor.AutoCloseInputStream(pfd)
@@ -288,5 +316,5 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     return false
 }
 
-val DEFAULT_WIDTH: Int = 1500
-val DEFAULT_HEIGHT: Int = 1125
+const val DEFAULT_WIDTH: Int = 1500
+const val DEFAULT_HEIGHT: Int = 1125

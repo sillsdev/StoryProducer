@@ -36,7 +36,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
         }
     }
 
-    internal fun buildSubtitle(outsideFrontCover: Element): String? {
+    private fun buildSubtitle(outsideFrontCover: Element): String? {
         val smallCoverCredits = outsideFrontCover.getElementsByAttributeValueContaining(DATA_BOOK, SMALL_COVER_CREDITS)
         for (credit in smallCoverCredits) {
             credit.children().firstOrNull()?.wholeText()?.also {
@@ -49,22 +49,22 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
         return null
     }
 
-    internal fun buildContent(html: Document): Elements? {
+    private fun buildContent(html: Document): Elements? {
         return bloomDataDiv(html)
                 ?.children()
     }
 
-    internal fun bloomDataDiv(html: Document): Element? {
+    private fun bloomDataDiv(html: Document): Element? {
         return html.getElementById(BLOOM_DATA_DIV)
     }
 
-    internal fun buildTitleIdeas(frontCoverContent: FrontCoverContent): String {
+    private fun buildTitleIdeas(frontCoverContent: FrontCoverContent): String {
         return frontCoverContent.run {
             "$titleIdeasHeading\n${titleIdeas.joinToString("\n")}"
         }
     }
 
-    internal fun getContentLanguage(html: Document): String {
+    private fun getContentLanguage(html: Document): String {
         return bloomDataDiv(html)
                 ?.children()
                 ?.find { it.attr(DATA_BOOK) == CONTENT_LANGUAGE_1 }                         // <div data-book="contentLanguage1"
@@ -73,7 +73,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
                 ?: lang
     }
 
-    internal fun buildNarrationFile(file: DocumentFile, html: Document, lang: String): String? {
+    private fun buildNarrationFile(file: DocumentFile, html: Document, lang: String): String? {
         return bloomDataDiv(html)
                 ?.children()
                 ?.find { it.attr(DATA_BOOK) == TITLE_IDEA_1 && it.attr(LANG) == lang }      // <div data-book="spTitleIdea1" lang="*">

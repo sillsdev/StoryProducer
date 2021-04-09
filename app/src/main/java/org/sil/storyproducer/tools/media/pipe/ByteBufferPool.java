@@ -19,7 +19,7 @@ public class ByteBufferPool {
     private static final ByteBufferPool SINGLETON = new ByteBufferPool();
 
     public ByteBufferPool() {
-        this(MediaHelper.INSTANCE.getMAX_INPUT_BUFFER_SIZE());
+        this(MediaHelper.MAX_INPUT_BUFFER_SIZE);
     }
     public ByteBufferPool(int capacity) {
         mCapacity = capacity;

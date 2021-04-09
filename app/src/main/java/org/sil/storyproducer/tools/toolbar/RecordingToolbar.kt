@@ -4,15 +4,17 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.preference.*
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
+import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.FilmStoryPlayerFrag
+import org.sil.storyproducer.controller.StoryPlayerFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
@@ -38,7 +40,7 @@ import org.sil.storyproducer.tools.media.AudioRecorderMP4
  * this class and other classes that use it so as to limit coupling. This involves the
  * ToolbarMediaListener interface that other classes can extend.
  */
-open class RecordingToolbar : Fragment(){
+open class RecordingToolbar(private val storyPlayerFrag: StoryPlayerFrag?) : Fragment() {
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
@@ -49,6 +51,7 @@ open class RecordingToolbar : Fragment(){
         get() {return voiceRecorder?.isRecording == true}
 
     private lateinit  var animationHandler: AnimationHandler
+    private lateinit var recordingRelPath : String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -121,14 +124,21 @@ open class RecordingToolbar : Fragment(){
 
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showInheritedToolbarButtons()
-        
+
         toolbarMediaListener.onStoppedToolbarRecording()
+
+        storyPlayerFrag?.stop()
     }
 
     protected fun recordAudio(recordingRelPath: String) {
         toolbarMediaListener.onStartedToolbarRecording()
 
         voiceRecorder?.startNewRecording(recordingRelPath)
+
+        if(storyPlayerFrag is FilmStoryPlayerFrag) {
+            storyPlayerFrag.mute()
+            storyPlayerFrag.play()
+        }
 
         if(isAnimationEnabled()){
             animationHandler.startAnimation()
@@ -207,7 +217,7 @@ open class RecordingToolbar : Fragment(){
               stopToolbarMedia()
 
               if (!wasRecording) {
-                  val recordingRelPath = assignNewAudioRelPath()
+                  recordingRelPath = assignNewAudioRelPath()
                   //we may be overwriting things in other phases, but we do not care.
                   if (storyRelPathExists(activity!!, recordingRelPath) && Workspace.activePhase.phaseType == PhaseType.LEARN) {
                       val dialog = AlertDialog.Builder(activity!!)
@@ -233,6 +243,6 @@ open class RecordingToolbar : Fragment(){
      * UI testing more difficult.
      */
     private fun isAnimationEnabled(): Boolean {
-        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
+        return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(R.string.recording_toolbar_disable_animation), false)
     }
 }

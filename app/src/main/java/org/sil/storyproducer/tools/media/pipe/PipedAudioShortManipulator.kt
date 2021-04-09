@@ -58,7 +58,7 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     protected var srcBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
     protected var srcPos: Int = 0
     protected var srcEnd: Int = 0
-    protected val srcSamplesAvailable: Int get() {return srcEnd - srcPos}
+    private val srcSamplesAvailable: Int get() {return srcEnd - srcPos}
     protected var srcHasBuffer = false
 
     override fun getMediaType(): MediaHelper.MediaType {
@@ -270,9 +270,9 @@ abstract class PipedAudioShortManipulator : PipedMediaByteBufferSource {
     }
 
     companion object {
-        private val TAG = "PipedAudioShortMan"
+        private const val TAG = "PipedAudioShortMan"
 
-        val BUFFER_COUNT = 8
+        const val BUFFER_COUNT = 8
 
         private val MAX_BUFFER_CAPACITY = MediaHelper.MAX_INPUT_BUFFER_SIZE
     }

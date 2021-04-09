@@ -2,10 +2,10 @@ package org.sil.storyproducer.tools.media
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.net.Uri
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
-import java.io.IOException
 
 class AudioPlayer {
 
@@ -36,10 +36,10 @@ class AudioPlayer {
      */
     val isAudioPlaying: Boolean
         get() {
-            try {
-                return mPlayer.isPlaying
+            return try {
+                mPlayer.isPlaying
             } catch (e: IllegalStateException) {
-                return false
+                false
             }
 
         }
@@ -72,11 +72,11 @@ class AudioPlayer {
         }
         return fileExists
     }
+
     /**
-     * set the audio file from the worskspace data
+     * set the audio file from the workspace data
      * @return true if the file exists, false if it does not.
      */
-
     fun setStorySource(context: Context, relPath: String,
                        storyName: String = Workspace.activeStory.title) : Boolean {
         val uri: Uri = getStoryUri(relPath,storyName) ?: return false
@@ -156,8 +156,20 @@ class AudioPlayer {
         mPlayer.setVolume(volume, volume)
     }
 
-    companion object {
+    /**
+     * sets the tempo of the audio playback
+     * @param tempo the speed at which to play the audio
+     */
+    fun setTempo(tempo: Double) {
+        if(isAudioPrepared) {
+            val params = PlaybackParams()
+            params.speed = tempo.toFloat()
+            mPlayer.playbackParams = params
+            mPlayer.pause()
+        }
+    }
 
-        private val TAG = "AudioPlayer"
+    companion object {
+        private const val TAG = "AudioPlayer"
     }
 }

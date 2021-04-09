@@ -17,15 +17,15 @@ import java.util.*
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is a BLOOM html file there
     val childDocs = getChildDocuments(context, storyPath.name!!)
-    var html_name = ""
+    var htmlName = ""
     for (f in childDocs) {
         if (f.endsWith(".html") || f.endsWith(".htm")){
-            html_name = f
+            htmlName = f
             continue
         }
     }
-    if(html_name == "") return null
-    val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
+    if(htmlName == "") return null
+    val htmlText = getText(context,"${storyPath.name}/$htmlName") ?: return null
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val story = Story(storyPath.name!!, slides)

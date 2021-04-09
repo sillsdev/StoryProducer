@@ -28,9 +28,9 @@ class PipedAudioResampler
     private var mOutputFormat: MediaFormat? = null
 
     private var orgFormat: MediaFormat? = null
-    protected val orgBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
-    protected var orgPos: Int = 0
-    protected var orgEnd: Int = 0
+    private val orgBuffer = ShortArray(MediaHelper.MAX_INPUT_BUFFER_SIZE / 2) //short = 2 bytes
+    private var orgPos: Int = 0
+    private var orgEnd: Int = 0
     private var orgSampleRate: Int = 0
     private var orgCumBufferEnd: Int = 0
     private var orgChannelCount: Int = 0
@@ -179,7 +179,7 @@ class PipedAudioResampler
                     + " with" + (if (buffer.hasArray()) "" else "out") + " array")
         }
 
-        for (i in 0 until prependSamples.size)
+        for (i in prependSamples.indices)
             orgBuffer[i] = prependSamples[i]
 
         orgBufferStartTime = orgBufferEndTime
@@ -197,7 +197,7 @@ class PipedAudioResampler
     }
 
     companion object {
-        private val TAG = "PipedAudioResampler"
+        private const val TAG = "PipedAudioResampler"
 
         /**
          *

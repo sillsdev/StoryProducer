@@ -5,12 +5,12 @@ import org.jsoup.select.Elements
 
 class FrontCoverContent(
         val content: Elements?,
-        val storyTitle: String,
+        private val storyTitle: String,
         storyScriptureReference: String,
         val lang: String
 ) {
 
-    val lines: List<Pair<String, String>> = content.orEmpty()
+    private val lines: List<Pair<String, String>> = content.orEmpty()
             .filter(::byLang)
             .map { keywordOf(it) to valueOf(it) }
 

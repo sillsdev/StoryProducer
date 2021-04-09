@@ -180,13 +180,13 @@ class PipedAudioMixer : PipedAudioShortManipulator(), PipedMediaByteBufferDest {
 
     override fun close() {
         super.close()
-        while (!mixSources.isEmpty()) {
+        while (mixSources.isNotEmpty()) {
             val source = mixSources.removeAt(0)
             source.close()
         }
     }
 
     companion object {
-        private val TAG = "PipedAudioMixer"
+        private const val TAG = "PipedAudioMixer"
     }
 }

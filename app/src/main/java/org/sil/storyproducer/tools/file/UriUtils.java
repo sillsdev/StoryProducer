@@ -30,10 +30,8 @@ public class UriUtils {
     private static final String SD_CARD_PATH = guessSdCardPath();
 
     public static String getDisplayName(Context context, Uri uri) {
-        Cursor cursor = null;
 
-        try {
-            cursor = context.getContentResolver().query(uri, NAME_PROJECTION, null, null, null);
+        try (Cursor cursor = context.getContentResolver().query(uri, NAME_PROJECTION, null, null, null)) {
 
             if (cursor != null && cursor.moveToFirst()) {
                 int nameColumn = cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME);
@@ -44,10 +42,6 @@ public class UriUtils {
                 } else {
                     return name;
                 }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
             }
         }
 
@@ -172,7 +166,7 @@ public class UriUtils {
             // Downloads provider
             String id = DocumentsContract.getDocumentId(uri);
             Uri contentUri = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    Uri.parse("content://downloads/public_downloads"), Long.parseLong(id));
 
             return getPathFromGeneralUri(context, contentUri);
         } else if (MEDIA_AUTHORITY.equals(uri.getAuthority())) {
@@ -220,21 +214,15 @@ public class UriUtils {
 
     private static String getPathFromGeneralUri(Context context, Uri uri) {
         String[] projection = {MediaStore.MediaColumns.DATA};
-        Cursor cur = null;
 
-        try {
-            cur = context.getContentResolver().query(uri, projection, null, null, null);
+        try (Cursor cur = context.getContentResolver().query(uri, projection, null, null, null)) {
             if (cur != null && cur.moveToFirst()) {
                 return cur.getString(cur.getColumnIndex(MediaStore.MediaColumns.DATA));
             } else {
                 return null;
             }
-        } catch (Throwable ignore) {
-            ignore.printStackTrace();
-        } finally {
-            if (cur != null) {
-                cur.close();
-            }
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
         return null;
     }

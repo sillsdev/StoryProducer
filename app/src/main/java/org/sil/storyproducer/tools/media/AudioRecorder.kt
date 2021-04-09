@@ -7,29 +7,27 @@ import android.content.pm.PackageManager
 import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.copyToWorkspacePath
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
-import org.sil.storyproducer.tools.file.getStoryUri
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
-import org.sil.storyproducer.tools.media.story.StoryMaker
-import org.sil.storyproducer.tools.media.story.StoryPage
+import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.media.imagestory.SlideProducer
+import org.sil.storyproducer.tools.media.imagestory.StoryMaker
+import org.sil.storyproducer.tools.media.imagestory.StoryPage
 import java.io.File
 import java.io.IOException
 
 
 //See https://developer.android.com/guide/topics/media/media-formats.html for supported formats.
-internal val OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4
-internal val AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC
-internal val SAMPLE_RATE = 44100
-internal val BIT_DEPTH = 16
-internal val AUDIO_CHANNELS = 1
+internal const val OUTPUT_FORMAT = MediaRecorder.OutputFormat.MPEG_4
+internal const val AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC
+internal const val SAMPLE_RATE = 44100
+internal const val BIT_DEPTH = 16
+internal const val AUDIO_CHANNELS = 1
 //Set bit rate to exact spec of Android doc or to SAMPLE_RATE * BIT_DEPTH.
 internal val BIT_RATE = SAMPLE_RATE * BIT_DEPTH
 
@@ -68,9 +66,8 @@ abstract class AudioRecorder(val activity: Activity) {
 
             val tempDestPath  = "${context.filesDir}/temp.mp4"
 
-
             val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-            val audioFormat = AutoStoryMaker.generateAudioFormat()
+            val audioFormat = SlideProducer.generateAudioFormat()
             val pages: MutableList<StoryPage> = mutableListOf()
 
             var duration = MediaHelper.getAudioDuration(context, getStoryUri(orgAudioRelPath)!!)
@@ -97,6 +94,8 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
 
+    private lateinit var relPath : String
+
     private fun initRecorder(){
         mRecorder.release()
         mRecorder = MediaRecorder()
@@ -110,6 +109,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     override fun startNewRecording(relPath: String){
         initRecorder()
+        this.relPath = relPath
         mRecorder.setOutputFile(getStoryFileDescriptor(activity, relPath,"","w"))
         isRecording = true
         try{
@@ -141,4 +141,3 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         }
     }
 }
-

@@ -16,7 +16,9 @@ import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.workspaceRelPathExists
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
+import org.sil.storyproducer.tools.media.Producer
+import org.sil.storyproducer.tools.media.filmstory.FilmStoryProducer
+import org.sil.storyproducer.tools.media.imagestory.SlideProducer
 import org.sil.storyproducer.tools.stripForFilename
 
 
@@ -32,8 +34,8 @@ class FinalizeActivity : PhaseBaseActivity() {
     private lateinit var mCheckboxSong: CheckBox
     private lateinit var mButtonStart: Button
     private lateinit var mButtonCancel: Button
-    private lateinit var mProgressBar: ProgressBar
     private lateinit var mButtonCredits: Button
+    lateinit var mProgressBar: ProgressBar
 
     private val mOutputPath: String get() {
         val num = if(Workspace.activeStory.titleNumber != "") "${Workspace.activeStory.titleNumber}_" else {""}
@@ -50,39 +52,39 @@ class FinalizeActivity : PhaseBaseActivity() {
 
     private var mProgressUpdater: Thread? = null
 
-    private val PROGRESS_UPDATER = Runnable {
-        var isDone = false
-        while (!isDone) {
-            try {
-                Thread.sleep(100)
-            } catch (e: InterruptedException) {
-                //If progress updater is interrupted, just stop.
-                return@Runnable
-            }
-
-            var progress: Double
-            synchronized(storyMakerLock) {
-                //Stop if storyMaker was cancelled by someone else.
-                if (storyMaker == null) {
-                    updateProgress(0)
-                    return@Runnable
-                }
-
-                progress = storyMaker!!.progress
-                isDone = storyMaker!!.isDone
-            }
-            updateProgress((progress * PROGRESS_MAX).toInt())
-        }
-        val isSuccess = storyMaker!!.isSuccess
-
-        runOnUiThread {
-            stopExport()
-            if(isSuccess)
-                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
-            else
-                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
-        }
-    }
+//    private val PROGRESS_UPDATER = Runnable {
+//        var isDone = false
+//        while (!isDone) {
+//            try {
+//                Thread.sleep(100)
+//            } catch (e: InterruptedException) {
+//                //If progress updater is interrupted, just stop.
+//                return@Runnable
+//            }
+//
+//            var progress: Double
+//            synchronized(storyMakerLock) {
+//                //Stop if storyMaker was cancelled by someone else.
+//                if (storyMaker == null) {
+//                    updateProgress(0)
+//                    return@Runnable
+//                }
+//
+//                progress = storyMaker!!.progress
+//                isDone = storyMaker!!.isDone
+//            }
+//            updateProgress((progress * PROGRESS_MAX).toInt())
+//        }
+//        val isSuccess = storyMaker!!.isSuccess
+//
+//        runOnUiThread {
+//            stopExport()
+//            if(isSuccess)
+//                Toast.makeText(baseContext, "Video created!", Toast.LENGTH_LONG).show()
+//            else
+//                Toast.makeText(baseContext, "Error!", Toast.LENGTH_LONG).show()
+//        }
+//    }
 
     /**
      * Unlock the start/cancel buttons after a brief time period.
@@ -101,8 +103,7 @@ class FinalizeActivity : PhaseBaseActivity() {
         }
     }
 
-    private var storyMaker: AutoStoryMaker? = null
-
+    private lateinit var producer: Producer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_finalize)
@@ -112,15 +113,25 @@ class FinalizeActivity : PhaseBaseActivity() {
             findViewById<View>(R.id.lock_overlay).visibility = View.INVISIBLE
         } else {
             val mainLayout = findViewById<View>(R.id.layout_export_configuration)
-            PhaseBaseActivity.disableViewAndChildren(mainLayout)
+            disableViewAndChildren(mainLayout)
         }
     }
 
+    override fun onStart(){
+        super.onStart()
+        producer = if(Workspace.activeStory.isFilmStory){
+            FilmStoryProducer(this, mOutputPath)
+        }else{
+            SlideProducer(this)
+        }
+    }
     override fun onResume() {
         super.onResume()
         loadPreferences()
         toggleVisibleElements()
-        watchProgress()
+        if(producer.isActive){
+            watchProgress()
+        }
 
         //attach the listeners after everything else is setup.
         mCheckboxPictures.setOnCheckedChangeListener { _, _ -> toggleVisibleElements(mCheckboxPictures) }
@@ -130,9 +141,10 @@ class FinalizeActivity : PhaseBaseActivity() {
     }
 
     override fun onPause() {
-        mProgressUpdater!!.interrupt()
+        if(producer.isActive) {
+            mProgressUpdater!!.interrupt()
+        }
         savePreferences()
-
         super.onPause()
     }
 
@@ -159,11 +171,12 @@ class FinalizeActivity : PhaseBaseActivity() {
      * Get handles to all necessary views and add some listeners.
      */
     private fun setupViews() {
+
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts
         //Add the listeners to the LinearLayouts's header section.
 
         mEditTextTitle = findViewById(R.id.editText_export_title)
-        mEditTextTitle.addTextChangedListener(object : TextWatcher {
+        mEditTextTitle.addTextChangedListener( object: TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val temp = s.toString().stripForFilename()
                 if (temp != s.toString()) {
@@ -233,8 +246,10 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         mButtonCancel.setOnClickListener {
             if (!buttonLocked) {
-                stopExport()
+//                stopExport()
+                showCreationElements()
             }
+            producer.isActive = false
             lockButtons()
         }
 
@@ -287,11 +302,11 @@ class FinalizeActivity : PhaseBaseActivity() {
     /**
      * Ensure the proper elements are visible based on checkbox dependencies and whether export process is going.
      */
-    private fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
+    fun toggleVisibleElements(currentCheckbox: CheckBox? = null) {
         var visibilityPreExport = View.VISIBLE
         var visibilityWhileExport = View.GONE
         synchronized(storyMakerLock) {
-            if (storyMaker != null) {
+            if (producer.isActive) {
 
                 visibilityPreExport = View.GONE
                 visibilityWhileExport = View.VISIBLE
@@ -302,14 +317,82 @@ class FinalizeActivity : PhaseBaseActivity() {
         mLayoutCancel.visibility = visibilityWhileExport
         mButtonStart.visibility = visibilityPreExport
 
-        if (mCheckboxPictures.isChecked) {
-            mCheckboxKBFX.visibility = View.VISIBLE
-            mCheckboxText.visibility = View.VISIBLE
-        }else{
+        if(Workspace.activeStory.isFilmStory){
             mCheckboxKBFX.visibility = View.GONE
             mCheckboxKBFX.isChecked = false
             mCheckboxText.visibility = View.GONE
             mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
+        }
+
+
+        if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
+            if(currentCheckbox == mCheckboxText){
+                mCheckboxKBFX.isChecked = false
+            }else{
+                mCheckboxText.isChecked = false
+            }
+        }
+
+        //Check if there is a song to play
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong.isChecked = false
+        }
+    }
+    fun showCreationElements(currentCheckbox : CheckBox? = null) {
+        val visibilityPreExport = View.VISIBLE
+        val visibilityWhileExport = View.GONE
+
+        mLayoutConfiguration.visibility = visibilityPreExport
+        mLayoutCancel.visibility = visibilityWhileExport
+        mButtonStart.visibility = visibilityPreExport
+
+        if(Workspace.activeStory.isFilmStory){
+            mCheckboxKBFX.visibility = View.GONE
+            mCheckboxKBFX.isChecked = false
+            mCheckboxText.visibility = View.GONE
+            mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
+        }
+
+
+        if (mCheckboxText.isChecked && mCheckboxKBFX.isChecked) {
+            if(currentCheckbox == mCheckboxText){
+                mCheckboxKBFX.isChecked = false
+            }else{
+                mCheckboxText.isChecked = false
+            }
+        }
+
+        //Check if there is a song to play
+        if (mCheckboxSong.isChecked && (Workspace.getSongFilename() == "")){
+            //you have to have a song to include it!
+            Toast.makeText(this,getString(R.string.export_local_song_unrecorded),Toast.LENGTH_SHORT).show()
+            mCheckboxSong.isChecked = false
+        }
+    }
+    private fun showProgressElements(currentCheckbox : CheckBox? = null) {
+        val visibilityPreExport = View.GONE
+        val visibilityWhileExport = View.VISIBLE
+
+        mLayoutConfiguration.visibility = visibilityPreExport
+        mLayoutCancel.visibility = visibilityWhileExport
+        mButtonStart.visibility = visibilityPreExport
+
+        if(Workspace.activeStory.isFilmStory){
+            mCheckboxKBFX.visibility = View.GONE
+            mCheckboxKBFX.isChecked = false
+            mCheckboxText.visibility = View.GONE
+            mCheckboxText.isChecked = false
+        }else{
+            mCheckboxKBFX.visibility = View.VISIBLE
+            mCheckboxText.visibility = View.VISIBLE
         }
 
 
@@ -383,7 +466,7 @@ class FinalizeActivity : PhaseBaseActivity() {
 
         // Else, check if the file already exists...
         if (workspaceRelPathExists(this, "$VIDEO_DIR/$mOutputPath")) {
-            val dialog = android.app.AlertDialog.Builder(this)
+            val dialog = AlertDialog.Builder(this)
                     .setTitle(getString(R.string.export_location_exists_title))
                     .setMessage(getString(R.string.export_location_exists_message))
                     .setNegativeButton(getString(R.string.no), null)
@@ -397,41 +480,32 @@ class FinalizeActivity : PhaseBaseActivity() {
 
     private fun startExport() {
         savePreferences()
-        synchronized(storyMakerLock) {
-            storyMaker = AutoStoryMaker(this)
-
-            storyMaker!!.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
-            storyMaker!!.mIncludePictures = mCheckboxPictures.isChecked
-            storyMaker!!.mIncludeText = mCheckboxText.isChecked
-            storyMaker!!.mIncludeKBFX = mCheckboxKBFX.isChecked
-            storyMaker!!.mIncludeSong = mCheckboxSong.isChecked
-
-            storyMaker!!.videoRelPath = mOutputPath
+        producer.isActive = false
+        if(!Workspace.activeStory.isFilmStory){
+            val storyMaker = SlideProducer(this)
+            storyMaker.mIncludeBackgroundMusic = mCheckboxSoundtrack.isChecked
+            storyMaker.mIncludePictures = true
+            storyMaker.mIncludeText = mCheckboxText.isChecked
+            storyMaker.mIncludeKBFX = mCheckboxKBFX.isChecked
+            storyMaker.mIncludeSong = mCheckboxSong.isChecked
+            storyMaker.videoRelPath = mOutputPath
+            producer = storyMaker
+        }else{
+            producer = FilmStoryProducer(this, mOutputPath)
         }
-
-        storyMaker!!.start()
-        watchProgress()
-    }
-
-    private fun stopExport() {
+        producer.start()
         synchronized(storyMakerLock) {
-            if (storyMaker != null) {
-                storyMaker!!.close()
-                storyMaker = null
-            }
+            watchProgress()
         }
         //update the list view
         toggleVisibleElements()
     }
 
     private fun watchProgress() {
-        mProgressUpdater = Thread(PROGRESS_UPDATER)
+        showProgressElements()
+        mProgressUpdater = Thread(producer.progressUpdater)
         mProgressUpdater!!.start()
         toggleVisibleElements()
-    }
-
-    private fun updateProgress(progress: Int) {
-        runOnUiThread { mProgressBar.progress = progress }
     }
 
     /**
@@ -447,22 +521,22 @@ class FinalizeActivity : PhaseBaseActivity() {
     }
 
     companion object {
-        private val TAG = "FinalizeActivity"
+        private const val TAG = "FinalizeActivity"
 
-        private val BUTTON_LOCK_DURATION_MS: Long = 1000
-        private val PROGRESS_MAX = 1000
+        private const val BUTTON_LOCK_DURATION_MS: Long = 1000
+        const val PROGRESS_MAX = 1000
 
-        private val PREF_FILE = "Export_Config"
+        private const val PREF_FILE = "Export_Config"
 
-        private val PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music"
-        private val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
-        private val PREF_KEY_INCLUDE_TEXT = "include_text"
-        private val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
-        private val PREF_KEY_INCLUDE_SONG = "include_song"
-        private val PREF_KEY_SHORT_NAME = "short_name"
+        private const val PREF_KEY_INCLUDE_BACKGROUND_MUSIC = "include_background_music"
+        private const val PREF_KEY_INCLUDE_PICTURES = "include_pictures"
+        private const val PREF_KEY_INCLUDE_TEXT = "include_text"
+        private const val PREF_KEY_INCLUDE_KBFX = "include_kbfx"
+        private const val PREF_KEY_INCLUDE_SONG = "include_song"
+        private const val PREF_KEY_SHORT_NAME = "short_name"
 
         @Volatile
         private var buttonLocked = false
-        private val storyMakerLock = Any()
+        val storyMakerLock = Any()
     }
 }
