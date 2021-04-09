@@ -19,7 +19,7 @@ import java.io.OutputStream
 import kotlin.math.max
 import kotlin.math.min
 
-
+// dkh
 fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 //    var iStream: AutoCloseInputStream = null
     try {
@@ -65,17 +65,50 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
 fun getDownsample(context: Context, relPath: String,
                          dstWidth: Int = DEFAULT_WIDTH, dstHeight: Int = DEFAULT_HEIGHT,
                          story: Story = Workspace.activeStory): Int{
-    val iStream = getStoryChildInputStream(context,relPath,story.title) ?: return 1
-    if(iStream.available() == 0) return 1
-    val options = BitmapFactory.Options()
-    options.inJustDecodeBounds = true
-    BitmapFactory.decodeStream(iStream, null, options)
-    return max(1,min(options.outHeight/dstHeight,options.outWidth/dstWidth))
+
+    // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Producer crashes in Finalize
+    //                         phase and no video is produced
+    // This routine is called for every slide in a story during FINALIZE.  "relPath" is the name of
+    // the image file for the slide (e.g., "1.jpg") but some slides images are optional such as the title
+    // slide and the song slide.  "relPath" for a slide without an image is passed as "" (empty string).
+    // Which  means open the root directory in getStoryChildInputStream
+    // Before the fix, iStream.available was called on an empty string file.  Previous to Android 11,
+    // iStream.available() return a zero when called on an empty string file.
+    // For Android 11, iStream.available() on an empty string file throws an exception which
+    // was not caught by this routine.
+    // For issue 548, check for an empty string and return
+    // a default value of 1 if there is an empty string.  According to the documentation,
+    // iStream.available() can throw an exception, so a try/catch was added.
+    // restructure routine for better flow
+    var ds:Int = 1
+    if(relPath != "") { // return ds default value
+        val iStream = getStoryChildInputStream(context, relPath, story.title)
+        if(iStream != null) { // could not assign an iStream to the file, return ds default value
+            try {
+                if (iStream.available() != 0) {  // if a throw or file is empty, return default value
+                    // got data in the file, so process it
+                    val options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    BitmapFactory.decodeStream(iStream, null, options)
+                    ds = max(1, min(options.outHeight / dstHeight, options.outWidth / dstWidth))
+                }
+            } catch (e: Exception) {
+                // return ds default value
+            }
+        }
+    }
+    return ds
 }
+
 
 fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: String = "", dirRoot: String = Workspace.activeDirRoot) : OutputStream? {
     if (dirRoot == "") return null
-    return getChildOutputStream(context, "$dirRoot/$relPath", mimeType)
+    // DKH-Updated 03/04/2021 to fix Issue #549: Lost data during story creation for Android 10 & 11
+    // Specify "truncate file" on open which will start with zero data in the file.
+    // Previously, data was not truncated which would leave garbage characters at the EOF when
+    // writing a smaller file.  Garbage data caused story.json file corruption.
+    // FIX - Added the ability to pass mode to getChildOutputStream.  Pass mode of write/truncate ("wt")
+    return getChildOutputStream(context, "$dirRoot/$relPath", mimeType,"wt")
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
@@ -124,9 +157,15 @@ fun getText(context: Context, relPath: String) : String? {
     return null
 }
 
-fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
-   // update to wt
-    val pfd = getPFD(context, relPath, mimeType,"w")
+// DKH-Updated 03/04/2021 to fix Issue #549: Lost data during story creation for Android 10 & 11
+// Expose mode to calling interfaces.  This allows caller to truncate the target (relPath) on an open
+// Before change, mode was hardwired to "w".  On a "w" open, all the data from the previous writes to
+// the file is still present. If the new file is smaller in size, there are garbage characters left
+// from the previous file open/write/close operations.
+// Other calling interfaces will see no change since the default to mode is "w" (as before).
+// To get file truncation, use "wt" as the mode argument.
+fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "", mode: String = "w") : OutputStream? {
+    val pfd = getPFD(context, relPath, mimeType, mode)
     var oStream: OutputStream? = null
     try {
         oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
