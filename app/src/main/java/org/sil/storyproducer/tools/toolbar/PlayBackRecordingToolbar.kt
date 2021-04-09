@@ -73,6 +73,7 @@ open class PlayBackRecordingToolbar(private val storyPlayerFrag: StoryPlayerFrag
 
     override fun stopToolbarMedia() {
         super.stopToolbarMedia()
+        storyPlayerFrag?.stop()
 
         if (audioPlayer.isAudioPlaying) {
             stopToolbarAudioPlaying()
