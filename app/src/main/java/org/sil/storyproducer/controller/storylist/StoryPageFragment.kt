@@ -15,16 +15,14 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
-import java.util.*
-import kotlin.collections.HashMap
+
 
 class StoryPageFragment : Fragment() {
 
-    lateinit var storyPageTab : StoryPageTab
+    private lateinit var storyPageTab : StoryPageTab
     private lateinit var listView: ListView
-    lateinit var adapter: ListAdapter
+    private lateinit var adapter: ListAdapter
 
     companion object {
         const val ARG_POSITION = "position"
@@ -59,14 +57,14 @@ class StoryPageFragment : Fragment() {
             return view
         }
 
-        var lfview = inflater.inflate(R.layout.story_list_container, container, false)
+        val lfview = inflater.inflate(R.layout.story_list_container, container, false)
 
         // Apply the Stories to the Story List View
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList() as MutableList<Story>)
+        adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
 
         listView = lfview.findViewById(R.id.story_list_view)
 
-        listView.onItemClickListener = AdapterView.OnItemClickListener {_, _, position, _ ->
+        listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
             (activity as MainActivity).switchToStory(storyPageTab.getStoryList()[position])
         }
 
@@ -76,8 +74,8 @@ class StoryPageFragment : Fragment() {
         return lfview
     }
 
-    fun updateStoryList(storyList : List<Story>) {
-        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList as MutableList<Story>)
+    fun updateStoryList(storyList: List<Story>) {
+        adapter = ListAdapter(context!!, R.layout.story_list_item, storyList, storyPageTab)
         listView.adapter = adapter
         adapter.notifyDataSetChanged()
     }
@@ -92,7 +90,10 @@ class StoryPageFragment : Fragment() {
 
 }
 
-class ListAdapter(context: Context, private val resourceId: Int, private val stories: MutableList<Story>) : ArrayAdapter<Story>(context, resourceId, stories) {
+class ListAdapter(context: Context,
+                  private val resourceId: Int,
+                  private val stories: List<Story>,
+                  private val storyPageTab: StoryPageTab) : ArrayAdapter<Story>(context, resourceId, stories) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var row = convertView
@@ -115,6 +116,27 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
             //Use the "second" image, because the first is just for the title screen.
             holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
             holder.txtSubTitle.text = story.slides[0].subtitle
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                    && storyPageTab == StoryPageTab.ALL_STORIES) { // Only show icon on ALL Stories
+
+                val color = if(story.isComplete) {
+                    R.color.story_list_completed
+                } else if(story.inProgress && !story.isComplete) {
+                    R.color.story_list_in_progress
+                } else {
+                    null
+                }
+
+                val progressIcon : ImageView = row.findViewById(R.id.progress_icon)
+
+                if(color == null) {
+                    progressIcon.visibility = View.INVISIBLE
+                } else {
+                    progressIcon.visibility = View.VISIBLE
+                    progressIcon.setBackgroundColor(context.getColor(color))
+                }
+            }
         }
 
         return row

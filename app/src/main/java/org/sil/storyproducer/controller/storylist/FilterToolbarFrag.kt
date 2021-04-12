@@ -13,7 +13,7 @@ import org.sil.storyproducer.model.Story
 
 class FilterToolbarFrag(private val storyPageFrag : StoryPageFragment): Fragment() {
 
-    lateinit var filterChipGroup : ChipGroup
+    private lateinit var filterChipGroup : ChipGroup
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -38,10 +38,9 @@ class FilterToolbarFrag(private val storyPageFrag : StoryPageFragment): Fragment
     }
 
     private fun registerFilterChanged() {
-        val ids = filterChipGroup.checkedChipIds
-
         var newStoryList = mutableListOf<Story>()
-        ids.forEach { id ->
+
+        filterChipGroup.checkedChipIds.forEach { id ->
             val filterStoryList = FilterOptions.values()[id].getStoryList()
             newStoryList.addAll(filterStoryList)
         }
