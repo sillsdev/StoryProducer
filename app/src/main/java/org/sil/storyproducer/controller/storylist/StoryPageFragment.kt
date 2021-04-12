@@ -24,11 +24,12 @@ class StoryPageFragment : Fragment() {
 
     lateinit var storyPageTab : StoryPageTab
     private lateinit var listView: ListView
+    lateinit var adapter: ListAdapter
 
     companion object {
         const val ARG_POSITION = "position"
 
-        fun getInstance(position: Int): Fragment {
+        fun getInstance(position: Int): StoryPageFragment {
             val storyPageFragment = StoryPageFragment()
             val bundle = Bundle()
             bundle.putInt(ARG_POSITION, position)
@@ -36,8 +37,6 @@ class StoryPageFragment : Fragment() {
             return storyPageFragment
         }
     }
-
-    lateinit var adapter: ListAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreate(savedInstanceState)
@@ -50,9 +49,9 @@ class StoryPageFragment : Fragment() {
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
                     if (Build.VERSION.SDK_INT >= 24){
-                        Html.fromHtml(getString(R.string.stories_not_found_body), 0)}
+                        Html.fromHtml(getString(storyPageTab.emptyStoryStringId), 0)}
                     else{
-                        Html.fromHtml(getString(R.string.stories_not_found_body))}
+                        Html.fromHtml(getString(storyPageTab.emptyStoryStringId))}
 
             view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
                 (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
@@ -65,7 +64,7 @@ class StoryPageFragment : Fragment() {
         // Apply the Stories to the Story List View
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList() as MutableList<Story>)
 
-        listView = lfview.findViewById<ListView>(R.id.story_list_view)
+        listView = lfview.findViewById(R.id.story_list_view)
 
         listView.onItemClickListener = AdapterView.OnItemClickListener {_, _, position, _ ->
             (activity as MainActivity).switchToStory(storyPageTab.getStoryList()[position])
@@ -80,10 +79,6 @@ class StoryPageFragment : Fragment() {
     fun updateStoryList(storyList : List<Story>) {
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyList as MutableList<Story>)
         listView.adapter = adapter
-        adapter.notifyDataSetChanged()
-    }
-
-    fun notifyDataSetChanged() {
         adapter.notifyDataSetChanged()
     }
 

@@ -93,6 +93,8 @@
         for story templates does not contain usable templates.  Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
+    <string name="stories_not_found_in_progress">There are no stories in progress.</string>
+    <string name="stories_not_found_completed">There are no completed stories.</string>
     <string name="welcome_screen_select_template_folder">
         Story Producer is different from typical apps.
         You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.&lt;br>
