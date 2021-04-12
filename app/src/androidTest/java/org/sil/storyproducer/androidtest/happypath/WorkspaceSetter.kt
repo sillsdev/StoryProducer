@@ -21,12 +21,16 @@ import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isNotDisplayed
 import org.sil.storyproducer.R
 
-
 private const val APP_PACKAGE_NAME = "org.sil.storyproducer"
 private const val TIMEOUT_DURATION = 5000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
+
+// Android Version: 7.1.1 (API 25)
 //private const val INTERNAL_STORAGE_BUTTON_TEXT = "Android SDK built for x86"
+
+// Android Version: 9.0 (API 28)
 private const val INTERNAL_STORAGE_BUTTON_TEXT = "AOSP on IA Emulator"
+
 private const val REGISTRATION_SCREEN_CONTAINER = "org.sil.storyproducer:id/registration_scroll_view"
 
 /**
