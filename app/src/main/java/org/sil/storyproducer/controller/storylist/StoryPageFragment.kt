@@ -17,7 +17,17 @@ import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.service.SlideService
 
-
+/**
+ * StoryPageFragment is a flexible fragment in that it displays different things based on the
+ * current configurations. Typically, this shows a list of list of stories. However, when there are
+ * no stories present, a message is shown that notifies the user that there aren't any stories of
+ * that type in the tab. Lastly, a StoryPageFragment can contain a FilterToolbarFrag that helps to
+ * sort the list of stories in the adapter.
+ *
+ * StoryPageFragment has a one-one relationship with a StoryPageTab, however, since the
+ * StoryPageFragment is an Android:Fragment, it will follow the typical activity lifecycle, which
+ * means that it gets created and destroyed when it is not being used.
+ */
 class StoryPageFragment : Fragment() {
 
     private lateinit var storyPageTab : StoryPageTab
@@ -27,6 +37,10 @@ class StoryPageFragment : Fragment() {
     companion object {
         const val ARG_POSITION = "position"
 
+        /**
+         * Creates a new instance based off of the tab position parameter
+         * @param position The Tab Position
+         */
         fun getInstance(position: Int): StoryPageFragment {
             val storyPageFragment = StoryPageFragment()
             val bundle = Bundle()
@@ -74,6 +88,11 @@ class StoryPageFragment : Fragment() {
         return lfview
     }
 
+    /**
+     * Updates ListAdapter to use the newly provided list. This is very helpful when filter options
+     * are used.
+     * @param storyList List of new stories to be used in the ListAdapter
+     */
     fun updateStoryList(storyList: List<Story>) {
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyList, storyPageTab)
         listView.adapter = adapter
@@ -117,6 +136,13 @@ class ListAdapter(context: Context,
             holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
             holder.txtSubTitle.text = story.slides[0].subtitle
 
+            // Handle graying out text when story is completed
+            if(storyPageTab == StoryPageTab.ALL_STORIES && story.isComplete) {
+                holder.txtTitle.alpha = 0.5f
+                holder.txtSubTitle.alpha = 0.5f
+            }
+
+            // Handle the image icon to the side of the story
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                     && storyPageTab == StoryPageTab.ALL_STORIES) { // Only show icon on ALL Stories
 

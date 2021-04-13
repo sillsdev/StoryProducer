@@ -10,7 +10,12 @@ import com.google.android.material.chip.ChipGroup
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 
-
+/**
+ * FilterToolbarFrag is the child filter element that is contained in a StoryListFragment.
+ * The FilterToolbarFrag dynamically generates a list of Material.io Choice Chips from FilterOptions.
+ * These Chips are clickable buttons that notify the parent StoryListFragment when they are clicked
+ * causing a new update of the story list in the StoryListFragment ListAdapter.
+ */
 class FilterToolbarFrag(private val storyPageFrag : StoryPageFragment): Fragment() {
 
     private lateinit var filterChipGroup : ChipGroup

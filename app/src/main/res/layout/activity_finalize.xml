@@ -124,7 +124,6 @@
             android:checked="true"
             android:text="@string/export_include_KBFX" />
 
-
         <CheckBox
             android:id="@+id/checkbox_export_text"
             android:layout_width="match_parent"

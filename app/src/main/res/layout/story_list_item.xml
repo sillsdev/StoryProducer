@@ -45,7 +45,7 @@
 
     <ImageView
         android:id="@+id/progress_icon"
-        android:layout_width="4dp"
+        android:layout_width="8dp"
         android:layout_height="match_parent"
         android:layout_gravity="center|right|end"
         android:layout_marginTop="5dp"

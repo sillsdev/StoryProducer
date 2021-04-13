@@ -54,7 +54,7 @@ class MainActivity : BaseActivity(), Serializable {
 
         setContentView(R.layout.activity_main)
         setupDrawer()
-        setupStoryPages()
+        setupStoryListTabPages()
 
         if (!Workspace.isInitialized) {initWorkspace()}
     }
@@ -112,7 +112,7 @@ class MainActivity : BaseActivity(), Serializable {
         }
     }
 
-    private fun setupStoryPages() {
+    private fun setupStoryListTabPages() {
         storyPageViewPager = findViewById(R.id.storyPageViewPager)
         storyPageViewPager.offscreenPageLimit = StoryPageTab.values().size
         storyPageTabLayout = findViewById(R.id.tabLayout)
@@ -161,7 +161,7 @@ class MainActivity : BaseActivity(), Serializable {
                 Workspace.addDemoToWorkspace(this)
 
                 // Refresh all the stories in the story page tabs
-                setupStoryPages()
+                setupStoryListTabPages()
             }
 
             R.id.nav_stories -> {
