@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.MultiRecordFrag
 
@@ -19,10 +18,11 @@ class TranslateReviseFrag : MultiRecordFrag() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return super.onCreateView(inflater, container, savedInstanceState)?.apply {
-            findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
-            findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
-        }
+        super.onCreateView(inflater, container, savedInstanceState)
+        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
+        setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
+
+        return rootView
     }
 
 }

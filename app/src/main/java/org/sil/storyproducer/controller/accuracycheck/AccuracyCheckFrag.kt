@@ -36,8 +36,8 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
         return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
             this@AccuracyCheckFrag.rootView = this
             setPic(findViewById<View>(R.id.fragment_image_view) as ImageView)
-            findViewById<TextView>(R.id.fragment_reference_text).text = viewModel.scriptureReference
-            findViewById<TextView>(R.id.fragment_scripture_text).text = viewModel.scriptureText
+            setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
+            setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
             setCheckmarkButton(findViewById<View>(R.id.concheck_checkmark_button) as ImageButton)
             setLogsButton(findViewById<View>(R.id.concheck_logs_button) as ImageButton)
         }

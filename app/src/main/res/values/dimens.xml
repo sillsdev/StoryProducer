@@ -16,5 +16,7 @@
     <dimen name="reference_audio_button">50dp</dimen>
     <dimen name="alternate_rendering_indent">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="wordlink_layout_margin">8dp</dimen>
+    <dimen name="wordlink_text_margin">16dp</dimen>
 
 </resources>

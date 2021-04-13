@@ -3,10 +3,8 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
-import org.sil.storyproducer.model.PhaseType
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
 import java.util.*
 import kotlin.math.max
 
@@ -35,6 +33,7 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
     return when (Workspace.activePhase.phaseType) {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
+        PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile
         PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
         else -> ""
@@ -50,6 +49,7 @@ fun setChosenFileIndex(index: Int, slideNum: Int = Workspace.activeSlideNum){
 
     when(Workspace.activePhase.phaseType){
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile = combName
+        PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile = combName
         PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile = combName
         PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile = combName
         else -> return
@@ -78,29 +78,59 @@ fun assignNewAudioRelPath() : String {
 }
 
 fun updateDisplayName(position:Int, newName:String) {
-    //make sure to update the actual list, not a copy.
+    // make sure to update the actual list, not a copy.
     val filenames = Workspace.activePhase.getCombNames() ?: return
-    filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+    if (Workspace.activePhase.phaseType == PhaseType.WORD_LINKS) {
+        // getCombNames() for WORD_LINKS creates a shallow copy
+        //  so the recording needs to be found by position and updated
+        Workspace.activeWordLink.wordLinkRecordings[position].audioRecordingFilename = "$newName|${Story.getFilename(filenames[position])}"
+    } else {
+        filenames[position] = "$newName|${Story.getFilename(filenames[position])}"
+    }
 }
 
-fun deleteAudioFileFromList(context: Context, pos: Int) {
-    //make sure to update the actual list, not a copy.
-    val filenames = Workspace.activePhase.getCombNames() ?: return
-    val filename = Story.getFilename(filenames[pos])
-    if(getChosenCombName() == filenames[pos]){
-        //the chosen filename was deleted!  Make it some other selection.
-        filenames.removeAt(pos)
-        if(filenames.size == 0) {
-            //If there is only 1 left, the resulting index will be -1, or no chosen filename.
+/**
+ * function implements deleteAudioFileFromList() for WordLinks
+ *  necessary because WL recordings are WordLinkRecordings, not just string file names as with other phases
+ */
+fun deleteWLAudioFileFromList(context: Context, pos: Int) {
+    val recordings = Workspace.activeWordLink.wordLinkRecordings
+    val fileLocation = Story.getFilename(recordings[pos].audioRecordingFilename)
+    val filename = recordings[pos].audioRecordingFilename
+
+    recordings.removeAt(pos)
+    if (getChosenCombName() == filename) {
+        // current chosen WL has been deleted, shift the file index
+        if (recordings.size == 0) {
             setChosenFileIndex(-1)
-        }else{
+        }else {
             setChosenFileIndex(0)
         }
-    }else{
-        //just delete the file index.
-        filenames.removeAt(pos)
     }
-    deleteStoryFile(context,filename)
+    // delete the WL recording file
+    deleteStoryFile(context, fileLocation)
+}
+
+
+/**
+ * function removes file from list of recordings by position
+ */
+fun deleteAudioFileFromList(context: Context, pos: Int) {
+    val recordings = Workspace.activePhase.getCombNames() ?: return
+    val fileLocation = Story.getFilename(recordings[pos])
+    val filename = recordings[pos]
+
+    recordings.removeAt(pos)
+    if (getChosenCombName() == filename) {
+        // current chosen WL has been deleted, shift the file index
+        if (recordings.size == 0) {
+            setChosenFileIndex(-1)
+        }else {
+            setChosenFileIndex(0)
+        }
+    }
+    // delete the recording file
+    deleteStoryFile(context, fileLocation)
 }
 
 fun createRecordingCombinedName() : String {
@@ -111,12 +141,16 @@ fun createRecordingCombinedName() : String {
     //they are used for the stages that do that.
     return when(Workspace.activePhase.phaseType) {
         //just one file.  Overwrite when you re-record.
-        PhaseType.LEARN, PhaseType.WHOLE_STORY -> {
+        PhaseType.LEARN,
+        PhaseType.WHOLE_STORY -> {
             "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
-        PhaseType.TRANSLATE_REVISE, PhaseType.COMMUNITY_WORK,
-        PhaseType.VOICE_STUDIO, PhaseType.ACCURACY_CHECK -> {
+        PhaseType.TRANSLATE_REVISE,
+        PhaseType.WORD_LINKS,
+        PhaseType.COMMUNITY_WORK,
+        PhaseType.VOICE_STUDIO,
+        PhaseType.ACCURACY_CHECK -> {
             //find the next number that is available for saving files at.
             val names = getRecordedDisplayNames()
             val rNameNum = "${Workspace.activePhase.getDirectorySafeName()} ([0-9]+)".toRegex()
@@ -155,8 +189,12 @@ fun addCombinedName(name:String){
             Workspace.activeSlide!!.chosenTranslateReviseFile = name
         }
         PhaseType.VOICE_STUDIO -> {
-            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0,name)
+            Workspace.activeSlide!!.voiceStudioAudioFiles.add(0, name)
             Workspace.activeSlide!!.chosenVoiceStudioFile = name
+        }
+        PhaseType.WORD_LINKS -> {
+            Workspace.activeWordLink.wordLinkRecordings.add(0, WordLinkRecording(name))
+            Workspace.activeWordLink.chosenWordLinkFile = name
         }
         else -> {}
     }

@@ -3,13 +3,12 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import android.database.Cursor
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.R
+import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import java.io.File
@@ -110,6 +109,10 @@ fun getStoryChildOutputStream(context: Context, relPath: String, mimeType: Strin
     // writing a smaller file.  Garbage data caused story.json file corruption.
     // FIX - Added the ability to pass mode to getChildOutputStream.  Pass mode of write/truncate ("wt")
     return getChildOutputStream(context, "$dirRoot/$relPath", mimeType,"wt")
+}
+
+fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: String = "") : OutputStream? {
+    return getChildOutputStream(context, "$WORD_LINKS_DIR/$relPath", mimeType, "wt")
 }
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{

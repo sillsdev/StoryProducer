@@ -141,7 +141,9 @@ class MainActivity : BaseActivity(), Serializable {
                 Workspace.addDemoToWorkspace(this)
                 storyList.notifyDataSetChanged()
             }
-
+            R.id.nav_word_link_list -> {
+                showWordLinksList()
+            }
             R.id.nav_stories -> {
                 // Current fragment
             }

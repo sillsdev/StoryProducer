@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
 import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
+import org.sil.storyproducer.controller.wordlink.WordLinksActivity
 
 /**
  * PhaseType enum used to track current phase
@@ -22,6 +23,7 @@ enum class PhaseType {
     @Json(name="STORY_LIST") STORY_LIST,
     @Json(name="LEARN") LEARN,
     @Json(name="DRAFT") TRANSLATE_REVISE,
+    @Json(name="WORD_LINKS") WORD_LINKS,
     @Json(name="COMMUNITY_CHECK") COMMUNITY_WORK,
     @Json(name="WHOLE_STORY") WHOLE_STORY,
     @Json(name="BACKT") BACK_T,
@@ -63,9 +65,10 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getColor() : Int {
         return when(phaseType){
-            PhaseType.LEARN -> R.color.learn_phase
+            PhaseType.LEARN            -> R.color.learn_phase
             PhaseType.TRANSLATE_REVISE -> R.color.translate_revise_phase
-            PhaseType.COMMUNITY_WORK   -> R.color.comunity_work_phase
+            PhaseType.WORD_LINKS       -> R.color.word_links_phase
+            PhaseType.COMMUNITY_WORK   -> R.color.community_work_phase
             PhaseType.WHOLE_STORY      -> R.color.whole_story_phase
             PhaseType.BACK_T           -> R.color.backT_phase
             PhaseType.REMOTE_CHECK     -> R.color.remote_check_phase
@@ -104,6 +107,7 @@ class Phase (val phaseType: PhaseType) {
         return when (phaseType) {
             PhaseType.LEARN            -> "Learn"
             PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
+            PhaseType.WORD_LINKS       -> "Word Links"
             PhaseType.COMMUNITY_WORK   -> "Community Work"
             PhaseType.WHOLE_STORY      -> "Whole Story"
             PhaseType.BACK_T           -> "Back Translation"
@@ -123,6 +127,7 @@ class Phase (val phaseType: PhaseType) {
     fun getDirectorySafeName() : String {
         return when (phaseType) {
             PhaseType.TRANSLATE_REVISE -> "Translation Draft"
+            PhaseType.WORD_LINKS       -> "WordLinks"
             PhaseType.COMMUNITY_WORK   -> "Comment"
             PhaseType.WHOLE_STORY      -> "Whole"
             PhaseType.BACK_T           -> "BackTrans"
@@ -141,6 +146,7 @@ class Phase (val phaseType: PhaseType) {
     fun getFileSafeName() : String {
         return when (phaseType) {
             PhaseType.TRANSLATE_REVISE -> "Translate"
+            PhaseType.WORD_LINKS       -> "WordLinks"
             PhaseType.COMMUNITY_WORK   -> "Community"
             PhaseType.WHOLE_STORY      -> "Whole"
             PhaseType.BACK_T           -> "BackTrans"
@@ -163,6 +169,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.STORY_LIST       -> MainActivity::class.java
             PhaseType.LEARN            -> LearnActivity::class.java
             PhaseType.TRANSLATE_REVISE -> PagerBaseActivity::class.java
+            PhaseType.WORD_LINKS       -> WordLinksActivity::class.java
             PhaseType.COMMUNITY_WORK   -> PagerBaseActivity::class.java
             PhaseType.WHOLE_STORY      -> WholeStoryBackTranslationActivity::class.java
             PhaseType.BACK_T           -> PagerBaseActivity::class.java
@@ -181,6 +188,13 @@ class Phase (val phaseType: PhaseType) {
     fun getCombNames(slideNum:Int = Workspace.activeSlideNum) : MutableList<String>?{
         return when (phaseType){
             PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].translateReviseAudioFiles
+            PhaseType.WORD_LINKS       -> {
+                val audioFiles : MutableList<String> = mutableListOf()
+                for(audioFile in Workspace.activeWordLink.wordLinkRecordings) {
+                    audioFiles.add(audioFile.audioRecordingFilename)
+                }
+                audioFiles
+            }
             PhaseType.COMMUNITY_WORK   -> Workspace.activeStory.slides[slideNum].communityWorkAudioFiles
             PhaseType.BACK_T           -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             PhaseType.VOICE_STUDIO     -> Workspace.activeStory.slides[slideNum].voiceStudioAudioFiles
