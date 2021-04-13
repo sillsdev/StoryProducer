@@ -140,6 +140,9 @@ class ListAdapter(context: Context,
             if(storyPageTab == StoryPageTab.ALL_STORIES && story.isComplete) {
                 holder.txtTitle.alpha = 0.5f
                 holder.txtSubTitle.alpha = 0.5f
+            } else {
+                holder.txtTitle.alpha = 1f
+                holder.txtSubTitle.alpha = 1f
             }
 
             // Handle the image icon to the side of the story
