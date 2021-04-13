@@ -65,9 +65,15 @@ class StoryPageFragment : Fragment() {
                     else{
                         Html.fromHtml(getString(storyPageTab.emptyStoryStringId))}
 
-            view.findViewById<Button>(R.id.update_workspace_button).setOnClickListener {
-                (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
+            val button : Button = view.findViewById(R.id.update_workspace_button)
+            if(storyPageTab != StoryPageTab.ALL_STORIES) {
+                button.visibility = View.INVISIBLE
+            } else {
+                button.setOnClickListener {
+                    (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
+                }
             }
+
             return view
         }
 
@@ -100,7 +106,7 @@ class StoryPageFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if(storyPageTab.hasFilterToolbar) {
+        if(storyPageTab.hasFilterToolbar && storyPageTab.getStoryList().isNotEmpty()) {
             val childFragment: Fragment = FilterToolbarFrag(this)
             val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
             transaction.replace(R.id.filter_container, childFragment).commit()
