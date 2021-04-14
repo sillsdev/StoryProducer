@@ -64,7 +64,8 @@ android {
         }
         debug {
             versionNameSuffix ".debug"
-            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+            applicationIdSuffix ".debug"
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
         }
         continuous {
             initWith release
