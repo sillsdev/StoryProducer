@@ -62,6 +62,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
         }
+        // dkh - 5/3/21  - These changes came  from Chris Hubbard (pull request 568)
+        // Updated applicationIdSuffix to allow debug versions of app crashes to be captured separate from
+        // continuous or product builds in Firebase.  Also, make sure we capture analytics by
+        // setting FIREBASE_ANALYTICS_DEACTIVATED to false.
+        //"package_name" in debug\google-services.json was also changed.  Side effect of
+        // changing the package_name is that field names in the JASON registration parsing were
+        // affected.  See Issue #559 for a more detailed explanation.
         debug {
             versionNameSuffix ".debug"
             applicationIdSuffix ".debug"
