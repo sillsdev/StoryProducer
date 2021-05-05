@@ -581,7 +581,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
 
         val EMAIL_SENT = "registration_email_sent"
-
+        //
         // dkh - 4/19/2021 PR #559: Registration data loss in Continuous builds
         // ID_PREFIX is prepended to each field in the JSON registration file
         // to create a unique token to store the data within story producer.
