@@ -595,7 +595,7 @@ open class RegistrationActivity : AppCompatActivity() {
         // This expression matches any a-z or "." zero or more times
         // This will also match a Debug build when the debug build conforms to the product id
         // naming standard described above
-        private val ID_PREFIX = "org.sil.storyproducer[.a-z]*:id/input_".toRegex()
+        private val ID_PREFIX = "org.sil.storyproducer[.a-zA-Z]*:id/input_".toRegex()
         private val SHOW_KEYBOARD = true
         private val CLOSE_KEYBOARD = false
 
