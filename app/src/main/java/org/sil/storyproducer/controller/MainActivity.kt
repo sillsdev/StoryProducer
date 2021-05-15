@@ -59,6 +59,21 @@ class MainActivity : BaseActivity(), Serializable {
             initWorkspace()
         }
 
+        if (Workspace.showRegistration) {
+            // DKH - 05/12/2021
+            // Issue #573: SP will hang/crash when submitting registration
+            // Indicates that MainActivity should create the RegistrationActivity and show the
+            // registration screen.
+            // This is set in BaseController function onStoriesUpdated()
+            Workspace.showRegistration = false
+
+            // When starting the RegistrationActivity from the MainActivity, specify that
+            // finish should not be called on the MainActivity.
+            // This is done by setting executeFinishActivity to false.
+            // After the RegistrationActivity is complete, MainActivity will then display
+            // the story template list
+            showRegistration(false)
+        }
         GlobalScope.launch {
             runOnUiThread {
                 supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
@@ -146,7 +161,14 @@ class MainActivity : BaseActivity(), Serializable {
                 // Current fragment
             }
             R.id.nav_registration -> {
-                showRegistration()
+                // DKH - 05/10/2021 Issue 573: SP will hang/crash when submitting registration
+                // The MainActivity thread is responsible for displaying  story templates
+                // and allowing the user to select  a registration update via this menu option.
+                // So, when calling the RegistrationActivity from the MainActivity, specify that
+                // finish should not be called.  This is done by setting executeFinishActivity to false.
+                // After the RegistrationActivity is complete, MainActivity will then display
+                // the story template list
+                showRegistration(false)
             }
             R.id.nav_about -> {
                 showAboutDialog()
