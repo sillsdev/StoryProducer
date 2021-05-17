@@ -81,10 +81,22 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
-
-    override fun showRegistration() {
+    // DKH - 05/12/2021
+    // Issue #573: SP will hang/crash when submitting registration
+    // showRegistration Argument allows calling function in current Activity to terminate the
+    // current Activity and then show the Registration screen via the RegistrationActivity
+    // Any MainActivity function should set executeFinishActivity to false.  MainActivity should
+    // always exist.
+    // Activities like LearnActivity will exit by using the default value of true
+    // After the RegistrationActivity completes, control is returned to the MainActivity
+    // where the list of story templates are displayed
+    override fun showRegistration(executeFinishActivity: Boolean) {
         startActivity(Intent(this, RegistrationActivity::class.java))
-        finish()
+
+        // If true, then this Activity will finish and exit
+        if(executeFinishActivity) {
+            finish()
+        }
     }
 
     override fun showReadingTemplatesDialog(controller: BaseController) {

@@ -79,11 +79,16 @@ open class BaseController(
     }
 
     private fun onStoriesUpdated() {
-        if (Workspace.registration.complete) {
-            view.showMain()
-        } else {
-            view.showRegistration()
+        if (!Workspace.registration.complete) {
+            // DKH - 05/12/2021
+            // Issue #573: SP will hang/crash when submitting registration
+            // Don't call view.showRegistration() directly,
+            // Tell MainActivity to display the registration upon MainActivity startup
+            Workspace.showRegistration = true
         }
+        // activate the MainActivity which if necessary, will call RegistrationActivity to display
+        // the registration
+        view.showMain()
     }
 
 }
