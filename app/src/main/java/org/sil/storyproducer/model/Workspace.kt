@@ -33,6 +33,12 @@ object Workspace{
     var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
+    // DKH - 05/12/2021
+    // Issue #573: SP will hang/crash when submitting registration
+    // This flag indicates whether MainActivity should call the RegistrationActivity to allow
+    // the user to update the registration
+    // This is set in BaseController function onStoriesUpdated()
+    var showRegistration = false
 
     var activeStory: Story = emptyStory()
     set(value){
