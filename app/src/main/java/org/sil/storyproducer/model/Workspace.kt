@@ -35,7 +35,7 @@ object Workspace{
     var prefs: SharedPreferences? = null
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
-    // Indicates whether MainActivity should call the RegistrationActivity to allow
+    // This flag indicates whether MainActivity should call the RegistrationActivity to allow
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false

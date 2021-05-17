@@ -62,8 +62,8 @@ class MainActivity : BaseActivity(), Serializable {
         if (Workspace.showRegistration) {
             // DKH - 05/12/2021
             // Issue #573: SP will hang/crash when submitting registration
-            // Indicates that MainActivity should create the RegistrationActivity and show the
-            // registration screen.
+            // This flag indicates that MainActivity should create the
+            // RegistrationActivity and show the registration screen.
             // This is set in BaseController function onStoriesUpdated()
             Workspace.showRegistration = false
 
