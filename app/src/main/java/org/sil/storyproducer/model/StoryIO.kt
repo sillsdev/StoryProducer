@@ -9,8 +9,12 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 import java.io.ByteArrayOutputStream
 import java.io.File
+import timber.log.Timber
+
+
 
 fun Story.toJson(context: Context){
+    val filePath = "$PROJECT_DIR/$PROJECT_FILE" // location of file
     val moshi = Moshi
             .Builder()
             .add(RectAdapter())
@@ -18,27 +22,67 @@ fun Story.toJson(context: Context){
             .build()
     val adapter = Story.jsonAdapter(moshi)
     val oStream = getStoryChildOutputStream(context,
-            "$PROJECT_DIR/$PROJECT_FILE","",this.title)
+            filePath,"",this.title)
     if(oStream != null) {
         try {
             oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
-        }catch(e:java.lang.Exception){}
+        }catch(e:java.lang.Exception){
+            // If we get here, there was an exception thrown while writing the story.json file
+            // Create a suitable error string.  Use  method name, File location, story title & the error
+            val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                    "File: "   + this.title + ", " +
+                    "Loc: "    + filePath + ", " +
+                    "Err: "    + e.toString()
+
+            // Record the error message & exception (includes stack trace) in FireBase
+            FirebaseCrashlytics.getInstance().log(errInfo)
+            FirebaseCrashlytics.getInstance().recordException(e)
+
+            // Record the message to the android system log
+            // The 4 character tag, "SP::", is a quick way to filter messages in the Logcat utility
+            // found in Android studio
+            // (i.e., to view message during debug, create a Logcat filter for "Log Message:"
+            // looking for "SP::")
+            Timber.wtf("SP::(%s)", errInfo)
+        }
         finally{oStream.close()}
     }
 }
 
 fun storyFromJson(context: Context, storyTitle: String): Story?{
+    val filePath = "$PROJECT_DIR/$PROJECT_FILE"  // location of file
     try {
+        // use Moshi to restore all information associated with this story
         val moshi = Moshi
                 .Builder()
                 .add(RectAdapter())
                 .add(UriAdapter())
                 .build()
         val adapter = Story.jsonAdapter(moshi)
-        val fileContents = getStoryText(context, "$PROJECT_DIR/$PROJECT_FILE", storyTitle)
+        val fileContents = getStoryText(context, filePath, storyTitle)
                 ?: return null
         return adapter.fromJson(fileContents)
     } catch (e: Exception) {
+        // If we get here, there was an exception thrown from the
+        // Moshi adapter parsing the story.json file
+        // Probably some kind of corruption in the story file.
+        // Create a suitable error string.  Use  method name, File location, story title & the error
+        val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                        "File: "   + storyTitle + ", " +
+                        "Loc: "    + filePath + ", " +
+                        "Err: "    + e.toString()
+
+        // Record the error message & exception (includes stack trace) in FireBase
+        FirebaseCrashlytics.getInstance().log(errInfo)
+        FirebaseCrashlytics.getInstance().recordException(e)
+
+        // Record the message to the android system log
+        // The 4 character tag, "SP::", is a quick way to filter messages in the Logcat utility
+        // found in Android studio
+        // (i.e., to view message during debug, create a Logcat filter for "Log Message:"
+        // looking for "SP::")
+        Timber.wtf("SP::(%s)", errInfo)
+
         return null
     }
 }
