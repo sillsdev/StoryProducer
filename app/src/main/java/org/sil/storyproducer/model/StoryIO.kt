@@ -43,7 +43,7 @@ fun Story.toJson(context: Context){
             // found in Android studio
             // (i.e., to view message during debug, create a Logcat filter for "Log Message:"
             // looking for "SP::")
-            Timber.wtf("SP::(%s)", errInfo)
+            Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
         }
         finally{oStream.close()}
     }
@@ -81,7 +81,7 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
         // found in Android studio
         // (i.e., to view message during debug, create a Logcat filter for "Log Message:"
         // looking for "SP::")
-        Timber.wtf("SP::(%s)", errInfo)
+        Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
 
         return null
     }
