@@ -1,49 +1,27 @@
-package org.sil.storyproducer.androidtest.happypath
+package org.sil.storyproducer.androidtest.happypath.accuracy_check
 
-import android.preference.PreferenceManager
-import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.DialogTitle
-import android.view.View
-import android.widget.ImageButton
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers.*
-import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.FixMethodOrder
-import org.junit.runners.MethodSorters
-import junit.framework.Assert.assertTrue
-import org.hamcrest.CoreMatchers
 import org.junit.Assert
+import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
+import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
-import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
-import org.sil.storyproducer.androidtest.utilities.Constants
-import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
 
-@LargeTest
-@RunWith(AndroidJUnit4::class)
-class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
+class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase) {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.accuracyCheck)
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.accuracyCheck, base)
     }
 
-    @Test
     fun shouldBeAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
-    @Test
     fun shouldBeAbleToPlayRecordedAudioForSpecificSlide() {
         makeSureAnAudioClipIsAvailable(Constants.Phase.accuracyCheck)
 
@@ -55,9 +33,8 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
         Assert.assertTrue("Expected progress bar to increase in position.", progressAfterPausing > originalProgress)
     }
 
-    @Test
     fun shouldBeAbleToToggleApprovedState() {
-        val currentSlideNum = findCurrentSlideNumber();
+        val currentSlideNum = findCurrentSlideNumber()
         val originalApprovalState = Workspace.activeStory.slides[currentSlideNum].isChecked
 
         pressCheckmarkButton()
@@ -71,20 +48,10 @@ class AccuracyCheckPhaseTest : SwipablePhaseTestBase() {
         Assert.assertEquals(originalApprovalState, approvalStateAfterSecondClickOnCheckmark)
     }
 
-    @Test
     fun passwordConfirmationPopupShouldBehaveCorrectly() {
         swipeThroughAndApproveAllSlides()
         typePasswordAndClickSubmit()
         shouldNowBeOnVoiceStudioPhase()
-    }
-
-    private fun pressPlayPauseButton() {
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
-    }
-
-    private fun getCurrentSlideAudioProgress(): Int {
-        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
-        return progressBar!!.progress
     }
 
     private fun pressCheckmarkButton() {

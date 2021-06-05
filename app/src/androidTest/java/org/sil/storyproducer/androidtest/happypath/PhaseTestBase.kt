@@ -7,17 +7,16 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers
-import org.junit.Assert
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Rule
+import org.junit.*
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.R
 import org.sil.storyproducer.androidtest.utilities.*
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
 import java.io.File
 
-open abstract class PhaseTestBase {
+abstract class PhaseTestBase {
+
     @Rule
     @JvmField
     val mActivityTestRule = androidx.test.rule.ActivityTestRule(RegistrationActivity::class.java, false, false)
@@ -27,16 +26,21 @@ open abstract class PhaseTestBase {
     var mGrantPermissionRule: GrantPermissionRule = PermissionsGranter.grantStoryProducerPermissions()
 
     companion object {
-        @JvmStatic
+
+//        @JvmStatic
         @BeforeClass
-        fun revertWorkspaceToCleanState() {
+        fun revertWorkspaceToCleanState(sharedBase: SharedBase) {
+            if(!Constants.workspaceIsInitialized) {
+                WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
+                Constants.workspaceIsInitialized = true
+            }
             checkSDCardType()
-            copyFreshTestStoryToWorkspace()
+            copyFreshTestStoryToWorkspace(sharedBase)
             deleteExportedVideos()
         }
 
         private fun checkSDCardType() {
-            for(s in Constants.storageRoots){
+            for(s in Constants.storageRoots) {
                 Constants.storage = s
                 if(File(Constants.workspaceDirectory).exists())
                     return
@@ -45,16 +49,18 @@ open abstract class PhaseTestBase {
             Assert.fail("Cannot find the workspace directory: ${Constants.workspaceDirectory}")
         }
 
-        private fun copyFreshTestStoryToWorkspace() {
+        private fun copyFreshTestStoryToWorkspace(sharedBase: SharedBase) {
             try {
-                val source = File(concatenateSourcePath())
-                val destination = File(concatenateDestinationPath())
+                val source = File(concatenateSourcePath(sharedBase))
+                val destination = File(concatenateDestinationPath(sharedBase))
                 if (destination.exists()) {
                     destination.deleteRecursively()
                 }
                 source.copyRecursively(destination, true)
             } catch (e: Exception){
-                Assert.fail("Failed to copy pristine story template from test resources folder to workspace folder.")
+                Assert.fail("Failed to copy pristine story template from test resources folder " +
+                        "to workspace folder. Ensure that Story Producer has the 'Storage' " +
+                        "permission.")
             }
         }
 
@@ -69,12 +75,15 @@ open abstract class PhaseTestBase {
             }
         }
 
-        private fun concatenateSourcePath(): String {
-            return Constants.espressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+        private fun concatenateSourcePath(sharedBase: SharedBase): String {
+//            return Constants.espressoResourceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.espressoResourceDirectory + File.separator + sharedBase.getStoryDirectory()
+
         }
 
-        private fun concatenateDestinationPath(): String {
-            return Constants.workspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+        private fun concatenateDestinationPath(sharedBase: SharedBase): String {
+//            return Constants.workspaceDirectory + File.separator + Constants.nameOfTestStoryDirectory
+            return Constants.workspaceDirectory + File.separator + sharedBase.getStoryDirectory()
         }
     }
 
@@ -104,7 +113,7 @@ open abstract class PhaseTestBase {
     }
 
     private fun areThereAnyAudioClipsOnThisSlide(): Boolean {
-        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(org.sil.storyproducer.R.id.list_recordings_button)
+        val showRecordingsListButton = ActivityAccessor.getCurrentActivity()?.findViewById<ImageButton>(R.id.list_recordings_button)
         return showRecordingsListButton?.visibility != View.INVISIBLE
     }
 
@@ -119,4 +128,5 @@ open abstract class PhaseTestBase {
     private fun pressMicButton() {
         Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.start_recording_button), ViewMatchers.isDisplayed())).perform(ViewActions.click())
     }
+
 }

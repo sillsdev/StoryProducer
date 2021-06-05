@@ -1,9 +1,6 @@
-package org.sil.storyproducer.androidtest.happypath
+package org.sil.storyproducer.androidtest.happypath.voice_studio
 
-import androidx.appcompat.widget.AppCompatSeekBar
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
-import android.widget.ImageButton
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
@@ -11,35 +8,31 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.LargeTest
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.junit.Assert
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.sil.storyproducer.androidtest.happypath.PlayerPhaseTestBase
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.R
-import org.sil.storyproducer.androidtest.utilities.ActivityAccessor
 import org.sil.storyproducer.androidtest.utilities.AnimationsToggler
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
-import org.sil.storyproducer.model.Workspace
 
-@LargeTest
-@RunWith(AndroidJUnit4::class)
-class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
+class VoiceStudioPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase) {
 
     override fun navigateToPhase() {
-        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.voiceStudio)
+        PhaseNavigator.navigateFromRegistrationScreenToPhase(Constants.Phase.voiceStudio, base)
     }
 
-    @Test
     fun should_beAbleToSwipeToNextPhase() {
-        testSwipingToNextPhase(Constants.Phase.finalize)
+        test_swipingToNextPhase(Constants.Phase.finalize)
     }
 
-    @Test
+    fun should_beAbleToSwipeToNextPhaseForVideo() {
+        test_swipingToNextPhase(Constants.Phase.reviewAdjust)
+    }
+
     fun should_beAbleToPlaySlideAudio() {
         // Arrange
         makeSureAnAudioClipIsAvailable(Constants.Phase.voiceStudio)
@@ -58,12 +51,10 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
         Assert.assertTrue("Expected ending progress to be greater than original progress.", endingProgress > originalProgress)
     }
 
-    @Test
     fun should_beAbleToSwipeBetweenSlides() {
-        testSwipingBetweenSlides()
+        test_swipingBetweenSlides()
     }
 
-    @Test
     fun should_beAbleToRecordSequentialAudioSnippetsAsOneClip() {
         PhaseNavigator.doInPhase(Constants.Phase.accuracyCheck, {
             approveSlides()
@@ -122,7 +113,7 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
 
     private fun getCurrentCountOfClips(): Int? {
         val numberOfClips = arrayOfNulls<Int>(1)
-        Espresso.onView(CoreMatchers.allOf(ViewMatchers.withId(R.id.recordings_list), ViewMatchers.isDisplayed())).perform(object : ViewAction {
+        Espresso.onView(allOf(withId(R.id.recordings_list), isDisplayed())).perform(object : ViewAction {
             override fun getConstraints(): Matcher<View> {
                 return ViewMatchers.isAssignableFrom(View::class.java)
             }
@@ -146,20 +137,4 @@ class VoiceStudioPhaseTest : SwipablePhaseTestBase() {
         }
     }
 
-    private fun pressMicButton() {
-        Espresso.onView(allOf(withId(R.id.start_recording_button), isDisplayed())).perform(click())
-    }
-
-    private fun getCurrentSlideAudioProgress(): Int {
-        val progressBar = ActivityAccessor.getCurrentActivity()?.findViewById<AppCompatSeekBar>(org.sil.storyproducer.R.id.videoSeekBar)
-        return progressBar!!.progress
-    }
-
-    private fun pressPlayPauseButton() {
-        Espresso.onView(allOf(withId(R.id.fragment_reference_audio_button), isDisplayed())).perform(click())
-    }
-
-    private fun giveAppTimeToPlayAudio() {
-        Thread.sleep(Constants.durationToPlayTranslatedClip)
-    }
 }
