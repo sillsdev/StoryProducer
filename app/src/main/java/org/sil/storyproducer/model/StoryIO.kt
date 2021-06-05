@@ -1,19 +1,30 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import android.os.Build
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
-import timber.log.Timber
-
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 
 fun Story.toJson(context: Context){
+    // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
+    // Each time we write out a story file, record timestamp and the Story Producer version name & code
+    storyToJasonAppVersionCode = BuildConfig.VERSION_CODE  // should be an integer, eg: 23
+    storyToJasonAppVersionName = BuildConfig.VERSION_NAME  // should be a string, eg: 3.0.5.debug
+    storyToJasonTimeStamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()) // eg: 2021-06-04 15:07:03
+
     val filePath = "$PROJECT_DIR/$PROJECT_FILE" // location of file
     val moshi = Moshi
             .Builder()
@@ -27,6 +38,7 @@ fun Story.toJson(context: Context){
         try {
             oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
         }catch(e:java.lang.Exception){
+            // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
             // If we get here, there was an exception thrown while writing the story.json file
             // Create a suitable error string.  Use  method name, File location, story title & the error
             val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
@@ -49,8 +61,10 @@ fun Story.toJson(context: Context){
     }
 }
 
-fun storyFromJson(context: Context, storyTitle: String): Story?{
+fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
     val filePath = "$PROJECT_DIR/$PROJECT_FILE"  // location of file
+    var fileContents: String? = null
+    // var fileContents: String? = null
     try {
         // use Moshi to restore all information associated with this story
         val moshi = Moshi
@@ -59,16 +73,17 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
                 .add(UriAdapter())
                 .build()
         val adapter = Story.jsonAdapter(moshi)
-        val fileContents = getStoryText(context, filePath, storyTitle)
+        fileContents = getStoryText(context, filePath, storyTitle.name!!)
                 ?: return null
         return adapter.fromJson(fileContents)
     } catch (e: Exception) {
+        // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
         // If we get here, there was an exception thrown from the
         // Moshi adapter parsing the story.json file
         // Probably some kind of corruption in the story file.
         // Create a suitable error string.  Use  method name, File location, story title & the error
         val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
-                        "File: "   + storyTitle + ", " +
+                        "File: "   + storyTitle.name + ", " +
                         "Loc: "    + filePath + ", " +
                         "Err: "    + e.toString()
 
@@ -82,9 +97,60 @@ fun storyFromJson(context: Context, storyTitle: String): Story?{
         // (i.e., to view message during debug, create a Logcat filter for "Log Message:"
         // looking for "SP::")
         Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
-
-        return null
     }
+    // if we get here we caught an exception and have exited from the catch clause
+    // Even though we cannot parse the file with this version of the software, save the
+    // content of file for later evaluation for data salvage or error evaluation
+
+    // create a backup file name  with a time stamp
+    // example file name: storyWithParseErr_2021-06-03-14-11-26.json
+    var backupFileName =
+            "project/storyWithParseErr_" +  //location under directory root (eg "002 Lost Coin" )
+                    SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(Date()) +
+                    ".json"
+
+    // open the backup file and write the contents of story.json to the backup file
+    // Can't do a rename on story.json because it is locked from some where else in the app
+    var oStream = getStoryChildOutputStream(context,backupFileName,"",storyTitle.name!!)
+    if(oStream != null) {
+        // We were able to create the file so log an info message
+        Timber.i("SP::(%s %s)", "Got valid oStream for backup file:",backupFileName)
+
+        try {
+            // catach any IO errors
+            // fileContents is not null because we checked above
+            oStream.write(fileContents?.toByteArray())  // write the new file
+            oStream.close()  // flush out data to file
+            // Record the message to the android system log - with special embedded string "SP::"
+            Timber.i("SP::(%s)", "Wrote backup file contents")
+        }catch(e:java.lang.Exception){
+            //  Unable to write backup file
+            val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                    "Unable to create/write story.json backup file" + ", " +
+                    "File: "   + fileContents + ", "
+                    "Err: "    + e.toString()
+
+            // Record the error message & exception (includes stack trace) in FireBase
+            FirebaseCrashlytics.getInstance().log(errInfo)
+            FirebaseCrashlytics.getInstance().recordException(e)
+
+            // Record the message to the android system log - with special embedded string "SP::"
+            Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
+        }
+    }else{
+        // report an error to logcat and Firebase about not being able to create a backup file
+        val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
+                "File: "   + backupFileName + ", " +
+                "Err: "    + "Could not create backup file"
+
+        // Record the error message in FireBase
+        FirebaseCrashlytics.getInstance().log(errInfo)
+
+        // Record the message to the android system log - with special embedded string "SP::"
+        Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
+    }
+
+    return null
 }
 
 fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
@@ -94,7 +160,7 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     //make a project directory if there is none.
     if (storyRelPathExists(context,PROJECT_DIR,storyPath.name!!)) {
         //parse the project file, if there is one.
-        story = storyFromJson(context, storyPath.name!!)
+        story = storyFromJson(context, storyPath)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }

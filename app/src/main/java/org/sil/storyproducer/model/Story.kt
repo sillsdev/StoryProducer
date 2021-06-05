@@ -1,10 +1,15 @@
 package org.sil.storyproducer.model
 
 
+import android.os.Build
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.R
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.model.logging.LogEntry
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 internal const val PROJECT_DIR = "project"
 internal const val VIDEO_DIR = "videos"
@@ -15,7 +20,19 @@ internal val RE_FILENAME = "([^|]+[|])?(.*)".toRegex()
 
 @JsonClass(generateAdapter = true)
 class Story(var title: String, var slides: List<Slide>){
+    // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
+    // Record versionCode & versionName which come from build.gradle (Module: StoreyProducer.app)
+    // Record timeStamp for when story.json file was written
+    // This will allow future Story Producer Apps to be backwards compatibility with old stories
+    // This will also allow for debugging of stories that have parse errors
 
+    // These are the initial story default values and will be updated from a story.json file if
+    // function storyFromJason is called and the story.json file contains these fields
+    // These values are also updated from function "Story.ToJason" when it is time to
+    // update the story.json file
+    var storyToJasonAppVersionCode = 0  // default value - no value available
+    var storyToJasonAppVersionName = "" // default value - no value available
+    var storyToJasonTimeStamp = ""  // default value - no value available
     var isApproved: Boolean = false
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""
