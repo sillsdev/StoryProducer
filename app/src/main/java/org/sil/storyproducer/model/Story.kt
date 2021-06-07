@@ -33,6 +33,7 @@ class Story(var title: String, var slides: List<Slide>){
     var storyToJasonAppVersionCode = 0  // default value - no value available
     var storyToJasonAppVersionName = "" // default value - no value available
     var storyToJasonTimeStamp = ""  // default value - no value available
+
     var isApproved: Boolean = false
     var learnAudioFile = ""
     var wholeStoryBackTAudioFile = ""

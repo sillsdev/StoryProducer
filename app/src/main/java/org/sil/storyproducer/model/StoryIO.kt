@@ -64,7 +64,7 @@ fun Story.toJson(context: Context){
 fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
     val filePath = "$PROJECT_DIR/$PROJECT_FILE"  // location of file
     var fileContents: String? = null
-    // var fileContents: String? = null
+
     try {
         // use Moshi to restore all information associated with this story
         val moshi = Moshi
