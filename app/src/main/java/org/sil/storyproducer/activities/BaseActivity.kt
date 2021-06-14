@@ -83,13 +83,21 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
-    // showRegistration Argument allows calling function in current Activity to terminate the
-    // current Activity and then show the Registration screen via the RegistrationActivity
-    // Any MainActivity function should set executeFinishActivity to false.  MainActivity should
-    // always exist.
-    // Activities like LearnActivity will exit by using the default value of true
+    //
+    // showRegistration Argument allows the caller in the current Activity to finish or
+    // not finish the current Activity before starting the RegistrationActivity.
+    // The MainActivity should set executeFinishActivity to false so that when the registration
+    // is complete, there is a Story Producer activity that will control execution.
     // After the RegistrationActivity completes, control is returned to the MainActivity
     // where the list of story templates are displayed
+    //
+    // 06/14/2021 - DKH, Issue 407, Pull Request 561 - Merge into Latest sillsdev
+    // Updated selectItem in DrawerItemclickListener to set Workspace.showRegistration
+    // to true and then call showMain() instead of calling showRegistration.  This is equivalent
+    // to calling showRegistration.  See selectItem for more detail.
+    //
+    // All showRegistration calls should be done through the MainActivity to
+    // avoid hanging Story Producer.
     override fun showRegistration(executeFinishActivity: Boolean) {
         startActivity(Intent(this, RegistrationActivity::class.java))
 
