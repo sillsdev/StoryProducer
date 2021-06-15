@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -17,6 +19,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.storylist.StoryPageAdapter
@@ -76,6 +80,17 @@ class MainActivity : BaseActivity(), Serializable {
             // the story template list
             showRegistration(false)
         }
+
+        // DKH - 6/15/2021: This was originally deleted for Issue 407: Story Template Filter Feature
+        // It was added back in because it monitors the network connection for VolleySingleton
+        // and is used by  for support of RemoteCheckFrag.java,
+        // AudioUpload.java & BackTranslationUpload.java
+        GlobalScope.launch {
+            runOnUiThread {
+                this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
+            }
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
