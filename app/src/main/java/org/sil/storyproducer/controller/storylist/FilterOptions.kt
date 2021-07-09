@@ -21,6 +21,34 @@ import org.sil.storyproducer.model.Workspace
  *  }
  */
 enum class FilterOptions(val nameId: Int) {
+    // DKH - 07/09/2021
+    // These options show up on the "Story Template" list when the "ALL STORIES" tab is selected.
+    // The Story Template list for all the tabs (ALL STORIES, IN PROGRESS, COMPLETED) are
+    // grouped/sorted by the numeric string that precedes at title, eg: "002 Lost Coin" followed by
+    // "006 Snakes Secret"
+    // Currently, the three subcategories for the "ALL STORIES" tab are listed
+    // below as enums (Other, OT, NT).  To keep with the paradigm of displaying the
+    // "Story Template" list sorted by the numeric string at the beginning of the title,
+    // (eg, 002 in title "002 Lost Coin") we have to match the enum values with the numeric
+    // sort order that we want.  Here is the table
+    //  ENUM            Subcategory Type            Range of values
+    //    0                 Other                       0-99
+    //    1                   OT                       100-199
+    //    2                   NT                       200-299
+    //
+    //  If you set NT as enum 1 and OT as enum 2, when enabling or disabling the subcategories,
+    //  the list will appear out of order, ie, the 200-299 range will appear before the 100-199.
+    //
+    // These names "Other", "OT" & "NT" are define in strings.xml
+
+    Other(R.string.other_toolbar) {
+        override fun getStoryList(): List<Story> {
+            return Workspace.Stories.filter { story ->
+                story.type == Story.StoryType.OTHER
+            }
+        }
+    },
+
     OT(R.string.ot_toolbar) {
         override fun getStoryList(): List<Story> {
             return Workspace.Stories.filter { story ->
@@ -35,15 +63,9 @@ enum class FilterOptions(val nameId: Int) {
                 story.type == Story.StoryType.NEW_TESTAMENT
             }
         }
-    },
-
-    Other(R.string.other_toolbar) {
-        override fun getStoryList(): List<Story> {
-            return Workspace.Stories.filter { story ->
-                story.type == Story.StoryType.OTHER
-            }
-        }
     };
+
+
 
     abstract fun getStoryList() : List<Story>
 }
