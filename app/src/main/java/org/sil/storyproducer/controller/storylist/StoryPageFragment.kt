@@ -33,6 +33,15 @@ class StoryPageFragment : Fragment() {
     private lateinit var storyPageTab : StoryPageTab
     private lateinit var listView: ListView
     private lateinit var adapter: ListAdapter
+    // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+    // Updated while integrating pull request #561 into current sillsdev baseline
+    // Integration testing identified the wrong index was being used for the selected story
+    //
+    // The story list, as supplied by StoryPageTab, can be modified by FilterToolbarFrag
+    // via updateStoryList.  So, we stash a copy of the story list in CurrentStoryList so that
+    // when a click is performed on a story, we know which story was actually clicked on.
+    // CurrentStoryList is used below to start a new activity on a selected story
+    private var CurrentStoryList: List<Story> = emptyList()
 
     companion object {
         const val ARG_POSITION = "position"
@@ -56,7 +65,13 @@ class StoryPageFragment : Fragment() {
         val position = requireArguments().getInt(ARG_POSITION)
         storyPageTab = StoryPageTab.values()[position]
 
-        if (storyPageTab.getStoryList().isEmpty()) {
+        // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+        // Updated while integrating pull request #561 into current sillsdev baseline
+        //
+        // save the stories assoicated with this storyPageFragment
+        // (eg, ALL STORIES, IN PROGRESS, COMPLETED)
+        CurrentStoryList = storyPageTab.getStoryList()  // grab the stories
+        if (CurrentStoryList.isEmpty()) {  // If empty, set up for displaying "No Story" message
             val view = inflater.inflate(R.layout.fragment_no_stories, container, false)
 
             view!!.findViewById<TextView>(R.id.stories_not_found_text).text =
@@ -84,9 +99,16 @@ class StoryPageFragment : Fragment() {
 
         listView = lfview.findViewById(R.id.story_list_view)
 
+        // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+        // Updated while integrating pull request #561 into current sillsdev baseline
+        //
+
+        // Set up a lambda routine to execute when a user clicks on a story.
+        // Upon a story click, the story is set as the current story and a new
+        // activity is started using the selected story.  Use CurrentStoryList to
+        // determine which story
         listView.onItemClickListener = AdapterView.OnItemClickListener { _, _, position, _ ->
-            (activity as MainActivity).switchToStory(storyPageTab.getStoryList()[position])
-        }
+                (activity as MainActivity).switchToStory(CurrentStoryList[position]) }
 
         // Assign adapter to ListView
         listView.adapter = adapter
@@ -100,6 +122,12 @@ class StoryPageFragment : Fragment() {
      * @param storyList List of new stories to be used in the ListAdapter
      */
     fun updateStoryList(storyList: List<Story>) {
+        // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+        // Updated while integrating pull request #561 into current sillsdev baseline
+        //
+        // Update CurrentStoryList so that when a click is made on a story, we know which
+        // story is selected
+        CurrentStoryList = storyList
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyList, storyPageTab)
         listView.adapter = adapter
         adapter.notifyDataSetChanged()
