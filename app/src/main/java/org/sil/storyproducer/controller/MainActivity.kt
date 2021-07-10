@@ -80,8 +80,9 @@ class MainActivity : BaseActivity(), Serializable {
             // the story template list
             showRegistration(false)
         }
-
-        // DKH - 6/15/2021: This was originally deleted for Issue 407: Story Template Filter Feature
+        // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+        // Updated while integrating pull request #561 into current sillsdev baseline
+        // This was deleted in pull request #561.
         // It was added back in because it monitors the network connection for VolleySingleton
         // and is used by  for support of RemoteCheckFrag.java,
         // AudioUpload.java & BackTranslationUpload.java

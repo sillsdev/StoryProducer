@@ -21,7 +21,10 @@ import org.sil.storyproducer.model.Workspace
  *  }
  */
 enum class FilterOptions(val nameId: Int) {
-    // DKH - 07/09/2021
+    // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+    // Updated while integrating pull request #561 into current sillsdev baseline
+    // Integration testing identified the stories in the displayed list were out of order
+    //
     // These options show up on the "Story Template" list when the "ALL STORIES" tab is selected.
     // The Story Template list for all the tabs (ALL STORIES, IN PROGRESS, COMPLETED) are
     // grouped/sorted by the numeric string that precedes at title, eg: "002 Lost Coin" followed by
