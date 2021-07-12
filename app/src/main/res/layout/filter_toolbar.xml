@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/FilterToolbarChips">
+
+    <com.google.android.material.chip.ChipGroup xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/filter_group"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        app:singleSelection="false">
+        <!-- List Chips from filter_chip_choice.xml -->
+    </com.google.android.material.chip.ChipGroup>
+
+</LinearLayout>

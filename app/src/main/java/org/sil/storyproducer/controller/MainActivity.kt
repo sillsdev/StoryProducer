@@ -15,11 +15,16 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.storylist.StoryPageAdapter
+import org.sil.storyproducer.controller.storylist.StoryPageTab
 import org.sil.storyproducer.model.Phase
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
@@ -30,9 +35,9 @@ import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
 
-    lateinit var storyList: StoryListFrag
-
     private var mDrawerLayout: DrawerLayout? = null
+    lateinit var storyPageViewPager : ViewPager2
+    lateinit var storyPageTabLayout : TabLayout
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -51,9 +56,10 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        storyList = StoryListFrag()
         setContentView(R.layout.activity_main)
         setupDrawer()
+        setupStoryListTabPages()
+
 
         if (!Workspace.isInitialized) {
             initWorkspace()
@@ -74,12 +80,18 @@ class MainActivity : BaseActivity(), Serializable {
             // the story template list
             showRegistration(false)
         }
+        // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
+        // Updated while integrating pull request #561 into current sillsdev baseline
+        // This was deleted in pull request #561.
+        // It was added back in because it monitors the network connection for VolleySingleton
+        // and is used by  for support of RemoteCheckFrag.java,
+        // AudioUpload.java & BackTranslationUpload.java
         GlobalScope.launch {
             runOnUiThread {
-                supportFragmentManager.beginTransaction().add(R.id.fragment_container, storyList).commit()
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
         }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -94,6 +106,7 @@ class MainActivity : BaseActivity(), Serializable {
         Workspace.activeStory = story
         val intent = Intent(this.applicationContext, Workspace.activePhase.getTheClass())
         startActivity(intent)
+        finish()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -121,6 +134,33 @@ class MainActivity : BaseActivity(), Serializable {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        storyPageViewPager.unregisterOnPageChangeCallback(storyPageChangeCallback)
+    }
+
+    var storyPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            Log.i("MainActivity Story Page", "Selected Tab: $position")
+        }
+    }
+
+    private fun setupStoryListTabPages() {
+        storyPageViewPager = findViewById(R.id.storyPageViewPager)
+        storyPageViewPager.offscreenPageLimit = StoryPageTab.values().size
+        storyPageTabLayout = findViewById(R.id.tabLayout)
+
+        val storyPageAdapter = StoryPageAdapter(this, StoryPageTab.values().size)
+        storyPageViewPager.adapter = storyPageAdapter
+
+        storyPageViewPager.registerOnPageChangeCallback(storyPageChangeCallback)
+
+        // Sets the Tab Names from the list of StoryPageTabs
+        TabLayoutMediator(storyPageTabLayout, storyPageViewPager) { tab, position ->
+            tab.text = getString(StoryPageTab.values()[position].nameId)
+        }.attach()
     }
 
     /**
@@ -154,7 +194,9 @@ class MainActivity : BaseActivity(), Serializable {
             }
             R.id.nav_demo -> {
                 Workspace.addDemoToWorkspace(this)
-                storyList.notifyDataSetChanged()
+
+                // Refresh all the stories in the story page tabs
+                setupStoryListTabPages()
             }
 
             R.id.nav_stories -> {

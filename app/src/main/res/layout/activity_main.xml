@@ -20,23 +20,22 @@
             android:maxHeight="?android:attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
-        <FrameLayout
-            android:id="@+id/fragment_container"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true">
+            android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/indeterminateBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                />
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/storyPageViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
-        </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView

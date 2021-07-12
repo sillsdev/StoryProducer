@@ -93,6 +93,8 @@
         for story templates does not contain usable templates.  Select the appropriate
         \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - normally found on the
         &lt;font color=\"green\">&lt;b>SD card&lt;/b>&lt;/font>.</string>
+    <string name="stories_not_found_in_progress">There are no stories in progress.</string>
+    <string name="stories_not_found_completed">There are no completed stories.</string>
     <string name="welcome_screen_select_template_folder">
         Story Producer is different from typical apps.
         You must first create a folder on your SD card (preferred) where the story template files must be downloaded by you.&lt;br>
@@ -263,6 +265,17 @@
     <string name="update_workspace">Select \'SP Templates\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
+
+    <!-- Main Story Page -->
+    <string name="all_stories_tab">All Stories</string>
+    <string name="in_progress_tab">In Progress</string>
+    <string name="completed_tab">Completed</string>
+
+    <!-- Filter Toolbar -->
+    <string name="film_toolbar">Film</string>
+    <string name="nt_toolbar">NT</string>
+    <string name="ot_toolbar">OT</string>
+    <string name="other_toolbar">Other</string>
 
     <!-- About -->
     <string name="about">About</string>
