@@ -111,7 +111,24 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
     if(soundtrack.size >= 1){
         slide.musicFile = "audio/${soundtrack[0].attr("data-backgroundaudio")}"
-        slide.volume = (soundtrack[0].attr("data-backgroundaudiovolume") ?: "0.25").toFloat()
+        // DKH - 07/23/2021
+        // Issue #585: SP fails to read new templates made with Story Producer Template Maker
+        // The attr method on class Node (ie, soundtrack[0] object) does not return a null but either
+        // the attribute string or an empty sting
+        // The following method throws this exception: "java.lang.NumberFormatException: empty String",
+        // because it tries to do a ".toFloat()" on an empty string
+        // slide.volume = (soundtrack[0].attr("data-backgroundaudiovolume") ?: "0.25").toFloat()
+        // Replace the previous line of code with the following, which checks for string length
+        // to determine if we have an empty string
+
+        // grab the node attribute
+        val slideVolume = soundtrack[0].attr("data-backgroundaudiovolume")
+        if(slideVolume.length == 0) { // if the attribute length is zero, we have an empty string
+            slide.volume = 0.25F     // assign a default volume
+        }else {
+            // convert slideVolume string to a float
+            slide.volume = slideVolume.toFloat()
+        }
     }
 
     //image
