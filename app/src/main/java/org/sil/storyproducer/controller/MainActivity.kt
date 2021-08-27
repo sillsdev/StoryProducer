@@ -198,7 +198,9 @@ class MainActivity : BaseActivity(), Serializable {
                 // Refresh all the stories in the story page tabs
                 setupStoryListTabPages()
             }
-
+            R.id.nav_word_link_list -> {
+                showWordLinksList()
+            }
             R.id.nav_stories -> {
                 // Current fragment
             }

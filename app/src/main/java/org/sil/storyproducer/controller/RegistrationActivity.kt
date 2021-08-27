@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -20,9 +21,9 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.VolleySingleton
@@ -568,7 +569,8 @@ open class RegistrationActivity : AppCompatActivity() {
             this.finish()
             reg.putBoolean(EMAIL_SENT, true)
             reg.save(this)
-            Log.i("Finished sending email", "")
+	    // DKH - 8/26/2021  Log.i needs second argument for print out
+            Log.i("Finished sending email", "Mail Sent")
         } catch (ex: android.content.ActivityNotFoundException) {
             FirebaseCrashlytics.getInstance().recordException(ex)
             Toast.makeText(this,
