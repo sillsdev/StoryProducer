@@ -21,7 +21,10 @@ import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isNotDisplayed
 import org.sil.storyproducer.R
 
-private const val APP_PACKAGE_NAME = "org.sil.storyproducer"
+// 09/02/2021 - DKH: Update for Testing Abstraction #566,
+// APP_PACKAGE_NAMES were changed to detect between debug, continuous or released Story Producer
+// version, so as to correctly recored crashes for Firebase crashlytics
+private const val APP_PACKAGE_NAME = "org.sil.storyproducer.debug"
 private const val TIMEOUT_DURATION = 5000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
 
@@ -94,12 +97,19 @@ class WorkspaceSetter {
             device.findObject(By.res("android:id/button1").text("OK")).click()
             device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)
             device.findObject(By.desc("More options")).click()
+            // 09/02/2021 - DKH: Update for Testing Abstraction #566
+            // Added "device.wait" which allows menu to popup before searching for a menu pick.
+            // Encountered intermittent failures due to searching for the object before the object appeared
+            device.wait(Until.hasObject(By.text("Show internal storage")), TIMEOUT_DURATION)
             val showInternalStorage = device.findObject(By.text("Show internal storage"))
             if (showInternalStorage != null) {
                 showInternalStorage.click()
             } else {
                 device.pressBack()
             }
+            // 09/02/2021 - DKH: Update for Testing Abstraction #566
+            // Added "device.wait" which allows window to get setup before picking an item
+            device.wait(Until.hasObject(By.desc("Show roots")), TIMEOUT_DURATION)
             device.findObject(By.desc("Show roots")).click()
 
             device.wait(Until.hasObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)), TIMEOUT_DURATION)
