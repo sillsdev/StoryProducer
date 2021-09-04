@@ -4,7 +4,9 @@ import org.sil.storyproducer.R
 
 open class ImageBase : SharedBase {
 
-    private val nameOfTestStory = "Lost Coin"
+    // 09/02/2021 - DKH: Update for Testing Abstraction #566
+    // Precisely identify story string for automated comparison during Espresso testing
+    private val nameOfTestStory = "002 Lost Coin"
     private val nameOfTestStoryDirectory = "002 Lost Coin"
     private val nameOfSampleExportVideo = "Lost_Coin.mp4"
 

@@ -25,11 +25,13 @@ object Constants {
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
     val storageRoots = arrayOf(
-            "mnt/sdcard",
+            "mnt/sdcard",  // Android Studio Emulator on Pixel 2 for Android 9
             "storage/removable_SD Card",
             "storage",
             "mnt/SDCARD")
-    var storage = storageRoots[3]
+    // TODO: update software to cycle through list of storage Roots so we don't have to set
+    //       it for each Android version
+    var storage = storageRoots[0] // Initial testing is on Android 9, so select it
     val workspaceDirectory : String
         get() {return "$storage/SPWorkspace"}
     val espressoResourceDirectory : String
