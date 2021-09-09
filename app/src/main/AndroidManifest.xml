@@ -86,6 +86,15 @@
             android:name=".controller.export.ShareActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
+        <!-- WordLinks -->
+        <activity
+            android:name=".controller.wordlink.WordLinksActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <!-- WordLinks List -->
+        <activity
+            android:name=".controller.wordlink.WordLinksListActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

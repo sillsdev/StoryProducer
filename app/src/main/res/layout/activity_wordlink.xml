@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".controller.wordlink.WordLinksActivity"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/wordlink_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_anchorGravity="top"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/wordlink_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/gray"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:id="@+id/linearLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_anchorGravity="bottom"
+            android:layout_marginBottom="50dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/wordlink_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/word_links_phase_secondary"
+                    android:elevation="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="4dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="4dp"
+                    android:textSize="@dimen/text_title" />
+
+                <TextView
+                    android:id="@+id/meaning_notes_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="@string/wordlink_notes"
+                    android:textSize="@dimen/large_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/explanation_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textSize="@dimen/text_body" />
+
+                <LinearLayout
+                    android:id="@+id/related_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:background="@color/lightDarkGrey"
+                    android:orientation="vertical"
+                    android:padding="8dp">
+
+                    <TextView
+                        android:id="@+id/related_terms_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/wordlink_related_terms"
+                        android:textSize="@dimen/large_text"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/related_terms_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/text_body" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/other_languages_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="@string/wordlink_other_langauge_examples"
+                    android:textSize="@dimen/large_text"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/alternate_renderings_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:textSize="@dimen/text_body" />
+            </LinearLayout>
+        </ScrollView>
+
+        <include layout="@layout/fragment_wordlink_recording_list" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

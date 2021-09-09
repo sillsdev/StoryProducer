@@ -1,27 +1,37 @@
 package org.sil.storyproducer.model
 
+import WordLinksCSVReader
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.deleteWorkspaceFile
-import org.sil.storyproducer.tools.file.getChildOutputStream
-import org.sil.storyproducer.tools.file.workspaceRelPathExists
+import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.io.InputStreamReader
 import java.util.*
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
+internal const val PHASE = "Phase"
 
-object Workspace{
+internal const val WORD_LINKS_DIR = "wordlinks"
+internal const val WORD_LINKS_CSV_FILE = "wordlinks.csv"
+internal const val WORD_LINKS_JSON_FILE = "wordlinks.json"
+internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
+internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
+
+object Workspace {
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
@@ -40,12 +50,22 @@ object Workspace{
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
 
+    // word links
+    lateinit var activeWordLink: WordLink
+    var termToWordLinkMap: MutableMap<String, WordLink> = mutableMapOf()
+    var termFormToTermMap: MutableMap<String, String> = mutableMapOf()
+    var WLSTree = WordLinkSearchTree()
+
     var activeStory: Story = emptyStory()
     set(value){
         field = value
         //You are switching the active story.  Recall the last phase and slide.
         activePhase = Phase(value.lastPhaseType)
         activeSlideNum = value.lastSlideNum
+        // DKH - Updated 06/03/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
+        // Record time when the story was last run - this will show up in the story.json file
+        // This is mainly used for debugging a story.json file that has a parse error
+        value.storyToJasonTimeStamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date())
     }
     var activePhase: Phase = Phase(PhaseType.LEARN)
         set(value){
@@ -56,12 +76,30 @@ object Workspace{
             }
         }
     val activeDirRoot: String
-    get(){return activeStory.title }
+    get() {
+        return if (activePhase.phaseType == PhaseType.WORD_LINKS) {
+            WORD_LINKS_DIR
+        } else {
+            activeStory.title
+        }
+    }
 
-    val activeDir: String = PROJECT_DIR
+    val activeDir: String
+    get() {
+        return if (activePhase.phaseType == PhaseType.WORD_LINKS) {
+            activeWordLink.term
+        } else {
+            PROJECT_DIR
+        }
+    }
+
     val activeFilenameRoot: String
     get() {
-        return "${activePhase.getFileSafeName()}${ Workspace.activeSlideNum }"
+        return if(activePhase.phaseType == PhaseType.WORD_LINKS) {
+            activeWordLink.term
+        } else {
+            return "${activePhase.getFileSafeName()}${ activeSlideNum }"
+        }
     }
 
     var activeSlideNum: Int = -1
@@ -98,8 +136,80 @@ object Workspace{
             // Initiate new workspace path
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
+
+            // load in the Word Links
+            importWordLinks(context)
         } catch (e: Exception) {
             Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
+        }
+    }
+
+    private fun importWordLinks(context: Context) {
+        val wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
+        // check that word links directory exists
+        if (wordLinksDir != null) {
+            importWordLinksFromCSV(context, wordLinksDir)
+            importWordLinksFromJsonFiles(context, wordLinksDir)
+            mapTermFormsToTerms()
+            buildWLSTree()
+        }
+    }
+
+    private fun importWordLinksFromCSV(context: Context, wordLinksDir: DocumentFile){
+        val wordLinksFile = wordLinksDir.findFile(WORD_LINKS_CSV_FILE)
+        if (wordLinksFile != null) {
+            try {
+                // open a raw file descriptor to access data under the URI
+                context.contentResolver.openFileDescriptor(wordLinksFile.uri, "r").use { pfd ->
+                    ParcelFileDescriptor.AutoCloseInputStream(pfd).use { inputStream ->
+                        InputStreamReader(inputStream).use { streamReader ->
+                            WordLinksCSVReader(streamReader).use { wordLinkCSVReader ->
+                                val wordLinks = wordLinkCSVReader.readAll()
+                                wordLinks.forEach { wl ->
+                                    termToWordLinkMap[wl.term] = wl
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (exception: Exception) {
+                Toast.makeText(context, R.string.wordlinks_csv_read_error, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun importWordLinksFromJsonFiles(context: Context, wordLinksDir: DocumentFile){
+        if(wordLinksDir.findFile(WORD_LINKS_JSON_FILE) != null) {
+            try {
+                wordLinkListFromJson(context)?.wordLinks?.forEach { wl ->
+                    if (termToWordLinkMap.containsKey(wl.term)) {
+                        termToWordLinkMap[wl.term]?.wordLinkRecordings = wl.wordLinkRecordings
+                        termToWordLinkMap[wl.term]?.chosenWordLinkFile = wl.chosenWordLinkFile
+                    } else {
+                        termToWordLinkMap[wl.term] = wl
+                    }
+                }
+            }
+            catch(exception: Exception) {
+                Toast.makeText(context, R.string.wordlinks_json_read_error, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun mapTermFormsToTerms() {
+        for (wl in termToWordLinkMap.values) {
+            val term = wl.term
+            termFormToTermMap[term.toLowerCase()] = term
+            for (termForm in wl.termForms) {
+                termFormToTermMap[termForm.toLowerCase()] = term
+            }
+        }
+    }
+
+    private fun buildWLSTree() {
+        for (termForm in termFormToTermMap.keys) {
+            WLSTree.insertTerm(termForm)
         }
     }
 
@@ -196,7 +306,7 @@ object Workspace{
     }
 
     fun goToNextPhase() : Boolean {
-        if(activePhaseIndex == -1) return false //phases not initizialized
+        if(activePhaseIndex == -1) return false //phases not initialized
         if(activePhaseIndex >= phases.size - 1) {
             activePhaseIndex = phases.size - 1
             return false
@@ -208,7 +318,7 @@ object Workspace{
     }
 
     fun goToPreviousPhase() : Boolean {
-        if(activePhaseIndex == -1) return false //phases not initizialized
+        if(activePhaseIndex == -1) return false //phases not initialized
         if(activePhaseIndex <= 0) {
             activePhaseIndex = 0
             return false
