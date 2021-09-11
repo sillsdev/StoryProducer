@@ -39,7 +39,21 @@ object PhaseNavigator {
     }
 
     private fun clickOnStory(storyName: String) {
-        onView(withText(CoreMatchers.containsString(storyName))).perform(ViewActions.scrollTo(), ViewActions.click())
+        // 09/11/2021 - DKH: Update for Testing Abstraction #566
+        // ALL_STORIES, IN_PROGRESS, COMPLETED are the tabs in the "Story Templates" view
+        //  that contain the story titles.
+        // The same exact title can appear in two places, eg, once in
+        //     ALL_STORIES tab and once in the IN_PROGRESS tab.  When running the Espresso test,
+        //     the Espresso title picker throws an exception because it cannot
+        //     differentiate between the same title in the ALL_STORIES tab and the
+        //     IN_PROGRESS tab.
+        // To provide more uniqueness, add one space to each title in the IN_PROGRESS tab, two
+        //     spaces to each title in the COMPLETED tab and three spaces to each title in
+        //     any other tabbed ENUMS.
+        //     The users will not see a difference but the Espresso software will be
+        //     able to pick the appropriate story/tab combo.
+        // So we do exact match (equalTo) instead of just containing part of the string (containsString)
+        onView(withText(CoreMatchers.equalTo(storyName))).perform(ViewActions.scrollTo(), ViewActions.click())
     }
 
     private fun isRegistrationDisplayed() : Boolean {

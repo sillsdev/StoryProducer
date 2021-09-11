@@ -164,7 +164,30 @@ class ListAdapter(context: Context,
 
         if(position <= stories.size){
             val story = stories[position]
-            holder.txtTitle.text = story.title
+
+            // 09/11/2021 - DKH: Update for Testing Abstraction #566
+            // ALL_STORIES, IN_PROGRESS, COMPLETED are the tabs in the "Story Templates" view.
+            // Previously for all tabs, the following code was used to assign the title:
+            //          holder.txtTitle.text = story.title
+            // Using this code, the same exact title can appear in two places, eg, once in
+            //     ALL_STORIES tab and once in IN_PROGRESS tab.  When running the Espresso test,
+            //     the Espresso title picker throws an exception because it cannot
+            //     differentiate between the same title in the ALL_STORIES tab and the
+            //     the IN_PROGRESS tab.
+            // To provide more uniqueness, add one space to the title in the IN_PROGRESS tab,
+            //     two spaces to the title in the COMPLETED tab and three spaces to the title in
+            //     any other added tabbed ENUMS.
+            //     The users will not see a difference but the Espresso software will be
+            //     able to pick the appropriate story/tab combo.
+            // Espresso test will have to reflect this new naming convention for stories in
+            //     each tab.
+            when (storyPageTab){
+                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title  // leave unchanged
+                StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.title + " " // add 1 space for uniqueness
+                StoryPageTab.COMPLETED-> holder.txtTitle.text = story.title + "  " // add 2 spaces for uniqueness
+                else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness
+            }
+
             //TODO put th number 25 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
             holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
