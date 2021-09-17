@@ -21,17 +21,22 @@ object Constants {
     const val intervalToWaitBetweenCheckingForVideoExport: Long = 1000
 
     const val durationToWaitWhenSwipingBetweenSlides: Long = 200 //Swipe.FAST = 100 * 2
-
+    // 09/17/2021 - DKH: Update for Testing Abstraction #566
+    // numberOfTimesToSwipeWhenApprovingAllSlides is very story template specific,
+    //  eg, Lost Coin only has 6 slides.  Other stories with different slide counts will not work
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
+    // 09/17/2021 - DKH: Update for Testing Abstraction #566
+    // This is a list of possible root mount points across different devices.  Standardize
+    //  on Pixel emulators which all use sdcard.  This way we can run different Android versions
+    //  on different Pixel models without change or extra software
     val storageRoots = arrayOf(
-            "mnt/sdcard",  // Android Studio Emulator on Pixel 2 for Android 9
+            "sdcard",  // Android Studio Emulators for Pixel
             "storage/removable_SD Card",
             "storage",
             "mnt/SDCARD")
-    // TODO: update software to cycle through list of storage Roots so we don't have to set
-    //       it for each Android version
-    var storage = storageRoots[0] // Initial testing is on Android 9, so select it
+
+    var storage = storageRoots[0] // Standard root access point for Pixel Emulators
     val workspaceDirectory : String
         get() {return "$storage/SPWorkspace"}
     val espressoResourceDirectory : String
