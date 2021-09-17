@@ -2,6 +2,7 @@ package org.sil.storyproducer.androidtest.happypath
 
 import android.app.Application
 import android.content.Intent
+import android.os.Build
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -28,11 +29,20 @@ private const val APP_PACKAGE_NAME = "org.sil.storyproducer.debug"
 private const val TIMEOUT_DURATION = 5000L
 private const val FILE_PICKER_PACKAGE = "com.android.documentsui"
 
-// Android Version: 7.1.1 (API 25)
-//private const val INTERNAL_STORAGE_BUTTON_TEXT = "Android SDK built for x86"
+// 09/17/2021 - DKH: Update for Testing Abstraction #566
+// INTERNAL_STORAGE_BUTTON_TEXT differs between SDK versions.  These are the strings
+//  when running on Android Studio with Debug version of Story Producer for
+//  ANDROID 8,9,10,11 (SDK 27,28,29,30) on a Pixel emulator
+private val INTERNAL_STORAGE_BUTTON_TEXT : String
+    get() {
+        when (Build.VERSION.SDK_INT){
+            28->return ("AOSP on IA Emulator")
+            30->return ("sdk_gphone_x86")
+        }
+        // SDK version 27,29  - supposedly works for 25 but not tested
+        return ("Android SDK built for x86")
+    }
 
-// Android Version: 9.0 (API 28)
-private const val INTERNAL_STORAGE_BUTTON_TEXT = "AOSP on IA Emulator"
 
 private const val REGISTRATION_SCREEN_CONTAINER = "org.sil.storyproducer:id/registration_scroll_view"
 
@@ -101,6 +111,7 @@ class WorkspaceSetter {
             // Added "device.wait" which allows menu to popup before searching for a menu pick.
             // Encountered intermittent failures due to searching for the object before the object appeared
             device.wait(Until.hasObject(By.text("Show internal storage")), TIMEOUT_DURATION)
+
             val showInternalStorage = device.findObject(By.text("Show internal storage"))
             if (showInternalStorage != null) {
                 showInternalStorage.click()
@@ -110,6 +121,7 @@ class WorkspaceSetter {
             // 09/02/2021 - DKH: Update for Testing Abstraction #566
             // Added "device.wait" which allows window to get setup before picking an item
             device.wait(Until.hasObject(By.desc("Show roots")), TIMEOUT_DURATION)
+
             device.findObject(By.desc("Show roots")).click()
 
             device.wait(Until.hasObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)), TIMEOUT_DURATION)
@@ -119,7 +131,19 @@ class WorkspaceSetter {
             device.wait(Until.hasObject(By.text(workspaceDirectoryName)), TIMEOUT_DURATION)
             device.findObject(By.text(workspaceDirectoryName)).click()
 
-            device.findObject(By.text("SELECT")).click()
+            // 09/17/2021 - DKH: Update for Testing Abstraction #566
+            // The advent of Android 10 introduced scoped storage where the user has to
+            //  okay the use of files and directories.  Add extra clicks to okay the use of
+            //  external storage
+            if(Build.VERSION.SDK_INT > 28){
+                // Android 10 and greater must get user to okay the use of directories & files
+                device.wait(Until.hasObject(By.text("ALLOW ACCESS TO \"SPWORKSPACE\"")), TIMEOUT_DURATION)
+                device.findObject(By.text("ALLOW ACCESS TO \"SPWORKSPACE\"")).click()
+                device.wait(Until.hasObject(By.text("ALLOW")), TIMEOUT_DURATION)
+                device.findObject(By.text("ALLOW")).click()
+            }else {
+                device.findObject(By.text("SELECT")).click()
+            }
             device.wait(Until.hasObject(By.res(REGISTRATION_SCREEN_CONTAINER)), TIMEOUT_DURATION)
         }
 
