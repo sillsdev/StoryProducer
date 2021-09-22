@@ -1,5 +1,6 @@
 package org.sil.storyproducer.androidtest.happypath
 
+import android.os.Build
 import android.view.View
 import android.widget.ImageButton
 import androidx.test.espresso.Espresso
@@ -56,7 +57,13 @@ abstract class PhaseTestBase {
                 if (destination.exists()) {
                     destination.deleteRecursively()
                 }
-                source.copyRecursively(destination, true)
+
+                // 09/19/2021 - DKH: Update for Testing Abstraction #566
+                // Android 10 and greater does not allow File operations
+                if(Build.VERSION.SDK_INT < 29) { // not valid operation for Android 10 or greater
+                    // todo: Recode this for Android 10 scoped storage
+                    source.copyRecursively(destination, true)
+                }
             } catch (e: Exception){
                 Assert.fail("Failed to copy pristine story template from test resources folder " +
                         "to workspace folder. Ensure that Story Producer has the 'Storage' " +
