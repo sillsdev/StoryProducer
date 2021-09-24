@@ -1,0 +1,38 @@
+09/22/2021 - DKH Update for Testing Abstraction #566
+
+This is the test data directory for GIT SHA1: 0661464cb5d6e6cd04f9b3c62f5ca392800c1e21
+The test data is loaded onto the target emulator or phone in the root
+directory (ie, /). Once the test data is loaded, the
+tests in 'org.sil.storyproducer.androidtest.happypath' are run. A total of 23
+tests will be run.  For Android 8 & 9 on an emulator, all 23 test run successfully. 
+For Android 10 & 11 on an emulator, a few tests fail due to the scoped storage
+requirement which  was introduced in Android 10 & 11.  For the Android 11
+phone, only a few tests passed.
+
+This test data has been tested on the following targets:
+Android  8, Pixel 3 on an Android Studio Emulator.
+Android  9, Pixel 2 on an Android Studio Emulator.
+Android 10, Pixel 4 on an Android Studio Emulator.
+Android 11, Pixel 4 on an Android Studio Emulator.
+Android 11, Pixel 5 phone.  
+
+To reduce the overall storage space and the number of GIT files, a windows zip
+file is used in the turnover to GIT. Uncompress the testData.zip file and the
+top level directory will be "sdcard".
+
+To load the data into the target platform, use the adb executable located in the
+"Android\Sdk\platform_tools" from the Windows PowerShell.
+     adb push sdcard /
+
+Once a test has been run, use the following command to delete the test data
+directories from the target before reloading the test data and rerunning:
+     adb shell rm -rf sdcard/EspressoResources sdcard/SPWorkspace
+
+The test data was created by expanding a "002 Lost Coin.bloom" file into a full
+story directory called "002 Lost Coin".  The directory was
+placed in sdcard/EspressoResources and sdcard/SPWorkspace.  Here are other
+files that were added:
+     sdcard/SPWorkspace/videos       (directory)
+     sdcard/EspressoResources/Lost_Coin.mp4   (file with an mp4 extension)
+     
+
