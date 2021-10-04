@@ -12,17 +12,21 @@ Developers:
    * Software engineers for Prototype app: LeTourneau University students (Jordan Skomer, Hannah Brown, Caleb Phillips)
    * Software engineers for v1.2: Cedarville University students (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
    * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University students (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
-   * Software engineer for v2.3 and later: John Lambert
-   * Software engineers for Remote Oral Consultant Checker website and app v2.4 and testing frameworks: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
+   * Software engineer for v2.3-2.5: John Lambert
+   * Software engineers for Remote Oral Consultant Checker website and app v2.3 and testing frameworks: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
+   * Software engineers for Film Producer: Cedarville Univesity students (Donald Shade,...)
+   * Software engineer for v3.0.2: Chad Dalton
+   * Software engineers for filtered story list, Film Producer, extensive refactoring based on v3.02: Cedarville Univesity students (Jake Allinson, Nathan ONeel, Clare)
+   * Software engineer for v3.0.4 - current : Dale Hensley
 
 Translate and produce stories (starting with templates in a major language made up of images, audio and text) by working through these phases:  
 * [REGISTER project and team information (one time)]
 * LEARN or internalize the story
-* TRANSLATE/DRAFT an audio translation
+* TRANSLATE+REVISE an audio translation
 * COMMUNITY CHECK the draft for naturalness and clarity
-* CONSULTANT CHECK for accuracy and approval
-* DRAMATIZE/VOICE STUDIO the final audio
-* FINALIZE/CREATE new videos
+* ACCURACY CHECK for Biblical accuracy and approval
+* VOICE STUDIO to dramatize the final audio
+* FINALIZE create new videos
 * SHARE the videos
 
 ## Creating a signed APK
@@ -49,7 +53,7 @@ save in the root directory.
 
 ## Installing the application
 * Minimum Requirements:  
-    * Android 5.x.x; Android 8 is required to create 3GP output videos
+    * Android 5.x.x
     * 2+GB RAM is needed to create the longer/larger videos
     * an average of 500 MB storage must be available per story template one wishes to create; it is suggested to put templates on an SD card
     * an (Android) file manager
@@ -62,10 +66,10 @@ save in the root directory.
     * Connect to your device via USB (it will show as a drive on your computer)
         * If it does not show up as a drive, swipe down from the top.  You should see a notification: USB for charging.  Touch it.  Select USB for file transfer.
     * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
-    * Download the [template folders](https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing) to your computer
-    * Copy the unzipped templates folder to your SD card.  A good directory would be **\[thumb drive\]/SP Templates**
-    * Open Story Producer and select the "SP Templates" which is the folder that all the templates are in.  (Not the folder of a specific template, but the folder that contains the templates.)
-    * Continue with registration and use the app!
+    * Download the .bloom template files (https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing) to your computer.
+    * Copy the the .bloom files to your SD card.  The standard folder there is **\[SDCARD]/SP Templates**
+    * Open Story Producer and select the folder "SP Templates" which is the folder that all the templates are in.
+    * After the app scans the templates, continue with registration and use the app!
 
 ## Unit Tests
 #### Organization
