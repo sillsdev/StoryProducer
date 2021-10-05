@@ -1,16 +1,18 @@
 package org.sil.storyproducer.androidtest.happypath.share
 
-import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.view.View
 import android.view.ViewGroup
+import androidx.documentfile.provider.DocumentFile
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import org.hamcrest.*
 import org.junit.Assert
-import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
-import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.happypath.PhaseTestBase
+import org.sil.storyproducer.androidtest.happypath.WorkspaceSetter
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
@@ -74,17 +76,50 @@ class SharePhaseBase(sharedBase: SharedBase) : PhaseTestBase() {
 
     private fun copySampleVideoToExportDirectory(videoFilename: String) {
         try {
-            val sampleVideo = File(Constants.espressoResourceDirectory + File.separator + videoFilename)
-            val destination = File(Constants.exportedVideosDirectory + File.separator + videoFilename)
-            // 09/19/2021 - DKH: Update for Testing Abstraction #566
-            // Android 10 and greater does not allow File operations
-            if(Build.VERSION.SDK_INT < 29) { // not valid operation for Android 10 or greater
-                // todo: Recode this for Android 10 scoped storage
-                File(Constants.exportedVideosDirectory).mkdirs()
-                sampleVideo.copyRecursively(destination, true)
+            // 10/04/2021 - DKH: Espresso test fail for Android 10 and 11 #594
+            // Update this function to use scoped storage that was introduced
+            // in the Android 10 release. The functions that were used here are no longer
+            // supported in Android 10 and subsequent releases.  Basically we move
+            // from using the "File" class to using the "DocumentFile" class.
+            // DocumentFile is supported in pre Android 10 releases.
+            // The DocumentFile Class has to obtain permission from the user before any files
+            // can be created by the Story Producer App (or Espresso).
+
+            // The Workspace.workdocfile documentFile was created by Espresso menu picks
+            // during startup and is the root directory for Story Producer and these test.
+            // Espresso used the
+            // workspaceDirectory variable string in Constants.kt (eg, /sdcard/SPWorkspace) and
+            // simulated the user typing the in the string so that the Story Producer App would
+            // know where to find the Story template.  We grab the documentFile (Workspace.workdocfile)
+            // from Story Producer, which points to the selected workspace, and then do some setup
+            // for the next test.
+            val WSDoc = Workspace.workdocfile
+
+            // For this test, we create a video file with no data.  That is all that is needed
+            // to pass the test.
+
+            // check to see if the video directory exists in the root directory
+            // grab the directory name
+            val videoDirName = Constants.exportedVideosDirectory.split('/').last()
+            WSDoc.findFile(videoDirName)?.let {
+                // video directory exists delete it, along with any videos in the directory
+                it.delete()
             }
+
+            // If we were able to create the video directory (ie, non null using ?),
+            // then try and create the file
+            WSDoc.createDirectory(videoDirName)?.let {
+                // see if we can create the file
+                it.createFile("",videoFilename)!!  // throw exception on file create fail
+                return  // success, so return
+            }
+
+            // report we were unable to create the directory
+            Assert.fail("Failed to create sample video directory for test.")
+
         } catch (e: Exception){
-            Assert.fail("Failed to copy sample video to exported videos directory for test.")
+            // report we were unable to create the video file
+            Assert.fail("Failed to create sample video to exported videos directory for test.")
         }
     }
 

@@ -1,6 +1,7 @@
 package org.sil.storyproducer.androidtest.happypath
 
 import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -132,6 +133,12 @@ class WorkspaceSetter {
             launchIntent!!.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             context.startActivity(launchIntent)
             device.wait(Until.hasObject(By.pkg(APP_PACKAGE_NAME).depth(0)), TIMEOUT_DURATION)
+        }
+        // 10/04/2021 - DKH: Espresso test fail for Android 10 and 11 #594
+        // Expose context for use in DocumentFile copy operations.  Context keeps
+        // track of file descriptors and streams.
+        fun getContext():Context {
+            return(getApplicationContext<Application>())
         }
 
         private fun selectStoryProducerWorkspace(device: UiDevice) {

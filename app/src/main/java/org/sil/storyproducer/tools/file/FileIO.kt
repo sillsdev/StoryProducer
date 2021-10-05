@@ -55,7 +55,11 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
             bytesRead = iStream.read(bArray)
         }
         iStream.close()
-        iStream.close()
+        // 10/04/2021 - DKH: Espresso test fail for Android 10 and 11 #594
+        // Found this typo bug which closed iStream.close() twice.  Change the second
+        // "istream.close()" to "ostream.close()". Previously, for every file that was created,
+        // the output stream hung around - not a good use of resources
+        oStream.close()
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
     }
