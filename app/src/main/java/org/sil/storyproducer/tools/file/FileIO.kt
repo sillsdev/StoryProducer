@@ -34,8 +34,13 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
             oStream.write(bArray,0,bytesRead)
             bytesRead = iStream.read(bArray)
         }
+
         iStream.close()
-        iStream.close()
+        // 10/21/2021 - DKH: Espresso test fail for Android 10 and 11 #594
+        // Found this typo bug which closed iStream.close() twice.  Change the second
+        // "istream.close()" to "ostream.close()". Previously, for every file that was created,
+        // the output stream hung around - not a good use of resources
+        oStream.close()
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
     }

@@ -24,6 +24,7 @@ import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PermissionsGranter
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator.isNotDisplayed
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Workspace
 import java.util.regex.Pattern
 
 // 09/02/2021 - DKH: Update for Testing Abstraction #566,
@@ -116,9 +117,21 @@ class WorkspaceSetter {
         @SdkSuppress(minSdkVersion = 18)
         fun setWorkspaceSoOtherTestsRunCorrectly() {
             val device = UiDevice.getInstance(getInstrumentation())
+            // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
+            // Story Producer remembers the last workspace that was used so the user does not
+            // have to traverse the workspace pick menus each time Story Producer is started.
+            // For testing, we always want Espresso to pick the workspace folder.  Picking the
+            // workspace folder also causes any Bloom files in the worspace folder to be expanded
+
+            // Retrieve a reference to the last workspace that was used
+            var prefs = getContext().getSharedPreferences(Workspace.WORKSPACE_KEY, Context.MODE_PRIVATE)
+            
+	        // Set the workspace to a blank string so that Espresso will always pick the
+            // defined workspace for the Espresso test and which will also
+            // expand any Bloom file in the workspace
+            prefs?.edit()?.putString("workspace", "")?.apply()
 
             launchStoryProducerApp(device)
-
             selectStoryProducerWorkspace(device)
         }
 
@@ -187,7 +200,6 @@ class WorkspaceSetter {
                 showRoots.click()
             }
 
-
             device.wait(Until.hasObject(By.text(INTERNAL_STORAGE_BUTTON_TEXT)), TIMEOUT_DURATION)
 
             // 09/21/2021 - DKH: Update for Testing Abstraction #566
@@ -196,10 +208,13 @@ class WorkspaceSetter {
             if (isButton != null) {
                 isButton.click()
             }
-
-            val workspaceDirectoryName = getDirectoryNameFromFullPath(Constants.workspaceDirectory)
-            device.wait(Until.hasObject(By.text(workspaceDirectoryName)), TIMEOUT_DURATION)
-            device.findObject(By.text(workspaceDirectoryName)).click()
+            // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
+            // For Android 8 & 9 Constants.workspaceDirectory was an absolute path name,
+            // but for Android 10 scoped storage, it was  changed to a relative pathname.
+            // So, just use workspaceDirectory as is, ie, we don't have to parse a directory path
+            // Scoped storage is backward compatible with Android 9 and lower
+            device.wait(Until.hasObject(By.text(Constants.workspaceDirectory)), TIMEOUT_DURATION)
+            device.findObject(By.text(Constants.workspaceDirectory)).click()
 
             // 09/17/2021 - DKH: Update for Testing Abstraction #566
             // The advent of Android 10 introduced scoped storage where the user has to

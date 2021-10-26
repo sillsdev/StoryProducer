@@ -109,12 +109,28 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
     }
 
     private fun doesVideoFileExist(videoTitle: String, extension: String) : Boolean{
-        val files = File(Constants.exportedVideosDirectory).listFiles() ?: return false
-        for (f in files){
-            if(f.name.contains(videoTitle) && f.name.contains(extension))
-                return true
+        // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
+        // For Android 10 and subsequent Android versions, an App (ie Story Producer)
+        // has to ask the user for permission to access files in external storage.
+        // New special file classes are used to read/write/delete
+        // files and directories in external storage.
+        // Refactor this routine to use Android 10 scoped storage
+
+        // Grab the workspace from Story Producer (this is the workspace that Espresso
+        // told Story Producer to use during test startup/initialization).
+        val WSDoc = Workspace.workdocfile
+
+        // See if the video directory exists
+        WSDoc.findFile(Constants.exportedVideosDirectory)?.let {
+            // Video directory exists, grab a list of files in the video directory
+            val videoList = it.listFiles()
+            for (f in videoList){
+                // iterate through the file list looking for the target video file
+                // if file found, return true
+                if(f.name!!.contains(videoTitle) && f.name!!.contains(extension)) return true
+            }
         }
-        return false
+        return false  // file not found
     }
 
 }
