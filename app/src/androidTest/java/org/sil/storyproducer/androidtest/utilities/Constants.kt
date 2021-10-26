@@ -26,23 +26,14 @@ object Constants {
     //  eg, Lost Coin only has 6 slides.  Other stories with different slide counts will not work
     const val numberOfTimesToSwipeWhenApprovingAllSlides: Int = 6
 
-    // 09/17/2021 - DKH: Update for Testing Abstraction #566
-    // This is a list of possible root mount points across different devices.  Standardize
-    //  on Pixel emulators which all use sdcard.  This way we can run different Android versions
-    //  on different Pixel models without change or extra software
-    val storageRoots = arrayOf(
-            "sdcard",  // Android Studio Emulators for Pixel
-            "storage/removable_SD Card",
-            "storage",
-            "mnt/SDCARD")
-
-    var storage = storageRoots[0] // Standard root access point for Pixel Emulators
-    val workspaceDirectory : String
-        get() {return "$storage/SPWorkspace"}
-    val espressoResourceDirectory : String
-        get() {return "$storage/EspressoResources"}
-    val exportedVideosDirectory : String
-        get() {return "$workspaceDirectory/videos"}
+    // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
+    // For Android 10 scoped storage, these were updated to relative path names from hard coded
+    // path names.  Apps cannot directly access hard coded path names in the scoped storage
+    // paradigm.  The user must okay the app's access to any directory in external storage.
+    // Scoped storage is backward compatible with Android 9 and lower
+    const val workspaceDirectory = "SPWorkspace"        // compatible with scoped storage
+    const val exportedVideosDirectory = "videos"        // compatible with scoped storage
+    const val dirNameForUserUpdatesToStory = "story"    // compatible with scoped storage
 
     val resources: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 
