@@ -63,10 +63,12 @@ private val scopedStorageUseFolderClick = Pattern.compile(
 // These are the strings for emulators and phones.  These may change depending
 // on the type of SDK version, emulator or phone hardware.  If they do,
 // just add another string to the regex search pattern
+// 11/1/2021 - DKH: Added string for Android 12 Android Studio Emulator
 private val A8_InternalStorageButton_Pixel3_ASEmulator = "(Android SDK built for x86)"
 private val A9_InternalStorageButton_Pixel2_ASEmulator = "(AOSP on IA Emulator)"
 private val A10_InternalStorageButton_Pixel4_ASEmulator = "(Android SDK built for x86)"
 private val A11_InternalStorageButton_Pixel4_ASEmulator = "(sdk_gphone_x86)"
+private val A12_InternalStorageButton_Pixel4_ASEmulator = "(Android SDK built for x86_64)"
 private val A11_InternalStorageButton_Pixel5_Phone = "(Internal storage)"
 
 private val INTERNAL_STORAGE_BUTTON_TEXT = Pattern.compile(
@@ -74,6 +76,7 @@ private val INTERNAL_STORAGE_BUTTON_TEXT = Pattern.compile(
                 "|" + A9_InternalStorageButton_Pixel2_ASEmulator +
                 "|" + A10_InternalStorageButton_Pixel4_ASEmulator +
                 "|" + A11_InternalStorageButton_Pixel5_Phone +
+                "|" + A12_InternalStorageButton_Pixel4_ASEmulator +
                 "|" + A11_InternalStorageButton_Pixel4_ASEmulator
 )
 
