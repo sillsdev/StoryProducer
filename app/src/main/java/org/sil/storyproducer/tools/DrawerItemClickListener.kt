@@ -56,8 +56,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 // "Use Google Drive and download story Templates" in the "Welcome Dialog Screen.
                 // This places Story Producer in the background and Google Drive interface appears.
                 // The user downloads the templates into the download directory on the phone and
-                // then uses the Android folder app to create a new folder.
-                // The user then moves the files
+                // then uses the Android folder app to moves the files
                 // from the download folder into a target folder (user may create a new folder for
                 // the newly downloaded templates or use an existing folder).
                 // The user then brings Story Producer to
