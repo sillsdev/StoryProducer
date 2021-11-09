@@ -23,6 +23,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.activities.WelcomeDialogActivity
 import org.sil.storyproducer.controller.storylist.StoryPageAdapter
 import org.sil.storyproducer.controller.storylist.StoryPageTab
 import org.sil.storyproducer.model.Phase
@@ -190,7 +191,24 @@ class MainActivity : BaseActivity(), Serializable {
 
         when (menuItem.itemId) {
             R.id.nav_workspace -> {
-                showSelectTemplatesFolderDialog()
+                // DKH - 11/8/2021
+                // Issue #571: Add a menu item for accessing templates from Google Drive
+                // Instead of adding a new menu item, repurpose the "Select 'SP Templates' Folder"
+                // option in the hamburger menu in the "Story Templates" screen.
+                // The user selects "Select 'SP Templates' Folder" from the hamburger menu and the
+                // "Welcome Dialog Screen" appears.  The user then selects the option  to
+                // "Use Google Drive and download story Templates" in the "Welcome Dialog Screen.
+                // This places Story Producer in the background and Google Drive interface appears.
+                // The user downloads the templates into the download directory on the phone and
+                // then uses the folder app to create a new folder.  The user then moves the files
+                // from the download folder into a target folder (user may create a new folder for
+                // the newly downloaded templates or use an existing folder).
+                // The user then brings Story Producer to
+                // the foreground.  The user then selects "Select 'SP Templates' Folder" at the
+                // bottom of the "Welcome Dialog Screen" and proceeds to process the target folder.
+                // Previous call interface: showSelectTemplatesFolderDialog()
+                // New call interface to bring up "Welcome Dialog Screen"
+                startActivity(Intent(this, WelcomeDialogActivity::class.java))
             }
             R.id.nav_demo -> {
                 Workspace.addDemoToWorkspace(this)
