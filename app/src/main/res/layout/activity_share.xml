@@ -58,7 +58,7 @@
             <ListView
                 android:id="@+id/videos_list"
                 android:layout_width="match_parent"
-                android:layout_height="604dp">
+                android:layout_height="384dp">
 
             </ListView>
 
