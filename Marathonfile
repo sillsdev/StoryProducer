@@ -1,0 +1,6 @@
+name: "StoryProducer"
+outputDir: "build/reports/marathon"
+vendorConfiguration:
+  type: "Android"
+  applicationApk: "app/build/outputs/apk/debug/SP-debug.apk"
+  testApplicationApk: "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
