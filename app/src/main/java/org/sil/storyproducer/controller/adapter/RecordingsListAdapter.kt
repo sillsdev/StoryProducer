@@ -115,8 +115,21 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
             // Apply layout properties
             newName.layoutParams = params
 
+            // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
+            // This piece of software is used in multiple places in Story Producer
+            // Grab the default instructions for data entry
+            // This is something like: "Choose a new name"
+            var title = itemView.context.getString(R.string.rename_title)
+
+            // If this is Wordlinks, use instructions that are geared toward Wordlinks
+            when(Workspace.activePhase.phaseType){
+                PhaseType.WORD_LINKS -> {
+                    title = itemView.context.getString(R.string.rename_title_wordlinks)
+                }
+            }
+
             val dialog = AlertDialog.Builder(itemView.context)
-                    .setTitle(itemView.context.getString(R.string.rename_title))
+                    .setTitle(title)
                     .setView(newName)
                     .setNegativeButton(itemView.context.getString(R.string.cancel), null)
                     .setPositiveButton(itemView.context.getString(R.string.save)) { _, _ ->
