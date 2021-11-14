@@ -3,6 +3,7 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
 import java.util.*
@@ -165,7 +166,13 @@ fun createRecordingCombinedName() : String {
                     FirebaseCrashlytics.getInstance().recordException(e)
                 }
             }
-            "${Workspace.activePhase.getDirectorySafeName()} ${maxNum+1}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
+            // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
+            // Append the generated instructional string to the display name.
+            var displayName = "${Workspace.activePhase.getDirectorySafeName()} ${maxNum+1}" +
+                    Workspace.activePhase.getDisplayNameAdditionalInfo()
+
+            // create the combined string of display name and audio file location
+            "${displayName}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
         }
         else -> {""}
     }

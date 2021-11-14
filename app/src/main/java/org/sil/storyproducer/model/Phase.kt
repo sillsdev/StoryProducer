@@ -139,6 +139,16 @@ class Phase (val phaseType: PhaseType) {
         }
     }
 
+    // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
+    // This piece of software is used in multiple places in Story Producer
+    // This instructional string is appended to the generated display name
+    fun getDisplayNameAdditionalInfo() : String {
+        return when (phaseType) {
+            PhaseType.WORD_LINKS       -> " --> Press and hold to back translate"
+            else -> ""
+        }
+    }
+
     /**
      * Get file-safe name for phase, used to save audio files
      * @return String
