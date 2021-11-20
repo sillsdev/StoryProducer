@@ -156,7 +156,11 @@ object Workspace {
             importWordLinksFromJsonFiles(context, wordLinksDir)
             mapTermFormsToTerms()
             buildWLSTree()
+        }else{
+            // DKH - 11/19/2021 Issue #661 Create Word Links CSV directory if it does not exist
+            workdocfile.createDirectory(WORD_LINKS_DIR)
         }
+
     }
 
     private fun importWordLinksFromCSV(context: Context, wordLinksDir: DocumentFile){
