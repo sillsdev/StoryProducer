@@ -11,13 +11,14 @@ import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.io.InputStreamReader
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -26,10 +27,13 @@ internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
 internal const val PHASE = "Phase"
 
 internal const val WORD_LINKS_DIR = "wordlinks"
-internal const val WORD_LINKS_CSV_FILE = "wordlinks.csv"
 internal const val WORD_LINKS_JSON_FILE = "wordlinks.json"
 internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
 internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
+// DKH - 11/19/2021 Issue #661 Allow CSV file to have different names
+// Use Regex expression when looking for CSV word links file
+internal val WORD_LINKS_CSV_REGEX = "wordlinks.*csv".toRegex()
+
 
 object Workspace {
     var workdocfile = DocumentFile.fromFile(File(""))
@@ -156,8 +160,26 @@ object Workspace {
     }
 
     private fun importWordLinksFromCSV(context: Context, wordLinksDir: DocumentFile){
-        val wordLinksFile = wordLinksDir.findFile(WORD_LINKS_CSV_FILE)
-        if (wordLinksFile != null) {
+        // DKH - 11/19/2021 Issue #661 Allow CSV file to have different names
+        // Check for minor error condition in having multiple files that can be used for the
+        // Word Links CSV file.  If we have more than one, we use the first one and print an
+        // error message to the user
+        var wordLinksFile : DocumentFile? = null  //initialize to file not found
+        val wordLinksList = wordLinksDir.listFiles() // grab a list of files in the word links directory
+        for (f in wordLinksList){ // iterate through the list of files
+            if(f.name!!.contains(WORD_LINKS_CSV_REGEX)){ // Use Regex when looking for CSV file
+                if(wordLinksFile != null){  // if true, we have multiple matches, so print an error
+                    // print the error
+                    Toast.makeText(context,
+                        context.getString(R.string.wordlinks_multiple_csv_files) + wordLinksFile.name,
+                            Toast.LENGTH_LONG).show()
+
+                    break // stop looking and use the first match
+                }
+                wordLinksFile = f  // first match is the file that we use
+            }
+        }
+        if (wordLinksFile != null) {  // check for nothing found
             try {
                 // open a raw file descriptor to access data under the URI
                 context.contentResolver.openFileDescriptor(wordLinksFile.uri, "r").use { pfd ->
@@ -176,6 +198,9 @@ object Workspace {
             catch (exception: Exception) {
                 Toast.makeText(context, R.string.wordlinks_csv_read_error, Toast.LENGTH_SHORT).show()
             }
+        }else{
+            // let user know there was no valid CSV file
+            Toast.makeText(context, R.string.wordlinks_no_csv_file, Toast.LENGTH_LONG).show()
         }
     }
 
