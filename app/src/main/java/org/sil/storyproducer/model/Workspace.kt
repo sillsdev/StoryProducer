@@ -27,12 +27,14 @@ internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
 internal const val PHASE = "Phase"
 
 internal const val WORD_LINKS_DIR = "wordlinks"
+internal const val WORD_LINKS_CSV = "wordlinks.csv"
 internal const val WORD_LINKS_JSON_FILE = "wordlinks.json"
 internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
 internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
-// DKH - 11/19/2021 Issue #661 Allow CSV file to have different names
+// DKH - 11/19/2021 Issue #611 Allow CSV file to have different names
 // Use Regex expression when looking for CSV word links file
-internal val WORD_LINKS_CSV_REGEX = "wordlinks.*csv".toRegex()
+internal val WORK_LINKS_CSV_REGEX_STRING = "wordlinks.*csv"
+internal val WORD_LINKS_CSV_REGEX = WORK_LINKS_CSV_REGEX_STRING.toRegex()
 
 
 object Workspace {
@@ -149,22 +151,43 @@ object Workspace {
     }
 
     private fun importWordLinks(context: Context) {
-        val wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
-        // check that word links directory exists
+        var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
+        var csvFileName : String? = null  // default is no csv file, later on, create one if none found
+
+        if (wordLinksDir == null) { // check to see if word links directory exists
+            // DKH - 11/19/2021 Issue #611 Create Word Links CSV directory if it does not exist
+            wordLinksDir = workdocfile.createDirectory(WORD_LINKS_DIR)
+        }else{
+            // DKH - 12/07/2021 Issue #611 Use the first CSV file that starts with "worklinks" & ends with "csv"
+
+            // The WordLinks Directory exists, so,  see if we can find a csv file
+            // CSV files start with the substring "wordlinks" and ends with ".csv"
+            // scan all the files in the wordlinks directory looking for a valid csv file
+            // If we have a valid CSV file, we don't have to create the default one
+            for (filename in wordLinksDir!!.listFiles()) {
+                // look for a wordlinks csv file
+                if((filename.name)?.contains(WORD_LINKS_CSV_REGEX)!!){
+                    csvFileName = filename.name  // found csv file
+                    break
+                }
+            }
+        }
+
         if (wordLinksDir != null) {
-            importWordLinksFromCSV(context, wordLinksDir)
-            importWordLinksFromJsonFiles(context, wordLinksDir)
+            // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
+            if(csvFileName == null) addWordLinksCSVFileToWorkspace(context, WORD_LINKS_CSV)
+            // Process the CSV file
+            importWordLinksFromCSV(context, wordLinksDir!!)
+            importWordLinksFromJsonFiles(context, wordLinksDir!!)
             mapTermFormsToTerms()
             buildWLSTree()
         }else{
-            // DKH - 11/19/2021 Issue #661 Create Word Links CSV directory if it does not exist
-            workdocfile.createDirectory(WORD_LINKS_DIR)
+            Log.e("workspace", "Failed to create word links directory: $WORD_LINKS_CSV")
         }
-
     }
 
     private fun importWordLinksFromCSV(context: Context, wordLinksDir: DocumentFile){
-        // DKH - 11/19/2021 Issue #661 Allow CSV file to have different names
+        // DKH - 11/19/2021 Issue #611 Allow CSV file to have different names
         // Check for minor error condition in having multiple files that can be used for the
         // Word Links CSV file.  If we have more than one, we use the first one and print an
         // error message to the user
@@ -278,7 +301,32 @@ object Workspace {
             }
         }
     }
+    fun addWordLinksCSVFileToWorkspace(context: Context, csvFileName: String) {
+        // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
+        // During compile time, the file app/src/main/assets/wordlinks.csv is compiled into
+        // the APK.  This routine extracts that file and places that file in the
+        // Worklinks directory.
+        // This routine is called anytime a ".csv" file cannot be found in the workdlinks directory
+        val assetManager = context.assets
 
+        try {
+            // open wordlinks.csv located in the APK
+            val instream = assetManager.open(csvFileName)
+            // Create the worklinks.csv file in the wordlinks directory
+            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileName")
+            val buffer = ByteArray(1024)
+            var read: Int
+            // copy input to output 1024 bytes at a time
+            while (instream.read(buffer).also { read = it } != -1) {
+                outstream!!.write(buffer, 0, read)
+            }
+            outstream?.close() // close output stream
+            instream.close() // close input stream
+        } catch (e: Exception) {
+            Log.e("workspace", "Failed to copy wordlinks CSV asset file: $csvFileName", e)
+        }
+
+    }
     fun pathOf(name: String): DocumentFile? {
         return workdocfile.listFiles().find { it.name == name }
     }
