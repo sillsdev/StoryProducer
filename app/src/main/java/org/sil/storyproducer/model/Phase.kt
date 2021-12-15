@@ -105,6 +105,7 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getDisplayName() : String {
         return when (phaseType) {
+            PhaseType.REGISTRATION     -> "Registration"
             PhaseType.LEARN            -> "Learn"
             PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
             PhaseType.WORD_LINKS       -> "Word Links"
