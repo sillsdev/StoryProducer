@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -200,6 +201,15 @@ class MainActivity : BaseActivity(), Serializable {
             }
             R.id.nav_word_link_list -> {
                 showWordLinksList()
+            }
+            R.id.nav_more_templates -> {
+                // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+                // A new menu item was added that opens a URL for the user to download templates.
+                // If we get here, the user wants to browse for more templates, so,
+                // open the URL in an new activity
+                val openURL = Intent(android.content.Intent.ACTION_VIEW)
+                openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
+                startActivity(openURL)
             }
             R.id.nav_stories -> {
                 // Current fragment
