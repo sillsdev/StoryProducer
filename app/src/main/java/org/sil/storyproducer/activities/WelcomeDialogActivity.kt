@@ -12,6 +12,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.Workspace
 
 /**
  * Activity creates the welcome screen dialog, used when the Workspace's project directory
@@ -62,7 +63,15 @@ class WelcomeDialogActivity : BaseActivity() {
     }
 
     private fun buildMessage(): Spanned {
-        val message = getString(R.string.welcome_screen_select_template_folder)
+        // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+        // The strings.xml file contains the "Welcome Screen" html in the following string:
+        // <string name="welcome_screen_select_template_folder">).
+        // This update moved the actual URL for the template folder from the strings.xml file
+        // to the Workspace object.  A place holder string was placed in the "Welcome Screen" html,
+        // so, update the place holder string with the actual URL before we display the
+        // "Welcome Screen" to the user.
+        val message = getString(R.string.welcome_screen_select_template_folder).
+            replace(Regex(Workspace.URL_FOR_TEMPLATES_PLACE_HOLDER), Workspace.URL_FOR_TEMPLATES)
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(message, 0)
         } else {

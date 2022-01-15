@@ -38,6 +38,21 @@ internal val WORD_LINKS_CSV_REGEX = WORK_LINKS_CSV_REGEX_STRING.toRegex()
 
 
 object Workspace {
+    // DKH - 01/15/2022 Issue #571 Add a menu item for accessing templates from Google Drive
+    // The strings.xml file contains the "Welcome Screen" html in the following string:
+    // <string name="welcome_screen_select_template_folder">).  Embedded in the string is
+    // the URL to the the location of the shared drive that contains the templates.
+    // Instead of duplicating the same string, remove the reference from the strings.xml file and
+    // update the "Welcome Screen" html with the URL before display of the "Welcome Screen"
+    // ( WelcomeDialogActivity.kt).  We will have different strings.xml file for each
+    // language and by having the URL defined here, we never have to update the different strings.xml
+    // files.
+    const val URL_FOR_TEMPLATES = "https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing"
+    // These are the place holder strings in the "Welcome Screen" html.  Before displaying the
+    // "Welcome Screen", replace this place holder strings with the URL_FOR_TEMPLATES
+    const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
+    // End Issue #571
+
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
