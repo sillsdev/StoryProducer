@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import WordLinksCSVReader
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -163,6 +164,14 @@ object Workspace {
         } catch (e: Exception) {
             Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
         }
+    }
+    // DKH - 01/26/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+    // A new menu item was added that opens a URL for the user to download templates.
+    // This is used in both the MainActivity menu (Story Templates display) and the Phase menus
+    fun startDownLoadMoreTemplatesActivity(context: Context){
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
+        context.startActivity(openURL)
     }
 
     private fun importWordLinks(context: Context) {
