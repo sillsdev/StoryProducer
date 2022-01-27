@@ -24,9 +24,6 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.finish()
             }
             1 -> {
-                activity.showWordLinksList()
-            }
-            2 -> {
                 // 06/14/2021 - DKH, Issue 407, Pull Request 561 - Merge into Latest sillsdev
                 // The new Filter layout for the Story Templates broke the capability to launch
                 // the showRegistration () from the calling activity.  SP uses the paradigm of
@@ -45,13 +42,23 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 Workspace.showRegistration = true
                 activity.showMain()
             }
+            2 -> {
+                // DKH - 01/23/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+                // A new menu item was added that opens a URL for the user to download templates.
+                // If we get here, the user wants to browse for more templates, so,
+                // open the URL in a new activity
+                Workspace.startDownLoadMoreTemplatesActivity(activity)
+            }
             3 -> {
-                activity.showSelectTemplatesFolderDialog()
+                activity.showWordLinksList()
             }
             4 -> {
-                Workspace.addDemoToWorkspace(activity)
+                activity.showSelectTemplatesFolderDialog()
             }
             5 -> {
+                Workspace.addDemoToWorkspace(activity)
+            }
+            6 -> {
                 activity.showAboutDialog()
             }
         }
