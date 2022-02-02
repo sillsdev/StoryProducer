@@ -4,6 +4,10 @@
 # $2 is the API revision
 # $3 is the type of image, either google_apis or google_apis_playstore
 
+# Make sure we have a system image for the emulator:
+echo Downloading system image
+sdkmanager --install "system-images;android-$2;$3;x86"
+
 # Create the AVD for the emulator:
 echo Creating AVD
 avdmanager create avd -f -n dev_$1_$2_$3 -k "system-images;android-$2;$3;x86" -d $1
