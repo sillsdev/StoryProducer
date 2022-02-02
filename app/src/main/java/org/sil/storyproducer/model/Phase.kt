@@ -233,15 +233,28 @@ class Phase (val phaseType: PhaseType) {
     }
 
     fun checkValidDisplaySlideNum(slideNum: Int) : Boolean {
-        val slideType = Workspace.activeStory.slides[slideNum].slideType
-        return when(phaseType){
-            PhaseType.VOICE_STUDIO -> slideType in arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG)
-            else -> slideType in arrayOf(
-                    SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,
-                    SlideType.LOCALSONG)
+        // 02/03/2022 - DKH, Issue 596, Review Crash & Exception reports for v3.0.6
+        // This routine determines if a slide is displayable, i.e. FRONTCOVER, NUMBEREDPAGE,
+        // LOCALSONG are displayable and NONE, LOCALCREDITS, COPYRIGHT, ENDPAGE are not
+        // When a null story is created, the active slide number is set to -1.  Routines
+        // such as PagerBaseActivity.java call this routine by fetching the active slide number
+        // (which can be -1 for a null story) from Workspace.INSTANCE.getActiveSlideNum()
+        // and passing it in as an argument.
+        // Previously, this routine did not check to see if the slide number actually existed
+        // in the story.  We now check to see if the slide exist before trying to determine it's
+        // type
+        Workspace.activeStory.slides.getOrNull(slideNum)?.let {    // see if this is a valid slide number
+            val slideType = it?.slideType  // slide exists, determine if it displayable
+            return when (phaseType) {
+                PhaseType.VOICE_STUDIO -> slideType in arrayOf(
+                        SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
+                        SlideType.LOCALSONG)
+                else -> slideType in arrayOf(
+                        SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,
+                        SlideType.LOCALSONG)
+            }
         }
+        return false  // slide does not exist or is not displayable
     }
 
     companion object {
