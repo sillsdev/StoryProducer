@@ -1,7 +1,7 @@
 
-export ANDROID_SDK_ROOT=~/Android/Sdk
+#export ANDROID_SDK_ROOT=~/Android/Sdk
 export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
-export JAVA_HOME=~/AndroidStudio/jre
+#export JAVA_HOME=~/AndroidStudio/jre
 
 # Only test one device until we get the scripts working right.
 
