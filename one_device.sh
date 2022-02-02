@@ -6,11 +6,11 @@
 
 # Make sure we have a system image for the emulator:
 echo Downloading system image
-sdkmanager --install "system-images;android-$2;$3;x86"
+$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "system-images;android-$2;$3;x86"
 
 # Create the AVD for the emulator:
 echo Creating AVD
-avdmanager create avd -f -n dev_$1_$2_$3 -k "system-images;android-$2;$3;x86" -d $1
+$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager create avd -f -n dev_$1_$2_$3 -k "system-images;android-$2;$3;x86" -d $1
 
 # Start the emulator with the AVD:
 echo Starting emulator
@@ -33,36 +33,36 @@ echo Building the app
 # While we were doing the above Gradle processing, the emulated device might have gone to sleep
 # so wake it up before trying to access it again.
 echo Waking device
-adb shell input keyevent KEYCODE_WAKEUP
+$ANDROID_SDK_ROOT/platform-tools/adb shell input keyevent KEYCODE_WAKEUP
 
 # Clear out a previously created workspace, ignoring any errors.
 echo Deleting workspace
-adb shell rm -rf sdcard/SPWorkspace
+$ANDROID_SDK_ROOT/platform-tools/adb shell rm -rf sdcard/SPWorkspace
 
 # Create a workspace.
 echo Creating workspace
-adb shell mkdir sdcard/SPWorkspace
+$ANDROID_SDK_ROOT/platform-tools/adb shell mkdir sdcard/SPWorkspace
 
 # Copy the Bloom file to the device's workspace.
 echo Copying Bloom file
-adb push "app/EspressoTestData/002 Lost Coin.bloom" sdcard/SPWorkspace
+$ANDROID_SDK_ROOT/platform-tools/adb push "app/EspressoTestData/002 Lost Coin.bloom" sdcard/SPWorkspace
 
 # Sometimes the app would not find the .bloom file, so give it a chance to really get there?
 sleep 5
 
 # Run the test:
 echo Run the test
-adb shell am instrument -w -e package org.sil.storyproducer.androidtest.happypath -e debug false org.sil.storyproducer.debug.test/androidx.test.runner.AndroidJUnitRunner > results_$1_$2.txt
+$ANDROID_SDK_ROOT/platform-tools/adb shell am instrument -w -e package org.sil.storyproducer.androidtest.happypath -e debug false org.sil.storyproducer.debug.test/androidx.test.runner.AndroidJUnitRunner > results_$1_$2.txt
 
 # Now that the test is complete, shut down the emulator
 echo Shutting down emulator
-adb emu kill
+$ANDROID_SDK_ROOT/platform-tools/adb emu kill
 
 # Give the emulator time to shut down before we delete its AVD
 sleep 20
 
 # Delete the AVD
 echo Deleting AVD
-avdmanager delete avd -n dev_$1_$2_$3
+$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager delete avd -n dev_$1_$2_$3
 echo Done!
 
