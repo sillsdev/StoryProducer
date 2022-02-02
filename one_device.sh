@@ -18,7 +18,7 @@ $ANDROID_SDK_ROOT/emulator/emulator -no-snapshot-save -avd dev_$1_$2_$3 &
 
 # Wait for the emulated device to boot up:
 echo Waiting for device to boot up
-while [ "`$ANDROID_SDK_ROOT/platform-tools/adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sleep 1; done
+while [ "`$ANDROID_SDK_ROOT/platform-tools/adb shell getprop sys.boot_completed | tr -d '\r' `" != "1" ] ; do sleep 10; done
 echo Device has booted.
 
 # Clean the app since we are changing devices and just building doesn't always work right

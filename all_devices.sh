@@ -3,9 +3,12 @@
 #export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
 #export JAVA_HOME=~/AndroidStudio/jre
 
+echo Find out what is in the SDK
+ls $ANDROID_SDK_ROOT
+
 # Only test one device until we get the scripts working right.
 
-# Test a Pixel 2 at Android 8.0:
+echo Test a Pixel 2 at Android 8.0:
 ./one_device.sh 16 26 google_apis_playstore
 
 # Test a Pixel 2 at Android 8.1:
