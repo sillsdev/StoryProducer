@@ -3,8 +3,8 @@
 #export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
 #export JAVA_HOME=~/AndroidStudio/jre
 
-echo Find out what is in the SDK
-ls $ANDROID_SDK_ROOT
+echo Find out who the users are
+ls /home
 
 # Only test one device until we get the scripts working right.
 
