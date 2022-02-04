@@ -3,8 +3,8 @@
 #export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
 #export JAVA_HOME=~/AndroidStudio/jre
 
-echo Find out who the users are
-ls /home
+# TEMPORARY: Use SDK Tim installed?
+export TEMP_ANDROID_SDK_ROOT=/home/bob/AndroidSDK
 
 # Only test one device until we get the scripts working right.
 
