@@ -4,6 +4,12 @@ export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/p
 export JAVA_HOME=~/AndroidStudio/jre
 echo $PATH
 
+echo Discover where things are and what they are called
+ls -alF $ANDROID_SDK_ROOT
+ls -alF $ANDROID_SDK_ROOT/cmdline-tools/latest/bin
+ls -alF $ANDROID_SDK_ROOT/platform-tools
+ls -alF $ANDROID_SDK_ROOT/emulator
+
 # Get keystore for signing the Story Producer app
 echo Getting keystore
 curl "https://sil-storyproducer-resources.s3.amazonaws.com/dev/dev-keystore.jks" -o "dev-keystore.jks"
