@@ -1,7 +1,8 @@
 
-#export ANDROID_SDK_ROOT=~/Android/Sdk
-#export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
-#export JAVA_HOME=~/AndroidStudio/jre
+export ANDROID_SDK_ROOT=~/AndroidSDK
+export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/emulator
+export JAVA_HOME=~/AndroidStudio/jre
+echo $PATH
 
 # Get keystore for signing the Story Producer app
 echo Getting keystore
