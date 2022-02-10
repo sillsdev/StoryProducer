@@ -3,8 +3,10 @@
 #export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
 #export JAVA_HOME=~/AndroidStudio/jre
 
-# TEMPORARY: Use SDK Tim installed?
-export TEMP_ANDROID_SDK_ROOT=/home/bob/AndroidSDK
+# Get keystore for signing the Story Producer app
+echo Getting keystore
+curl "https://sil-storyproducer-resources.s3.amazonaws.com/dev/dev-keystore.jks" -o "dev-keystore.jks"
+curl "https://sil-storyproducer-resources.s3.amazonaws.com/dev/keystore.properties" -o "keystore.properties"
 
 # Only test one device until we get the scripts working right.
 
