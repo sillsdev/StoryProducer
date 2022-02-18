@@ -176,18 +176,16 @@ object Workspace {
 
     private fun importWordLinks(context: Context) {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
-        var csvFileName : String? = null  // default is no csv file, later on, create one if none found
+        var csvFileName : String? = null  // csv file name if found
 
         if (wordLinksDir == null) { // check to see if word links directory exists
             // DKH - 11/19/2021 Issue #611 Create Word Links CSV directory if it does not exist
             wordLinksDir = workdocfile.createDirectory(WORD_LINKS_DIR)
         }else{
             // DKH - 12/07/2021 Issue #611 Use the first CSV file that starts with "worklinks" & ends with "csv"
-
             // The WordLinks Directory exists, so,  see if we can find a csv file
             // CSV files start with the substring "wordlinks" and ends with ".csv"
             // scan all the files in the wordlinks directory looking for a valid csv file
-            // If we have a valid CSV file, we don't have to create the default one
             for (filename in wordLinksDir!!.listFiles()) {
                 // look for a wordlinks csv file
                 if((filename.name)?.contains(WORD_LINKS_CSV_REGEX)!!){
@@ -199,14 +197,19 @@ object Workspace {
 
         if (wordLinksDir != null) {
             // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
-            if(csvFileName == null) addWordLinksCSVFileToWorkspace(context, WORD_LINKS_CSV)
-            // Process the CSV file
-            importWordLinksFromCSV(context, wordLinksDir!!)
-            importWordLinksFromJsonFiles(context, wordLinksDir!!)
-            mapTermFormsToTerms()
-            buildWLSTree()
+            // BW 2/16/2022 #622 There is no default CSV file or LWC.
+            // In a future version, the correct CSV would be based on the user's selection
+                // of the LWC for this workspace.
+            // if(csvFileName == null) addWordLinksCSVFileToWorkspace(context, csvFileNameForSelectedLWC)
+            if(csvFileName != null) {
+                // Process the CSV file
+                importWordLinksFromCSV(context, wordLinksDir!!)
+                importWordLinksFromJsonFiles(context, wordLinksDir!!)
+                mapTermFormsToTerms()
+                buildWLSTree()
+            }
         }else{
-            Log.e("workspace", "Failed to create word links directory: $WORD_LINKS_CSV")
+            Log.e("workspace", "Failed to create word links directory: $WORD_LINKS_DIR")
         }
     }
 
