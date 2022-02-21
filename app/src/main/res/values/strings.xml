@@ -43,7 +43,7 @@
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
     <string name="title_activity_story_templates">Story Templates</string>
-    <string name="title_activity_wordlink_list">Word Links List</string>
+    <string name="title_activity_wordlink_list">WordLinks List</string>
 
     <!-- String names for registration -->
     <string name="registration_language_header">Language Information</string>
@@ -181,10 +181,10 @@
     <string name="wordlink_backtranslation">Backtranslation</string>
     <string name="wordlink_none">None</string>
     <string name="wordlink_list_help">None</string>
-    <string name="wordlinks_csv_read_error">Error reading word links CSV file</string>
-    <string name="wordlinks_json_read_error">Error reading word links JSON file</string>
-    <string name="wordlinks_no_csv_file">No Valid CSV WordLinks File Specified</string> <!-- SP611 CSV Error handling -->
-    <string name="wordlinks_multiple_csv_files">Detected multiple Word Links CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_csv_read_error">Error reading wordlinks CSV file</string>
+    <string name="wordlinks_json_read_error">Error reading wordlinks JSON file</string>
+    <string name="wordlinks_no_csv_file">No WordLinks CSV File Found</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_multiple_csv_files">Found multiple WordLinks CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
 
     <!-- Voice Studio Phase -->
     <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>

@@ -197,12 +197,14 @@ object Workspace {
 
         if (wordLinksDir != null) {
             // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
-            // BW 2/16/2022 #622 There is no default CSV file or LWC.
+            // BW 2/21/2022 #622 There is no default CSV file or LWC.
             // In a future version, the correct CSV would be based on the user's selection
                 // of the LWC for this workspace.
-            // if(csvFileName == null) addWordLinksCSVFileToWorkspace(context, csvFileNameForSelectedLWC)
+            // if(csvFileName == null)
+            //     addWordLinksCSVFileToWorkspace(context, csvFileNameForSelectedLWC)
+
             if(csvFileName != null) {
-                // Process the CSV file
+                // Process the CSV file, read the Json file, and map the terms
                 importWordLinksFromCSV(context, wordLinksDir!!)
                 importWordLinksFromJsonFiles(context, wordLinksDir!!)
                 mapTermFormsToTerms()
@@ -328,19 +330,19 @@ object Workspace {
             }
         }
     }
-    fun addWordLinksCSVFileToWorkspace(context: Context, csvFileName: String) {
+    fun addWordLinksCSVFileToWorkspace(context: Context, csvFileNameForSelectedLWC: String) {
         // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
-        // During compile time, the file app/src/main/assets/wordlinks.csv is compiled into
-        // the APK.  This routine extracts that file and places that file in the
-        // Worklinks directory.
-        // This routine is called anytime a ".csv" file cannot be found in the workdlinks directory
+        // BW 2/21/2022 #622 There is no default CSV file or LWC.
+        // At compile time, files such as app/src/main/assets/WordLinks - English.csv
+        // may be compiled into the APK.  This routine extracts the given file and writes that
+        // file in the Worklinks directory.
         val assetManager = context.assets
 
         try {
             // open wordlinks.csv located in the APK
-            val instream = assetManager.open(csvFileName)
+            val instream = assetManager.open(csvFileNameForSelectedLWC)
             // Create the worklinks.csv file in the wordlinks directory
-            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileName")
+            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileNameForSelectedLWC")
             val buffer = ByteArray(1024)
             var read: Int
             // copy input to output 1024 bytes at a time
@@ -350,7 +352,7 @@ object Workspace {
             outstream?.close() // close output stream
             instream.close() // close input stream
         } catch (e: Exception) {
-            Log.e("workspace", "Failed to copy wordlinks CSV asset file: $csvFileName", e)
+            Log.e("workspace", "Failed to copy wordlinks asset file: $csvFileNameForSelectedLWC", e)
         }
 
     }
