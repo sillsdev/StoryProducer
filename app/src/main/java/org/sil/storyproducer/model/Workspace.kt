@@ -34,7 +34,7 @@ internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
 internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
 // DKH - 11/19/2021 Issue #611 Allow CSV file to have different names
 // Use Regex expression when looking for CSV word links file
-internal val WORK_LINKS_CSV_REGEX_STRING = "wordlinks.*csv"
+internal val WORK_LINKS_CSV_REGEX_STRING = "(?i)wordlinks.*\\.csv"
 internal val WORD_LINKS_CSV_REGEX = WORK_LINKS_CSV_REGEX_STRING.toRegex()
 
 
