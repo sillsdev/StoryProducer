@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.media.MediaFormat
 import android.util.Log
+import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
@@ -182,10 +183,15 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             canv.drawARGB((alpha * 255).toInt(), 0, 0, 0)
         }
 
-        val tOverlay = page.textOverlay
-        if (tOverlay != null) {
-            tOverlay.setAlpha(alpha)
-            tOverlay.draw(canv)
+        page.textOverlay.let{
+            // 2/22/2022 - DKH, Issue 456: Add grey rectangle to backdrop text "sub titles"
+            // If this is a NUMBEREDPAGE type slide, draw a background behind the text so
+            // that it can be clearly read in the video that we are creating
+            // Other pages (eg: NONE, FRONTCOVER, LOCALSONG, LOCALCREDITS, COPYRIGHT, ENDPAGE),
+            // do not need a background for the text
+            if (page.sType == SlideType.NUMBEREDPAGE) it?.drawTextBG(true)
+            it?.setAlpha(alpha)
+            it?.draw(canv)
         }
     }
 
