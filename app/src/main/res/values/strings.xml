@@ -174,9 +174,9 @@
     <!-- WordLink Tool -->
     <string name="wordlink_submit_backtranslation_hint">word-for-word backtranslation / transliteration</string>
     <string name="wordlink_close">Close</string>
-    <string name="wordlink_notes">MEANING NOTES. DEFINITIONS:</string>
+    <string name="wordlink_notes"><!--MEANING NOTES. DEFINITIONS:--></string>
     <string name="wordlink_related_terms">RELATED (BUT DIFFERENT) TERMS:</string>
-    <string name="wordlink_other_langauge_examples">OTHER LANGUAGE EXAMPLES:</string>
+    <string name="wordlink_other_langauge_examples"><!--OTHER LANGUAGE EXAMPLES:--></string>
     <string name="wordlink_fill_with_audio_comment">Fill with Audio Comment</string>
     <string name="wordlink_backtranslation">Backtranslation</string>
     <string name="wordlink_none">None</string>
