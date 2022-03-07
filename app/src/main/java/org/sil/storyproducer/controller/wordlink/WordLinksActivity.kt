@@ -44,7 +44,7 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
 
         Workspace.activePhase = Phase(PhaseType.WORD_LINKS)
         val clickedTerm = intent.getStringExtra(WORD_LINKS_CLICKED_TERM)
-        Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[clickedTerm.toLowerCase()]]!!
+        Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[clickedTerm!!.toLowerCase(Locale.getDefault())]]!!
         wordLinkHistory.push(clickedTerm)
 
         setupStatusBar()
