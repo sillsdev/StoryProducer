@@ -74,7 +74,7 @@ abstract class PipedMediaCodec : PipedMediaByteBufferSource {
         if (mComponentState == PipedMediaSource.State.CLOSED) {
             throw SourceClosedException()
         }
-        mCodec!!.releaseOutputBuffer(outputBufferId,true)
+        mCodec!!.releaseOutputBuffer(outputBufferId,false)
         if (MediaHelper.VERBOSE) Log.v(TAG, "$componentName.release buffer $outputBufferId")
         return
     }
