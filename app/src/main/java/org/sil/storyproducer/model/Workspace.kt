@@ -180,7 +180,7 @@ object Workspace {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
         var csvFileName : String? = null  // csv file name if found
 
-        // DKH - 04/13/2022 Issue 6/25/2022 WordLinks list is incorrectly copied when you select a new SP Templates folder
+        // DKH - 04/13/2022 Issue 625 WordLinks list is incorrectly copied when you select a new SP Templates folder
         // Before we load a new Word Links file, clear any previous Word Links data from memory.
         if(termToWordLinkMap.isNotEmpty()){
             // If the termToWorkLinkMap is not empty, it means the user has selected a new
