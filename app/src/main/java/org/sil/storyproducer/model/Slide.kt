@@ -13,6 +13,9 @@ import java.util.*
  */
 @JsonClass(generateAdapter = true)
 class Slide{
+    // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+    // This extension is used on a local image from the camera tool
+    val localSlideExtension = "_Local.png"
     // template information
     var slideType: SlideType = SlideType.NUMBEREDPAGE
     var narrationFile = ""
