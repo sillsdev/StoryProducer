@@ -61,7 +61,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             imageFab.visibility = View.VISIBLE
             imageFab.setOnClickListener {
                 val chooser = Intent(Intent.ACTION_CHOOSER)
-                chooser.putExtra(Intent.EXTRA_TITLE, "Select From:")
+                chooser.putExtra(Intent.EXTRA_TITLE, R.string.camera_select_from)
 
                 val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
                 galleryIntent.type = "image/*"
@@ -105,13 +105,33 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 val dialog = AlertDialog.Builder(context)
                         .setTitle(getString(R.string.enter_text))
                         .setView(editText)
-                        .setNegativeButton(getString(R.string.cancel), null)
-                        .setPositiveButton(getString(R.string.save)) { _, _ ->
+                        .setNegativeButton(R.string.cancel, null)
+                        .setPositiveButton(R.string.save) { _, _ ->
                             Workspace.activeSlide!!.translatedContent = editText.text.toString()
                             setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
                         }.create()
 
                 dialog.show()
+            }
+        }
+        // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+        // Allow the user to revert to the original image
+        if(slideType == SlideType.NUMBEREDPAGE) {
+            val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
+            editFab?.visibility = View.VISIBLE
+            editFab?.setOnClickListener {
+                val dialog = AlertDialog.Builder(context)
+                        .setTitle(R.string.camera_revert_title)
+                        .setMessage(R.string.camera_revert_message)
+                        .setNegativeButton(R.string.no, null)
+                        .setPositiveButton(R.string.yes) { _, _ ->
+                            Workspace.activeStory.slides[slideNum].imageFile = "${slideNum}.jpg"
+                            setPic(rootView!!.findViewById(R.id.fragment_image_view) as ImageView)
+                        }
+                        .create()
+
+                dialog.show()
+
             }
         }
     }

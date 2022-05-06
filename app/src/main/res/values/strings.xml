@@ -67,7 +67,10 @@
     <string name="communication_preference_hint">Communication Preference:</string>
     <string name="location_type_hint">Location Type: </string>
     <string name="bypass_button_text">Skip Registration</string>
-
+    <!-- Strings for MultiRecordFrag - add photos to story; SP422-->
+    <string name="camera_select_from">Select From:</string>
+    <string name="camera_revert_title">Revert To The Original Image?</string>
+    <string name="camera_revert_message">Do you want to revert to the original image?</string>
     <!-- Dialog strings for titles, messages, and buttons -->
     <string name="welcome_to_story_producer">Welcome to Story Producer</string>
     <string name="use_internal_demo">Use internal demo</string>
