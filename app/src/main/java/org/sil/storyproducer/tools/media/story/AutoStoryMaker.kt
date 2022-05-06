@@ -197,7 +197,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
             var kbfx: KenBurnsEffect? = null
             if (mIncludePictures && mIncludeKBFX && slide.slideType == SlideType.NUMBEREDPAGE) {
-                kbfx = KenBurnsEffect.fromSlide(slide)
+                // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+                // Ken Burns effect is not yet implemented on local slides, ie, slides created
+                // with the camera tool
+                if(!(image.contains(slide.localSlideExtension))) {
+                    kbfx = KenBurnsEffect.fromSlide(slide)
+                }
             }
 
             val overlayText = SlideViewModelBuilder(slide).buildOverlayText(mIncludeText)

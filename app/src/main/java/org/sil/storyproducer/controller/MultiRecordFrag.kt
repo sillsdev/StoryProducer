@@ -52,8 +52,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      */
     fun setupCameraAndEditButton() {
         // display the image selection button, if on the title slide
+        // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+        // Add camera tool to numbered pages so that local images can be used in the story
         if(Workspace.activeStory.slides[slideNum].slideType in
-        arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG))
+        arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG,SlideType.NUMBEREDPAGE))
         {
             val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
             imageFab.visibility = View.VISIBLE
@@ -124,7 +126,9 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
                 //copy image into workspace
                 var uri = data?.data
                 if (uri == null) uri = FileProvider.getUriForFile(context!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!)   //it was a camera intent
-                Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}_Local.png"
+                // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
+                // Put extension in a common place for use by others
+                Workspace.activeStory.slides[slideNum].imageFile = "$PROJECT_DIR/${slideNum}${Workspace.activeStory.slides[slideNum].localSlideExtension}"
                 copyToWorkspacePath(context!!, uri!!,
                         "${Workspace.activeStory.title}/${Workspace.activeStory.slides[slideNum].imageFile}")
                 tempPicFile?.delete()
