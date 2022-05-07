@@ -51,7 +51,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
      * and edit button for renaming text and local credits
      */
     fun setupCameraAndEditButton() {
-        // display the image selection button, if on the title slide
+        // display the image selection button on FRONTCOVER,LOCALSONG & NUMBEREDPAGE
         // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
         // Add camera tool to numbered pages so that local images can be used in the story
         if(Workspace.activeStory.slides[slideNum].slideType in
@@ -78,9 +78,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             }
         }
 
-        // display the image selection button, if on the title slide
+        // 0R17 - DKH 05/7/2022 Allow for text editing on the song slide
+        // display the Edit  button, if on the FRONTCOVER or LOCALSONG
         val slideType : SlideType = Workspace.activeStory.slides[slideNum].slideType
-        if(slideType in arrayOf(SlideType.FRONTCOVER)) {
+        if(slideType in arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG)) {
             //for these, use the edit text button instead of the text in the lower half.
             //In the phases that these are not there, do nothing.
             val editBox = rootView?.findViewById<View>(R.id.fragment_dramatization_edit_text) as EditText?
