@@ -55,7 +55,11 @@ class SlideViewModelBuilder(
         }
         tOverlay.setFontSize(fontSize)
 
-        if(slide.slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
+        // 0R17 - DKH 05/7/2022 Allow for text editing on the song slide
+        // Remove LOCALSONG from if statement -  ALIGN_OPPOSITE starts at the bottom of the page
+        // and scrolls up, which is used for NUMBERED PAGE.  LOCALSONG will be centered on the
+        // middle of the page
+        if(slide.slideType in arrayOf(SlideType.NUMBEREDPAGE))
             tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
         return tOverlay
     }
