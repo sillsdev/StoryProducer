@@ -260,11 +260,11 @@
     <string name="title_activity_splash_screen">Story Producer</string>
 
     <!-- Local Credits -->
-    <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
-    <string name="LC_starting_text">Local Contact (phone/email):\nLanguage:\nTranslated by:\nPhotography by:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_starting_text">Local Contact (phone/email):\nLanguage:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
     <string name="LC_prompt">Local Credits will be added during voice acting.</string>
     <string name="export_local_credits_header">Local Credits</string>
-    <string name="license_attribution">This video is licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License ©</string>
+    <string name="license_attribution">This video is licensed under a Creative Commons Attribution-BY-SA-ShareAlike 4.0 International License ©</string>
     <string name="local_credits_changed">Local Credits Changed!</string>
     <string name="local_credits_unchanged">Local Credits Unchanged!</string>
 
