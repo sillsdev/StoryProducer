@@ -16,10 +16,9 @@ import android.widget.Toast
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
 import org.sil.storyproducer.model.SLIDE_NUM
-import org.sil.storyproducer.model.SlideType
-import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.toolbar.MultiRecordRecordingToolbar
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
@@ -54,27 +53,30 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
         // display the image selection button on FRONTCOVER,LOCALSONG & NUMBEREDPAGE
         // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
         // Add camera tool to numbered pages so that local images can be used in the story
-        if(Workspace.activeStory.slides[slideNum].slideType in
-        arrayOf(SlideType.FRONTCOVER,SlideType.LOCALSONG,SlideType.NUMBEREDPAGE))
-        {
-            val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
-            imageFab.visibility = View.VISIBLE
-            imageFab.setOnClickListener {
-                val chooser = Intent(Intent.ACTION_CHOOSER)
-                chooser.putExtra(Intent.EXTRA_TITLE, R.string.camera_select_from)
+        // If we have a numbered page, only show the camera on the Translate_Revise Phase
+        if(!(Workspace.activeStory.slides[slideNum].slideType == SlideType.NUMBEREDPAGE &&
+                        Workspace.activePhase.phaseType != PhaseType.TRANSLATE_REVISE)) {
+            if (Workspace.activeStory.slides[slideNum].slideType in
+                    arrayOf(SlideType.FRONTCOVER, SlideType.LOCALSONG, SlideType.NUMBEREDPAGE)) {
+                val imageFab: ImageView = rootView!!.findViewById<View>(R.id.insert_image_view) as ImageView
+                imageFab.visibility = View.VISIBLE
+                imageFab.setOnClickListener {
+                    val chooser = Intent(Intent.ACTION_CHOOSER)
+                    chooser.putExtra(Intent.EXTRA_TITLE, R.string.camera_select_from)
 
-                val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
-                galleryIntent.type = "image/*"
-                chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent)
+                    val galleryIntent = Intent(Intent.ACTION_GET_CONTENT)
+                    galleryIntent.type = "image/*"
+                    chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent)
 
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                cameraIntent.resolveActivity(activity!!.packageManager).also {
-                    tempPicFile = File.createTempFile("temp", ".jpg", activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
-                    cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!))
+                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    cameraIntent.resolveActivity(activity!!.packageManager).also {
+                        tempPicFile = File.createTempFile("temp", ".jpg", activity?.getExternalFilesDir(Environment.DIRECTORY_PICTURES))
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(activity!!, "${BuildConfig.APPLICATION_ID}.fileprovider", tempPicFile!!))
+                    }
+                    chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
+
+                    startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
                 }
-                chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(cameraIntent))
-
-                startActivityForResult(chooser, ACTIVITY_SELECT_IMAGE)
             }
         }
 
@@ -116,9 +118,11 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             }
         }
         // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
-        // Allow the user to revert to the original image
-        if(slideType == SlideType.NUMBEREDPAGE) {
-            val editFab = rootView!!.findViewById<View>(R.id.edit_text_view) as ImageView?
+        // Allow the user to restore to the original image
+        // If we have a numbered page, only show the restore on the Translate_Revise Phase
+        if(slideType == SlideType.NUMBEREDPAGE && Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE) {
+
+            val editFab = rootView!!.findViewById<View>(R.id.restore_image_view) as ImageView?
             editFab?.visibility = View.VISIBLE
             editFab?.setOnClickListener {
                 val dialog = AlertDialog.Builder(context)
@@ -133,7 +137,10 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
 
                 dialog.show()
 
+
+
             }
+
         }
     }
 
