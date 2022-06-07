@@ -38,12 +38,10 @@ class WordLinksCSVReader(reader: Reader): AutoCloseable {
 
         wordLink.term = line[1].trim()
         wordLink.termForms = stringToList(line[2], ",")
-        // DKH - 08/27/2021
-        // Do not process column D "Other language examples (back translations)" in WordLinks spreadsheet
-        // wordLink.alternateRenderings = stringToList(line[3], ";") // column D
-        // DKH - 08/27/2021
-        // Do not process column E "Meaning notes/Definitions" in WordLinks spreadsheet
-        // wordLink.explanation = line[4].trim()   // column E
+        // DKH - 9/20/2021, for testing process Column D
+        wordLink.alternateRenderings = stringToList(line[3], ";") // column D
+        // DKH - 9/20/2021, for testing process Column E
+        wordLink.explanation = line[4].trim()   // column E
         wordLink.relatedTerms = stringToList(line[5], ",")
 
         return wordLink
