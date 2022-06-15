@@ -32,6 +32,7 @@
 
 
     <!-- Phases -->
+    <string name="registration_title">Registration</string>
     <string name="learn_title">Learn</string>
     <string name="translate_revise_title">Translate + Revise</string>
     <string name="community_work_title">Community Work</string>
@@ -42,12 +43,12 @@
     <string name="whole_story_title">Whole Story Back Translation</string>
     <string name="back_translation_title">Back Translation</string>
     <string name="title_activity_story_templates">Story Templates</string>
-    <string name="title_activity_wordlink_list">Word Links List</string>
+    <string name="title_activity_wordlink_list">WordLinks List</string>
 
     <!-- String names for registration -->
     <string name="registration_language_header">Language Information</string>
     <string name="registration_translator_header">Translator Information</string>
-    <string name="registration_consultant_header">Consultant Information</string>
+    <string name="registration_accuracy_check_header">Accuracy Checker Info</string>
     <string name="registration_trainer_header">Trainer Information</string>
     <string name="registration_archive_header">Archive Information</string>
     <string name="language_hint">Language (being translated into)</string>
@@ -180,10 +181,10 @@
     <string name="wordlink_backtranslation">Backtranslation</string>
     <string name="wordlink_none">None</string>
     <string name="wordlink_list_help">None</string>
-    <string name="wordlinks_csv_read_error">Error reading word links CSV file</string>
-    <string name="wordlinks_json_read_error">Error reading word links JSON file</string>
-    <string name="wordlinks_no_csv_file">No Valid CSV WordLinks File Specified</string> <!-- SP611 CSV Error handling -->
-    <string name="wordlinks_multiple_csv_files">Detected multiple Word Links CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_csv_read_error">Error reading wordlinks CSV file</string>
+    <string name="wordlinks_json_read_error">Error reading wordlinks JSON file</string>
+    <string name="wordlinks_no_csv_file">No WordLinks CSV File Found</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_multiple_csv_files">Found multiple WordLinks CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
 
     <!-- Voice Studio Phase -->
     <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>

@@ -3,6 +3,7 @@ package org.sil.storyproducer.model
 import WordLinksCSVReader
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
@@ -33,7 +34,7 @@ internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
 internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
 // DKH - 11/19/2021 Issue #611 Allow CSV file to have different names
 // Use Regex expression when looking for CSV word links file
-internal val WORK_LINKS_CSV_REGEX_STRING = "wordlinks.*csv"
+internal val WORK_LINKS_CSV_REGEX_STRING = "(?i)wordlinks.*\\.csv"
 internal val WORD_LINKS_CSV_REGEX = WORK_LINKS_CSV_REGEX_STRING.toRegex()
 
 
@@ -76,6 +77,8 @@ object Workspace {
     var termToWordLinkMap: MutableMap<String, WordLink> = mutableMapOf()
     var termFormToTermMap: MutableMap<String, String> = mutableMapOf()
     var WLSTree = WordLinkSearchTree()
+
+
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -164,21 +167,40 @@ object Workspace {
             Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
         }
     }
+    // DKH - 01/26/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+    // A new menu item was added that opens a URL for the user to download templates.
+    // This is used in both the MainActivity menu (Story Templates display) and the Phase menus
+    fun startDownLoadMoreTemplatesActivity(context: Context){
+        val openURL = Intent(Intent.ACTION_VIEW)
+        openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
+        context.startActivity(openURL)
+    }
 
     private fun importWordLinks(context: Context) {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
-        var csvFileName : String? = null  // default is no csv file, later on, create one if none found
+        var csvFileName : String? = null  // csv file name if found
+
+        // DKH - 04/13/2022 Issue 625 WordLinks list is incorrectly copied when you select a new SP Templates folder
+        // Before we load a new Word Links file, clear any previous Word Links data from memory.
+        if(termToWordLinkMap.isNotEmpty()){
+            // If the termToWorkLinkMap is not empty, it means the user has selected a new
+            // workspace that will contain a different set of word links terms, so,
+            // create an empty link search tree for the newly selected workspace
+            WLSTree = WordLinkSearchTree()
+            // Clear out all term data
+            termToWordLinkMap.clear()
+            termFormToTermMap.clear()
+        }
+
 
         if (wordLinksDir == null) { // check to see if word links directory exists
             // DKH - 11/19/2021 Issue #611 Create Word Links CSV directory if it does not exist
             wordLinksDir = workdocfile.createDirectory(WORD_LINKS_DIR)
         }else{
             // DKH - 12/07/2021 Issue #611 Use the first CSV file that starts with "worklinks" & ends with "csv"
-
             // The WordLinks Directory exists, so,  see if we can find a csv file
             // CSV files start with the substring "wordlinks" and ends with ".csv"
             // scan all the files in the wordlinks directory looking for a valid csv file
-            // If we have a valid CSV file, we don't have to create the default one
             for (filename in wordLinksDir!!.listFiles()) {
                 // look for a wordlinks csv file
                 if((filename.name)?.contains(WORD_LINKS_CSV_REGEX)!!){
@@ -190,14 +212,21 @@ object Workspace {
 
         if (wordLinksDir != null) {
             // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
-            if(csvFileName == null) addWordLinksCSVFileToWorkspace(context, WORD_LINKS_CSV)
-            // Process the CSV file
-            importWordLinksFromCSV(context, wordLinksDir!!)
-            importWordLinksFromJsonFiles(context, wordLinksDir!!)
-            mapTermFormsToTerms()
-            buildWLSTree()
+            // BW 2/21/2022 #622 There is no default CSV file or LWC.
+            // In a future version, the correct CSV would be based on the user's selection
+                // of the LWC for this workspace.
+            // if(csvFileName == null)
+            //     addWordLinksCSVFileToWorkspace(context, csvFileNameForSelectedLWC)
+
+            if(csvFileName != null) {
+                // Process the CSV file, read the Json file, and map the terms
+                importWordLinksFromCSV(context, wordLinksDir!!)
+                importWordLinksFromJsonFiles(context, wordLinksDir!!)
+                mapTermFormsToTerms()
+                buildWLSTree()
+            }
         }else{
-            Log.e("workspace", "Failed to create word links directory: $WORD_LINKS_CSV")
+            Log.e("workspace", "Failed to create word links directory: $WORD_LINKS_DIR")
         }
     }
 
@@ -316,19 +345,19 @@ object Workspace {
             }
         }
     }
-    fun addWordLinksCSVFileToWorkspace(context: Context, csvFileName: String) {
+    fun addWordLinksCSVFileToWorkspace(context: Context, csvFileNameForSelectedLWC: String) {
         // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
-        // During compile time, the file app/src/main/assets/wordlinks.csv is compiled into
-        // the APK.  This routine extracts that file and places that file in the
-        // Worklinks directory.
-        // This routine is called anytime a ".csv" file cannot be found in the workdlinks directory
+        // BW 2/21/2022 #622 There is no default CSV file or LWC.
+        // At compile time, files such as app/src/main/assets/WordLinks - English.csv
+        // may be compiled into the APK.  This routine extracts the given file and writes that
+        // file in the Worklinks directory.
         val assetManager = context.assets
 
         try {
             // open wordlinks.csv located in the APK
-            val instream = assetManager.open(csvFileName)
+            val instream = assetManager.open(csvFileNameForSelectedLWC)
             // Create the worklinks.csv file in the wordlinks directory
-            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileName")
+            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileNameForSelectedLWC")
             val buffer = ByteArray(1024)
             var read: Int
             // copy input to output 1024 bytes at a time
@@ -338,7 +367,7 @@ object Workspace {
             outstream?.close() // close output stream
             instream.close() // close input stream
         } catch (e: Exception) {
-            Log.e("workspace", "Failed to copy wordlinks CSV asset file: $csvFileName", e)
+            Log.e("workspace", "Failed to copy wordlinks asset file: $csvFileNameForSelectedLWC", e)
         }
 
     }

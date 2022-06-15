@@ -91,11 +91,24 @@ class PipedVideoSurfaceEncoder : PipedMediaCodec() {
                 //just count the number of buffers used through looking at the time queue.
                 Thread.sleep(10)
             }
-            mCanvas = if (Build.VERSION.SDK_INT >= 23) {
-                mSurface!!.lockHardwareCanvas()
-            } else {
-                mSurface!!.lockCanvas(null)
-            }
+            // 4/6/2022 - DKH, Issue 639: Logcat reports this error: FrameEvents: updateAcquireFence: Did not find frame.
+            // The following code was previously used to allow the use of hardware Codec video
+            // encoding.
+            // mCanvas = if (Build.VERSION.SDK_INT >= 23) {
+            //    mSurface!!.lockHardwareCanvas()
+            // } else {
+            //    mSurface!!.lockCanvas(null)
+            //}
+            // With the advent of Android 11 and later versions, the Codec encoder began reporting
+            // to the system error log the following error per frame of data:
+            //      FrameEvents: updateAcquireFence: Did not find frame.
+            // For small stories (6 slides), this resulted ~3000 error messages to the system log
+            // Further analysis of the performance data showed that in most cases, the software
+            // codec encoder performed better than the hardware encoder.
+            // The following change uses the software codec to eliminate the error messages and
+            // provides better performance in most cases.
+            mCanvas = mSurface!!.lockCanvas(null)  // force use of software video codec encoder
+
             mCurrentPresentationTime = mSource!!.fillCanvas(mCanvas!!)
 
             synchronized(mPresentationTimeQueue) {
