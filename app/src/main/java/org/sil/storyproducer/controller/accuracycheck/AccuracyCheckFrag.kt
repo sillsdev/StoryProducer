@@ -83,7 +83,14 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
                 button.background = greenCheckmark
                 Workspace.activeStory.slides[slideNum].isChecked = true
                 if (checkAllMarked()) {
-                    showConsultantPasswordDialog()
+                    // SP645 - BW 06/15/2022 new Affirm Accuracy Check dialog for SIL Story Producer
+                    // Other forks of story producer may want to keep the ConsultantPassword dialog instead.
+                    // We could use a Feature Flags library to enable/choose the desired approach.
+                    // for now, comment out the other
+                    //if (xxx)
+                        showAffirmAccuracyCheckDialog()
+                    //else
+                    //    showConsultantPasswordDialog()
                 }
             }
         })
@@ -184,6 +191,59 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
 
         passwordDialog.show()
         toggleKeyboard(true, password)
+    }
+
+    /**
+     * Launches a dialog for affirming the accuracy check once all slides 'approved'
+     */
+    // SP645 - BW 06/15/2022 new Affirm Accuracy Check dialog for SIL Story Producer
+    private fun showAffirmAccuracyCheckDialog() {
+        val affirmDialog = AlertDialog.Builder(context!!)
+                .setTitle(getString(R.string.affirm_accuracy_check_title))
+                .setMessage(getString(R.string.affirm_accuracy_check_message))
+                .setPositiveButton(getString(R.string.yes), null)
+                .setNegativeButton(getString(R.string.no), null)
+                .setNeutralButton(getString(R.string.affirm_accuracy_check_NotaBibleStory), null)
+                .create()
+
+        // This sets the three button listeners
+        affirmDialog.setOnShowListener { dialog ->
+            // Sets the Yes button listener so that we save 'approval', dismiss the dialog,
+            // and continue to the Voice Studio phase
+            val YesButton = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_POSITIVE)
+            YesButton.setOnClickListener {
+                saveConsultantApproval()
+                dialog.dismiss()
+                launchDramatizationPhase()
+            }
+            //Sets the No button listener so that the user is prompted to do proper accuracy check
+            val NoButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            NoButton.setOnClickListener {
+                dialog.dismiss()
+                showRequestAccuracyCheckDialog()
+            }
+            //Sets the Neutral button listener -
+            // affirmation is not applicable;  save 'approval' and proceed to voice studio phase
+            val NeutButton = dialog.getButton(AlertDialog.BUTTON_NEUTRAL)
+            NeutButton.setOnClickListener {
+                saveConsultantApproval()
+                dialog.dismiss()
+                launchDramatizationPhase()
+            }
+         }
+
+        affirmDialog.show()
+    }
+
+    /**
+     * Launches a dialog for requesting a Bible accuracy check, when user did not affirm it
+     */
+    private fun showRequestAccuracyCheckDialog() {
+        val requestAccCkDialog = AlertDialog.Builder(context!!)
+                .setMessage(getString(R.string.request_accuracy_check_message))
+                .setPositiveButton(getString(R.string.ok), null)
+                .create()
+        requestAccCkDialog.show()
     }
 
     /**
