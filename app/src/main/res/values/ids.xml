@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="start_recording_button" type="id" />
+    <item name="play_recording_button" type="id" />
+    <item name="list_recordings_button" type="id" />
+    <item name="finish_recording_button" type="id" />
+    <item name="password_text_field" type="id" />
+    <item name="edit_text_view" type="id" />
+    <item name="edit_text_input" type="id" />
+</resources>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_learn"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.sil.storyproducer.controller.learn.LearnActivity">
+
+    <ImageView
+        android:id="@+id/fragment_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:contentDescription="@string/story_picture"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".5" />
+
+    <ImageButton
+        android:id="@+id/fragment_reference_audio_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black_semi_transparent"
+        android:contentDescription="@string/play"
+        android:onClick="onClickPlayPauseButton"
+        android:src="@drawable/ic_play_arrow_white_48dp"
+        app:layout_constraintEnd_toStartOf="@id/videoSeekBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <SeekBar
+        android:id="@+id/videoSeekBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/black_semi_transparent"
+        android:max="100"
+        app:layout_constraintBottom_toBottomOf="@id/fragment_reference_audio_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/fragment_reference_audio_button"
+        app:layout_constraintTop_toTopOf="@id/fragment_reference_audio_button" />
+
+    <ImageView
+        android:id="@+id/soundOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/sound_off"
+        app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
+        app:layout_constraintEnd_toStartOf="@id/volumeSwitch"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/videoSeekBar"
+        app:srcCompat="@drawable/ic_volume_off_white_36dp" />
+
+    <Switch
+        android:id="@+id/volumeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
+        app:layout_constraintEnd_toStartOf="@id/soundOn"
+        app:layout_constraintStart_toEndOf="@id/soundOff"
+        app:layout_constraintTop_toBottomOf="@id/videoSeekBar" />
+
+    <ImageView
+        android:id="@+id/soundOn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/sound_on"
+        app:layout_constraintBottom_toTopOf="@id/toolbar_for_recording_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/volumeSwitch"
+        app:layout_constraintTop_toBottomOf="@id/videoSeekBar"
+        app:srcCompat="@drawable/ic_volume_up_white_36dp" />
+
+    <FrameLayout
+        android:id="@+id/toolbar_for_recording_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

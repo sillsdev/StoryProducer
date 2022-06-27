@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingEnd="15dp"
+    android:paddingStart="60dp"
+    android:padding="5dp"
+    android:layout_margin="5dp"
+    android:clipToPadding="false">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/message_body"
+        android:background="@drawable/phone_message"
+        android:textColor="@color/white"
+        android:padding="10dp"
+        android:textSize="18sp"
+        android:layout_alignParentEnd="true"
+        android:text="@string/app_name"
+        android:maxWidth="240dp"
+        />
+</RelativeLayout>

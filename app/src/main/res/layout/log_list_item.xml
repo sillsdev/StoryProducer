@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content" android:orientation="vertical" android:layout_width="fill_parent">
+
+    <TextView
+        android:text="@string/logging_item_date"
+        android:id="@+id/textView_logging_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginTop="5dip"
+        android:layout_marginStart="5dip"
+        android:layout_below="@+id/textView_logging_type" />
+
+    <TextView
+        android:text="@string/logging_item_type"
+        android:id="@+id/textView_logging_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:textStyle="bold"
+        android:layout_marginStart="5dip" />
+
+</RelativeLayout>

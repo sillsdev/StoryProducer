@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="global_menu_array">
+        <item>@string/title_activity_story_templates</item>
+        <item>@string/update_registration</item>
+        <item>@string/more_templates</item>
+        <item>@string/title_activity_wordlink_list</item>
+        <item>@string/update_workspace</item>
+        <item>@string/copy_demo</item>
+        <item>@string/about</item>
+    </string-array>
+</resources>

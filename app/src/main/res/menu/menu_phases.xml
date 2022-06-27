@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <item
+        android:id="@+id/icon_logo"
+        android:title="@string/menu_search"
+        android:icon="@drawable/ic_mic_white_48dp"
+        app:showAsAction="always"
+        android:height="500dp"
+        android:width="500dp"
+        />
+    <item
+        android:id="@+id/spinner"
+        android:icon="@drawable/ic_apps_white_24dp"
+        android:title=""
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"
+        android:checkable="false" />
+    <item
+        android:id="@+id/helpButton"
+        android:icon="@drawable/ic_help_white_24dp"
+        android:title="@string/help"
+        app:showAsAction="always"/>
+
+
+</menu>

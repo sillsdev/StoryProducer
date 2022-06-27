@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group>
+        <item
+            android:id="@+id/nav_stories"
+            android:title="@string/title_activity_story_templates" />
+        <item
+            android:id="@+id/nav_registration"
+            android:title="@string/update_registration" />
+        <item
+            android:id="@+id/nav_more_templates"
+            android:title="@string/more_templates" />
+        <item
+            android:id="@+id/nav_word_link_list"
+            android:title="@string/title_activity_wordlink_list" />
+        <item
+            android:id="@+id/nav_workspace"
+            android:title="@string/update_workspace" />
+        <item
+            android:id="@+id/nav_demo"
+            android:title="@string/copy_demo" />
+        <item
+            android:id="@+id/nav_about"
+            android:title="@string/about" />
+    </group>
+</menu>

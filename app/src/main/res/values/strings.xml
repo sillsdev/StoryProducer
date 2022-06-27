@@ -1,0 +1,342 @@
+<resources>
+    <string name="app_name">StoryProducerAdv</string>
+
+    <!-- General -->
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="help">Help</string>
+    <string name="search">Search</string>
+
+    <string name="submit">Submit</string>
+    <string name="submit_via">Submit via&#8230;</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="enter_text">Enter Text</string>
+
+    <string name="play">Play</string>
+    <string name="share">Share</string>
+    <string name="sound_off">Sound off</string>
+    <string name="sound_on">Sound on</string>
+
+    <string name="question_mark">What is this?</string>
+
+    <string name="SECONDS_ABBREVIATION">sec</string>
+    <string name="MINUTES_ABBREVIATION">min</string>
+
+    <string name="story_picture">story picture</string>
+    <string name="stage_locked">stage locked</string>
+    <string name="edit_image">edit image</string>
+    <string name="edit_text">edit text</string>
+
+
+    <!-- Phases -->
+    <string name="registration_title">Registration</string>
+    <string name="learn_title">Learn</string>
+    <string name="translate_revise_title">Translate + Revise</string>
+    <string name="community_work_title">Community Work</string>
+    <string name="accuracy_check_title">Accuracy Check</string>
+    <string name="voice_studio_title">Voice Studio</string>
+    <string name="finalize_title">Finalize</string>
+    <string name="share_title">Share</string>
+    <string name="whole_story_title">Story Tell-Back</string>
+    <string name="back_translation_title">Slide Tell-Back</string>
+    <string name="title_activity_story_templates">Story Templates</string>
+    <string name="title_activity_wordlink_list">Word Links List</string>
+
+    <!-- String names for registration -->
+    <string name="registration_language_header">Language Information</string>
+    <string name="registration_translator_header">Translator Information</string>
+    <string name="registration_accuracy_check_header">Accuracy Checker Info</string>
+    <string name="registration_trainer_header">Trainer Information</string>
+    <string name="registration_archive_header">Archive Information</string>
+    <string name="language_hint">Language (being translated into)</string>
+    <string name="etnologue_code_hint">Ethnologue Code</string>
+    <string name="country_hint">Country</string>
+    <string name="location_hint">Province/State/Region</string>
+    <string name="town_hint">Village/Town/City</string>
+    <string name="lwc_hint">Language (being translated from)</string>
+    <string name="orthography_hint">Orthography Status:</string>
+    <string name="name_hint">Name</string>
+    <string name="spoken_language_hint">Spoken Languages</string>
+    <string name="phone_hint">Phone</string>
+    <string name="email_hint">E-mail</string>
+    <string name="person_location_hint">Location</string>
+    <string name="education_hint">Education Level</string>
+    <string name="communication_preference_hint">Communication Preference:</string>
+    <string name="location_type_hint">Location Type: </string>
+    <string name="bypass_button_text">Skip Registration</string>
+    <!-- Strings for MultiRecordFrag - add photos to story; SP422-->
+    <string name="camera_select_from">Select From:</string>
+    <string name="camera_revert_title">Revert To The Original Image?</string>
+    <string name="camera_revert_message">Do you want to revert to the original image?</string>
+    <!-- Dialog strings for titles, messages, and buttons -->
+    <string name="welcome_to_story_producer">Welcome to StoryProducerAdv</string>
+    <string name="use_internal_demo">Use internal demo</string>
+    <string name="please_create_and_then_select_folder">Please create and then Select a new folder, needed for running the demo.</string>
+    <string name="registration_exit_title">Exit Registration?</string>
+    <string name="registration_exit_message">"Are you sure you want to exit registration? Your changes will not be saved."</string>
+    <string name="registration_skip_title">Skip Registration?</string>
+    <string name="registration_submit">Submit Registration via...</string>
+    <string name="registration_skip_message">"Are you sure you want to skip registration? Don't worry, we'll save what you have so far."</string>
+    <string name="registration_submit_title">Submit?</string>
+    <string name="registration_submit_complete_message">Are you ready to submit?</string>
+    <string name="registration_submit_incomplete_message">You have left some fields blank. Continue with submission?</string>
+    <string name="registration_error_title">Submission Error</string>
+    <string name="registration_error_message">Please provide an database email address</string>
+    <string name="registration_saved_successfully">Registration information saved!</string>
+    <string name="registration_SPadv_email">SPapp.training@gmail.com</string>
+    <string name="registration_robin_rempel_email">SPapp_info@sil.org</string>
+    <string name="rename_title">Choose a new name</string><!-- Default instructions on how to enter data -->
+    <!-- For Word links, give user more instruction on how to enter the data -->
+    <string name="rename_title_wordlinks">Type a back translation or spell the name.</string>
+    <string name="recordings_title">Recordings</string>
+    <string name="backTranslation_recordings_title">Back Translation Recordings </string> <!-- for new backtranslation phase -->
+    <string name="consultant_password_title">Consultant Password</string>
+    <string name="consultant_password_message">Please enter the consultant password:</string>
+    <string name="consultant_incorrect_password_message">Incorrect Password</string>
+    <string name="stories_not_found_title">No stories found!</string>
+    <string name="stories_not_found_body">No story templates found! The currently selected Workspace folder
+        for story templates does not contain usable templates.  Select the appropriate
+        \'&lt;font color=\"green\">&lt;b>SP Workspace&lt;/b>&lt;/font>\' folder - found on the
+        &lt;font color=\"green\">&lt;b>SD card or in internal memory&lt;/b>&lt;/font>.</string>
+    <string name="stories_not_found_in_progress">There are no stories in progress.</string>
+    <string name="stories_not_found_completed">There are no completed stories.</string>
+    <!--  Issue #571, for welcome_screen_select_template_folder, replace template URL with a place holder. Move URL to workspace object -->
+    <string name="welcome_screen_select_template_folder">
+        StoryProducerAdv is different from typical apps.
+        First you must create a Workspace folder in your phone storage.  You will then download and move story templates and other assets into this folder.&lt;br>&lt;br>
+        DETAILED INSTRUCTIONS:&lt;br>
+        1. Use Google Drive and download story templates from &lt;a href="URL_FOR_TEMPLATES_PLACE_HOLDER">HERE&lt;/a>&lt;br>
+        2. Use a Files app to create a Workspace folder in internal memory or on the SD card &lt;br>and name it &lt;font color=\"green\">1SP Workspace&lt;/font>&lt;br>
+        3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">1SP Workspace&lt;/font> folder&lt;br>&lt;br>
+        After you have prepared the &lt;font color=\"green\">1SP Workspace&lt;/font> folder, proceed:
+    </string>
+    <string name="workspace_selection_help">
+        &lt;font color=\"gray\">Tell the StoryProducerAdv app where to find story templates.&lt;/font>&lt;br>&lt;br>
+        The next screen will be a \'folder picker\'.&lt;br>
+        Navigate to the &lt;font color=\"green\">SP Workspace&lt;/font> folder (on the &lt;font color=\"green\">SD Card or in internal memory&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
+    </string>
+    <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
+    <string-array name="orthography_list">
+        <item>None</item>
+        <item>Trial</item>
+        <item>Stable</item>
+    </string-array>
+
+    <string-array name="communication_list">
+        <item>Phone</item>
+        <item>E-mail</item>
+        <item>WhatsApp</item>
+        <item>Facebook</item>
+    </string-array>
+
+    <string-array name="location_type_list">
+        <item>Local</item>
+        <item>Remote</item>
+    </string-array>
+
+    <!--Navigation Drawer Labels (Main Activity) -->
+    <string name="nav_open">Options</string>
+    <string name="nav_close">Close</string>
+
+    <!-- PHONE -->
+    <string name="PhoneId">PhoneId</string>
+
+    <!-- Network -->
+    <string name="send_message_down">Message sending is unavailable at this time. Please try again later.</string>
+    <string name="audio_pre_send">Sending Audio</string>
+    <string name="audio_Sent">Audio File Sent Successfully</string>
+    <string name="audio_Send_Failed">Error occurred, please try sending the audio file again</string>
+    <string name="queue_status_upload"> No Connection: File Queued for Delivery</string>
+    <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
+    <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
+    <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
+    <string name="url_get_messages">http://10.10.10.248/rocc/API/GetMessages.php</string>
+    <string name="url_send_message">http://10.10.10.248/rocc/API/SendMessage.php</string>
+    <string name="url_request_review">http://10.10.10.248/rocc/API/RequestRemoteReview.php</string>
+    <string name="url_get_slide_status">http://10.10.10.248/rocc/API/GetSlideStatuses.php</string>
+    <string name="url_upload_audio">http://10.10.10.248/rocc/API/UploadSlideBacktranslation.php</string>
+    <string name="url_register_phone">http://10.10.10.248/rocc/API/RegisterPhone.php</string>
+    <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
+
+    <string name="fill_with_audio_comment">Fill with Audio Comment</string>
+
+    <!-- Learn Phase -->
+    <string name="learn_phase_practice">Retell the whole story in your language!</string>
+    <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
+
+    <!-- Translate + Revise Phase -->
+    <string name="translate_revise_playback_no_lwc_audio">Could not find narration audio</string>
+    <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>
+    <string name="translate_revise_play_narration_audio">Play narration audio</string>
+
+    <!-- WordLink Tool -->
+    <string name="wordlink_submit_backtranslation_hint">word-for-word backtranslation / transliteration</string>
+    <string name="wordlink_close">Close</string>
+    <string name="wordlink_notes">MEANING NOTES. DEFINITIONS:</string>
+    <string name="wordlink_related_terms">RELATED (BUT DIFFERENT) TERMS:</string>
+    <string name="wordlink_other_langauge_examples">OTHER LANGUAGE EXAMPLES:</string>
+    <string name="wordlink_fill_with_audio_comment">Fill with Audio Comment</string>
+    <string name="wordlink_backtranslation">Backtranslation</string>
+    <string name="wordlink_none">None</string>
+    <string name="wordlink_list_help">None</string>
+    <string name="wordlinks_csv_read_error">Error reading word links CSV file</string>
+    <string name="wordlinks_json_read_error">Error reading word links JSON file</string>
+    <string name="wordlinks_no_csv_file">No Valid CSV WordLinks File Specified</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_multiple_csv_files">Detected multiple Word Links CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
+
+    <!-- Voice Studio Phase -->
+    <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>
+    <string name="voice_studio_edit_title_text_hint">Write story title to show for all videos made.</string>
+
+    <!-- Share Phase -->
+    <string name="delete_video_title">Delete Video file?</string>
+    <string name="delete_video_message">Do you want to delete this video?</string>
+    <string name="view_video_folder_path">Videos Folder</string>
+    <string name="view_video_folder_message">Using a file manager app, video files can be accessed at:</string>
+
+    <!-- Whole Story Back Translation phase -->
+    <string name="wsbt_alert_title">Finish Draft Phase</string>
+    <string name="wsbt_alert_text">Please record a translation for each slide.</string>
+
+    <!-- Back Translation Phase -->
+    <string name="backTranslation_draft_no_picture">Could Not Find Picture</string>
+    <string name="backTranslation_no_draft_recording_available">Draft recording not available!</string>
+    <string name="backTranslation_playback_draft_recording">Playing back draft recording!</string>
+    <string name="backTranslation_edit_text_hint">Story Text</string>
+    <string name="backTranslation_playing_backT">Playing Back Translation</string>
+    <string name="backTranslation_play_draft">Play translated draft</string>
+    <string name="backTranslation_no_backT_found">No Back Translation Found</string>
+    <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
+    <string name="backTranslation_hint">Message for consultant&#8230;</string>
+
+    <!-- Remote Check Phase -->
+    <string name="remote_check_title">Remote Check</string>
+    <string name="messaging_bar_title">Messages for Slide</string>
+    <string name="message_hint">Enter Message</string>
+    <string name="empty_message">RC messages will appear here&#8230;</string>
+    <string name="remote_check_msg_sent">Message Sent!</string>
+    <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
+    <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
+
+    <!-- RecordingToolbar -->
+    <string name="recording_toolbar_no_recording">No recording available!</string>
+    <string name="recording_toolbar_error_recording">Error recording, record again!</string>
+    <string name="recording_toolbar_disable_animation">DISABLE_ANIMATIONS_FOR_TESTING</string>
+
+    <!-- Multiple Recording Dialog -->
+    <string name="delete_audio_title">Delete Audio file?</string>
+    <string name="delete_audio_message">Do you want to delete this audio file?</string>
+
+    <!-- Export Phase -->
+    <string name="export_title_header">Text in Filename</string>
+    <string name="Text_In_Filename_Placeholder">Type Your Local Short Story Title Here</string>
+    <string name="export_options_header">Options</string>
+    <string name="export_include_soundtrack">Include Background Music (Fx)</string>
+    <string name="export_include_pictures">Include Pictures (Px)</string>
+    <string name="export_include_text">Include Story Text (Tx)</string>
+    <string name="export_include_song">Include Local Song (Sg)</string>
+    <string name="export_include_KBFX">Enable Picture Movement (Mv)</string>
+    <string name="export_dumbphone">(3gp) is for </string>
+    <string name="export_smartphone">(mp4) is for </string>
+
+    <string name="export_local_credits_unchanged">Edit Local Credits</string>
+    <string name="local_credits_check_mark_description">check mark indicating if the local credits have been updated</string>
+    <string name="export_no_filename">Type a Short Story Title, above</string>
+    <string name="export_local_song_unrecorded">Record local song first.</string>
+
+    <string name="export_location_exists_title">Replace File?</string>
+    <string name="export_location_exists_message">The file specified already exists. Do you want to replace it?</string>
+
+    <string name="export_start">Create Video</string>
+    <string name="export_cancel">Cancel</string>
+    <string name="export_cancel_comment">Do not leave this screen until the video is complete.</string>
+
+    <!-- ListView -->
+    <string name="title_activity_splash_screen">StoryProducer Advance</string>
+
+    <!-- Local Credits -->
+    <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_starting_text">Local Contact (phone/email):\nLanguage:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
+    <string name="LC_prompt">Local Credits will be added during voice acting.</string>
+    <string name="export_local_credits_header">Local Credits</string>
+    <string name="license_attribution">This video is licensed under a Creative Commons Attribution-BY-SA-ShareAlike 4.0 International License ©</string>
+    <string name="local_credits_changed">Local Credits Changed!</string>
+    <string name="local_credits_unchanged">Local Credits Unchanged!</string>
+
+    <!-- Local Song -->
+    <string name="LS_prompt">Compose and record a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>
+
+    <string name="LWC_PLAYBACK">LWC Playback</string>
+    <string name="DRAFT_RECORDING">Draft Recording</string>
+    <string name="DRAFT_PLAYBACK">Draft Playback</string>
+    <string name="COMMENT_PLAYBACK">Comment Playback</string>
+    <string name="COMMENT_RECORDING">Comment Recording</string>
+
+    <string name="no_videos">No Videos to Share</string>
+    <string name="send_video">Send Video:</string>
+    <string name="file_view">File view:</string>
+
+    <!-- app menus -->
+    <string name="menu_search">Search</string>
+    <string name="update_registration">Update Registration</string>
+    <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
+    <string name="update_workspace">Select \'SP Workspace\' folder</string>
+    <string name="cancelling">Cancelling &#8230;</string>
+    <string name="copy_demo">Add demo to story list</string>
+    <string name="more_templates">Download More Templates</string>
+
+    <!-- Main Story Page -->
+    <string name="all_stories_tab">All Stories</string>
+    <string name="in_progress_tab">In Progress</string>
+    <string name="completed_tab">Completed</string>
+
+    <!-- Filter Toolbar -->
+    <string name="film_toolbar">Film</string>
+    <string name="nt_toolbar">NT</string>
+    <string name="ot_toolbar">OT</string>
+    <string name="other_toolbar">Other</string>
+
+    <!-- About -->
+    <string name="about">About</string>
+    <string name="license">License</string>
+    <string name="about_title">About StoryProducerAdv (SPadv)</string>
+    <string name="app_version">app version: %1$s</string>
+    <string name="prefer_bloom_templates">prefer .bloom templates</string>
+    <string name="license_body">This StoryProducerAdv (Story Producer Advance) software is
+                                copyrighted © 2022, Robin Rempel .
+                                Adapted from and built upon original, Story Producer (version 3.0.6)
+                                jointly copyrighted © 2020, SIL International and
+                                Cedarville University. It is released under the following license:
+                                Permission is hereby granted, free of charge, to any person lawfully
+                                obtaining a copy of this software and associated documentation files
+                                (the “Software”), to use and redistribute the software, to build and
+                                distribute videos from text and audio-visual data, provided that
+                                they are the owner of the data or have permission to distribute it.
+                                The Software is protected by international copyright treaty
+                                provisions. No person may remove any copyright or other proprietary
+                                notice from the software nor reverse engineer, decompile, or
+                                disassemble the software. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
+                                WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+                                TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+                                PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+                                COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+                                ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+                                OR OTHER DEALINGS IN THE SOFTWARE.</string>
+
+    <!-- Logging -->
+    <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
+    <string name="logging_item_date">Date</string>
+    <string name="logging_item_type">Type</string>
+    <plurals name="logging_numSlides">
+        <item quantity="one">Slide</item>
+        <item quantity="other">Slides</item>
+    </plurals>
+
+    <!-- Snackbar Messages -->
+    <string name="overwrite">Overwrite</string>
+
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="remote_phases_menu_array">
+        <item>@string/learn_title</item>
+        <item>@string/translate_revise_title</item>
+        <item>@string/community_work_title</item>
+        <item>@string/whole_story_title</item>
+        <item>@string/back_translation_title</item>
+        <item>@string/remote_check_title</item>
+        <item>@string/voice_studio_title</item>
+        <item>@string/finalize_title</item>
+        <item>@string/share_title</item>
+    </string-array>
+</resources>
