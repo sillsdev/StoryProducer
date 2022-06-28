@@ -380,7 +380,8 @@ open class RegistrationActivity : AppCompatActivity() {
         js["TrainerPhone"] = reg.getString("trainer_phone", " ")
 
         Log.i("LOG_VOLLEY", js.toString())
-        val req = object : StringRequest(Request.Method.POST, getString(R.string.url_register_phone), Response.Listener { response ->
+        val registerPhoneUrl = Workspace.getRoccUrlPrefix(this) + getString(R.string.url_register_phone)
+        val req = object : StringRequest(Request.Method.POST, registerPhoneUrl, Response.Listener { response ->
             Log.i("LOG_VOLEY", response)
             resp = response
         }, Response.ErrorListener { error ->

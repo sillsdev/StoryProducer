@@ -8,12 +8,14 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.preference.PreferenceManager
 import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 import java.io.File
@@ -137,6 +139,15 @@ object Workspace {
     get(){
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
+    }
+
+    fun getRoccUrlPrefix(context: Context): String {
+        return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+            PreferenceManager.getDefaultSharedPreferences(context).getString("ROCC_URL_PREFIX", BuildConfig.ROCC_URL_PREFIX)
+                ?: BuildConfig.ROCC_URL_PREFIX
+        } else {
+            BuildConfig.ROCC_URL_PREFIX
+        }
     }
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
@@ -394,7 +405,7 @@ object Workspace {
     fun buildPhases(): List<Phase> {
         //update phases based upon registration selection
         return when(registration.getString("consultant_location_type")) {
-            "remote" -> Phase.getRemotePhases()
+            "Remote" -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
     }

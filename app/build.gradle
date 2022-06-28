@@ -64,6 +64,10 @@ android {
             // release number shows up in the firebase website (get mixed SPadvance and SP crashes
             // showing up
             resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+            buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
+            buildConfigField "String", "ROCC_WEBSOCKETS_PREFIX", ROCC_WEBSOCKETS_PREFIX
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", "false"
+            resValue "bool", "enable_in_app_rocc_url_setting", "false"
         }
         // dkh - 5/3/21  - These changes came  from Chris Hubbard (pull request 568)
         // Updated applicationIdSuffix to allow debug versions of app crashes to be captured separate from
@@ -80,6 +84,10 @@ android {
             // release number shows up in the firebase website (get mixed SPadvance and SP crashes
             // showing up
             resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+            buildConfigField "String", "ROCC_URL_PREFIX", ROCC_URL_PREFIX
+            buildConfigField "String", "ROCC_WEBSOCKETS_PREFIX", ROCC_WEBSOCKETS_PREFIX
+            buildConfigField "Boolean", "ENABLE_IN_APP_ROCC_URL_SETTING", "false"
+            resValue "bool", "enable_in_app_rocc_url_setting", "false"
         }
         continuous {
             initWith release
