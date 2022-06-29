@@ -15,8 +15,12 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.messaging.Approval
@@ -26,9 +30,11 @@ import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
+import java.net.URI
+import java.net.URISyntaxException
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
@@ -151,6 +157,8 @@ object Workspace {
     val queuedMessages = ArrayDeque<MessageROCC>()
     val messageChannel = BroadcastChannel<MessageROCC>(30)
     val toSendMessageChannel = Channel<MessageROCC>(100)
+    var messageClient: MessageWebSocketClient? = null
+    var lastReceivedTimeSent = Timestamp(0)
 
     fun getRoccUrlPrefix(context: Context): String {
         return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
@@ -161,16 +169,109 @@ object Workspace {
         }
     }
 
+    fun getRoccWebSocketsUrl(context: Context): String {
+        var baseUrl = if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
+            PreferenceManager.getDefaultSharedPreferences(context).getString("WEBSOCKETS_URL", BuildConfig.ROCC_WEBSOCKETS_PREFIX)
+                ?: BuildConfig.ROCC_WEBSOCKETS_PREFIX
+        } else {
+            BuildConfig.ROCC_WEBSOCKETS_PREFIX
+        }
+        val projectId = Secure.getString(context.contentResolver, Secure.ANDROID_ID)
+        Log.e("@pwhite", "Getting websocket URL: $baseUrl/phone/$projectId")
+        return "$baseUrl/phone/$projectId"
+    }
+
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     val WORKSPACE_KEY = "org.sil.storyproducer.model.workspace"
 
-    fun initializeWorkspace(activity: Activity) {
+    fun initializeWorkspace(context: Context) {
         //first, see if there is already a workspace in shared preferences
-        prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
+        prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
+        setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
-        firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
+        firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
+        GlobalScope.launch {
+            for (message in messageChannel.openSubscription()) {
+                messages.add(message)
+                if (message.timeSent > lastReceivedTimeSent) {
+                    lastReceivedTimeSent = message.timeSent
+                }
+            }
+        }
+        GlobalScope.launch {
+            for (approval in approvalChannel.openSubscription()) {
+                for (story in Stories) {
+                    if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
+                        story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
+                    }
+                }
+                if (approval.timeSent > lastReceivedTimeSent) {
+                    lastReceivedTimeSent = approval.timeSent
+                }
+            }
+        }
+        GlobalScope.launch {
+            for (message in toSendMessageChannel) {
+                try {
+                    val js = messageToJson(message)
+                    messageClient!!.send(js.toString(2))
+                } catch (e: Exception) {
+                    queuedMessages.add(message)
+                }
+            }
+        }
+        GlobalScope.launch {
+            var hasSentCatchupMessage = false
+            val reconnect: () -> Unit = {
+                hasSentCatchupMessage = false
+                val oldClient = messageClient
+                if (oldClient != null) {
+                    oldClient.close()
+                }
+                Log.e("@pwhite", "Restarting websocket.")
+                val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                newClient.connectBlocking()
+                messageClient = newClient
+            }
+            while (true) {
+                try {
+                    if (messageClient?.isOpen != true) {
+                        reconnect()
+                    }
+                    if (!hasSentCatchupMessage) {
+                        val js = JSONObject()
+                        js.put("type", "catchup")
+                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        js.put("since", df.format(lastReceivedTimeSent))
+                        messageClient!!.send(js.toString(2))
+                        hasSentCatchupMessage = true
+                    }
+                    val nextQueuedMessage = queuedMessages.peek()
+                    if (nextQueuedMessage != null) {
+                        val js = messageToJson(nextQueuedMessage)
+                        messageClient!!.send(js.toString(2))
+                        queuedMessages.remove()
+                    }
+                } catch (ex: Exception) {
+                    Log.e("@pwhite", "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket.")
+                    ex.printStackTrace();
+                    reconnect()
+                    delay(5000)
+                }
+            }
+        }
+    }
+
+    fun messageToJson(m: MessageROCC): JSONObject {
+        val js = JSONObject()
+        js.put("type", "text")
+        js.put("isTranscript", m.isTranscript)
+        js.put("slideNumber", m.slideNumber)
+        js.put("storyId", m.storyId)
+        js.put("text", m.message)
+        return js
     }
 
     fun setupWorkspacePath(context: Context, uri: Uri) {
@@ -482,5 +583,3 @@ object Workspace {
     }
 
 }
-
-

@@ -40,7 +40,6 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     private var refPlaybackDuration = 0
     private var wasAudioPlaying = false
 
-
     protected var slideNum: Int = 0 //gets overwritten
     protected lateinit var slide: Slide
     protected lateinit var phaseType: PhaseType
@@ -52,6 +51,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
             slideNum = this.arguments!!.getInt(SLIDE_NUM)
             viewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
             slide = Workspace.activeStory.slides[slideNum]
+            phaseType = Workspace.phases[Workspace.activePhaseIndex].phaseType
         } catch (ex: Exception) {
             Timber.e(ex)
         }

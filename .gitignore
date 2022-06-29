@@ -12,3 +12,4 @@
 # putting these files in the root directory. We don't want them checked in.
 /keystore.properties
 /*.jks
+app/local.properties
