@@ -15,8 +15,13 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.model.messaging.Approval
+import org.sil.storyproducer.model.messaging.Message
+import org.sil.storyproducer.model.messaging.MessageROCC
 import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
@@ -80,6 +85,7 @@ object Workspace {
     var termToWordLinkMap: MutableMap<String, WordLink> = mutableMapOf()
     var termFormToTermMap: MutableMap<String, String> = mutableMapOf()
     var WLSTree = WordLinkSearchTree()
+    val approvalChannel = BroadcastChannel<Approval>(30)
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -140,6 +146,11 @@ object Workspace {
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
+
+    val messages = ArrayList<MessageROCC>()
+    val queuedMessages = ArrayDeque<MessageROCC>()
+    val messageChannel = BroadcastChannel<MessageROCC>(30)
+    val toSendMessageChannel = Channel<MessageROCC>(100)
 
     fun getRoccUrlPrefix(context: Context): String {
         return if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {

@@ -2,12 +2,20 @@ package org.sil.storyproducer.model
 
 import android.graphics.Rect
 import android.net.Uri
+import android.text.Layout
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.ToJson
+import org.sil.storyproducer.tools.media.graphics.TextOverlay
+import java.text.SimpleDateFormat
 import java.util.*
 
+enum class UploadState {
+    UPLOADING,
+    NOT_UPLOADED,
+    UPLOADED
+}
 /**
  * This class contains metadata pertinent to a given slide from a story template.
  */
@@ -17,7 +25,10 @@ class Slide{
     // This extension is used on a local image from the camera tool
     val localSlideExtension = "_Local.png"
     // template information
+    var isApproved: Boolean = false
+
     var slideType: SlideType = SlideType.NUMBEREDPAGE
+    var narration: Recording? = null
     var narrationFile = ""
     var title = ""
     var subtitle = ""
@@ -25,6 +36,7 @@ class Slide{
     var content = ""
     var imageFile = ""
     var textFile = ""
+    val simpleContent: String = ""
 
     //TODO initialize to no crop and no motion from picture size
     var width: Int = 0
@@ -38,6 +50,9 @@ class Slide{
 
     //translated text
     var translatedContent: String = ""
+
+    var draftRecordings = RecordingList()
+    var backTranslationRecordings = RecordingList()
 
     @Json(name="draftAudioFiles")
     var translateReviseAudioFiles: MutableList<String> = ArrayList()
@@ -55,12 +70,37 @@ class Slide{
     var backTranslationAudioFiles: MutableList<String> = ArrayList()
     @Json(name="chosenBackTranslationFile")
     var chosenBackTranslationFile = ""
+    var backTranslationUploadState = UploadState.NOT_UPLOADED
 
     //consultant approval
     var isChecked: Boolean = false
 
     fun isFrontCover() = slideType == SlideType.FRONTCOVER
     fun isNumberedPage() = slideType == SlideType.NUMBEREDPAGE
+
+    fun getOverlayText(dispStory: Boolean = false, origTitle: Boolean = false) : TextOverlay? {
+        //There is no text overlay on normal slides or "no slides"
+        if(!dispStory){
+            if(slideType in arrayOf(SlideType.NUMBEREDPAGE, SlideType.NONE )) return null
+        }
+        val tOverlay = when(slideType) {
+            SlideType.FRONTCOVER -> if (origTitle) TextOverlay(simpleContent) else TextOverlay(translatedContent)
+            SlideType.LOCALCREDITS -> TextOverlay("$translatedContent\n" +
+                    "This video is licensed under a Creative Commons Attribution" +
+                    "-NonCommercial-ShareAlike 4.0 International License " +
+                    "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}")
+            else -> TextOverlay(translatedContent)
+        }
+        val fontSize : Int = when(slideType){
+            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
+            SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 16
+        }
+        tOverlay.setFontSize(fontSize)
+        if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
+            tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+        return tOverlay
+    }
 
     companion object
 }

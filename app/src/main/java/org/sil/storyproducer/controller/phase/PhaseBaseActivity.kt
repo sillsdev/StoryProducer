@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.phase
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -21,16 +22,15 @@ import androidx.core.view.GravityCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.model.Phase
-import org.sil.storyproducer.model.Story
-import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.model.toJson
+import org.sil.storyproducer.model.*
 import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
 import kotlin.math.max
+import org.sil.storyproducer.tools.file.genDefaultImage
+import org.sil.storyproducer.tools.file.getStoryImage
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
@@ -301,6 +301,40 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     }
 
     companion object {
+
+        /**
+         * This function allows the picture to scale with the phone's screen size.
+         *
+         * @param slideImage    The ImageView that will contain the picture.
+         * @param slideNumber The slide number to grab the picture from the files.
+         */
+        fun setPic(context: Context, slideImage: ImageView, slideNumber: Int) {
+            val downSample = 2
+            var slidePicture: Bitmap = getStoryImage(context, slideNumber, downSample)
+                ?: genDefaultImage()
+
+            if (slideNumber < Workspace.activeStory.slides.size) {
+                //scale down image to not crash phone from memory error from displaying too large an image
+                //Get the height of the phone.
+                val scalingFactor = 0.4
+                val height = (context.resources.displayMetrics.heightPixels * scalingFactor).toInt()
+                val width = context.resources.displayMetrics.widthPixels
+
+                slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
+                slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+                val canvas = Canvas(slidePicture)
+                //only show the untranslated title in the Learn phase.
+                val tOverlay = Workspace.activeStory.slides[slideNumber]
+                    .getOverlayText(false, Workspace.activeStory.lastPhaseType == PhaseType.LEARN)
+                //if overlay is null, it will not write the text.
+                tOverlay?.setPadding(max(20, 20 + (canvas.width - width) / 2))
+                tOverlay?.draw(canvas)
+            }
+            //Set the height of the image view
+            slideImage.requestLayout()
+
+            slideImage.setImageBitmap(slidePicture)
+        }
 
         fun disableViewAndChildren(view: View) {
             view.isEnabled = false

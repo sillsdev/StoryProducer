@@ -191,6 +191,11 @@
     <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>
     <string name="voice_studio_edit_title_text_hint">Write story title to show for all videos made.</string>
 
+    <!-- Draft Phase -->
+    <string name="draft_playback_no_lwc_audio">Could not find narration audio</string>
+    <string name="draft_playback_lwc_audio">Playing narration audio</string>
+    <string name="draft_play_narration_audio">Play narration audio</string>
+
     <!-- Share Phase -->
     <string name="delete_video_title">Delete Video file?</string>
     <string name="delete_video_message">Do you want to delete this video?</string>

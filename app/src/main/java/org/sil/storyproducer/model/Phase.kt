@@ -289,5 +289,18 @@ class Phase (val phaseType: PhaseType) {
         fun getHelpDocFile(phase: PhaseType) : String {
             return "${phase.name.toLowerCase()}.html"
         }
+
+        fun getReferenceRecording(slideNumber: Int = Workspace.activeStory.lastSlideNum, phaseType: PhaseType): Recording? {
+            val slide = Workspace.activeStory.slides[slideNumber]
+            return when (phaseType) {
+                PhaseType.TRANSLATE_REVISE -> slide.narration
+                PhaseType.COMMUNITY_WORK,
+                PhaseType.ACCURACY_CHECK,
+                PhaseType.VOICE_STUDIO,
+                PhaseType.BACK_T -> slide.draftRecordings.selectedFile
+                PhaseType.REMOTE_CHECK -> slide.draftRecordings.selectedFile
+                else -> throw Exception("Unsupported stage to get a reference audio file for")
+            }
+        }
     }
 }

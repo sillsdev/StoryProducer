@@ -3,10 +3,13 @@ package org.sil.storyproducer.tools.file
 
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import android.util.LruCache
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Story
@@ -44,6 +47,43 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
     }
+}
+
+
+fun getStoryImage(context: Context, slideNumber: Int = Workspace.activeStory.lastSlideNum, sampleSize: Int = 1, story: Story = Workspace.activeStory): Bitmap? {
+    return if (story.title == "" || slideNumber == story.slides.size) {
+        null
+    } else {
+        getStoryImage(context, story.slides[slideNumber].imageFile, sampleSize, false, story)
+    }
+}
+
+var storyImageCache = LruCache<String, Bitmap>(30)
+var storyImageCacheState = HashSet<String>()
+
+fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap? {
+    val cacheString = "${story.title}:$useAllPixels:$sampleSize:$relPath"
+    var bmp = storyImageCache.get(cacheString)
+    if (!storyImageCacheState.contains(cacheString)) {
+        storyImageCacheState.add(cacheString)
+        val iStream = getStoryChildInputStream(context, relPath, story.title)
+        if (iStream == null || iStream.available() == 0) {
+            return null
+        }
+        val options = BitmapFactory.Options()
+        options.inSampleSize = sampleSize
+        if (useAllPixels) options.inTargetDensity = 1
+        bmp = BitmapFactory.decodeStream(iStream, null, options)!!
+        if (useAllPixels) bmp.density = Bitmap.DENSITY_NONE
+        storyImageCache.put(cacheString, bmp)
+    }
+    return bmp
+}
+
+fun genDefaultImage(): Bitmap {
+    val pic = Bitmap.createBitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT, Bitmap.Config.ARGB_8888)
+    pic!!.eraseColor(Color.DKGRAY)
+    return pic
 }
 
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){

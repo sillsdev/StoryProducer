@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/unread_messages_divider_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/divider_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="internet seems to be gone - messages will be sent when internet connection is regained"
+        android:textColor="#ffffff" />
+
+    <View
+       android:layout_width="match_parent"
+       android:layout_height="1dp"
+       android:layout_centerVertical="true"
+       android:layout_marginLeft="16dp"
+       android:layout_toLeftOf="@id/divider_text"
+       android:background="#ff0000" />
+       
+    <View
+       android:layout_width="match_parent"
+       android:layout_height="1dp"
+       android:layout_centerVertical="true"
+       android:layout_marginRight="16dp"
+       android:layout_toRightOf="@id/divider_text"
+       android:background="#ff0000" />
+
+</RelativeLayout>

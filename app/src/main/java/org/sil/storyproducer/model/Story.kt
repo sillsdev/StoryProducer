@@ -48,6 +48,7 @@ class Story(var title: String, var slides: List<Slide>){
     var outputVideos: MutableList<String> = ArrayList()
     var lastPhaseType: PhaseType = PhaseType.LEARN
     var lastSlideNum: Int = 0
+    var remoteId: Int? = null
     var importAppVersion = ""
     var localCredits = ""
 
