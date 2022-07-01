@@ -215,7 +215,7 @@
     <string name="backTranslation_play_draft">Play translated draft</string>
     <string name="backTranslation_no_backT_found">No Back Translation Found</string>
     <string name="backTranslation_record_file_backT_name">Back Translation %1$d</string>
-    <string name="backTranslation_hint">Message for consultant&#8230;</string>
+    <string name="backTranslation_hint">If requested, write a back translation here.&#8230;</string>
 
     <!-- Remote Check Phase -->
     <string name="remote_check_title">Remote Check</string>
