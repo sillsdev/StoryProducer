@@ -33,12 +33,13 @@ import org.sil.storyproducer.model.messaging.Approval
 import org.sil.storyproducer.model.messaging.Message
 import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import org.sil.storyproducer.controller.dramatization.DramatizationRecordingToolbar
+import org.sil.storyproducer.model.messaging.MessageROCC
 import java.util.*
 //Code copied from the ROCC version of the app
 
 class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
-    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar()
+    override var recordingToolbar: RecordingToolbar = DramatizationRecordingToolbar() //This toolbar is specific to the slide-tellback
 
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
@@ -53,7 +54,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 //apparently this function might not be needed        onCreateView() // Also check the comment on why CU used initializeViews() instead
         setPic(rootView?.findViewById<View>(R.id.fragment_image_view) as ImageView) //uncertain if this line is correct
 
-/*
+
         val whiteSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_white_24dp, null)!!
         val blackSendIcon = VectorDrawableCompat.create(resources, R.drawable.ic_send_black_24dp, null)!!
         val sendTranscriptButton: Button = rootView.findViewById(R.id.send_transcript_button)
@@ -76,7 +77,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             val text = transcriptEditText.text.toString()
             if (text.length > 0 && slide.backTranslationTranscriptIsDirty) {
                 val storyId = Workspace.activeStory.remoteId ?: 0
-                val message = Message(slideNumber, storyId, false, true, Timestamp(0), text)
+                val message = MessageROCC(slideNum, storyId, false, true, Timestamp(0), text)
                 launch {
                     Workspace.toSendMessageChannel.send(message)
                 }
@@ -109,20 +110,20 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             { slide.backTranslationUploadState },
             { slide.backTranslationUploadState = it },
             { slide.backTranslationRecordings.selectedFile },
-            slideNumber)
+            slideNum)
 
         approvalIndicatorManager = ApprovalIndicatorManager(
             context!!,
             this,
             rootView.findViewById(R.id.slide_approved_indicator),
             slide,
-            slideNumber)
-        */
+            slideNum)
+
         setToolbar() //<---- This brings up the audio recording bar
 
         return rootView
     }
-/*
+
     override fun onStart() {
         super.onStart()
 
@@ -148,5 +149,5 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             uploadAudioButtonManager.refreshBackground()
         }
     }
-*/
+
 }

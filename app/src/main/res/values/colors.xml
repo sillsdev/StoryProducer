@@ -29,6 +29,8 @@
     <color name="remote_check_phase">#551a8b</color>
     <color name="messagingBkrd">#8e8e93</color>
     <color name="messagingSecondary">#ceced2</color>
+    <color name="transcript_sent">#d3d3d3</color>
+    <color name="transcript_dirty">#ffffff</color>
 
     <color name="story_list_in_progress">@color/primary</color>
     <color name="story_list_completed">@color/darkGray</color>

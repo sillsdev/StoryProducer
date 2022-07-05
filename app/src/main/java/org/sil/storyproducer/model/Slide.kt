@@ -71,6 +71,8 @@ class Slide{
     @Json(name="chosenBackTranslationFile")
     var chosenBackTranslationFile = ""
     var backTranslationUploadState = UploadState.NOT_UPLOADED
+    var backTranslationTranscript: String? = null
+    var backTranslationTranscriptIsDirty = false
 
     //consultant approval
     var isChecked: Boolean = false
