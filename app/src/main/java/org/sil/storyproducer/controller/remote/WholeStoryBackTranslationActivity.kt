@@ -1,14 +1,11 @@
 package org.sil.storyproducer.controller.remote
 
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
-import androidx.core.content.res.ResourcesCompat
-import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -16,13 +13,13 @@ import org.sil.storyproducer.model.SlideType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLearnLog
+import org.sil.storyproducer.tools.file.getChosenFilename
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.min
 
 /**
@@ -170,7 +167,10 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                 if(i-1 != curPos){
                     curPos = i-1
                     setPic(learnImageView!!, curPos)
-                    narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].chosenTranslateReviseFile)
+                    var path = Workspace.activeStory.slides[curPos].chosenTranslateReviseFile
+                    val split: Array<String> = path.split("|").toTypedArray()
+                    val filename = split[1]
+                    narrationPlayer.setStorySource(this, filename)
                 }
                 break
             }
