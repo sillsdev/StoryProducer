@@ -151,6 +151,7 @@ fun createRecordingCombinedName() : String {
         PhaseType.TRANSLATE_REVISE,
         PhaseType.WORD_LINKS,
         PhaseType.COMMUNITY_WORK,
+        PhaseType.BACK_T,
         PhaseType.VOICE_STUDIO,
         PhaseType.ACCURACY_CHECK -> {
             //find the next number that is available for saving files at.
@@ -195,6 +196,10 @@ fun addCombinedName(name:String){
         PhaseType.TRANSLATE_REVISE ->{
             Workspace.activeSlide!!.translateReviseAudioFiles.add(0,name)
             Workspace.activeSlide!!.chosenTranslateReviseFile = name
+        }
+        PhaseType.BACK_T -> {
+            Workspace.activeSlide!!.backTranslationAudioFiles.add(0,name)
+            Workspace.activeSlide!!.chosenBackTranslationFile = name
         }
         PhaseType.VOICE_STUDIO -> {
             Workspace.activeSlide!!.voiceStudioAudioFiles.add(0, name)
