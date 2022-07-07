@@ -28,7 +28,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     private var enableSendAudioButton : Boolean = false
 
     private var isAppendingOn = false
-    private val audioTempName = getTempAppendAudioRelPath() //may need to change this
+    private val audioTempName = getTempAppendAudioRelPath() //Temporary audio file path
 
     override fun onPause() {
         isAppendingOn = false
@@ -44,7 +44,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
         rootView?.addView(toolbarButtonSpace())
 
-        sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1)
+        sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1) //probably need to remove this or re-adapt functionality
         if(enableSendAudioButton) {
             rootView?.addView(sendAudioButton)
 
