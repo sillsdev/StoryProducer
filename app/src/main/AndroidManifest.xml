@@ -64,7 +64,7 @@
             android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".controller.WorkspaceUpdateActivity"
+            android:name=".controller.remote.WholeStoryBackTranslationActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activities.WelcomeDialogActivity"
@@ -72,9 +72,6 @@
         <!-- Learn -->
         <activity
             android:name=".controller.learn.LearnActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".controller.remote.WholeStoryBackTranslationActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
