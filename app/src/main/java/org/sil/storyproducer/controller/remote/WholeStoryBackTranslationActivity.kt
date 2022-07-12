@@ -169,8 +169,12 @@ class WholeStoryBackTranslationActivity : PhaseBaseActivity(), PlayBackRecording
                     setPic(learnImageView!!, curPos)
                     var path = Workspace.activeStory.slides[curPos].chosenTranslateReviseFile
                     val split: Array<String> = path.split("|").toTypedArray()
-                    val filename = split[1]
-                    narrationPlayer.setStorySource(this, filename)
+                    try {
+
+                        val filename = split[1]
+                        narrationPlayer.setStorySource(this, filename)
+
+                    } catch(e: Exception) {} //does nothing if there is no filename. More specifically, there needs to be an audio file for translate+revise slide 0 for the program to work
                 }
                 break
             }
