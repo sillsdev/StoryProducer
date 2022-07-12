@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/gray"
     tools:context="org.sil.storyproducer.controller.remote.BackTranslationFrag">
-    <!-- WARNING: ANDROID ID'S ARE NOT CORRECT YET!!!!! -->
+    <!-- WARNING: ANDROID ID'S MAY NOT BE CORRECT!!!!! -->
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="wrap_content"
