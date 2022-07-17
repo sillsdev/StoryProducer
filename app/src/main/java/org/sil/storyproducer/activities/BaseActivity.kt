@@ -148,7 +148,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         AlertDialog.Builder(this)
                 .setTitle(buildSelectTemplatesTitle())
                 .setMessage(buildSelectTemplatesMessage())
-                .setPositiveButton(R.string.ok) { _, _ -> updateTemplatesFolder() }
+                .setPositiveButton(R.string.next) { _, _ -> updateTemplatesFolder() }
                 .setNegativeButton(R.string.cancel, null)
                 .create()
                 .show()
