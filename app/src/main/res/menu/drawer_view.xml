@@ -15,7 +15,7 @@
             android:title="@string/title_activity_wordlink_list" />
         <item
             android:id="@+id/nav_workspace"
-            android:title="@string/update_workspace" />
+            android:title="@string/select_workspace_folder" />
         <item
             android:id="@+id/nav_demo"
             android:title="@string/copy_demo" />

@@ -70,7 +70,7 @@ class WelcomeDialogActivity : BaseActivity() {
         // to the Workspace object.  A place holder string was placed in the "Welcome Screen" html,
         // so, update the place holder string with the actual URL before we display the
         // "Welcome Screen" to the user.
-        val message = getString(R.string.welcome_screen_select_template_folder).
+        val message = getString(R.string.welcome_screen_msg).
             replace(Regex(Workspace.URL_FOR_TEMPLATES_PLACE_HOLDER), Workspace.URL_FOR_TEMPLATES)
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(message, 0)
