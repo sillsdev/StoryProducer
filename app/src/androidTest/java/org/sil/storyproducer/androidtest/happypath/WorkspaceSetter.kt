@@ -161,13 +161,13 @@ class WorkspaceSetter {
 
             // If the welcome dialog does not display, then the workspace has already been initialized.
             // This means, that we need to ensure that the workspace is set to the testing directory
-            val welcomeScreenButton = onView(withId(R.id.select_templates_button))
-            if(welcomeScreenButton.isNotDisplayed()) {
+            val nextButton = onView(withId(R.id.next_button))
+            if(nextButton.isNotDisplayed()) {
                 return
             }
 
-            // Select the "Select Location" button
-            onView(withId(R.id.select_templates_button))
+            // Select the "Next" button
+            onView(withId(R.id.next_button))
                     .inRoot(isDialog())
                     .check(matches(isDisplayed()))
                     .perform(click())
@@ -175,8 +175,8 @@ class WorkspaceSetter {
             // 09/02/2021 - DKH: Update for Testing Abstraction #566
             // Added "device.wait" which allows menu to popup before searching for a menu pick.
             // Encountered intermittent failures due to searching for the object before the object appeared
-            device.wait(Until.hasObject(By.res("android:id/button1").text("OK")), TIMEOUT_DURATION)
-            device.findObject(By.res("android:id/button1").text("OK")).click()
+            device.wait(Until.hasObject(By.res("android:id/button1").text("NEXT")), TIMEOUT_DURATION)
+            device.findObject(By.res("android:id/button1").text("NEXT")).click()
             device.wait(Until.hasObject(By.desc("More options")), TIMEOUT_DURATION)
             device.findObject(By.desc("More options")).click()
 

@@ -37,10 +37,10 @@
                 android:textSize="12sp" />
 
             <Button
-                android:id="@+id/select_templates_button"
+                android:id="@+id/next_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/update_workspace"
+                android:text="@string/next"
                 android:textAlignment="center" />
         </LinearLayout>
 

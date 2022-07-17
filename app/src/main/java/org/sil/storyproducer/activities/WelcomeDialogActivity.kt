@@ -41,8 +41,8 @@ class WelcomeDialogActivity : BaseActivity() {
             errorToast.show()
         }
 
-        val selectTemplatesButton = view.findViewById<Button>(R.id.select_templates_button);
-        selectTemplatesButton.setOnClickListener {
+        val nextButton = view.findViewById<Button>(R.id.next_button);
+        nextButton.setOnClickListener {
             showSelectTemplatesFolderDialog()
             welcomeDialog.dismiss()
         }
