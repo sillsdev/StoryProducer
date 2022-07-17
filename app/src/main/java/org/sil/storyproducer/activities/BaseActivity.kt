@@ -155,7 +155,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     private fun buildSelectTemplatesTitle(): Spanned {
-        val title = "<b>${getString(R.string.update_workspace)}</b>"
+        val title = "<b>${getString(R.string.select_workspace_folder)}</b>"
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(title,0)
         } else {
@@ -163,7 +163,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     private fun buildSelectTemplatesMessage(): Spanned {
-        val message = getString(R.string.workspace_selection_help)
+        val message = getString(R.string.select_workspace_help_msg)
         return if (Build.VERSION.SDK_INT >= 24) {
             Html.fromHtml(message, 0)
         } else {

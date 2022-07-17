@@ -109,7 +109,7 @@
     <string name="stories_not_found_completed">There are no completed stories.</string>
     <!--  Issue #571, for welcome_screen_select_template_folder, replace template URL with a place holder. Move URL to workspace object -->
     <!--not currently using: download story templates from &lt;a href="URL_FOR_TEMPLATES_PLACE_HOLDER">HERE&lt;/a> -->
-    <string name="welcome_screen_select_template_folder">
+    <string name="welcome_screen_msg">
         Story Producer is different from typical apps.
         You will need to follow
         &lt;a href="https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit">these instructions&lt;/a>
@@ -117,7 +117,7 @@
         and download the Story Templates into that folder.&lt;br>&lt;br>
         After you have completed the instructions, come back to this screen and proceed:
     </string>
-    <string name="workspace_selection_help">
+    <string name="select_workspace_help_msg">
         &lt;font color=\"gray\">The objective in what follows is to tell Story Producer where to find the story templates.&lt;/font>&lt;br>&lt;br>
         The next screen allows you to pick a folder.&lt;br>
         In that screen you will need to Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder.&lt;br>
@@ -288,7 +288,7 @@
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
-    <string name="update_workspace">Select \'SP Templates\' folder</string>
+    <string name="select_workspace_folder">Select \'SP Templates\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
     <string name="more_templates">Download More Templates</string>
