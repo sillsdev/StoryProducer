@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings.Secure
+import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -23,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.text.HtmlCompat.fromHtml
 import androidx.core.view.GravityCompat
 import com.android.volley.Request
 import com.android.volley.Response
@@ -490,13 +492,13 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     /**
-     * Creates an alert dialog asking if the user wants to exit registration (without saving)
+     * Creates an alert dialog asking if the user wants to exit registration (without submitting)
      * If they respond yes, finish activity or send them back to MainActivity
      */
     private fun showExitAlertDialog() {
         val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_exit_title))
-                .setMessage(getString(R.string.registration_exit_message))
+                .setMessage(fromHtml(getString(R.string.registration_exit_message),0))
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
@@ -513,16 +515,21 @@ open class RegistrationActivity : AppCompatActivity() {
     private fun showSkipAlertDialog() {
         val dialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.registration_skip_title))
-                .setMessage(getString(R.string.registration_skip_message))
-                .setNegativeButton(getString(R.string.no), null)
-                .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
-                    //clicks on the splash screen
+                .setMessage(fromHtml(getString(R.string.registration_skip_message),0))
+                .setNegativeButton(getString(R.string.registration_now), null)
+                .setPositiveButton(getString(R.string.registration_later)) { _, _ ->
+                    //TODO flush all click event prior to showing the registration screen so that this
+                    // is not invoked if the user inadvertently clicks on the splash screen
                     startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                     finish()
                 }.create()
 
         dialog.show()
+    }
+
+    private fun exitRegistrationActivity(){
+        startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+        finish()
     }
 
     /**
