@@ -1,0 +1,14 @@
+/* *** DO NOT EDIT! ***   These styles are controlled by the Settings dialog box in Bloom. */
+/* They may be over-ridden by rules in customCollectionStyles.css or customBookStyles.css */
+
+.numberedPage::after
+{
+ font-family: '';
+ direction: ltr;
+}
+
+[lang='en']
+{
+ font-family: '';
+ direction: ltr;
+}

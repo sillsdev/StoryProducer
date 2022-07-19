@@ -24,11 +24,10 @@ import java.util.*
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
-internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
+internal const val DEMO_FOLDER = "000 Unlocked demo"
 internal const val PHASE = "Phase"
 
 internal const val WORD_LINKS_DIR = "wordlinks"
-internal const val WORD_LINKS_CSV = "wordlinks.csv"
 internal const val WORD_LINKS_JSON_FILE = "wordlinks.json"
 internal const val WORD_LINKS_CLICKED_TERM = "ClickedTerm"
 internal const val WORD_LINKS_SLIDE_NUM = "CurrentSlideNum"
@@ -201,7 +200,7 @@ object Workspace {
             // The WordLinks Directory exists, so,  see if we can find a csv file
             // CSV files start with the substring "wordlinks" and ends with ".csv"
             // scan all the files in the wordlinks directory looking for a valid csv file
-            for (filename in wordLinksDir!!.listFiles()) {
+            for (filename in wordLinksDir.listFiles()) {
                 // look for a wordlinks csv file
                 if((filename.name)?.contains(WORD_LINKS_CSV_REGEX)!!){
                     csvFileName = filename.name  // found csv file
@@ -220,8 +219,8 @@ object Workspace {
 
             if(csvFileName != null) {
                 // Process the CSV file, read the Json file, and map the terms
-                importWordLinksFromCSV(context, wordLinksDir!!)
-                importWordLinksFromJsonFiles(context, wordLinksDir!!)
+                importWordLinksFromCSV(context, wordLinksDir)
+                importWordLinksFromJsonFiles(context, wordLinksDir)
                 mapTermFormsToTerms()
                 buildWLSTree()
             }
@@ -313,12 +312,19 @@ object Workspace {
         //check if the demo folder already exists in the Workspace.  If not, add the demo
         if (!workspaceRelPathExists(context,DEMO_FOLDER)) {
             val assetManager = context.assets
-            var files: MutableList<String>? = null
+            var files: MutableList<String>
+            val AUDIO_FOLDER = "audio"
+            var audiofiles: List<String>
             try {
                 files = assetManager.list(DEMO_FOLDER)!!.toMutableList()
+                files.remove(PROJECT_DIR)
+                files.remove(AUDIO_FOLDER)
                 files.add("$PROJECT_DIR/$PROJECT_FILE")
+                audiofiles = assetManager.list("$DEMO_FOLDER/$AUDIO_FOLDER")!!.toList()
+                for(filename in audiofiles)
+                    files.add("$AUDIO_FOLDER/$filename")
             } catch (e: IOException) {
-                Log.e("workspace", "Failed to get demo assets.", e)
+                Log.e("workspace", "SP::Failed to get demo assets.", e)
                 return
             }
             for (filename in files) {
@@ -333,7 +339,7 @@ object Workspace {
                     outstream?.close()
                     instream.close()
                 } catch (e: Exception) {
-                    Log.e("workspace", "Failed to copy demo asset file: $filename", e)
+                    Log.e("workspace", "SP::Failed to copy demo asset file: $filename", e)
                 }
             }
 
