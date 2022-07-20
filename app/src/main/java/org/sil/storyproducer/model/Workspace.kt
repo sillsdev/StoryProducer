@@ -25,6 +25,7 @@ import java.util.*
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo"
+internal const val AUDIO_FOLDER = "audio"
 internal const val PHASE = "Phase"
 
 internal const val WORD_LINKS_DIR = "wordlinks"
@@ -313,7 +314,6 @@ object Workspace {
         if (!workspaceRelPathExists(context,DEMO_FOLDER)) {
             val assetManager = context.assets
             var files: MutableList<String>
-            val AUDIO_FOLDER = "audio"
             var audiofiles: List<String>
             try {
                 files = assetManager.list(DEMO_FOLDER)!!.toMutableList()
@@ -390,7 +390,11 @@ object Workspace {
     }
 
     private fun storyDirectories(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { it.isDirectory }
+        // We don't want the videos and wordlinks folders included in the list of story folders
+        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+        return workdocfile.listFiles().filter {
+            it.isDirectory && (!non_story_folders.contains(it.name))
+        }
     }
 
     private fun storyBloomFiles(): List<DocumentFile> {
@@ -400,8 +404,22 @@ object Workspace {
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
         return unzipIfZipped(context, storyPath, workdocfile.listFiles())
                 ?.let { storyFolder -> pathOf(storyFolder) }
-                ?.let { storyPath -> parseStoryIfPresent(context, storyPath) }
+                ?.let { storyPath1 -> parseStoryIfPresent(context, storyPath1) }
                 ?.let { story -> migrateStory(context, story) }
+        /*  Daniel March and BW figured this is what the lambdas are doing...
+        var unzipped = unzipIfZipped(context, storyPath, workdocfile.listFiles());
+        if(unzipped != null)
+        {
+            var pathUnzipped = pathOf(unzipped);
+            if(pathUnzipped != null)
+            {
+                var story = parseStoryIfPresent(context, pathUnzipped)
+                if (story != null)
+                    return migrateStory(context, story)
+            }
+        }
+        return null
+        */
     }
 
     fun buildPhases(): List<Phase> {
