@@ -209,7 +209,7 @@ fun migrateStory(context: Context, story: Story): Story? {
 
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
-        arrayOf("zip", "bloom", "bloomd").contains(it)
+        arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
     } == true
 }
 
@@ -219,23 +219,25 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
         return file.name
     }
 
-    val name = file.name!!.substringBeforeLast(".","")
-    val sourceFile = File("${context.filesDir}/${file.name!!}")
-    val zipFile = ZipFile(sourceFile.absolutePath)
+    val storyName = file.name!!.substringBeforeLast(".","")
+    val internalFile = File("${context.filesDir}/${file.name!!}")
+    val zipFile = ZipFile(internalFile.absolutePath)
 
     try
     {
-        //copy file to internal files directory to perform the normal "File" opterations on.
+        //copy file to internal files directory to perform the normal "File" operations on.
         val uri = getWorkspaceUri(file.name!!)
-        if(uri != null){copyToFilesDir(context,uri,sourceFile)}
+        if(uri != null){copyToFilesDir(context,uri,internalFile)}
 
-        //Exctract to files/unzip
+        //Extract to files/unzip
         val fileHeaders = zipFile.fileHeaders
 
         val folderNames: MutableList<String> = mutableListOf()
         for (f in existingFolders){
             if(f != null) folderNames.add(f.name ?: continue)
         }
+        // BW not sure why we just made a list of existing folder and file names (folderNames).
+        // Did we hope to check if the new folder name storyName already exists?
 
         val baos = ByteArrayOutputStream()
         val buffer = ByteArray(4192)
@@ -245,7 +247,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
 
             if (storyRelPathExists(context, f.fileName)) continue
 
-            val ostream = getChildOutputStream(context, "$name/${f.fileName}") ?: continue
+            val ostream = getChildOutputStream(context, "$storyName/${f.fileName}") ?: continue
 
             // reading and writing
             val zis = zipFile.getInputStream(f)
@@ -268,8 +270,8 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
     }
     catch(e: Exception) { }
     //delete copied and original zip file to save space
-    sourceFile.delete()
+    internalFile.delete()
     deleteWorkspaceFile(context,file.name!!)
 
-    return name
+    return storyName
 }
