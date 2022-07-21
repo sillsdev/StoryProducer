@@ -40,7 +40,7 @@ class UploadAudioButtonManager(
     val uploadAudioButton: ImageButton, 
     val getUploadState: () -> UploadState, 
     val setUploadState: (UploadState) -> Unit,
-    val getAudioRecording: () -> Recording?,
+    val getAudioRecording: () -> String,
     val slideNumber: Int?
 ) {
 
@@ -64,7 +64,7 @@ class UploadAudioButtonManager(
                         setUploadState(UploadState.UPLOADING)
                         uploadAudioButton.background = uploadingIcon
                         Toast.makeText(context, "Uploading audio", Toast.LENGTH_SHORT).show()
-                        val input = getStoryChildInputStream(context, audioRecording.fileName)
+                        val input = getStoryChildInputStream(context, audioRecording)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
 
