@@ -31,7 +31,6 @@
     <string name="edit_image">edit image</string>
     <string name="edit_text">edit text</string>
 
-
     <!-- Phases -->
     <string name="registration_title">Registration</string>
     <string name="learn_title">Learn</string>
@@ -68,10 +67,13 @@
     <string name="communication_preference_hint">Communication Preference:</string>
     <string name="location_type_hint">Location Type: </string>
     <string name="bypass_button_text">Skip Registration</string>
+    <string name="registration_submit">Submit Registration via…</string>
+
     <!-- Strings for MultiRecordFrag - add photos to story; SP422-->
     <string name="camera_select_from">Select From:</string>
     <string name="camera_revert_title">Revert To The Original Image?</string>
     <string name="camera_revert_message">Do you want to revert to the original image?</string>
+
     <!-- Dialog strings for titles, messages, and buttons -->
     <string name="welcome_to_story_producer">Welcome to Story Producer</string>
     <string name="use_internal_demo">Use internal demo</string>
@@ -80,9 +82,7 @@
     <string name="registration_exit_message">"Are you sure you want to exit registration?
         Your registration will not be submitted."</string>
     <string name="registration_skip_title">Skip Registration?</string>
-    <string name="registration_submit">Submit Registration via…</string>
-    <string name="registration_skip_message">"Are you sure you want to skip registration?&lt;br>
-        Registration helps SIL support you and continue SP development."</string>
+    <string name="registration_skip_message">"Registration helps SIL support you and continue SP development."</string>
     <string name="registration_now">Register Now</string>
     <string name="registration_later">Register Later</string>
     <string name="registration_submit_title">Submit?</string>
@@ -91,7 +91,7 @@
     <string name="registration_error_title">Submission Error</string>
     <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
-    <string name="registration_robin_rempel_email">SPapp_info@sil.org</string>
+    <string name="registration_support_email">SPapp_info@sil.org</string>
     <string name="rename_title">Choose a new name</string><!-- Default instructions on how to enter data -->
     <!-- For Word links, give user more instruction on how to enter the data -->
     <string name="rename_title_wordlinks">Type a back translation or spell the name.</string>
@@ -102,7 +102,7 @@
     <string name="consultant_incorrect_password_message">Incorrect Password</string>
     <string name="affirm_accuracy_check_title">Affirm Accuracy Check</string>
     <string name="affirm_accuracy_check_message">If this is a Bible story, has this story been checked for accuracy by someone with Bible knowledge?</string>
-    <string name="affirm_accuracy_check_NotaBibleStory">(not a Bible story)</string>
+    <string name="affirm_accuracy_check_NotaBibleStory">(this story is not a Bible story)</string>
     <string name="request_accuracy_check_message">Please have someone with Bible knowledge check this story for accuracy.</string>
     <string name="stories_not_found_title">No stories found!</string>
     <string name="stories_not_found_body">No story templates found! The currently selected folder
