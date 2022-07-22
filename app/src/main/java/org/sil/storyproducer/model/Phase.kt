@@ -85,6 +85,7 @@ class Phase (val phaseType: PhaseType) {
      */
     fun getReferenceAudioFile(slideNum: Int = Workspace.activeSlideNum) : String {
         val filename = when (phaseType){
+            PhaseType.WHOLE_STORY -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.COMMUNITY_WORK   -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.BACK_T           -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
@@ -206,6 +207,7 @@ class Phase (val phaseType: PhaseType) {
                 audioFiles
             }
             PhaseType.COMMUNITY_WORK   -> Workspace.activeStory.slides[slideNum].communityWorkAudioFiles
+            PhaseType.WHOLE_STORY   -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             PhaseType.BACK_T           -> Workspace.activeStory.slides[slideNum].backTranslationAudioFiles
             PhaseType.VOICE_STUDIO     -> Workspace.activeStory.slides[slideNum].voiceStudioAudioFiles
             else -> null
@@ -296,6 +298,7 @@ class Phase (val phaseType: PhaseType) {
                 PhaseType.COMMUNITY_WORK,
                 PhaseType.ACCURACY_CHECK,
                 PhaseType.VOICE_STUDIO,
+                PhaseType.WHOLE_STORY -> slide.narration
                 PhaseType.BACK_T -> slide.draftRecordings.selectedFile
                 PhaseType.REMOTE_CHECK -> slide.draftRecordings.selectedFile
                 else -> throw Exception("Unsupported stage to get a reference audio file for")
