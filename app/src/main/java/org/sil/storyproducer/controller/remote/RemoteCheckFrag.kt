@@ -102,7 +102,7 @@ class  RemoteCheckFrag : SlidePhaseFrag(), CoroutineScope by MainScope() {
             rootView.findViewById(R.id.upload_audio_botton),
             { slide.backTranslationUploadState },
             { slide.backTranslationUploadState = it },
-            { slide.backTranslationRecordings.selectedFile },
+            { org.sil.storyproducer.tools.file.getChosenFilename(slideNum) },
             slideNum)
 
         approvalIndicatorManager = ApprovalIndicatorManager(

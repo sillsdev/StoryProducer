@@ -25,6 +25,7 @@ import org.json.JSONObject
 import org.json.JSONException
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.MultiRecordFrag
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.SlideType
@@ -41,6 +42,7 @@ import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
 import org.sil.storyproducer.controller.remote.sendProjectSpecificRequest
 import org.sil.storyproducer.controller.remote.sendSlideSpecificRequest
 import org.sil.storyproducer.controller.remote.getPhoneId
+import org.sil.storyproducer.tools.toolbar.RecordingToolbar
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -62,7 +64,7 @@ import kotlin.text.Charsets.UTF_8
  */
 
 
-class WholeStoryBackTranslationFragment : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
+class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
     class DraftSlide(val slideNumber: Int, val duration: Int, val startTime: Int, val filename: String) {}
 

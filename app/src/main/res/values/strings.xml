@@ -153,11 +153,11 @@
     <string name="queue_status_message_get">No Connection: Cannot Retrieve New Messages</string>
     <string name="queue_status_register">No Connection: Registration Queued for Delivery</string>
     <string name="queue_status_approved">No Connection: Cannot Retrieve Slide Status</string>
-    <string name="url_get_messages">http://10.10.10.248/rocc/API/GetMessages.php</string>
-    <string name="url_send_message">http://10.10.10.248/rocc/API/SendMessage.php</string>
-    <string name="url_request_review">http://10.10.10.248/rocc/API/RequestRemoteReview.php</string>
-    <string name="url_get_slide_status">http://10.10.10.248/rocc/API/GetSlideStatuses.php</string>
-    <string name="url_upload_audio">http://10.10.10.248/rocc/API/UploadSlideBacktranslation.php</string>
+    <string name="url_get_messages">/API/GetMessages.php</string>
+    <string name="url_send_message">/API/SendMessage.php</string>
+    <string name="url_request_review">/API/RequestRemoteReview.php</string>
+    <string name="url_get_slide_status">/API/GetSlideStatuses.php</string>
+    <string name="url_upload_audio">/API/UploadSlideBacktranslation.php</string>
     <string name="url_register_phone">/API/RegisterPhone.php</string>
     <string name="api_token">XUKYjBHCsD6OVla8dYAt298D9zkaKSqd</string>
 

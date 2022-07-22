@@ -9,6 +9,7 @@ import org.sil.storyproducer.controller.translaterevise.TranslateReviseFrag
 import org.sil.storyproducer.controller.voicestudio.VoiceStudioFrag
 import org.sil.storyproducer.controller.remote.RemoteCheckFrag
 import org.sil.storyproducer.controller.remote.BackTranslationFrag
+import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationFrag
 import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.SLIDE_NUM
 import org.sil.storyproducer.model.Workspace
@@ -41,6 +42,9 @@ class PagerAdapter(fm: FragmentManager) : androidx.fragment.app.FragmentStatePag
             }
             PhaseType.BACK_T -> {
                 fragment = BackTranslationFrag()
+            }
+            PhaseType.WHOLE_STORY -> {
+                fragment = WholeStoryBackTranslationFrag()
             }
             PhaseType.REMOTE_CHECK -> {
                 fragment = RemoteCheckFrag()

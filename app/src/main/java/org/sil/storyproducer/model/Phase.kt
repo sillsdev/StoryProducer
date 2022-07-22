@@ -8,7 +8,6 @@ import org.sil.storyproducer.controller.export.FinalizeActivity
 import org.sil.storyproducer.controller.export.ShareActivity
 import org.sil.storyproducer.controller.learn.LearnActivity
 import org.sil.storyproducer.controller.pager.PagerBaseActivity
-import org.sil.storyproducer.controller.remote.WholeStoryBackTranslationActivity
 import org.sil.storyproducer.controller.wordlink.WordLinksActivity
 
 /**
@@ -182,7 +181,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.TRANSLATE_REVISE -> PagerBaseActivity::class.java
             PhaseType.WORD_LINKS       -> WordLinksActivity::class.java
             PhaseType.COMMUNITY_WORK   -> PagerBaseActivity::class.java
-            PhaseType.WHOLE_STORY      -> WholeStoryBackTranslationActivity::class.java
+            PhaseType.WHOLE_STORY      -> PagerBaseActivity::class.java
             PhaseType.BACK_T           -> PagerBaseActivity::class.java
             PhaseType.REMOTE_CHECK     -> PagerBaseActivity::class.java
             PhaseType.ACCURACY_CHECK   -> PagerBaseActivity::class.java
