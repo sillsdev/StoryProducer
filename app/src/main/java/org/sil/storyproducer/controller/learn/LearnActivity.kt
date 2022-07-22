@@ -2,6 +2,7 @@ package org.sil.storyproducer.controller.learn
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
 import android.view.View
@@ -104,8 +105,9 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             //don't play the copyright slides.
             if (s.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)) {
                 numOfSlides++
-                slideDurations.add((MediaHelper.getAudioDuration(this,
-                        getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
+                Log.d("else", (MediaHelper.getAudioDuration(this, getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt().toString())
+                Log.d("else",Story.getFilename(s.narrationFile)!!)
+                slideDurations.add((MediaHelper.getAudioDuration(this, getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
                 slideStartTimes.add(slideStartTimes.last() + slideDurations.last())
             } else {
                 break

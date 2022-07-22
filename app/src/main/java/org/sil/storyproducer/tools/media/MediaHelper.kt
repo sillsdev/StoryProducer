@@ -5,6 +5,7 @@ import android.media.MediaCodec
 import android.media.MediaFormat
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.ShortBuffer
@@ -37,10 +38,13 @@ object MediaHelper {
     fun getAudioDuration(context: Context, uri: Uri): Long {
         val mmr = MediaMetadataRetriever()
         try {
-            mmr.setDataSource(context, uri)
+            Log.d("suss","huh")
+            mmr.setDataSource(context, uri) //fails
+            Log.d("suss","step one")
             val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
             return (Integer.parseInt(durationStr) * 1000).toLong()
         } catch (e: Exception) {
+            Log.d("suss","Audio Duration Exception!")
             //I don't know what happened, but lets not stop everything.
         }
 
