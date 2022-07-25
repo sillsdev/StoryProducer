@@ -89,6 +89,7 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].narrationFile
             PhaseType.COMMUNITY_WORK   -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.BACK_T           -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
+            PhaseType.REMOTE_CHECK     -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.ACCURACY_CHECK   -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             PhaseType.VOICE_STUDIO     -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
             else -> ""
@@ -291,6 +292,7 @@ class Phase (val phaseType: PhaseType) {
             return "${phase.name.toLowerCase()}.html"
         }
 
+        //Currently unused and non-functional
         fun getReferenceRecording(slideNumber: Int = Workspace.activeStory.lastSlideNum, phaseType: PhaseType): Recording? {
             val slide = Workspace.activeStory.slides[slideNumber]
             return when (phaseType) {
