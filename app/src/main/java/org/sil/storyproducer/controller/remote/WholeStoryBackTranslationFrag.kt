@@ -152,21 +152,19 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
         var lastEndTime = 0
         Workspace.activeStory.slides.forEachIndexed { slideNumber, slide ->
             // Don't play the copyright slides.
-            Log.d("suss","baka")
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
-                Log.d("suss","yolo")
 
-                val combinedFilename = Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
-                val split: Array<String> = combinedFilename.split("|").toTypedArray()
-                val filename = split[1]
+                var filename: String? = null
+                try {
+                    val combinedFilename =
+                        Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
+                    val split: Array<String> = combinedFilename.split("|").toTypedArray()
+                    filename = split[1]
+                } catch(e: Exception) {}
 
                 if (filename != null) {
-                    Log.d("suss","null thingy")
-                    Log.d("suss",filename)
                     val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
-                    Log.d("suss", duration.toString())
                     val startTime = lastEndTime
-                    Log.d("suss",startTime.toString())
                     lastEndTime = startTime + duration
                     translatedSlides.add(DraftSlide(slideNumber, duration, startTime, filename))
                 }
@@ -236,13 +234,10 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
     }
 
     private fun setSlideFromSeekbar() {
-        Log.d("suss","setSlideFromSeekbar")
         if (translatedSlides.isNotEmpty()) {
-            Log.d("suss","next step")
             val time = seekBar.progress
             var slideIndexBeforeSeekBar = translatedSlides.indexOfLast { it.startTime <= time }
             if (slideIndexBeforeSeekBar != currentSlideIndex || !draftPlayer.isAudioPrepared) {
-                Log.d("suss","himom")
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = translatedSlides[currentSlideIndex]
                 PhaseBaseActivity.setPic(context!!, wholeStoryImageView, slide.slideNumber)
@@ -274,7 +269,6 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
      * Plays the audio
      */
     internal fun playStoryAudio() {
-        Log.d("suss","playStoryAudio")
         recordingToolbar.stopToolbarMedia()
         setSlideFromSeekbar()
         draftPlayer.pauseAudio()
@@ -288,7 +282,6 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
      * helper function for pausing the video
      */
     private fun pauseStoryAudio() {
-        Log.d("suss","pauseStoryAudio")
         draftPlayer.pauseAudio()
         playButton.setImageResource(R.drawable.ic_play_arrow_white_48dp)
     }
