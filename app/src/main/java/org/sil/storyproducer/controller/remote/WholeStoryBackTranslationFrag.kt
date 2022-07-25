@@ -154,13 +154,10 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
             // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
 
-                var filename: String? = null
-                try {
-                    val combinedFilename =
-                        Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
-                    val split: Array<String> = combinedFilename.split("|").toTypedArray()
-                    filename = split[1]
-                } catch(e: Exception) {}
+
+                val combinedFilename = Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
+                val split: Array<String> = combinedFilename.split("|").toTypedArray()
+                val filename = split[1]
 
                 if (filename != null) {
                     val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
@@ -238,6 +235,7 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
             val time = seekBar.progress
             var slideIndexBeforeSeekBar = translatedSlides.indexOfLast { it.startTime <= time }
             if (slideIndexBeforeSeekBar != currentSlideIndex || !draftPlayer.isAudioPrepared) {
+
                 currentSlideIndex = slideIndexBeforeSeekBar
                 val slide = translatedSlides[currentSlideIndex]
                 PhaseBaseActivity.setPic(context!!, wholeStoryImageView, slide.slideNumber)

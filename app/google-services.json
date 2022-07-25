@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "89996807106",
+    "firebase_url": "https://storyproducerdebug.firebaseio.com",
+    "project_id": "storyproducerdebug",
+    "storage_bucket": "storyproducerdebug.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89996807106:android:905fb87a3796b480ece45b",
+        "android_client_info": {
+          "package_name": "org.sil.storyproducer.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "89996807106-46acr978hig6s5s8kfpb685estbds700.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkA1VGDTPRcAuVzFJ6snAxAhyV8i2q8N8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "89996807106-46acr978hig6s5s8kfpb685estbds700.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
