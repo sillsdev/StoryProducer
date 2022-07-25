@@ -60,7 +60,7 @@ class UploadAudioButtonManager(
                 UploadState.UPLOADED -> Toast.makeText(context, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
                     val audioRecording = getAudioRecording()
-                    if (audioRecording != null && audioRecording != "") {
+                    if (audioRecording != null) {
                         setUploadState(UploadState.UPLOADING)
                         uploadAudioButton.background = uploadingIcon
                         Toast.makeText(context, "Uploading audio", Toast.LENGTH_SHORT).show()
