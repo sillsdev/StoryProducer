@@ -38,13 +38,10 @@ object MediaHelper {
     fun getAudioDuration(context: Context, uri: Uri): Long {
         val mmr = MediaMetadataRetriever()
         try {
-            Log.d("suss","huh")
-            mmr.setDataSource(context, uri) //fails
-            Log.d("suss","step one")
+            mmr.setDataSource(context, uri)
             val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
             return (Integer.parseInt(durationStr) * 1000).toLong()
         } catch (e: Exception) {
-            Log.d("suss","Audio Duration Exception!")
             //I don't know what happened, but lets not stop everything.
         }
 
