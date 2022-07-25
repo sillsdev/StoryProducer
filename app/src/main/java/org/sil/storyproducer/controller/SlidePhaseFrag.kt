@@ -105,10 +105,10 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     }
 
     private fun setupAudioPlayer(): Boolean {
-        val referenceRecording = Phase.getReferenceRecording(slideNum, phaseType)
+        val referenceRecording = Workspace.activePhase.getReferenceAudioFile(slideNum)
         referenceAudioPlayer = AudioPlayer()
         if (referenceRecording != null) {
-            referenceAudioPlayer.setStorySource(context!!, referenceRecording.fileName)
+            referenceAudioPlayer.setStorySource(context!!, referenceRecording)
             refPlaybackSeekBar.max = referenceAudioPlayer.audioDurationInMilliseconds
             refPlaybackSeekBar.progress = refPlaybackProgress
 
