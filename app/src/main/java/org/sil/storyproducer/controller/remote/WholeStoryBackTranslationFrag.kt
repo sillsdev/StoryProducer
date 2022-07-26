@@ -161,7 +161,7 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
                     val split: Array<String> = combinedFilename.split("|").toTypedArray()
                     filename = split[1]
                 } catch(e: Exception) {
-                    Toast.makeText(context!!, "No audio file found!!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context!!, "Missing audio files!", Toast.LENGTH_LONG).show()
                 }
 
                 if (filename != null) {
@@ -218,6 +218,7 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
                     }
                     if (recordingToolbar.isRecording || recordingToolbar.isAudioPlaying) {
                         seekBar.progress = minOf((System.currentTimeMillis() - seekbarStartTime).toInt(), seekBar.max)
+                        setSlideFromSeekbar()
                     } else if (draftPlayer.isAudioPrepared) {
                         seekBar.progress = translatedSlides[currentSlideIndex].startTime + draftPlayer.currentPosition
                     } else {
