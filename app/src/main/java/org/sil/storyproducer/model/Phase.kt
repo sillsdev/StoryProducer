@@ -216,6 +216,12 @@ class Phase (val phaseType: PhaseType) {
     }
 
     fun getPhaseDisplaySlideCount() : Int {
+
+        //Disabled horizontal scrolling on Whole Story Tell-Back
+        if(phaseType == PhaseType.WHOLE_STORY){
+            return 1
+        }
+
         var tempSlideNum = 0
         val validSlideTypes = when(phaseType){
             PhaseType.VOICE_STUDIO -> arrayOf(
