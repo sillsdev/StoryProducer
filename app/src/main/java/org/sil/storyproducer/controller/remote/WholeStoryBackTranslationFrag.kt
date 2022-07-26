@@ -154,10 +154,15 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
             // Don't play the copyright slides.
             if (slide.slideType == SlideType.FRONTCOVER || slide.slideType == SlideType.NUMBEREDPAGE) {
 
-
-                val combinedFilename = Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
-                val split: Array<String> = combinedFilename.split("|").toTypedArray()
-                val filename = split[1]
+                var filename: String? = null
+                try {
+                    val combinedFilename =
+                            Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
+                    val split: Array<String> = combinedFilename.split("|").toTypedArray()
+                    filename = split[1]
+                } catch(e: Exception) {
+                    Toast.makeText(context!!, "No audio file found!!", Toast.LENGTH_LONG).show()
+                }
 
                 if (filename != null) {
                     val duration = (MediaHelper.getAudioDuration(context!!, getStoryUri(filename)!!) / 1000).toInt()
