@@ -35,9 +35,10 @@ fun getChosenCombName(slideNum: Int = Workspace.activeSlideNum): String {
         PhaseType.LEARN -> Workspace.activeStory.learnAudioFile
         PhaseType.TRANSLATE_REVISE -> Workspace.activeStory.slides[slideNum].chosenTranslateReviseFile
         PhaseType.WORD_LINKS -> Workspace.activeWordLink.chosenWordLinkFile
-        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
-        PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
         PhaseType.WHOLE_STORY -> Workspace.activeStory.wholeStoryBackTAudioFile
+        PhaseType.BACK_T -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+        PhaseType.REMOTE_CHECK -> Workspace.activeStory.slides[slideNum].chosenBackTranslationFile
+        PhaseType.VOICE_STUDIO -> Workspace.activeStory.slides[slideNum].chosenVoiceStudioFile
         else -> ""
     }
 }
