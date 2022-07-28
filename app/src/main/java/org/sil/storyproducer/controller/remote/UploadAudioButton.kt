@@ -95,7 +95,8 @@ class UploadAudioButtonManager(
                 }
                 UploadState.UPLOADING -> {
                     uploadAudioButton.background = uploadingIcon
-                    Toast.makeText(context, "Upload already in progress", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Upload already in progress\nTap again to upload", Toast.LENGTH_LONG).show()
+                    setUploadState(UploadState.NOT_UPLOADED)
                 }
             }
         }
