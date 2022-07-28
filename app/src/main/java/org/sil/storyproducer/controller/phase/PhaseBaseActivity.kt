@@ -62,6 +62,9 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         setupStatusBar()
     }
 
+    //Do nothing if back button is pressed on the phone
+    override fun onBackPressed() {}
+
     override fun onPause(){
         super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum

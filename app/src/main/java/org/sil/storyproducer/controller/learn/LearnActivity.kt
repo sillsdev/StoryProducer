@@ -118,6 +118,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         invalidateOptionsMenu()
     }
 
+
+    //Do nothing if back button is pressed on the phone
+    override fun onBackPressed() {}
+
+
     public override fun onPause() {
         super.onPause()
         pauseStoryAudio()
