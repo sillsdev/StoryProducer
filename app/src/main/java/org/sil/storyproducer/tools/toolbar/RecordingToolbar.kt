@@ -114,7 +114,7 @@ open class RecordingToolbar : Fragment(){
         }
     }
 
-    private fun stopToolbarVoiceRecording(){
+    open fun stopToolbarVoiceRecording(){
         voiceRecorder?.stop()
         
         animationHandler.stopAnimation()
