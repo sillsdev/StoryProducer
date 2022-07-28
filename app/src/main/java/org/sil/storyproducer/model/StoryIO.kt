@@ -209,7 +209,7 @@ fun migrateStory(context: Context, story: Story): Story? {
 
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
-        arrayOf("zip", "bloom", "bloomd").contains(it)
+        arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
     } == true
 }
 
