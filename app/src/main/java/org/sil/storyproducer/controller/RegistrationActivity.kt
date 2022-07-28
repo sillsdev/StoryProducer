@@ -466,6 +466,9 @@ open class RegistrationActivity : AppCompatActivity() {
         reg.putBoolean("isRemote", isRemote!!)
 
         reg.save(this)
+        
+        //Reinitialize the workspace to fix wrong slide issues with changing from local to remote without restarting the app
+        Workspace.isInitialized = false
     }
 
     /**
@@ -569,6 +572,7 @@ open class RegistrationActivity : AppCompatActivity() {
                     val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
                     saveToast.show()
                     sendEmail()
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
                 }.create()
 
         dialog.show()

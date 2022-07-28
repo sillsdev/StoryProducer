@@ -64,9 +64,6 @@
             android:name=".controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".controller.remote.WholeStoryBackTranslationActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
