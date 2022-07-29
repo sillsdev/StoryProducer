@@ -5,7 +5,7 @@
     android:id="@+id/activity_export"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.sil.storyproducer.controller.export.ShareActivity">
+    tools:context="org.tyndalebt.spadv.controller.export.ShareActivity">
 
     <LinearLayout
         android:id="@+id/main_linear_layout"

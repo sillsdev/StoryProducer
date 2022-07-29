@@ -5,7 +5,7 @@
     android:id="@+id/activity_learn"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.sil.storyproducer.controller.learn.LearnActivity">
+    tools:context="org.tyndalebt.spadv.controller.learn.LearnActivity">
 
     <ImageView
         android:id="@+id/fragment_image_view"

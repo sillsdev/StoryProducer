@@ -77,7 +77,7 @@ save in the root directory.
 * Test files are named for the class that they test, plus the word "Test" prepended.
     * >**Example:** `TestRegistrationActivity` contains tests for the `RegistrationActivity` class.
 * Folders in the unit test directory correspond to folders in the source directory.
-    * >**Example:** `org.sil.storyproducer.test/controller/` contains tests for code that lives in `org.sil.storyproducer/controller/`
+    * >**Example:** `org.tyndalebt.spadv.test/controller/` contains tests for code that lives in `org.tyndalebt.spadv/controller/`
 * Individual tests are named according to the following format: `FunctionName_When_[Condition]_Should_[DoExpectedBehavior]`
     * >**Example:** `OnCreate_When_WorkspaceDirectoryIsAlreadySet_Should_NotStartFileTreeActivity`
 
@@ -107,7 +107,7 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 4. Copy an .mp4 video file (the particular length or content doesn't matter) into the espresso resource directory. The name of the .mp4 file needs to match the "nameOfSampleExportVideo" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 5. Launch your emulator device (or connect a physical one via adb).
 6. Run `./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:installDebug :app:installDebugAndroidTest` from the root directory of the repository.
-7. Run `adb shell am instrument -w -e debug false -e package 'org.sil.storyproducer.androidtest.runfirst' org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner` from the root directory of the repository. (Note that the folder containing ADB must be in your path for this command to work.)
+7. Run `adb shell am instrument -w -e debug false -e package 'org.tyndalebt.spadv.androidtest.runfirst' org.tyndalebt.spadv.test/androidx.test.runner.AndroidJUnitRunner` from the root directory of the repository. (Note that the folder containing ADB must be in your path for this command to work.)
 
 > **Why is this necessary?** The Espresso tests rely on the presence of the "Lost Coin" template as a sample with which to exercise the features of the app. The Espresso Tests also require the workspace to have been set up, but Espresso is not capable interacting with the operating system's file picker, so the WorkspaceSetter class uses UIAutomator to select the workspace.
 
@@ -115,13 +115,13 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 ##### From the command line:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."** (The device/emulator should be running.)
 2. Navigate to the root directory of the repository.
-3. Run `adb shell am instrument -w -e debug false org.sil.storyproducer.test/androidx.test.runner.AndroidJUnitRunner`.
+3. Run `adb shell am instrument -w -e debug false org.tyndalebt.spadv.test/androidx.test.runner.AndroidJUnitRunner`.
 ##### From Android Studio:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."**
 2. Open the Story Producer project (StoryProducer.iml) in Android Studio.
 3. Set the "Project" tool window to show "Android Instrumented Tests" (or just navigate to a directory containing Espresso tests).
 4. Right click on one of the directories that contains some Espresso tests (this can be the "app" directory, a specific folder, or a single test file.).
-5. Click "Run 'Tests in org.sil.storyproducer...'".
+5. Click "Run 'Tests in org.tyndalebt.spadv...'".
 6. The "Run" tool window shows the results of the tests.
 *Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
 
