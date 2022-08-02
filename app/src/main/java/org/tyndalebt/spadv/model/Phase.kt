@@ -47,8 +47,8 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.LEARN            -> R.drawable.ic_ear_speak
             PhaseType.TRANSLATE_REVISE -> R.drawable.ic_mic_white_48dp
             PhaseType.COMMUNITY_WORK   -> R.drawable.ic_people_white_48dp
-            PhaseType.WHOLE_STORY      -> R.drawable.ic_school_white_48dp
-            PhaseType.BACK_T           -> R.drawable.ic_headset_mic_white_48dp
+            PhaseType.WHOLE_STORY      -> R.drawable.ic_question_answer_48dp
+            PhaseType.BACK_T           -> R.drawable.ic_message_white_48dp
             PhaseType.REMOTE_CHECK     -> R.drawable.ic_school_white_48dp
             PhaseType.ACCURACY_CHECK   -> R.drawable.ic_school_white_48dp
             PhaseType.VOICE_STUDIO     -> R.drawable.ic_mic_box_48dp
@@ -111,8 +111,8 @@ class Phase (val phaseType: PhaseType) {
             PhaseType.TRANSLATE_REVISE -> "Translate + Revise"
             PhaseType.WORD_LINKS       -> "Word Links"
             PhaseType.COMMUNITY_WORK   -> "Community Work"
-            PhaseType.WHOLE_STORY      -> "Whole Story"
-            PhaseType.BACK_T           -> "Back Translation"
+            PhaseType.WHOLE_STORY      -> "Story Tell-Back"
+            PhaseType.BACK_T           -> "Slide Tell-Back"
             PhaseType.REMOTE_CHECK     -> "Remote Check"
             PhaseType.ACCURACY_CHECK   -> "Accuracy Check"
             PhaseType.VOICE_STUDIO     -> "Voice Studio"

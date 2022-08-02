@@ -87,7 +87,7 @@
     <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
     <string name="registration_SPadv_email">SPapp.training@gmail.com</string>
-    <string name="registration_robin_rempel_email">SPapp_info@sil.org</string>
+    <string name="registration_robin_rempel_email"></string>
     <string name="rename_title">Choose a new name</string><!-- Default instructions on how to enter data -->
     <!-- For Word links, give user more instruction on how to enter the data -->
     <string name="rename_title_wordlinks">Type a back translation or spell the name.</string>
