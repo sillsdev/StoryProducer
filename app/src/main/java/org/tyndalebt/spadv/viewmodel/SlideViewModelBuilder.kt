@@ -51,7 +51,13 @@ class SlideViewModelBuilder(
             SlideType.COPYRIGHT -> 12
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
         }
+        val outlineShow : Boolean = when(slide.slideType){
+            SlideType.FRONTCOVER -> true
+            else -> false
+        }
+
         tOverlay.setFontSize(fontSize)
+        tOverlay.setTextOutline(outlineShow)
 
         // 0R17 - DKH 05/7/2022 Allow for text editing on the song slide
         // Remove LOCALSONG from if statement -  ALIGN_OPPOSITE starts at the bottom of the page

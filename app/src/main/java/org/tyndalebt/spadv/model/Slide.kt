@@ -93,14 +93,19 @@ class Slide{
                     "© ${SimpleDateFormat("yyyy", Locale.US).format(GregorianCalendar().time)}")
             else -> TextOverlay(translatedContent)
         }
+
         val fontSize : Int = when(slideType){
-            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            // 8/3/22 was 32 and were told it needed reduced several for FrontCover
+            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 24
             SlideType.LOCALCREDITS, SlideType.COPYRIGHT -> 16
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 16
         }
-        tOverlay.setFontSize(fontSize)
-        if(slideType in arrayOf(SlideType.NUMBEREDPAGE,SlideType.LOCALSONG))
-            tOverlay.setVerticalAlign(Layout.Alignment.ALIGN_OPPOSITE)
+
+        val outlineShow : Boolean = when(slideType){
+            SlideType.FRONTCOVER -> true
+            else -> false
+        }
+
         return tOverlay
     }
 

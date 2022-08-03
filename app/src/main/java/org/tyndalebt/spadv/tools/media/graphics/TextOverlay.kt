@@ -10,6 +10,7 @@ import android.text.TextPaint
 
 class TextOverlay(private val mText: String) {
     private var mFontSize = 18
+    private var mOutlineShow = false
     private var mAlpha = 1f
     private var mTextColor = Color.WHITE
     // 2/22/2022 - DKH, Issue 456: Add grey rectangle to backdrop text "sub titles"
@@ -76,7 +77,10 @@ class TextOverlay(private val mText: String) {
             mDrawTextBG = false  // reset to default of no background color
         }
         // 05/26/2022 - DKH Issue SPa3: Update subtitles for better readability. Delete outline
-        // mTextOutlineLayout!!.draw(canvas)
+
+        if (mOutlineShow == true) {
+            mTextOutlineLayout!!.draw(canvas)
+            }
 
         mTextLayout!!.draw(canvas)
         canvas.restore()
@@ -89,6 +93,13 @@ class TextOverlay(private val mText: String) {
     fun setFontSize(fontSize: Int) {
         mFontSize = fontSize
         mIsDirty = true
+    }
+
+    /**
+     * Set to use outline
+     */
+    fun setTextOutline(ShowOutline: Boolean) {
+        mOutlineShow = ShowOutline
     }
 
     // 2/22/2022 - DKH, Issue 456: Add  rectangle to backdrop text "sub titles"

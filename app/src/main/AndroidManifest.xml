@@ -20,9 +20,10 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true"
         android:fullBackupContent="false"
-        android:usesCleartextTraffic="true"
+
         tools:replace="android:icon,android:roundIcon"
         >
+<!-- android:usesCleartextTraffic="true" -->
 
         <meta-data android:name="firebase_analytics_collection_deactivated"
                    android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED" />
