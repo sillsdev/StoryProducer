@@ -156,7 +156,7 @@ fun sendProjectSpecificRequest(
         try {
             jsonObject = JSONObject(it)
         } catch (e: JSONException) {
-            Toast.makeText(context, "The request was successful, but the response was of an unexpected form.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Invalid response. Audio upload failed.", Toast.LENGTH_SHORT).show()
         }
         if (jsonObject != null) {
             onSuccess(jsonObject)
