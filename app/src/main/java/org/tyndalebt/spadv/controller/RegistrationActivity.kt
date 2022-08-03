@@ -570,7 +570,15 @@ open class RegistrationActivity : AppCompatActivity() {
                     val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
                     saveToast.show()
                     sendEmail()
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+
+                    val dialog = AlertDialog.Builder(this)
+                        .setNeutralButton(getString(R.string.Continue)) { _, _ ->
+                            startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                            finish()
+                        }.create()
+                    dialog.show()
+
+
                 }.create()
 
         dialog.show()
@@ -609,7 +617,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
         try {
             this.startActivity(Intent.createChooser(emailIntent, getText(R.string.registration_submit)))
-            this.finish()
+
             reg.putBoolean(EMAIL_SENT, true)
             reg.save(this)
 	    // DKH - 8/26/2021  Log.i needs second argument for print out

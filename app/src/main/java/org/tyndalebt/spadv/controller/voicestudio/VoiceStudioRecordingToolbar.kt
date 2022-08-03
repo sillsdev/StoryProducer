@@ -80,6 +80,31 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
         sendAudioButton.setOnClickListener(sendButtonOnClickListener())
     }
 
+
+    //Pauses recording if the slide narration is played
+    //Some code copied from micButtonOnClickListener()
+    override fun stopToolbarMedia() {
+        val wasRecording = voiceRecorder?.isRecording == true
+
+        if (wasRecording) {
+
+            stopToolbarVoiceRecording()
+
+            if (isAppendingOn) {
+                try {
+                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
+                } catch (e: FileNotFoundException) {
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                }
+            } else {
+                isAppendingOn = true
+            }
+
+            micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
+        }
+    }
+
+
     override fun micButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             val wasRecording = voiceRecorder?.isRecording == true
