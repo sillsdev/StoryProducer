@@ -112,7 +112,7 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
             stopToolbarMedia()
 
-            if (!!wasRecording) {
+            if (!wasRecording) {
                 if (isAppendingOn) {
                     recordAudio(audioTempName)
                 } else {
