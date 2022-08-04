@@ -106,27 +106,13 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
     }
 
 
-
-
     override fun micButtonOnClickListener(): View.OnClickListener {
         return View.OnClickListener {
             val wasRecording = voiceRecorder?.isRecording == true
 
             stopToolbarMedia()
 
-            if (wasRecording) {
-                if (isAppendingOn) {
-                    try {
-                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
-                    } catch (e: FileNotFoundException) {
-                        FirebaseCrashlytics.getInstance().recordException(e)
-                    }
-                } else {
-                    isAppendingOn = true
-                }
-
-                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
-            } else {
+            if (!!wasRecording) {
                 if (isAppendingOn) {
                     recordAudio(audioTempName)
                 } else {
@@ -141,17 +127,8 @@ class DramatizationRecordingToolbar: MultiRecordRecordingToolbar() {
 
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
+            stopToolbarMedia()
 
-            if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
-                stopToolbarMedia()
-                try {
-                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
-                } catch (e: FileNotFoundException) {
-                    FirebaseCrashlytics.getInstance().recordException(e)
-                }
-            }else{
-                stopToolbarMedia()
-            }
             isAppendingOn = false
 
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)

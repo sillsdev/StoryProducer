@@ -111,19 +111,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
 
             stopToolbarMedia()
 
-            if (wasRecording) {
-                if (isAppendingOn) {
-                    try {
-                        AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
-                    } catch (e: FileNotFoundException) {
-                        FirebaseCrashlytics.getInstance().recordException(e)
-                    }
-                } else {
-                    isAppendingOn = true
-                }
-
-                micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
-            } else {
+            if (!!wasRecording) {
                 if (isAppendingOn) {
                     recordAudio(audioTempName)
                 } else {
@@ -139,16 +127,8 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     private fun checkButtonOnClickListener(): View.OnClickListener{
         return View.OnClickListener {
 
-            if (isAppendingOn && (voiceRecorder?.isRecording == true)) {
-                stopToolbarMedia()
-                try {
-                    AudioRecorder.concatenateAudioFiles(appContext, getChosenFilename(), audioTempName)
-                } catch (e: FileNotFoundException) {
-                    FirebaseCrashlytics.getInstance().recordException(e)
-                }
-            }else{
-                stopToolbarMedia()
-            }
+            stopToolbarMedia()
+
             isAppendingOn = false
 
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
