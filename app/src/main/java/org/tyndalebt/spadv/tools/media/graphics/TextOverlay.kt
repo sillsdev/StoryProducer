@@ -24,7 +24,8 @@ class TextOverlay(private val mText: String) {
     // 255 = 100%
     private var mBgAlpha: Int = 192  // Background for Text transparency, 0-255, 255 is opaque
     private val mOutlineColor = Color.BLACK
-    private var mPadding = 2
+    // DBH 8/8/2022 Issue #52 change padding from 2 to 5 to make a little more space between edge of blue rectangle and text
+    private var mPadding = 5
     private var mPaddingActual: Int = 0
     private var mHorizontalAlign: Layout.Alignment = Layout.Alignment.ALIGN_CENTER
     private var mVerticalAlign: Layout.Alignment = Layout.Alignment.ALIGN_CENTER
@@ -69,7 +70,9 @@ class TextOverlay(private val mText: String) {
             mTextLayout!!.paint.setAlpha(mBgAlpha)      // set the amount of transparency
 
             // draw a rectangle behind the text
-            canvas.drawRect(0.0F, 0.0F, mCanvasWidth.toFloat(), mCanvasHeight.toFloat(), mTextLayout!!.paint);
+            // 8/8/2022 DBH Issue #52 - start rectangle mPaddingActual to the left of where the text starts
+            // so that the entire width is the background color
+            canvas.drawRect(0.0F - mPaddingActual.toFloat(), 0.0F, mCanvasWidth.toFloat(), mCanvasHeight.toFloat(), mTextLayout!!.paint);
             // reset the updated values
             mTextLayout!!.paint.color = mTextColor      // reset back to the text color
             mTextLayout!!.paint.setAlpha(mAlpha)        // reset to original alpha
