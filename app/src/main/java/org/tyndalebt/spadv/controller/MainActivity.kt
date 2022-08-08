@@ -92,6 +92,9 @@ class MainActivity : BaseActivity(), Serializable {
             }
         }
 
+        //Adding Demo Story
+        Workspace.addDemoToWorkspace(this)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -191,12 +194,6 @@ class MainActivity : BaseActivity(), Serializable {
         when (menuItem.itemId) {
             R.id.nav_workspace -> {
                 showSelectTemplatesFolderDialog()
-            }
-            R.id.nav_demo -> {
-                Workspace.addDemoToWorkspace(this)
-
-                // Refresh all the stories in the story page tabs
-                setupStoryListTabPages()
             }
             R.id.nav_word_link_list -> {
                 showWordLinksList()

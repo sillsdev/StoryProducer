@@ -292,7 +292,6 @@
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
     <string name="update_workspace">Select \'SP Workspace\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
-    <string name="copy_demo">Add demo to story list</string>
     <string name="more_templates">Download More Templates</string>
 
     <!-- Main Story Page -->
