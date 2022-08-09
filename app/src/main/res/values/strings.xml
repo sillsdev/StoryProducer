@@ -87,8 +87,8 @@
     <string name="registration_error_title">Submission Error</string>
     <string name="registration_error_message">Please provide an database email address</string>
     <string name="registration_saved_successfully">Registration information saved!</string>
-    <string name="registration_SPadv_email">SPapp.training@gmail.com</string>
-    <string name="registration_robin_rempel_email"></string>
+    <string name="registration_SPadv_email"></string>
+    <string name="registration_robin_rempel_email">SPapp.training@gmail.com</string>
     <string name="rename_title">Choose a new name</string><!-- Default instructions on how to enter data -->
     <!-- For Word links, give user more instruction on how to enter the data -->
     <string name="rename_title_wordlinks">Type a back translation or spell the name.</string>
@@ -292,7 +292,6 @@
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
     <string name="update_workspace">Select \'SP Workspace\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
-    <string name="copy_demo">Add demo to story list</string>
     <string name="more_templates">Download More Templates</string>
 
     <!-- Main Story Page -->
@@ -312,8 +311,9 @@
     <string name="about_title">About StoryProducerAdv (SPadv)</string>
     <string name="app_version">app version: %1$s</string>
     <string name="prefer_bloom_templates">prefer .bloom templates</string>
-    <string name="license_body">This StoryProducerAdv (Story Producer Advance) software is
-                                copyrighted © 2022, Robin Rempel .
+    <string name="license_body">The StoryProducerAdv (StoryProducer Advantage) (SPadv) software is
+                                jointly copyrighted © 2022, Tyndale Bible Translators and Robin Rempel.
+                                SPadv only uses .bloom and .bloomSource templates.
                                 Adapted from and built upon original, Story Producer (version 3.0.6)
                                 jointly copyrighted © 2020, SIL International and
                                 Cedarville University. It is released under the following license:

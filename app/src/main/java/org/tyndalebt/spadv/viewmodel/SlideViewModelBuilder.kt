@@ -52,7 +52,7 @@ class SlideViewModelBuilder(
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
         }
         val outlineShow : Boolean = when(slide.slideType){
-            SlideType.FRONTCOVER -> true
+            SlideType.FRONTCOVER, SlideType.LOCALSONG -> true
             else -> false
         }
 
