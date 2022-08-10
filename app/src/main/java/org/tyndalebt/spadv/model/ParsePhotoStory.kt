@@ -12,6 +12,7 @@ import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.ArrayList
 
+/* DBH 8/9/2022  XML logic no longer used
 fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
     //See if there is an xml photostory file there
     val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
@@ -217,3 +218,5 @@ private fun skipToNextTag(parser: XmlPullParser) {
         }
     }
 }
+
+ */

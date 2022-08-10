@@ -161,19 +161,19 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
+/* DBH 8/9/2022  XML logic no longer used
     try {
         story = parsePhotoStoryXML(context, storyPath)
     } catch (e : Exception){
         FirebaseCrashlytics.getInstance().recordException(e)
         story = null
     }
-    if(story == null){
-        try {
-            story = parseBloomHTML(context, storyPath)
-        } catch (e : Exception){
-            FirebaseCrashlytics.getInstance().recordException(e)
-            story = null
-        }
+ */
+    try {
+        story = parseBloomHTML(context, storyPath)
+    } catch (e : Exception){
+        FirebaseCrashlytics.getInstance().recordException(e)
+        story = null
     }
     //write the story (if it is not null) to json.
     if(story != null) {
