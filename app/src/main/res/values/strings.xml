@@ -310,10 +310,9 @@
     <string name="license">License</string>
     <string name="about_title">About StoryProducerAdv (SPadv)</string>
     <string name="app_version">app version: %1$s</string>
-    <string name="prefer_bloom_templates">prefer .bloom templates</string>
+    <string name="prefer_bloom_templates">uses only .bloom and .bloomSource templates</string>
     <string name="license_body">The StoryProducerAdv (StoryProducer Advantage) (SPadv) software is
                                 jointly copyrighted © 2022, Tyndale Bible Translators and Robin Rempel.
-                                SPadv only uses .bloom and .bloomSource templates.
                                 Adapted from and built upon original, Story Producer (version 3.0.6)
                                 jointly copyrighted © 2020, SIL International and
                                 Cedarville University. It is released under the following license:
