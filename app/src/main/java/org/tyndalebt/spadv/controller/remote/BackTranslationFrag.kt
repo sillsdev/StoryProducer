@@ -34,7 +34,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
     private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
-    private var SkipChanged: Boolean = false
+    private var skipChanged: Boolean = false
 
 //Check other files for examples on how to use the old version of onCreateView
     override fun onCreateView(inflater: LayoutInflater,
@@ -52,7 +52,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
         val transcriptEditText: EditText = rootView.findViewById(R.id.transcript_edit_text)
         val transcriptString = slide.backTranslationTranscript
         if (transcriptString != null && transcriptString != "") {
-            SkipChanged = true // Not changed by user, don't change colors, etc.
+            skipChanged = true // Not changed by user, don't change colors, etc.
             slide.backTranslationTranscriptModified = false
             slide.backTranslationTranscriptPresent = true
             transcriptEditText.setText(transcriptString)
@@ -89,7 +89,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-                if (!SkipChanged) {
+                if (!skipChanged) {
                     transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
                     slide.backTranslationTranscript = text.toString()
                     sendTranscriptButton.background = whiteSendIcon;
@@ -101,7 +101,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
                         // Text exists, we are setting it, so make it sent color
                         transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_sent));
                         sendTranscriptButton.background = blackSendIcon
-                        SkipChanged = false
+                        skipChanged = false
                     }
                 }
             }
