@@ -150,6 +150,7 @@ class TextOverlay(private val mText: String) {
         mTextOutlinePaint!!.color = mOutlineColor
         mTextOutlinePaint!!.alpha = (mAlpha * 255).toInt()
         mTextOutlinePaint!!.textSize = mTextPaint!!.textSize
+        mTextOutlinePaint!!.setTypeface(Typeface.DEFAULT_BOLD)
         mTextOutlinePaint!!.style = Paint.Style.STROKE
         mTextOutlinePaint!!.strokeWidth = mFontSize.toFloat() * 0.1f * fontSizeScale
         mPaddingActual = (mPadding * fontSizeScale).toInt()
