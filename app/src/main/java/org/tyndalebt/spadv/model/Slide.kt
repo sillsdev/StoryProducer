@@ -72,8 +72,9 @@ class Slide{
     var chosenBackTranslationFile = ""
     var backTranslationUploadState = UploadState.NOT_UPLOADED
     var backTranslationTranscript: String? = null
-    var backTranslationTranscriptIsDirty = false
-
+    // DBH 8/11/2022 Issue #57 There are really 3 stages.  No message, message sent, message modified
+    var backTranslationTranscriptModified = false
+    var backTranslationTranscriptPresent = false
     //consultant approval
     var isChecked: Boolean = false
 

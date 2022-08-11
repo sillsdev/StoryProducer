@@ -34,7 +34,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
     private lateinit var uploadAudioButtonManager: UploadAudioButtonManager
     private lateinit var approvalIndicatorManager: ApprovalIndicatorManager
     private var approvalReceiveChannel: ReceiveChannel<Approval>? = null
-
+    private var SkipChanged: Boolean = false
 
 //Check other files for examples on how to use the old version of onCreateView
     override fun onCreateView(inflater: LayoutInflater,
@@ -51,11 +51,13 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
         val transcriptEditText: EditText = rootView.findViewById(R.id.transcript_edit_text)
         val transcriptString = slide.backTranslationTranscript
-        if (transcriptString != null) {
+        if (transcriptString != null && transcriptString != "") {
+            SkipChanged = true // Not changed by user, don't change colors, etc.
+            slide.backTranslationTranscriptModified = false
+            slide.backTranslationTranscriptPresent = true
             transcriptEditText.setText(transcriptString)
         }
-
-        if (slide.backTranslationTranscriptIsDirty) {
+        if (!slide.backTranslationTranscriptPresent) {
             transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
             sendTranscriptButton.background = whiteSendIcon
         } else {
@@ -65,7 +67,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
         sendTranscriptButton.setOnClickListener {
             val text = transcriptEditText.text.toString()
-            if (text.length > 0 && slide.backTranslationTranscriptIsDirty) {
+            if (text.isNotEmpty() && slide.backTranslationTranscriptModified) {
                 val storyId = Workspace.activeStory.remoteId ?: 0
                 val message = MessageROCC(slideNum, storyId, false, true, Timestamp(0), text)
                 launch {
@@ -79,7 +81,7 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
 
                 transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_sent));
                 sendTranscriptButton.background = blackSendIcon;
-                slide.backTranslationTranscriptIsDirty = false
+                slide.backTranslationTranscriptModified = false
             }
         }
 
@@ -87,10 +89,21 @@ class BackTranslationFrag : MultiRecordFrag(), CoroutineScope by MainScope() {
             override fun afterTextChanged(s: Editable) {}
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
-                transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
-                slide.backTranslationTranscript = text.toString()
-                sendTranscriptButton.background = whiteSendIcon;
-                slide.backTranslationTranscriptIsDirty = true
+                if (!SkipChanged) {
+                    transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_dirty));
+                    slide.backTranslationTranscript = text.toString()
+                    sendTranscriptButton.background = whiteSendIcon;
+                    slide.backTranslationTranscriptModified = true
+                }
+                else {
+                    val text = transcriptEditText.text.toString()
+                    if (text.isNotEmpty()) {
+                        // Text exists, we are setting it, so make it sent color
+                        transcriptEditText.setTextColor(ContextCompat.getColor(context!!, R.color.transcript_sent));
+                        sendTranscriptButton.background = blackSendIcon
+                        SkipChanged = false
+                    }
+                }
             }
         })
 
