@@ -1,6 +1,7 @@
 package org.tyndalebt.spadv.model
 
 import android.content.Context
+import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
@@ -33,7 +34,19 @@ fun Story.toJson(context: Context){
             filePath,"",this.title)
     if(oStream != null) {
         try {
-            oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
+//            oStream.write(adapter.toJson(this).toByteArray(Charsets.UTF_8))
+            val tmpStr = adapter.toJson(this)
+            if (tmpStr.length > 1) {
+                val storyJson = tmpStr.toByteArray(Charsets.UTF_8)
+                if (storyJson.size > 50) {
+                    oStream.write(storyJson)    // Force close was getting here with empty Json file to write
+                }
+                else
+                    Workspace.saveLogToFile(context, "toJson: toByteArray returned ${tmpStr.length} bytes")
+            }
+            else
+                Workspace.saveLogToFile(context, "toJson: adapter.toJson returned ${tmpStr.length} bytes")
+
         }catch(e:java.lang.Exception){
             // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
             // If we get here, there was an exception thrown while writing the story.json file
@@ -46,6 +59,8 @@ fun Story.toJson(context: Context){
             // Record the error message & exception (includes stack trace) in FireBase
             FirebaseCrashlytics.getInstance().log(errInfo)
             FirebaseCrashlytics.getInstance().recordException(e)
+
+//            Workspace.saveLogToFile(context, "toJson: $errInfo")
 
             // Record the message to the android system log
             // The 4 character tag, "SP::", is a quick way to filter messages in the Logcat utility
@@ -87,6 +102,8 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
         // Record the error message & exception (includes stack trace) in FireBase
         FirebaseCrashlytics.getInstance().log(errInfo)
         FirebaseCrashlytics.getInstance().recordException(e)
+
+//        Workspace.saveLogToFile(context, errInfo)
 
         // Record the message to the android system log
         // The 4 character tag, "SP::", is a quick way to filter messages in the Logcat utility

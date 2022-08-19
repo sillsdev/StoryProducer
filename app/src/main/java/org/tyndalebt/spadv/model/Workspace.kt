@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.preference.PreferenceManager
 import android.provider.Settings.Secure
@@ -23,12 +24,14 @@ import org.tyndalebt.spadv.R
 import org.tyndalebt.spadv.BuildConfig
 import org.tyndalebt.spadv.model.messaging.Approval
 import org.tyndalebt.spadv.model.messaging.MessageROCC
-import org.tyndalebt.spadv.tools.file.*
-import java.io.File
-import java.io.IOException
-import java.io.InputStreamReader
+import org.tyndalebt.spadv.tools.file.deleteWorkspaceFile
+import org.tyndalebt.spadv.tools.file.getChildOutputStream
+import org.tyndalebt.spadv.tools.file.wordLinkListFromJson
+import org.tyndalebt.spadv.tools.file.workspaceRelPathExists
+import java.io.*
 import java.net.URI
 import java.sql.Timestamp
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,6 +84,9 @@ object Workspace {
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
+
+    // To track if force quit is happening or just changing between activities
+    var LastActivityEvent: String = ""
 
     // word links
     lateinit var activeWordLink: WordLink
@@ -572,6 +578,28 @@ object Workspace {
         params.putString("trainer_email", registration.getString("trainer_email", " "))
         params.putString("consultant_email", registration.getString("consultant_email", " "))
         firebaseAnalytics.logEvent(eventName, params)
+    }
+
+    fun saveLogToFile(context: Context, pText: String) {
+        val filePath = "logFile.txt" // location of file
+        val folder:File? = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val logFile = File(folder?.absolutePath, filePath)
+        if (!logFile.exists()) {
+            try {
+                logFile.createNewFile()
+            } catch (e: IOException) {
+                // TODO Auto-generated catch block
+                e.printStackTrace()
+            }
+        }
+
+        val buf: BufferedWriter = BufferedWriter(FileWriter(logFile, true))
+
+        val currentDateTimeString: String? = DateFormat.getDateTimeInstance().format(Date())
+        buf.append("$currentDateTimeString ")
+        buf.append(pText)
+        buf.newLine()
+        buf.close()
     }
 
     fun sortStoriesByTitle() {

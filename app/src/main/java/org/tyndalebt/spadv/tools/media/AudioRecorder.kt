@@ -15,10 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.tyndalebt.spadv.R
-import org.tyndalebt.spadv.model.PROJECT_DIR
-import org.tyndalebt.spadv.model.PhaseType
-import org.tyndalebt.spadv.model.Story
-import org.tyndalebt.spadv.model.Workspace
+import org.tyndalebt.spadv.model.*
 import org.tyndalebt.spadv.tools.file.*
 import org.tyndalebt.spadv.tools.media.story.AutoStoryMaker
 import org.tyndalebt.spadv.tools.media.story.StoryMaker
@@ -135,6 +132,9 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             mRecorder.reset()
             mRecorder.release()
             isRecording = false
+            // save story.json each time a new audio file is created in case we leave the application
+            // without saving it. (Force quit, background close by OS, etc.)
+            Thread(Runnable { Workspace.activeStory.toJson(activity) }).start()
             cleanupOlderFiles()
         } catch (stopException: RuntimeException) {
             Toast.makeText(activity, R.string.recording_toolbar_error_recording, Toast.LENGTH_SHORT).show()

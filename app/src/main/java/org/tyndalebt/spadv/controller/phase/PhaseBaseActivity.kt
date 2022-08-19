@@ -23,14 +23,15 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.tyndalebt.spadv.R
 import org.tyndalebt.spadv.activities.BaseActivity
 import org.tyndalebt.spadv.model.*
+import org.tyndalebt.spadv.model.Workspace.saveLogToFile
 import org.tyndalebt.spadv.service.SlideService
 import org.tyndalebt.spadv.tools.BitmapScaler
 import org.tyndalebt.spadv.tools.DrawerItemClickListener
 import org.tyndalebt.spadv.tools.PhaseGestureListener
-import org.tyndalebt.spadv.viewmodel.SlideViewModelBuilder
-import kotlin.math.max
 import org.tyndalebt.spadv.tools.file.genDefaultImage
 import org.tyndalebt.spadv.tools.file.getStoryImage
+import org.tyndalebt.spadv.viewmodel.SlideViewModelBuilder
+import kotlin.math.max
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
 
@@ -65,16 +66,35 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     //Do nothing if back button is pressed on the phone
     override fun onBackPressed() {}
 
+
     override fun onPause(){
-        super.onPause()
         story.lastSlideNum = Workspace.activeSlideNum
         story.lastPhaseType = Workspace.activePhase.phaseType
 
-        // Issue #503, it is possible for the user to change workspaces causing a rouge story
-        // to save. Instead, ensure that the story exists in the current workspace before saving.
-        if(Workspace.Stories.contains(story)) {
-            Thread(Runnable { story.toJson(this) }).start()
+        if (Workspace.LastActivityEvent == "Start" || Workspace.LastActivityEvent == "Resume") {
+            // Issue #503, it is possible for the user to change workspaces causing a rogue story
+            // to save. Instead, ensure that the story exists in the current workspace before saving.
+            if (Workspace.Stories.contains(story)) {
+                Thread(Runnable { story.toJson(this) }).start()
+            }
         }
+        Workspace.LastActivityEvent = "Pause"
+        super.onPause()
+    }
+
+    override fun onStart() {
+        Workspace.LastActivityEvent = "Start"
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Workspace.LastActivityEvent = "Resume"
+        super.onResume()
+    }
+
+    override fun onStop() {
+        Workspace.LastActivityEvent = "Stop"
+        super.onStop()
     }
 
     //Override setContentView to coerce into child view.
