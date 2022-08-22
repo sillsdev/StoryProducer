@@ -315,16 +315,21 @@
                                 jointly copyrighted © 2022, Tyndale Bible Translators and Robin Rempel.
                                 Adapted from and built upon original, Story Producer (version 3.0.6)
                                 jointly copyrighted © 2020, SIL International and
-                                Cedarville University. It is released under the following license:
+                                Cedarville University.
+\n\n
+                                It is released under the following license:
                                 Permission is hereby granted, free of charge, to any person lawfully
                                 obtaining a copy of this software and associated documentation files
                                 (the “Software”), to use and redistribute the software, to build and
                                 distribute videos from text and audio-visual data, provided that
                                 they are the owner of the data or have permission to distribute it.
+\n\n
                                 The Software is protected by international copyright treaty
                                 provisions. No person may remove any copyright or other proprietary
                                 notice from the software nor reverse engineer, decompile, or
-                                disassemble the software. THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
+                                disassemble the software.
+\n\n
+                                THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
                                 WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
                                 TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
                                 PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -332,7 +337,6 @@
                                 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
                                 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
                                 OR OTHER DEALINGS IN THE SOFTWARE.</string>
-
     <!-- Logging -->
     <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
     <string name="logging_item_date">Date</string>
