@@ -189,7 +189,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
             aSize = getAudioFiles(Workspace.activePhase.phaseType).size
             if (aSize <= MAX_AUDIO_ARCHIVE_COUNT)
                 break
-            pos = 0
+            pos = MAX_AUDIO_ARCHIVE_COUNT
             val recordings = Workspace.activePhase.getCombNames()
             mCombName = recordings!![pos]
             val fileLocation = Story.getFilename(mCombName)

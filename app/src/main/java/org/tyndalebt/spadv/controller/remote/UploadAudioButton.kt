@@ -65,7 +65,7 @@ class UploadAudioButtonManager(
                             finalSlideNumber = slideNumber
                         }
                         sendSlideSpecificRequest(context, finalSlideNumber, context.getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(context, "Audio File Sent Successfuly", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show()
                             setUploadState(UploadState.UPLOADED)
                             uploadAudioButton.background = uploadedIcon
                         }, {
