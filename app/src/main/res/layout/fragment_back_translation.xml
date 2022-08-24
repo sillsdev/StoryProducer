@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray"
-    tools:context="org.tyndalebt.spadv.controller.remote.BackTranslationFrag">
+    tools:context="org.tyndalebt.storyproduceradv.controller.remote.BackTranslationFrag">
     <!-- WARNING: ANDROID ID'S MAY NOT BE CORRECT!!!!! -->
     <LinearLayout
         android:id="@+id/linearLayout3"

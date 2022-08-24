@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="org.tyndalebt.spadv">
+    package="org.tyndalebt.storyproduceradv">
 
     <!-- IMPORTANT for allowing recording and also writing to sd card -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:name="org.tyndalebt.spadv.App"
+        android:name="org.tyndalebt.storyproduceradv.App"
         android:allowBackup="true"
         android:icon="@mipmap/logo_new_splash"
         android:roundIcon="@mipmap/logo_new_splash"
@@ -40,13 +40,13 @@
 
         <!-- Pager Base -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.pager.PagerBaseActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.pager.PagerBaseActivity"
             android:label="Pager Base"
             android:screenOrientation="portrait" />
 
         <!-- Splash Screen -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.SplashScreenActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
             android:screenOrientation="portrait">
@@ -58,38 +58,38 @@
         </activity>
         <!-- Story List Page -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.MainActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.MainActivity"
             android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait" />
         <!-- Registration -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.RegistrationActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="org.tyndalebt.spadv.activities.WelcomeDialogActivity"
+            android:name="org.tyndalebt.storyproduceradv.activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" />
         <!-- Learn -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.learn.LearnActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.learn.LearnActivity"
             android:screenOrientation="portrait" />
         <!-- Create -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.export.FinalizeActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.export.FinalizeActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <!-- Share -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.export.ShareActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.export.ShareActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <!-- WordLinks -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.wordlink.WordLinksActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.wordlink.WordLinksActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <!-- WordLinks List -->
         <activity
-            android:name="org.tyndalebt.spadv.controller.wordlink.WordLinksListActivity"
+            android:name="org.tyndalebt.storyproduceradv.controller.wordlink.WordLinksListActivity"
             android:screenOrientation="portrait" />
     </application>
 

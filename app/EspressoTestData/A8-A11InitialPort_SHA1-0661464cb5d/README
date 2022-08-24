@@ -3,7 +3,7 @@
 This is the test data directory for GIT SHA1: 0661464cb5d6e6cd04f9b3c62f5ca392800c1e21
 The test data is loaded onto the target emulator or phone in the root
 directory (ie, /). Once the test data is loaded, the
-tests in 'org.tyndalebt.spadv.androidtest.happypath' are run. A total of 23
+tests in 'storyproduceradv.androidtest.happypath' are run. A total of 23
 tests will be run.  For Android 8 & 9 on an emulator, all 23 test run successfully. 
 For Android 10 & 11 on an emulator, a few tests fail due to the scoped storage
 requirement which  was introduced in Android 10 & 11.  For the Android 11

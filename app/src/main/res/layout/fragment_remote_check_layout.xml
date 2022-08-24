@@ -7,7 +7,7 @@
     android:clipToPadding="false"
     android:focusableInTouchMode="true"
     android:orientation="vertical"
-    tools:context="org.tyndalebt.spadv.controller.remote.RemoteCheckFrag">
+    tools:context="org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag">
 
     <LinearLayout
         android:id="@+id/indicator_bar"
