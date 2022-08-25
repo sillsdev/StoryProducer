@@ -22,6 +22,7 @@ import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companio
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
+import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import timber.log.Timber
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
@@ -187,5 +188,10 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                     .setText(getString(R.string.app_version, versionName))
         }
     }
+
+    fun showBLDownloadDialog() {
+        startActivity(Intent(this, BLDownloadActivity::class.java))
+    }
+
 
 }

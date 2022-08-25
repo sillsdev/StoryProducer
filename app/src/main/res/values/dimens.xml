@@ -9,7 +9,7 @@
     <dimen name="large_text">18sp</dimen>
     <dimen name="header_text">24sp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">40dp</dimen>
     <dimen name="triangle_width">50dp</dimen>
     <dimen name="triangle_height">100dp</dimen>
     <dimen name="rect_height">60dp</dimen>
@@ -18,5 +18,6 @@
     <dimen name="text_margin">16dp</dimen>
     <dimen name="wordlink_layout_margin">8dp</dimen>
     <dimen name="wordlink_text_margin">16dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
 
 </resources>

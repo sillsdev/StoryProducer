@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -36,6 +35,9 @@ import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
 
+    companion object {
+        lateinit var mainActivity: MainActivity
+    }
     private var mDrawerLayout: DrawerLayout? = null
     lateinit var storyPageViewPager : ViewPager2
     lateinit var storyPageTabLayout : TabLayout
@@ -57,6 +59,8 @@ class MainActivity : BaseActivity(), Serializable {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mainActivity = this
+
         setContentView(R.layout.activity_main)
         setupDrawer()
         setupStoryListTabPages()
@@ -66,7 +70,10 @@ class MainActivity : BaseActivity(), Serializable {
             initWorkspace()
         }
 
-        if (Workspace.showRegistration) {
+        if (Workspace.showRegistration and !Workspace.showRegistrationSkiped) {
+
+            Workspace.showRegistrationSkiped = true
+
             // DKH - 05/12/2021
             // Issue #573: SP will hang/crash when submitting registration
             // This flag indicates that MainActivity should create the
@@ -221,6 +228,9 @@ class MainActivity : BaseActivity(), Serializable {
                 // After the RegistrationActivity is complete, MainActivity will then display
                 // the story template list
                 showRegistration(false)
+            }
+            R.id.nav_bloom_templates -> {
+                showBLDownloadDialog();
             }
             R.id.nav_about -> {
                 showAboutDialog()

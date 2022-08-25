@@ -2,11 +2,13 @@ package org.sil.storyproducer.model
 
 import WordLinksCSVReader
 import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
@@ -14,13 +16,18 @@ import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.storyproducer.App
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activities.BaseActivity
+import org.sil.storyproducer.controller.MainActivity
+import org.sil.storyproducer.controller.SplashScreenActivity
 import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
@@ -71,6 +78,7 @@ object Workspace {
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
+    var showRegistrationSkiped = false
 
     // word links
     lateinit var activeWordLink: WordLink
@@ -386,7 +394,10 @@ object Workspace {
     }
 
     fun storyFiles(): List<DocumentFile> {
-        return storyDirectories().plus(storyBloomFiles())
+        // made up of already installed stories +
+        //      story archives downloaded in story template dir +
+        //      story archives downloaded in external app storage download dir
+        return storyDirectories().plus(storyBloomFiles()).plus(storyDownloadedBloomFiles())
     }
 
     private fun storyDirectories(): List<DocumentFile> {
@@ -399,6 +410,15 @@ object Workspace {
 
     private fun storyBloomFiles(): List<DocumentFile> {
         return workdocfile.listFiles().filter { isZipped(it.name) }
+    }
+
+    private fun storyDownloadedBloomFiles(): List<DocumentFile> {
+        var fileDownloadDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+        val dlFiles = fileDownloadDir?.listFiles()?.filter { it.name.endsWith(".bloomSource") }
+        var dlFilesList : MutableList<DocumentFile> = ArrayList()
+        for (i in 0 until dlFiles?.size!!)
+            dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))
+        return dlFilesList
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {

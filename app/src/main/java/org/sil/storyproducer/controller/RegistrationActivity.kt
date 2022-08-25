@@ -103,7 +103,6 @@ open class RegistrationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_registration)
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(mActionBarToolbar)
-        setSupportActionBar(mActionBarToolbar)
         supportActionBar?.setTitle(R.string.registration_title)
 
         //Initialize sectionViews[] with the integer id's of the various LinearLayouts

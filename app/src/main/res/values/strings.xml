@@ -296,6 +296,7 @@
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
     <string name="more_templates">Download More Templates</string>
+    <string name="bloom_templates">Download Bloom Library Templates</string>
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>
@@ -345,5 +346,7 @@
 
     <!-- Snackbar Messages -->
     <string name="overwrite">Overwrite</string>
+    <string name="title_activity_bldownload">Bloom Library Download</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
