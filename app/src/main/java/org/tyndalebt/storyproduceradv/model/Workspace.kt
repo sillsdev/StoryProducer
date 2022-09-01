@@ -12,6 +12,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +29,7 @@ import org.tyndalebt.storyproduceradv.tools.file.deleteWorkspaceFile
 import org.tyndalebt.storyproduceradv.tools.file.getChildOutputStream
 import org.tyndalebt.storyproduceradv.tools.file.wordLinkListFromJson
 import org.tyndalebt.storyproduceradv.tools.file.workspaceRelPathExists
+import org.tyndalebt.storyproduceradv.activities.DownloadActivity;
 import java.io.*
 import java.net.URI
 import java.sql.Timestamp
@@ -66,6 +68,9 @@ object Workspace {
     // "Welcome Screen", replace this place holder strings with the URL_FOR_TEMPLATES
     const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
     // End Issue #571
+
+    // destination folder for bloom files downloaded from a server (to then be parsed)
+    lateinit var bloomFolder:File
 
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
@@ -283,6 +288,7 @@ object Workspace {
 
             // Initiate new workspace path
             workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+            bloomFolder = File(workdocfile.uri.path)
             registration.load(context)
 
             // load in the Word Links
@@ -295,9 +301,10 @@ object Workspace {
     // A new menu item was added that opens a URL for the user to download templates.
     // This is used in both the MainActivity menu (Story Templates display) and the Phase menus
     fun startDownLoadMoreTemplatesActivity(context: Context){
-        val openURL = Intent(Intent.ACTION_VIEW)
-        openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
-        context.startActivity(openURL)
+        //val openURL = Intent(Intent.ACTION_VIEW)
+        //openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
+        //context.startActivity(openURL)
+        startActivity(context, Intent(context, DownloadActivity::class.java), null)
     }
 
     private fun importWordLinks(context: Context) {
