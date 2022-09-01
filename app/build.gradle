@@ -161,6 +161,8 @@ dependencies {
     // implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     // Issue 166, Cedarville pull #519
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
     testImplementation 'junit:junit:4.12'

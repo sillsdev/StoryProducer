@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.activities.BaseActivity
 import org.tyndalebt.storyproduceradv.controller.MainActivity
 import org.tyndalebt.storyproduceradv.controller.RegistrationActivity
 import org.tyndalebt.storyproduceradv.model.*
@@ -27,7 +28,7 @@ import org.tyndalebt.storyproduceradv.model.Workspace.termToWordLinkMap
 /**
  * This activity shows all Word Links, clickable to go to the WordLinksActivity
  */
-class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
     private var mDrawerLayout: DrawerLayout? = null
@@ -133,20 +134,28 @@ class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
 
             // Add code here to update the UI based on the item selected
             // For example, swap UI fragments here
-            val intent: Intent
             when (menuItem.itemId) {
+                R.id.nav_workspace -> {
+                    showSelectTemplatesFolderDialog()
+                }
+                R.id.nav_word_link_list -> {
+                    // Current fragment
+                }
+                R.id.nav_more_templates -> {
+                    Workspace.startDownLoadMoreTemplatesActivity(this)
+                }
                 R.id.nav_stories -> {
                     intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
-                R.id.nav_word_link_list -> {
-                    // Current fragment
-                }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
+                }
+                R.id.nav_about -> {
+                    showAboutDialog()
                 }
             }
             true
