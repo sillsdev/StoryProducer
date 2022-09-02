@@ -20,9 +20,6 @@
         android:roundIcon="@mipmap/logo_new_splash"
         android:theme="@style/AppTheme"
         tools:replace="android:icon,android:roundIcon">
-        <activity
-            android:name=".DownloadActivity"
-            android:exported="false" />
         <!-- android:usesCleartextTraffic="true" -->
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
@@ -60,7 +57,7 @@
             android:name="org.tyndalebt.storyproduceradv.controller.RegistrationActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".WelcomeDialogActivity"
+            android:name="org.tyndalebt.storyproduceradv.activities.WelcomeDialogActivity"
             android:screenOrientation="portrait" /> <!-- Learn -->
         <activity
             android:name="org.tyndalebt.storyproduceradv.controller.learn.LearnActivity"
