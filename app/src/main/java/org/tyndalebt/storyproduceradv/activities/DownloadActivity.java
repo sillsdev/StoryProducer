@@ -38,6 +38,8 @@ import org.tyndalebt.storyproduceradv.R;
 
 import org.tyndalebt.storyproduceradv.controller.BaseController;
 import org.tyndalebt.storyproduceradv.controller.MainActivity;
+import org.tyndalebt.storyproduceradv.controller.adapter.DownloadAdapter;
+import org.tyndalebt.storyproduceradv.controller.adapter.DownloadDS;
 import org.tyndalebt.storyproduceradv.tools.file.*;
 
 // This needs to correspond to name on server
@@ -101,17 +103,17 @@ public class DownloadActivity extends BaseActivity {
         pView = (ListView) findViewById(R.id.bloom_list_view);
         pDownloadImage = (ImageView) findViewById(R.id.image_download);
 
-        ArrayList<DataModel> arrayList = new ArrayList<>();
+        ArrayList<DownloadDS> arrayList = new ArrayList<>();
         Integer idx;
         String tmp;
 
         for (idx = 0; idx < pList.length; idx++) {
             if (folderExists(this, pURL[idx]) == false) {
                 tmp = pList[idx].replace(".bloom", "");
-                arrayList.add(new DataModel(tmp, pURL[idx], false));
+                arrayList.add(new DownloadDS(tmp, pURL[idx], false));
             }
         }
-        CustomAdapter arrayAdapter = new CustomAdapter(arrayList, this);
+        DownloadAdapter arrayAdapter = new DownloadAdapter(arrayList, this);
 
         pView.setAdapter(arrayAdapter);
 
@@ -152,7 +154,7 @@ public class DownloadActivity extends BaseActivity {
 
         for (idx = 0; idx < pView.getCount(); idx++) {
             Object obj = pView.getAdapter().getItem(idx);
-            DataModel dataModel=(DataModel)obj;
+            DownloadDS dataModel=(DownloadDS) obj;
             if (dataModel.getChecked() == true) {
                 if (pURLs != "") {
                     pURLs = pURLs + ",";
@@ -265,122 +267,4 @@ public class DownloadActivity extends BaseActivity {
         return true;
 
     }
-}
-
-class CustomAdapter extends ArrayAdapter<DataModel> implements View.OnClickListener {
-    Context mContext;
-    private ArrayList<DataModel> dataSet;
-    String apos;
-
-    private static class ViewHolder {
-        CheckedTextView chkItem;
-    }
-
-    public CustomAdapter(ArrayList<DataModel> data, Context context) {
-        super(context, R.layout.bloom_list_item, data);
-        this.mContext = context;
-        this.dataSet = data;
-        // Special Apostrophe (not single quote) doesn't transfer in a URL, encode it along with spaces
-        apos = new Character((char) 226).toString();
-        apos = apos + new Character((char) 128).toString();
-        apos = apos + new Character((char) 153).toString();
-
-    }
-
-    @Override
-    public void onClick(View v) {
-
-        int position=(Integer) v.getTag();
-        Object object= getItem(position);
-        DataModel dataModel=(DataModel)object;
-
-        switch (v.getId())
-        {
-            case R.id.checkedTextView:
-                CheckedTextView ctv = (CheckedTextView) v;
-                dataModel.setChecked(!ctv.isChecked());   // toggle check
-                setCheckmark(ctv, dataModel.getChecked());
-                break;
-        }
-    }
-
-    private int lastPosition = -1;
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        // Get the data item for this position
-        DataModel dataModel = getItem(position);
-        // Check if an existing view is being reused, otherwise inflate the view
-        ViewHolder viewHolder; // view lookup cache stored in tag
-
-        final View result;
-
-        if (convertView == null) {
-            viewHolder = new ViewHolder();
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.bloom_list_item, parent,false);
-            viewHolder.chkItem = (CheckedTextView) convertView.findViewById(R.id.checkedTextView);
-
-            result = convertView;
-            convertView.setTag(viewHolder);
-        }
-        else {
-            viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
-        }
-
-        Animation animation = AnimationUtils.loadAnimation(mContext, (position > lastPosition) ? R.anim.enter_up : R.anim.enter_down);
-        result.startAnimation(animation);
-        lastPosition = position;
-
-        String tmpString;
-        tmpString = dataModel.getName();
-        tmpString = tmpString.replaceAll(apos, "’");
-
-        viewHolder.chkItem.setText(tmpString);
-        setCheckmark(viewHolder.chkItem, dataModel.getChecked());
-        viewHolder.chkItem.setOnClickListener(this);
-        viewHolder.chkItem.setTag(position);
-        // Return the completed view to render on screen
-        return convertView;
-    }
-
-
-    void setCheckmark(CheckedTextView ctv, Boolean checked) {
-        ctv.setChecked(checked);
-        if (!ctv.isChecked()) {
-            ctv.setCompoundDrawables(null, null, null, null);
-//            ctv.setCheckMarkDrawable(null);
-        } else {
-            Drawable img = getContext().getResources().getDrawable(R.drawable.ic_checkmark_green);
-            img.setBounds(0, 0, 120, 120);
-            ctv.setCompoundDrawables(img, null, null, null);
-//            ctv.setCheckMarkDrawable(R.drawable.ic_checkmark_green);
-        }
-    }
-
-}
-
-class DataModel {
-    String fileName;
-    String URL;
-    Boolean checked;
-
-    public DataModel(String name, String url, Boolean checked) {
-        this.fileName = name;
-        this.URL = url;
-        this.checked = checked;
-    }
-
-    public String getName() {
-        return fileName;
-    }
-
-    public String getURL() {
-        return URL;
-    }
-
-    public Boolean getChecked() { return checked; }
-
-    public void setChecked(Boolean checked) { this.checked = checked; }
-
 }

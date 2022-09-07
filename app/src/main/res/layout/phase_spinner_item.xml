@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/darkGray"
+    android:padding="15dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/phaseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
+        android:text="Purple"
+        android:textColor="@color/black"
+        android:padding="8dp"
+        android:textSize="20sp" />
+
+</RelativeLayout>

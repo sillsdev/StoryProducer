@@ -22,6 +22,9 @@ import androidx.core.view.GravityCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.activities.BaseActivity
+import org.tyndalebt.storyproduceradv.controller.adapter.PhaseList
+import org.tyndalebt.storyproduceradv.controller.adapter.PhaseObject
+import org.tyndalebt.storyproduceradv.controller.adapter.PhaseSpinnerAdapter
 import org.tyndalebt.storyproduceradv.model.*
 import org.tyndalebt.storyproduceradv.service.SlideService
 import org.tyndalebt.storyproduceradv.tools.BitmapScaler
@@ -41,9 +44,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     private var mAdapter: ArrayAdapter<String>? = null
     private var mDrawerToggle: ActionBarDrawerToggle? = null
     private var mDrawerLayout: androidx.drawerlayout.widget.DrawerLayout? = null
-
+    private var pView: ListView? = null
     protected var phase: Phase = Workspace.activePhase
     protected var story: Story = Workspace.activeStory
+    lateinit var selectedPhase: PhaseObject
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +59,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         supportActionBar?.title = ""
         supportActionBar?.setBackgroundDrawable(ColorDrawable(ResourcesCompat.getColor(resources,
                 phase.getColor(), null)))
+        pView = findViewById<View>(R.id.navList) as ListView
 
         mDetector = GestureDetectorCompat(this, PhaseGestureListener(this))
 
@@ -120,6 +125,9 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
 
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
+        val pList = PhaseList()
+        spinner.adapter = PhaseSpinnerAdapter(this, pList.getPhaseList())
+/*
         val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
             ArrayAdapter.createFromResource(this,
@@ -130,15 +138,16 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
                     R.array.local_phases_menu_array, android.R.layout.simple_spinner_item)
         }
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
-
         spinner.adapter = adapter
+ */
+        spinner.setPopupBackgroundResource(R.color.darkGray)
+
         //Set the selection before setting the listener.  If flipped, the listener would be called
         //when initializing and cause bad things.
         spinner.setSelection(Workspace.activePhaseIndex)
         spinner.onItemSelectedListener = this
         return true
     }
-
 
     override fun onItemSelected(parent: AdapterView<*>, view: View,
                                 pos: Int, id: Long) {
