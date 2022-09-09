@@ -3,6 +3,7 @@ package org.tyndalebt.storyproduceradv.activities
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -22,7 +23,21 @@ class WelcomeDialogActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+/**
+        if (externalMemoryAvailable() == true) {
+            val errorToast = Toast.makeText(this, "There is an SD card", Toast.LENGTH_SHORT)
+            errorToast.show()
+        } else {
+            val errorToast = Toast.makeText(this, "There is NO SD card", Toast.LENGTH_SHORT)
+            errorToast.show()
+        }
+*/
         showWelcomeDialog()
+    }
+
+    fun externalMemoryAvailable(): Boolean {
+        val storages = ContextCompat.getExternalFilesDirs(this, null)
+        return storages.size > 1 && storages[0] != null && storages[1] != null
     }
 
     private fun showWelcomeDialog() {
