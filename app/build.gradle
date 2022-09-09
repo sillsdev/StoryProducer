@@ -162,3 +162,14 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 }
 
+// Added the following 'configurations' exclusions to fix issue: build.gradle: Error: commons-logging defines classes that conflict with classes now provided by Android.
+// Solutions include finding newer versions or alternative libraries that don't have the same problem (for example, for httpclient use HttpUrlConnection or okhttp instead), or repackaging the library using something like jarjar.
+// [DuplicatePlatformClasses]
+// As suggested by: https://stackoverflow.com/questions/46989310/commons-logging-defines-classes-that-conflict-with-classes-now-provided-by-andro
+configurations {
+    all {
+        exclude module: 'httpclient'
+        exclude module: 'commons-logging'
+    }
+}
+
