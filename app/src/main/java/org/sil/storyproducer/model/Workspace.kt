@@ -78,6 +78,9 @@ object Workspace {
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
+
+    // set if user skipped the registration process - so that they are not nagged too much
+    // when updateStories() is called by the BL Download Activity
     var showRegistrationSkiped = false
 
     // word links
@@ -413,8 +416,9 @@ object Workspace {
     }
 
     private fun storyDownloadedBloomFiles(): List<DocumentFile> {
-        var fileDownloadDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-        val dlFiles = fileDownloadDir?.listFiles()?.filter { it.name.endsWith(".bloomSource") }
+        var fileDownloadDir = File(bloomSourceAutoDLDir())
+        var blExt = bloomSourceZipExt()
+        val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) }
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until dlFiles?.size!!)
             dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))

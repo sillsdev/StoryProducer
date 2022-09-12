@@ -1,14 +1,12 @@
 package org.sil.storyproducer.model
 
-
 import java.util.*
-
 
 /**
  * BLBookList is used as a collection of books available to download from BloomLibrary
  */
 open class BLBookList(var dateUpdated: Date) {
-    public var booklist = mutableListOf<BLBook>()
+    var booklist = mutableListOf<BLBook>()
 
     init {
         booklist.add(BLBook("001 The Widow’s Offering", "en",
@@ -34,14 +32,9 @@ class BLBook(
         val LangCode: String,
         val ThumbnailURL: String,
         val BloomSourceURL: String)
-{
-    // the book by this title is present in the Workspace, either as a Bloom or BloomSource file
-    // or as a project folder
-    var isInWorkspace: Boolean = false
-}
 
-object blBookList : BLBookList(Date())
+object BlBookList : BLBookList(Date())
 
-public fun parseOPDSfile(): MutableList<BLBook> {
-     return blBookList.booklist
+fun parseOPDSfile(): MutableList<BLBook> {
+     return BlBookList.booklist
 }

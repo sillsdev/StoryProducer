@@ -10,8 +10,14 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.bldownload.BLCustomAdapter.BLViewHolder
 import java.util.ArrayList
 
+// This class implements a RecyclerView.Adapter for the Bloom Library card list UI
+// The child class BLViewHolder is used to hold the UI widgets that make the card item
 class BLCustomAdapter(data: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLViewHolder?>() {
     private val dataSet: ArrayList<BLDataModel>
+
+    init {
+        dataSet = data
+    }
 
     class BLViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textViewTitle: TextView
@@ -49,7 +55,4 @@ class BLCustomAdapter(data: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLVie
         return dataSet.size
     }
 
-    init {
-        dataSet = data
-    }
 }

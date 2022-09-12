@@ -209,6 +209,10 @@ fun migrateStory(context: Context, story: Story): Story? {
     return story
 }
 
+fun bloomSourceAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!!}
+
+fun bloomSourceZipExt() : String {return ".bloomSource"}
+
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
         arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
@@ -223,7 +227,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
 
     val storyName = file.name!!.substringBeforeLast(".","")
     val internalFile = File("${context.filesDir}/${file.name!!}")
-    var dlFileStr = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path + "/" + file.name
+    var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name
     var dlFile = File(dlFileStr)
     var dlFileExists = dlFile.exists()
     var zipFile : ZipFile
