@@ -114,6 +114,11 @@
         3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">1SP Workspace&lt;/font> folder&lt;br>&lt;br>
         After you have prepared the &lt;font color=\"green\">1SP Workspace&lt;/font> folder, proceed:
     </string>
+    <string name="welcome_screen_select_template_folder_new">
+        StoryProducerAdv is different from typical apps.
+        You must create a Workspace folder in your phone storage.  You will then download story templates and other assets into this folder.&lt;br>&lt;br>
+        You can do so by pressing the button below.  Select the &lt;font color=\"green\">1SP Workspace&lt;/font> folder if it already exists or create a new folder and then select it.
+    </string>
     <string name="workspace_selection_help">
         &lt;font color=\"gray\">Tell the StoryProducerAdv app where to find story templates.&lt;/font>&lt;br>&lt;br>
         The next screen will be a \'folder picker\'.&lt;br>

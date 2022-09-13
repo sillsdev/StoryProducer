@@ -92,7 +92,9 @@ open class BaseController(
             // Issue #573: SP will hang/crash when submitting registration
             // Don't call view.showRegistration() directly,
             // Tell MainActivity to display the registration upon MainActivity startup
-            Workspace.showRegistration = true
+        // 9/13/22 - Select folder, process demo (and other) project(s) and skip registration screen and show template list
+            // Registration can be chosen manually from list
+        //            Workspace.showRegistration = true
         }
         // activate the MainActivity which if necessary, will call RegistrationActivity to display
         // the registration

@@ -509,11 +509,21 @@ object Workspace {
     }
 
     private fun storyDirectories(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { it.isDirectory }
+        // Improperly counting worklinks or video folder as a template. remove from list
+        var storyList = workdocfile.listFiles().toMutableList()
+        var idx: Int = 0
+        var tmpSize = storyList.size - 1
+        for (idx in tmpSize downTo 0)
+        {
+            if (storyList[idx].name == WORD_LINKS_DIR || storyList[idx].name == VIDEO_DIR) {
+                storyList.removeAt(idx)
+            }
+        }
+        return storyList.filter { it.isDirectory }
     }
 
     private fun storyBloomFiles(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { isZipped(it.name) }
+        return  workdocfile.listFiles().filter { isZipped(it.name) }
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {

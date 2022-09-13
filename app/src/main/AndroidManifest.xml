@@ -19,6 +19,7 @@
         android:largeHeap="true"
         android:roundIcon="@mipmap/logo_new_splash"
         android:theme="@style/AppTheme"
+        android:requestLegacyExternalStorage="true"
         tools:replace="android:icon,android:roundIcon">
         <!-- android:usesCleartextTraffic="true" -->
         <meta-data

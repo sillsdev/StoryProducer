@@ -145,6 +145,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     }
 
     fun showSelectTemplatesFolderDialog() {
+/*
         AlertDialog.Builder(this)
                 .setTitle(buildSelectTemplatesTitle())
                 .setMessage(buildSelectTemplatesMessage())
@@ -152,6 +153,9 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
                 .setNegativeButton(R.string.cancel, null)
                 .create()
                 .show()
+
+ */
+        updateTemplatesFolder()
     }
 
     private fun buildSelectTemplatesTitle(): Spanned {
