@@ -58,6 +58,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     // Show download complete toast message
                     Toast.makeText(context, R.string.bloom_lib_download_complete, Toast.LENGTH_LONG).show()
                     // close BL download activity so we can initiate and see the templates being processed by the MainActivity
+                    // this onBackPressed() override also unregisters the broadcast receiver and calls updateStories()
                     bldlActivity.onBackPressed()
                 }
             }
@@ -135,9 +136,8 @@ class BLDownloadActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
                 bldlActivity.unregisterBLBroadcastReceiver(blBroadCastReceiver) // bug fix for crash in updateStories()
                 // close BL download activity so we can see the templates being processed by the MainActivity
+                // this onBackPressed() override also unregisters the broadcast receiver and calls updateStories()
                 bldlActivity.onBackPressed()
-                // some files have already been downloaded so install them
-                MainActivity.mainActivity.controller.updateStories() // process the downloaded templates
             }
         }   // FAB binding.bldlFab.setOnClickListener() lambda ends here
 
@@ -251,8 +251,8 @@ class BLDownloadActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-
     override fun onSupportNavigateUp(): Boolean {
+        // this onBackPressed() override also unregisters the broadcast receiver and calls updateStories()
         onBackPressed()
         return true
     }

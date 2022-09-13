@@ -284,8 +284,11 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
     }
     catch(e: Exception) { }
     //delete copied and original zip file to save space
-    if (dlFileExists)
-        dlFile.delete()
+    if (dlFileExists) {
+        if (!dlFile.delete()) {
+            Timber.w("Failed to delete downloaded story: '%s'", file.name)
+        }
+    }
     else {
         internalFile.delete()
         deleteWorkspaceFile(context, file.name!!)

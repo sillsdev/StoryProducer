@@ -2,25 +2,18 @@ package org.sil.storyproducer.model
 
 import WordLinksCSVReader
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
-import org.sil.storyproducer.App
 import org.sil.storyproducer.R
-import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.controller.MainActivity
-import org.sil.storyproducer.controller.SplashScreenActivity
 import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
@@ -412,7 +405,16 @@ object Workspace {
     }
 
     private fun storyBloomFiles(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { isZipped(it.name) }
+        var installStories = workdocfile.listFiles().filter { isZipped(it.name) }
+        var installFilesList : MutableList<DocumentFile> = ArrayList()
+        for (i in 0 until installStories.size) {
+            val installFilename = installStories[i].name
+            val installBaseName = installFilename?.substringBeforeLast('.')
+            val workStoryIdx = workdocfile.listFiles().indexOfFirst { it.name == installBaseName }
+            if (workStoryIdx == -1)
+                installFilesList.add(installStories[i])
+        }
+        return installFilesList
     }
 
     private fun storyDownloadedBloomFiles(): List<DocumentFile> {
@@ -420,8 +422,13 @@ object Workspace {
         var blExt = bloomSourceZipExt()
         val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) }
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
-        for (i in 0 until dlFiles?.size!!)
-            dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))
+        for (i in 0 until dlFiles?.size!!) {
+            val storyFilename = dlFiles[i].name
+            val storyName = storyFilename.substring(0, storyFilename.length - blExt.length)
+            val workStoryIdx = workdocfile.listFiles().indexOfFirst { it.name == storyName }
+            if (workStoryIdx == -1)
+                dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))
+        }
         return dlFilesList
     }
 
