@@ -1,6 +1,7 @@
 package org.tyndalebt.storyproduceradv.model
 
 import WordLinksCSVReader
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -21,15 +22,16 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.BuildConfig
+import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.activities.BaseActivity
+import org.tyndalebt.storyproduceradv.activities.DownloadActivity
 import org.tyndalebt.storyproduceradv.model.messaging.Approval
 import org.tyndalebt.storyproduceradv.model.messaging.MessageROCC
 import org.tyndalebt.storyproduceradv.tools.file.deleteWorkspaceFile
 import org.tyndalebt.storyproduceradv.tools.file.getChildOutputStream
 import org.tyndalebt.storyproduceradv.tools.file.wordLinkListFromJson
 import org.tyndalebt.storyproduceradv.tools.file.workspaceRelPathExists
-import org.tyndalebt.storyproduceradv.activities.DownloadActivity;
 import java.io.*
 import java.net.URI
 import java.sql.Timestamp
@@ -91,7 +93,10 @@ object Workspace {
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
-
+    // DBH 9/14/22
+    // Issue #73  Show registration screen whenever more templates is selected, until registration has been submitted
+    // This flag marks whether main should go to "More Templates" or to the template list
+    var showMoreTemplates = false
     // To track if force quit is happening or just changing between activities
     var LastActivityEvent: String = ""
 
@@ -303,10 +308,20 @@ object Workspace {
     // A new menu item was added that opens a URL for the user to download templates.
     // This is used in both the MainActivity menu (Story Templates display) and the Phase menus
     fun startDownLoadMoreTemplatesActivity(context: Context){
-        //val openURL = Intent(Intent.ACTION_VIEW)
-        //openURL.data = Uri.parse(Workspace.URL_FOR_TEMPLATES)
-        //context.startActivity(openURL)
-        startActivity(context, Intent(context, DownloadActivity::class.java), null)
+        // if Registration has not been submitted yet, then show Registration screen first, then "Download More Templates"
+        if (!Workspace.registration.complete && !Workspace.showMoreTemplates) {
+            if (context is BaseActivity)
+            {
+                // Mark that going to registration came from Download more templates, so that it goes there after registration is done
+                Workspace.showMoreTemplates = true
+                val activity = context as BaseActivity
+                activity.showRegistration(false)
+            }
+        }
+        else {
+            Workspace.showMoreTemplates = false
+            startActivity(context, Intent(context, DownloadActivity::class.java), null)
+        }
     }
 
     private fun importWordLinks(context: Context) {

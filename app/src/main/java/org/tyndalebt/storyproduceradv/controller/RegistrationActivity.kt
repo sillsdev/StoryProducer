@@ -31,6 +31,7 @@ import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.model.Phase
 import org.tyndalebt.storyproduceradv.model.PhaseType
 import org.tyndalebt.storyproduceradv.model.Workspace
+import org.tyndalebt.storyproduceradv.model.Workspace.startDownLoadMoreTemplatesActivity
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import java.util.*
 
@@ -519,8 +520,12 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     //TODO flush all click event prior to showing the registration screen so that this is not invoked if the user inadvertently
                     //clicks on the splash screen
-                    Workspace.registration.complete = true
-                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    if (Workspace.showMoreTemplates) {
+                        startDownLoadMoreTemplatesActivity(this)
+                    }
+                    else {
+                        startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    }
                     finish()
                 }.create()
 

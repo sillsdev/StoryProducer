@@ -66,7 +66,10 @@ class MainActivity : BaseActivity(), Serializable {
             initWorkspace()
         }
 
-        if (Workspace.showRegistration) {
+        if (Workspace.showMoreTemplates) {
+            Workspace.startDownLoadMoreTemplatesActivity(this)
+        }
+        else if (Workspace.showRegistration) {
             // DKH - 05/12/2021
             // Issue #573: SP will hang/crash when submitting registration
             // This flag indicates that MainActivity should create the
@@ -92,9 +95,6 @@ class MainActivity : BaseActivity(), Serializable {
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
         }
-
-        //Adding Demo Story
-        Workspace.addDemoToWorkspace(this)
 
     }
 

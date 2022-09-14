@@ -26,11 +26,15 @@ open class BaseController(
     }
 
     fun updateStories() {
+
+        var storyFiles = Workspace.storyFiles()
+        if (storyFiles.isEmpty()) {
+            //Adding Demo Story, empty folder
+            Workspace.addDemoToWorkspace(this.context)
+        }
         Workspace.Stories.clear()
-
-        val storyFiles = Workspace.storyFiles()
-
-        if (storyFiles.size > 0) {
+        storyFiles = Workspace.storyFiles()
+        if (storyFiles.isNotEmpty()) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)
         } else {
             onStoriesUpdated()
