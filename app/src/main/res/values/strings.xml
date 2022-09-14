@@ -116,8 +116,8 @@
     </string>
     <string name="welcome_screen_select_template_folder_new">
         StoryProducerAdv is different from typical apps.
-        You must create a Workspace folder in your phone storage.  You will then download story templates and other assets into this folder.&lt;br>&lt;br>
-        You can do so by pressing the button below.  Select the &lt;font color=\"green\">1SP Workspace&lt;/font> folder if it already exists or create a new folder and then select it.
+        You must create a Workspace folder in your phone storage.  You will then download story templates into this folder.&lt;br>&lt;br>
+        You can do so by tapping the button below.  Select the &lt;font color=\"green\">1SP Workspace&lt;/font> folder if it already exists or create a new folder and then select it.
     </string>
     <string name="workspace_selection_help">
         &lt;font color=\"gray\">Tell the StoryProducerAdv app where to find story templates.&lt;/font>&lt;br>&lt;br>

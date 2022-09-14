@@ -27,15 +27,6 @@
             android:paddingBottom="20dp"
             android:paddingLeft="20dp">
 
-            <TextView
-                android:id="@+id/demo_textview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Demo"
-                android:textColor="@color/gray"
-                android:textSize="12sp" />
-
             <Button
                 android:id="@+id/select_templates_button"
                 android:layout_width="wrap_content"
