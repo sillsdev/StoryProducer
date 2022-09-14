@@ -1,21 +1,11 @@
 package org.tyndalebt.storyproduceradv.activities;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -40,6 +30,7 @@ import org.tyndalebt.storyproduceradv.controller.BaseController;
 import org.tyndalebt.storyproduceradv.controller.MainActivity;
 import org.tyndalebt.storyproduceradv.controller.adapter.DownloadAdapter;
 import org.tyndalebt.storyproduceradv.controller.adapter.DownloadDS;
+import org.tyndalebt.storyproduceradv.model.Workspace;
 import org.tyndalebt.storyproduceradv.tools.file.*;
 
 // This needs to correspond to name on server
@@ -229,6 +220,9 @@ public class DownloadActivity extends BaseActivity {
                 break;
             case R.id.nav_registration:
                 showRegistration(false);
+                break;
+            case R.id.nav_spadv_website:
+                org.tyndalebt.storyproduceradv.tools.file.FileIO.goToURL(this, Workspace.URL_FOR_WEBSITE);
                 break;
             case R.id.nav_about:
                 showAboutDialog();

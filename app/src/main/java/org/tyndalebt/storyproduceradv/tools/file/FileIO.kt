@@ -2,6 +2,7 @@
 package org.tyndalebt.storyproduceradv.tools.file
 
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -342,3 +343,9 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
 
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125
+
+fun goToURL(context: Context, url: String) {
+    val openURL = Intent(Intent.ACTION_VIEW)
+    openURL.data = Uri.parse(url)
+    context.startActivity(openURL)
+}

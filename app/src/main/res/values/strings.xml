@@ -298,6 +298,7 @@
     <string name="update_workspace">Select \'SP Workspace\' folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="more_templates">Download More Templates</string>
+    <string name="spadv_website">SPadv - website</string>
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>

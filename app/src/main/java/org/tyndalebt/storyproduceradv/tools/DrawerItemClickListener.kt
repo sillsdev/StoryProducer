@@ -6,6 +6,7 @@ import android.widget.AdapterView
 import org.tyndalebt.storyproduceradv.activities.BaseActivity
 import org.tyndalebt.storyproduceradv.controller.MainActivity
 import org.tyndalebt.storyproduceradv.model.Workspace
+import org.tyndalebt.storyproduceradv.tools.file.goToURL
 
 class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.OnItemClickListener {
 
@@ -56,7 +57,8 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.showSelectTemplatesFolderDialog()
             }
             5 -> {
-                Workspace.addDemoToWorkspace(activity)
+                //Workspace.addDemoToWorkspace(activity)
+                goToURL(activity, Workspace.URL_FOR_WEBSITE)
             }
             6 -> {
                 activity.showAboutDialog()

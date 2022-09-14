@@ -24,6 +24,7 @@ import org.tyndalebt.storyproduceradv.model.*
 import org.tyndalebt.storyproduceradv.model.PHASE
 import org.tyndalebt.storyproduceradv.model.WORD_LINKS_CLICKED_TERM
 import org.tyndalebt.storyproduceradv.model.Workspace.termToWordLinkMap
+import org.tyndalebt.storyproduceradv.tools.file.goToURL
 
 /**
  * This activity shows all Word Links, clickable to go to the WordLinksActivity
@@ -143,6 +144,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 }
                 R.id.nav_more_templates -> {
                     Workspace.startDownLoadMoreTemplatesActivity(this)
+                }
+                R.id.nav_spadv_website -> {
+                    goToURL(this, Workspace.URL_FOR_WEBSITE)
                 }
                 R.id.nav_stories -> {
                     intent = Intent(this, MainActivity::class.java)

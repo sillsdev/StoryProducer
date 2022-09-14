@@ -63,10 +63,12 @@ object Workspace {
     // language and by having the URL defined here, we never have to update the different strings.xml
     // files.
     // DKH - 5/3/2022 Issue OR14 - Update to use secure SPadv website
-    const val URL_FOR_TEMPLATES = "https://sites.google.com/view/spadv-website"
+//    Download templates from ROCC server
+//    const val URL_FOR_TEMPLATES = "https://sites.google.com/view/spadv-website"
+    const val URL_FOR_WEBSITE = "https://sites.google.com/view/spadv-website/home?authuser=2"
     // These are the place holder strings in the "Welcome Screen" html.  Before displaying the
     // "Welcome Screen", replace this place holder strings with the URL_FOR_TEMPLATES
-    const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
+//    const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
     // End Issue #571
 
     // destination folder for bloom files downloaded from a server (to then be parsed)

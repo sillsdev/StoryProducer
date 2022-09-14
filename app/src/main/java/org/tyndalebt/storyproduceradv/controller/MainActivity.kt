@@ -31,6 +31,7 @@ import org.tyndalebt.storyproduceradv.model.Story
 import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.tools.Network.ConnectivityStatus
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
+import org.tyndalebt.storyproduceradv.tools.file.goToURL
 import java.io.Serializable
 
 class MainActivity : BaseActivity(), Serializable {
@@ -217,6 +218,9 @@ class MainActivity : BaseActivity(), Serializable {
                 // After the RegistrationActivity is complete, MainActivity will then display
                 // the story template list
                 showRegistration(false)
+            }
+            R.id.nav_spadv_website -> {
+                goToURL(this, Workspace.URL_FOR_WEBSITE)
             }
             R.id.nav_about -> {
                 showAboutDialog()

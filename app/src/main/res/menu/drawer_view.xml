@@ -17,6 +17,9 @@
             android:id="@+id/nav_workspace"
             android:title="@string/update_workspace" />
         <item
+            android:id="@+id/nav_spadv_website"
+            android:title="@string/spadv_website" />
+        <item
             android:id="@+id/nav_about"
             android:title="@string/about" />
     </group>
