@@ -32,6 +32,7 @@ class StoryPageFragment : Fragment() {
 
     private lateinit var storyPageTab : StoryPageTab
     private lateinit var listView: ListView
+    private lateinit var demoOnlyMsg: TextView
     private lateinit var adapter: ListAdapter
     // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
     // Updated while integrating pull request #561 into current sillsdev baseline
@@ -68,7 +69,7 @@ class StoryPageFragment : Fragment() {
         // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
         // Updated while integrating pull request #561 into current sillsdev baseline
         //
-        // save the stories assoicated with this storyPageFragment
+        // save the stories associated with this storyPageFragment
         // (eg, ALL STORIES, IN PROGRESS, COMPLETED)
         CurrentStoryList = storyPageTab.getStoryList()  // grab the stories
         if (CurrentStoryList.isEmpty()) {  // If empty, set up for displaying "No Story" message
@@ -91,13 +92,16 @@ class StoryPageFragment : Fragment() {
 
             return view
         }
-
-        val lfview = inflater.inflate(R.layout.story_list_container, container, false)
+        val lfView = inflater.inflate(R.layout.story_list_container, container, false)
 
         // Apply the Stories to the Story List View
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
 
-        listView = lfview.findViewById(R.id.story_list_view)
+        listView = lfView.findViewById(R.id.story_list_view)
+        if (CurrentStoryList.size == 1) {
+            demoOnlyMsg = lfView.findViewById(R.id.demo_only_msg)
+            demoOnlyMsg.text =  getString(R.string.only_demo_present)
+        }
 
         // DKH - 07/10/2021 - Issue 407: Add filtering to SP's 'Story Templates' List
         // Updated while integrating pull request #561 into current sillsdev baseline
@@ -113,7 +117,7 @@ class StoryPageFragment : Fragment() {
         // Assign adapter to ListView
         listView.adapter = adapter
 
-        return lfview
+        return lfView
     }
 
     /**

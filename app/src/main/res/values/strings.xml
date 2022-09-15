@@ -124,6 +124,9 @@
         The next screen will be a \'folder picker\'.&lt;br>
         Navigate to the &lt;font color=\"green\">SP Workspace&lt;/font> folder (on the &lt;font color=\"green\">SD Card or in internal memory&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
     </string>
+    <string name="only_demo_present">
+    To download more story templates or access other options, open the main menu (tap the 3-lines icon top left corner). Please complete and submit the Registration to make it "hide".
+    </string>
     <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
     <string-array name="orthography_list">
         <item>None</item>
