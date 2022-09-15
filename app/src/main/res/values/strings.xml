@@ -349,10 +349,12 @@
     <string name="title_activity_bldownload">Bloom Library Download</string>
     <string name="action_settings">Settings</string>
     <string name="bloom_lib_download_started">Bloom Library: download started</string>
+    <string name="bloom_lib_already_installed">Bloom Library: already installed</string>
 
     <!-- Toast Messages -->
     <string name="bloom_lib_download_complete">Bloom Library: download complete</string>
     <string name="bloom_lib_already_downloaded">Bloom Library: already downloaded</string>
+    <string name="bloom_lib_nothing_selected">Bloom Library: nothing selected</string>
 
     <!-- Other Messages -->
     <string name="bloom_lib_download">Bloom Library: download</string>

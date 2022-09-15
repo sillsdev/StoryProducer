@@ -389,11 +389,14 @@ object Workspace {
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun storyFiles(): List<DocumentFile> {
+    fun storyFilesToScanOrUnzip(): List<DocumentFile> {
         // made up of already installed stories +
         //      story archives downloaded in story template dir +
         //      story archives downloaded in external app storage download dir
-        return storyDirectories().plus(storyBloomFiles()).plus(storyDownloadedBloomFiles())
+        // while checking that the story does not already exist
+        return storyDirectories()
+            .run { this.plus(storyDownloadedBloomFiles(this)) }
+            .run { this.plus(storyBloomFiles(this)) }
     }
 
     private fun storyDirectories(): List<DocumentFile> {
@@ -404,29 +407,31 @@ object Workspace {
         }
     }
 
-    private fun storyBloomFiles(): List<DocumentFile> {
+    private fun storyBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
         var installStories = workdocfile.listFiles().filter { isZipped(it.name) }
         var installFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until installStories.size) {
             val installFilename = installStories[i].name
             val installBaseName = installFilename?.substringBeforeLast('.')
-            val workStoryIdx = workdocfile.listFiles().indexOfFirst { it.name == installBaseName }
-            if (workStoryIdx == -1)
+            // don't add if already in the workspace
+            if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
+                        it.name == installBaseName } == null)
                 installFilesList.add(installStories[i])
         }
         return installFilesList
     }
 
-    private fun storyDownloadedBloomFiles(): List<DocumentFile> {
+    private fun storyDownloadedBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
         var fileDownloadDir = File(bloomSourceAutoDLDir())
         var blExt = bloomSourceZipExt()
         val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) }
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until dlFiles?.size!!) {
-            val storyFilename = dlFiles[i].name
-            val storyName = storyFilename.substring(0, storyFilename.length - blExt.length)
-            val workStoryIdx = workdocfile.listFiles().indexOfFirst { it.name == storyName }
-            if (workStoryIdx == -1)
+            val installFilename = dlFiles[i].name
+            val installBaseName = installFilename?.substringBeforeLast('.')
+            // don't add if already in the workspace
+            if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
+                                    it.name == installBaseName } == null)
                 dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))
         }
         return dlFilesList

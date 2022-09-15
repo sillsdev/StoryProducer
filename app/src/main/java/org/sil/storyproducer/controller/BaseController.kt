@@ -26,7 +26,7 @@ open class BaseController(
     fun updateStories() {
         Workspace.Stories.clear()
 
-        val storyFiles = Workspace.storyFiles()
+        val storyFiles = Workspace.storyFilesToScanOrUnzip()
 
         if (storyFiles.size > 0) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)

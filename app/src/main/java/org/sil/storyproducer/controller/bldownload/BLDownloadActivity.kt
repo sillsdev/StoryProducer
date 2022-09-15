@@ -41,20 +41,29 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // process a message from the DownloadManager to see if it has completed one of our story files
         override fun onReceive(context: Context?, intent: Intent?) {
+            // check that we have received a download complete action
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == intent!!.action) {
-                var moreDownloads = 0;
-                val downloadedId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, BLDataModel.NOT_DOWNLOADED)
+                // process the download complete action - installing any downloads if necessary
+                var moreDownloadsToComplete = 0;
+                var recognisedDownloads = 0
+                val downloadCompleteId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, // get the downloaded id
+                                                    BLDataModel.DOWNLOAD_NOT_REQUESTED) // default
+                val fileDownloadDir = bloomSourceAutoDLDir()
                 for (i in 0 until data.size) {
                     val model = data.get(i)
-                    if (model.downloadId != BLDataModel.NOT_DOWNLOADED && model.downloadId == downloadedId) {
-                        model.downloadId = BLDataModel.ALREADY_DOWNLOADED   // no longer need to check for this download id
+                    // Check if the file has already been downloaded or removed somehow since last checked
+                    model.isInBLDLDir = File(fileDownloadDir + "/" + model.title + bloomSourceZipExt()).exists()
+                    if (model.isInBLDLDir && !model.isInWorkspace) {
+                        recognisedDownloads++
                     }
-                    else if (model.downloadId != BLDataModel.NOT_DOWNLOADED &&
-                        model.downloadId != BLDataModel.ALREADY_DOWNLOADED) {
-                        moreDownloads++ // we have other ids that are still being downloaded
+                    if (downloadCompleteId >= 0 && model.downloadId == downloadCompleteId) {
+                        model.downloadId = BLDataModel.DOWNLOADED_COMPLETE   // no longer need to check for this download id
+                    }
+                    else if (model.downloadId >= 0) {
+                        moreDownloadsToComplete++ // we have other ids in the list that are still being downloaded
                     }
                 }
-                if (moreDownloads == 0) {
+                if (moreDownloadsToComplete == 0 && recognisedDownloads > 0) {
                     // Show download complete toast message
                     Toast.makeText(context, R.string.bloom_lib_download_complete, Toast.LENGTH_LONG).show()
                     // close BL download activity so we can initiate and see the templates being processed by the MainActivity
@@ -96,48 +105,90 @@ class BLDownloadActivity : AppCompatActivity() {
 
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager;
 
-        // FAB Icon from:
-        // <a href="https://www.flaticon.com/free-icons/download" title="download icons">Download icons created by Becris - Flaticon</a>
-        // Now setup a listener, for the BL Download cloud FAB button click, here using a lambda
+        // Add listener for when 'Floating Action Button' (FAB) Cloud download button is clicked
+        // Icon from: <a href="https://www.flaticon.com/free-icons/download" title="download icons">Download icons created by Becris - Flaticon</a>
+        // Now setup a listener, for FAB button click, here using a lambda
         binding.bldlFab.setOnClickListener { view ->
             var numQueued = 0
+            var numDownloadsCompleted = 0
             var numAlreadyDownloaded = 0
+            var numAlreadyInstalled = 0
+            val fileDownloadDir = bloomSourceAutoDLDir()
             for (i in 0 until data.size)
             {
                 var dataItem = data.get(i)
-                if (dataItem.isChecked &&
-                        !dataItem.isInWorkspace &&
-                        dataItem.downloadId == BLDataModel.NOT_DOWNLOADED)
-                {   // user is initiating a download of this title from bloom library
+                // Check if the file has already been downloaded or removed somehow since last checked
+                dataItem.isInBLDLDir = File(fileDownloadDir + "/" + dataItem.title + bloomSourceZipExt()).exists()
+                // find out which action(s) or message needs processing
+                if (dataItem.isChecked && dataItem.isEnabled)
+                {
+                    // user is initiating a download of this title from bloom library
                     val request = DownloadManager.Request(Uri.parse(dataItem.downloadUri))
+
+                    // add properties for this download request
                     request.setTitle(dataItem.title)
                     request.setDescription(getString(R.string.bloom_lib_download))
                     request.setDestinationInExternalFilesDir(this,
                             Environment.DIRECTORY_DOWNLOADS, dataItem.title + bloomSourceZipExt())
+                    request.setAllowedOverMetered(true)     // set here until we have a setting for it
+                    request.setAllowedOverRoaming(true)     // set here until we have a setting for it
+                    //request.setRequiresDeviceIdle(false)  // this property requires N (Nougat)
+                    //request.setRequiresCharging(false)    // this property requires N (Nougat)
+
+                    // set download visibility in the DownloadManager
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     // queue the download
                     dataItem.downloadId = downloadManager.enqueue(request);
+
+                    adapter.notifyItemChanged(i)    // update the display of this card to be grayed out
+
                     numQueued++
                 }
-                else if (dataItem.isChecked &&
-                        dataItem.isInWorkspace &&
-                        dataItem.downloadId == BLDataModel.ALREADY_DOWNLOADED)
-                {   // download of this title has already been completed
+                else if (dataItem.isInBLDLDir &&
+                    !dataItem.isInWorkspace &&
+                    dataItem.downloadId >= 0 || dataItem.downloadId == BLDataModel.DOWNLOADED_COMPLETE)
+                {   // download of this queued title has already been completed
+                    numDownloadsCompleted++
+                }
+                else if (dataItem.isInBLDLDir &&
+                    !dataItem.isInWorkspace)
+                {   // download of this forgotten queued title (possibly due to SP app being closed down)
+                    // has already been completed outside of BL Download Activity
                     numAlreadyDownloaded++
+                }
+                else if (dataItem.isInBLDLDir &&
+                    dataItem.isInWorkspace)
+                {   // Already download somehow but also already installed
+                    numAlreadyInstalled++
                 }
             }
 
             if (numQueued > 0) {
+                // tell user that download(s) have started
                 Snackbar.make(view, getString(R.string.bloom_lib_download_started), Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
             }
-            else if (numAlreadyDownloaded > 0) {
-                Toast.makeText(this, getString(R.string.bloom_lib_already_downloaded),
+            else if (numAlreadyDownloaded > 0 || numDownloadsCompleted > 0) {
+                // a toast message is used so that it is visible in the Main Activity after this activity ends
+                Toast.makeText(this,
+                        if (numDownloadsCompleted > 0)
+                            getString(R.string.bloom_lib_download_complete)
+                        else
+                            getString(R.string.bloom_lib_already_downloaded),
                     Toast.LENGTH_LONG).show()
-                bldlActivity.unregisterBLBroadcastReceiver(blBroadCastReceiver) // bug fix for crash in updateStories()
                 // close BL download activity so we can see the templates being processed by the MainActivity
                 // this onBackPressed() override also unregisters the broadcast receiver and calls updateStories()
                 bldlActivity.onBackPressed()
+            }
+            else if (numAlreadyInstalled > 0) {
+                // warn the user 'already installed' and do nothing
+                Snackbar.make(view, getString(R.string.bloom_lib_already_installed), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show()
+            }
+            else {
+                // warn the user 'nothing selected' and do nothing
+                Snackbar.make(view, getString(R.string.bloom_lib_nothing_selected), Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show()
             }
         }   // FAB binding.bldlFab.setOnClickListener() lambda ends here
 
@@ -157,7 +208,7 @@ class BLDownloadActivity : AppCompatActivity() {
         val blDataList = parseOPDSfile();
 
         // Find or add BLDataModel items to our data list and update any members for the known state
-        var lastItemCheckedTitle = blFindOrAddBookItems(blDataList, fileDownloadDir)
+        var lastItemCheckedTitle = blFindOrAddBookItems(blDataList)
         var lastItemClicked = -1    // last checked item - used for toggling
         if (lastItemCheckedTitle.isNotEmpty()) {
             lastItemClicked = data.indexOfFirst { it -> it.title == lastItemCheckedTitle }
@@ -170,9 +221,9 @@ class BLDownloadActivity : AppCompatActivity() {
     }
 
     private fun blFindOrAddBookItems(
-        blDataList: MutableList<BLBook>,
-        fileDownloadDir: String
+        blDataList: MutableList<BLBook>
     ): String {
+        val fileDownloadDir = bloomSourceAutoDLDir()
         var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
         for (i in 0 until blDataList.size) {
             val blItem = blDataList[i]
@@ -180,22 +231,35 @@ class BLDownloadActivity : AppCompatActivity() {
             val isFileDownloaded =
                 File(fileDownloadDir + "/" + blItem.Title + bloomSourceZipExt()).exists()
             // Check if the title is already in the workspace
-            val isInWorkspace = isFileDownloaded or workspaceRelPathExists(this, blItem.Title)
+            val isInWorkspace = workspaceRelPathExists(this, blItem.Title)
             val blItemFound = data.find { it -> it.title == blItem.Title }
             if (blItemFound != null) {
-                if (isFileDownloaded)
-                    blItemFound.isChecked = true    // downloaded and ready for installing
-                else if (isInWorkspace)
-                    blItemFound.isChecked = false   // already installed
                 blItemFound.isInWorkspace = isInWorkspace
-                if (isFileDownloaded)
-                    blItemFound.downloadId =
-                        BLDataModel.ALREADY_DOWNLOADED // is file was downloaded outside of the BLDownloadActivity running
-                if (blItemFound.isChecked && !blItemFound.isInWorkspace)
+                blItemFound.isInBLDLDir = isFileDownloaded
+                if (isInWorkspace) {
+                    blItemFound.isChecked = false   // already installed
+                    if (isFileDownloaded)
+                        blItemFound.downloadId = BLDataModel.ALREADY_DOWNLOADED
+                    else
+                        blItemFound.downloadId = BLDataModel.DOWNLOAD_NOT_REQUESTED
+                }
+                else if (isFileDownloaded) {
+                    blItemFound.isChecked = true    // downloaded and ready for installing
+                    if (blItemFound.downloadId >= 0) {
+                        // file was downloaded outside of the BLDownloadActivity running
+                        blItemFound.downloadId = BLDataModel.DOWNLOADED_COMPLETE
+                    }
+                    else if (blItemFound.downloadId != BLDataModel.DOWNLOADED_COMPLETE) {
+                        // file was downloaded after SP app has been restarted
+                        blItemFound.downloadId = BLDataModel.ALREADY_DOWNLOADED
+                    }
+                }
+                if (blItemFound.isChecked && blItemFound.isEnabled)
                     lastItemCheckedTitle =
                         blItemFound.title    // make a note in case we need to uncheck it
-            } else {   // we need to add this title to out data list
+            } else {   // we need to add this title to our data list
                 data.add(
+                    // Add a new data model item passing in the correct values to the constructor
                     BLDataModel(
                         blItem.Title,
                         blItem.LangCode,
@@ -205,8 +269,9 @@ class BLDownloadActivity : AppCompatActivity() {
                             R.drawable.temp_sp_logo_book,
                         blItem.BloomSourceURL,
                         isInWorkspace,      // makes it grayed out
+                        isFileDownloaded,   // remember if already downloaded
                         isFileDownloaded,   // makes it checked
-                        if (isFileDownloaded) BLDataModel.ALREADY_DOWNLOADED else BLDataModel.NOT_DOWNLOADED
+                        if (isFileDownloaded) BLDataModel.ALREADY_DOWNLOADED else BLDataModel.DOWNLOAD_NOT_REQUESTED
                     )
                 )
             }
@@ -239,9 +304,9 @@ class BLDownloadActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        // all files have been downloaded so install them
         bldlActivity.unregisterBLBroadcastReceiver(blBroadCastReceiver) // bug fix for crash in updateStories()
 
+        // if any downloaded files exists from a previous action, process them now
         var downloadDir = bloomSourceAutoDLDir()
         var firstExists = data.indexOfFirst { it -> File(downloadDir + "/" + it.title + bloomSourceZipExt()).exists() }
         if (firstExists != -1) {
@@ -282,18 +347,14 @@ class BLDownloadActivity : AppCompatActivity() {
         }
 
         private fun toggleSelected(i: Int) : Boolean {
-            val viewHolder: RecyclerView.ViewHolder? = recyclerView.findViewHolderForLayoutPosition(i)
-            val cardTemplate = viewHolder?.itemView?.findViewById(R.id.card_view) as BLCheckableCardView
-            val imageViewCheckBox = viewHolder?.itemView?.findViewById(R.id.imageViewCheckBox) as ImageView
-            var blViewHolder = viewHolder as BLCustomAdapter.BLViewHolder
-
             var selectedDataItem = data.get(i)
-            if (!selectedDataItem.isInWorkspace)
+            if (selectedDataItem.isEnabled)
                 selectedDataItem.isChecked = !selectedDataItem.isChecked;   // toggle the checked state
 
+            adapter.notifyItemChanged(i)    // update the check mark on the display of this card
+
             // toggle checked icon visible or not using the alpha (transparency) property
-            imageViewCheckBox.alpha = if (selectedDataItem.isChecked) 1.0F else 0.0F
-            return !selectedDataItem.isInWorkspace
+            return selectedDataItem.isEnabled
         }
     }
 }

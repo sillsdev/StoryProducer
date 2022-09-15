@@ -24,12 +24,14 @@ class BLCustomAdapter(data: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLVie
         var textViewLang: TextView
         var imageViewThumbnailIcon: ImageView
         var imageViewCheckBox: ImageView
+        var imageViewCardParent: BLCheckableCardView
 
         init {
             textViewTitle = itemView.findViewById<View>(R.id.textViewTitle) as TextView
             textViewLang = itemView.findViewById<View>(R.id.textViewLang) as TextView
             imageViewThumbnailIcon = itemView.findViewById<View>(R.id.imageViewThumb) as ImageView
             imageViewCheckBox = itemView.findViewById<View>(R.id.imageViewCheckBox) as ImageView
+            imageViewCardParent = itemView.findViewById<View>(R.id.card_view) as BLCheckableCardView
         }
     }
 
@@ -47,8 +49,13 @@ class BLCustomAdapter(data: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLVie
         holder.textViewTitle.text = dataSet[listPosition].title
         holder.textViewLang.text = dataSet[listPosition].lang
         holder.imageViewThumbnailIcon.setImageResource(dataSet[listPosition].imageId)
-        holder.imageViewCheckBox.alpha = if (dataSet[listPosition].isChecked)  1.0F else 0.0F // show check box or not
-        holder.itemView.alpha = if (dataSet[listPosition].isInWorkspace)  0.5F else 1.0F // 'grayed' out if disabled (since background is black)
+
+        // show check box is visible or not by setting alpha (transparency) property
+        holder.imageViewCheckBox.alpha = if (dataSet[listPosition].isChecked)  1.0F else 0.0F
+
+        // show grayed-out (disabled) or not by setting alpha (transparency) property
+        // 0.5 is grayed-out (since background is black)
+        holder.imageViewCardParent.alpha = if (dataSet[listPosition].isEnabled) 1.0F else 0.5F
     }
 
     override fun getItemCount(): Int {
