@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -44,7 +45,7 @@ class BLDownloadActivity : AppCompatActivity() {
             // check that we have received a download complete action
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE == intent!!.action) {
                 // process the download complete action - installing any downloads if necessary
-                var moreDownloadsToComplete = 0;
+                var moreDownloadsToComplete = 0
                 var recognisedDownloads = 0
                 val downloadCompleteId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, // get the downloaded id
                                                     BLDataModel.DOWNLOAD_NOT_REQUESTED) // default
@@ -99,11 +100,11 @@ class BLDownloadActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true);
-        supportActionBar?.setDisplayShowHomeEnabled(true);
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.toolbar.title = title
 
-        downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager;
+        downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
 
         // Add listener for when 'Floating Action Button' (FAB) Cloud download button is clicked
         // Icon from: <a href="https://www.flaticon.com/free-icons/download" title="download icons">Download icons created by Becris - Flaticon</a>
@@ -138,7 +139,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     // set download visibility in the DownloadManager
                     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                     // queue the download
-                    dataItem.downloadId = downloadManager.enqueue(request);
+                    dataItem.downloadId = downloadManager.enqueue(request)
 
                     adapter.notifyItemChanged(i)    // update the display of this card to be grayed out
 
@@ -146,7 +147,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 }
                 else if (dataItem.isInBLDLDir &&
                     !dataItem.isInWorkspace &&
-                    dataItem.downloadId >= 0 || dataItem.downloadId == BLDataModel.DOWNLOADED_COMPLETE)
+                    (dataItem.downloadId >= 0 || dataItem.downloadId == BLDataModel.DOWNLOADED_COMPLETE))
                 {   // download of this queued title has already been completed
                     numDownloadsCompleted++
                 }
@@ -202,16 +203,14 @@ class BLDownloadActivity : AppCompatActivity() {
         recyclerView.layoutManager = layoutManager
         recyclerView.itemAnimator = DefaultItemAnimator()
 
-        val fileDownloadDir = bloomSourceAutoDLDir()    // get download folder for checking if already downloaded
-
         // Get the definitive list of available Bloom Library story templates
-        val blDataList = parseOPDSfile();
-
-        // Find or add BLDataModel items to our data list and update any members for the known state
-        var lastItemCheckedTitle = blFindOrAddBookItems(blDataList)
         var lastItemClicked = -1    // last checked item - used for toggling
-        if (lastItemCheckedTitle.isNotEmpty()) {
-            lastItemClicked = data.indexOfFirst { it -> it.title == lastItemCheckedTitle }
+        val blDataList = parseOPDSfile()
+        if (blDataList != null)
+        {
+            onDownloadXmlBloomCatalogSuccess(false) // hide the loading messages
+            // Find or add BLDataModel items to our data list and update any members for the known state
+            lastItemClicked = blFindOrAddBookItems(blDataList)
         }
         // listen for clicks to check/uncheck item
         blOnClickListener = BLOnClickListener(this, lastItemClicked)
@@ -220,9 +219,15 @@ class BLDownloadActivity : AppCompatActivity() {
         recyclerView.setAdapter(adapter)
     }
 
+    // When called for the first time it adds new BLDataModel items to the 'data' model list
+    // To match each OPDS file BLBook item in the parsed xml file
+    // Subsequent calls will update the BLDataModel data list items with new information on
+    // if the downloaded file exists or is in the workspace.
+    // It will also add new BLDataModel items to the end of the data list to match any newly found
+    // BLBook items that may have been added to the source xml file
     private fun blFindOrAddBookItems(
         blDataList: MutableList<BLBook>
-    ): String {
+    ): Int {
         val fileDownloadDir = bloomSourceAutoDLDir()
         var lastItemCheckedTitle = ""   // for automatically unchecking items if more than one clicked on
         for (i in 0 until blDataList.size) {
@@ -276,7 +281,12 @@ class BLDownloadActivity : AppCompatActivity() {
                 )
             }
         }
-        return lastItemCheckedTitle
+
+        var lastItemClicked = -1
+        if (lastItemCheckedTitle.isNotEmpty()) {
+            lastItemClicked = data.indexOfFirst { it -> it.title == lastItemCheckedTitle }
+        }
+        return lastItemClicked
     }
 
     override fun onStart() {
@@ -322,6 +332,28 @@ class BLDownloadActivity : AppCompatActivity() {
         return true
     }
 
+    // load the BL books in the the CardView if loadBooks is enabled
+    // then hide the loading messages
+    fun onDownloadXmlBloomCatalogSuccess(loadBooks : Boolean = true) {
+        if (loadBooks) {
+            var bookList = parseOPDSfile()
+            if (bookList != null) {
+                blFindOrAddBookItems(bookList)
+            }
+            adapter.notifyDataSetChanged()
+        }
+        binding.textViewLoading.visibility = View.INVISIBLE  // hide loading messages
+        binding.textViewWait.visibility = View.INVISIBLE
+    }
+
+    // On error display the error messages and set error color
+    fun onDownloadXmlBloomCatalogFailure(errorMessage : String) {
+        binding.textViewLoading.text = getString(R.string.bloom_lib_loading_failed)
+        binding.textViewWait.text = errorMessage
+        binding.textViewWait.setTextColor(Color.parseColor("#ff4000"))  // A more visible red color
+    }
+
+
     // Click listener for clicks on individual cards in the recycler list of BL downloads
     class BLOnClickListener internal constructor(private val context: Context, var lastSelectedItem: Int = -1) : View.OnClickListener {
 
@@ -349,7 +381,7 @@ class BLDownloadActivity : AppCompatActivity() {
         private fun toggleSelected(i: Int) : Boolean {
             var selectedDataItem = data.get(i)
             if (selectedDataItem.isEnabled)
-                selectedDataItem.isChecked = !selectedDataItem.isChecked;   // toggle the checked state
+                selectedDataItem.isChecked = !selectedDataItem.isChecked   // toggle the checked state
 
             adapter.notifyItemChanged(i)    // update the check mark on the display of this card
 

@@ -358,6 +358,11 @@
 
     <!-- Other Messages -->
     <string name="bloom_lib_download">Bloom Library: download</string>
+    <string name="bloom_lib_loading">Bloom Library loading...</string>
+    <string name="bloom_lib_load_wait">please wait</string>
+    <string name="bloom_lib_loading_failed">Bloom Library loading failed!</string>
+    <string name="bloom_connection_error">connection error</string>
+    <string name="bloom_xml_error">xml error</string>
 
 
 </resources>
