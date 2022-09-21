@@ -20,11 +20,25 @@
         android:roundIcon="@mipmap/logo_new_splash"
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
         tools:replace="android:icon,android:roundIcon">
-        <!-- android:usesCleartextTraffic="true" -->
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
             android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED" />
+        <!--
+ Set custom default icon. This is used when no icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_ic_notification" />
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -81,6 +95,23 @@
         <activity
             android:name="org.tyndalebt.storyproduceradv.activities.DownloadActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="org.tyndalebt.storyproduceradv.activities.DisplayAlert">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="org.tyndalebt.storyproduceradv.service.FirebaseMsgServiceSPAdv"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

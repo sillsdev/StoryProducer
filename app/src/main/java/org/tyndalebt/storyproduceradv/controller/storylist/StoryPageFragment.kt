@@ -15,6 +15,7 @@ import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.activities.BaseActivity
 import org.tyndalebt.storyproduceradv.controller.MainActivity
 import org.tyndalebt.storyproduceradv.model.Story
+import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.service.SlideService
 
 /**
@@ -98,7 +99,7 @@ class StoryPageFragment : Fragment() {
         adapter = ListAdapter(context!!, R.layout.story_list_item, storyPageTab.getStoryList(), storyPageTab)
 
         listView = lfView.findViewById(R.id.story_list_view)
-        if (CurrentStoryList.size == 1) {
+        if (Workspace.Stories.size == 1) {
             demoOnlyMsg = lfView.findViewById(R.id.demo_only_msg)
             demoOnlyMsg.text =  getString(R.string.only_demo_present)
         }

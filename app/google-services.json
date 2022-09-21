@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "89996807106",
-    "firebase_url": "https://storyproducerdebug.firebaseio.com",
-    "project_id": "storyproducerdebug",
-    "storage_bucket": "storyproducerdebug.appspot.com"
+    "project_number": "359754091652",
+    "project_id": "spadv-360315",
+    "storage_bucket": "spadv-360315.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:89996807106:android:905fb87a3796b480ece45b",
+        "mobilesdk_app_id": "1:359754091652:android:a7bb1d1dc83f5550e406d1",
         "android_client_info": {
           "package_name": "org.tyndalebt.storyproduceradv.debug"
         }
       },
       "oauth_client": [
         {
-          "client_id": "89996807106-46acr978hig6s5s8kfpb685estbds700.apps.googleusercontent.com",
+          "client_id": "359754091652-9a7t2te5lb1vc24vd9061s1c1vcrjfn8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCkA1VGDTPRcAuVzFJ6snAxAhyV8i2q8N8"
+          "current_key": "AIzaSyA56w9cILIRqLj2FVhXbozc-gI5e6pWOGE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "89996807106-46acr978hig6s5s8kfpb685estbds700.apps.googleusercontent.com",
+              "client_id": "359754091652-9a7t2te5lb1vc24vd9061s1c1vcrjfn8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -135,7 +135,9 @@ class WholeStoryBackTranslationFrag : Fragment(), PlayBackRecordingToolbar.Toolb
                     val combinedFilename =
                             Workspace.activeStory.slides[slideNumber].chosenTranslateReviseFile
                     val split: Array<String> = combinedFilename.split("|").toTypedArray()
-                    filename = split[1]
+                    if (split.size > 1) {
+                        filename = split[1]
+                    }
                 } catch(e: Exception) {
                     Toast.makeText(context!!, "Missing audio files!", Toast.LENGTH_LONG).show()
                 }

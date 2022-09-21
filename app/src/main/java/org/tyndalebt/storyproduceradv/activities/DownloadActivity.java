@@ -188,7 +188,7 @@ public class DownloadActivity extends BaseActivity {
             at = new DownloadFileFromURL(this);
 //            at.execute(urlList);
             buildBloomList(lines, urlList);
-            // remote bloomlist file after arrays are created
+            // remove bloomlist file after arrays are created
             if (org.tyndalebt.storyproduceradv.tools.file.FileIO.deleteWorkspaceFile(this, outFile)) {
             }
         } else {

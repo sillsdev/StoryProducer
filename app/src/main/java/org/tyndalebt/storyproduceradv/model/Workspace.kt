@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -308,6 +309,7 @@ object Workspace {
     // A new menu item was added that opens a URL for the user to download templates.
     // This is used in both the MainActivity menu (Story Templates display) and the Phase menus
     fun startDownLoadMoreTemplatesActivity(context: Context){
+        val token = FirebaseMessaging.getInstance().token
         // if Registration has not been submitted yet, then show Registration screen first, then "Download More Templates"
         if (!Workspace.registration.complete && !Workspace.showMoreTemplates) {
             if (context is BaseActivity)

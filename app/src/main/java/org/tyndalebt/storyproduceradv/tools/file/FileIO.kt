@@ -65,7 +65,7 @@ var storyImageCacheState = HashSet<String>()
 fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap? {
     val cacheString = "${story.title}:$useAllPixels:$sampleSize:$relPath"
     var bmp = storyImageCache.get(cacheString)
-    if (!storyImageCacheState.contains(cacheString)) {
+    if (!storyImageCacheState.contains(cacheString) && bmp != null) {
         storyImageCacheState.add(cacheString)
         val iStream = getStoryChildInputStream(context, relPath, story.title)
         if (iStream == null || iStream.available() == 0) {
