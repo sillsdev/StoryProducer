@@ -60,5 +60,6 @@ class MessageWebSocketClient(uri: URI) : WebSocketClient(uri) {
     }
 
     override fun onError(ex: Exception) {
+        Log.e("@pwhite", "Error on websocket: ${ex.message} ")
     }
 }

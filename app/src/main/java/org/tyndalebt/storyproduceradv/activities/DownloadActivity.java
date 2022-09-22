@@ -148,12 +148,12 @@ public class DownloadActivity extends BaseActivity {
             DownloadDS dataModel=(DownloadDS) obj;
             if (dataModel.getChecked() == true) {
                 if (pURLs != "") {
-                    pURLs = pURLs + ",";
+                    pURLs = pURLs + "|";
                 }
                 pURLs = pURLs + dataModel.getURL();
             }
         }
-        return pURLs.split(",");
+        return pURLs.split("\\|");
     }
 
     public boolean copyFile(String outFile) {
@@ -172,6 +172,11 @@ public class DownloadActivity extends BaseActivity {
                 }
             } catch (Exception e) {
                 Log.d("DownloadActivity:copyFile", e.toString());
+                Intent mDisplayAlert = new Intent(this, DisplayAlert.class);
+                mDisplayAlert.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                mDisplayAlert.putExtra("title",  "List of templates");
+                mDisplayAlert.putExtra("body",  "Unable to download list of templates. Please check internet connection.");
+                startActivity(mDisplayAlert);
             }
             String lines[] = result.split("\\r?\\n");
             String urlList[] = new String[lines.length];
