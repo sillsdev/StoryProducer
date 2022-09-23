@@ -19,8 +19,6 @@ class BLBook(
     val ThumbnailURL: String,
     val BloomSourceURL: String)
 
-object BlBookList : BLBookList(Date())
-
 /**
  * BLBookList is used as a collection of books available to download from BloomLibrary
  */
@@ -30,14 +28,11 @@ open class BLBookList(var dateUpdated: Date) {
 
         var booklistLoading = false
         var booklist : List<BLBook>? = null
+        private const val resourceBucket = "sil-storyproducer-resources"
+        private const val resourceDomain = "s3.amazonaws.com"
 
         const val WIFI = "Wi-Fi"
         const val ANY = "Any"
-
-        private const val resourceBucket = "sil-storyproducer-resources"
-        private const val resourceDomain = "s3.amazonaws.com"
-        private const val resourceKey = "bl1/bl_samples.xml"
-        val resourceAddr = "https://${resourceBucket}.${resourceDomain}/${resourceKey}"
 
         // Whether there is a Wi-Fi connection.
         private var wifiConnected = true//false
@@ -48,6 +43,9 @@ open class BLBookList(var dateUpdated: Date) {
         var refreshDisplay = true
         // The user's current network preference setting.
         var sPref: String? = ANY
+
+        private const val resourceKey = "bl1/bl_samples.xml"
+        val resourceAddr = "https://${resourceBucket}.${resourceDomain}/${resourceKey}"
     }
 
     // We don't use namespaces
