@@ -50,15 +50,19 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 Workspace.startDownLoadMoreTemplatesActivity(activity)
             }
             3 -> {
-                activity.showWordLinksList()
+                activity.showBLDownloadDialog()
             }
             4 -> {
-                activity.showSelectTemplatesFolderDialog()
+                activity.showWordLinksList()
             }
             5 -> {
-                Workspace.addDemoToWorkspace(activity)
+                activity.showSelectTemplatesFolderDialog()
             }
             6 -> {
+                Workspace.addDemoToWorkspace(activity)
+                MainActivity.mainActivity.controller.updateStories()  // refresh list of stories
+            }
+            7 -> {
                 activity.showAboutDialog()
             }
         }

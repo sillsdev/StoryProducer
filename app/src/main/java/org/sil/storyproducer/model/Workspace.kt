@@ -151,12 +151,15 @@ object Workspace {
     fun initializeWorkspace(activity: Activity) {
         //first, see if there is already a workspace in shared preferences
         prefs = activity.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
-        setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", "")))
-        isInitialized = true
+        if (setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", ""))))
+            isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
     }
 
-    fun setupWorkspacePath(context: Context, uri: Uri) {
+    fun setupWorkspacePath(context: Context, uri: Uri) : Boolean {
+        if (uri.toString().isEmpty())
+            return false
+
         try {
             // Issue 539 - Reset Story info to detach from current Story, if any
             activeStory = emptyStory()
@@ -167,9 +170,14 @@ object Workspace {
 
             // load in the Word Links
             importWordLinks(context)
+
+            return true;
+
         } catch (e: Exception) {
             Log.e("setupWorkspacePath", "Error setting up new workspace path!", e)
         }
+
+        return false
     }
     // DKH - 01/26/2022 Issue #571: Add a menu item for accessing templates from Google Drive
     // A new menu item was added that opens a URL for the user to download templates.
@@ -347,12 +355,12 @@ object Workspace {
                 }
             }
 
-            pathOf(DEMO_FOLDER)?.also { path ->
-                buildStory(context, path)?.also { story ->
-                    Stories.add(story)
-                    sortStoriesByTitle()
-                }
-            }
+//            pathOf(DEMO_FOLDER)?.also { path ->
+//                buildStory(context, path)?.also { story ->
+//                    Stories.add(story)
+//                    sortStoriesByTitle()
+//                }
+//            }
         }
     }
     fun addWordLinksCSVFileToWorkspace(context: Context, csvFileNameForSelectedLWC: String) {

@@ -86,6 +86,7 @@ open class BaseController(
             // Tell MainActivity to display the registration upon MainActivity startup
             Workspace.showRegistration = true
         }
+
         // activate the MainActivity which if necessary, will call RegistrationActivity to display
         // the registration
         view.showMain()
