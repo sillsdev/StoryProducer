@@ -96,6 +96,9 @@ android {
             includeAndroidResources = true
         }
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 
@@ -114,6 +117,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.preference:preference:1.1.0'
     implementation 'net.i2p.android.ext:floatingactionbutton:1.10.1'
     implementation 'com.github.futuresimple:android-floating-action-button:1.10.1'
@@ -156,5 +160,16 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+}
+
+// Added the following 'configurations' exclusions to fix issue: build.gradle: Error: commons-logging defines classes that conflict with classes now provided by Android.
+// Solutions include finding newer versions or alternative libraries that don't have the same problem (for example, for httpclient use HttpUrlConnection or okhttp instead), or repackaging the library using something like jarjar.
+// [DuplicatePlatformClasses]
+// As suggested by: https://stackoverflow.com/questions/46989310/commons-logging-defines-classes-that-conflict-with-classes-now-provided-by-andro
+configurations {
+    all {
+        exclude module: 'httpclient'
+        exclude module: 'commons-logging'
+    }
 }
 

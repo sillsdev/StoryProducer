@@ -12,7 +12,6 @@ import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
@@ -21,6 +20,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 internal const val SLIDE_NUM = "CurrentSlideNum"
@@ -71,6 +71,10 @@ object Workspace {
     // the user to update the registration
     // This is set in BaseController function onStoriesUpdated()
     var showRegistration = false
+
+    // set if user skipped the registration process - so that they are not nagged too much
+    // when updateStories() is called by the BL Download Activity
+    var showRegistrationSkiped = false
 
     // word links
     lateinit var activeWordLink: WordLink
@@ -385,8 +389,14 @@ object Workspace {
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun storyFiles(): List<DocumentFile> {
-        return storyDirectories().plus(storyBloomFiles())
+    fun storyFilesToScanOrUnzip(): List<DocumentFile> {
+        // made up of already installed stories +
+        //      story archives downloaded in story template dir +
+        //      story archives downloaded in external app storage download dir
+        // while checking that the story does not already exist
+        return storyDirectories()
+            .run { this.plus(storyDownloadedBloomFiles(this)) }
+            .run { this.plus(storyBloomFiles(this)) }
     }
 
     private fun storyDirectories(): List<DocumentFile> {
@@ -397,8 +407,34 @@ object Workspace {
         }
     }
 
-    private fun storyBloomFiles(): List<DocumentFile> {
-        return workdocfile.listFiles().filter { isZipped(it.name) }
+    private fun storyBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
+        var installStories = workdocfile.listFiles().filter { isZipped(it.name) }
+        var installFilesList : MutableList<DocumentFile> = ArrayList()
+        for (i in 0 until installStories.size) {
+            val installFilename = installStories[i].name
+            val installBaseName = installFilename?.substringBeforeLast('.')
+            // don't add if already in the workspace
+            if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
+                        it.name == installBaseName } == null)
+                installFilesList.add(installStories[i])
+        }
+        return installFilesList
+    }
+
+    private fun storyDownloadedBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
+        var fileDownloadDir = File(bloomSourceAutoDLDir())
+        var blExt = bloomSourceZipExt()
+        val dlFiles = fileDownloadDir.listFiles()?.filter { it.name.endsWith(blExt) }
+        var dlFilesList : MutableList<DocumentFile> = ArrayList()
+        for (i in 0 until dlFiles?.size!!) {
+            val installFilename = dlFiles[i].name
+            val installBaseName = installFilename?.substringBeforeLast('.')
+            // don't add if already in the workspace
+            if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
+                                    it.name == installBaseName } == null)
+                dlFilesList.add(DocumentFile.fromFile(dlFiles[i]))
+        }
+        return dlFilesList
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {

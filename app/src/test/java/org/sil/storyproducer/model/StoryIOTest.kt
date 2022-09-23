@@ -29,6 +29,7 @@ class StoryIOTest {
         assertTrue(isZipped("225 Walk on water.zip"))
         assertTrue(isZipped("225 Walk on water.bloom"))
         assertTrue(isZipped("225 Walk on water.bloomd"))
+        assertTrue(isZipped("225 Walk on water.bloomSource"))
     }
 
 }

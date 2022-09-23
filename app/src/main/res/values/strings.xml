@@ -296,6 +296,7 @@
     <string name="cancelling">Cancelling &#8230;</string>
     <string name="copy_demo">Add demo to story list</string>
     <string name="more_templates">Download More Templates</string>
+    <string name="bloom_templates">Download Bloom Library Templates</string>
 
     <!-- Main Story Page -->
     <string name="all_stories_tab">All Stories</string>
@@ -345,5 +346,23 @@
 
     <!-- Snackbar Messages -->
     <string name="overwrite">Overwrite</string>
+    <string name="title_activity_bldownload">Bloom Library Download</string>
+    <string name="action_settings">Settings</string>
+    <string name="bloom_lib_download_started">Bloom Library: download started</string>
+    <string name="bloom_lib_already_installed">Bloom Library: already installed</string>
+
+    <!-- Toast Messages -->
+    <string name="bloom_lib_download_complete">Bloom Library: download complete</string>
+    <string name="bloom_lib_already_downloaded">Bloom Library: already downloaded</string>
+    <string name="bloom_lib_nothing_selected">Bloom Library: nothing selected</string>
+
+    <!-- Other Messages -->
+    <string name="bloom_lib_download">Bloom Library: download</string>
+    <string name="bloom_lib_loading">Bloom Library loading...</string>
+    <string name="bloom_lib_load_wait">please wait</string>
+    <string name="bloom_lib_loading_failed">Bloom Library loading failed!</string>
+    <string name="bloom_connection_error">connection error</string>
+    <string name="bloom_xml_error">xml error</string>
+
 
 </resources>

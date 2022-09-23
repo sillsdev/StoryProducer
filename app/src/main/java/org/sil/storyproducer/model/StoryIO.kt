@@ -2,10 +2,12 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import android.os.Build
+import android.os.Environment
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
+import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
@@ -207,6 +209,10 @@ fun migrateStory(context: Context, story: Story): Story? {
     return story
 }
 
+fun bloomSourceAutoDLDir() : String {return App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.path!!}
+
+fun bloomSourceZipExt() : String {return ".bloomSource"}
+
 fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
         arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
@@ -221,13 +227,21 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
 
     val storyName = file.name!!.substringBeforeLast(".","")
     val internalFile = File("${context.filesDir}/${file.name!!}")
-    val zipFile = ZipFile(internalFile.absolutePath)
-
+    var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name
+    var dlFile = File(dlFileStr)
+    var dlFileExists = dlFile.exists()
+    var zipFile : ZipFile
+    zipFile = if (dlFileExists)
+        ZipFile(dlFile.absolutePath)
+    else
+        ZipFile(internalFile.absolutePath)
     try
     {
         //copy file to internal files directory to perform the normal "File" operations on.
         val uri = getWorkspaceUri(file.name!!)
-        if(uri != null){copyToFilesDir(context,uri,internalFile)}
+        if(uri != null && !dlFileExists) {
+            copyToFilesDir(context, uri!!, internalFile)
+        }
 
         //Extract to files/unzip
         val fileHeaders = zipFile.fileHeaders
@@ -270,8 +284,15 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
     }
     catch(e: Exception) { }
     //delete copied and original zip file to save space
-    internalFile.delete()
-    deleteWorkspaceFile(context,file.name!!)
+    if (dlFileExists) {
+        if (!dlFile.delete()) {
+            Timber.w("Failed to delete downloaded story: '%s'", file.name)
+        }
+    }
+    else {
+        internalFile.delete()
+        deleteWorkspaceFile(context, file.name!!)
+    }
 
     return storyName
 }
