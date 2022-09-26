@@ -225,7 +225,6 @@ class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarM
                     Workspace.activePhase = Phase(intent.getSerializableExtra(PHASE) as PhaseType)
                 }
                 super.onBackPressed()
-                finish()
             } else {
                 Workspace.activeWordLink = Workspace.termToWordLinkMap[Workspace.termFormToTermMap[wordLinkHistory.peek().toLowerCase()]]!!
                 setupNoteView()

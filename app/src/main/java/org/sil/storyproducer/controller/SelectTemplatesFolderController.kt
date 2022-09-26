@@ -34,11 +34,18 @@ class SelectTemplatesFolderController(
 
         if (shouldAddDemoToWorkspace(request)) {
             workspace.addDemoToWorkspace(context)
+            updateStories()  // refresh list of stories
         }
     }
 
     fun shouldAddDemoToWorkspace(request: Int): Boolean {
-        return request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO
+        if (request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
+            return true
+
+        // always add demo when no installed stories or stories to unzip - this is awating approval
+//        if (workspace.storyFilesToScanOrUnzip().isEmpty())
+//            return true
+        return false
     }
 
     companion object {
