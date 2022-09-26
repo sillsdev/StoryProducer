@@ -64,8 +64,8 @@ class MainActivity : BaseActivity(), Serializable {
 
         setContentView(R.layout.activity_main)
 
-//        setupDrawer()             // moved to onStart()
-//        setupStoryListTabPages()  // ditto
+        setupDrawer()             // also added to onStart()
+        setupStoryListTabPages()  // ditto
 
         if (!Workspace.isInitialized) {
             initWorkspace()
