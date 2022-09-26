@@ -35,11 +35,11 @@ class WelcomeDialogActivity : BaseActivity() {
         mainTextView.movementMethod = LinkMovementMethod.getInstance()
 
         // demo button not available, show error as of 3.0.4beta
-        val demoTextView = view.findViewById<TextView>(R.id.demo_textview);
-        demoTextView.setOnClickListener {
-            val errorToast = Toast.makeText(this, R.string.welcome_screen_demo_error, Toast.LENGTH_SHORT)
-            errorToast.show()
-        }
+        //val demoTextView = view.findViewById<TextView>(R.id.demo_textview);
+        //demoTextView.setOnClickListener {
+        //    val errorToast = Toast.makeText(this, R.string.welcome_screen_demo_error, Toast.LENGTH_SHORT)
+        //    errorToast.show()
+        //}
 
         val nextButton = view.findViewById<Button>(R.id.next_button);
         nextButton.setOnClickListener {

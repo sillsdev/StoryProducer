@@ -80,14 +80,14 @@ class StoryPageFragment : Fragment() {
                     else{
                         Html.fromHtml(getString(storyPageTab.emptyStoryStringId))}
 
-            val button : Button = view.findViewById(R.id.update_workspace_button)
-            if(storyPageTab != StoryPageTab.ALL_STORIES) {
-                button.visibility = View.INVISIBLE
-            } else {
-                button.setOnClickListener {
-                    (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
-                }
-            }
+//            val button : Button = view.findViewById(R.id.update_workspace_button)
+//            if(storyPageTab != StoryPageTab.ALL_STORIES) {
+//                button.visibility = View.INVISIBLE
+//            } else {
+//                button.setOnClickListener {
+//                    (activity as? BaseActivity)?.showSelectTemplatesFolderDialog()
+//                }
+//            }
 
             return view
         }
