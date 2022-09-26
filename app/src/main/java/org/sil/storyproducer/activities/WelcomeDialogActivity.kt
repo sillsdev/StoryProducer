@@ -43,7 +43,8 @@ class WelcomeDialogActivity : BaseActivity() {
 
         val nextButton = view.findViewById<Button>(R.id.next_button);
         nextButton.setOnClickListener {
-            showSelectTemplatesFolderDialog()
+            //showSelectTemplatesFolderDialog()
+            updateTemplatesFolder()
             welcomeDialog.dismiss()
         }
 
