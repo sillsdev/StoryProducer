@@ -106,8 +106,10 @@ open class BLBookList(var dateUpdated: Date) {
                 "dcterms:language" -> langCode = readLanguage(parser)
                 "link" -> { numLink++
                             if (numLink == 1)
+                                // this relies on the thumbnail link being the first of the two
                                 thumbLink = readThumbnailLink(parser)
                             else
+                                // this relies on the bloom book link being the second of the two
                                 bookLink = readBLBookLink(parser)
                 }
                 else -> skip(parser)

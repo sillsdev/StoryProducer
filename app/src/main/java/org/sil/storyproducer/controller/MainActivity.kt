@@ -32,6 +32,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.Network.ConnectivityStatus
 import org.sil.storyproducer.tools.Network.VolleySingleton
 import java.io.Serializable
+import kotlin.system.exitProcess
 
 class MainActivity : BaseActivity(), Serializable {
 
@@ -62,9 +63,9 @@ class MainActivity : BaseActivity(), Serializable {
         mainActivity = this
 
         setContentView(R.layout.activity_main)
-        setupDrawer()
-        setupStoryListTabPages()
 
+        setupDrawer()             // also added to onStart()
+        setupStoryListTabPages()  // ditto
 
         if (!Workspace.isInitialized) {
             initWorkspace()
@@ -102,6 +103,19 @@ class MainActivity : BaseActivity(), Serializable {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onStart() {
+
+        super.onStart()
+
+        setupDrawer()
+        setupStoryListTabPages()
+
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_with_help, menu)
         return true
@@ -114,7 +128,7 @@ class MainActivity : BaseActivity(), Serializable {
         Workspace.activeStory = story
         val intent = Intent(this.applicationContext, Workspace.activePhase.getTheClass())
         startActivity(intent)
-        finish()
+//        finish()  // removed to keep back button working on MainActivity
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -203,8 +217,8 @@ class MainActivity : BaseActivity(), Serializable {
             R.id.nav_demo -> {
                 Workspace.addDemoToWorkspace(this)
 
-                // Refresh all the stories in the story page tabs
-                setupStoryListTabPages()
+                controller.updateStories()  // refresh list of stories
+
             }
             R.id.nav_word_link_list -> {
                 showWordLinksList()
@@ -246,10 +260,8 @@ class MainActivity : BaseActivity(), Serializable {
                 .setMessage("Are you sure you want to quit?")
                 .setNegativeButton(getString(R.string.no), null)
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
-                    val homeIntent = Intent(Intent.ACTION_MAIN)
-                    homeIntent.addCategory(Intent.CATEGORY_HOME)
-                    homeIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(homeIntent)
+                    finishAffinity()
+                    exitProcess(0)  // exit fully
                 }.create()
         dialog.show()
     }

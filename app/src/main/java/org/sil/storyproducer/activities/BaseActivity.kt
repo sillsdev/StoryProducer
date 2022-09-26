@@ -65,7 +65,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     private fun showWelcomeDialog() {
         startActivity(Intent(this, WelcomeDialogActivity::class.java))
-        finish()
+//        finish()  // removed to keep back button working on MainActivity
     }
 
     fun updateTemplatesFolder() {
@@ -111,7 +111,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun showWordLinksList() {
         startActivity(Intent(this, WordLinksListActivity::class.java))
-        finish()
+//        finish()  // removed to keep back button working on MainActivity
     }
 
     override fun showReadingTemplatesDialog(controller: BaseController) {

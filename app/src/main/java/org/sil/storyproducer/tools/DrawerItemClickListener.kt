@@ -60,6 +60,7 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
             }
             6 -> {
                 Workspace.addDemoToWorkspace(activity)
+                MainActivity.mainActivity.controller.updateStories()  // refresh list of stories
             }
             7 -> {
                 activity.showAboutDialog()
