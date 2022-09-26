@@ -16,13 +16,6 @@
             android:textColor="@android:color/white"
             android:textSize="16sp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="prefer .bloom templates"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
         <Space
             android:layout_width="match_parent"
             android:layout_height="16dp" />

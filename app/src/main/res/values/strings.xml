@@ -104,27 +104,26 @@
     <string name="affirm_accuracy_check_message">If this is a Bible story, has this story been checked for accuracy by someone with Bible knowledge?</string>
     <string name="affirm_accuracy_check_NotaBibleStory">(this story is not a Bible story)</string>
     <string name="request_accuracy_check_message">Please have someone with Bible knowledge check this story for accuracy.</string>
-    <string name="stories_not_found_title">No stories found!</string>
-    <string name="stories_not_found_body">No story templates found! The currently selected folder
-        for story templates does not contain usable templates.  Select the appropriate
-        \'&lt;font color=\"green\">&lt;b>SP Templates&lt;/b>&lt;/font>\' folder - it may be on the SD card.
-    </string>
+    <string name="stories_not_found_title"></string> //intentionally blank for now, the body messages are ok alone
+    <string name="stories_not_found_body">Now it\'s time to install some story templates.&lt;br/>
+        Tap the menu in the upper left, then...&lt;br/>&lt;br/>
+        To install the demo story, choose:&lt;br/>
+        &lt;b>&lt;font color=\"white\">Add Demo to Story List&lt;/font>&lt;/b>&lt;br/>&lt;br/>
+        If you are connected to the internet, you can get more stories by choosing:&lt;br/>
+        &lt;b>&lt;font color=\"rgb(255, 255, 255)\">Download Bloom Library Templates&lt;/font>&lt;/b>
+        <!-- color white is not working -->
+     </string>
     <string name="stories_not_found_in_progress">There are no stories in progress.</string>
     <string name="stories_not_found_completed">There are no completed stories.</string>
-    <!--  Issue #571, for welcome_screen_select_template_folder, replace template URL with a place holder. Move URL to workspace object -->
-    <!--not currently using: download story templates from &lt;a href="URL_FOR_TEMPLATES_PLACE_HOLDER">HERE&lt;/a> -->
     <string name="welcome_screen_msg">
-        Story Producer is different from typical apps.
-        You will need to follow
-        &lt;a href="https://docs.google.com/document/d/1d33AyDsJPe7opFRJYihuVVEGCXCXmIQrt8nGqNEBdPA/edit">these instructions&lt;/a>
-        to help you create a folder called &lt;font color=\"green\">SP Templates&lt;/font>
-        and download the Story Templates into that folder.&lt;br>&lt;br>
-        After you have completed the instructions, come back to this screen and proceed:
+        On the next screen, &lt;b>create a folder&lt;/b> and name it &lt;font color=\"green\">SP Templates&lt;/font>.&lt;br/>
+        Then tap &lt;b>SELECT&lt;/b> at the bottom of that screen.&lt;br/>&lt;br/>
+        Here are  &lt;a href="https://docs.google.com/document/d/10mPxRtR_JsMFhboCauecOSe_ScY5_j59jJfMOF2AYko/edit">detailed instructions&lt;/a>.
     </string>
     <string name="select_workspace_help_msg">
-        &lt;font color=\"gray\">The objective in what follows is to tell Story Producer where to find the story templates.&lt;/font>&lt;br>&lt;br>
-        The next screen allows you to pick a folder.&lt;br>
-        In that screen you will need to Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder.&lt;br>
+        &lt;font color=\"gray\">The objective in what follows is to tell Story Producer where to find the story templates.&lt;/font>&lt;br/>&lt;br/>
+        The next screen allows you to pick a folder.&lt;br/>
+        In that screen you will need to Navigate to the &lt;font color=\"green\">SP Templates&lt;/font> folder.&lt;br/>
         Then tap &lt;b>SELECT&lt;/b> at the bottom of that screen.
     </string>
     <string name="welcome_screen_demo_error">Demo functionality coming soon!</string>
@@ -292,9 +291,9 @@
     <string name="menu_search">Search</string>
     <string name="update_registration">Update Registration</string>
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
-    <string name="select_workspace_folder">Select \'SP Templates\' folder</string>
+    <string name="select_workspace_folder">Select \'SP Templates\' Folder</string>
     <string name="cancelling">Cancelling &#8230;</string>
-    <string name="copy_demo">Add demo to story list</string>
+    <string name="copy_demo">Add Demo to Story List</string>
     <string name="more_templates">Download More Templates</string>
     <string name="bloom_templates">Download Bloom Library Templates</string>
 
@@ -314,7 +313,6 @@
     <string name="license">License</string>
     <string name="about_title">About Story Producer</string>
     <string name="app_version">app version: %1$s</string>
-    <string name="prefer_bloom_templates">prefer .bloom templates</string>
     <string name="license_body">This software is copyrighted © 2021-2022 SIL International.
                                 Portions Copyright (c) 2016-2021 Cedarville Univ. and SIL Intl.
                                 It is released under the following license:

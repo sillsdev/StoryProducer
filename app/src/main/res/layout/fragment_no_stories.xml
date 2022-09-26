@@ -18,15 +18,4 @@
         android:padding="15dp"
         android:textSize="@dimen/text_title" />
 
-    <Button
-        android:id="@+id/update_workspace_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:textAllCaps="false"
-        android:text="@string/select_workspace_folder" />
-
-
 </LinearLayout>
