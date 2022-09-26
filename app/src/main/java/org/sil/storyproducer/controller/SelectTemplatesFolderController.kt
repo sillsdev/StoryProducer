@@ -42,9 +42,9 @@ class SelectTemplatesFolderController(
         if (request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
             return true
 
-        // always add demo when no installed stories or stories to unzip
-        if (workspace.storyFilesToScanOrUnzip().isEmpty())
-            return true
+        // always add demo when no installed stories or stories to unzip - this is awating approval
+//        if (workspace.storyFilesToScanOrUnzip().isEmpty())
+//            return true
         return false
     }
 
