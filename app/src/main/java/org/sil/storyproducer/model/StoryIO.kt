@@ -259,7 +259,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
 
         for (f in fileHeaders){
 
-            if (storyRelPathExists(context, f.fileName, storyName)) continue
+            if (storyRelPathExists(context, f.fileName, storyName)) continue    // added storyName to fix unzipping issue
 
             val ostream = getChildOutputStream(context, "$storyName/${f.fileName}") ?: continue
 
