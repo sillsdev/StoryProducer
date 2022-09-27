@@ -42,6 +42,13 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun onResume() {
         super.onResume()
         Timber.tag(javaClass.simpleName).v("onResume")
+/*
+        val prefs = getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        if (prefs.getBoolean("FirebaseChanged", false))
+        {
+            updateFBToken(this)
+        }
+ */
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
@@ -80,6 +87,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showMain() {
         startActivity(Intent(this, MainActivity::class.java))
+        processReceivedApprovals()
         finish()
     }
     // DKH - 05/12/2021
@@ -192,4 +200,62 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         }
     }
 
+    private fun processReceivedApprovals() {
+        // This could be being built while processed, so remove elements from front one by one as
+        // elements may be added on the back end
+        while (Workspace.approvalList.size > 0) {
+            var approval = Workspace.approvalList[0]
+            for (story in Workspace.Stories) {
+                if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
+                    story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
+                }
+            }
+            if (approval.timeSent > Workspace.lastReceivedTimeSent) {
+                Workspace.lastReceivedTimeSent = approval.timeSent
+            }
+            Workspace.approvalList.removeAt(0)
+        }
+    }
+/*
+    private fun updateFBToken(context: Context) {
+        if (!Workspace.registration.complete)
+            return  // Registration will send token for the first time
+        var js: MutableMap<String, String> = hashMapOf()
+        var resp: String? = null
+        var testErr = ""
+        val myContext = context.applicationContext
+        val reg = Workspace.registration
+
+        val prefs = getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        val token = prefs.getString("FirebaseToken", " ")
+        val prefsEditor = prefs.edit()
+        prefsEditor.putBoolean("FirebaseChanged", false)  // hasn't changed since last time sent to server'
+        prefsEditor.apply()
+
+        val phoneId = getPhoneId(myContext)
+
+        js["Key"] = getString(R.string.api_token)
+        js["PhoneId"] = phoneId
+        js["FirebaseToken"] = token!!
+
+        Log.i("LOG_VOLLEY", js.toString())
+        val registerPhoneUrl = Workspace.getRoccUrlPrefix(context) + getString(R.string.url_update_fb_token)
+        val req = object : StringRequest(Request.Method.POST, registerPhoneUrl, Response.Listener { response ->
+            Log.i("LOG_VOLEY", response)
+            resp = response
+        }, Response.ErrorListener { error ->
+            Log.e("LOG_VOLLEY", error.toString())
+            Log.e("LOG_VOLLEY", "HIT ERROR")
+            testErr = error.toString()
+        }) {
+            override fun getParams(): Map<String, String> {
+                return js
+            }
+        }
+
+        val test = VolleySingleton.getInstance(myContext).requestQueue
+        test.add(req)
+    }
+*/
 }
+

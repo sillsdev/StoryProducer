@@ -65,7 +65,7 @@ var storyImageCacheState = HashSet<String>()
 fun getStoryImage(context: Context, relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story = Workspace.activeStory): Bitmap? {
     val cacheString = "${story.title}:$useAllPixels:$sampleSize:$relPath"
     var bmp = storyImageCache.get(cacheString)
-    if (!storyImageCacheState.contains(cacheString) && bmp != null) {
+    if (!storyImageCacheState.contains(cacheString)) {
         storyImageCacheState.add(cacheString)
         val iStream = getStoryChildInputStream(context, relPath, story.title)
         if (iStream == null || iStream.available() == 0) {
@@ -199,7 +199,7 @@ fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.
 }
 
 fun getStoryChildInputStream(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : InputStream? {
-    if (dirRoot == "") return null
+    if (dirRoot == "" || relPath == "") return null
     return getChildInputStream(context, "$dirRoot/$relPath")
 }
 

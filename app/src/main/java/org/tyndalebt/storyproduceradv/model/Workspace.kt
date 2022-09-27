@@ -85,6 +85,7 @@ object Workspace {
     val Stories: MutableList<Story> = mutableListOf()
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
+    val approvalList: MutableList<Approval> = mutableListOf()
     var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
@@ -217,14 +218,7 @@ object Workspace {
         }
         GlobalScope.launch {
             for (approval in approvalChannel.openSubscription()) {
-                for (story in Stories) {
-                    if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
-                        story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
-                    }
-                }
-                if (approval.timeSent > lastReceivedTimeSent) {
-                    lastReceivedTimeSent = approval.timeSent
-                }
+                approvalList.add(approval)
             }
         }
         GlobalScope.launch {
