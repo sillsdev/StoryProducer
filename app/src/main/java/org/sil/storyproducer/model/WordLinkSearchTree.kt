@@ -125,3 +125,5 @@ class WordLinkSearchTree {
         var childWords: MutableMap<String, WordNode> = mutableMapOf()
     }
 }
+
+// write a test for this

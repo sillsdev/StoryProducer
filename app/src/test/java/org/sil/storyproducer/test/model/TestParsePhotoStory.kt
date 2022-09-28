@@ -26,7 +26,7 @@ class TestParsePhotoStory {
     fun parsePhotoStoryXML_Should_ReturnAStoryWithProvidedSlidesPlusSongAndCreditSlides() {
         val result = parseValidStory()
 
-        Assert.assertEquals(5, result!!.slides.size.toLong())
+        Assert.assertEquals(4, result!!.slides.size.toLong())
     }
 
     @Test
@@ -143,7 +143,7 @@ class TestParsePhotoStory {
     fun parsePhotoStoryXML_When_StoryHasExtraTagsInsideRoot_Should_IgnoreThem() {
         val result = parseValidStory()
 
-        Assert.assertEquals(5, result!!.slides.size.toLong())
+        Assert.assertEquals(4, result!!.slides.size.toLong())
     }
 
     @Test
