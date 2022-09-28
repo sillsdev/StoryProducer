@@ -636,4 +636,22 @@ object Workspace {
         Stories.sortBy { it.title }
     }
 
+
+    fun processReceivedApprovals() {
+        // This could be being built while processed, so remove elements from front one by one as
+        // elements may be added on the back end
+        while (approvalList.size > 0) {
+            var approval = approvalList[0]
+            for (story in Stories) {
+                if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
+                    story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
+                }
+            }
+            if (approval.timeSent > lastReceivedTimeSent) {
+                lastReceivedTimeSent = approval.timeSent
+            }
+            approvalList.removeAt(0)
+        }
+    }
+
 }

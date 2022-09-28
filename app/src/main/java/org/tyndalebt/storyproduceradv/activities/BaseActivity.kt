@@ -87,7 +87,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showMain() {
         startActivity(Intent(this, MainActivity::class.java))
-        processReceivedApprovals()
+        Workspace.processReceivedApprovals()
         finish()
     }
     // DKH - 05/12/2021
@@ -200,22 +200,6 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         }
     }
 
-    private fun processReceivedApprovals() {
-        // This could be being built while processed, so remove elements from front one by one as
-        // elements may be added on the back end
-        while (Workspace.approvalList.size > 0) {
-            var approval = Workspace.approvalList[0]
-            for (story in Workspace.Stories) {
-                if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
-                    story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
-                }
-            }
-            if (approval.timeSent > Workspace.lastReceivedTimeSent) {
-                Workspace.lastReceivedTimeSent = approval.timeSent
-            }
-            Workspace.approvalList.removeAt(0)
-        }
-    }
 /*
     private fun updateFBToken(context: Context) {
         if (!Workspace.registration.complete)

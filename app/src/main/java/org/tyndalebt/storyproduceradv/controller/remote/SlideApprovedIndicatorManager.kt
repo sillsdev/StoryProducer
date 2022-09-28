@@ -52,7 +52,9 @@ class ApprovalIndicatorManager(
                 if (approval.slideNumber == slideNumber && approval.storyId == Workspace.activeStory.remoteId) {
                     approvedIndicator.background = if (approval.approvalStatus) { greenCheckmark } else { grayCheckmark }
                 }
-
+                Workspace.approvalList.add(approval)  // Will be added in another place, but its ok to process this twice
+                                                      // Doing this avoids missing it, if there is a timing issue.
+                Workspace.processReceivedApprovals()
                 // Approve story if all slides in the story have been approved.
                 var allApproved = true
                 var story = Workspace.activeStory
