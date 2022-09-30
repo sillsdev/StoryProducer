@@ -1,16 +1,21 @@
 package org.tyndalebt.storyproduceradv.activities
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.text.Spanned
+import android.util.Log
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import io.reactivex.disposables.CompositeDisposable
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.controller.BaseController
@@ -19,8 +24,11 @@ import org.tyndalebt.storyproduceradv.controller.RegistrationActivity
 import org.tyndalebt.storyproduceradv.controller.SelectTemplatesFolderController
 import org.tyndalebt.storyproduceradv.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.tyndalebt.storyproduceradv.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
+import org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag
+import org.tyndalebt.storyproduceradv.controller.remote.getPhoneId
 import org.tyndalebt.storyproduceradv.controller.wordlink.WordLinksListActivity
 import org.tyndalebt.storyproduceradv.model.Workspace
+import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import org.tyndalebt.storyproduceradv.view.BaseActivityView
 import timber.log.Timber
 
@@ -42,13 +50,11 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun onResume() {
         super.onResume()
         Timber.tag(javaClass.simpleName).v("onResume")
-/*
         val prefs = getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
         if (prefs.getBoolean("FirebaseChanged", false))
         {
             updateFBToken(this)
         }
- */
     }
 
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
@@ -200,7 +206,6 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         }
     }
 
-/*
     private fun updateFBToken(context: Context) {
         if (!Workspace.registration.complete)
             return  // Registration will send token for the first time
@@ -240,6 +245,5 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         val test = VolleySingleton.getInstance(myContext).requestQueue
         test.add(req)
     }
-*/
 }
 
