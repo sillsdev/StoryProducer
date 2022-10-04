@@ -242,6 +242,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
         val uri = getWorkspaceUri(file.name!!)
         if(uri != null){copyToFilesDir(context,uri,sourceFile)}
 
+        Thread.sleep(100)
         //Exctract to files/unzip
         val fileHeaders = zipFile.fileHeaders
 

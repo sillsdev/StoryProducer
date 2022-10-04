@@ -30,14 +30,16 @@ class MessageWebSocketClient(uri: URI) : WebSocketClient(uri) {
     }
 
     override fun onMessage(messageString: String?) {
-        Log.e("@pwhite", "got message: ${messageString!!}")
+
         try {
             val message = JSONObject(messageString)
             val type = message.getString("type")
             val slideNumber = message.getInt("slideNumber")
             val storyId = message.getInt("storyId")
             val timeSent = Timestamp.valueOf(message.getString("timeSent"))
+
             if (type == "text") {
+                Log.e("@pwhite", "got message: ${messageString!!}")
                 val isConsultant = message.getBoolean("isConsultant")
                 val isTranscript = message.getBoolean("isTranscript")
                 val text = message.getString("text")
