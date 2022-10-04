@@ -505,7 +505,7 @@ object Workspace {
             it.isDirectory
         }
 
-        for (i in 0 until prevDocs?.size!!) {
+        for (i in 0 until prevDocs.size) {
             val copyOldDirName = prevDocs[i].name
             // don't add if already in the workspace
             if (current.find { it.name == copyOldDirName } == null)

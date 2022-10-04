@@ -23,6 +23,7 @@ import org.sil.storyproducer.tools.media.AudioPlayer
  */
 open class PlayBackRecordingToolbar: RecordingToolbar() {
     private lateinit var playButton: ImageButton
+    private var editButton: ImageButton? = null // optional edit button if an Audio editor app is installed
 
     override lateinit var toolbarMediaListener: RecordingToolbar.ToolbarMediaListener
     private var audioPlayer: AudioPlayer = AudioPlayer()
@@ -92,6 +93,14 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         rootView?.addView(playButton)
         
         rootView?.addView(toolbarButtonSpace())
+
+        if (canUseExternalAudioEditor()) {
+            // Add edit button and spacer to playback recording toolbar if usable
+            editButton = toolbarButton(R.drawable.ic_edit_white_48dp, R.id.edit_recording_button)
+            rootView?.addView(editButton)
+            rootView?.addView(toolbarButtonSpace())
+        }
+
     }
 
     /*
@@ -112,18 +121,25 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         super.showInheritedToolbarButtons()
 
         playButton.visibility = View.VISIBLE
+        if (editButton != null)
+            editButton?.visibility = View.VISIBLE
     }
 
     override fun hideInheritedToolbarButtons() {
         super.hideInheritedToolbarButtons()
 
         playButton.visibility = View.INVISIBLE
+        if (editButton != null)
+            editButton?.visibility = View.INVISIBLE
     }
 
     override fun setToolbarButtonOnClickListeners() {
         super.setToolbarButtonOnClickListeners()
 
         playButton.setOnClickListener(playButtonOnClickListener())
+
+        if (editButton != null)
+            editButton?.setOnClickListener(editButtonOnClickListener())
     }
 
     private fun playButtonOnClickListener(): View.OnClickListener {

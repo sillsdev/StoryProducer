@@ -244,7 +244,7 @@ class Phase (val phaseType: PhaseType) {
         // in the story.  We now check to see if the slide exist before trying to determine it's
         // type
         Workspace.activeStory.slides.getOrNull(slideNum)?.let {    // see if this is a valid slide number
-            val slideType = it?.slideType  // slide exists, determine if it displayable
+            val slideType = it.slideType  // slide exists, determine if it displayable
             return when (phaseType) {
                 PhaseType.VOICE_STUDIO -> slideType in arrayOf(
                         SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE,

@@ -175,6 +175,10 @@
     <string name="learn_phase_practice">Retell the whole story in your language!</string>
     <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
 
+    <!-- Edit translation audio -->
+    <string name="translation_updated">Translation updated</string>
+    <string name="translation_edit_cancelled">Translation edit cancelled</string>
+
     <!-- Translate + Revise Phase -->
     <string name="translate_revise_playback_no_lwc_audio">Slide not translated - no narration audio in the local language</string>
     <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>

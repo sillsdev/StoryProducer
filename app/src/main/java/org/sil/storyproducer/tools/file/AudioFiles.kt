@@ -6,6 +6,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PROJECT_DIR
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.max
 
@@ -172,7 +173,8 @@ fun createRecordingCombinedName() : String {
                     Workspace.activePhase.getDisplayNameAdditionalInfo()
 
             // create the combined string of display name and audio file location
-            "${displayName}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${Date().time}$AUDIO_EXT"
+            val currentDateTimeStr = SimpleDateFormat("yyyyMMdd-HHmmss.SSS").format(Date())
+            "${displayName}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${currentDateTimeStr}$AUDIO_EXT"
         }
         else -> {""}
     }
