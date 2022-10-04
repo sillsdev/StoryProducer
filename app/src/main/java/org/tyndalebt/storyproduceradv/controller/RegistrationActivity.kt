@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.Secure
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -28,6 +27,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag
+import org.tyndalebt.storyproduceradv.controller.remote.getPhoneId
 import org.tyndalebt.storyproduceradv.model.Phase
 import org.tyndalebt.storyproduceradv.model.PhaseType
 import org.tyndalebt.storyproduceradv.model.Workspace
@@ -355,16 +356,21 @@ open class RegistrationActivity : AppCompatActivity() {
         return true
     }
 
-    private fun postRegistrationInfo() {
-        val myContext = this.applicationContext
-
+    private fun postRegistrationInfo(context: Context) {
+        val myContext = context.applicationContext
         val reg = Workspace.registration
 
-        val PhoneId = Secure.getString(myContext.contentResolver,
-                Secure.ANDROID_ID)
+        val prefs = getSharedPreferences(RemoteCheckFrag.R_CONSULTANT_PREFS, Context.MODE_PRIVATE)
+        val token = prefs.getString("FirebaseToken", " ")
+        val prefsEditor = prefs.edit()
+        prefsEditor.putBoolean("FirebaseChanged", false)  // hasn't changed since last time sent to server'
+        prefsEditor.apply()
+
+        val PhoneId = getPhoneId(myContext)
 
         js["Key"] = getString(R.string.api_token)
         js["PhoneId"] = PhoneId
+        js["FirebaseToken"] = token!!
         js["TranslatorEmail"] = reg.getString("translator_email", " ")
         js["TranslatorPhone"] = reg.getString("translator_phone", " ")
         js["TranslatorLanguage"] = reg.getString("translator_languages", " ")
@@ -378,7 +384,7 @@ open class RegistrationActivity : AppCompatActivity() {
         js["TrainerPhone"] = reg.getString("trainer_phone", " ")
 
         Log.i("LOG_VOLLEY", js.toString())
-        val registerPhoneUrl = Workspace.getRoccUrlPrefix(this) + getString(R.string.url_register_phone)
+        val registerPhoneUrl = Workspace.getRoccUrlPrefix(context) + getString(R.string.url_register_phone)
         val req = object : StringRequest(Request.Method.POST, registerPhoneUrl, Response.Listener { response ->
             Log.i("LOG_VOLEY", response)
             resp = response
@@ -392,11 +398,8 @@ open class RegistrationActivity : AppCompatActivity() {
             }
         }
 
-
         val test = VolleySingleton.getInstance(myContext).requestQueue
         test.add(req)
-
-
     }
 
     /**
@@ -571,7 +574,7 @@ open class RegistrationActivity : AppCompatActivity() {
                 .setPositiveButton(getString(R.string.yes)) { _, _ ->
                     Workspace.registration.complete = true
                     storeRegistrationInfo()
-                    postRegistrationInfo()
+                    postRegistrationInfo(this)
                     val saveToast = Toast.makeText(this@RegistrationActivity, R.string.registration_saved_successfully, Toast.LENGTH_LONG)
                     saveToast.show()
                     sendEmail()
