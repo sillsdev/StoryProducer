@@ -219,7 +219,7 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
         var found: Boolean
         var title: String = Workspace.activeStory.title
         docFile = Workspace.workdocfile.findFile(title)
-        docFile = docFile!!.findFile("project")
+        docFile = docFile!!.findFile(PROJECT_DIR)
         val audioList1: List<DocumentFile> = docFile!!.listFiles().filter { isCurrentPhase(it.name) }
         if (audioList1.size <= MAX_AUDIO_ARCHIVE_COUNT)
             return

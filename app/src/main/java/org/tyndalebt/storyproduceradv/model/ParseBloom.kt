@@ -30,7 +30,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val slides: MutableList<Slide> = ArrayList()
     val story = Story(storyPath.name!!, slides)
     story.importAppVersion = BuildConfig.VERSION_NAME
-
+    story.language = Workspace.parseLanguage
     val soup = Jsoup.parse(htmlText)
 
     //add the title slide

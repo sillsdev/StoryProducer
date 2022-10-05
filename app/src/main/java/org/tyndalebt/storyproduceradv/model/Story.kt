@@ -47,6 +47,7 @@ class Story(var title: String, var slides: List<Slide>){
     var remoteId: Int? = null
     var importAppVersion = ""
     var localCredits = ""
+    var language = ""
 
     val inProgress: Boolean get() {
         for(slide in slides){

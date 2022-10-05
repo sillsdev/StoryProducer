@@ -76,6 +76,8 @@ object Workspace {
 
     // destination folder for bloom files downloaded from a server (to then be parsed)
     lateinit var bloomFolder:File
+    // parseLanguage is used to store the language folder name from the server to eventually be stored in the story.json file as it is parsed
+    lateinit var parseLanguage: String
 
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {

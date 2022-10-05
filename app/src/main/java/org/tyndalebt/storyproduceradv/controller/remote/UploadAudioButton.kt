@@ -125,6 +125,7 @@ fun sendSlideSpecificRequest(
         js["StoryId"] = Workspace.activeStory.remoteId.toString()
     }
     js["TemplateTitle"] = Workspace.activeStory.title
+    js["Language"] = Workspace.activeStory.language
     js["SlideNumber"] = slideNumber.toString()
     js["Data"] = content
     sendProjectSpecificRequest(context, relativeUrl, {

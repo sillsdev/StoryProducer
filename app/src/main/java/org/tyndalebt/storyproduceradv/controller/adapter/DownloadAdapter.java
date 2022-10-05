@@ -11,21 +11,23 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 
 import org.tyndalebt.storyproduceradv.R;
+import org.tyndalebt.storyproduceradv.activities.DownloadActivity;
 
 import java.util.ArrayList;
 
 public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.OnClickListener {
+    DownloadActivity dla;
     Context mContext;
     private ArrayList<DownloadDS> dataSetArray;
     String apos;
-
     private static class ViewHolder {
         CheckedTextView chkItem;
     }
 
-    public DownloadAdapter(ArrayList<DownloadDS> data, Context context) {
-        super(context, R.layout.bloom_list_item, data);
-        this.mContext = context;
+    public DownloadAdapter(ArrayList<DownloadDS> data, DownloadActivity pDownloadActivity) {
+        super(pDownloadActivity, R.layout.bloom_list_item, data);
+        dla = pDownloadActivity;
+        this.mContext = pDownloadActivity;
         this.dataSetArray = data;
         // Special Apostrophe (not single quote) doesn't transfer in a URL, encode it along with spaces
         apos = new Character((char) 226).toString();
@@ -41,13 +43,17 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
         Object object= getItem(position);
         DownloadDS dataModel=(DownloadDS) object;
 
-        switch (v.getId())
-        {
-            case R.id.checkedTextView:
-                CheckedTextView ctv = (CheckedTextView) v;
-                dataModel.setChecked(!ctv.isChecked());   // toggle check
-                setCheckmark(ctv, dataModel.getChecked());
-                break;
+        if (dataModel.URL.equals("Language")) {  // first pass, now show stories for chosen language
+            dla.chosenLanguage = dataModel.fileName;
+            dla.copyFile(DownloadActivity.BLOOM_LIST_FILE);
+        } else {  // List of stories, toggle checkmark
+            switch (v.getId()) {
+                case R.id.checkedTextView:
+                    CheckedTextView ctv = (CheckedTextView) v;
+                    dataModel.setChecked(!ctv.isChecked());   // toggle check
+                    setCheckmark(ctv, dataModel.getChecked());
+                    break;
+            }
         }
     }
 

@@ -36,7 +36,7 @@ import org.tyndalebt.storyproduceradv.tools.file.*;
 // This needs to correspond to name on server
 
 public class DownloadActivity extends BaseActivity {
-    public static final String BLOOM_LIST_FILE = "bloomlist";
+    public static final String BLOOM_LIST_FILE = "BloomfileLang";
 
     private static String file_url;
     public ProgressBar pBar;
@@ -46,6 +46,10 @@ public class DownloadActivity extends BaseActivity {
     public static final int progress_bar_type = 0;
     public DownloadFileFromURL at;
     public DrawerLayout mDrawerLayout = null;
+    // First pass is to parse languages, select the language, second pass is to choose story within that language
+    public Boolean firstPass;
+    public String chosenLanguage;
+    public String bloomFileContents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class DownloadActivity extends BaseActivity {
         at.progress_bar_type = this.progress_bar_type;
         file_url = BuildConfig.ROCC_URL_PREFIX + "/Files/Bloom/";
         at.execute(file_url + BLOOM_LIST_FILE);
+        firstPass = true;
     }
 
     @Override
@@ -105,7 +110,6 @@ public class DownloadActivity extends BaseActivity {
             }
         }
         DownloadAdapter arrayAdapter = new DownloadAdapter(arrayList, this);
-
         pView.setAdapter(arrayAdapter);
 
         pDownloadImage.setOnClickListener(clickListener);
@@ -161,45 +165,78 @@ public class DownloadActivity extends BaseActivity {
         String result = "";
 
         if (outFile.compareTo(BLOOM_LIST_FILE) == 0) {
-            InputStream fis = null;
-            try {
-//                fis = new FileInputStream(outFile);
-                fis = org.tyndalebt.storyproduceradv.tools.file.FileIO.getChildInputStream(this, outFile);
-                char current;
-                while (fis.available() > 0) {
-                    current = (char) fis.read();
-                    result = result + String.valueOf(current);
+            if (firstPass == true) {
+                InputStream fis = null;
+                try {
+                    fis = org.tyndalebt.storyproduceradv.tools.file.FileIO.getChildInputStream(this, outFile);
+                    char current;
+                    while (fis.available() > 0) {
+                        current = (char) fis.read();
+                        result = result + String.valueOf(current);
+                    }
+                } catch (Exception e) {
+                    Log.d("DownloadActivity:copyFile", e.toString());
+                    Intent mDisplayAlert = new Intent(this, DisplayAlert.class);
+                    mDisplayAlert.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mDisplayAlert.putExtra("title", "List of templates");
+                    mDisplayAlert.putExtra("body", "Unable to download list of templates. Please check internet connection.");
+                    startActivity(mDisplayAlert);
                 }
-            } catch (Exception e) {
-                Log.d("DownloadActivity:copyFile", e.toString());
-                Intent mDisplayAlert = new Intent(this, DisplayAlert.class);
-                mDisplayAlert.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mDisplayAlert.putExtra("title",  "List of templates");
-                mDisplayAlert.putExtra("body",  "Unable to download list of templates. Please check internet connection.");
-                startActivity(mDisplayAlert);
+                bloomFileContents = result;
+            } else {
+                result = bloomFileContents;
             }
+
             String lines[] = result.split("\\r?\\n");
-            String urlList[] = new String[lines.length];
+            String itemString = "";
+            String tagString = "";
             int idx;
+            String lastLang = "";
             String apos;
+            String tmpString;
             // Special Apostrophe (not single quote) doesn't transfer in a URL, encode it along with spaces
             apos = new Character((char) 226).toString();
             apos = apos + new Character((char) 128).toString();
             apos = apos + new Character((char) 153).toString();
+
             for (idx = 0; idx < lines.length; idx++) {
-                urlList[idx] = file_url + lines[idx].replaceAll(" ", "%20");
-                urlList[idx] = urlList[idx].replaceAll(apos, "%E2%80%99");
+                String lang[] = lines[idx].split("/");
+                if (firstPass == true) {
+                    if (!lastLang.equals(lang[0])) {
+                        if (!itemString.equals("")) {
+                            itemString = itemString + "|";
+                            tagString = tagString + "|";
+                        }
+                        lastLang = lang[0];
+                        itemString = itemString + lang[0];
+                        tagString = tagString + "Language";
+                    }
+                } else {
+                    if (lang[0].equals(this.chosenLanguage)) {
+                        if (!itemString.equals("")) {
+                            itemString = itemString + "|";
+                            tagString = tagString + "|";
+                        }
+                        if (lang.length > 1) {
+                            itemString = itemString + lang[1];
+                        }
+                        tmpString = file_url + lines[idx].replaceAll(" ", "%20");
+                        tmpString = tmpString.replaceAll(apos, "%E2%80%99");
+                        tagString = tagString + tmpString;
+                    }
+                }
             }
+            String itemArray[] = itemString.split("\\|");
+            String tagArray[] = tagString.split("\\|");
             at = new DownloadFileFromURL(this);
-//            at.execute(urlList);
-            buildBloomList(lines, urlList);
-            // remove bloomlist file after arrays are created
-            if (org.tyndalebt.storyproduceradv.tools.file.FileIO.deleteWorkspaceFile(this, outFile)) {
-            }
+            buildBloomList(itemArray, tagArray);
+            firstPass = false;
         } else {
             BaseController upstor = new BaseController(this, this);
             pBar.setVisibility(View.INVISIBLE);
             pText.setVisibility(View.INVISIBLE);
+            Workspace.parseLanguage = this.chosenLanguage;
+            org.tyndalebt.storyproduceradv.tools.file.FileIO.deleteWorkspaceFile(this, BLOOM_LIST_FILE);
             upstor.updateStories();
         }
         return true;
