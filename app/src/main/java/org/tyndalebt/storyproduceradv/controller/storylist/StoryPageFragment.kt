@@ -20,7 +20,7 @@ import org.tyndalebt.storyproduceradv.service.SlideService
 
 /**
  * StoryPageFragment is a flexible fragment in that it displays different things based on the
- * current configurations. Typically, this shows a list of list of stories. However, when there are
+ * current configurations. Typically, this shows a list of stories. However, when there are
  * no stories present, a message is shown that notifies the user that there aren't any stories of
  * that type in the tab. Lastly, a StoryPageFragment can contain a FilterToolbarFrag that helps to
  * sort the list of stories in the adapter.
@@ -187,7 +187,7 @@ class ListAdapter(context: Context,
             // Espresso test will have to reflect this new naming convention for stories in
             //     each tab.
             when (storyPageTab){
-                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title  // leave unchanged
+                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title + " (" + (story.slides.size - 1) + ")" // leave unchanged
                 StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.title + " " // add 1 space for uniqueness
                 StoryPageTab.COMPLETED-> holder.txtTitle.text = story.title + "  " // add 2 spaces for uniqueness
                 else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness
