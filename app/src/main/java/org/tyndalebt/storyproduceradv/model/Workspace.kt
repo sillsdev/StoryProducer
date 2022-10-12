@@ -208,6 +208,7 @@ object Workspace {
         prefs = context.getSharedPreferences(WORKSPACE_KEY, Context.MODE_PRIVATE)
         setupWorkspacePath(context, Uri.parse(prefs!!.getString("workspace", "")))
         isInitialized = true
+        parseLanguage = ""
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
         Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
         GlobalScope.launch {

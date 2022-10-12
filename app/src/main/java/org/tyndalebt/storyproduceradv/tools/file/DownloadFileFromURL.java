@@ -47,7 +47,7 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
             String fName = f_url[arrayIndex].substring(f_url[arrayIndex].lastIndexOf("/") + 1);
             try {
                 fileName = java.net.URLDecoder.decode(fName, StandardCharsets.UTF_8.name());
-                String folderName = fileName.replace(".bloom", "");
+                String folderName = removeExtension(fileName);
                 // If bloom file has not already been parsed, download it and parse it
                 if (!org.tyndalebt.storyproduceradv.tools.file.FileIO.workspaceRelPathExists(con, folderName)) {
                     try {
@@ -114,6 +114,13 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                 da.pBar.setProgress(item);
             }
         });
+    }
+
+    public String removeExtension(String pFilename) {
+        // extension may be .bloom or .bloomSource
+        String folderName = pFilename.replace(".bloomSource", "");
+        folderName = folderName.replace(".bloom", "");
+        return folderName;
     }
 
     /**

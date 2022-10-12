@@ -187,7 +187,7 @@ class ListAdapter(context: Context,
             // Espresso test will have to reflect this new naming convention for stories in
             //     each tab.
             when (storyPageTab){
-                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title + " (" + (story.slides.size - 1) + ")" // leave unchanged
+                StoryPageTab.ALL_STORIES-> holder.txtTitle.text = story.title + " (" + (story.slides.size - 1) + "s)" // leave unchanged
                 StoryPageTab.IN_PROGRESS-> holder.txtTitle.text = story.title + " " // add 1 space for uniqueness
                 StoryPageTab.COMPLETED-> holder.txtTitle.text = story.title + "  " // add 2 spaces for uniqueness
                 else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness

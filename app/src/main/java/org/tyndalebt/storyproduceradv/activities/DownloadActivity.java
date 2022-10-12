@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -105,7 +106,7 @@ public class DownloadActivity extends BaseActivity {
 
         for (idx = 0; idx < pList.length; idx++) {
             if (folderExists(this, pURL[idx]) == false) {
-                tmp = pList[idx].replace(".bloom", "");
+                tmp = at.removeExtension((pList[idx]));
                 arrayList.add(new DownloadDS(tmp, pURL[idx], false));
             }
         }
@@ -134,7 +135,7 @@ public class DownloadActivity extends BaseActivity {
         String fileName;
         try {
             fileName = java.net.URLDecoder.decode(fName, StandardCharsets.UTF_8.name());
-            String folderName = fileName.replace(".bloom", "");
+            String folderName = at.removeExtension(fileName);
             // If bloom file has not already been parsed, download it and parse it
             return org.tyndalebt.storyproduceradv.tools.file.FileIO.workspaceRelPathExists(con, folderName);
         } catch (Exception e) {
@@ -158,6 +159,28 @@ public class DownloadActivity extends BaseActivity {
             }
         }
         return pURLs.split("\\|");
+    }
+
+    public String URLEncodeUTF8(String pSource) {
+        String tmpNew = "";
+        Integer tmpInt = 0;
+        char tmpByte = 0;
+        Integer idx;
+
+        for (idx = 0; idx < pSource.length(); idx++) {
+            if (pSource.charAt(idx) >= 128) {
+                tmpByte = pSource.charAt(idx);
+                tmpNew = tmpNew + "%";
+                tmpInt = (int)tmpByte;
+                tmpNew = tmpNew + String.format("%02X", tmpInt);
+            }
+            else if (pSource.charAt(idx) == ' ') {
+                tmpNew = tmpNew + "%20";
+            } else {
+                tmpNew = tmpNew + pSource.charAt(idx);
+            }
+        }
+        return tmpNew;
     }
 
     public boolean copyFile(String outFile) {
@@ -192,12 +215,6 @@ public class DownloadActivity extends BaseActivity {
             String tagString = "";
             int idx;
             String lastLang = "";
-            String apos;
-            String tmpString;
-            // Special Apostrophe (not single quote) doesn't transfer in a URL, encode it along with spaces
-            apos = new Character((char) 226).toString();
-            apos = apos + new Character((char) 128).toString();
-            apos = apos + new Character((char) 153).toString();
 
             for (idx = 0; idx < lines.length; idx++) {
                 String lang[] = lines[idx].split("/");
@@ -218,11 +235,11 @@ public class DownloadActivity extends BaseActivity {
                             tagString = tagString + "|";
                         }
                         if (lang.length > 1) {
-                            itemString = itemString + lang[1];
+                            ByteBuffer buffer = StandardCharsets.ISO_8859_1.encode(lang[1]);
+                            String encodedString = StandardCharsets.UTF_8.decode(buffer).toString();
+                            itemString = itemString + encodedString;
                         }
-                        tmpString = file_url + lines[idx].replaceAll(" ", "%20");
-                        tmpString = tmpString.replaceAll(apos, "%E2%80%99");
-                        tagString = tagString + tmpString;
+                        tagString = tagString + file_url + URLEncodeUTF8(lines[idx]);
                     }
                 }
             }

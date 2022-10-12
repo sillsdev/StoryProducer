@@ -19,7 +19,6 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
     DownloadActivity dla;
     Context mContext;
     private ArrayList<DownloadDS> dataSetArray;
-    String apos;
     private static class ViewHolder {
         CheckedTextView chkItem;
     }
@@ -29,11 +28,6 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
         dla = pDownloadActivity;
         this.mContext = pDownloadActivity;
         this.dataSetArray = data;
-        // Special Apostrophe (not single quote) doesn't transfer in a URL, encode it along with spaces
-        apos = new Character((char) 226).toString();
-        apos = apos + new Character((char) 128).toString();
-        apos = apos + new Character((char) 153).toString();
-
     }
 
     @Override
@@ -87,7 +81,6 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
 
         String tmpString;
         tmpString = dataModel.getName();
-        tmpString = tmpString.replaceAll(apos, "’");
 
         viewHolder.chkItem.setText(tmpString);
         setCheckmark(viewHolder.chkItem, dataModel.getChecked());

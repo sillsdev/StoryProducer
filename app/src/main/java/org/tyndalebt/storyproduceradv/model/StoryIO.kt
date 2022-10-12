@@ -238,7 +238,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
 
     try
     {
-        //copy file to internal files directory to perform the normal "File" opterations on.
+        //copy file to internal files directory to perform the normal "File" operations on.
         val uri = getWorkspaceUri(file.name!!)
         if(uri != null){copyToFilesDir(context,uri,sourceFile)}
 
@@ -274,6 +274,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
                 }
             } catch (e: Exception) {
             }
+            ostream.flush()
             ostream.close()
             zis.close()
         }
