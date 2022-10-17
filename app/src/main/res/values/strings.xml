@@ -301,6 +301,7 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
+    <string name="more_story_templates">If you are connected to the internet, you can add more story templates!\nTap the menu in the upper left, and choose:\n<b>Download Bloom Library Templates</b></string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>
