@@ -11,12 +11,14 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
+import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.GlobalScope
@@ -101,10 +103,31 @@ class MainActivity : BaseActivity(), Serializable {
             }
         }
 
+        checkDownloadStoriesMessage()
+
+    }
+
+    // If only one or two stories are (auto) installed then display short
+    // message to user to explain how to download more bloom templates
+    private fun checkDownloadStoriesMessage() {
+        if (Workspace.storyFilesToScanOrUnzip().size <= 3) {
+            val snackBar = Snackbar.make(
+                    findViewById(R.id.drawer_layout),
+                    R.string.more_story_templates,
+                    20 * 1000   // display for 20 seconds
+            )
+            val snackTextView =
+                snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            snackTextView.maxLines = 5  // allow 5 line snack-bar messages
+            snackBar.show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
+
+        checkDownloadStoriesMessage()
+
     }
 
     override fun onStart() {
