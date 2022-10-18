@@ -56,10 +56,10 @@
             android:name="org.tyndalebt.storyproduceradv.controller.SplashScreenActivity"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Story List Page -->
@@ -95,11 +95,11 @@
             android:name="org.tyndalebt.storyproduceradv.activities.DownloadActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name="org.tyndalebt.storyproduceradv.activities.DisplayAlert">
+            android:name="org.tyndalebt.storyproduceradv.activities.DisplayAlert"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
