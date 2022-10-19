@@ -103,17 +103,31 @@ class MainActivity : BaseActivity(), Serializable {
             }
         }
 
-        // If only one or two stories are (auto) installed then display short
-        // message to user to explain how to download more bloom templates
-        val snackBar = Snackbar.make(findViewById(R.id.drawer_layout), R.string.more_story_templates, 20 * 1000)
-        val snackTextView = snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-        snackTextView.maxLines = 4  // allow 4 line snack-bar messages
-        snackBar.show()
+        checkDownloadStoriesMessage()
 
+    }
+
+    // If only one or two stories are (auto) installed then display short
+    // message to user to explain how to download more bloom templates
+    private fun checkDownloadStoriesMessage() {
+        if (Workspace.storyFilesToScanOrUnzip().size <= 3) {
+            val snackBar = Snackbar.make(
+                    findViewById(R.id.drawer_layout),
+                    R.string.more_story_templates,
+                    20 * 1000   // display for 20 seconds
+            )
+            val snackTextView =
+                snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
+            snackTextView.maxLines = 4  // allow 4 line snack-bar messages
+            snackBar.show()
+        }
     }
 
     override fun onResume() {
         super.onResume()
+
+        checkDownloadStoriesMessage()
+
     }
 
     override fun onStart() {

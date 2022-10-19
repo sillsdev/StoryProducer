@@ -22,7 +22,6 @@ class SelectTemplatesFolderController(
         data?.data?.also { uri ->
             if (result == Activity.RESULT_OK) {
                 setupWorkspace(request, uri)
-                updateStories()
             }
         }
     }
@@ -34,8 +33,9 @@ class SelectTemplatesFolderController(
 
         if (shouldAddDemoToWorkspace(request)) {
             workspace.addDemoToWorkspace(context)
-            updateStories()  // refresh list of stories
         }
+
+        updateStories()  // always refresh list of stories
     }
 
     fun shouldAddDemoToWorkspace(request: Int): Boolean {
