@@ -100,7 +100,7 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
             oStream.write(bArray,0,bytesRead)
             bytesRead = iStream.read(bArray)
         }
-        oStream.flush()
+        //oStream.flush()
         iStream.close()
 
         // 10/04/2021 - DKH: Espresso test fail for Android 10 and 11 #594

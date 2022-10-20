@@ -1,6 +1,7 @@
 package org.tyndalebt.storyproduceradv.model
 
 import android.content.Context
+import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
@@ -274,7 +275,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
                 }
             } catch (e: Exception) {
             }
-            ostream.flush()
+            //ostream.flush()
             ostream.close()
             zis.close()
         }
