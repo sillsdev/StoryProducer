@@ -15,10 +15,13 @@ import android.content.Intent;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -191,7 +194,8 @@ public class DownloadActivity extends BaseActivity {
             if (firstPass == true) {
                 InputStream fis = null;
                 try {
-                    fis = org.tyndalebt.storyproduceradv.tools.file.FileIO.getChildInputStream(this, outFile);
+                    File sourceFile = new File(this.getFilesDir() + "/" + outFile);
+                    fis = new FileInputStream(sourceFile);
                     char current;
                     while (fis.available() > 0) {
                         current = (char) fis.read();
@@ -253,8 +257,20 @@ public class DownloadActivity extends BaseActivity {
             pBar.setVisibility(View.INVISIBLE);
             pText.setVisibility(View.INVISIBLE);
             Workspace.parseLanguage = this.chosenLanguage;
-            org.tyndalebt.storyproduceradv.tools.file.FileIO.deleteWorkspaceFile(this, BLOOM_LIST_FILE);
-            upstor.updateStories();
+            File sourceFile = new File(this.getFilesDir() + "/" + BLOOM_LIST_FILE);
+            sourceFile.delete();
+            // Build list of (downloaded) bloom files on internal folder
+            ArrayList<DocumentFile> storyFiles=new ArrayList<>();
+            DocumentFile root = DocumentFile.fromFile(new File(this.getFilesDir() + "/"));
+            for(DocumentFile f:root.listFiles()){
+                 if(f.isFile()){
+                    String name=f.getName();
+                    if(name.endsWith(".bloomSource")
+                            || name.endsWith(".bloom"))
+                        storyFiles.add(f);
+                }
+            }
+            upstor.updateStoriesCommon(storyFiles);
         }
         return true;
     }

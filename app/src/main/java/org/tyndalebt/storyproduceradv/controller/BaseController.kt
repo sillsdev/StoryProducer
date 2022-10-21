@@ -34,6 +34,10 @@ open class BaseController(
         }
         Workspace.Stories.clear()
         storyFiles = Workspace.storyFiles()
+        updateStoriesCommon(storyFiles)
+    }
+
+    fun updateStoriesCommon(storyFiles: List<DocumentFile>) {
         if (storyFiles.isNotEmpty()) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)
         } else {

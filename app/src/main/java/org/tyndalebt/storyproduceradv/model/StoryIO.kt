@@ -1,17 +1,17 @@
 package org.tyndalebt.storyproduceradv.model
 
 import android.content.Context
-import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
-import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.BuildConfig
+import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.tools.file.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -236,14 +236,27 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
     val name = file.name!!.substringBeforeLast(".","")
     val sourceFile = File("${context.filesDir}/${file.name!!}")
     val zipFile = ZipFile(sourceFile.absolutePath)
+    var workspaceBloomExits:Boolean = false
 
     try
     {
-        //copy file to internal files directory to perform the normal "File" operations on.
+        // if user copied directly to SP Workspace folder. workspaceBloomExits = true and copy to sourceFile.
+        // If downloaded, it only exists on sourceFile.
         val uri = getWorkspaceUri(file.name!!)
-        if(uri != null){copyToFilesDir(context,uri,sourceFile)}
-
-        Thread.sleep(250)
+        if (uri != null) {
+            try {
+                val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+                inputStream!!.close()
+                workspaceBloomExits = true
+            } catch (e: java.lang.Exception) {
+                workspaceBloomExits = false
+            }
+        }
+        if (workspaceBloomExits) {
+            //copy file to internal files directory to perform the normal "File" operations on.
+            copyToFilesDir(context, uri!!, sourceFile)
+            Thread.sleep(250)
+        }
         //Extract to files/unzip
         val fileHeaders = zipFile.fileHeaders
 
@@ -285,7 +298,8 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
     catch(e: Exception) { }
     //delete copied and original zip file to save space
     sourceFile.delete()
-    deleteWorkspaceFile(context,file.name!!)
-
+    if (workspaceBloomExits) {
+        deleteWorkspaceFile(context, file.name!!)
+    }
     return name
 }

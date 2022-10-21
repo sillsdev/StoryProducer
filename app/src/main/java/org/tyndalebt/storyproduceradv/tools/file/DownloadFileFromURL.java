@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -68,7 +70,8 @@ public class DownloadFileFromURL extends AsyncTask<String, String, String> {
                         InputStream input = new BufferedInputStream(url.openStream(),
                                 8192);
 
-                        OutputStream output = org.tyndalebt.storyproduceradv.tools.file.FileIO.getChildOutputStream(con, fileName, "", "w");
+                        File sourceFile = new File(con.getFilesDir() + "/" + fileName);
+                        OutputStream output = new FileOutputStream(sourceFile);
 
                         byte data[] = new byte[1024];
 
