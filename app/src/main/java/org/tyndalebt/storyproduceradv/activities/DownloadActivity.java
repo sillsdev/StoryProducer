@@ -259,6 +259,12 @@ public class DownloadActivity extends BaseActivity {
             Workspace.parseLanguage = this.chosenLanguage;
             File sourceFile = new File(this.getFilesDir() + "/" + BLOOM_LIST_FILE);
             sourceFile.delete();
+            //  All bloom files have been download and Bloomlist file deleted.  Wait for a second, then build list of bloom files and parse them
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             // Build list of (downloaded) bloom files on internal folder
             ArrayList<DocumentFile> storyFiles=new ArrayList<>();
             DocumentFile root = DocumentFile.fromFile(new File(this.getFilesDir() + "/"));
