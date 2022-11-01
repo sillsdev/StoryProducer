@@ -12,6 +12,11 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
+import android.util.Base64
+import java.text.SimpleDateFormat
+import javax.crypto.Mac
+import javax.crypto.spec.SecretKeySpec
+
 
 class BLBook(
     val Title: String,
@@ -28,8 +33,9 @@ open class BLBookList(var dateUpdated: Date) {
 
         var booklistLoading = false
         var booklist : List<BLBook>? = null
-        private const val resourceBucket = "sil-storyproducer-resources"
-        private const val resourceDomain = "s3.amazonaws.com"
+        private const val fallbackResourceBucket = "sil-storyproducer-resources"
+        private const val fallbackResourceDomain = "s3.amazonaws.com"
+        private const val fallbackResourceKey = "bl1/bl_samples.xml"
 
         const val WIFI = "Wi-Fi"
         const val ANY = "Any"
@@ -39,17 +45,23 @@ open class BLBookList(var dateUpdated: Date) {
         // Whether there is a mobile connection.
         private var mobileConnected = true//false
 
-        // Whether the display should be refreshed.
-        var refreshDisplay = true
         // The user's current network preference setting.
         var sPref: String? = ANY
 
-        private const val resourceKey = "bl1/bl_samples.xml"
-        val resourceAddr = "https://${resourceBucket}.${resourceDomain}/${resourceKey}"
+        private const val fallbackResourceAddr = "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey}"
     }
 
     // We don't use namespaces
     private val ns: String? = null
+
+
+    private val accessKey = "AWS_ACCESS_KEY_ID"
+    private val secretKey = "AWS_SECRET_ACCESS_KEY"
+    private val resourceKey = "AWS_RESOURCE_KEY"
+    private val resourceBucket = "sil-storyproducer-resources"
+    private val resourceDomain = "s3.amazonaws.com"
+    private lateinit var requestDate: String
+    private lateinit var authValue : String
 
     //
     // xml parsing code methods below are adapted from: https://developer.android.com/training/basics/network-ops/xml
@@ -200,10 +212,17 @@ open class BLBookList(var dateUpdated: Date) {
     @Throws(XmlPullParserException::class, IOException::class)
     private fun loadXmlFromNetwork(urlString: String) {
 
-        booklist = downloadUrl(urlString)?.use { stream ->
-            // Instantiate the parser
-            parse(stream)
-        } ?: emptyList()
+        if (accessKey.compareTo("AWS_ACCESS_KEY_ID") == 0) {
+            booklist = downloadUrl(urlString)?.use { stream ->
+                // Instantiate the fallback samples parser
+                parse(stream)
+            } ?: emptyList()
+        } else {
+            booklist = doAuthInBackground()?.use { stream ->
+                // Instantiate the full catalog parser
+                parse(stream)
+            } ?: emptyList()
+        }
 
     }
 
@@ -223,9 +242,45 @@ open class BLBookList(var dateUpdated: Date) {
         }
     }
 
-    // Implementation of AsyncTask used to download XML feed from the bloom catalog url.
+    @Throws(IOException::class)
+    private fun doAuthInBackground(): InputStream? {
+        createRequestDate()
+        createAuthValue()
+        return getCatalogStream()
+    }
+
+    private fun createRequestDate() {
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US)
+        dateFormat.timeZone = TimeZone.getTimeZone("GMT")
+        requestDate = dateFormat.format(calendar.time)
+    }
+
+    private fun createAuthValue()  {
+        val message = "GET\n\n\n${requestDate}\n/${resourceBucket}/${resourceKey}"
+        val mac = Mac.getInstance("HmacSHA1")
+        val secret = SecretKeySpec(secretKey.toByteArray(), "HmacSHA1")
+        mac.init(secret)
+        val encoded = Base64.encodeToString(mac.doFinal(message.toByteArray()), Base64.DEFAULT).trimEnd()
+        authValue = "AWS ${accessKey}:${encoded}"
+    }
+
+    private fun getCatalogStream(): InputStream? {
+
+        val url = URL("https://${resourceBucket}.${resourceDomain}/${resourceKey}")
+        with(url.openConnection() as HttpURLConnection) {
+            requestMethod = "GET"
+            addRequestProperty("Date", requestDate)
+            addRequestProperty("Authorization", authValue)
+            return inputStream
+        }
+    }
+
+// Implementation of AsyncTask used to download XML feed from the bloom catalog url.
     private inner class DownloadXmlTask : AsyncTask<String, Void, String>() {
+
         val resources = App.appContext.resources
+
         override fun doInBackground(vararg urls: String) : String {
             return try {
                 loadXmlFromNetwork(urls[0])
@@ -258,9 +313,9 @@ open class BLBookList(var dateUpdated: Date) {
     fun loadPage() {
 
         if (sPref.equals(ANY) && (wifiConnected || mobileConnected)) {
-            DownloadXmlTask().execute(resourceAddr)
+            DownloadXmlTask().execute(fallbackResourceAddr)
         } else if (sPref.equals(WIFI) && wifiConnected) {
-            DownloadXmlTask().execute(resourceAddr)
+            DownloadXmlTask().execute(fallbackResourceAddr)
         } else {
             // show error
         }
