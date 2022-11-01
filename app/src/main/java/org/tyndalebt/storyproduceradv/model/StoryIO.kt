@@ -255,8 +255,8 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
         if (workspaceBloomExits) {
             //copy file to internal files directory to perform the normal "File" operations on.
             copyToFilesDir(context, uri!!, sourceFile)
-            Thread.sleep(1000)
         }
+        Thread.sleep(1000)
         //Extract to files/unzip
         val fileHeaders = zipFile.fileHeaders
 

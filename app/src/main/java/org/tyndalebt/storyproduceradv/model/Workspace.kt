@@ -1,7 +1,6 @@
 package org.tyndalebt.storyproduceradv.model
 
 import WordLinksCSVReader
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -91,6 +90,7 @@ object Workspace {
     var activePhaseIndex: Int = -1
     var isInitialized = false
     var prefs: SharedPreferences? = null
+    var startedMain = false
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
     // This flag indicates whether MainActivity should call the RegistrationActivity to allow
@@ -210,6 +210,7 @@ object Workspace {
         isInitialized = true
         parseLanguage = ""
         firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        startedMain = false
         Log.e("@pwhite", "about to create socket client ${getRoccWebSocketsUrl(context)}")
         GlobalScope.launch {
             for (message in messageChannel.openSubscription()) {
@@ -222,6 +223,9 @@ object Workspace {
         GlobalScope.launch {
             for (approval in approvalChannel.openSubscription()) {
                 approvalList.add(approval)
+                // If workspace not built yet, let main do this later
+                if (Workspace.startedMain)
+                    processReceivedApprovals()
             }
         }
         GlobalScope.launch {
@@ -639,22 +643,20 @@ object Workspace {
         Stories.sortBy { it.title }
     }
 
-
     fun processReceivedApprovals() {
         // This could be being built while processed, so remove elements from front one by one as
         // elements may be added on the back end
         while (approvalList.size > 0) {
-            var approval = approvalList[0]
+            var approval = approvalList.removeAt(0)
             for (story in Stories) {
                 if (story.remoteId == approval.storyId && approval.slideNumber >= 0 && approval.slideNumber < story.slides.size) {
-                    story.slides[approval.slideNumber].isApproved = approval.approvalStatus;
+                    story.slides[approval.slideNumber].isApproved = approval.approvalStatus
+                    break
                 }
             }
             if (approval.timeSent > lastReceivedTimeSent) {
                 lastReceivedTimeSent = approval.timeSent
             }
-            approvalList.removeAt(0)
         }
     }
-
 }
