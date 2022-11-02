@@ -93,6 +93,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     override fun showMain() {
         startActivity(Intent(this, MainActivity::class.java))
+        Workspace.startedMain = true
         Workspace.processReceivedApprovals()
         finish()
     }

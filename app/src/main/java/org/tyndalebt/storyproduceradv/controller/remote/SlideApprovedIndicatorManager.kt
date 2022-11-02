@@ -17,7 +17,7 @@ import org.tyndalebt.storyproduceradv.model.messaging.Approval
 class ApprovalIndicatorManager(
     val context: Context,
     val scope: CoroutineScope,
-    val approvedIndicator: ImageButton,
+    private val approvedIndicator: ImageButton,
     val slide: Slide,
     val slideNumber: Int?
 ){
@@ -28,12 +28,6 @@ class ApprovalIndicatorManager(
     init {
         greenCheckmark = VectorDrawableCompat.create(context.resources, R.drawable.ic_checkmark_green, null)!!
         grayCheckmark = VectorDrawableCompat.create(context.resources, R.drawable.ic_checkmark_gray, null)!!
-
-        approvedIndicator.background = if (slide.isApproved) {
-            greenCheckmark
-        } else {
-            grayCheckmark
-        }
     }
 
     public fun start() {
@@ -52,19 +46,17 @@ class ApprovalIndicatorManager(
                 if (approval.slideNumber == slideNumber && approval.storyId == Workspace.activeStory.remoteId) {
                     approvedIndicator.background = if (approval.approvalStatus) { greenCheckmark } else { grayCheckmark }
                 }
-                Workspace.approvalList.add(approval)  // Will be added in another place, but its ok to process this twice
-                                                      // Doing this avoids missing it, if there is a timing issue.
-                Workspace.processReceivedApprovals()
                 // Approve story if all slides in the story have been approved.
                 var allApproved = true
                 var story = Workspace.activeStory
                 for (slide in story.slides) {
                     if ((slide.slideType == SlideType.FRONTCOVER ||
                          slide.slideType == SlideType.NUMBEREDPAGE ||
-                         slide.slideType == SlideType.LOCALSONG) && 
+                         slide.slideType == SlideType.LOCALSONG) &&
                         !slide.isApproved) {
 
                         allApproved = false
+                        break  // found at least one so need to keep looking
                     }
                 }
                 story.isApproved = allApproved
