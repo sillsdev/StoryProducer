@@ -104,16 +104,6 @@
         &lt;font color=\"green\">&lt;b>SD card or in internal memory&lt;/b>&lt;/font>.</string>
     <string name="stories_not_found_in_progress">There are no stories in progress.</string>
     <string name="stories_not_found_completed">There are no completed stories.</string>
-    <!--  Issue #571, for welcome_screen_select_template_folder, replace template URL with a place holder. Move URL to workspace object -->
-    <string name="welcome_screen_select_template_folder">
-        StoryProducerAdv is different from typical apps.
-        First you must create a Workspace folder in your phone storage.  You will then download and move story templates and other assets into this folder.&lt;br>&lt;br>
-        DETAILED INSTRUCTIONS:&lt;br>
-        1. Use Google Drive and download story templates from &lt;a href="URL_FOR_TEMPLATES_PLACE_HOLDER">HERE&lt;/a>&lt;br>
-        2. Use a Files app to create a Workspace folder in internal memory or on the SD card &lt;br>and name it &lt;font color=\"green\">1SP Workspace&lt;/font>&lt;br>
-        3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">1SP Workspace&lt;/font> folder&lt;br>&lt;br>
-        After you have prepared the &lt;font color=\"green\">1SP Workspace&lt;/font> folder, proceed:
-    </string>
     <string name="welcome_screen_select_template_folder_new">
         StoryProducerAdv is different from typical apps.
         You must create a Workspace folder in your phone storage.  You will then download story templates into this folder.&lt;br>&lt;br>
@@ -283,7 +273,7 @@
     <string name="local_credits_unchanged">Local Credits Unchanged!</string>
 
     <!-- Local Song -->
-    <string name="LS_prompt">Compose and record a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>
+    <string name="LS_prompt">Use this slide to compose and record a song for the Bible story! Or ask questions to help people think about the story!  You can choose to include it or not include it when you make a video.</string>
 
     <string name="LWC_PLAYBACK">LWC Playback</string>
     <string name="DRAFT_RECORDING">Draft Recording</string>
