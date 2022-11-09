@@ -70,10 +70,10 @@ open class BLBookList(var dateUpdated: Date) {
     // parse xml from inputStream
     @Throws(XmlPullParserException::class, IOException::class)
     fun parse(inputStream: InputStream) : List<BLBook> {
-        inputStream.use { inputStream ->
+        inputStream.use { inStream ->
             val parser: XmlPullParser = Xml.newPullParser()
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false)
-            parser.setInput(inputStream, null)
+            parser.setInput(inStream, null)
             parser.nextTag()
             return readFeed(parser)
         }
@@ -297,14 +297,11 @@ open class BLBookList(var dateUpdated: Date) {
 
             booklistLoading = false
 
-            if (BLDownloadActivity.bldlActivity != null)
-            {
-                if (result.isEmpty()) {
-                    BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogSuccess()
-                }
-                else {
-                    BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogFailure(result)
-                }
+            if (result.isEmpty()) {
+                BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogSuccess()
+            }
+            else {
+                BLDownloadActivity.bldlActivity.onDownloadXmlBloomCatalogFailure(result)
             }
         }
     }
