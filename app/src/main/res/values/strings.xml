@@ -224,7 +224,7 @@
     <string name="message_hint">Enter Message</string>
     <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
-    <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
+    <string name="remote_check_msg_no_connection">Please check your internet connection and try again.</string>
     <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
@@ -261,7 +261,7 @@
     <string name="export_cancel_comment">Do not leave this screen until the video is complete.</string>
 
     <!-- ListView -->
-    <string name="title_activity_splash_screen">StoryProducer Advance</string>
+    <string name="title_activity_splash_screen">StoryProducer Advantage</string>
 
     <!-- Local Credits -->
     <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
@@ -298,6 +298,19 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
+
+    <!-- Upload for Remote Phases -->
+    <string name="already_uploaded">Selected recording already uploaded</string>
+    <string name="uploading_audio">Uploading Audio</string>
+    <string name="upload_success">Audio File Sent Successfully</string>
+    <string name="upload_failed">Audio upload failed</string>
+    <string name="no_recording_found">No recording found</string>
+    <string name="upload_already_started">Upload already in progress</string>
+    <string name="cancel_uploaded">Cancelling upload</string>
+    <string name="ignore_uploaded">Ignoring previous upload</string>
+    <string name="no_uploads_done">There have been no uploads yet</string>
+    <string name="invalid_response">Invalid response. Audio upload failed</string>
+    <string name="connect_failed">Failed to connect to server</string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>

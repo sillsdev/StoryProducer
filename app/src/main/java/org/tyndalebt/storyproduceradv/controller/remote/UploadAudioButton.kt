@@ -41,13 +41,13 @@ class UploadAudioButtonManager(
 
         uploadAudioButton.setOnClickListener {
             when (getUploadState()) {
-                UploadState.UPLOADED -> Toast.makeText(context, "Selected recording already uploaded", Toast.LENGTH_SHORT).show()
+                UploadState.UPLOADED -> Toast.makeText(context, R.string.already_uploaded, Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
                     val audioRecording = getAudioRecording()
                     if (audioRecording != null && audioRecording != "") {
                         setUploadState(UploadState.UPLOADING)
                         uploadAudioButton.background = uploadingIcon
-                        Toast.makeText(context, "Uploading audio", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.uploading_audio, Toast.LENGTH_SHORT).show()
                         val input = getStoryChildInputStream(context, audioRecording)
                         val audioBytes = IOUtils.toByteArray(input)
                         val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
@@ -65,21 +65,21 @@ class UploadAudioButtonManager(
                             finalSlideNumber = slideNumber
                         }
                         sendSlideSpecificRequest(context, finalSlideNumber, context.getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(context, "Audio File Sent Successfully", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, R.string.upload_success, Toast.LENGTH_SHORT).show()
                             setUploadState(UploadState.UPLOADED)
                             uploadAudioButton.background = uploadedIcon
                         }, {
-                            Toast.makeText(context, "Audio upload failed", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, R.string.upload_failed, Toast.LENGTH_SHORT).show()
                             setUploadState(UploadState.NOT_UPLOADED)
                             uploadAudioButton.background = notUploadedIcon
                         }, js)
                     } else {
-                        Toast.makeText(context, "No recording found", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, R.string.no_recording_found, Toast.LENGTH_SHORT).show()
                     }
                 }
                 UploadState.UPLOADING -> {
                     uploadAudioButton.background = uploadingIcon
-                    Toast.makeText(context, "Upload already in progress\nTap again to upload", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, R.string.upload_already_started, Toast.LENGTH_LONG).show()
                     setUploadState(UploadState.NOT_UPLOADED)
                 }
             }
@@ -89,15 +89,15 @@ class UploadAudioButtonManager(
             when (getUploadState()) {
                 UploadState.UPLOADING -> {
                     setUploadState(UploadState.NOT_UPLOADED)
-                    Toast.makeText(context, "Cancelling upload", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.cancel_uploaded, Toast.LENGTH_SHORT).show()
                     uploadAudioButton.background = notUploadedIcon
                 }
                 UploadState.UPLOADED -> {
                     setUploadState(UploadState.NOT_UPLOADED)
-                    Toast.makeText(context, "Ignoring previous upload", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, R.string.ignore_uploaded, Toast.LENGTH_SHORT).show()
                     uploadAudioButton.background = notUploadedIcon
                 }
-                UploadState.NOT_UPLOADED -> Toast.makeText(context, "There have been no uploads yet", Toast.LENGTH_SHORT).show()
+                UploadState.NOT_UPLOADED -> Toast.makeText(context, R.string.no_uploads_done, Toast.LENGTH_SHORT).show()
             }
             true
         }
@@ -157,7 +157,7 @@ fun sendProjectSpecificRequest(
         try {
             jsonObject = JSONObject(it)
         } catch (e: JSONException) {
-            Toast.makeText(context, "Invalid response. Audio upload failed.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.upload_failed, Toast.LENGTH_SHORT).show()
         }
         if (jsonObject != null) {
             onSuccess(jsonObject)
@@ -169,7 +169,7 @@ fun sendProjectSpecificRequest(
         if (nr != null) {
             Toast.makeText(context, "${nr.statusCode}: ${String(nr.data, Charsets.UTF_8)}", Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(context, "Failed to connect to server.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.upload_failed, Toast.LENGTH_SHORT).show()
         }
         onFailure(it)
     }) {
