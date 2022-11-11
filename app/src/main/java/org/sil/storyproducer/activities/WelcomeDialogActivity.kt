@@ -1,6 +1,7 @@
 package org.sil.storyproducer.activities
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -12,6 +13,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
+import org.sil.storyproducer.controller.SelectTemplatesFolderController
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -23,6 +25,16 @@ class WelcomeDialogActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         showWelcomeDialog()
+    }
+
+    override fun onActivityResult(request: Int, result: Int, data: Intent?) {
+        super.onActivityResult(request, result, data)
+
+        if (result == RESULT_CANCELED) {
+            if (request == SelectTemplatesFolderController.UPDATE_TEMPLATES_FOLDER) {
+                showWelcomeDialog()     // re-show welcome screen after folder select followed by cancel
+            }
+        }
     }
 
     private fun showWelcomeDialog() {

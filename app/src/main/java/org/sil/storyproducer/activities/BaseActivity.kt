@@ -48,8 +48,10 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
         super.onActivityResult(request, result, data)
 
-        if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
-            controller.onFolderSelected(request, result, data)
+        if (result == RESULT_OK) {
+            if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
+                controller.onFolderSelected(request, result, data)
+            }
         }
     }
 
