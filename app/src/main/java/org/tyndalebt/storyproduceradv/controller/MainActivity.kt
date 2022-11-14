@@ -61,10 +61,10 @@ class MainActivity : BaseActivity(), Serializable {
         setupDrawer()
         setupStoryListTabPages()
 
-
-        if (!Workspace.isInitialized) {
-            initWorkspace()
-        }
+// Only do this in one place.  SplashScreenActivity
+//        if (!Workspace.isInitialized) {
+//            initWorkspace()
+//        }
 
         if (Workspace.showMoreTemplates) {
             Workspace.startDownLoadMoreTemplatesActivity(this)
