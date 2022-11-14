@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -27,6 +29,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.activities.BaseActivity
+import org.tyndalebt.storyproduceradv.activities.DisplayAlert
 import org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag
 import org.tyndalebt.storyproduceradv.controller.remote.getPhoneId
 import org.tyndalebt.storyproduceradv.model.Phase
@@ -89,6 +93,17 @@ open class RegistrationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (checkForInternet(this) == false) {
+            val dialogBuilder = AlertDialog.Builder(this)
+            dialogBuilder.setTitle(R.string.registration_title)
+                .setMessage(R.string.remote_check_msg_no_connection)
+                .setPositiveButton("OK") { _, _ ->
+                    startActivity(Intent(this@RegistrationActivity, MainActivity::class.java))
+                    finish()
+                }.create()
+                .show()
+        }
+
         //first get permissions
         val PERMISSION_ALL = 1
         val PERMISSIONS = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -109,6 +124,45 @@ open class RegistrationActivity : AppCompatActivity() {
             sectionViews[i] = findViewById(sectionIds[i])
             headerViews[i] = findViewById(headerIds[i])
             setAccordionListener(findViewById(headerIds[i]), sectionViews[i]!!)
+        }
+    }
+
+    private fun checkForInternet(context: Context): Boolean {
+
+        // register activity with the connectivity manager service
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        // if the android version is equal to M
+        // or greater we need to use the
+        // NetworkCapabilities to check what type of
+        // network has the internet connection
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            // Returns a Network object corresponding to
+            // the currently active default data network.
+            val network = connectivityManager.activeNetwork ?: return false
+
+            // Representation of the capabilities of an active network.
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+
+            return when {
+                // Indicates this network uses a Wi-Fi transport,
+                // or WiFi has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+
+                // Indicates this network uses a Cellular transport. or
+                // Cellular has network connectivity
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+
+                // else return false
+                else -> false
+            }
+        } else {
+            // if the android version is below M
+            @Suppress("DEPRECATION") val networkInfo =
+                connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
         }
     }
 
@@ -639,7 +693,6 @@ open class RegistrationActivity : AppCompatActivity() {
     }
 
     companion object {
-
 
         val EMAIL_SENT = "registration_email_sent"
 

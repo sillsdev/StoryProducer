@@ -104,16 +104,6 @@
         &lt;font color=\"green\">&lt;b>SD card or in internal memory&lt;/b>&lt;/font>.</string>
     <string name="stories_not_found_in_progress">There are no stories in progress.</string>
     <string name="stories_not_found_completed">There are no completed stories.</string>
-    <!--  Issue #571, for welcome_screen_select_template_folder, replace template URL with a place holder. Move URL to workspace object -->
-    <string name="welcome_screen_select_template_folder">
-        StoryProducerAdv is different from typical apps.
-        First you must create a Workspace folder in your phone storage.  You will then download and move story templates and other assets into this folder.&lt;br>&lt;br>
-        DETAILED INSTRUCTIONS:&lt;br>
-        1. Use Google Drive and download story templates from &lt;a href="URL_FOR_TEMPLATES_PLACE_HOLDER">HERE&lt;/a>&lt;br>
-        2. Use a Files app to create a Workspace folder in internal memory or on the SD card &lt;br>and name it &lt;font color=\"green\">1SP Workspace&lt;/font>&lt;br>
-        3. With the Files app, Move or Copy story template(s) to the &lt;font color=\"green\">1SP Workspace&lt;/font> folder&lt;br>&lt;br>
-        After you have prepared the &lt;font color=\"green\">1SP Workspace&lt;/font> folder, proceed:
-    </string>
     <string name="welcome_screen_select_template_folder_new">
         StoryProducerAdv is different from typical apps.
         You must create a Workspace folder in your phone storage.  You will then download story templates into this folder.&lt;br>&lt;br>
@@ -234,7 +224,7 @@
     <string name="message_hint">Enter Message</string>
     <string name="empty_message">RC messages will appear here&#8230;</string>
     <string name="remote_check_msg_sent">Message Sent!</string>
-    <string name="remote_check_msg_no_connection">Check your internet connection and please try again.</string>
+    <string name="remote_check_msg_no_connection">Please check your internet connection and try again.</string>
     <string name="remote_check_msg_failed">Messaging service down. Try again later.</string>
 
     <!-- RecordingToolbar -->
@@ -271,7 +261,7 @@
     <string name="export_cancel_comment">Do not leave this screen until the video is complete.</string>
 
     <!-- ListView -->
-    <string name="title_activity_splash_screen">StoryProducer Advance</string>
+    <string name="title_activity_splash_screen">StoryProducer Advantage</string>
 
     <!-- Local Credits -->
     <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
@@ -283,7 +273,7 @@
     <string name="local_credits_unchanged">Local Credits Unchanged!</string>
 
     <!-- Local Song -->
-    <string name="LS_prompt">Compose and record a song for the Bible story!  You can choose to include it or not include it when you make a video.</string>
+    <string name="LS_prompt">Use this slide to compose and record a song for the Bible story! Or ask questions to help people think about the story!  You can choose to include it or not include it when you make a video.</string>
 
     <string name="LWC_PLAYBACK">LWC Playback</string>
     <string name="DRAFT_RECORDING">Draft Recording</string>
@@ -308,6 +298,19 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
+
+    <!-- Upload for Remote Phases -->
+    <string name="already_uploaded">Selected recording already uploaded</string>
+    <string name="uploading_audio">Uploading Audio</string>
+    <string name="upload_success">Audio File Sent Successfully</string>
+    <string name="upload_failed">Audio upload failed</string>
+    <string name="no_recording_found">No recording found</string>
+    <string name="upload_already_started">Upload already in progress</string>
+    <string name="cancel_uploaded">Cancelling upload</string>
+    <string name="ignore_uploaded">Ignoring previous upload</string>
+    <string name="no_uploads_done">There have been no uploads yet</string>
+    <string name="invalid_response">Invalid response. Audio upload failed</string>
+    <string name="connect_failed">Failed to connect to server</string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>

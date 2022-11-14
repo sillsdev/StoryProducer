@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
@@ -202,11 +203,12 @@ public class DownloadActivity extends BaseActivity {
                         result = result + String.valueOf(current);
                     }
                 } catch (Exception e) {
+
                     Log.d("DownloadActivity:copyFile", e.toString());
                     Intent mDisplayAlert = new Intent(this, DisplayAlert.class);
                     mDisplayAlert.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mDisplayAlert.putExtra("title", "List of templates");
-                    mDisplayAlert.putExtra("body", "Unable to download list of templates. Please check internet connection.");
+                    mDisplayAlert.putExtra("title", getString(R.string.more_templates));
+                    mDisplayAlert.putExtra("body", getString(R.string.remote_check_msg_no_connection));
                     startActivity(mDisplayAlert);
                 }
                 bloomFileContents = result;
