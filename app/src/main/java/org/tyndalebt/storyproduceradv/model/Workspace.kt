@@ -243,18 +243,19 @@ object Workspace {
             val reconnect: () -> Unit = {
                 hasSentCatchupMessage = false
                 val oldClient = messageClient
-                if (oldClient != null) {
-                    oldClient.close()
+                if (oldClient == null || !oldClient.isOpen) {
+                    oldClient?.close()
+                    Log.e("@pwhite", "Restarting websocket.")
+                    val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                    newClient.connectBlocking()
+                    messageClient = newClient
                 }
-                Log.e("@pwhite", "Restarting websocket.")
-                val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-                newClient.connectBlocking()
-                messageClient = newClient
             }
             while (true) {
                 try {
                     if (messageClient?.isOpen != true) {
                         reconnect()
+                        delay(5000)
                     }
                     if (!hasSentCatchupMessage) {
                         val js = JSONObject()
@@ -270,6 +271,7 @@ object Workspace {
                         messageClient!!.send(js.toString(2))
                         queuedMessages.remove()
                     }
+                    delay(500) // pause 1/2 second between checks
                 } catch (ex: Exception) {
                     Log.e("@pwhite", "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket.")
                     ex.printStackTrace();
