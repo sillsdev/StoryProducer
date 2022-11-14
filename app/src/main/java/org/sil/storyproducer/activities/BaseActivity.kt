@@ -48,8 +48,12 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
         super.onActivityResult(request, result, data)
 
-        if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
-            controller.onFolderSelected(request, result, data)
+        // This is a generic handler for all template folder picking request results
+        // The result can be checked for RESULT_CANCELED in a derived class for specific actions
+        if (result == RESULT_OK) {
+            if (SELECT_TEMPLATES_FOLDER_REQUEST_CODES.contains(request)) {
+                controller.onFolderSelected(request, result, data)
+            }
         }
     }
 
