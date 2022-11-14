@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SelectTemplatesFolderController
+import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.model.Workspace
 
 /**
@@ -30,8 +31,10 @@ class WelcomeDialogActivity : BaseActivity() {
     override fun onActivityResult(request: Int, result: Int, data: Intent?) {
         super.onActivityResult(request, result, data)
 
+        // Handle the cancelled template folder picking request result here (the ok result is handled in the base class)
+        // This is because the showWelcomeDialog() action needed here is specific to this WelcomeDialogActivity class.
         if (result == RESULT_CANCELED) {
-            if (request == SelectTemplatesFolderController.UPDATE_TEMPLATES_FOLDER) {
+            if (request == UPDATE_TEMPLATES_FOLDER) {
                 showWelcomeDialog()     // re-show welcome screen after folder select followed by cancel
             }
         }
