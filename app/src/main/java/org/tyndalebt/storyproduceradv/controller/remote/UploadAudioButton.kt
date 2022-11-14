@@ -1,6 +1,8 @@
 package org.tyndalebt.storyproduceradv.controller.remote
 
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import org.tyndalebt.storyproduceradv.model.UploadState
 import android.provider.Settings
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
@@ -13,6 +15,7 @@ import org.apache.commons.io.IOUtils
 import org.json.JSONObject
 import org.json.JSONException
 import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.controller.MainActivity
 import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import org.tyndalebt.storyproduceradv.tools.file.getStoryChildInputStream
@@ -43,6 +46,17 @@ class UploadAudioButtonManager(
             when (getUploadState()) {
                 UploadState.UPLOADED -> Toast.makeText(context, R.string.already_uploaded, Toast.LENGTH_SHORT).show()
                 UploadState.NOT_UPLOADED -> {
+
+                    if (Workspace.checkForInternet (context) == false) {
+                        val dialogBuilder = AlertDialog.Builder(context)
+                        dialogBuilder.setTitle("")
+                            .setMessage(R.string.remote_check_msg_no_connection)
+                            .setPositiveButton("OK") { _, _ ->
+
+                            }.create()
+                            .show()
+                    }
+
                     val audioRecording = getAudioRecording()
                     if (audioRecording != null && audioRecording != "") {
                         setUploadState(UploadState.UPLOADING)
