@@ -194,6 +194,7 @@
     <string name="wordlinks_json_read_error">Error reading wordlinks JSON file</string>
     <string name="wordlinks_no_csv_file">No WordLinks CSV File Found</string> <!-- SP611 CSV Error handling -->
     <string name="wordlinks_multiple_csv_files">Found multiple WordLinks CSV Files.\nUsing:\t</string> <!-- SP611 CSV Error handling -->
+    <string name="wordlinks_no_database_installed">There is currently no WordLinks database installed</string>
 
     <!-- Voice Studio Phase -->
     <string name="voice_studio_edit_text_hint">Write story text for videos with included text.</string>
