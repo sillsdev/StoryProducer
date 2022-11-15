@@ -17,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
@@ -48,6 +49,16 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
+        }
+
+        if (termToWordLinkMap.count() == 0)
+        {
+            val snackBar = Snackbar.make(
+                findViewById(R.id.drawer_layout),
+                R.string.wordlinks_no_database_installed,
+                60 * 1000   // display for 60 seconds
+            )
+            snackBar.show()
         }
 
         setupDrawer()
