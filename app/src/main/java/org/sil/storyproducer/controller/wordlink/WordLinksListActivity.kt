@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.*
@@ -28,7 +29,7 @@ import org.sil.storyproducer.model.Workspace.termToWordLinkMap
 /**
  * This activity shows all Word Links, clickable to go to the WordLinksActivity
  */
-class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListener {
+class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
     private var mDrawerLayout: DrawerLayout? = null
@@ -129,7 +130,7 @@ class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             // set item as selected to persist highlight
-            menuItem.isChecked = true
+//            menuItem.isChecked = true
             // close drawer when item is tapped
             mDrawerLayout!!.closeDrawers()
 
@@ -137,20 +138,43 @@ class WordLinksListActivity : AppCompatActivity(), SearchView.OnQueryTextListene
             // For example, swap UI fragments here
             val intent: Intent
             when (menuItem.itemId) {
+                R.id.nav_workspace -> {
+                    showSelectTemplatesFolderDialog()
+                }
+                R.id.nav_demo -> {
+                    Workspace.addDemoToWorkspace(this)
+                    controller.updateStories()  // refresh list of stories
+                }
+                R.id.nav_word_link_list -> {
+                    // Current fragment
+                }
+                R.id.nav_more_templates -> {
+                    // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+                    // A new menu item was added that opens a URL for the user to download templates.
+                    // If we get here, the user wants to browse for more templates, so,
+                    // open the URL in a new activity
+                    Workspace.startDownLoadMoreTemplatesActivity(this)
+                    this.finish()
+                }
                 R.id.nav_stories -> {
                     intent = Intent(this, MainActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
-                }
-                R.id.nav_word_link_list -> {
-                    // Current fragment
                 }
                 R.id.nav_registration -> {
                     intent = Intent(this, RegistrationActivity::class.java)
                     this.startActivity(intent)
                     this.finish()
                 }
+                R.id.nav_bloom_templates -> {
+                    showBLDownloadDialog();
+                    this.finish()
+                }
+                R.id.nav_about -> {
+                    showAboutDialog()
+                }
             }
+
             true
         }
     }
