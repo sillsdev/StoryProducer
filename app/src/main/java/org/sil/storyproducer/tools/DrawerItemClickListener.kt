@@ -54,24 +54,24 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
             2 -> {
                 activity.showBLDownloadDialog()
             }
+//            3 -> {
+//                // DKH - 01/23/2022 Issue #571: Add a menu item for accessing templates from Google Drive
+//                // A new menu item was added that opens a URL for the user to download templates.
+//                // If we get here, the user wants to browse for more templates, so,
+//                // open the URL in a new activity
+//                Workspace.startDownLoadMoreTemplatesActivity(activity)
+//            }
             3 -> {
-                // DKH - 01/23/2022 Issue #571: Add a menu item for accessing templates from Google Drive
-                // A new menu item was added that opens a URL for the user to download templates.
-                // If we get here, the user wants to browse for more templates, so,
-                // open the URL in a new activity
-                Workspace.startDownLoadMoreTemplatesActivity(activity)
-            }
-            4 -> {
                 activity.showWordLinksList()
             }
-            5 -> {
+            4 -> {
                 activity.showSelectTemplatesFolderDialog()
             }
-            6 -> {
+            5 -> {
                 Workspace.addDemoToWorkspace(activity)
                 MainActivity.mainActivity.controller.updateStories()  // refresh list of stories
             }
-            7 -> {
+            6 -> {
                 activity.showAboutDialog()
             }
         }
