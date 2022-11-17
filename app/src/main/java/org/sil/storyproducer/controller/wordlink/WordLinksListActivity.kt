@@ -1,7 +1,6 @@
 
 package org.sil.storyproducer.controller.wordlink
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import android.content.Context
 import android.content.Intent
@@ -10,7 +9,6 @@ import android.view.*
 import android.webkit.WebView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -34,6 +32,26 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 
     private lateinit var recyclerView: RecyclerView
     private var mDrawerLayout: DrawerLayout? = null
+    private var mSnackBar: Snackbar? = null
+
+    private fun checkNoDatabaseMsg() {
+        if (termToWordLinkMap.count() == 0) {
+
+            dismissNoDatabaseMsg()
+
+            mSnackBar = Snackbar.make(
+                findViewById(R.id.drawer_layout),
+                R.string.wordlinks_no_database_installed,
+                60 * 1000   // display for 60 seconds
+            )
+            mSnackBar!!.show()
+        }
+    }
+
+    private fun dismissNoDatabaseMsg() {
+        if (mSnackBar != null)
+            mSnackBar!!.dismiss()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,20 +69,13 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
             adapter = viewAdapter
         }
 
-        if (termToWordLinkMap.count() == 0)
-        {
-            val snackBar = Snackbar.make(
-                findViewById(R.id.drawer_layout),
-                R.string.wordlinks_no_database_installed,
-                60 * 1000   // display for 60 seconds
-            )
-            snackBar.show()
-        }
+        checkNoDatabaseMsg()
 
         setupDrawer()
 
         supportActionBar?.setTitle(R.string.title_activity_wordlink_list)
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_wordlink_list_view, menu)
@@ -151,6 +162,7 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
             when (menuItem.itemId) {
                 R.id.nav_workspace -> {
                     showSelectTemplatesFolderDialog()
+                    dismissNoDatabaseMsg()
                 }
                 R.id.nav_demo -> {
                     Workspace.addDemoToWorkspace(this)
@@ -158,6 +170,7 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 }
                 R.id.nav_word_link_list -> {
                     // Current fragment
+                    checkNoDatabaseMsg()
                 }
 //                R.id.nav_more_templates -> {
 //                    // DKH - 01/15/2022 Issue #571: Add a menu item for accessing templates from Google Drive
@@ -183,12 +196,14 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 }
                 R.id.nav_about -> {
                     showAboutDialog()
+                    dismissNoDatabaseMsg()
                 }
             }
 
             true
         }
     }
+
 }
 
 class WordLinkListAdapter(private val wordLinkTerms: Array<String>, private val context: Context) : RecyclerView.Adapter<WordLinkListAdapter.WordLinkListViewHolder>() {
