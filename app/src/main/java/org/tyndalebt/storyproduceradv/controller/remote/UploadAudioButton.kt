@@ -49,48 +49,68 @@ class UploadAudioButtonManager(
 
                     if (Workspace.checkForInternet (context) == false) {
                         val dialogBuilder = AlertDialog.Builder(context)
-                        dialogBuilder.setTitle("")
+                        dialogBuilder.setTitle(R.string.upload_failed)
                             .setMessage(R.string.remote_check_msg_no_connection)
                             .setPositiveButton("OK") { _, _ ->
-
                             }.create()
                             .show()
-                    }
-
-                    val audioRecording = getAudioRecording()
-                    if (audioRecording != null && audioRecording != "") {
-                        setUploadState(UploadState.UPLOADING)
-                        uploadAudioButton.background = uploadingIcon
-                        Toast.makeText(context, R.string.uploading_audio, Toast.LENGTH_SHORT).show()
-                        val input = getStoryChildInputStream(context, audioRecording)
-                        val audioBytes = IOUtils.toByteArray(input)
-                        val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
-
-                        val js = HashMap<String, String>()
-                        // Default to 0 as the slide number to send to the server
-                        // because the server will ignore it if the request has
-                        // IsWholeStory set to true.
-                        var finalSlideNumber = 0
-                        // Null slideNumber indicates that this is a a whole story
-                        // upload button.
-                        if (slideNumber == null) {
-                            js["IsWholeStory"] = "true"
-                        } else {
-                            finalSlideNumber = slideNumber
-                        }
-                        sendSlideSpecificRequest(context, finalSlideNumber, context.getString(R.string.url_upload_audio), byteString, {
-                            Toast.makeText(context, R.string.upload_success, Toast.LENGTH_SHORT).show()
-                            setUploadState(UploadState.UPLOADED)
-                            uploadAudioButton.background = uploadedIcon
-                        }, {
-                            Toast.makeText(context, R.string.upload_failed, Toast.LENGTH_SHORT).show()
-                            setUploadState(UploadState.NOT_UPLOADED)
-                            uploadAudioButton.background = notUploadedIcon
-                        }, js)
                     } else {
-                        Toast.makeText(context, R.string.no_recording_found, Toast.LENGTH_SHORT).show()
+
+                        val audioRecording = getAudioRecording()
+                        if (audioRecording != null && audioRecording != "") {
+                            setUploadState(UploadState.UPLOADING)
+                            uploadAudioButton.background = uploadingIcon
+                            Toast.makeText(context, R.string.uploading_audio, Toast.LENGTH_SHORT)
+                                .show()
+                            val input = getStoryChildInputStream(context, audioRecording)
+                            val audioBytes = IOUtils.toByteArray(input)
+                            val byteString = Base64.encodeToString(audioBytes, Base64.DEFAULT)
+
+                            val js = HashMap<String, String>()
+                            // Default to 0 as the slide number to send to the server
+                            // because the server will ignore it if the request has
+                            // IsWholeStory set to true.
+                            var finalSlideNumber = 0
+                            // Null slideNumber indicates that this is a a whole story
+                            // upload button.
+                            if (slideNumber == null) {
+                                js["IsWholeStory"] = "true"
+                            } else {
+                                finalSlideNumber = slideNumber
+                            }
+                            sendSlideSpecificRequest(
+                                context,
+                                finalSlideNumber,
+                                context.getString(R.string.url_upload_audio),
+                                byteString,
+                                {
+                                    Toast.makeText(
+                                        context,
+                                        R.string.upload_success,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    setUploadState(UploadState.UPLOADED)
+                                    uploadAudioButton.background = uploadedIcon
+                                },
+                                {
+                                    Toast.makeText(
+                                        context,
+                                        R.string.upload_failed,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    setUploadState(UploadState.NOT_UPLOADED)
+                                    uploadAudioButton.background = notUploadedIcon
+                                },
+                                js
+                            )
+                        } else {
+                            Toast.makeText(context, R.string.no_recording_found, Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                 }
+
+
                 UploadState.UPLOADING -> {
                     uploadAudioButton.background = uploadingIcon
                     Toast.makeText(context, R.string.upload_already_started, Toast.LENGTH_LONG).show()

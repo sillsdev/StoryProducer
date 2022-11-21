@@ -342,14 +342,18 @@
                                 notice from the software nor reverse engineer, decompile, or
                                 disassemble the software.
 \n\n
-                                THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT
-                                WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
-                                TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-                                PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-                                COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-                                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-                                ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-                                OR OTHER DEALINGS IN THE SOFTWARE.</string>
+The software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose and noninfringement. In no event shall the
+authors or copyright holders be liable for any claim, damages or other
+liability, whether in an action or contract, tort or otherwise, arising from,
+out of or in connection with the software or the use or other dealings in the
+software.
+\n\n
+Data is collected whenever the user submits registration info. All the
+information that the user types into the registration fields, plus
+phone type, is collected and used by the remote consultant in assisting
+and communicating with the user.</string>
     <!-- Logging -->
     <string name="logging_slide_log_view_title">Logs for Slide #%1$d</string>
     <string name="logging_item_date">Date</string>

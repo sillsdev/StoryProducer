@@ -204,7 +204,21 @@ class MainActivity : BaseActivity(), Serializable {
                 // A new menu item was added that opens a URL for the user to download templates.
                 // If we get here, the user wants to browse for more templates, so,
                 // open the URL in a new activity
-                Workspace.startDownLoadMoreTemplatesActivity(this)
+
+                if (Workspace.checkForInternet(this) == false) {
+                    val dialogBuilder = AlertDialog.Builder(this)
+                    dialogBuilder.setTitle(R.string.more_templates)
+                        .setMessage(R.string.remote_check_msg_no_connection)
+                        .setPositiveButton("OK") { _, _ ->
+                            startActivity(Intent(this@MainActivity, MainActivity::class.java))
+                            finish()
+                        }.create()
+                        .show()
+                }
+                else {
+                    Workspace.startDownLoadMoreTemplatesActivity(this)
+                }
+
             }
             R.id.nav_stories -> {
                 // Current fragment
@@ -217,7 +231,20 @@ class MainActivity : BaseActivity(), Serializable {
                 // finish should not be called.  This is done by setting executeFinishActivity to false.
                 // After the RegistrationActivity is complete, MainActivity will then display
                 // the story template list
-                showRegistration(false)
+
+                if (Workspace.checkForInternet(this) == false) {
+                    val dialogBuilder = AlertDialog.Builder(this)
+                    dialogBuilder.setTitle(R.string.registration_title)
+                        .setMessage(R.string.remote_check_msg_no_connection)
+                        .setPositiveButton("OK") { _, _ ->
+                            startActivity(Intent(this@MainActivity, MainActivity::class.java))
+                            finish()
+                        }.create()
+                        .show()
+                }
+                else {
+                    showRegistration(false)
+                }
             }
             R.id.nav_spadv_website -> {
                 goToURL(this, Workspace.URL_FOR_WEBSITE)

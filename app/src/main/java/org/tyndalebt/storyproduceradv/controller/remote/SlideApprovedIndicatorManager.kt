@@ -13,6 +13,7 @@ import org.tyndalebt.storyproduceradv.model.Slide
 import org.tyndalebt.storyproduceradv.model.SlideType
 import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.model.messaging.Approval
+import org.tyndalebt.storyproduceradv.tools.file.workspaceRelPathExists
 
 class ApprovalIndicatorManager(
     val context: Context,
@@ -46,20 +47,7 @@ class ApprovalIndicatorManager(
                 if (approval.slideNumber == slideNumber && approval.storyId == Workspace.activeStory.remoteId) {
                     approvedIndicator.background = if (approval.approvalStatus) { greenCheckmark } else { grayCheckmark }
                 }
-                // Approve story if all slides in the story have been approved.
-                var allApproved = true
-                var story = Workspace.activeStory
-                for (slide in story.slides) {
-                    if ((slide.slideType == SlideType.FRONTCOVER ||
-                         slide.slideType == SlideType.NUMBEREDPAGE ||
-                         slide.slideType == SlideType.LOCALSONG) &&
-                        !slide.isApproved) {
-
-                        allApproved = false
-                        break  // found at least one so need to keep looking
-                    }
-                }
-                story.isApproved = allApproved
+                Workspace.processStoryApproval()
             }
         }
     }

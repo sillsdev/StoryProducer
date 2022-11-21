@@ -686,6 +686,23 @@ object Workspace {
         }
     }
 
+    fun processStoryApproval() {
+        // Approve story if all slides in the story have been approved.
+        var allApproved = true
+        var story = Workspace.activeStory
+        for (slide in story.slides) {
+            if ((slide.slideType == SlideType.FRONTCOVER ||
+                        slide.slideType == SlideType.NUMBEREDPAGE ||
+                        slide.slideType == SlideType.LOCALSONG) &&
+                !slide.isApproved
+            ) {
+                allApproved = false
+                break  // found at least one so need to keep looking
+            }
+        }
+        story.isApproved = allApproved
+    }
+
     fun processReceivedApprovals() {
         // This could be being built while processed, so remove elements from front one by one as
         // elements may be added on the back end
@@ -700,6 +717,7 @@ object Workspace {
             if (approval.timeSent > lastReceivedTimeSent) {
                 lastReceivedTimeSent = approval.timeSent
             }
+            processStoryApproval()
         }
     }
 }
