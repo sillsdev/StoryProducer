@@ -655,7 +655,7 @@ open class RegistrationActivity : AppCompatActivity() {
 
         // dkh - 4/19/2021 PR #559: Registration data loss in Continuous builds
         // ID_PREFIX is prepended to each field in the JSON registration file
-        // to create a unique token to store the data within story producer.
+        // to create a unique token to store the data within Story Publisher Adv.
         // For build type of Continuous or Release, the product id changes, which impacts the
         // unique token. The product id is found in the google-services.json file.
         // Here are the unique token strings for JSON registration file field "ethnologue" according

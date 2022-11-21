@@ -142,7 +142,7 @@ class Phase (val phaseType: PhaseType) {
     }
 
     // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
-    // This piece of software is used in multiple places in Story Producer
+    // This piece of software is used in multiple places in Story Publisher Adv
     // This instructional string is appended to the generated display name
     fun getDisplayNameAdditionalInfo() : String {
         return when (phaseType) {

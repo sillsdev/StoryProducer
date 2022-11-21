@@ -23,7 +23,7 @@ class SlideService(val context: Context) {
     }
 
     fun getImage(relPath: String, sampleSize: Int = 1, useAllPixels: Boolean = false, story: Story): Bitmap {
-        // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Producer crashes in Finalize
+        // DKH - Updated 03/13/2021 to fix Issue 548: In Android 11 Story Publisher Adv crashes in Finalize
         //                         phase and no video is produced
         // This routine is called for every slide in a story during FINALIZE.  "relPath" is the name of
         // the image file for the slide (e.g., "1.jpg") but some slides images are optional such as the title

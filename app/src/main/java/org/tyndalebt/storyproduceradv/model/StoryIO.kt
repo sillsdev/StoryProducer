@@ -18,7 +18,7 @@ import java.util.*
 
 fun Story.toJson(context: Context){
     // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
-    // Each time we write out a story file, record timestamp and the Story Producer version name & code
+    // Each time we write out a story file, record timestamp and the Story Publisher Adv version name & code
     storyToJasonAppVersionCode = BuildConfig.VERSION_CODE  // should be an integer, eg: 23
     storyToJasonAppVersionName = BuildConfig.VERSION_NAME  // should be a string, eg: 3.0.5.debug
     storyToJasonTimeStamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()) // eg: 2021-06-04 15:07:03

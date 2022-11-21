@@ -112,7 +112,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     if(soundtrack.size >= 1){
         slide.musicFile = "audio/${soundtrack[0].attr("data-backgroundaudio")}"
         // DKH - 07/23/2021
-        // Issue #585: SP fails to read new templates made with Story Producer Template Maker
+        // Issue #585: SP fails to read new templates made with Story Publisher Adv Template Maker
         // The attr method on class Node (ie, soundtrack[0] object) does not return a null but either
         // the attribute string or an empty sting
         // The following method throws this exception: "java.lang.NumberFormatException: empty String",

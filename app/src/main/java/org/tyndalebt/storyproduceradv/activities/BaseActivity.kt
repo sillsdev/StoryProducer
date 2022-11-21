@@ -103,7 +103,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     // showRegistration Argument allows the caller in the current Activity to finish or
     // not finish the current Activity before starting the RegistrationActivity.
     // The MainActivity should set executeFinishActivity to false so that when the registration
-    // is complete, there is a Story Producer activity that will control execution.
+    // is complete, there is a Story Publisher Adv activity that will control execution.
     // After the RegistrationActivity completes, control is returned to the MainActivity
     // where the list of story templates are displayed
     //
@@ -113,7 +113,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     // to calling showRegistration.  See selectItem for more detail.
     //
     // All showRegistration calls should be done through the MainActivity to
-    // avoid hanging Story Producer.
+    // avoid hanging Story Publisher Adv.
     override fun showRegistration(executeFinishActivity: Boolean) {
         startActivity(Intent(this, RegistrationActivity::class.java))
 

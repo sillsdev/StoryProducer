@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">StoryProducerAdv</string>
+    <string name="app_name">Story Publisher Adv</string>
 
     <!-- General -->
     <string name="no">No</string>
@@ -73,7 +73,7 @@
     <string name="camera_revert_title">Revert To The Original Image?</string>
     <string name="camera_revert_message">Do you want to revert to the original image?</string>
     <!-- Dialog strings for titles, messages, and buttons -->
-    <string name="welcome_to_story_producer">Welcome to StoryProducerAdv</string>
+    <string name="welcome_to_story_producer">Welcome to Story Publisher Adv</string>
     <string name="use_internal_demo">Use internal demo</string>
     <string name="please_create_and_then_select_folder">Please create and then Select a new folder, needed for running the demo.</string>
     <string name="registration_exit_title">Exit Registration?</string>
@@ -105,12 +105,12 @@
     <string name="stories_not_found_in_progress">There are no stories in progress.</string>
     <string name="stories_not_found_completed">There are no completed stories.</string>
     <string name="welcome_screen_select_template_folder_new">
-        StoryProducerAdv is different from typical apps.
+        Story Publisher Adv is different from typical apps.
         You must create a Workspace folder in your phone storage.  You will then download story templates into this folder.&lt;br>&lt;br>
         You can do so by tapping the button below.  Select the &lt;font color=\"green\">1SP Workspace&lt;/font> folder if it already exists or create a new folder and then select it.
     </string>
     <string name="workspace_selection_help">
-        &lt;font color=\"gray\">Tell the StoryProducerAdv app where to find story templates.&lt;/font>&lt;br>&lt;br>
+        &lt;font color=\"gray\">Tell the Story Publisher Adv app where to find story templates.&lt;/font>&lt;br>&lt;br>
         The next screen will be a \'folder picker\'.&lt;br>
         Navigate to the &lt;font color=\"green\">SP Workspace&lt;/font> folder (on the &lt;font color=\"green\">SD Card or in internal memory&lt;/font>), then tap &lt;b>SELECT&lt;/b> at the bottom.
     </string>
@@ -261,7 +261,7 @@
     <string name="export_cancel_comment">Do not leave this screen until the video is complete.</string>
 
     <!-- ListView -->
-    <string name="title_activity_splash_screen">StoryProducer Advantage</string>
+    <string name="title_activity_splash_screen">Story Publisher Adv</string>
 
     <!-- Local Credits -->
     <string name="LC_obsolete_starting_text">Language:\nTranslated by:\nNew image credits:\nNarration / Voice Acting by:\nLocal Song by:</string>
@@ -321,10 +321,10 @@
     <!-- About -->
     <string name="about">About</string>
     <string name="license">License</string>
-    <string name="about_title">About StoryProducerAdv (SPadv)</string>
+    <string name="about_title">About Story Publisher Adv (SPadv)</string>
     <string name="app_version">app version: %1$s</string>
     <string name="prefer_bloom_templates">uses only .bloom and .bloomSource templates</string>
-    <string name="license_body">The StoryProducerAdv (StoryProducer Advantage) (SPadv) software is
+    <string name="license_body">The Story Publisher Adv (SPadv) software is
                                 jointly copyrighted © 2022, Tyndale Bible Translators and Robin Rempel.
                                 Adapted from and built upon original, Story Producer (version 3.0.6)
                                 jointly copyrighted © 2020, SIL International and

@@ -1,4 +1,4 @@
-# Story Producer (SP app)
+# Story Publisher Adv (SPadv)
 
 Purpose: to enable end users to translate still-picture audio-video stories with community help, then dramatize, publish and digitally share new local language videos. 
 
@@ -58,7 +58,7 @@ save in the root directory.
     * an average of 500 MB storage must be available per story template one wishes to create; it is suggested to put templates on an SD card
     * an (Android) file manager
 * Prepare your Android device: 
-    * If you have installed Story Producer before, delete the previous version. If the version of the app that you delete is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
+    * If you have installed Story Publisher before, delete the previous version. If the version of the app that you delete is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
     * Enable a manual install of apk file: 
         * Settings(gear icon) -> Security -> (scroll down) Enable "Unknown sources"; disable "Verify apps"
     * Insert SD card if desired
@@ -68,7 +68,7 @@ save in the root directory.
     * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
     * Download the .bloom template files (https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing) to your computer.
     * Copy the the .bloom files to your SD card.  The standard folder there is **\[SDCARD]/SP Templates**
-    * Open Story Producer and select the folder "SP Templates" which is the folder that all the templates are in.
+    * Open Story Publisher and select the folder "SP Templates" which is the folder that all the templates are in.
     * After the app scans the templates, continue with registration and use the app!
 
 ## Unit Tests
@@ -87,7 +87,7 @@ save in the root directory.
 2. Run `./gradlew test` (on Linux) or `gradlew.bat test`(on Windows).
 *Note:* You may need to run the gradle wrapper with sudo or make the gradle wrapper executable with `sudo chmod +x ./gradlew`
 ##### From Android Studio:
-1. Open the Story Producer project (StoryProducer.iml) in Android Studio.
+1. Open the Story Publisher project (StoryProducer.iml) in Android Studio.
 2. Set the "Project" tool window to show "Local Unit Tests" (or just navigate a the folder containing unit tests).
 3. Right click on one of the files or directories that contains some unit tests (this can be the "app" directory, a specific folder, or a single test file.).
 4. Click "Run 'All Tests'" (or a more specific option if you chose a folder or file).
@@ -101,7 +101,7 @@ save in the root directory.
 
 #### Before You Run the Espresso Tests:
 The Espresso tests make a couple of assumptions about the state of the emulator/device that they run on. In order for the tests to pass, you must do the following:
-1. Create a directory on the phone to act as the Story Producer workspace. The path needs to match the "pathToWorkspaceDirectory" constant defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
+1. Create a directory on the phone to act as the Story Publisher workspace. The path needs to match the "pathToWorkspaceDirectory" constant defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 2. Create a directory on the phone to store resource files that the Espresso tests use. The path needs to match the "pathToEspressoResourceDirectory" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 3. Copy the "Lost Coin" story template into the espresso resource directory you created in step #2. The name of the directory needs to match the "nameOfTestStoryDirectory" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
 4. Copy an .mp4 video file (the particular length or content doesn't matter) into the espresso resource directory. The name of the .mp4 file needs to match the "nameOfSampleExportVideo" value defined in `app\src\androidTest\java\org\sil\storyproducer\androidtest\utilities\Constants.kt`
@@ -118,7 +118,7 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 3. Run `adb shell am instrument -w -e debug false storyproduceradv.test/androidx.test.runner.AndroidJUnitRunner`.
 ##### From Android Studio:
 1. **Ensure that you have set up your Android device according to the previous section, "Before You Run the Tests."**
-2. Open the Story Producer project (StoryProducer.iml) in Android Studio.
+2. Open the Story Publisher project (StoryProducer.iml) in Android Studio.
 3. Set the "Project" tool window to show "Android Instrumented Tests" (or just navigate to a directory containing Espresso tests).
 4. Right click on one of the directories that contains some Espresso tests (this can be the "app" directory, a specific folder, or a single test file.).
 5. Click "Run 'Tests in storyproduceradv...'".

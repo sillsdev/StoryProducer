@@ -116,7 +116,7 @@ class RecordingsListAdapter(val values: MutableList<String>?, private val listen
             newName.layoutParams = params
 
             // 11/13/2021 - DKH, Issue 606, Wordlinks quick fix for text back translation
-            // This piece of software is used in multiple places in Story Producer
+            // This piece of software is used in multiple places in Story Publisher Adv
             // Grab the default instructions for data entry
             // This is something like: "Choose a new name"
             var title = itemView.context.getString(R.string.rename_title)

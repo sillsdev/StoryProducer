@@ -94,7 +94,7 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
             // which is a symbolic link to the emulated storage path.
             // sdcard/: Is a symlink to...
             //      /storage/sdcard0 (Android 4.0+)
-            // In Story Producer, the version will never be less than Android 4.0
+            // In Story Publisher Adv, the version will never be less than Android 4.0
             // We will instead show it as an optional [sdcard]
             // The below code will change: /storage/emulated/0/ to /storage/[sdcard]/
             videoFileUriStr = videoFileUriStr.replace(Regex("(storage\\/emulated\\/)\\d+"), "storage/[sdcard]")

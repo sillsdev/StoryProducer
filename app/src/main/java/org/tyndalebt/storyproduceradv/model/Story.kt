@@ -25,7 +25,7 @@ class Story(var title: String, var slides: List<Slide>){
     // DKH - Updated 06/02/2021  for Issue 555: Report Story Parse Exceptions and Handle them appropriately
     // Record versionCode & versionName which come from build.gradle (Module: StoreyProducer.app)
     // Record timeStamp for when story.json file was written
-    // This will allow future Story Producer Apps to be backwards compatibility with old stories
+    // This will allow future Story Publisher Adv apps to be backwards compatibility with old stories
     // This will also allow for debugging of stories that have parse errors
 
     // These are the initial story default values and will be updated from a story.json file if
