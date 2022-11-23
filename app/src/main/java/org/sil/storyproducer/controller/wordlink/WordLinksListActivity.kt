@@ -181,14 +181,10 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
 //                    this.finish()
 //                }
                 R.id.nav_stories -> {
-                    intent = Intent(this, MainActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
+                    finish()  // finish this activity to reveal main activity
                 }
                 R.id.nav_registration -> {
-                    intent = Intent(this, RegistrationActivity::class.java)
-                    this.startActivity(intent)
-                    this.finish()
+                    showRegistration(true)
                 }
                 R.id.nav_bloom_templates -> {
                     showBLDownloadDialog();

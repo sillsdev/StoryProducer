@@ -290,7 +290,7 @@
 
     <!-- app menus -->
     <string name="menu_search">Search</string>
-    <string name="update_registration">Update Registration</string>
+    <string name="update_registration">User Registration</string>
     <string name="scanning_sp_templates">Please wait for SP to scan the templates</string>
     <string name="select_workspace_folder">Select \'SP Templates\' Folder</string>
     <string name="cancelling">Cancelling &#8230;</string>

@@ -74,7 +74,7 @@ object Workspace {
 
     // set if user skipped the registration process - so that they are not nagged too much
     // when updateStories() is called by the BL Download Activity
-    var showRegistrationSkiped = false
+    var showRegistrationSkiped = true // now always skip startup registration dialog (was: false)
 
     // word links
     lateinit var activeWordLink: WordLink
