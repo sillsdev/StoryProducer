@@ -14,10 +14,10 @@
         android:name="org.tyndalebt.storyproduceradv.App"
         android:allowBackup="true"
         android:fullBackupContent="false"
-        android:icon="@mipmap/logo_new_splash"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@mipmap/logo_new_splash"
+        android:roundIcon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
         tools:replace="android:icon,android:roundIcon">
