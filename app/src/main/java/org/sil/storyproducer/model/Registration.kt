@@ -4,8 +4,11 @@ import android.content.Context
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.json.JSONException
 import org.json.JSONObject
-import org.sil.storyproducer.tools.file.getChildOutputStream
 import org.sil.storyproducer.tools.file.getText
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 val REGISTRATION_FILENAME = "registration.json"
 
@@ -16,8 +19,40 @@ class Registration{
     get() {return getBoolean("registration_complete",false)}
     set(value){putBoolean("registration_complete",value)}
 
+    // gets the String from a text file in internal storage or null if error
+    private fun getInternalText(context: Context, relPath: String) : String? {
+        try {
+            val iInternalStreamPath = "${context.filesDir}/$relPath";
+            val iInternalStream = File(iInternalStreamPath).inputStream()
+            val internalFileText = iInternalStream.reader().use {it.readText()}
+            if (internalFileText.isNotEmpty())
+                return internalFileText;
+            return null
+        } catch (e: FileNotFoundException) {
+            return null
+        }
+    }
+
+    // returns an output file stream to a file in internal storage or null if error
+    private fun getInternalOutputStream(context: Context, relPath: String) : OutputStream? {
+        try {
+            val iInternalStreamPath = "${context.filesDir}/$relPath";
+            val iInternalOFile = File(iInternalStreamPath)
+            val iInternalOStream = FileOutputStream(iInternalOFile, false)  // false = don't append
+            return iInternalOStream;
+        } catch (e: FileNotFoundException) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return null
+        }
+    }
+
     fun load(context: Context) {
-        val regString: String? = getText(context,REGISTRATION_FILENAME)
+        // check for registration info in internal storage first
+        var regString: String? = getInternalText(context,REGISTRATION_FILENAME)
+        if (regString == null) {
+            // not found so look in the old place for a registration file in the templates folder
+            regString = getText(context, REGISTRATION_FILENAME)
+        }
         if(regString != null) {
             try {
                 jsonData = JSONObject(regString)
@@ -33,7 +68,11 @@ class Registration{
         // to eliminate all data.  Previously, the file was open with default mode of "w" which
         // preserved all the data in the file. If the new file is smaller in size,
         // there are garbage characters left.
-        val oStream = getChildOutputStream(context,REGISTRATION_FILENAME,"","wt")
+
+        // now we only save registration info in internal app storage
+        // WAS: val oStream = getChildOutputStream(context,REGISTRATION_FILENAME,"","wt")
+        // so now only write registration file to internal storage
+        val oStream = getInternalOutputStream(context, REGISTRATION_FILENAME)
         if(oStream != null) {
             try {
                 oStream.write(jsonData.toString(1).toByteArray(Charsets.UTF_8))
