@@ -348,7 +348,7 @@
     <string name="overwrite">Overwrite</string>
     <string name="title_activity_bldownload">Bloom Library Download</string>
     <string name="action_settings">Settings</string>
-    <string name="bloom_lib_download_started">Bloom Library: download started</string>
+    <string name="bloom_lib_download_started">Bloom Library: download started\nStay on this page for automatic install</string>
     <string name="bloom_lib_already_installed">Bloom Library: already installed</string>
 
     <!-- Toast Messages -->

@@ -166,7 +166,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
             if (numQueued > 0) {
                 // tell user that download(s) have started
-                Snackbar.make(view, getString(R.string.bloom_lib_download_started), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, getString(R.string.bloom_lib_download_started), 60 * 1000)
                     .setAction("Action", null).show()
             }
             else if (numAlreadyDownloaded > 0 || numDownloadsCompleted > 0) {
