@@ -16,9 +16,14 @@ import org.sil.storyproducer.model.Story
  * These Chips are clickable buttons that notify the parent StoryListFragment when they are clicked
  * causing a new update of the story list in the StoryListFragment ListAdapter.
  */
-class FilterToolbarFrag(private val storyPageFrag : StoryPageFragment): Fragment() {
+class FilterToolbarFrag(): Fragment() {
 
+    private var storyPageFrag : StoryPageFragment? = null
     private lateinit var filterChipGroup : ChipGroup
+
+    fun setStoryPageFrag(storyPageFrag : StoryPageFragment) {
+        this.storyPageFrag = storyPageFrag
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -54,7 +59,8 @@ class FilterToolbarFrag(private val storyPageFrag : StoryPageFragment): Fragment
         newStoryList = newStoryList.distinct().toMutableList()
 
         // Update parent fragment with generated story list
-        storyPageFrag.updateStoryList(newStoryList)
+        if (storyPageFrag != null)
+            storyPageFrag?.updateStoryList(newStoryList)
     }
 
 }
