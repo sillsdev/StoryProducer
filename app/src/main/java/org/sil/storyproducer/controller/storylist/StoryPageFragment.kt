@@ -126,7 +126,8 @@ class StoryPageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(storyPageTab.hasFilterToolbar && storyPageTab.getStoryList().isNotEmpty()) {
-            val childFragment: Fragment = FilterToolbarFrag(this)
+            val childFragment = FilterToolbarFrag()
+            childFragment.setStoryPageFrag(this)
             val transaction: FragmentTransaction = childFragmentManager.beginTransaction()
             transaction.replace(R.id.filter_container, childFragment).commit()
         }
