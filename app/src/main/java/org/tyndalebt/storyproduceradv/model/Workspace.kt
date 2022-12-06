@@ -1,13 +1,14 @@
 package org.tyndalebt.storyproduceradv.model
 
 import WordLinksCSVReader
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.ParcelFileDescriptor
@@ -28,7 +29,9 @@ import org.json.JSONObject
 import org.tyndalebt.storyproduceradv.BuildConfig
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.activities.BaseActivity
+import org.tyndalebt.storyproduceradv.activities.DisplayAlert
 import org.tyndalebt.storyproduceradv.activities.DownloadActivity
+import org.tyndalebt.storyproduceradv.activities.WelcomeDialogActivity
 import org.tyndalebt.storyproduceradv.model.messaging.Approval
 import org.tyndalebt.storyproduceradv.model.messaging.MessageROCC
 import org.tyndalebt.storyproduceradv.tools.file.deleteWorkspaceFile
@@ -45,6 +48,9 @@ import java.util.*
 internal const val SLIDE_NUM = "CurrentSlideNum"
 internal const val DEMO_FOLDER = "000 Unlocked demo story Storm"
 internal const val PHASE = "Phase"
+
+internal const val DISPLAY_LANGUAGE_FILE = "language.csv"
+internal const val LANGUAGE_CLICKED = "ClickedLanguage"
 
 internal const val WORD_LINKS_DIR = "wordlinks"
 internal const val WORD_LINKS_CSV = "wordlinks.csv"
@@ -106,6 +112,8 @@ object Workspace {
     var showMoreTemplates = false
     // To track if force quit is happening or just changing between activities
     var LastActivityEvent: String = ""
+    // To track what language they select for the strings<language>.xml to be used
+    var displaylanguage = ""
 
     // word links
     lateinit var activeWordLink: WordLink
@@ -113,6 +121,9 @@ object Workspace {
     var termFormToTermMap: MutableMap<String, String> = mutableMapOf()
     var WLSTree = WordLinkSearchTree()
     val approvalChannel = BroadcastChannel<Approval>(30)
+
+    // language list
+    var LanguageToTextMap: MutableMap<String, WordLink> = mutableMapOf()
 
     var activeStory: Story = emptyStory()
     set(value){
@@ -495,6 +506,33 @@ object Workspace {
             }
         }
     }
+
+    fun addLanguageToWorkspace(context: Context) {
+        // open languageFile list and display it for selecting strings file to use
+        val assetManager = context.assets
+        var MyInput1: String = ""
+        var MyInput2: String = ""
+
+        try {
+            val inputStream: InputStream =assetManager.open("language.csv")
+            val size: Int = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            MyInput1 = String(buffer)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        // here is where we want to try to save the file to the app area
+
+        val alert = AlertDialog.Builder(context)
+        alert.setTitle("Hello!")
+        alert.setMessage(MyInput1)
+        alert.setNegativeButton("Close") { dialog, _ ->
+            dialog!!.dismiss()
+        }
+        alert.show()
+        }
+
     fun addWordLinksCSVFileToWorkspace(context: Context, csvFileName: String) {
         // DKH - 11/19/2021 Issue #613 Create Word Links CSV file if it does not exist
         // During compile time, the file app/src/main/assets/wordlinks.csv is compiled into
@@ -518,9 +556,13 @@ object Workspace {
             instream.close() // close input stream
         } catch (e: Exception) {
             Log.e("workspace", "Failed to copy wordlinks CSV asset file: $csvFileName", e)
-        }
+}
+}
 
+    private fun showWelcomeDialog() {
+        startActivity(Intent(this, WelcomeDialogActivity::class.java))
     }
+
     fun pathOf(name: String): DocumentFile? {
         return workdocfile.listFiles().find { it.name == name }
     }
@@ -720,4 +762,5 @@ object Workspace {
             processStoryApproval()
         }
     }
+
 }
