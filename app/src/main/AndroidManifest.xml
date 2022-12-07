@@ -72,10 +72,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="org.tyndalebt.storyproduceradv.activities.WelcomeDialogActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name="org.tyndalebt.storyproduceradv.activities.LanguageDialogActivity"
-            android:screenOrientation="portrait" />        <!-- Learn -->
+            android:screenOrientation="portrait" /> <!-- Learn -->
         <activity
             android:name="org.tyndalebt.storyproduceradv.controller.learn.LearnActivity"
             android:screenOrientation="portrait" /> <!-- Create -->

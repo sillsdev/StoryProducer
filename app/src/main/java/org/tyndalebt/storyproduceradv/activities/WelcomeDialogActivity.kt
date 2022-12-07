@@ -28,11 +28,74 @@ class WelcomeDialogActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+/*
+        // Ask permission before trying to build folders (checkForDirectory)
+        //  android:requestLegacyExternalStorage="true" needed to be added to the manifest folder for this to work on Android 10
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+        }
+        else
+            checkForDirectory()
+*/
         showWelcomeDialog()
     }
 
-    private fun showWelcomeDialog() {
+/*
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            1 -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // proceed
+                    checkForDirectory()
+                }
+                else {
+                    //not allowed
+                    val errorToast = Toast.makeText(this, "This permission is required to save template information", Toast.LENGTH_LONG)
+                    errorToast.show()
+                }
+            }
+            else -> {
+                // ignore other requests
+            }
+        }
+    }
 
+    private fun checkForDirectory() {
+
+        val storages = ContextCompat.getExternalFilesDirs(this, null)
+
+        var res: Boolean
+        if (storages.size == 1) {
+            // Build 1SP Workspace folder on the only storage space
+
+              val docFile = File(storages[0], "1SP Workspace")
+              if (!docFile.exists()) {
+                  if (docFile.mkdirs()) {
+                      println("directory created successfully")
+                  }
+              }
+        }
+        else {
+            val docFile = File(storages[1], "1SP Workspace")
+            if (!docFile.exists()) {
+                if (docFile.mkdirs()) {
+                    println("directory created successfully")
+                }
+            }
+        }
+    }
+
+    fun externalMemoryAvailable(): Boolean {
+        val storages = ContextCompat.getExternalFilesDirs(this, null)
+        return storages.size > 1 && storages[0] != null && storages[1] != null
+    }
+*/
+
+    private fun showWelcomeDialog() {
         val welcomeDialog = AlertDialog.Builder(this).create()
 
         // Issue #541: welcome screen is now created using a layout View
@@ -45,7 +108,6 @@ class WelcomeDialogActivity : BaseActivity() {
         selectTemplatesButton.setOnClickListener {
             showSelectTemplatesFolderDialog()
             welcomeDialog.dismiss()
-
         }
 
         // build rest of welcome dialog
@@ -53,7 +115,6 @@ class WelcomeDialogActivity : BaseActivity() {
         welcomeDialog.setView(view)
         welcomeDialog.setCancelable(false)
         welcomeDialog.show()
-
     }
 
     private fun buildTitle(): Spanned {
