@@ -129,8 +129,11 @@ class BLDownloadActivity : AppCompatActivity() {
                     // add properties for this download request
                     request.setTitle(dataItem.title)
                     request.setDescription(getString(R.string.bloom_lib_download))
-                    request.setDestinationInExternalFilesDir(this,
-                            Environment.DIRECTORY_DOWNLOADS, dataItem.title + bloomSourceZipExt())
+
+                    val destDir = File(this.getExternalFilesDir(null), Environment.DIRECTORY_DOWNLOADS);
+                    val destFile = File(destDir, dataItem.title + bloomSourceZipExt())
+                    request.setDestinationUri(Uri.fromFile(destFile))
+
                     request.setAllowedOverMetered(true)     // set here until we have a setting for it
                     request.setAllowedOverRoaming(true)     // set here until we have a setting for it
                     //request.setRequiresDeviceIdle(false)  // this property requires N (Nougat)
