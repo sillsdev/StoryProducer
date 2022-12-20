@@ -1,12 +1,6 @@
 package org.tyndalebt.storyproduceradv.controller.adapter
 
-import android.os.Bundle
-import android.provider.Settings.Global.getString
-import android.provider.Settings.Secure.getString
-import android.provider.Settings.System.getString
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.content.res.TypedArrayUtils.getString
+import android.content.Context
 import org.tyndalebt.storyproduceradv.model.Workspace
 
 class PhaseList
@@ -17,12 +11,12 @@ class PhaseList
 //    val defaultPhase: PhaseObject = phases()[0]
     val phases = ArrayList<PhaseObject>()
 
-    public fun getPhaseList() : ArrayList<PhaseObject>
+    public fun getPhaseList(context: Context) : ArrayList<PhaseObject>
     {
         if (phases.size > 0) return phases
         var idx = 0
         while (idx < Workspace.phases.size) {
-            phases.add(PhaseObject(Workspace.phases[idx].getDisplayName(), Workspace.phases[idx].getColor(), "FFFFFF"))
+            phases.add(PhaseObject(Workspace.phases[idx].getLangDisplayName(context), Workspace.phases[idx].getColor(), "FFFFFF"))
             idx += 1
         }
         return phases

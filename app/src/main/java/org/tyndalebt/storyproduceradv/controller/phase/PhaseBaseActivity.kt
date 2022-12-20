@@ -126,7 +126,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
         val pList = PhaseList()
-        spinner.adapter = PhaseSpinnerAdapter(this, pList.getPhaseList())
+        spinner.adapter = PhaseSpinnerAdapter(this, pList.getPhaseList(this))
 /*
         val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
@@ -253,6 +253,13 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
      */
     private fun addDrawerItems() {
         val menuArray = resources.getStringArray(R.array.global_menu_array)
+        menuArray[0] = getString(R.string.title_activity_story_templates)
+        menuArray[1] = getString(R.string.update_registration)
+        menuArray[2] = getString(R.string.more_templates)
+        menuArray[3] = getString(R.string.title_activity_wordlink_list)
+        menuArray[4] = getString(R.string.update_workspace)
+        menuArray[5] = getString(R.string.spadv_website)
+        menuArray[6] = getString(R.string.about)
         mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
         mDrawerList!!.adapter = mAdapter
     }

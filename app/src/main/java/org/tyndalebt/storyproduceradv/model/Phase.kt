@@ -1,5 +1,6 @@
 package org.tyndalebt.storyproduceradv.model
 
+import android.content.Context
 import com.squareup.moshi.Json
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.controller.MainActivity
@@ -97,7 +98,24 @@ class Phase (val phaseType: PhaseType) {
         return Story.getFilename(filename)
     }
 
-
+    fun getLangDisplayName(context: Context) : String {
+        val mResources = context.resources
+        return when (phaseType) {
+            PhaseType.REGISTRATION     -> mResources.getString(R.string.registration_title)
+            PhaseType.LEARN            -> mResources.getString(R.string.learn_title)
+            PhaseType.TRANSLATE_REVISE -> mResources.getString(R.string.translate_revise_title)
+            PhaseType.WORD_LINKS       -> mResources.getString(R.string.title_activity_wordlink_list)
+            PhaseType.COMMUNITY_WORK   -> mResources.getString(R.string.community_work_title)
+            PhaseType.WHOLE_STORY      -> mResources.getString(R.string.whole_story_title)
+            PhaseType.BACK_T           -> mResources.getString(R.string.back_translation_title)
+            PhaseType.REMOTE_CHECK     -> mResources.getString(R.string.remote_check_title)
+            PhaseType.ACCURACY_CHECK   -> mResources.getString(R.string.accuracy_check_title)
+            PhaseType.VOICE_STUDIO     -> mResources.getString(R.string.voice_studio_title)
+            PhaseType.FINALIZE         -> mResources.getString(R.string.finalize_title)
+            PhaseType.SHARE            -> mResources.getString(R.string.share_title)
+            else -> phaseType.toString().toLowerCase()
+        }
+    }
      // TODO: refactor (see Issues #546 & #547)
 
     /**
