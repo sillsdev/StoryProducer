@@ -72,7 +72,6 @@
         </activity> <!-- Story List Page -->
         <activity
             android:name="org.tyndalebt.storyproduceradv.controller.MainActivity"
-            android:label="@string/title_activity_story_templates"
             android:screenOrientation="portrait" /> <!-- Registration -->
         <activity
             android:name="org.tyndalebt.storyproduceradv.controller.RegistrationActivity"

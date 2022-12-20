@@ -6,19 +6,24 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.webkit.WebView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dev.b3nedikt.restring.Restring
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.tyndalebt.storyproduceradv.R
@@ -32,13 +37,21 @@ import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.tools.Network.ConnectivityStatus
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import org.tyndalebt.storyproduceradv.tools.file.goToURL
+import java.io.IOException
 import java.io.Serializable
+import java.nio.charset.StandardCharsets
+import java.util.*
+import kotlin.collections.HashMap
 
 class MainActivity : BaseActivity(), Serializable {
 
     private var mDrawerLayout: DrawerLayout? = null
     lateinit var storyPageViewPager : ViewPager2
     lateinit var storyPageTabLayout : TabLayout
+    var englishStringsMap: HashMap<String, String> = HashMap()
+    var spanishStringsMap: HashMap<String, String> = HashMap()
+    var swahiliStringsMap: HashMap<String, String> = HashMap()
+    var tokpisinStringsMap: HashMap<String, String> = HashMap()
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -56,6 +69,8 @@ class MainActivity : BaseActivity(), Serializable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        updateStringsHashmap()
 
         setContentView(R.layout.activity_main)
         setupDrawer()
@@ -95,7 +110,13 @@ class MainActivity : BaseActivity(), Serializable {
                 this@MainActivity.applicationContext.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))
             }
         }
-
+        if (Workspace.InternetConnection == false) {
+            Toast.makeText(this,
+                this.getString(R.string.remote_check_msg_no_connection),
+                Toast.LENGTH_LONG).show()
+        }
+        updateAppLanguage("es")
+        supportActionBar?.setTitle(R.string.title_activity_story_templates)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -270,6 +291,58 @@ class MainActivity : BaseActivity(), Serializable {
                 }.create()
         dialog.show()
     }
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun updateStringsHashmap() {
+        getLocalStringJsonHashmap("en").forEach {
+            englishStringsMap[it.key] = it.value
+        }
+        getLocalStringJsonHashmap("es").forEach {
+            spanishStringsMap[it.key] = it.value
+        }
+        getLocalStringJsonHashmap("sw").forEach {
+            swahiliStringsMap[it.key] = it.value
+        }
+        getLocalStringJsonHashmap("tkp").forEach {
+            tokpisinStringsMap[it.key] = it.value
+        }
+    }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    fun getLocalStringJsonHashmap(language: String): HashMap<String, String> {
+        val listTypeJson: HashMap<String, String> = HashMap()
+        var TmpStr: String = ""
+        try {
+            applicationContext.assets.open("$language.json").use { inputStream ->
+                val size: Int = inputStream.available()
+                val buffer = ByteArray(size)
+                inputStream.read(buffer)
+                val jsonString = String(buffer, StandardCharsets.UTF_8)
+                JsonHelper().getFlattenedHashmapFromJsonForLocalization(
+                    "",
+                    ObjectMapper().readTree(jsonString),
+                    listTypeJson
+                )
+            }
+        } catch (exception: IOException) {
+            TmpStr = exception.localizedMessage
+        }
+        return listTypeJson
+    }
+
+    fun updateAppLanguage(language: String) {
+        Restring.locale = Locale(language)
+        if (language == "es") {
+            Restring.putStrings(Restring.locale, spanishStringsMap)
+        } else if (language == "sw") {
+            Restring.putStrings(Restring.locale, swahiliStringsMap)
+        } else if (language == "tkp") {
+            Restring.putStrings(Restring.locale, tokpisinStringsMap)
+        } else {
+            Restring.locale = Locale("en") // in case its not set
+            Restring.putStrings(Restring.locale, englishStringsMap)
+        }
+//        var StringsArrayMap: HashMap<String, Array<CharSequence>> = HashMap()
+//        Restring.putStringArrays(Restring.locale, StringsArrayMap)
+    }
 }
 
