@@ -144,6 +144,26 @@ class Phase (val phaseType: PhaseType) {
      * Get directory-safe name for phase, used to save audio files
      * @return String
      */
+    fun getAudioFileDisplayName(context: Context) : String {
+        val mResources = context.resources
+        return when (phaseType) {
+            PhaseType.TRANSLATE_REVISE -> mResources.getString(R.string.recordings_title)
+            PhaseType.WORD_LINKS       -> mResources.getString(R.string.recordings_title)
+            PhaseType.COMMUNITY_WORK   -> mResources.getString(R.string.recordings_title)
+            PhaseType.WHOLE_STORY      -> mResources.getString(R.string.recordings_title)
+            PhaseType.BACK_T           -> mResources.getString(R.string.recordings_title)
+            PhaseType.REMOTE_CHECK     -> mResources.getString(R.string.recordings_title)
+            PhaseType.ACCURACY_CHECK   -> mResources.getString(R.string.recordings_title)
+            PhaseType.VOICE_STUDIO     -> mResources.getString(R.string.recordings_title)
+            PhaseType.FINALIZE         -> mResources.getString(R.string.recordings_title)
+            else -> phaseType.toString().toLowerCase()
+        }
+    }
+
+    /**
+     * Get directory-safe name for phase, used to save audio files
+     * @return String
+     */
     fun getDirectorySafeName() : String {
         return when (phaseType) {
             PhaseType.TRANSLATE_REVISE -> "Translation Draft"

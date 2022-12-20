@@ -1,6 +1,5 @@
 package org.tyndalebt.storyproduceradv.activities
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import org.tyndalebt.storyproduceradv.R

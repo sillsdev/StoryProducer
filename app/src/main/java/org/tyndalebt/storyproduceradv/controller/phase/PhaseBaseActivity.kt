@@ -68,7 +68,9 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     }
 
     //Do nothing if back button is pressed on the phone
-    override fun onBackPressed() {}
+    override fun onBackPressed() {
+        updateView()
+    }
 
 
     override fun onPause(){
@@ -126,7 +128,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         val item = menu.findItem(R.id.spinner)
         val spinner = item.actionView as Spinner
         val pList = PhaseList()
-        spinner.adapter = PhaseSpinnerAdapter(this, pList.getPhaseList(this))
+        spinner.adapter = PhaseSpinnerAdapter(this, pList.getPhaseList(spinner.context))
 /*
         val adapter = if (Workspace.registration.getBoolean("isRemote",false)) {
             //remote
@@ -260,6 +262,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         menuArray[4] = getString(R.string.update_workspace)
         menuArray[5] = getString(R.string.spadv_website)
         menuArray[6] = getString(R.string.about)
+
         mAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, menuArray)
         mDrawerList!!.adapter = mAdapter
     }

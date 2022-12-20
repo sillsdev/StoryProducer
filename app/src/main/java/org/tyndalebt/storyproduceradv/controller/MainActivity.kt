@@ -71,6 +71,7 @@ class MainActivity : BaseActivity(), Serializable {
         super.onCreate(savedInstanceState)
 
         updateStringsHashmap()
+        updateAppLanguage("es")
 
         setContentView(R.layout.activity_main)
         setupDrawer()
@@ -115,7 +116,6 @@ class MainActivity : BaseActivity(), Serializable {
                 this.getString(R.string.remote_check_msg_no_connection),
                 Toast.LENGTH_LONG).show()
         }
-        updateAppLanguage("es")
         supportActionBar?.setTitle(R.string.title_activity_story_templates)
     }
 
