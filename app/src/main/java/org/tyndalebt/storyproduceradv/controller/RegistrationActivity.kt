@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
@@ -26,6 +25,7 @@ import com.android.volley.toolbox.StringRequest
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag
 import org.tyndalebt.storyproduceradv.controller.remote.getPhoneId
@@ -74,7 +74,7 @@ import java.util.*
 const val FIRST_ACTIVITY_KEY = "first"
 
 
-open class RegistrationActivity : AppCompatActivity() {
+open class RegistrationActivity : AppCompatActivityMTT() {
 
     private val sectionIds = intArrayOf(R.id.language_section, R.id.translator_section, R.id.consultant_section, R.id.trainer_section, R.id.archive_section)
     private val headerIds = intArrayOf(R.id.language_header, R.id.translator_header, R.id.consultant_header, R.id.trainer_header, R.id.archive_header)

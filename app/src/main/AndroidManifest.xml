@@ -21,6 +21,13 @@
         android:theme="@style/AppTheme"
         android:requestLegacyExternalStorage="true"
         tools:replace="android:icon,android:roundIcon">
+        <activity
+            android:name="org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
             android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED" />

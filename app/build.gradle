@@ -7,7 +7,7 @@ apply plugin: 'com.google.gms.google-services'
 def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properties')
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "org.tyndalebt.storyproduceradv"
@@ -178,5 +178,19 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
+
+    // Replace bundled strings dynamically
+    implementation 'dev.b3nedikt.restring:restring:5.1.2'
+
+    // Intercept view inflation
+    implementation 'dev.b3nedikt.viewpump:viewpump:4.0.7'
+
+    // Allows to update the text of views at runtime without recreating the activity
+    implementation 'dev.b3nedikt.reword:reword:4.0.1'
+
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.5'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.8.5'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.8.5'
 }
 

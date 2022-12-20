@@ -14,11 +14,11 @@ import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
+import org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.tools.dpToPx
 import org.tyndalebt.storyproduceradv.controller.adapter.RecordingsListAdapter
@@ -31,7 +31,7 @@ import java.util.*
  * This activity shows information about the active Word Link so the user can learn more
  * about the word as well as record an audio translation
  */
-class WordLinksActivity : AppCompatActivity(), PlayBackRecordingToolbar.ToolbarMediaListener {
+class WordLinksActivity : AppCompatActivityMTT(), PlayBackRecordingToolbar.ToolbarMediaListener {
 
     private lateinit var recordingToolbar : WordLinksRecordingToolbar
     private lateinit var displayList : RecordingsListAdapter.RecordingsListModal

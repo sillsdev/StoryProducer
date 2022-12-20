@@ -1,10 +1,10 @@
 package org.tyndalebt.storyproduceradv.controller.storylist
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT
 
-class StoryPageAdapter(activity: AppCompatActivity, private val itemsCount: Int) :
+class StoryPageAdapter(activity: AppCompatActivityMTT, private val itemsCount: Int) :
         FragmentStateAdapter(activity) {
 
     override fun getItemCount(): Int {

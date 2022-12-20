@@ -94,6 +94,7 @@ object Workspace {
     var isInitialized = false
     var prefs: SharedPreferences? = null
     var startedMain = false
+    var InternetConnection = true
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
     // This flag indicates whether MainActivity should call the RegistrationActivity to allow
@@ -191,6 +192,11 @@ object Workspace {
     }
 
     fun getRoccWebSocketsUrl(context: Context): String {
+        if (InternetConnection == false) {
+            Toast.makeText(context,
+                context.getString(R.string.remote_check_msg_no_connection),
+                Toast.LENGTH_LONG).show()
+        }
         var baseUrl = if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
             PreferenceManager.getDefaultSharedPreferences(context).getString("WEBSOCKETS_URL", BuildConfig.ROCC_WEBSOCKETS_PREFIX)
                 ?: BuildConfig.ROCC_WEBSOCKETS_PREFIX
@@ -251,6 +257,11 @@ object Workspace {
                     Log.e("@pwhite", "Restarting websocket.")
                     val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
                     newClient.connectBlocking()
+                    if (newClient.isOpen == false) {
+                        InternetConnection = false
+                    } else {
+                        InternetConnection = true
+                    }
                     messageClient = newClient
                 }
             }

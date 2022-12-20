@@ -32,7 +32,7 @@ import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import org.tyndalebt.storyproduceradv.view.BaseActivityView
 import timber.log.Timber
 
-open class BaseActivity : AppCompatActivity(), BaseActivityView {
+open class BaseActivity : AppCompatActivityMTT(), BaseActivityView {
 
     lateinit var controller: SelectTemplatesFolderController
 
