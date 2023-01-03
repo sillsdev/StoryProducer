@@ -8,6 +8,7 @@ interface BaseActivityView {
 
     fun startActivityForResult(intent: Intent, request: Int)
     fun showMain()
+    fun showChooseLanguage()
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
     // Updated showRegistration interface to allow calling function in the current activity

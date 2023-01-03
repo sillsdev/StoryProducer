@@ -96,6 +96,14 @@ open class BaseActivity : AppCompatActivityMTT(), BaseActivityView {
         Workspace.processReceivedApprovals()
         finish()
     }
+
+    override fun showChooseLanguage() {
+        startActivity(Intent(this, ChooseLangActivity::class.java))
+        //Workspace.startedMain = true
+        //Workspace.processReceivedApprovals()
+        finish()
+    }
+
     // DKH - 05/12/2021
     // Issue #573: SP will hang/crash when submitting registration
     //

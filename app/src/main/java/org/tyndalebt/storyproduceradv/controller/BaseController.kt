@@ -106,7 +106,12 @@ open class BaseController(
         }
         // activate the MainActivity which if necessary, will call RegistrationActivity to display
         // the registration
-        view.showMain()
+        if (true) {
+            view.showChooseLanguage()
+        }
+        else {
+            view.showMain()
+        }
     }
 
 }
