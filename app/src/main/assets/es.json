@@ -1,5 +1,6 @@
 {
     "app_name": "Publicador de Historias Adv",
+
     "no": "No",
     "yes": "Sí",
     "ok": "OK",
@@ -7,22 +8,28 @@
     "cancel": "Anular",
     "help": "Ayuda",
     "search": "Buscar",
+
     "submit": "Enviar",
     "submit_via": "Enviar por...",
     "save": "Guardar",
     "delete": "Borrar",
     "enter_text": "Introducir Texto",
+
     "play": "Reproducir",
     "share": "Compartir",
     "sound_off": "Sonido apagado",
     "sound_on": "Sonido activado",
+
     "question_mark": "¿Qué es esto?",
+
     "SECONDS_ABBREVIATION": "seg",
     "MINUTES_ABBREVIATION": "min",
+
     "story_picture": "imagen de la historia",
     "stage_locked": "etapa bloqueada",
     "edit_image": "editar imagen",
     "edit_text": "editar texto",
+
     "registration_title": "Registro",
     "learn_title": "Aprender",
     "translate_revise_title": "Traducir + Revisar",
@@ -35,6 +42,7 @@
     "back_translation_title": "Recontar Diapositivas",
     "title_activity_story_templates": "Plantillas de Historias",
     "title_activity_wordlink_list": "Lista de Enlaces de Términos",
+
     "registration_language_header": "Información de la Lengua",
     "registration_translator_header": "Información del Traductor",
     "registration_accuracy_check_header": "Información del Verificador Bíblico",
@@ -56,9 +64,11 @@
     "communication_preference_hint": "Preferencia de Comunicación:",
     "location_type_hint": "Tipo de ubicación: ",
     "bypass_button_text": "Saltar el registro",
+
     "camera_select_from": "Seleccionar de:",
     "camera_revert_title": "¿Volver a la Imagen Original?",
     "camera_revert_message": "¿Quiere volver a la imagen original?",
+
     "welcome_to_story_producer": "Bienvenido a PublicadorHistoriasAdv",
     "use_internal_demo": "Utilizar la demo interna",
     "please_create_and_then_select_folder": "Por favor, cree y luego seleccione una nueva carpeta, necesaria para ejecutar la demo.",
@@ -76,6 +86,7 @@
     "registration_SPadv_email": "",
     "registration_robin_rempel_email": "SPapp.training@gmail.com",
     "rename_title": "Elegir un nuevo nombre",
+
     "rename_title_wordlinks": "Escriba una traducción inversa o deletree el nombre.",
     "recordings_title": "Grabaciones",
     "backTranslation_recordings_title": "Grabaciones de Traducciones Inversas ",

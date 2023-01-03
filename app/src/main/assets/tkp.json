@@ -4,6 +4,7 @@
     "no": "Nogat",
     "yes": "Yes",
     "ok": "orait",
+    "Continue": "Continue",    
     "cancel": "Maski",
     "help": "Helpim",
     "search": "Painim",
@@ -29,6 +30,7 @@
     "edit_image": "senisim piksa",
     "edit_text": "senisim tok",
 
+    "registration_title": "Registrar",
     "learn_title": "Kisim Save",
     "translate_revise_title": "Tanim + Stretim",
     "community_work_title": "Sekim Tokples",
@@ -63,6 +65,10 @@
     "location_type_hint": "Saveman blg sekim ol stori i stap we: ",
     "bypass_button_text": "Abrusim TokSave",
 
+    "camera_select_from": "Select From:",
+    "camera_revert_title": "Revert To The Original Image?",
+    "camera_revert_message": "Do you want to revert to the original image?",
+
     "welcome_to_story_producer": "Welkam long Story Producer Tul blg Tanim Stori",
     "use_internal_demo": "Traim 1pela eksampel stori",
     "please_create_and_then_select_folder": "Pastaim, kamapim nupela folder long Files na makim dispela folda long holim eksampel stori",
@@ -77,8 +83,11 @@
     "registration_error_title": "Sori! Samting i paul. Samting yu bin trai long salim, i no bin go.  ",
     "registration_error_message": "Plis, raitim emel blg yu long hia. ",
     "registration_saved_successfully": "Ol Tok save yu raitim pinis bai i stap sef!",
+    "registration_SPadv_email": "",
     "registration_robin_rempel_email": "SPapp_info@sil.org",
     "rename_title": "Raitim nupela nem blg stori",
+
+    "rename_title_wordlinks": "Type a back translation or spell the name.",
     "recordings_title": "Lista blg ol tanim tok",
     "backTranslation_recordings_title": "Lista blg ol tanim bek tok ",
     "consultant_password_title": "Tok hait blg Saveman",
@@ -90,6 +99,7 @@
     "stories_not_found_completed": "Ating nogat sampela ol stori i pinis.",
     "welcome_screen_select_template_folder": "Story Producer o dispela Tul blg Tanim ol Stori i narakain liklik.  Pastaim yu mas redim ol liklik samting na bihain yu ken lukim na yusim tul ya.  Pastaim yu mas kamapim nupela folda long SD kad (o long ples we i gat planti spes long pon) na yu mas kisim (daunlodim) ol stori sel blg tanim na putim ol stori sel long dispela folda.  ) where the story template files must be downloaded by you.<br> <font color=\"gray\"> (If your SD card has already been prepared, skip down to \"Select 'SP Templates' Folder\")</font><br><br> To prepare your SD card...<br> \t\tGo <a href=\"https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit\"> HERE</a> for detailed instructions<br> \t\tOR follow these summary instructions:<br> 1. Use Google Drive and download story templates from <a href=\"https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing\"> HERE</a><br> 2. Use a Files app to create a folder on the SD card, and name it <font color=\"green\"> SP Templates</font><br> 3. With the Files app, Move or Copy story template(s) to the <font color=\"green\"> SP Templates</font> folder<br><br> After you have prepared the <font color=\"green\"> SP Templates</font> folder, proceed:",
     "workspace_selection_help": "<font color=\"gray\"> Tell the Story Producer app where to find story templates.</font><br><br> The next screen will be a 'folder picker'.<br> Navigate to the <font color=\"green\"> SP Templates</font> folder (on the <font color=\"green\"> SD Card</font>), then tap <b>SELECT</b> at the bottom.",
+    "only_demo_present": "To download more story templates or access other options, open the main menu (tap the 3-lines icon top left corner). Please complete and submit the Registration to make it \"hide\".",
     "welcome_screen_demo_error": "Demo functionality coming soon!",
     "orthography_list": [
         "None",
@@ -106,11 +116,11 @@
 
     "location_type_list": [
         "Local"
+        "Remote"        
     ],
 
     "nav_open": "Options",
     "nav_close": "Close",
-
     "PhoneId": "PhoneId",
 
     "send_message_down": "Message sending is unavailable at this time. Please try again later.",
@@ -127,6 +137,7 @@
     "url_get_slide_status": "https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php",
     "url_upload_audio": " https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php",
     "url_register_phone": "https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php",
+    "url_update_fb_token": "/API/AtualizarFBToken.php",
     "api_token": "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd",
 
     "fill_with_audio_comment": "Fill with Audio Comment",
@@ -149,9 +160,15 @@
     "wordlink_list_help": "Nogot",
     "wordlinks_csv_read_error": "Tul i no inap luksave long wordlinks csv fail",
     "wordlinks_json_read_error": "Error reading word links JSON file",
+    "wordlinks_no_csv_file": "No Valid CSV WordLinks File Specified",
+    "wordlinks_multiple_csv_files": "Detected multiple Word Links CSV Files.\nUsing:\t",
 
     "voice_studio_edit_text_hint": "Write story text for videos with included text.",
     "voice_studio_edit_title_text_hint": "Write story title to show for all videos made.",
+
+    "draft_playback_no_lwc_audio": "Could not find narration audio",
+    "draft_playback_lwc_audio": "Playing narration audio",
+    "draft_play_narration_audio": "Play narration audio",
 
     "delete_video_title": "Delete Video file?",
     "delete_video_message": "Do you want to delete this video?",
@@ -170,6 +187,7 @@
     "backTranslation_no_backT_found": "No Back Translation Found",
     "backTranslation_record_file_backT_name": "Back Translation %1$d",
     "backTranslation_hint": "Message for consultant...",
+    "transcript_hint": "If requested, write a back translation here.",
 
     "remote_check_title": "Remote Check",
     "messaging_bar_title": "Messages for Slide",
@@ -236,11 +254,25 @@
     "scanning_sp_templates": "Stap isi na larim Tul i luksave long olgeta stori sel",
     "update_workspace": "Makim 'SP Ol Stori Sel' folda",
     "cancelling": "Cancelling ...",
-    "copy_demo": "Skruim eksampel stori long lista blg stori sel",
+    "more_templates": "Download More Templates",
+    "change_language": "Change Language",
+    "spadv_website": "SPadv - website",
 
     "all_stories_tab": "Olgeta Stori",
     "in_progress_tab": "Stori i Gohet",
     "completed_tab": "Stori i Pinis",
+
+    "already_uploaded": "Selected recording already uploaded",
+    "uploading_audio": "Uploading Audio",
+    "upload_success": "Audio File Sent Successfully",
+    "upload_failed": "Audio upload failed",
+    "no_recording_found": "No recording found",
+    "upload_already_started": "Upload already in progress",
+    "cancel_uploaded": "Cancelling upload",
+    "ignore_uploaded": "Ignoring previous upload",
+    "no_uploads_done": "There have been no uploads yet",
+    "invalid_response": "Invalid response. Audio upload failed",
+    "connect_failed": "Failed to connect to server",
 
     "film_toolbar": "Film",
     "nt_toolbar": "NT",
@@ -257,6 +289,7 @@
     "logging_slide_log_view_title": "Wok i bin kamap long ol pej #%1$d",
     "logging_item_date": "Taim",
     "logging_item_type": "Kain",
+
     "logging_numSlides": [
         "Pej",
         "ol Pej"

@@ -4,6 +4,7 @@
     "no": "Hapana",
     "yes": "ndio",
     "ok": "sawa",
+    "Continue": "Continue",
     "cancel": "kata",
     "help": "saidia",
     "search": "tafuta",
@@ -29,6 +30,7 @@
     "edit_image": "rekebisha picha",
     "edit_text": "rekebisha maandishi",
 
+    "registration_title": "Registration",
     "learn_title": "soma",
     "translate_revise_title": "tafsiri + rudia",
     "community_work_title": "Kazi ya jamii",
@@ -63,6 +65,10 @@
     "location_type_hint": "Aina ya eneo",
     "bypass_button_text": "ruka usajili",
 
+    "camera_select_from": "Select From:",
+    "camera_revert_title": "Revert To The Original Image?",
+    "camera_revert_message": "Do you want to revert to the original image?",
+
     "welcome_to_story_producer": "karibu kwa mutayarishaji wa hadithi",
     "use_internal_demo": "tumia onyesho la ndani",
     "please_create_and_then_select_folder": "tafadhali unda na uchague folda, ihitjikayo kwa maonyesho.",
@@ -77,8 +83,11 @@
     "registration_error_title": "kosa la uwasilishaji",
     "registration_error_message": "tafadhali toa anwani ya barua pepe ya hifadhidata",
     "registration_saved_successfully": "habari za usajili zimehifadhika",
+    "registration_SPadv_email": "",
     "registration_robin_rempel_email": "SPapp_info@sil.org",
     "rename_title": "chagua jina jipwa",
+
+    "rename_title_wordlinks": "Type a back translation or spell the name.",
     "recordings_title": "kurekodi",
     "backTranslation_recordings_title": "urekodi wa habari rejeshi",
     "consultant_password_title": "neno la siri la mshauri",
@@ -90,6 +99,7 @@
     "stories_not_found_completed": "hakuna hadithi zilizokamilika .",
     "welcome_screen_select_template_folder": "mtayarishaji wa hadhithi ni tofauti na programu ya kawiada lazima kwanza uunde folda kwenye SD kadi mahali kwenye faili ambako mpangilio huo wa hadithi unaeza kupakua.<br> <font color=\"green\"> (If Kama SD yako imetayarishika tafadhali ruka \"chagua 'SP mpangilio' Folda\")</font><br><br>kutayarisha SD kadi yako...<br> \t\tGo <a href=\"https://docs.google.com/document/d/1Jw73VlLmIyJgoFM3EOLyqGZyO50pOqXiSmsuLuq_u34/edit\"> HERE</a> for detailed instructions<br> \t\tOR fata mkutasari huu:<br> 1. tumia google drive kukupua mpamgilio wako <a href=\"https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing\"> HERE</a><br> 2. Tumia faili kuunda folda yako kwa SD , ipe jina <rangi ya herufi=\"kijani\"> SP Templates</herufi><br> 3. na programu ya faili, ondoa ama kopea kwa <font color=\"green\">SP mupangilio</font> folda<br><br> baada ya kutayarisha <font color=\"green\"> mpangilio wa Sp </font> folder, proceed:    ",
     "workspace_selection_help": "<font color=\"gray\"> mwambie mutayarishaji wa hdhithi akuonyeshe kwenye templates.</font><br><br>skrini ifwatayo itakuwa ya 'folda'.<br> tembea <font color=\"green\"> SP Templates</font> folder (on the <font color=\"green\"> SD Card</font>), then tap <b>SELECT</b> at the bottom. ",
+    "only_demo_present": "To download more story templates or access other options, open the main menu (tap the 3-lines icon top left corner). Please complete and submit the Registration to make it \"hide\".",
     "welcome_screen_demo_error": "Demo functionality coming soon!",
     "orthography_list": [
         "hakuna",
@@ -106,11 +116,11 @@
 
     "location_type_list": [
         "vitu vya kawaida"
+        "Remote"
     ],
 
     "nav_open": "chaguo",
     "nav_close": "funga",
-
     "PhoneId": "simu id",
 
     "send_message_down": "ujumbe uliotuma haupatikani kwa sasa. tafadhali jaribu ten baadaye.",
@@ -127,6 +137,7 @@
     "url_get_slide_status": "https://storyproducer.eastus.cloudapp.azure.com/API/GetSlideStatuses.php",
     "url_upload_audio": " https://storyproducer.eastus.cloudapp.azure.com/API/UploadSlideBacktranslation.php",
     "url_register_phone": "https://storyproducer.eastus.cloudapp.azure.com/API/RegisterPhone.php",
+    "url_update_fb_token": "/API/UpdateFBToken.php",
     "api_token": "XUKYjBHCsD6OVla8dYAt298D9zkaKSqd",
 
     "fill_with_audio_comment": "jaza faili hii kwakutumia maoni katika nia ya audio",
@@ -149,9 +160,15 @@
     "wordlink_list_help": "hakuna kitu",
     "wordlinks_csv_read_error": "kusoma kosa kupitia kiungo cha neno CSV faili",
     "wordlinks_json_read_error": "kusoma kosa kupitia kiungo cha neno JSON faili",
+    "wordlinks_no_csv_file": "No Valid CSV WordLinks File Specified",
+    "wordlinks_multiple_csv_files": "Detected multiple Word Links CSV Files.\nUsing:\t",
 
     "voice_studio_edit_text_hint": "andika hadhithi ukitumia maneno katika video.",
     "voice_studio_edit_title_text_hint": "Andika anwani katika video.",
+
+    "draft_playback_no_lwc_audio": "Could not find narration audio",
+    "draft_playback_lwc_audio": "Playing narration audio",
+    "draft_play_narration_audio": "Play narration audio",
 
     "delete_video_title": "futa faili ya video",
     "delete_video_message": " je wataka kufuta video hii",
@@ -170,6 +187,7 @@
     "backTranslation_no_backT_found": "hakuna utafsiri rejeshi uonekanao",
     "backTranslation_record_file_backT_name": "utafsiri rejeshi %1$d",
     "backTranslation_hint": "ujumbe kwa mshauri ...",
+    "transcript_hint": "If requested, write a back translation here.",
 
     "remote_check_title": "kuangalia",
     "messaging_bar_title": "ujumbe kwa slaidi",
@@ -236,11 +254,25 @@
     "scanning_sp_templates": "tafadhali subiri SP to ianagalie mpangilio",
     "update_workspace": "chagua 'SP Templates' folda",
     "cancelling": "ninakata ...",
-    "copy_demo": "eka majario katila orodha",
+    "more_templates": "Download More Templates",
+    "change_language": "Change Language",
+    "spadv_website": "SPadv - website",
 
     "all_stories_tab": "hadithi zote",
     "in_progress_tab": "inaendelea",
     "completed_tab": "kumalizika",
+
+    "already_uploaded": "Selected recording already uploaded",
+    "uploading_audio": "Uploading Audio",
+    "upload_success": "Audio File Sent Successfully",
+    "upload_failed": "Audio upload failed",
+    "no_recording_found": "No recording found",
+    "upload_already_started": "Upload already in progress",
+    "cancel_uploaded": "Cancelling upload",
+    "ignore_uploaded": "Ignoring previous upload",
+    "no_uploads_done": "There have been no uploads yet",
+    "invalid_response": "Invalid response. Audio upload failed",
+    "connect_failed": "Failed to connect to server",
 
     "film_toolbar": "ukanda",
     "nt_toolbar": "agano jipya",
@@ -257,6 +289,7 @@
     "logging_slide_log_view_title": "kuingia katika slide #%1$d",
     "logging_item_date": "tarehe",
     "logging_item_type": "aina",
+
     "logging_numSlides": [
         "Slidi",
         "Slidi"
