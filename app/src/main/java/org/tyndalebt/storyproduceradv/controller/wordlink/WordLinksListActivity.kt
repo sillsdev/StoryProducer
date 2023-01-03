@@ -158,6 +158,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     this.startActivity(intent)
                     this.finish()
                 }
+                R.id.change_language -> {
+                    showChooseLanguage()
+                }
                 R.id.nav_about -> {
                     showAboutDialog()
                 }

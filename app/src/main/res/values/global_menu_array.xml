@@ -6,6 +6,7 @@
         <item>@string/more_templates</item>
         <item>@string/title_activity_wordlink_list</item>
         <item>@string/update_workspace</item>
+        <item>@string/change_language</item>
         <item>@string/spadv_website</item>
         <item>@string/about</item>
     </string-array>

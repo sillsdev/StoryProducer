@@ -296,12 +296,13 @@ public class DownloadActivity extends BaseActivity {
                 // current fragment
                 break;
             case R.id.nav_stories:
-                Intent intent = new Intent(this, MainActivity.class);
-                this.startActivity(intent);
-                this.finish();
+                showMain();
                 break;
             case R.id.nav_registration:
                 showRegistration(false);
+                break;
+            case R.id.change_language:
+                showChooseLanguage();
                 break;
             case R.id.nav_spadv_website:
                 org.tyndalebt.storyproduceradv.tools.file.FileIO.goToURL(this, Workspace.URL_FOR_WEBSITE);

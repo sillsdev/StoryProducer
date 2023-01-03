@@ -48,10 +48,6 @@ class MainActivity : BaseActivity(), Serializable {
     private var mDrawerLayout: DrawerLayout? = null
     lateinit var storyPageViewPager : ViewPager2
     lateinit var storyPageTabLayout : TabLayout
-    var englishStringsMap: HashMap<String, String> = HashMap()
-    var spanishStringsMap: HashMap<String, String> = HashMap()
-    var swahiliStringsMap: HashMap<String, String> = HashMap()
-    var tokpisinStringsMap: HashMap<String, String> = HashMap()
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -69,9 +65,6 @@ class MainActivity : BaseActivity(), Serializable {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        updateStringsHashmap()
-        updateAppLanguage("es")
 
         setContentView(R.layout.activity_main)
         setupDrawer()
@@ -267,6 +260,9 @@ class MainActivity : BaseActivity(), Serializable {
                     showRegistration(false)
                 }
             }
+            R.id.change_language -> {
+                showChooseLanguage()
+            }
             R.id.nav_spadv_website -> {
                 goToURL(this, Workspace.URL_FOR_WEBSITE)
             }
@@ -290,59 +286,6 @@ class MainActivity : BaseActivity(), Serializable {
                     startActivity(homeIntent)
                 }.create()
         dialog.show()
-    }
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun updateStringsHashmap() {
-        getLocalStringJsonHashmap("en").forEach {
-            englishStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("es").forEach {
-            spanishStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("sw").forEach {
-            swahiliStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("tkp").forEach {
-            tokpisinStringsMap[it.key] = it.value
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun getLocalStringJsonHashmap(language: String): HashMap<String, String> {
-        val listTypeJson: HashMap<String, String> = HashMap()
-        var TmpStr: String = ""
-        try {
-            applicationContext.assets.open("$language.json").use { inputStream ->
-                val size: Int = inputStream.available()
-                val buffer = ByteArray(size)
-                inputStream.read(buffer)
-                val jsonString = String(buffer, StandardCharsets.UTF_8)
-                JsonHelper().getFlattenedHashmapFromJsonForLocalization(
-                    "",
-                    ObjectMapper().readTree(jsonString),
-                    listTypeJson
-                )
-            }
-        } catch (exception: IOException) {
-            TmpStr = exception.localizedMessage
-        }
-        return listTypeJson
-    }
-
-    fun updateAppLanguage(language: String) {
-        Restring.locale = Locale(language)
-        if (language == "es") {
-            Restring.putStrings(Restring.locale, spanishStringsMap)
-        } else if (language == "sw") {
-            Restring.putStrings(Restring.locale, swahiliStringsMap)
-        } else if (language == "tkp") {
-            Restring.putStrings(Restring.locale, tokpisinStringsMap)
-        } else {
-            Restring.locale = Locale("en") // in case its not set
-            Restring.putStrings(Restring.locale, englishStringsMap)
-        }
-//        var StringsArrayMap: HashMap<String, Array<CharSequence>> = HashMap()
-//        Restring.putStringArrays(Restring.locale, StringsArrayMap)
     }
 }
 
