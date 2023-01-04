@@ -121,7 +121,6 @@
 
     "nav_open": "Options",
     "nav_close": "Close",
-
     "PhoneId": "PhoneId",
 
     "send_message_down": "Message sending is unavailable at this time. Please try again later.",
@@ -290,11 +289,11 @@
     "logging_slide_log_view_title": "Logs for Slide #%1$d",
     "logging_item_date": "Date",
     "logging_item_type": "Type",
+
     "logging_numSlides": [
         "Slide",
         "Slides"
     ],
 
     "overwrite": "Overwrite"
-
 }

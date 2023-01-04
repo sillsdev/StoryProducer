@@ -1,5 +1,6 @@
 {
     "app_name": "Story Publisher Adv",
+
     "no": "Não",
     "yes": "Sim",
     "ok": "OK",
@@ -7,11 +8,13 @@
     "cancel": "Cancelar",
     "help": "Ajuda",
     "search": "Buscar",
+
     "submit": "Concordar",
     "submit_via": "Concordar via...",
     "save": "Salvar",
     "delete": "Deletar",
     "enter_text": "Digite o texto",
+
     "play": "Reproduzir",
     "share": "Compartilhar",
     "sound_off": "Som desligado",
@@ -118,7 +121,6 @@
 
     "nav_open": "Opções",
     "nav_close": "Fechar",
-
     "PhoneId": "PhoneId",
 
     "send_message_down": "O envio de mensagens não está disponível no momento. Por favor, tente novamente mais tarde.",
@@ -227,7 +229,6 @@
 
     "title_activity_splash_screen": "Story Publisher Advantage",
 
-
     "LC_obsolete_starting_text": "Idioma:\nTraduzido por:\nCréditos da nova imagem:\nNarração / Atuação de voz por:\nMúsica local por:",
     "LC_starting_text": "Contato local (telefone/email):\nIdioma:\nTraduzido por:\nCréditos da nova imagem:\nNarração / Atuação de voz por:\nMúsica local por:",
     "LC_prompt": "Créditos locais serão adicionados durante a narração.",
@@ -288,6 +289,7 @@
     "logging_slide_log_view_title": "Registros para Slide #%1$d",
     "logging_item_date": "Dados",
     "logging_item_type": "Modelo",
+
     "logging_numSlides": [
         "Slide",
         "Slides"
