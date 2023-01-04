@@ -26,7 +26,7 @@ class ChooseLangAdapter(data: ArrayList<DownloadDS?>, var cla: ChooseLangActivit
         val dataModel = `object` as DownloadDS?
 
         cla.setLanguage(dataModel!!.URL) // language name in English
-        cla.showMain()
+        cla.goToNextStep()
     }
 
     private var lastPosition = -1

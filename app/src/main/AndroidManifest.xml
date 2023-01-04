@@ -23,10 +23,14 @@
         tools:replace="android:icon,android:roundIcon">
         <activity
             android:name="org.tyndalebt.storyproduceradv.activities.ChooseLangActivity"
-            android:exported="false">
+            android:exported="true">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT"
@@ -72,10 +76,6 @@
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity> <!-- Story List Page -->
         <activity
             android:name="org.tyndalebt.storyproduceradv.controller.MainActivity"

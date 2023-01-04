@@ -1,33 +1,28 @@
 package org.tyndalebt.storyproduceradv.activities
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.ListView
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import com.fasterxml.jackson.databind.ObjectMapper
 import dev.b3nedikt.restring.Restring
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.controller.JsonHelper
-import org.tyndalebt.storyproduceradv.controller.MainActivity
+import org.tyndalebt.storyproduceradv.controller.SplashScreenActivity
 import org.tyndalebt.storyproduceradv.controller.adapter.ChooseLangAdapter
 import org.tyndalebt.storyproduceradv.controller.adapter.DownloadDS
 import org.tyndalebt.storyproduceradv.model.Workspace
-import org.tyndalebt.storyproduceradv.tools.file.goToURL
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.nio.charset.StandardCharsets
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 internal const val CHOOSE_LANGUAGE_FILE = "language.csv"
 
@@ -43,16 +38,23 @@ class ChooseLangActivity : BaseActivity() {
     var swahiliStringsMap: HashMap<String, String> = HashMap()
     var tokpisinStringsMap: HashMap<String, String> = HashMap()
     var portugueseStringsMap: HashMap<String, String> = HashMap()
+    var initialSetup: Boolean = false
+    var chosenLanguage: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_download)
 
-//        var itemArray = arrayOf<String>("Surat","Mumbai","Rajkot")
-//        var tagArray = arrayOf<String>("C","B","C")
-        parseLangFile()
+        chosenLanguage = readFromFile(this)
+        if (chosenLanguage != "" && !Workspace.isInitialized) {
+            setLanguage(chosenLanguage!!)
+            goToNextStep()
+        }
+        else {
+            setContentView(R.layout.activity_download)
+            parseLangFile()
 
-        buildLanguageList(itemArray, tagArray)
+            buildLanguageList(itemArray, tagArray)
+        }
     }
 
     fun buildLanguageList(pList: Array<String>, pURL: Array<String>) {
@@ -157,6 +159,7 @@ class ChooseLangActivity : BaseActivity() {
         else {   // English or not defined
             updateAppLanguage("en")
         }
+        writeToFile(pChosenLanguage, this)
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
@@ -218,4 +221,42 @@ class ChooseLangActivity : BaseActivity() {
 //        Restring.putStringArrays(Restring.locale, StringsArrayMap)
     }
 
+    public fun goToNextStep() {
+        startActivity(Intent(this, SplashScreenActivity::class.java))
+        finish()
+    }
+
+    private fun writeToFile(data: String, context: Context) {
+        try {
+            val outputStreamWriter =
+                OutputStreamWriter(context.openFileOutput("config.txt", MODE_PRIVATE))
+            outputStreamWriter.write(data)
+            outputStreamWriter.close()
+        } catch (e: IOException) {
+            Log.e("Exception", "File write failed: $e")
+        }
+    }
+
+    private fun readFromFile(context: Context): String? {
+        var ret = ""
+        try {
+            val inputStream: InputStream = context.openFileInput("config.txt")
+            if (inputStream != null) {
+                val inputStreamReader = InputStreamReader(inputStream)
+                val bufferedReader = BufferedReader(inputStreamReader)
+                var receiveString: String? = ""
+                val stringBuilder = StringBuilder()
+                while (bufferedReader.readLine().also({ receiveString = it }) != null) {
+                    stringBuilder.append(receiveString)
+                }
+                inputStream.close()
+                ret = stringBuilder.toString()
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e("login activity", "File not found: " + e.toString())
+        } catch (e: IOException) {
+            Log.e("login activity", "Can not read file: $e")
+        }
+        return ret
+    }
 }
