@@ -101,23 +101,18 @@
     "workspace_selection_help": "<font color=\"gray\"> Indique a la aplicación PHadv dónde encontrar plantillas de historias.</font><br><br> La siguiente pantalla será un 'seleccionador de carpetas'.<br> Navegue hasta la carpeta <font color=\"green\"> PH Espacio de Trabajo</font> folder (en la <font color=\"green\"> Tarjeta SD o en la memoria interna</font>), luego pulse <b>SELLECIONAR</b> en la parte inferior.",
     "only_demo_present": "Para descargar más plantillas de historias o acceder a otras opciones, abra el menú principal (toque el icono de las 3 líneas en la esquina superior izquierda). Por favor, complete y envíe el Registro para que se \"oculte\".",
     "welcome_screen_demo_error": "¡Pronto se podrá realizar una demostración!",
-    "orthography_list": [
-        "No Existe",
-        "En prueba",
-        "Estable"
-    ],
 
-    "communication_list": [
-        "Teléfono",
-        "Correo Electrónico",
-        "WhatsApp",
-        "Facebook"
-    ],
+    "orthography_list_none": "No Existe",
+    "orthography_list_trial": "En prueba",
+    "orthography_list_stable": "Estable",
 
-    "location_type_list": [
-        "Local",
-        "A Distancia"
-    ],
+    "communication_list_phone": "Teléfono",
+    "communication_list_email": "Correo Electrónico",
+    "communication_list_whatsapp": "WhatsApp",
+    "communication_list_facebook": "Facebook",
+
+    "location_type_list_local": "Local",
+    "location_type_list_remote": "A Distancia",
 
     "nav_open": "Opciones",
     "nav_close": "Cerrar",

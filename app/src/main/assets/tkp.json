@@ -101,23 +101,18 @@
     "workspace_selection_help": "<font color=\"gray\"> Tell the Story Producer app where to find story templates.</font><br><br> The next screen will be a 'folder picker'.<br> Navigate to the <font color=\"green\"> SP Templates</font> folder (on the <font color=\"green\"> SD Card</font>), then tap <b>SELECT</b> at the bottom.",
     "only_demo_present": "To download more story templates or access other options, open the main menu (tap the 3-lines icon top left corner). Please complete and submit the Registration to make it \"hide\".",
     "welcome_screen_demo_error": "Demo functionality coming soon!",
-    "orthography_list": [
-        "None",
-        "Trial",
-        "Stable"
-    ],
 
-    "communication_list": [
-        "Phone",
-        "E-mail",
-        "WhatsApp",
-        "Facebook"
-    ],
+    "orthography_list_none": "None",
+    "orthography_list_trial": "Trial",
+    "orthography_list_stable": "Stable",
 
-    "location_type_list": [
-        "Local"
-        "Remote"        
-    ],
+    "communication_list_phone": "Phone",
+    "communication_list_email": "E-mail",
+    "communication_list_whatsapp": "WhatsApp",
+    "communication_list_facebook": "Facebook",
+
+    "location_type_list_local": "Local",
+    "location_type_list_remote": "Remote",
 
     "nav_open": "Options",
     "nav_close": "Close",

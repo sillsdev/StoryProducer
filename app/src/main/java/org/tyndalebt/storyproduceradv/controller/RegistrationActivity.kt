@@ -22,11 +22,11 @@ import androidx.core.content.res.ResourcesCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.tyndalebt.storyproduceradv.R
+import org.tyndalebt.storyproduceradv.activities.AppCompatActivityMTT
 import org.tyndalebt.storyproduceradv.controller.remote.RemoteCheckFrag
 import org.tyndalebt.storyproduceradv.controller.remote.getPhoneId
 import org.tyndalebt.storyproduceradv.model.Phase
@@ -35,6 +35,7 @@ import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.model.Workspace.startDownLoadMoreTemplatesActivity
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import java.util.*
+
 
 /**
  * The purpose of this class is to create the Registration activity.
@@ -110,7 +111,13 @@ open class RegistrationActivity : AppCompatActivityMTT() {
 
         setContentView(R.layout.activity_registration)
         val mActionBarToolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(mActionBarToolbar)
+
+        buildSpinner(R.id.input_orthography)
+        buildSpinner(R.id.input_translator_communication_preference)
+        buildSpinner(R.id.input_consultant_communication_preference)
+        buildSpinner(R.id.input_consultant_location_type)
+        buildSpinner(R.id.input_trainer_communication_preference)
+
         setSupportActionBar(mActionBarToolbar)
         supportActionBar?.setTitle(R.string.registration_title)
 
@@ -121,6 +128,51 @@ open class RegistrationActivity : AppCompatActivityMTT() {
             headerViews[i] = findViewById(headerIds[i])
             setAccordionListener(findViewById(headerIds[i]), sectionViews[i]!!)
         }
+    }
+
+    fun buildSpinner(id: Int) {
+        val mSpinner = findViewById<Spinner>(id)
+        var idList: Int = 0
+
+        if (id == R.id.input_consultant_location_type) {
+            idList = R.array.location_type_list
+        } else if (id == R.id.input_orthography) {
+            idList = R.array.orthography_list
+        } else if (id == R.id.input_translator_communication_preference ||
+                id == R.id.input_consultant_communication_preference ||
+                id == R.id.input_trainer_communication_preference) {
+            idList = R.array.communication_list
+        }
+        setSpinnerValues(mSpinner, buildStringArray(idList))
+    }
+
+    fun setSpinnerValues(pSpinner: Spinner, pList: ArrayList<String>) {
+        val spinnerAdapter =
+            ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, android.R.id.text1)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        pSpinner.adapter = spinnerAdapter
+        for (i in pList.indices) {
+            spinnerAdapter.add(pList[i])
+        }
+        spinnerAdapter.notifyDataSetChanged()
+    }
+
+    fun buildStringArray(id: Int): ArrayList<String> {
+        var choiceStrings: ArrayList<String> = arrayListOf()
+        if (id == R.array.location_type_list) {
+            choiceStrings.add(resources.getString(R.string.location_type_list_local))
+            choiceStrings.add(resources.getString(R.string.location_type_list_remote))
+        } else if (id == R.array.orthography_list) {
+            choiceStrings.add(resources.getString(R.string.orthography_list_none))
+            choiceStrings.add(resources.getString(R.string.orthography_list_trial))
+            choiceStrings.add(resources.getString(R.string.orthography_list_stable))
+        } else if (id == R.array.communication_list) {
+            choiceStrings.add(resources.getString(R.string.communication_list_phone))
+            choiceStrings.add(resources.getString(R.string.communication_list_email))
+            choiceStrings.add(resources.getString(R.string.communication_list_whatsapp))
+            choiceStrings.add(resources.getString(R.string.communication_list_facebook))
+        }
+        return choiceStrings
     }
 
     override fun onPause(){
@@ -314,7 +366,7 @@ open class RegistrationActivity : AppCompatActivityMTT() {
      * @return index of the spinner array
      */
     private fun getSpinnerIndexFromString(value: String): Int {
-        var search = resources.getStringArray(R.array.orthography_list)
+        var search = buildStringArray(R.array.orthography_list)
 
         for (i in search.indices) {
             if (value == search[i]) {
@@ -322,14 +374,14 @@ open class RegistrationActivity : AppCompatActivityMTT() {
             }
         }
 
-        search = resources.getStringArray(R.array.communication_list)
+        search = buildStringArray(R.array.communication_list)
         for (i in search.indices) {
             if (value == search[i]) {
                 return i
             }
         }
 
-        search = resources.getStringArray(R.array.location_type_list)
+        search = buildStringArray(R.array.location_type_list)
         for (i in search.indices) {
             if (value == search[i]) {
                 return i
@@ -473,7 +525,7 @@ open class RegistrationActivity : AppCompatActivityMTT() {
 
         //Store whether remote or not
         var isRemote: Boolean? = false
-        if (reg.getString("consultant_location_type", "") == "Remote")
+        if (reg.getString("consultant_location_type", "") == resources.getString(R.string.location_type_list_remote))
             isRemote = true
         reg.putBoolean("isRemote", isRemote!!)
 

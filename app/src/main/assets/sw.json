@@ -101,23 +101,18 @@
     "workspace_selection_help": "<font color=\"gray\"> mwambie mutayarishaji wa hdhithi akuonyeshe kwenye templates.</font><br><br>skrini ifwatayo itakuwa ya 'folda'.<br> tembea <font color=\"green\"> SP Templates</font> folder (on the <font color=\"green\"> SD Card</font>), then tap <b>SELECT</b> at the bottom. ",
     "only_demo_present": "To download more story templates or access other options, open the main menu (tap the 3-lines icon top left corner). Please complete and submit the Registration to make it \"hide\".",
     "welcome_screen_demo_error": "Demo functionality coming soon!",
-    "orthography_list": [
-        "hakuna",
-        "jaribu",
-        "imara"
-    ],
 
-    "communication_list": [
-        "simu",
-        "barua pepe",
-        "WhatsApp",
-        "Facebook"
-    ],
+    "orthography_list_none": "hakuna",
+    "orthography_list_trial": "jaribu",
+    "orthography_list_stable": "imara",
 
-    "location_type_list": [
-        "vitu vya kawaida"
-        "Remote"
-    ],
+    "communication_list_phone": "simu",
+    "communication_list_email": "barua pepe",
+    "communication_list_whatsapp": "WhatsApp",
+    "communication_list_facebook": "Facebook",
+
+    "location_type_list_local": "vitu vya kawaida",
+    "location_type_list_remote": "Remote",
 
     "nav_open": "chaguo",
     "nav_close": "funga",

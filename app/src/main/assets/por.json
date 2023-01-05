@@ -101,23 +101,18 @@
     "workspace_selection_help": "<font color=\"gray\"> Diga ao aplicativo SPadv onde encontrar modelos de histórias.</font><br><br> A próxima tela será um 'seletor de pastas'.<br> Navegue até a pasta <font color=\"green\"> SP Workspace</font> (no cartão SD <font color=\"green\"> ou na memória interna</font>) e toque em <b>SELECT</b> na parte inferior. ",
     "only_demo_present": "Para baixar mais modelos de histórias ou acessar outras opções, abra o menu principal (toque no ícone de 3 linhas no canto superior esquerdo). Por favor, preencha e envie o Registro para torná-lo \"ocultar\". ",
     "welcome_screen_demo_error": "Funcionalidade de demonstração em breve!",
-    "orthography_list": [
-        "Nenhum",
-        "Tentativas",
-        "Stable"
-    ],
 
-    "communication_list": [
-        "Telefone",
-        "E-mail",
-        "WhatsApp",
-        "Facebook"
-    ],
+    "orthography_list_none": "Nenhum",
+    "orthography_list_trial": "Tentativas",
+    "orthography_list_stable": "Stable",
 
-    "location_type_list": [
-        "Local",
-        "Remote"
-    ],
+    "communication_list_phone": "Telefone",
+    "communication_list_email": "E-mail",
+    "communication_list_whatsapp": "WhatsApp",
+    "communication_list_facebook": "Facebook",
+
+    "location_type_list_local": "Local",
+    "location_type_list_remote": "Remote",
 
     "nav_open": "Opções",
     "nav_close": "Fechar",

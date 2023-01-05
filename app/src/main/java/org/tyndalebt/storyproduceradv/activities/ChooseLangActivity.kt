@@ -33,11 +33,8 @@ class ChooseLangActivity : BaseActivity() {
     var itemArray = arrayOf<String>()
     var tagArray = arrayOf<String>()
     private var bloomFileContents: String = ""
-    var englishStringsMap: HashMap<String, String> = HashMap()
-    var spanishStringsMap: HashMap<String, String> = HashMap()
-    var swahiliStringsMap: HashMap<String, String> = HashMap()
-    var tokpisinStringsMap: HashMap<String, String> = HashMap()
-    var portugueseStringsMap: HashMap<String, String> = HashMap()
+    var languageStringsMap: HashMap<String, String> = HashMap()
+
     var initialSetup: Boolean = false
     var chosenLanguage: String? = ""
 
@@ -141,7 +138,6 @@ class ChooseLangActivity : BaseActivity() {
     }
 
     public fun setLanguage(pChosenLanguage: String) {
-        updateStringsHashmap()
         if (pChosenLanguage == "Bislama") {
         } else if (pChosenLanguage == "French") {
         } else if (pChosenLanguage == "Indonesian") {
@@ -163,21 +159,9 @@ class ChooseLangActivity : BaseActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.KITKAT)
-    fun updateStringsHashmap() {
-        getLocalStringJsonHashmap("en").forEach {
-            englishStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("es").forEach {
-            spanishStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("sw").forEach {
-            swahiliStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("tkp").forEach {
-            tokpisinStringsMap[it.key] = it.value
-        }
-        getLocalStringJsonHashmap("por").forEach {
-            portugueseStringsMap[it.key] = it.value
+    fun updateStringsHashmap(language: String) {
+        getLocalStringJsonHashmap(language).forEach {
+            languageStringsMap[it.key] = it.value
         }
     }
 
@@ -204,26 +188,18 @@ class ChooseLangActivity : BaseActivity() {
     }
 
     fun updateAppLanguage(language: String) {
+        updateStringsHashmap(language)
         Restring.locale = Locale(language)
-        if (language == "es") {
-            Restring.putStrings(Restring.locale, spanishStringsMap)
-        } else if (language == "sw") {
-            Restring.putStrings(Restring.locale, swahiliStringsMap)
-        } else if (language == "tkp") {
-            Restring.putStrings(Restring.locale, tokpisinStringsMap)
-        } else if (language == "por") {
-            Restring.putStrings(Restring.locale, portugueseStringsMap)
-        } else {
-            Restring.locale = Locale("en") // in case its not set
-            Restring.putStrings(Restring.locale, englishStringsMap)
-        }
-//        var StringsArrayMap: HashMap<String, Array<CharSequence>> = HashMap()
-//        Restring.putStringArrays(Restring.locale, StringsArrayMap)
+        Restring.putStrings(Restring.locale, languageStringsMap)
     }
 
     public fun goToNextStep() {
-        startActivity(Intent(this, SplashScreenActivity::class.java))
-        finish()
+        if (Workspace.isInitialized) {
+            showMain()
+        } else {
+            startActivity(Intent(this, SplashScreenActivity::class.java))
+            finish()
+        }
     }
 
     private fun writeToFile(data: String, context: Context) {

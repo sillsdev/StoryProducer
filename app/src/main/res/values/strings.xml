@@ -136,6 +136,18 @@
         <item>Remote</item>
     </string-array>
 
+    <string name="orthography_list_none">None</string>
+    <string name="orthography_list_trial">Trial</string>
+    <string name="orthography_list_stable">Stable</string>
+
+    <string name="communication_list_phone">Phone</string>
+    <string name="communication_list_email">E-mail</string>
+    <string name="communication_list_whatsapp">WhatsApp</string>
+    <string name="communication_list_facebook">Facebook</string>
+
+    <string name="location_type_list_local">Local</string>
+    <string name="location_type_list_remote">Remote</string>
+
     <!--Navigation Drawer Labels (Main Activity) -->
     <string name="nav_open">Options</string>
     <string name="nav_close">Close</string>
