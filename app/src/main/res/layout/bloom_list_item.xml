@@ -4,12 +4,12 @@
     android:id="@+id/bloomItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="46dp"
+    android:minHeight="56dp"
     android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="46dp"
+        android:layout_height="56dp"
         android:layout_weight="3"
         android:gravity="start|center_vertical"
         android:orientation="vertical">
