@@ -1,5 +1,5 @@
 {
-    "app_name": "Publicador de Historias Adv",
+    "app_name": "Story Publisher Adv (Publicador de Historias Adv)",
 
     "no": "No",
     "yes": "Sí",
@@ -69,7 +69,7 @@
     "camera_revert_title": "¿Volver a la Imagen Original?",
     "camera_revert_message": "¿Quiere volver a la imagen original?",
 
-    "welcome_to_story_producer": "Bienvenido a PublicadorHistoriasAdv",
+    "welcome_to_story_producer": "Bienvenido a StoryPublisherAdv o PublicadorHistoriasAdv",
     "use_internal_demo": "Utilizar la demo interna",
     "please_create_and_then_select_folder": "Por favor, cree y luego seleccione una nueva carpeta, necesaria para ejecutar la demo.",
     "registration_exit_title": "¿Salir del registro?",
@@ -97,7 +97,7 @@
     "stories_not_found_body": "¡No se han encontrado plantillas de historias! La Carpeta del área de trabajo seleccionada actualmente para las plantillas de historias no contiene plantillas utilizables.  Seleccione la carpeta apropiada <font color=\"green\"> <b>SP Workspace</b></font> la que - se encuentra en <font color=\"green\"> <b>la Tarjeta SD o en la memoria interna</b></font>.",
     "stories_not_found_in_progress": "No hay historias en curso.",
     "stories_not_found_completed": "No hay historias terminadas.",
-    "welcome_screen_select_template_folder_new": "Publicador de Historias Adv (SPadv) es diferente de las aplicaciones típicas. Debe crear una Carpeta de Espacio de Trabajo en la memoria de su teléfono.  A continuación, descargará las plantillas de historias en esta carpeta.<br><br> Puede hacerlo pulsando el botón de abajo.  Seleccionar <font color=\"green\"> 1SP Workspace</font> la carpeta si ya existe o crear una nueva carpeta y luego seleccionarla.",
+    "welcome_screen_select_template_folder_new": "Story  Publisher Adv (SPadv) (Publicador de Historias Adv) es diferente de las aplicaciones típicas. Debe crear una Carpeta de Espacio de Trabajo en la memoria de su teléfono.  A continuación, descargará las plantillas de historias en esta carpeta.<br><br> Puede hacerlo pulsando el botón de abajo.  Seleccionar <font color=\"green\"> 1SP Workspace</font> la carpeta si ya existe o crear una nueva carpeta y luego seleccionarla.",
     "workspace_selection_help": "<font color=\"gray\"> Indique a la aplicación PHadv dónde encontrar plantillas de historias.</font><br><br> La siguiente pantalla será un 'seleccionador de carpetas'.<br> Navegue hasta la carpeta <font color=\"green\"> PH Espacio de Trabajo</font> folder (en la <font color=\"green\"> Tarjeta SD o en la memoria interna</font>), luego pulse <b>SELLECIONAR</b> en la parte inferior.",
     "only_demo_present": "Para descargar más plantillas de historias o acceder a otras opciones, abra el menú principal (toque el icono de las 3 líneas en la esquina superior izquierda). Por favor, complete y envíe el Registro para que se \"oculte\".",
     "welcome_screen_demo_error": "¡Pronto se podrá realizar una demostración!",
@@ -276,10 +276,10 @@
 
     "about": "Acerca de",
     "license": "Licencia",
-    "about_title": "Acerca de Publicador de Historias Adv (PHadv)",
+    "about_title": "Acerca de SPadv o Publicador de Historias Adv (PHadv)",
     "app_version": "versión de applicación: %1$s",
     "prefer_bloom_templates": "utiliza solo plantillas de .bloom y .bloomSource",
-    "license_body": "El software Publicador de Historias (PHAdv) (StoryProducer Advantage) (SPadv) tiene derechos de autor conjuntos © 2022, Tyndale Bible Translators and Robin Rempel.  Adaptada y basada en el original, Story Producer (version 3.0.6) con derechos de autor conjuntos © 2020, SIL International y Cedarville University. \n\n Se publica bajo la siguiente licencia: Por la presente se autoriza, de forma gratuita, a cualquier persona que obtenga legalmente una copia de este software y los archivos de documentación asociados (el “Software”), para utilizar y redistribuir el software, para construir y distribuir vídeos a partir de texto y datos audiovisuales, siempre que sean los propietarios de los datos o tengan permiso para distribuirlos. \n\n El Software está protegido por las disposiciones de los tratados internacionales de derechos de autor. Ninguna persona puede eliminar los derechos de autor u otros avisos de propiedad del software ni realizar ingeniería inversa, descompilar o desensamblar el software.\n\n El software se proporciona \"tal cual\", sin garantía de ningún tipo, expresa o implícita, incluyendo pero no limitándose a las garantías de comerciabilidad idoneidad para un fin determinado y no infracción. En ningún caso los autores o los titulares de los derechos de autor serán responsables de cualquier  reclamación, daño u otra responsabilidad, ya sea en una acción o contrato,  agravio o de otra manera, que surja de, o en relación con el software o el uso  u otras operaciones con el mismo software. \n\nLos datos se recogen cada vez que el usuario envía la información de registro.  Toda la información que el usuario escribe en los campos de registro, además de tipo de teléfono, se recoge y es utilizada por el consultor remoto para asistir y la comunicación con el usuario.",
+    "license_body": "El software Story Publisher Adv (SPadv) tiene derechos de autor conjuntos © 2022, Tyndale Bible Translators and Robin Rempel.  Adaptada y basada en el original, Story Producer (version 3.0.6) con derechos de autor conjuntos © 2020, SIL International y Cedarville University. \n\n Se publica bajo la siguiente licencia: Por la presente se autoriza, de forma gratuita, a cualquier persona que obtenga legalmente una copia de este software y los archivos de documentación asociados (el \"Software\"), para utilizar y redistribuir el software, para construir y distribuir vídeos a partir de texto y datos audiovisuales, siempre que sean los propietarios de los datos o tengan permiso para distribuirlos. \n\n El Software está protegido por las disposiciones de los tratados internacionales de derechos de autor. Ninguna persona puede eliminar los derechos de autor u otros avisos de propiedad del software ni realizar ingeniería inversa, descompilar o desensamblar el software.\n\n El software se proporciona \"tal cual\", sin garantía de ningún tipo, expresa o implícita, incluyendo pero no limitándose a las garantías de comerciabilidad idoneidad para un fin determinado y no infracción. En ningún caso los autores o los titulares de los derechos de autor serán responsables de cualquier  reclamación, daño u otra responsabilidad, ya sea en una acción o contrato,  agravio o de otra manera, que surja de, o en relación con el software o el uso  u otras operaciones con el mismo software. \n\nLos datos se recogen cada vez que el usuario envía la información de registro.  Toda la información que el usuario escribe en los campos de registro, además de tipo de teléfono, se recoge y es utilizada por el consultor remoto para asistir y la comunicación con el usuario.",
 
     "logging_slide_log_view_title": "Registro de Diapositivas #%1$d",
     "logging_item_date": "Fecha",

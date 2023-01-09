@@ -141,6 +141,7 @@ class ChooseLangActivity : BaseActivity() {
         if (pChosenLanguage == "Bislama") {
         } else if (pChosenLanguage == "French") {
         } else if (pChosenLanguage == "Indonesian") {
+            updateAppLanguage("id")
         } else if (pChosenLanguage == "Khmer") {
         } else if (pChosenLanguage == "Portuguese") {
             updateAppLanguage("por")

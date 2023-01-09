@@ -498,7 +498,12 @@ open class RegistrationActivity : AppCompatActivityMTT() {
             } else if (field is Spinner) {
                 var spinnerName = resources.getResourceEntryName(field.id)
                 spinnerName = spinnerName.replace("input_", "")
-                val spinnerText = field.selectedItem.toString()
+                var spinnerText:String
+                if (field.selectedItem == null)
+                    spinnerText = field.getItemAtPosition(0).toString()
+                else
+                    spinnerText = field.selectedItem.toString()
+
                 reg.putString(spinnerName, spinnerText)
                 //if(spinnerText.equals("Remote")){
                 //isRemoteConsultant = true;
