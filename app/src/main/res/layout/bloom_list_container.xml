@@ -9,29 +9,48 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
-        <androidx.appcompat.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/toolbarMoreTemplates"
+    <androidx.appcompat.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/toolbarMoreTemplates"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:maxHeight="?android:attr/actionBarSize"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/primary"
-            android:maxHeight="?android:attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+            android:layout_height="107dp"
+            android:paddingTop="7dp"
+            android:weightSum="2">
 
-        <ImageView
-            android:id="@+id/image_download"
-            android:layout_width="94dp"
-            android:layout_height="96dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/cloud_download" />
+            <ImageView
+                android:id="@+id/image_download"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_gravity="left"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/cloud_download" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="94dp"
+                android:layout_height="94dp"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="right"
+                android:layout_weight="1"
+                app:srcCompat="@mipmap/ic_launcher" />
+
+        </LinearLayout>
 
         <ListView
             android:id="@+id/bloom_list_view"
             android:layout_width="match_parent"
-            android:layout_height="568dp"
-            android:layout_gravity="center_horizontal" />
+            android:layout_height="568dp" >
+        </ListView>
 
     </LinearLayout>
 
