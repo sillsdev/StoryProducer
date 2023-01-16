@@ -324,7 +324,9 @@ class BLDownloadActivity : AppCompatActivity() {
         var firstExists = data.indexOfFirst { it -> File(downloadDir + "/" + it.title + bloomSourceZipExt()).exists() }
         if (firstExists != -1) {
             // one or more files have been downloaded so install them
-            MainActivity.mainActivity.controller.updateStories() // process the downloaded templates
+            if (MainActivity.mainActivity != null) {
+                MainActivity.mainActivity!!.controller.updateStories() // process the downloaded templates
+            }
         }
         super.onBackPressed()
     }
