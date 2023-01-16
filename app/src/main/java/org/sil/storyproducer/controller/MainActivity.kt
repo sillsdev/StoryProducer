@@ -118,7 +118,7 @@ class MainActivity : BaseActivity(), Serializable {
             )
             val snackTextView =
                 snackBar.view.findViewById(com.google.android.material.R.id.snackbar_text) as TextView
-            snackTextView.maxLines = 5  // allow 5 line snack-bar messages
+            snackTextView.maxLines = 6  // allow 5 line snack-bar messages + 1 for large fonts wrapping
             snackBar.show()
         }
     }
