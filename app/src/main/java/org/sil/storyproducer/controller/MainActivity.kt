@@ -39,7 +39,7 @@ import kotlin.system.exitProcess
 class MainActivity : BaseActivity(), Serializable {
 
     companion object {
-        lateinit var mainActivity: MainActivity
+        var mainActivity : MainActivity ? = null
     }
     private var mDrawerLayout: DrawerLayout? = null
     lateinit var storyPageViewPager : ViewPager2
