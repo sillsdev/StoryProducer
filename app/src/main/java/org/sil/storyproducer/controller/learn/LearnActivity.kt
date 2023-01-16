@@ -162,7 +162,9 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         var i = 0
         for (d in slideStartTimes) {
             if (time < d) {
-                if(i-1 != curPos){
+                // if the current position is different or if the audio is not prepared
+                // then setup the story source audio (fixes notion bug 816)
+                if (i-1 != curPos || !narrationPlayer.isAudioPrepared) {
                     curPos = i-1
                     setPic(learnImageView!!, curPos)
                     narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
