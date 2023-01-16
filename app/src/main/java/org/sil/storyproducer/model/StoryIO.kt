@@ -225,6 +225,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
         return file.name
     }
 
+    var unzippedOk = false  // only delete file if it can be unzipped (installed) ok
     val storyName = file.name!!.substringBeforeLast(".","")
     val internalFile = File("${context.filesDir}/${file.name!!}")
     var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name
@@ -281,17 +282,25 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<a
         }
 
         //delete copied zip file
+        unzippedOk = true
     }
-    catch(e: Exception) { }
+    catch(e: Exception) {
+        unzippedOk = false
+        Timber.w("Failed to unzip downloaded story: '%s' [%s]", file.name, e.message)
+    }
     //delete copied and original zip file to save space
     if (dlFileExists) {
-        if (!dlFile.delete()) {
-            Timber.w("Failed to delete downloaded story: '%s'", file.name)
+        if (unzippedOk) {
+            if (!dlFile.delete()) {
+                Timber.w("Failed to delete downloaded story: '%s'", file.name)
+            }
         }
     }
     else {
-        internalFile.delete()
-        deleteWorkspaceFile(context, file.name!!)
+        if (unzippedOk) {
+            internalFile.delete()
+            deleteWorkspaceFile(context, file.name!!)
+        }
     }
 
     return storyName
