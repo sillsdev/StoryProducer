@@ -140,6 +140,7 @@ class ChooseLangActivity : BaseActivity() {
     public fun setLanguage(pChosenLanguage: String) {
         if (pChosenLanguage == "Bislama") {
         } else if (pChosenLanguage == "French") {
+            updateAppLanguage("fr")
         } else if (pChosenLanguage == "Indonesian") {
             updateAppLanguage("id")
         } else if (pChosenLanguage == "Khmer") {
