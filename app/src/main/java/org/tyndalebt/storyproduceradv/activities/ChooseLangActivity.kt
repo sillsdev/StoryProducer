@@ -151,7 +151,7 @@ class ChooseLangActivity : BaseActivity() {
         } else if (pChosenLanguage == "Swahili") {
             updateAppLanguage("sw")
         } else if (pChosenLanguage == "Tok Pisin") {
-            updateAppLanguage("tkp")
+            updateAppLanguage("tpi")
         } else if (pChosenLanguage == "") {
         }
         else {   // English or not defined
