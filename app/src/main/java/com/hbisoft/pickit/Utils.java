@@ -13,14 +13,14 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
-class Utils {
+public class Utils {
     private static String failReason;
     static String errorReason(){
         return failReason;
     }
 
     @SuppressLint("NewApi")
-    static String getRealPathFromURI_API19(final Context context, final Uri uri) {
+    public static String getRealPathFromURI_API19(final Context context, final Uri uri) {
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -42,7 +42,7 @@ class Utils {
                     // Instead, we first have to get the name of the SD Card, for example /storage/sdcard1/folder/video.mp4
 
                     // We first have to check if the device allows this access
-                    if (new File("storage" + "/" + docId.replace(":", "/")).exists()){
+                    if (new File("/storage" + "/" + docId.replace(":", "/")).exists()){
                         return "/storage/" + docId.replace(":", "/");
                     }
                     // If the file is not available, we have to get the name of the SD Card, have a look at SDUtils
@@ -56,7 +56,7 @@ class Utils {
                         }
                     }
                     if (root.contains(type)){
-                        return "storage" + "/" + docId.replace(":", "/");
+                        return "/storage" + "/" + docId.replace(":", "/");
                     }else{
                         if (root.startsWith("/storage/")||root.startsWith("storage/")) {
                             return root;
