@@ -1,18 +1,22 @@
 package org.sil.storyproducer.controller.export
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.net.Uri
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.storage.StorageManager
 import android.view.View
 import android.widget.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.UriUtils
 import org.sil.storyproducer.tools.file.getChildDocuments
 import org.sil.storyproducer.tools.file.getWorkspaceUri
+import com.hbisoft.pickit.Utils
 
 
 /**
@@ -84,32 +88,59 @@ class ShareActivity : PhaseBaseActivity(), RefreshViewListener {
         }
         videosAdapter!!.setVideoPaths(exportedVideos)
 
+        mOpenVideoPath.isEnabled = presentVideos.isNotEmpty() // disable video path button if no videos or folder
         mOpenVideoPath.setOnClickListener {
 
-            val videoContentUri  = getWorkspaceUri("$VIDEO_DIR/")
-            var videoFileUriStr = UriUtils.getPathFromUri(this, videoContentUri!!)
-
-            // At this point the videoFileUriStr will look something like this: /storage/emulated/0/
-            // This is the actual path. However, it needs be changed to the SD Card (/sdcard/)
-            // which is a symbolic link to the emulated storage path.
-            // sdcard/: Is a symlink to...
-            //      /storage/sdcard0 (Android 4.0+)
-            // In Story Producer, the version will never be less than Android 4.0
-            // We will instead show it as an optional [sdcard]
-            // The below code will change: /storage/emulated/0/ to /storage/[sdcard]/
-            videoFileUriStr = videoFileUriStr.replace(Regex("(storage\\/emulated\\/)\\d+"), "storage/[sdcard]")
-
-            // Also, the SD-Card could show up as /storage/####-####/ where # is a hexidecimal value
-            videoFileUriStr = videoFileUriStr.replace(Regex("(storage)\\/[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"), "storage/[sdcard]")
-
-            var videoFileUri = Uri.parse(videoFileUriStr)
-
-            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-            builder.setMessage("${getString(R.string.view_video_folder_message)} ${videoFileUri.path}")
+            var videoContentUri  = getWorkspaceUri("$VIDEO_DIR/") // 27A2-3AB6
+//            var videoFileUriStr = UriUtils.getPathFromUri(this, videoContentUri!!)    // this old library call does not work for all cases
+            var videoFileUriStr = Utils.getRealPathFromURI_API19(this, videoContentUri!!)  // using another third party library to get file path
+            if (videoFileUriStr != null && videoFileUriStr.isNotEmpty()) {
+                // At this point the videoFileUriStr will look something like this: /storage/emulated/0/ or
+                // /storage/####-####/ where # is a hexadecimal value, this is the actual path.
+                // However, it needs be changed to [Internal Storage]/... or [SD Card] or [USB Drive] etc.
+                // This is so that the user can use a file manager app to easily locate the folder there
+                val internalStorageRoot = "/storage/emulated/0"
+                if (videoFileUriStr.startsWith(internalStorageRoot)) {
+                    // The below code will change: /storage/emulated/0/ to [Internal Storage]/
+                    videoFileUriStr = videoFileUriStr.replaceFirst(internalStorageRoot,
+                        "[${getString(R.string.view_video_folder_internal_storage)}]")
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    // Also, the SD-Card/USB-Drive could show up as /storage/####-####/ where # is a hexadecimal value
+                    // Here we can use the storage service to get the short description of the external drive
+                    var hexStorageRoot = ""
+                    val regexStorageVol = "^\\/storage\\/[0-9a-fA-F]{4}-[0-9a-fA-F]{4}"
+                    if (Regex(regexStorageVol).find(videoFileUriStr) != null) {
+                        hexStorageRoot = videoFileUriStr.substring(9, 18) // e.g. /storage/1234-5678
+                    }
+                    if (hexStorageRoot.isNotEmpty()) {
+                        // we have found a external drive path and hex value, so now find its description
+                        val storageManager = getSystemService(Context.STORAGE_SERVICE) as StorageManager
+                        for (storageVolume in storageManager.storageVolumes) {
+                            if (!storageVolume.isPrimary) {
+                                val storageVolToString = storageVolume.toString()
+                                if (storageVolToString.contains(hexStorageRoot)) {
+                                    // Finding the hex root in the storage volume string seems to be the
+                                    // most backwards compatible way of finding the matching volume
+                                    val driveDesc = storageVolume.getDescription(this)
+                                    if (driveDesc != null) {
+                                        // we now have a volume/drive description so use it
+                                        videoFileUriStr = videoFileUriStr.replace(
+                                            Regex(regexStorageVol),"[$driveDesc]")
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+                // now display an alert dialog with a user friendly videos path in it
+                val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                builder.setMessage("${getString(R.string.view_video_folder_message)}\n${videoFileUriStr}")
                     .setCancelable(false)
                     .setPositiveButton("OK") { _, _ -> }
-            val alert: AlertDialog = builder.create()
-            alert.show()
+                val alert: AlertDialog = builder.create()
+                alert.show()
+            }
         }
     }
 
