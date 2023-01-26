@@ -77,8 +77,12 @@ public class Utils {
                 }
                 String id = DocumentsContract.getDocumentId(uri);
 
-                final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                return getDataColumn(context, contentUri, null, null);
+                try {
+                    final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    return getDataColumn(context, contentUri, null, null);
+                } catch (java.lang.NumberFormatException e) {
+                    return null;
+                }
             }
             else if (isDownloadsDocument(uri)) {
                 String fileName = getFilePath(context, uri);
@@ -99,8 +103,12 @@ public class Utils {
                     if (file.exists())
                         return id;
                 }
-                final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
-                return getDataColumn(context, contentUri, null, null);
+                try {
+                    final Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                    return getDataColumn(context, contentUri, null, null);
+                } catch (java.lang.NumberFormatException e) {
+                    return null;
+                }
             }
             else if (isMediaDocument(uri)) {
                 final String docId = DocumentsContract.getDocumentId(uri);
@@ -165,16 +173,19 @@ public class Utils {
         }
     }
 
-    static String getRealPathFromURI_BelowAPI19(Context context, Uri contentUri) {
-        String[] proj = {MediaStore.Video.Media.DATA};
-        CursorLoader loader = new CursorLoader(context, contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
-        cursor.moveToFirst();
-        String result = cursor.getString(column_index);
-        cursor.close();
-        return result;
-    }
+//  Removed unused code due to github-code-scanning issues
+//    static String getRealPathFromURI_BelowAPI19(Context context, Uri contentUri) {
+//        String[] proj = {MediaStore.Video.Media.DATA};
+//        CursorLoader loader = new CursorLoader(context, contentUri, proj, null, null, null);
+//          // Invoking CursorLoader.CursorLoader should be avoided because it has been deprecated.
+//        Cursor cursor = loader.loadInBackground();
+//          // Invoking CursorLoader.loadInBackground should be avoided because it has been deprecated.
+//        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+//        cursor.moveToFirst();
+//        String result = cursor.getString(column_index);
+//        cursor.close();
+//        return result;
+//    }
 
     private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
         Cursor cursor = null;
