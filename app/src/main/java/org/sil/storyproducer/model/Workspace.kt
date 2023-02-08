@@ -60,6 +60,7 @@ object Workspace {
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
         }
     val Stories: MutableList<Story> = mutableListOf()
+    val asyncAddedStories: MutableList<Story> = mutableListOf()
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1

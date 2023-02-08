@@ -24,7 +24,7 @@ open class BaseController(
     }
 
     fun updateStories() {
-        Workspace.Stories.clear()
+        Workspace.asyncAddedStories.clear() // used for adding stories asynchronously
 
         val storyFiles = Workspace.storyFilesToScanOrUnzip()
 
@@ -46,7 +46,7 @@ open class BaseController(
         subscriptions.add(
                 Single.fromCallable {
                     Workspace.buildStory(context, file)?.also {
-                        Workspace.Stories.add(it)
+                        Workspace.asyncAddedStories.add(it)
                     }
                 }
                         .subscribeOn(Schedulers.io())
@@ -70,6 +70,13 @@ open class BaseController(
     }
 
     private fun onLastStoryUpdated() {
+        // now update Stories on the main thread to prevent crash
+        Workspace.Stories.clear()
+        for (story in Workspace.asyncAddedStories) {
+            Workspace.Stories.add(story)
+        }
+        Workspace.asyncAddedStories.clear()
+
         Workspace.sortStoriesByTitle()
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
