@@ -13,7 +13,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.storyproducer.App
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.*
 import org.sil.storyproducer.tools.file.*
 import java.io.File
 import java.io.IOException
@@ -53,6 +55,10 @@ object Workspace {
     // "Welcome Screen", replace this place holder strings with the URL_FOR_TEMPLATES
     const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
     // End Issue #571
+
+    val MIN_BYTES_NEEDED_FOR_DEMO_STORY = 1024L * 1024L * 200L;
+    val RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY = 1024L * 1024L * 1024L;
+    val SP_TEMPLATES_FOLDER_NAME = "SP Templates"
 
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
@@ -157,6 +163,64 @@ object Workspace {
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
     }
 
+    fun createAppSpecificWorkspace(): String {
+        // Create an App-specific internal or external storage folder for an initial demo
+        // https://developer.android.com/training/data-storage
+        // https://developer.android.com/training/data-storage/app-specific
+        var workspaceStorageTypeStr = ""
+        var appSpecificDocsDir: File? = null
+        var appSpecificTemplateDir : File? = null
+        val freeEmuExtFile = getFreeEmulatedExternalMemoryFile();
+        val freeIntFile = getFreeInternalMemoryFile()
+        val maxFreeExtFile = getMaxFreeExtMemoryFile()
+        // Check 'emulated internal' memory first then private internal memory for recommended free space for demo
+        if (freeEmuExtFile != null && freeEmuExtFile.freeSpace >= RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // We have 1GB free of 'emulated internal' storage so use that before anything else for demo
+            appSpecificDocsDir = freeEmuExtFile
+            workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_internal)
+        } else if (freeIntFile != null && freeIntFile.freeSpace >= RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // We have 1GB free private internal storage so use that before external storage for demo
+            appSpecificDocsDir = freeIntFile
+            workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_private)
+        } else {
+            // We haven't got the recommended space on internal storage so find
+            // best free space from either emulated, internal or external storage
+            if (freeEmuExtFile != null &&
+                    freeEmuExtFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY &&
+                    (maxFreeExtFile == null || freeEmuExtFile.freeSpace >= maxFreeExtFile.freeSpace)) {
+                // We have 200MB free of 'emulated internal' storage so use that for demo
+                appSpecificDocsDir = freeEmuExtFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_internal)
+            } else if (freeIntFile != null &&
+                    freeIntFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY &&
+                    (maxFreeExtFile == null || freeIntFile.freeSpace >= maxFreeExtFile.freeSpace)) {
+                // We have 200MB free of private internal storage so use that for demo
+                appSpecificDocsDir = freeIntFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_private)
+            } else if (maxFreeExtFile != null && maxFreeExtFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // Use the external drive with most free memory for demo
+                appSpecificDocsDir = maxFreeExtFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_external)
+            }
+        }
+        if (appSpecificDocsDir != null)
+            appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+        if (appSpecificTemplateDir != null) {
+            // we have space on this volume for a demo story
+            appSpecificTemplateDir.mkdirs()
+            if (appSpecificTemplateDir.isDirectory) {
+                // if we managed to create an app-specific workspace folder
+                if (setupWorkspacePath(App.appContext, Uri.fromFile(appSpecificTemplateDir))) {
+                    isInitialized = true  // app-specific workspace successful
+                    // Add the demo for new users
+                    addDemoToWorkspace(App.appContext)
+                    return workspaceStorageTypeStr // created ok if non empty
+                }
+            }
+        }
+        return ""   // Not enough space to use a folder automatically
+    }
+
     fun setupWorkspacePath(context: Context, uri: Uri) : Boolean {
         if (uri.toString().isEmpty())
             return false
@@ -166,10 +230,12 @@ object Workspace {
             activeStory = emptyStory()
 
             // Initiate new workspace path
-            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+            workdocfile = getDocumentFileFromUri(context, uri)
+
+            // Load the registration info
             registration.load(context)
 
-            // load in the Word Links
+            // load in the Word Links database
             importWordLinks(context)
 
             return true;
@@ -437,7 +503,7 @@ object Workspace {
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until dlFiles?.size!!) {
             val installFilename = dlFiles[i].name
-            val installBaseName = installFilename?.substringBeforeLast('.')
+            val installBaseName = installFilename.substringBeforeLast('.')
             // don't add if already in the workspace
             if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
                                     it.name == installBaseName } == null)

@@ -3,6 +3,8 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +14,9 @@ import android.widget.TextView
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.getWorkspaceUri
+import org.sil.storyproducer.tools.file.getWorkspaceFileProviderUri
 import java.util.*
+
 
 class ExportedVideosAdapter(private val context: Context, private val rvListener: RefreshViewListener) : BaseAdapter() {
 
@@ -83,12 +86,28 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
-        //TODO fix this so it actually plays.  Why not?
-        videoIntent.setDataAndNormalize(uri!!)
+
+        // Should now be fixed so it actually plays.
+        // Why did it not work? - because it needs the new grantUriPermission() etc.
+        var uri = getWorkspaceFileProviderUri("$VIDEO_DIR/$path")   // Uses file provider if necessary
+
+        videoIntent.setDataAndType(uri, "video/*")
         videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
         videoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))
+
+        val chooser = Intent.createChooser(videoIntent, context.getString(R.string.file_view))
+        chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        // find all packages that can respond to this view intent
+        val resInfoList: List<ResolveInfo> = context.getPackageManager()
+                .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+        for (resolveInfo in resInfoList) {
+            // grant each package read uri permission for this file/uri
+            val packageName = resolveInfo.activityInfo.packageName
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(chooser)
     }
 
     private fun showShareFileChooser(path: String, fileName: String) {
@@ -96,11 +115,25 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
+        var uri = getWorkspaceFileProviderUri("$VIDEO_DIR/$path")   // Uses file provider if necessary
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))
+
+        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.send_video))
+        chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        // find all packages that can respond to this send intent
+        val resInfoList: List<ResolveInfo> = context.getPackageManager()
+            .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+        for (resolveInfo in resInfoList) {
+            // grant each package read uri permission for this file/uri
+            val packageName = resolveInfo.activityInfo.packageName
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(chooser)
     }
 
     private fun showDeleteDialog(path: String) {

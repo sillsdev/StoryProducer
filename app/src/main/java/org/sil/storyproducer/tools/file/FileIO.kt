@@ -5,16 +5,20 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import androidx.core.content.FileProvider
+import androidx.core.net.toFile
+import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.model.WORD_LINKS_DIR
+import com.hbisoft.pickit.Utils
+import org.sil.storyproducer.App
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Workspace
-import java.io.File
-import java.io.FileDescriptor
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -124,19 +128,25 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
     return getChildOutputStream(context, "$WORD_LINKS_DIR/$relPath", mimeType, "wt")
 }
 
+fun workspaceUriPathExists(context: Context, uri: Uri) : Boolean {
+    if (uri.scheme == "file")
+        return File(uri.path!!).exists()  // check app-specific storage for file
+    else
+        context.contentResolver.getType(uri) ?: return false
+    return true
+}
+
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
-    val uri = getStoryUri(relPath,dirRoot) ?: return false
-    context.contentResolver.getType(uri) ?: return false
-    return true
+    val uri = getStoryUri(relPath, dirRoot) ?: return false
+    return workspaceUriPathExists(context, uri)
 }
 
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
     val uri: Uri = getWorkspaceUri(relPath) ?: return false
-    context.contentResolver.getType(uri) ?: return false
-    return true
+    return workspaceUriPathExists(context, uri)
 }
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
@@ -147,6 +157,16 @@ fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Ur
 
 fun getWorkspaceUri(relPath: String) : Uri? {
     return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("/$relPath"))
+}
+
+fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
+    val uri = getWorkspaceUri(relPath)
+    if (uri?.scheme == "file") {
+        // for app-specific storage we need a file provider content: Uri
+        return FileProvider.getUriForFile(App.Companion.appContext,
+            BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path!!))
+    }
+    return uri
 }
 
 fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : String? {
@@ -182,8 +202,8 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
     var oStream: OutputStream? = null
     try {
         oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
-    } catch (e:java.lang.Exception) {}
-
+    } catch (e: java.lang.Exception) {
+    }
     return oStream
 }
 
@@ -197,28 +217,45 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 }
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
-    //build a query to look for the child documents
-    //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
     var childDocs: MutableList<String> = ArrayList()
-    val cursor: Cursor
-    try {
-        cursor = context.contentResolver.query(
+    if (Workspace.workdocfile.uri.scheme == "file")
+    {
+        // Use listFiles to find children in app-specific internal/external storage
+        val parentDir = File(Workspace.workdocfile.uri.path, relPath)
+        val parentFiles = parentDir.listFiles()
+        if (parentFiles != null) {
+            for (childFileOrDir in parentFiles) {
+                childDocs.add(childFileOrDir.name)
+            }
+        }
+    } else {
+        //build a query to look for the child documents
+        //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
+        val cursor: Cursor
+        try {
+            cursor = context.contentResolver.query(
                 DocumentsContract.buildChildDocumentsUriUsingTree(
-                        Workspace.workdocfile.uri,
-                        DocumentsContract.getDocumentId(
-                                Uri.parse(Workspace.workdocfile.uri.toString() +
-                                        Uri.encode("/$relPath"))
-                        ))
-                , arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
-                null, null, null)!!
-        //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
-        cursor.moveToFirst()
-        do {
-            childDocs.add(cursor.getString(0))
-            cursor.moveToNext()
-        } while ((!cursor.isAfterLast))
-        cursor.close()
-    } catch (e: Exception) { childDocs = ArrayList() }
+                    Workspace.workdocfile.uri,
+                    DocumentsContract.getDocumentId(
+                        Uri.parse(
+                            Workspace.workdocfile.uri.toString() +
+                                    Uri.encode("/$relPath")
+                        )
+                    )
+                ), arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                null, null, null
+            )!!
+            //You have a handle to the data structure (as if in SQL).  walk through the elements and add them to the list.
+            cursor.moveToFirst()
+            do {
+                childDocs.add(cursor.getString(0))
+                cursor.moveToNext()
+            } while ((!cursor.isAfterLast))
+            cursor.close()
+        } catch (e: Exception) {
+            childDocs = ArrayList()
+        }
+    }
 
     return childDocs
 }
@@ -232,22 +269,29 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
             val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-            val isDirectory = context.contentResolver.getType(newUri)?.contains(DocumentsContract.Document.MIME_TYPE_DIR)
-                    ?: false
-            if (!isDirectory) {
-                DocumentsContract.createDocument(context.contentResolver, uri,
-                        DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+            var isDirectory: Boolean
+            if (uri.scheme == "file") {
+                // new app-specific storage uses File class to test and create directories
+                isDirectory = newUri.toFile().isDirectory // use File class to test app-specific storage
+                if (!isDirectory)
+                    newUri.toFile().mkdirs()    // use File class to make directories
+            } else {
+                // old way uses content resolver to test and create directories
+                isDirectory = context.contentResolver.getType(newUri)?.
+                        contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
+                if (!isDirectory)
+                    DocumentsContract.createDocument(context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
             }
-            uri = newUri
+            uri = newUri    // next uri of path is one level down
         }
     } catch (e: Exception){
         FirebaseCrashlytics.getInstance().recordException(e)
         return null
     }
     //create the file if it is needed
-    val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
+    val fullUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
     //TODO replace with custom exists thing.
-    if(context.contentResolver.getType(newUri) == null){
+    if (context.contentResolver.getType(fullUri) == null) {
         //find the mime type by extension
         var mType = mimeType
         if(mType == "") {
@@ -260,12 +304,15 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
                 else -> "*/*"
             }
         }
-        DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
+        if (fullUri.scheme == "file")
+            File(uri.path, segments.last()).createNewFile() // use File class to create the new file
+        else
+            DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
     }
     var pfd: ParcelFileDescriptor? = null
-    try{
-        pfd = context.contentResolver.openFileDescriptor(newUri,mode)
-    }catch(e:java.lang.Exception){}
+    try {
+        pfd = context.contentResolver.openFileDescriptor(fullUri, mode)
+    } catch (e:java.lang.Exception) { }
     return pfd
 }
 
@@ -284,10 +331,18 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
     }
 }
 
+fun deleteUriFile(context: Context, uri: Uri) : Boolean {
+    return if (uri.scheme == "file")
+        File(uri.path!!).delete()
+    else
+        DocumentsContract.deleteDocument(context.contentResolver, uri)
+}
+
+
 fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean {
-    if(storyRelPathExists(context, relPath, dirRoot)){
-        val uri: Uri = getStoryUri(relPath,dirRoot) ?: return false
-        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+    if (storyRelPathExists(context, relPath, dirRoot)) {
+        val uri: Uri = getStoryUri(relPath, dirRoot) ?: return false
+        return deleteUriFile(context, uri)
     }
     return false
 }
@@ -295,10 +350,49 @@ fun deleteStoryFile(context: Context, relPath: String, dirRoot: String = Workspa
 fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     if(workspaceRelPathExists(context, relPath)){
         val uri: Uri  = getWorkspaceUri(relPath) ?: return false
-        return DocumentsContract.deleteDocument(context.contentResolver,uri)
+        return deleteUriFile(context, uri)
     }
     return false
 }
+
+fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
+    // Get a document file from a file uri or from a user selected tree uri
+    var docFile: DocumentFile?
+    if (uri.scheme == "file")
+        docFile = DocumentFile.fromFile(File(uri.path!!)) // use the file uri from app-specific storage
+    else
+        docFile = DocumentFile.fromTreeUri(context, uri)  // use the content uri with user granted privileges
+    if (docFile == null)
+        docFile = DocumentFile.fromFile(File(""))   // use empty DocumentFile
+    return docFile
+}
+
+fun isUriStorageMounted(uri: Uri): Boolean {
+    // Check a Uri to see if it is un-mounted auto-selected external storage
+    if (uri.scheme == "file" &&
+        uri.path!!.isNotEmpty()) {
+        if (uri.path != "/") {
+            val wsStorageState =
+                Environment.getExternalStorageState(File(uri.path));
+            if (wsStorageState != Environment.MEDIA_MOUNTED) {
+                return false
+            }
+        }
+    } else {
+        // check if user selected storage is mounted
+        var storageFileUriStr = Utils.getRealPathFromURI_API19(App.appContext, uri)  // using another third party library to get file path
+        if (storageFileUriStr != null && storageFileUriStr.isNotEmpty()) {
+            val wsStorageState =
+                Environment.getExternalStorageState(File(storageFileUriStr));
+            if (wsStorageState != Environment.MEDIA_MOUNTED) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+
 
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125
