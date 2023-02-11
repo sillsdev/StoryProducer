@@ -8,8 +8,10 @@ import android.view.inputmethod.InputMethodManager
 import android.media.MediaCodecList
 import android.media.MediaCodecInfo
 import android.os.Build
+import android.os.Environment
 import androidx.annotation.RequiresApi
-
+import org.sil.storyproducer.App
+import java.io.File
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -97,4 +99,18 @@ fun selectCodec(mimeType: String): MediaCodecInfo? {
     // this could be null or the first encoder associated with a mime type that needed a
     // canonical name but the canonical name was not found
     return myDefaultCodecInfo
+}
+
+fun getFreeInternalMemorySize(): Long {
+    //val file = File("/data")
+    val file = App.appContext.getFilesDir()
+    return file?.freeSpace ?: 0
+}
+
+fun getFreeExternalMemorySize(): Long {
+    if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+        val file = Environment.getExternalStorageDirectory()
+        return file.freeSpace
+    }
+    return 0
 }

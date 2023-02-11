@@ -166,7 +166,10 @@ object Workspace {
             activeStory = emptyStory()
 
             // Initiate new workspace path
-            workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+            if (uri.scheme == "file")
+                workdocfile = DocumentFile.fromFile(File(uri.path))!!
+            else
+                workdocfile = DocumentFile.fromTreeUri(context, uri)!!
             registration.load(context)
 
             // load in the Word Links

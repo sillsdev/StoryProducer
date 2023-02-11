@@ -3,17 +3,24 @@ package org.sil.storyproducer.controller.export
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.FileProvider
+import org.sil.storyproducer.App
+import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getWorkspaceUri
+import java.io.File
 import java.util.*
+
 
 class ExportedVideosAdapter(private val context: Context, private val rvListener: RefreshViewListener) : BaseAdapter() {
 
@@ -83,24 +90,58 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
-        //TODO fix this so it actually plays.  Why not?
-        videoIntent.setDataAndNormalize(uri!!)
+        var uri = getWorkspaceUri("$VIDEO_DIR/$path")
+        // Should now be fixed so it actually plays.
+        // Why did it not work? - because it needs the new grantUriPermission() etc.
+        if (uri?.scheme == "file") {
+            // for internal storage we need a content: Uri
+            uri = FileProvider.getUriForFile(App.Companion.appContext,
+                    BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path))
+        }
+
+        videoIntent.setDataAndType(uri, "video/*")
         videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
         videoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        context.startActivity(Intent.createChooser(videoIntent, context.getString(R.string.file_view)))
-    }
+
+        val chooser = Intent.createChooser(videoIntent, context.getString(R.string.file_view))
+        chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        val resInfoList: List<ResolveInfo> = context.getPackageManager()
+                .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        context.startActivity(chooser)    }
 
     private fun showShareFileChooser(path: String, fileName: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        val uri = getWorkspaceUri("$VIDEO_DIR/$path")
+        var uri = getWorkspaceUri("$VIDEO_DIR/$path")
+        if (uri?.scheme == "file") {
+            // for internal storage we need a content: Uri
+            uri = FileProvider.getUriForFile(App.Companion.appContext,
+                BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path))
+        }
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.send_video)))
+
+        val chooser = Intent.createChooser(shareIntent, context.getString(R.string.send_video))
+        chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        val resInfoList: List<ResolveInfo> = context.getPackageManager()
+            .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+
+        for (resolveInfo in resInfoList) {
+            val packageName = resolveInfo.activityInfo.packageName
+            context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        context.startActivity(chooser)
     }
 
     private fun showDeleteDialog(path: String) {

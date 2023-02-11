@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.text.Html
 import android.text.Spanned
 import android.view.View
@@ -12,6 +13,7 @@ import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
+import org.sil.storyproducer.App
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.BaseController
 import org.sil.storyproducer.controller.MainActivity
@@ -23,10 +25,13 @@ import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.tools.getFreeInternalMemorySize
 import timber.log.Timber
+import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
+    private val autoInternalWorkspace = true
     lateinit var controller: SelectTemplatesFolderController
 
     private var readingTemplatesDialog: AlertDialog? = null
@@ -59,10 +64,30 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun initWorkspace() {
         Workspace.initializeWorkspace(this)
-
+        var showWelcome = true
         if (Workspace.workdocfile.isDirectory) {
-            controller.updateStories()
-        } else {
+            controller.updateStories()  // We already have a workspace folder
+            showWelcome = false
+        } else if (autoInternalWorkspace) {
+            // Use internal storage for a new workspace folder
+            val freeIntMem = getFreeInternalMemorySize()
+            if (freeIntMem > 10000000) {
+                val internalDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                val internalTemplateDir = File(internalDocsDir, "SP Templates")
+                internalTemplateDir.mkdirs()
+                if (internalTemplateDir.isDirectory) {
+                    // if we managed to create an internal workspace folder
+                    if (Workspace.setupWorkspacePath(App.appContext, Uri.fromFile(internalTemplateDir))) {
+                        Workspace.isInitialized = true  // internal workspace successful
+                        // Add the demo for new users
+                        Workspace.addDemoToWorkspace(App.appContext)
+                        controller.updateStories()  // always refresh list of stories
+                        showWelcome = false
+                    }
+                }
+            }
+        }
+        if (showWelcome) {
             showWelcomeDialog()
         }
     }

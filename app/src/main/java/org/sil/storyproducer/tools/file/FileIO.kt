@@ -7,14 +7,12 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
+import androidx.core.net.toFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Story
+import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Workspace
-import java.io.File
-import java.io.FileDescriptor
-import java.io.InputStream
-import java.io.OutputStream
+import java.io.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -127,7 +125,10 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
     val uri = getStoryUri(relPath,dirRoot) ?: return false
-    context.contentResolver.getType(uri) ?: return false
+    if (uri.scheme == "file")
+        return File(uri.path).exists()
+    else
+        context.contentResolver.getType(uri) ?: return false
     return true
 }
 
@@ -135,7 +136,10 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
     //if we can get the type, it exists.
     val uri: Uri = getWorkspaceUri(relPath) ?: return false
-    context.contentResolver.getType(uri) ?: return false
+    if (uri.scheme == "file")
+        return File(uri.path).exists()
+    else
+        context.contentResolver.getType(uri) ?: return false
     return true
 }
 
@@ -182,8 +186,8 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
     var oStream: OutputStream? = null
     try {
         oStream = ParcelFileDescriptor.AutoCloseOutputStream(pfd)
-    } catch (e:java.lang.Exception) {}
-
+    } catch (e: java.lang.Exception) {
+    }
     return oStream
 }
 
@@ -197,9 +201,19 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 }
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
+    var childDocs: MutableList<String> = ArrayList()
+    if (Workspace.workdocfile.uri.scheme == "file")
+    {
+        var f = File(Workspace.workdocfile.uri.path, relPath)
+        for (s in f.listFiles())
+        {
+            childDocs.add(s.name)
+        }
+        return childDocs
+    }
+
     //build a query to look for the child documents
     //This is actually the easiest and fastest way to get a list of child documents, believe it or not.
-    var childDocs: MutableList<String> = ArrayList()
     val cursor: Cursor
     try {
         cursor = context.contentResolver.query(
@@ -218,7 +232,9 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
             cursor.moveToNext()
         } while ((!cursor.isAfterLast))
         cursor.close()
-    } catch (e: Exception) { childDocs = ArrayList() }
+    } catch (e: Exception) {
+        childDocs = ArrayList()
+    }
 
     return childDocs
 }
@@ -231,12 +247,21 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     try {
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
-            val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-            val isDirectory = context.contentResolver.getType(newUri)?.contains(DocumentsContract.Document.MIME_TYPE_DIR)
+            val newUri = if (uri.scheme == "file")
+                Uri.parse(uri.toString() + "/" + Uri.encode("${segments[i]}"))
+            else
+                Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+            val isDirectory = if (newUri.scheme == "file")
+                        newUri.toFile().isDirectory
+                    else
+                        context.contentResolver.getType(newUri)?.contains(DocumentsContract.Document.MIME_TYPE_DIR)
                     ?: false
             if (!isDirectory) {
-                DocumentsContract.createDocument(context.contentResolver, uri,
-                        DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+                if (newUri.scheme == "file")
+                    newUri.toFile().mkdirs()
+                else
+                    DocumentsContract.createDocument(context.contentResolver, uri,
+                            DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
             }
             uri = newUri
         }
@@ -260,7 +285,10 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
                 else -> "*/*"
             }
         }
-        DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
+        if (newUri.scheme == "file")
+            File(uri.path, segments.last()).createNewFile()
+        else
+            DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
     }
     var pfd: ParcelFileDescriptor? = null
     try{
