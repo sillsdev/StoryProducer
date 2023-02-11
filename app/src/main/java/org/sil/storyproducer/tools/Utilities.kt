@@ -8,8 +8,10 @@ import android.view.inputmethod.InputMethodManager
 import android.media.MediaCodecList
 import android.media.MediaCodecInfo
 import android.os.Build
-import androidx.annotation.RequiresApi
-
+import android.os.Environment
+import androidx.core.content.ContextCompat
+import org.sil.storyproducer.App
+import java.io.File
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -98,3 +100,36 @@ fun selectCodec(mimeType: String): MediaCodecInfo? {
     // canonical name but the canonical name was not found
     return myDefaultCodecInfo
 }
+
+fun getFreeInternalMemoryFile(): File? {
+    // For older Android versions this is the best way to get the free internal storage space
+    val file = App.appContext.getFilesDir() ?: return null
+    return file
+}
+
+fun getFreeEmulatedExternalMemoryFile(): File? {
+    // For older Android versions this is the best way to get the free external storage space
+    val file = App.appContext.getExternalFilesDir(null) ?: return null
+    if (!Environment.isExternalStorageEmulated(file))
+        return null    // we only want to use emulated external i.e. internal backed storage
+    return file
+}
+
+fun getMaxFreeExtMemoryFile(): File? {
+    var maxFree = 0L;
+    var maxFreeDir: File? = null
+    // Check non-emulated external drives for maximum space free
+    val externalFilesDirs = ContextCompat.getExternalFilesDirs(App.appContext, null)
+    for (eDir in externalFilesDirs) {
+        if (eDir != null &&
+                !Environment.isExternalStorageEmulated(eDir) && // if emulated no point checking it
+                (Environment.getExternalStorageState(eDir) == Environment.MEDIA_MOUNTED)) { // is mounted?
+            if (eDir.freeSpace > maxFree) {
+                maxFree = eDir.freeSpace    // best drive found so far
+                maxFreeDir = eDir           // return this drive File
+            }
+        }
+    }
+    return maxFreeDir
+}
+

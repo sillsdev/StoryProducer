@@ -5,11 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.text.Html
 import android.text.Spanned
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
@@ -23,7 +25,9 @@ import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.tools.file.isUriStorageMounted
 import timber.log.Timber
+import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
@@ -59,12 +63,32 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun initWorkspace() {
         Workspace.initializeWorkspace(this)
+        var showWelcome = true  // set to false if no need to show welcome wizard
+        do {
+            if (Workspace.workdocfile.isDirectory) {    // i.e. is the workspace still accessable
+                controller.updateStories()  // We already have a workspace folder
+                showWelcome = false
+                break
+            }
+            if (!isUriStorageMounted(Workspace.workdocfile.uri)) {
+                // TODO: Replace 'media not mounted' toast message with a better Startup Wizard
+                Toast.makeText(this, R.string.workspace_not_mounted, Toast.LENGTH_LONG).show()
+                showWelcome = true
+                break
+            }
+            val workspaceCreatedMsg = Workspace.createAppSpecificWorkspace()
+            if (workspaceCreatedMsg.isNotEmpty()) {
+                controller.updateStories()  // Update after a new app-specific workspace was created
+                Toast.makeText(this, workspaceCreatedMsg, Toast.LENGTH_LONG).show()
+                showWelcome = false
+                break
+            }
+        } while (false)
 
-        if (Workspace.workdocfile.isDirectory) {
-            controller.updateStories()
-        } else {
+        if (showWelcome) {
             showWelcomeDialog()
         }
+
     }
 
     private fun showWelcomeDialog() {
