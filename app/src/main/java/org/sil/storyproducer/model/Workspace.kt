@@ -59,8 +59,8 @@ object Workspace {
             field = value
             prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
         }
-    val Stories: MutableList<Story> = mutableListOf()
-    val asyncAddedStories: MutableList<Story> = mutableListOf()
+    val Stories: MutableList<Story> = mutableListOf()   // the main list of Stories
+    val asyncAddedStories: MutableList<Story> = mutableListOf() // Used for adding Stories in a background thread
     var registration: Registration = Registration()
     var phases: List<Phase> = ArrayList()
     var activePhaseIndex: Int = -1
