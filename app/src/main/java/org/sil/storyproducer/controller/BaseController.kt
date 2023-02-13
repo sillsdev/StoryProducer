@@ -44,9 +44,9 @@ open class BaseController(
         val file = files.get(index)
         view.updateReadingTemplatesDialog(current, total, file.name.orEmpty())
         subscriptions.add(
-                Single.fromCallable {
-                    Workspace.buildStory(context, file)?.also {
-                        Workspace.asyncAddedStories.add(it)
+                Single.fromCallable {   // this code creates a background thread for adding Stories
+                    Workspace.buildStory(context, file)?.also { // build or unzip a story in the background
+                        Workspace.asyncAddedStories.add(it) // Add a Story in this background thread
                     }
                 }
                         .subscribeOn(Schedulers.io())
@@ -71,11 +71,11 @@ open class BaseController(
 
     private fun onLastStoryUpdated() {
         // now update Stories on the main thread to prevent crash
-        Workspace.Stories.clear()
+        Workspace.Stories.clear()   // clear the visible list of Stories
         for (story in Workspace.asyncAddedStories) {
-            Workspace.Stories.add(story)
+            Workspace.Stories.add(story)    // add individual found Stories
         }
-        Workspace.asyncAddedStories.clear()
+        Workspace.asyncAddedStories.clear() // clear the async Stories for next time
 
         Workspace.sortStoriesByTitle()
         Workspace.phases = Workspace.buildPhases()
