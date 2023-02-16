@@ -106,14 +106,17 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         val chooser = Intent.createChooser(videoIntent, context.getString(R.string.file_view))
         chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
+        // find all packages that can respond to this view intent
         val resInfoList: List<ResolveInfo> = context.getPackageManager()
                 .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
 
         for (resolveInfo in resInfoList) {
+            // grant each package read uri permission for this file/uri
             val packageName = resolveInfo.activityInfo.packageName
             context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        context.startActivity(chooser)    }
+        context.startActivity(chooser)
+    }
 
     private fun showShareFileChooser(path: String, fileName: String) {
         val shareIntent = Intent(Intent.ACTION_SEND)
@@ -133,14 +136,15 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         val chooser = Intent.createChooser(shareIntent, context.getString(R.string.send_video))
         chooser.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 
+        // find all packages that can respond to this send intent
         val resInfoList: List<ResolveInfo> = context.getPackageManager()
             .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
 
         for (resolveInfo in resInfoList) {
+            // grant each package read uri permission for this file/uri
             val packageName = resolveInfo.activityInfo.packageName
             context.grantUriPermission(packageName, uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(chooser)
     }
 

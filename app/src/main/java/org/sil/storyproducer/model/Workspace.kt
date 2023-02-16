@@ -167,12 +167,12 @@ object Workspace {
 
             // Initiate new workspace path
             if (uri.scheme == "file")
-                workdocfile = DocumentFile.fromFile(File(uri.path))!!
+                workdocfile = DocumentFile.fromFile(File(uri.path)) // use the file uri
             else
-                workdocfile = DocumentFile.fromTreeUri(context, uri)!!
+                workdocfile = DocumentFile.fromTreeUri(context, uri)!!  // use the content uri
             registration.load(context)
 
-            // load in the Word Links
+            // load in the Word Links database
             importWordLinks(context)
 
             return true;

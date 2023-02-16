@@ -124,9 +124,9 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
-    val uri = getStoryUri(relPath,dirRoot) ?: return false
+    val uri = getStoryUri(relPath, dirRoot) ?: return false
     if (uri.scheme == "file")
-        return File(uri.path).exists()
+        return File(uri.path).exists()  // check internal storage for file
     else
         context.contentResolver.getType(uri) ?: return false
     return true
@@ -137,7 +137,7 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     //if we can get the type, it exists.
     val uri: Uri = getWorkspaceUri(relPath) ?: return false
     if (uri.scheme == "file")
-        return File(uri.path).exists()
+        return File(uri.path).exists()  // check internal storage for path
     else
         context.contentResolver.getType(uri) ?: return false
     return true
@@ -204,10 +204,13 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     var childDocs: MutableList<String> = ArrayList()
     if (Workspace.workdocfile.uri.scheme == "file")
     {
-        var f = File(Workspace.workdocfile.uri.path, relPath)
-        for (s in f.listFiles())
-        {
-            childDocs.add(s.name)
+        // Use listFiles to find children in internal storage
+        val parentDir = File(Workspace.workdocfile.uri.path, relPath)
+        val parentFiles = parentDir.listFiles()
+        if (parentFiles != null) {
+            for (childFileOrDir in parentFiles) {
+                childDocs.add(childFileOrDir.name)
+            }
         }
         return childDocs
     }
@@ -252,13 +255,13 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             else
                 Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
             val isDirectory = if (newUri.scheme == "file")
-                        newUri.toFile().isDirectory
+                        newUri.toFile().isDirectory // use File class to test internal storage
                     else
                         context.contentResolver.getType(newUri)?.contains(DocumentsContract.Document.MIME_TYPE_DIR)
                     ?: false
             if (!isDirectory) {
                 if (newUri.scheme == "file")
-                    newUri.toFile().mkdirs()
+                    newUri.toFile().mkdirs()    // use File class to make directories
                 else
                     DocumentsContract.createDocument(context.contentResolver, uri,
                             DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
@@ -286,7 +289,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             }
         }
         if (newUri.scheme == "file")
-            File(uri.path, segments.last()).createNewFile()
+            File(uri.path, segments.last()).createNewFile() // use File class to create the new file
         else
             DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
     }

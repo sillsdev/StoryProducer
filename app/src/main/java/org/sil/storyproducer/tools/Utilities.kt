@@ -102,12 +102,13 @@ fun selectCodec(mimeType: String): MediaCodecInfo? {
 }
 
 fun getFreeInternalMemorySize(): Long {
-    //val file = File("/data")
+    // For older Android versions this is the best way to get the free internal storage space
     val file = App.appContext.getFilesDir()
     return file?.freeSpace ?: 0
 }
 
 fun getFreeExternalMemorySize(): Long {
+    // For older Android versions this is the best way to get the free external storage space
     if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
         val file = Environment.getExternalStorageDirectory()
         return file.freeSpace

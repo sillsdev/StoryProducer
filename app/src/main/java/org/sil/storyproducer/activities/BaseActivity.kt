@@ -25,13 +25,17 @@ import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
+import org.sil.storyproducer.tools.getFreeExternalMemorySize
 import org.sil.storyproducer.tools.getFreeInternalMemorySize
 import timber.log.Timber
 import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
+    val NUM_BYTES_NEEDED_FOR_DEMO_STORY = 1024 * 1024 * 10L;
+    val SP_TEMPLATES_FOLDER_NAME = "SP Templates"
     private val autoInternalWorkspace = true
+
     lateinit var controller: SelectTemplatesFolderController
 
     private var readingTemplatesDialog: AlertDialog? = null
@@ -69,15 +73,28 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
             controller.updateStories()  // We already have a workspace folder
             showWelcome = false
         } else if (autoInternalWorkspace) {
-            // Use internal storage for a new workspace folder
+            // Check App specific internal or external storage volumes for free space for a new workspace demo folder
+            // https://developer.android.com/training/data-storage
+            // https://developer.android.com/training/data-storage/app-specific
+            var appSpecificDocsDir : File? = null
+            var appSpecificTemplateDir : File? = null
             val freeIntMem = getFreeInternalMemorySize()
-            if (freeIntMem > 10000000) {
-                val internalDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-                val internalTemplateDir = File(internalDocsDir, "SP Templates")
-                internalTemplateDir.mkdirs()
-                if (internalTemplateDir.isDirectory) {
+            val freeExtMem = getFreeExternalMemorySize()
+            // Check external memory first then internal memory for enough free space for demo
+            if (freeExtMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+                appSpecificDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                if (appSpecificDocsDir != null)
+                    appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+            } else if (freeIntMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+                appSpecificDocsDir = App.appContext.filesDir
+                appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+            }
+            if (appSpecificTemplateDir != null) {
+                // we have space on this volume for a demo story
+                appSpecificTemplateDir.mkdirs()
+                if (appSpecificTemplateDir.isDirectory) {
                     // if we managed to create an internal workspace folder
-                    if (Workspace.setupWorkspacePath(App.appContext, Uri.fromFile(internalTemplateDir))) {
+                    if (Workspace.setupWorkspacePath(App.appContext, Uri.fromFile(appSpecificTemplateDir))) {
                         Workspace.isInitialized = true  // internal workspace successful
                         // Add the demo for new users
                         Workspace.addDemoToWorkspace(App.appContext)
