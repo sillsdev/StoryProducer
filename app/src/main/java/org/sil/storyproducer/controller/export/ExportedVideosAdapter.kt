@@ -11,15 +11,10 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.core.content.FileProvider
-import org.sil.storyproducer.App
-import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getWorkspaceFileProviderUri
-import org.sil.storyproducer.tools.file.getWorkspaceUri
-import java.io.File
 import java.util.*
 
 

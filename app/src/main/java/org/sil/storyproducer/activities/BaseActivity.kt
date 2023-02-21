@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.Html
 import android.text.Spanned
 import android.view.View
@@ -13,7 +12,6 @@ import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
-import org.sil.storyproducer.App
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.BaseController
 import org.sil.storyproducer.controller.MainActivity
@@ -25,10 +23,7 @@ import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
-import org.sil.storyproducer.tools.getFreeExternalMemorySize
-import org.sil.storyproducer.tools.getFreeInternalMemorySize
 import timber.log.Timber
-import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 

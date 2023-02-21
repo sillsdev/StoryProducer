@@ -128,7 +128,7 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 
 fun workspaceUriPathExists(context: Context, uri: Uri) : Boolean {
     if (uri.scheme == "file")
-        return File(uri.path).exists()  // check app-specific storage for file
+        return File(uri.path!!).exists()  // check app-specific storage for file
     else
         context.contentResolver.getType(uri) ?: return false
     return true
@@ -162,7 +162,7 @@ fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
     if (uri?.scheme == "file") {
         // for app-specific storage we need a file provider content: Uri
         return FileProvider.getUriForFile(App.Companion.appContext,
-            BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path))
+            BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path!!))
     }
     return uri
 }
@@ -267,7 +267,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
             val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-            var isDirectory = false
+            var isDirectory: Boolean
             if (uri.scheme == "file") {
                 // new app-specific storage uses File class to test and create directories
                 isDirectory = newUri.toFile().isDirectory // use File class to test app-specific storage
@@ -331,7 +331,7 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
 
 fun deleteUriFile(context: Context, uri: Uri) : Boolean {
     return if (uri.scheme == "file")
-        File(uri.path).delete()
+        File(uri.path!!).delete()
     else
         DocumentsContract.deleteDocument(context.contentResolver, uri)
 }
@@ -353,13 +353,13 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
     return false
 }
 
-fun geDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
+fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
     // Get a document file from a file uri or from a user selected tree uri
-    var docFile: DocumentFile? = null
+    var docFile: DocumentFile?
     if (uri.scheme == "file")
-        docFile = DocumentFile.fromFile(File(uri.path)) // use the file uri from app-specific storage
+        docFile = DocumentFile.fromFile(File(uri.path!!)) // use the file uri from app-specific storage
     else
-        docFile = DocumentFile.fromTreeUri(context, uri)!!  // use the content uri with user granted privileges
+        docFile = DocumentFile.fromTreeUri(context, uri)  // use the content uri with user granted privileges
     if (docFile == null)
         docFile = DocumentFile.fromFile(File(""))   // use empty DocumentFile
     return docFile

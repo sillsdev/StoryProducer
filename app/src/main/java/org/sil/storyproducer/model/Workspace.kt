@@ -168,10 +168,10 @@ object Workspace {
         // Create an App-specific internal or external storage folder for an initial demo
         // https://developer.android.com/training/data-storage
         // https://developer.android.com/training/data-storage/app-specific
-        var appSpecificDocsDir : File? = null
+        var appSpecificDocsDir: File?
         var appSpecificTemplateDir : File? = null
         // Check external memory first then internal memory for enough free space for demo
-        val freeExtMem = getFreeExternalMemorySize()    // may be hosted on the same internal storage volume
+        val freeExtMem = getFreeExternalMemorySize()    // may be hosted on the same storage volume as internal
         val freeIntMem = getFreeInternalMemorySize()
         if (freeExtMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
             appSpecificDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
@@ -207,7 +207,7 @@ object Workspace {
             activeStory = emptyStory()
 
             // Initiate new workspace path
-            workdocfile = geDocumentFileFromUri(context, uri)
+            workdocfile = getDocumentFileFromUri(context, uri)
 
             // Load the registration info
             registration.load(context)
