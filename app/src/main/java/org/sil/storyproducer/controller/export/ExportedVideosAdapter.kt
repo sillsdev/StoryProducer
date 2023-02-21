@@ -17,6 +17,7 @@ import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.getWorkspaceFileProviderUri
 import org.sil.storyproducer.tools.file.getWorkspaceUri
 import java.io.File
 import java.util.*
@@ -90,14 +91,10 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
 
     private fun showPlayVideoChooser(path: String) {
         val videoIntent = Intent(android.content.Intent.ACTION_VIEW)
-        var uri = getWorkspaceUri("$VIDEO_DIR/$path")
+
         // Should now be fixed so it actually plays.
         // Why did it not work? - because it needs the new grantUriPermission() etc.
-        if (uri?.scheme == "file") {
-            // for internal storage we need a content: Uri
-            uri = FileProvider.getUriForFile(App.Companion.appContext,
-                    BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path))
-        }
+        var uri = getWorkspaceFileProviderUri("$VIDEO_DIR/$path")   // Uses file provider if necessary
 
         videoIntent.setDataAndType(uri, "video/*")
         videoIntent.putExtra(Intent.EXTRA_STREAM, uri)
@@ -123,13 +120,9 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         shareIntent.type = "video/*"
         shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, fileName)
         shareIntent.putExtra(android.content.Intent.EXTRA_TITLE, fileName)
-        var uri = getWorkspaceUri("$VIDEO_DIR/$path")
-        if (uri?.scheme == "file") {
-            // for internal storage we need a content: Uri
-            uri = FileProvider.getUriForFile(App.Companion.appContext,
-                BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path))
-        }
+        var uri = getWorkspaceFileProviderUri("$VIDEO_DIR/$path")   // Uses file provider if necessary
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri)
+
         //TODO replace with documentLaunchMode for the activity to make compliant with API 18
         shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
 

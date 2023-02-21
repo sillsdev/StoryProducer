@@ -166,10 +166,9 @@ object Workspace {
             activeStory = emptyStory()
 
             // Initiate new workspace path
-            if (uri.scheme == "file")
-                workdocfile = DocumentFile.fromFile(File(uri.path)) // use the file uri
-            else
-                workdocfile = DocumentFile.fromTreeUri(context, uri)!!  // use the content uri
+            workdocfile = geDocumentFileFromUri(context, uri)
+
+            // Load the registration info
             registration.load(context)
 
             // load in the Word Links database
@@ -440,7 +439,7 @@ object Workspace {
         var dlFilesList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until dlFiles?.size!!) {
             val installFilename = dlFiles[i].name
-            val installBaseName = installFilename?.substringBeforeLast('.')
+            val installBaseName = installFilename.substringBeforeLast('.')
             // don't add if already in the workspace
             if (current.find { (isZipped(it.name) && it.name?.substringBeforeLast('.') == installBaseName) ||
                                     it.name == installBaseName } == null)
