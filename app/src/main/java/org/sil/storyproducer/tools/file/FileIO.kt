@@ -128,7 +128,7 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 
 fun workspaceUriPathExists(context: Context, uri: Uri) : Boolean {
     if (uri.scheme == "file")
-        return File(uri.path).exists()  // check internal storage for file
+        return File(uri.path).exists()  // check app-specific storage for file
     else
         context.contentResolver.getType(uri) ?: return false
     return true

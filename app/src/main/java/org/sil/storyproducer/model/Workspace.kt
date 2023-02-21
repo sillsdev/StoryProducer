@@ -7,14 +7,18 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
+import org.sil.storyproducer.App
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
+import org.sil.storyproducer.tools.getFreeExternalMemorySize
+import org.sil.storyproducer.tools.getFreeInternalMemorySize
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -53,6 +57,9 @@ object Workspace {
     // "Welcome Screen", replace this place holder strings with the URL_FOR_TEMPLATES
     const val URL_FOR_TEMPLATES_PLACE_HOLDER = "URL_FOR_TEMPLATES_PLACE_HOLDER"
     // End Issue #571
+
+    val NUM_BYTES_NEEDED_FOR_DEMO_STORY = 1024 * 1024 * 10L;
+    val SP_TEMPLATES_FOLDER_NAME = "SP Templates"
 
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
@@ -155,6 +162,40 @@ object Workspace {
         if (setupWorkspacePath(activity, Uri.parse(prefs!!.getString("workspace", ""))))
             isInitialized = true
         firebaseAnalytics = FirebaseAnalytics.getInstance(activity)
+    }
+
+    fun createAppSpecificWorkspace(): Boolean {
+        // Create an App-specific internal or external storage folder for an initial demo
+        // https://developer.android.com/training/data-storage
+        // https://developer.android.com/training/data-storage/app-specific
+        var appSpecificDocsDir : File? = null
+        var appSpecificTemplateDir : File? = null
+        // Check external memory first then internal memory for enough free space for demo
+        val freeExtMem = getFreeExternalMemorySize()    // may be hosted on the same internal storage volume
+        val freeIntMem = getFreeInternalMemorySize()
+        if (freeExtMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+            appSpecificDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+            if (appSpecificDocsDir != null)
+                appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+        } else if (freeIntMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+            appSpecificDocsDir = App.appContext.filesDir
+            appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+        }
+        if (appSpecificTemplateDir != null) {
+            // we have space on this volume for a demo story
+            appSpecificTemplateDir.mkdirs()
+            if (appSpecificTemplateDir.isDirectory) {
+                // if we managed to create an app-specific workspace folder
+                if (setupWorkspacePath(App.appContext, Uri.fromFile(appSpecificTemplateDir))) {
+                    isInitialized = true  // app-specific workspace successful
+                    // Add the demo for new users
+                    addDemoToWorkspace(App.appContext)
+                    return true // created ok
+                }
+            }
+        }
+
+        return false;
     }
 
     fun setupWorkspacePath(context: Context, uri: Uri) : Boolean {
