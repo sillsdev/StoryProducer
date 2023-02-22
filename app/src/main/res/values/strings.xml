@@ -356,6 +356,7 @@
     <string name="bloom_lib_download_complete">Bloom Library: download complete</string>
     <string name="bloom_lib_already_downloaded">Bloom Library: already downloaded</string>
     <string name="bloom_lib_nothing_selected">Bloom Library: nothing selected</string>
+    <string name="workspace_not_mounted">Workspace not accessible, mount the SD card?</string>
 
     <!-- Other Messages -->
     <string name="bloom_lib_download">Bloom Library: download</string>

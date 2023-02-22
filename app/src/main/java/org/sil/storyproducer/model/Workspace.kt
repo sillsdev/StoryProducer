@@ -19,6 +19,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.getFreeExternalMemorySize
 import org.sil.storyproducer.tools.getFreeInternalMemorySize
+import org.sil.storyproducer.tools.getMaxFreeExternalMemoryFile
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -168,19 +169,21 @@ object Workspace {
         // Create an App-specific internal or external storage folder for an initial demo
         // https://developer.android.com/training/data-storage
         // https://developer.android.com/training/data-storage/app-specific
-        var appSpecificDocsDir: File?
+        var appSpecificDocsDir: File? = null
         var appSpecificTemplateDir : File? = null
         // Check external memory first then internal memory for enough free space for demo
-        val freeExtMem = getFreeExternalMemorySize()    // may be hosted on the same storage volume as internal
+        val freeExtFile = getMaxFreeExternalMemoryFile()    // may be hosted on the same storage volume as internal
+        val freeExtMem = getFreeExternalMemorySize()        // may also be hosted on the same storage volume as internal
         val freeIntMem = getFreeInternalMemorySize()
-        if (freeExtMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
-            appSpecificDocsDir = App.appContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-            if (appSpecificDocsDir != null)
-                appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
+        if (freeExtFile != null && freeExtFile.freeSpace!! >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+            appSpecificDocsDir = freeExtFile
+        } else if (freeExtMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
+            appSpecificDocsDir = App.appContext.getExternalFilesDir(null)
         } else if (freeIntMem >= NUM_BYTES_NEEDED_FOR_DEMO_STORY) {
             appSpecificDocsDir = App.appContext.filesDir
-            appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
         }
+        if (appSpecificDocsDir != null)
+            appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
         if (appSpecificTemplateDir != null) {
             // we have space on this volume for a demo story
             appSpecificTemplateDir.mkdirs()

@@ -9,7 +9,9 @@ import android.media.MediaCodecList
 import android.media.MediaCodecInfo
 import android.os.Build
 import android.os.Environment
+import androidx.core.content.ContextCompat
 import org.sil.storyproducer.App
+import java.io.File
 
 fun Context.hideKeyboard(view: View) {
     val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -113,3 +115,20 @@ fun getFreeExternalMemorySize(): Long {
     }
     return 0
 }
+
+
+fun getMaxFreeExternalMemoryFile(): File? {
+    var maxFree = 0L;
+    var maxFreeDir: File? = null
+    val externalFilesDirs = ContextCompat.getExternalFilesDirs(App.appContext, null)
+    for (eDir in externalFilesDirs) {
+        if (Environment.getExternalStorageState(eDir) == Environment.MEDIA_MOUNTED) {
+            if (eDir.freeSpace > maxFree) {
+                maxFree = eDir.freeSpace
+                maxFreeDir = eDir
+            }
+        }
+    }
+    return maxFreeDir
+}
+

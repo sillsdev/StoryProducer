@@ -5,11 +5,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.text.Html
 import android.text.Spanned
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
@@ -24,6 +26,7 @@ import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import timber.log.Timber
+import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
@@ -60,16 +63,33 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     fun initWorkspace() {
         Workspace.initializeWorkspace(this)
         var showWelcome = true
-        if (Workspace.workdocfile.isDirectory) {
-            controller.updateStories()  // We already have a workspace folder
-            showWelcome = false
-        } else if (Workspace.createAppSpecificWorkspace()) {
-            controller.updateStories()  // Update after a new app-specific workspace was created
-            showWelcome = false
-        }
+        do {
+            if (Workspace.workdocfile.isDirectory) {
+                controller.updateStories()  // We already have a workspace folder
+                showWelcome = false
+                break
+            }
+            if (Workspace.workdocfile.uri.scheme == "file" &&
+                    Workspace.workdocfile.uri.path!!.isNotEmpty() &&
+                    Workspace.workdocfile.uri.path != "/") {
+                val wsStorageState = Environment.getExternalStorageState(File(Workspace.workdocfile.uri.path));
+                if (wsStorageState != Environment.MEDIA_MOUNTED) {
+                    // TODO: Replace 'Show media not mounted' toast message with a better welcome screen
+                    Toast.makeText(this, R.string.workspace_not_mounted, Toast.LENGTH_LONG).show()
+                    showWelcome = true
+                    break
+                }
+            }
+            if (Workspace.createAppSpecificWorkspace()) {
+                controller.updateStories()  // Update after a new app-specific workspace was created
+                showWelcome = false
+                break
+            }
+        } while (false)
         if (showWelcome) {
             showWelcomeDialog()
         }
+
     }
 
     private fun showWelcomeDialog() {
