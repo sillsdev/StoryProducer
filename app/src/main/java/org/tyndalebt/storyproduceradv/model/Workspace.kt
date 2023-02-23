@@ -6,11 +6,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
 import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
-import android.os.ParcelFileDescriptor
+import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings.Secure
 import android.util.Log
@@ -193,9 +190,11 @@ object Workspace {
 
     fun getRoccWebSocketsUrl(context: Context): String {
         if (InternetConnection == false) {
-            Toast.makeText(context,
-                context.getString(R.string.remote_check_msg_no_connection),
-                Toast.LENGTH_LONG).show()
+            Handler(Looper.getMainLooper()).post {
+                Toast.makeText(context,
+                    context.getString(R.string.remote_check_msg_no_connection),
+                    Toast.LENGTH_LONG).show()
+            }
         }
         var baseUrl = if (BuildConfig.ENABLE_IN_APP_ROCC_URL_SETTING) {
             PreferenceManager.getDefaultSharedPreferences(context).getString("WEBSOCKETS_URL", BuildConfig.ROCC_WEBSOCKETS_PREFIX)

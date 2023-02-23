@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- put android:usesCleartextTraffic="true" below if debugging on 248 -->
     <application
         android:name="org.tyndalebt.storyproduceradv.App"
         android:allowBackup="true"
