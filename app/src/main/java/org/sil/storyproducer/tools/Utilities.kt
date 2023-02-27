@@ -107,25 +107,16 @@ fun getFreeInternalMemorySize(): Long {
     return file?.freeSpace ?: 0
 }
 
-fun getFreeExternalMemorySize(): Long {
-    // For older Android versions this is the best way to get the free external storage space
-    if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-        val file = Environment.getExternalStorageDirectory()
-        return file.freeSpace
-    }
-    return 0
-}
-
-
 fun getMaxFreeExternalMemoryFile(): File? {
     var maxFree = 0L;
     var maxFreeDir: File? = null
     val externalFilesDirs = ContextCompat.getExternalFilesDirs(App.appContext, null)
     for (eDir in externalFilesDirs) {
-        if (Environment.getExternalStorageState(eDir) == Environment.MEDIA_MOUNTED) {
+        if (!Environment.isExternalStorageEmulated(eDir) and // if emulated no point checking it
+                (Environment.getExternalStorageState(eDir) == Environment.MEDIA_MOUNTED)) { // is mounted?
             if (eDir.freeSpace > maxFree) {
-                maxFree = eDir.freeSpace
-                maxFreeDir = eDir
+                maxFree = eDir.freeSpace    // best drive found so far
+                maxFreeDir = eDir           // return this drive File
             }
         }
     }

@@ -5,12 +5,14 @@ import android.content.Context
 import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.DocumentsContract
 import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.hbisoft.pickit.Utils
 import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.model.Story
@@ -364,6 +366,32 @@ fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
         docFile = DocumentFile.fromFile(File(""))   // use empty DocumentFile
     return docFile
 }
+
+fun isUriStorageMounted(uri: Uri): Boolean {
+    // Check a Uri to see if it is un-mounted external storage
+    if (uri.scheme == "file" &&
+        uri.path!!.isNotEmpty()) {
+        if (uri.path != "/") {
+            val wsStorageState =
+                Environment.getExternalStorageState(File(uri.path));
+            if (wsStorageState != Environment.MEDIA_MOUNTED) {
+                return false
+            }
+        }
+    } else {
+        var storageFileUriStr = Utils.getRealPathFromURI_API19(App.appContext, uri)  // using another third party library to get file path
+        if (storageFileUriStr != null && storageFileUriStr.isNotEmpty()) {
+            val wsStorageState =
+                Environment.getExternalStorageState(File(storageFileUriStr));
+            if (wsStorageState != Environment.MEDIA_MOUNTED) {
+                return false
+            }
+        }
+    }
+    return true
+}
+
+
 
 val DEFAULT_WIDTH: Int = 1500
 val DEFAULT_HEIGHT: Int = 1125
