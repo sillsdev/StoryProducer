@@ -101,18 +101,28 @@ fun selectCodec(mimeType: String): MediaCodecInfo? {
     return myDefaultCodecInfo
 }
 
-fun getFreeInternalMemorySize(): Long {
+fun getFreeInternalMemoryFile(): File? {
     // For older Android versions this is the best way to get the free internal storage space
-    val file = App.appContext.getFilesDir()
-    return file?.freeSpace ?: 0
+    val file = App.appContext.getFilesDir() ?: return null
+    return file
 }
 
-fun getMaxFreeExternalMemoryFile(): File? {
+fun getFreeEmulatedExternalMemoryFile(): File? {
+    // For older Android versions this is the best way to get the free external storage space
+    val file = App.appContext.getExternalFilesDir(null) ?: return null
+    if (!Environment.isExternalStorageEmulated(file))
+        return null    // we only want to use emulated external i.e. internal backed storage
+    return file
+}
+
+fun getMaxFreeExtMemoryFile(): File? {
     var maxFree = 0L;
     var maxFreeDir: File? = null
+    // Check non-emulated external drives for maximum space free
     val externalFilesDirs = ContextCompat.getExternalFilesDirs(App.appContext, null)
     for (eDir in externalFilesDirs) {
-        if (!Environment.isExternalStorageEmulated(eDir) and // if emulated no point checking it
+        if (eDir != null &&
+                !Environment.isExternalStorageEmulated(eDir) && // if emulated no point checking it
                 (Environment.getExternalStorageState(eDir) == Environment.MEDIA_MOUNTED)) { // is mounted?
             if (eDir.freeSpace > maxFree) {
                 maxFree = eDir.freeSpace    // best drive found so far

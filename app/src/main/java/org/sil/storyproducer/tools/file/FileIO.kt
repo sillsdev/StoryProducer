@@ -368,7 +368,7 @@ fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
 }
 
 fun isUriStorageMounted(uri: Uri): Boolean {
-    // Check a Uri to see if it is un-mounted external storage
+    // Check a Uri to see if it is un-mounted auto-selected external storage
     if (uri.scheme == "file" &&
         uri.path!!.isNotEmpty()) {
         if (uri.path != "/") {
@@ -379,6 +379,7 @@ fun isUriStorageMounted(uri: Uri): Boolean {
             }
         }
     } else {
+        // check if user selected storage is mounted
         var storageFileUriStr = Utils.getRealPathFromURI_API19(App.appContext, uri)  // using another third party library to get file path
         if (storageFileUriStr != null && storageFileUriStr.isNotEmpty()) {
             val wsStorageState =

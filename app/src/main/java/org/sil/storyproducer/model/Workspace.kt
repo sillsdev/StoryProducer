@@ -7,19 +7,16 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.Settings.Secure
 import android.util.Log
 import android.widget.Toast
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.hbisoft.pickit.Utils
 import org.sil.storyproducer.App
 import org.sil.storyproducer.R
+import org.sil.storyproducer.tools.*
 import org.sil.storyproducer.tools.file.*
-import org.sil.storyproducer.tools.getFreeInternalMemorySize
-import org.sil.storyproducer.tools.getMaxFreeExternalMemoryFile
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
@@ -170,24 +167,41 @@ object Workspace {
         // Create an App-specific internal or external storage folder for an initial demo
         // https://developer.android.com/training/data-storage
         // https://developer.android.com/training/data-storage/app-specific
-        var workspaceStorageType = ""
+        var workspaceStorageTypeStr = ""
         var appSpecificDocsDir: File? = null
         var appSpecificTemplateDir : File? = null
-        // Check external memory first then internal memory for enough free space for demo
-        val freeExtFile = getMaxFreeExternalMemoryFile()    // may be hosted on the same storage volume as internal
-        val freeIntMem = getFreeInternalMemorySize()
-        if (freeIntMem >= RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY) {
-                // We have 1GB free internal storage so use that before anything else for demo
-            appSpecificDocsDir = App.appContext.filesDir
-            workspaceStorageType = App.appContext.resources.getString(R.string.workspace_internal)
-        } else if (freeExtFile != null && freeExtFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY) {
-                // Use external drive with most free memory for demo
-            appSpecificDocsDir = freeExtFile
-            workspaceStorageType = App.appContext.resources.getString(R.string.workspace_external)
-        } else if (freeIntMem >= MIN_BYTES_NEEDED_FOR_DEMO_STORY) {
-                // use internal drive with enough free memory for demo
-            appSpecificDocsDir = App.appContext.filesDir
-            workspaceStorageType = App.appContext.resources.getString(R.string.workspace_internal)
+        val freeEmuExtFile = getFreeEmulatedExternalMemoryFile();
+        val freeIntFile = getFreeInternalMemoryFile()
+        val maxFreeExtFile = getMaxFreeExtMemoryFile()
+        // Check 'emulated internal' memory first then private internal memory for recommended free space for demo
+        if (freeEmuExtFile != null && freeEmuExtFile.freeSpace >= RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // We have 1GB free of 'emulated internal' storage so use that before anything else for demo
+            appSpecificDocsDir = freeEmuExtFile
+            workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_internal)
+        } else if (freeIntFile != null && freeIntFile.freeSpace >= RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // We have 1GB free private internal storage so use that before external storage for demo
+            appSpecificDocsDir = freeIntFile
+            workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_private)
+        } else {
+            // We haven't got the recommended space on internal storage so find
+            // best free space from either emulated, internal or external storage
+            if (freeEmuExtFile != null &&
+                    freeEmuExtFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY &&
+                    (maxFreeExtFile == null || freeEmuExtFile.freeSpace >= maxFreeExtFile.freeSpace)) {
+                // We have 200MB free of 'emulated internal' storage so use that for demo
+                appSpecificDocsDir = freeEmuExtFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_internal)
+            } else if (freeIntFile != null &&
+                    freeIntFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY &&
+                    (maxFreeExtFile == null || freeIntFile.freeSpace >= maxFreeExtFile.freeSpace)) {
+                // We have 200MB free of private internal storage so use that for demo
+                appSpecificDocsDir = freeIntFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_private)
+            } else if (maxFreeExtFile != null && maxFreeExtFile.freeSpace >= MIN_BYTES_NEEDED_FOR_DEMO_STORY) {
+                // Use the external drive with most free memory for demo
+                appSpecificDocsDir = maxFreeExtFile
+                workspaceStorageTypeStr = App.appContext.resources.getString(R.string.workspace_external)
+            }
         }
         if (appSpecificDocsDir != null)
             appSpecificTemplateDir = File(appSpecificDocsDir, SP_TEMPLATES_FOLDER_NAME)
@@ -200,11 +214,11 @@ object Workspace {
                     isInitialized = true  // app-specific workspace successful
                     // Add the demo for new users
                     addDemoToWorkspace(App.appContext)
-                    return workspaceStorageType // created ok if non empty
+                    return workspaceStorageTypeStr // created ok if non empty
                 }
             }
         }
-        return ""
+        return ""   // Not enough space to use a folder automatically
     }
 
     fun setupWorkspacePath(context: Context, uri: Uri) : Boolean {

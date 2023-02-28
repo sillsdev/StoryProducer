@@ -359,6 +359,7 @@
     <string name="workspace_not_mounted">Workspace not accessible, mount the SD card?</string>
     <string name="workspace_internal">Workspace created in app internal storage</string>
     <string name="workspace_external">Workspace created in app external storage</string>
+    <string name="workspace_private">Workspace created in app private storage</string>
 
     <!-- Other Messages -->
     <string name="bloom_lib_download">Bloom Library: download</string>
