@@ -1,10 +1,13 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.FileUtils
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.hbisoft.pickit.Utils.getRealPathFromURI_API19
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
 import org.sil.storyproducer.App
@@ -14,6 +17,7 @@ import org.sil.storyproducer.tools.file.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -217,6 +221,113 @@ fun isZipped(fileName: String?): Boolean {
     return fileName?.substringAfterLast(".", "")?.let {
         arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
     } == true
+}
+
+
+
+fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldDocFolder: DocumentFile): DocumentFile? {
+
+    do {
+        if (newWorkspaceFolder.uri == oldDocFolder.uri)
+            return file
+
+        if (oldDocFolder.name?.isEmpty() ?: break)
+            break
+
+        if (newWorkspaceFolder.name?.isEmpty() ?: break)
+            break
+
+        if (file.name?.isEmpty() ?: break)
+            break;
+
+        if (isZipped(file.name))
+            return file
+
+        if (workspaceRelPathExists(context, file.name!!))
+            return file
+
+        var sourceStr = getRealPathFromURI_API19(context, oldDocFolder.uri)
+        sourceStr += "/${file.name}"
+        var destStr = getRealPathFromURI_API19(context, newWorkspaceFolder.uri)
+
+        if (File(sourceStr).canonicalPath == File(destStr).canonicalPath)
+            break
+
+//        destStr += "/${file.name}"
+        var sourceFile = File(sourceStr)
+        var destFile = File(destStr, sourceFile.name)
+//        destFile.mkdirs()
+
+//        var testFile = File(destFile.path + "/test_file.txt")
+//        testFile.writeText("Test writing to file.")
+
+        val baos = ByteArrayOutputStream()
+        val buffer = ByteArray(4192)
+        var count : Int
+
+
+
+        var walkSource = sourceFile.walkTopDown()
+        for (w in walkSource) {
+            var sourceSubPath = w.path.substring(sourceStr.length)
+            if (sourceSubPath.startsWith("/"))
+                sourceSubPath = sourceSubPath.substring(1)
+            var destFullPath = File(destFile.path, sourceSubPath)
+            if (w.isDirectory) {
+                destFullPath.mkdirs()
+            } else {
+//                destFullPath.writeText("test text here")
+                //w.copyTo(destFullPath)
+//                destFullPath.writeText("just testing again!")
+
+                var f = w
+                var storyName = sourceFile.name
+
+//                for (f in fileHeaders){
+                do {
+                    if (storyRelPathExists(context, sourceSubPath, storyName)) continue    // added storyName to fix unzipping issue
+
+                    val ostream = getChildOutputStream(context, "$storyName/${sourceSubPath}") ?: continue
+
+                    // reading and writing
+                    val zis = f.inputStream()
+                    count = zis.read(buffer)
+                    try {
+                        while (count != -1) {
+                            baos.write(buffer, 0, count)
+                            val bytes = baos.toByteArray()
+                            ostream.write(bytes)
+                            baos.reset()
+                            count = zis.read(buffer, 0, 4192)
+                        }
+                    } catch (e: Exception) {
+                    }
+                    ostream.close()
+                    zis.close()
+                } while (false)
+
+
+
+
+
+            }
+        }
+
+
+
+//        if (!sourceFile.copyRecursively(destFile, true, {f, e -> myErrorAction(f, e)}))    // TODO: SET OVERWRITE = FALSE HERE!!!!
+//            break
+
+        return file
+
+    } while (false)
+
+    return file
+}
+
+fun myErrorAction(file: File, e: IOException): OnErrorAction {
+
+    return OnErrorAction.SKIP
 }
 
 fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {

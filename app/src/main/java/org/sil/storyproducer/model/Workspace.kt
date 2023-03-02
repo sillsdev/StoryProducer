@@ -60,6 +60,7 @@ object Workspace {
     val RECOMMENDED_BYTES_NEEDED_FOR_DEMO_STORY = 1024L * 1024L * 1024L;
     val SP_TEMPLATES_FOLDER_NAME = "SP Templates"
 
+    var previousWorkDocFile = DocumentFile.fromFile(File(""))
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
@@ -229,6 +230,8 @@ object Workspace {
             // Issue 539 - Reset Story info to detach from current Story, if any
             activeStory = emptyStory()
 
+            // Remember previous workdocfile location - for story migration
+            previousWorkDocFile = workdocfile
             // Initiate new workspace path
             workdocfile = getDocumentFileFromUri(context, uri)
 
@@ -470,6 +473,7 @@ object Workspace {
         //      story archives downloaded in external app storage download dir
         // while checking that the story does not already exist
         return storyDirectories()
+            .run { this.plus(oldStoryDirectories(this)) }
             .run { this.plus(storyDownloadedBloomFiles(this)) }
             .run { this.plus(storyBloomFiles(this)) }
     }
@@ -480,6 +484,22 @@ object Workspace {
         return workdocfile.listFiles().filter {
             it.isDirectory && (!non_story_folders.contains(it.name))
         }
+    }
+
+    private fun oldStoryDirectories(current : List<DocumentFile>): List<DocumentFile> {
+        // We don't want the videos and wordlinks folders included in the list of story folders
+        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+        val prevDocs = previousWorkDocFile.listFiles().filter {
+            it.isDirectory && (!non_story_folders.contains(it.name))
+        }
+        var oldStoryDirsList : MutableList<DocumentFile> = ArrayList()
+        for (i in 0 until prevDocs?.size!!) {
+            val copyOldDirName = prevDocs[i].name
+            // don't add if already in the workspace
+            if (current.find { it.name == copyOldDirName } == null)
+                oldStoryDirsList.add(prevDocs[i])
+        }
+        return oldStoryDirsList
     }
 
     private fun storyBloomFiles(current : List<DocumentFile>): List<DocumentFile> {
@@ -513,7 +533,8 @@ object Workspace {
     }
 
     fun buildStory(context: Context, storyPath: DocumentFile): Story? {
-        return unzipIfZipped(context, storyPath, workdocfile.listFiles())
+        return copyOldStory(context, storyPath, workdocfile, previousWorkDocFile)
+                ?.let { oldStoryPath -> unzipIfZipped(context, oldStoryPath, workdocfile.listFiles()) }
                 ?.let { storyFolder -> pathOf(storyFolder) }
                 ?.let { storyPath1 -> parseStoryIfPresent(context, storyPath1) }
                 ?.let { story -> migrateStory(context, story) }
