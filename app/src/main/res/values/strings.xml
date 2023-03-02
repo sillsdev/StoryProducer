@@ -368,6 +368,8 @@
     <string name="bloom_lib_loading_failed">Bloom Library loading failed!</string>
     <string name="bloom_connection_error">connection error</string>
     <string name="bloom_xml_error">xml error</string>
+    <string name="migrate_stories_title">Move current projects?</string>
+    <string name="migrate_stories_message">Would you like to move your current projects to this folder? (recommended)</string>
 
 
 </resources>

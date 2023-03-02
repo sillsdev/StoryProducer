@@ -6,16 +6,20 @@ import androidx.documentfile.provider.DocumentFile
 import android.util.Xml
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.getStoryChildInputStream
-import org.sil.storyproducer.tools.file.getStoryText
+import org.sil.storyproducer.tools.file.getDocumentInputStream
+import org.sil.storyproducer.tools.file.getDocumentText
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
 import java.io.IOException
 import java.util.ArrayList
 
-fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
+fun parsePhotoStoryXML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is an xml photostory file there
-    val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
+
+    // TODO: We need a xml file to test!
+//    val xmlContents = getStoryChildInputStream(context,"project.xml",storyPath.name!!) ?: return null
+    val xmlContents = storyPath.findFile("project.xml")?.let { projXml ->
+                            getDocumentInputStream(context, projXml) } ?: return null
     //The file "project.xml" is there, it is a photostory project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val parser = Xml.newPullParser()
@@ -32,11 +36,13 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
         }
         val tag = parser.name
 
-        when (tag) {
+        when (tag) {    
             "VisualUnit" -> {
                 val slide = parseSlideXML(parser)
                 //open up text file that has title, ext.  They are called 0.txt, 1.txt, etc.
-                val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
+//                val textFile = getStoryText(context,slide.textFile,storyPath.name!!)
+                val textFile = storyPath.findFile(slide.textFile)?.let { textPath ->
+                            getDocumentText(context, textPath) }
                 if(textFile != null){
                     val textList = textFile.split("~")
                     if (textList.size > 0) slide.title = textList[0].removePrefix(" ").removeSuffix(" ")
@@ -75,7 +81,7 @@ fun parsePhotoStoryXML(context: Context, storyPath: androidx.documentfile.provid
     //add as second last slide
     slides.add(slides.size-1,slide)
 
-    return Story(storyPath.name!!,slides).apply {
+    return Story(storyPath.name!!, slides).apply {
         importAppVersion = BuildConfig.VERSION_NAME
     }
 }
