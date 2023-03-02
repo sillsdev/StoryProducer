@@ -9,6 +9,7 @@ import org.jsoup.nodes.Element
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.getChildDocuments
+import org.sil.storyproducer.tools.file.getDocumentText
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 import org.sil.storyproducer.tools.file.getText
 import java.util.*
@@ -16,16 +17,21 @@ import java.util.*
 
 fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     //See if there is a BLOOM html file there
-    val childDocs = getChildDocuments(context, storyPath.name!!)
+    val childDocs = storyPath.listFiles()
     var html_name = ""
-    for (f in childDocs) {
+    for (d in childDocs) {
+        val f = d.name
+        if (f == null)
+            continue
         if (f.endsWith(".html") || f.endsWith(".htm")){
             html_name = f
-            continue
+            continue    // why continue and not break?
         }
     }
     if(html_name == "") return null
-    val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
+//    val htmlText = getText(context,"${storyPath.name}/$html_name") ?: return null
+    val htmlText = storyPath.findFile(html_name)?.let {
+            htmlFile -> getDocumentText(context, htmlFile) } ?: return null
     //The file "index.html" is there, it is a Bloom project.  Parse it.
     val slides: MutableList<Slide> = ArrayList()
     val story = Story(storyPath.name!!, slides)

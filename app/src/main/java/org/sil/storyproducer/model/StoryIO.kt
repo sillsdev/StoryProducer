@@ -1,7 +1,6 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.os.Build
 import android.os.Environment
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -15,8 +14,6 @@ import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -63,7 +60,13 @@ fun Story.toJson(context: Context){
     }
 }
 
-fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
+fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false): Story? {
+
+    val storyFilePath = storyPath.findFile(PROJECT_DIR)
+            ?.let { projDir -> projDir.findFile(PROJECT_FILE) }
+                ?: return null
+    if (!storyFilePath.isFile)
+        return null
     val filePath = "$PROJECT_DIR/$PROJECT_FILE"  // location of file
     var fileContents: String? = null
 
@@ -75,7 +78,7 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
                 .add(UriAdapter())
                 .build()
         val adapter = Story.jsonAdapter(moshi)
-        fileContents = getStoryText(context, filePath, storyTitle.name!!)
+        fileContents = getDocumentText(context, storyFilePath)
                 ?: return null
         return adapter.fromJson(fileContents)
     } catch (e: Exception) {
@@ -85,7 +88,7 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
         // Probably some kind of corruption in the story file.
         // Create a suitable error string.  Use  method name, File location, story title & the error
         val errInfo =   "Method: " + Throwable().stackTrace[0].methodName + ", " +
-                        "File: "   + storyTitle.name + ", " +
+                        "File: "   + storyPath.name + ", " +
                         "Loc: "    + filePath + ", " +
                         "Err: "    + e.toString()
 
@@ -100,6 +103,9 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
         // looking for "SP::")
         Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
     }
+    if (validateOnly)
+        return null // return if no backup needed (just validating story)
+
     // if we get here we caught an exception and have exited from the catch clause
     // Even though we cannot parse the file with this version of the software, save the
     // content of file for later evaluation for data salvage or error evaluation
@@ -113,7 +119,7 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
 
     // open the backup file and write the contents of story.json to the backup file
     // Can't do a rename on story.json because it is locked from some where else in the app
-    var oStream = getStoryChildOutputStream(context,backupFileName,"",storyTitle.name!!)
+    var oStream = getStoryChildOutputStream(context,backupFileName,"",storyPath.name!!)
     if(oStream != null) {
         // We were able to create the file so log an info message
         Timber.i("SP::(%s %s)", "Got valid oStream for backup file:",backupFileName)
@@ -155,14 +161,22 @@ fun storyFromJson(context: Context, storyTitle: DocumentFile): Story?{
     return null
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provider.DocumentFile): Story? {
-    var story: Story?
+fun isValidStory(context: Context, storyPath: DocumentFile) : Boolean {
+    var story = parseStoryIfPresent(context, storyPath, true)
+    if (story == null)
+        return false
+    return true
+}
+
+fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false): Story? {
+    var story: Story? = null
     //Check if path is path
     if(!storyPath.isDirectory) return null
+
     //make a project directory if there is none.
-    if (storyRelPathExists(context,PROJECT_DIR,storyPath.name!!)) {
+    if (storyPath.findFile(PROJECT_DIR) != null) {
         //parse the project file, if there is one.
-        story = storyFromJson(context, storyPath)
+        story = storyFromJson(context, storyPath, validateOnly)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
@@ -182,7 +196,8 @@ fun parseStoryIfPresent(context: Context, storyPath: androidx.documentfile.provi
     }
     //write the story (if it is not null) to json.
     if(story != null) {
-        story.toJson(context)
+        if (!validateOnly)
+            story.toJson(context)   // No need to write json if validating only
         return story
     }
     return null
@@ -218,8 +233,158 @@ fun isZipped(fileName: String?): Boolean {
         arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
     } == true
 }
+// copy a file to the new location
+fun copySubFile(context: Context, subFile: String, newDocumentFolder: DocumentFile, oldDocumentFolder: DocumentFile): Boolean {
 
-fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {
+    val oldDoc = oldDocumentFolder.findFile(subFile) ?: return false
+    if (!oldDoc.isFile)
+        return false
+
+    if (newDocumentFolder.findFile(subFile) != null)
+        return false    // Should not have the same file in the target folder (abort)
+
+    try {
+        // copy the file using a buffer here
+        val newDoc = newDocumentFolder.createFile(oldDoc.type!!, subFile) ?: return false
+
+        val buffer = ByteArray(1024 * 64)
+        val outStream = context.contentResolver.openOutputStream(newDoc.uri) ?: return false
+        val inStream = context.contentResolver.openInputStream(oldDoc.uri) ?: return false
+        var bytesRead = 0
+        do {
+            bytesRead = inStream.read(buffer)
+            if (bytesRead > 0)
+                outStream.write(buffer, 0, bytesRead)
+        } while (bytesRead > 0)
+        inStream.close()
+        outStream.close()
+
+        return true
+
+    } catch (e: java.io.IOException) {
+    }
+
+    return false;
+}
+
+// Copy a sub-folder and content to a new folder location - this is done recursively
+fun copySubFolder(context: Context, subFolder: String, newDocumentFolder: DocumentFile, oldDocumentFolder: DocumentFile, isWordlinksOrVideo: Boolean = false): Boolean {
+
+    var allCopiedOk = true
+    val oldFolder = oldDocumentFolder.findFile(subFolder) ?: return false
+    if (!oldFolder.isDirectory)
+        return false    // no old folder found to copy
+
+    var newFolder = newDocumentFolder.findFile(subFolder)
+    if (newFolder != null && !newFolder.isDirectory)
+        return false    // found a non-directory - give up
+
+    if (newFolder != null && !isWordlinksOrVideo)
+        return false    // found a folder but not copying wordlinks or videos - give up
+
+    if (newFolder == null)  // if no new folder create one
+        newFolder = newDocumentFolder.createDirectory(subFolder) ?: return false
+
+    for (oldSubDoc in oldFolder.listFiles()) {
+        if (oldSubDoc.isDirectory) {
+            if (!copySubFolder(context, oldSubDoc.name!!, newFolder, oldFolder)) {
+                return false
+            }
+        } else if (oldSubDoc.isFile) {
+            if (!copySubFile(context, oldSubDoc.name!!, newFolder, oldFolder)) {
+                allCopiedOk = false // flag so that old wordlinks or videos folder does not get deleted
+                if (!isWordlinksOrVideo)
+                    return false   // abort further copying if not a wordlinks or videos sub-file
+            }
+        } else
+            return false
+    }
+
+    return allCopiedOk  // only successful if all files copied ok
+}
+
+// Copy a Story/videos/wordlinks sub-folder from the source templates folder and if ok return for further processing
+fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): DocumentFile? {
+
+    do {
+        // NB: This list may also contains Stories and zipped Stories already found in the new SP Templates folder
+
+        if (newWorkspaceFolder.uri == oldWorkspaceFolder.uri)
+            return file // same folder so no need to copy
+
+        if (oldWorkspaceFolder.name?.isEmpty() ?: return file)
+            return file // no old folder so noting to copy
+
+        if (newWorkspaceFolder.name?.isEmpty() ?: break)
+            break   // no new SP Templates folder so can't copy TODO: report error?
+
+        if (file.name?.isEmpty() ?: break)
+            break;  // no Story name so can't copy TODO: report error?
+
+        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+        val isWordlinksOrVideo = non_story_folders.contains(file.name!!)
+        if (!isWordlinksOrVideo) {
+            // if this is not a video or worklinks folder AND
+            if (workspaceRelPathExists(context, file.name!!)) {
+                // folder already exists in new workspace
+                return file // Story already exists - don't copy but process it
+            }
+        }
+
+        if (isZipped(file.name)) {
+                        // The Story archive zipped file must be for the unzipIfZipped() function
+            return file // NB any zipped file in the old folder will be ignored
+        }
+
+        if (file.isFile)
+            return file // Unknown file, return it for processing and don't copy here
+
+        if (!file.isDirectory)
+            break // Stories are always folders TODO: report error?
+
+        // get the old subfolder as a DocumentFile
+        val oldSubFolder = oldWorkspaceFolder.findFile(file.name!!) ?: break
+        if (!oldSubFolder.isDirectory)
+            break   // old stories are are always folders TODO: report error?
+
+        // Here we check that this sub-folder is a valid Story before copying it
+        if (!isWordlinksOrVideo) {
+            // but only validate if not a video or wordlinks folder
+            // get the newly copied subfolder as a DocumentFile
+            if (!isValidStory(context, oldSubFolder))
+                break   // don't process it further TODO: report warning?
+        }
+
+        // here is the main action - copy this subfolder now
+        if (!copySubFolder(context, file.name!!, newWorkspaceFolder, oldWorkspaceFolder, isWordlinksOrVideo))
+            break   // copying story failed so no more processing TODO: report error (if not wordlinks or videos folder)?
+
+        // get the newly copied subfolder as a DocumentFile
+        val newSubFolder = newWorkspaceFolder.findFile(file.name!!) ?: break    // TODO: report error?
+
+        // Story folder copied ok - so check new folder parses before deleting the old story folder
+        if (!isWordlinksOrVideo) {
+            // but only validate if not a video or wordlinks folder
+            if (!isValidStory(context, newSubFolder))
+                break   // don't process it further TODO: report error?
+        }
+
+        // everything copied ok so we can delete the old copied folder
+        if (!oldSubFolder.delete())
+            break   // failed to delete so don't process further TODO: report error?
+
+        // if a video or wordlinks folder copied ok then no need to process further
+        if (isWordlinksOrVideo)
+            break   // don't process non story folders any more
+
+        return newSubFolder // continue processing this copied Story folder
+
+    } while (false)
+
+    return null // TODO: report an error to user (via crashlitics?)
+}
+
+fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<DocumentFile?>): String? {
     //only unzip zipped files.
     if (!isZipped(file.name)) {
         return file.name

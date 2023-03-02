@@ -1,10 +1,13 @@
 package org.sil.storyproducer.controller
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.isUriAutomaticallyCreated
 import org.sil.storyproducer.view.BaseActivityView
 
 class SelectTemplatesFolderController(
@@ -18,32 +21,69 @@ class SelectTemplatesFolderController(
         view.startActivityForResult(intent, request)
     }
 
+    // show dialog to ask if user wants to migrate the old stories
+    private fun showMigrateIntenalStoriesDialog(request: Int, uri: Uri) {
+        val dialog = AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.migrate_stories_title))
+            .setMessage(context.getString(R.string.migrate_stories_message))
+            .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
+                setupWorkspace(request, uri, true)
+            }
+            .setNegativeButton(context.getString(R.string.no)) { _, _ ->
+                setupWorkspace(request, uri, false)
+            }
+            .setOnCancelListener() {
+                setupWorkspace(request, uri, false)
+            }
+            .create()
+
+        dialog.show()
+    }
+
     fun onFolderSelected(request: Int, result: Int, data: Intent?) {
         data?.data?.also { uri ->
             if (result == Activity.RESULT_OK) {
-                setupWorkspace(request, uri)
+                if (!workspace.setupWorkspacePath(context, uri, false))
+                    return
+                val newStories = workspace.storyDirectories()
+                if (        // Check that new workspace is empty before migrating (moving) stories AND
+                        newStories.isEmpty() &&
+                            // check that there was an old workspace folder AND
+                        workspace.previousWorkDocFile.exists() &&
+                            // check that a different workspace folder was selected AND
+                        workspace.previousWorkDocFile.uri != workspace.workdocfile.uri &&
+                            // check that the old workspace was automatically selected AND
+                        isUriAutomaticallyCreated(workspace.previousWorkDocFile.uri) &&
+                            // check that there exist stories in the old folder that do not exist in the new selected folder
+                        workspace.oldStoryDirectories(newStories, true).isNotEmpty()) {
+                    showMigrateIntenalStoriesDialog(request, uri)   // dialog calls setupWorkspace() appropriately
+                } else {
+                    setupWorkspace(request, uri, false)
+                }
             }
         }
     }
 
-    internal fun setupWorkspace(request: Int, uri: Uri) {
+    internal fun setupWorkspace(request: Int, uri: Uri, migrate: Boolean = false) {
         view.takePersistableUriPermission(uri)
 
-        workspace.setupWorkspacePath(context, uri)
+        if (!workspace.setupWorkspacePath(context, uri))
+            return
 
         if (shouldAddDemoToWorkspace(request)) {
             workspace.addDemoToWorkspace(context)
         }
 
-        updateStories()  // always refresh list of stories
+        updateStories(migrate)  // always refresh list of stories
     }
 
     fun shouldAddDemoToWorkspace(request: Int): Boolean {
         if (request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
             return true
 
-        // always add demo when no installed stories or stories to unzip
-        if (workspace.storyFilesToScanOrUnzip().isEmpty())
+        // Add demo to automatically selected worksapce when no installed stories or stories to unzip or move
+        if (isUriAutomaticallyCreated(Workspace.workdocfile.uri) &&
+                workspace.storyFilesToScanOrUnzipOrMove().isEmpty())
             return true
 
         return false
