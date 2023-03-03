@@ -1,15 +1,9 @@
 package org.sil.storyproducer.model
 
 import android.content.Context
-import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.os.FileUtils
-import android.provider.DocumentsContract
-import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.hbisoft.pickit.Utils.getRealPathFromURI_API19
 import com.squareup.moshi.Moshi
 import net.lingala.zip4j.ZipFile
 import org.sil.storyproducer.App
@@ -21,8 +15,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -224,130 +216,108 @@ fun isZipped(fileName: String?): Boolean {
         arrayOf("zip", "bloom", "bloomd", "bloomSource").contains(it)
     } == true
 }
+// copy a file to the new location
+fun copySubFile(context: Context, subFile: String, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): Boolean {
 
+    val oldDoc = oldWorkspaceFolder.findFile(subFile) ?: return false
+    if (!oldDoc.isFile)
+        return false
 
+    val newDoc = newWorkspaceFolder.createFile(oldDoc.type!!, subFile) ?: return false
 
-fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldDocFolder: DocumentFile): DocumentFile? {
+    val buffer = ByteArray(1024 * 64)
+    val outStream = context.contentResolver.openOutputStream(newDoc.uri) ?: return false
+    val inStream = context.contentResolver.openInputStream(oldDoc.uri) ?: return false
+    var bytesRead = 0
+    do {
+        bytesRead = inStream.read(buffer)
+        if (bytesRead > 0)
+            outStream.write(buffer, 0, bytesRead)
+    } while (bytesRead > 0)
+    inStream.close()
+    outStream.close()
+
+    return true
+}
+
+// Copy a sub-folder and content to a new folder location - this is done recursively
+fun copySubFolder(context: Context, subFolder: String, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): Boolean {
+
+    val oldFolder = oldWorkspaceFolder.findFile(subFolder) ?: return false
+    if (!oldFolder.isDirectory)
+        return false
+
+    val newFolder = newWorkspaceFolder.findFile(subFolder) ?:
+                        newWorkspaceFolder.createDirectory(subFolder) ?:
+                        return false
+
+    for (oldSubDoc in oldFolder.listFiles()) {
+        if (oldSubDoc.isDirectory) {
+            if (!copySubFolder(context, oldSubDoc.name!!, newFolder, oldFolder))
+                return false
+        } else if (oldSubDoc.isFile) {
+            if (!copySubFile(context, oldSubDoc.name!!, newFolder, oldFolder))
+                return false
+        } else
+            return false
+    }
+
+    return true
+}
+
+// Copy a sub-folder from the source templates folder and if ok return for further processing
+fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): DocumentFile? {
 
     do {
-//        if (!Workspace.copyOldInternalStories)
-//            return file
+        // NB: This list may also contains Stories and zipped Stories already found in the new SP Templates folder
 
-        if (newWorkspaceFolder.uri == oldDocFolder.uri)
-            return file
+        if (newWorkspaceFolder.uri == oldWorkspaceFolder.uri)
+            return file // same folder so no need to copy
 
-        if (oldDocFolder.name?.isEmpty() ?: break)
-            break
+        if (oldWorkspaceFolder.name?.isEmpty() ?: return file)
+            return file // no old folder so noting to copy
 
         if (newWorkspaceFolder.name?.isEmpty() ?: break)
-            break
+            break   // no new SP Templates folder so can't copy
 
         if (file.name?.isEmpty() ?: break)
-            break;
+            break;  // no Story name so can't copy
 
-        if (workspaceRelPathExists(context, file.name!!))
-            return file
+        if (file.name!! != WORD_LINKS_DIR &&
+                workspaceRelPathExists(context, file.name!!))
+            return file // Story already exists in new SP Templates folder - so process it
+
+        if (file.isFile)
+            return file // TODO: Should we copy unknown files in SP Templates folder?
 
         if (isZipped(file.name))
-            return file
+            return file // The the Story archive zipped file must be for the unzipIfZipped() function
 
-        var sourceStr = getRealPathFromURI_API19(context, oldDocFolder.uri)
-        sourceStr += "/${file.name}"
-        var destStr = getRealPathFromURI_API19(context, newWorkspaceFolder.uri)
-
-        if (File(sourceStr).canonicalPath == File(destStr).canonicalPath)
+        // TODO: Should we check that all sub-folders are valid Stories before copying them
+        if (!copySubFolder(context, file.name!!, newWorkspaceFolder, oldWorkspaceFolder))
             break
 
-//        destStr += "/${file.name}"
-        var sourceFile = File(sourceStr)
-        var destFile = File(destStr, sourceFile.name)
-//        destFile.mkdirs()
+        // get the copied subfolder as a DocumentFile
+        val newSubFolder = newWorkspaceFolder.findFile(file.name!!) ?: break
 
-//        var testFile = File(destFile.path + "/test_file.txt")
-//        testFile.writeText("Test writing to file.")
+        // Story or non-story folder copied ok - so delete old story folder
+        val oldSubFolder = oldWorkspaceFolder.findFile(file.name!!) ?: break
+        if (!oldSubFolder.isDirectory)
+            break
 
-        val baos = ByteArrayOutputStream()
-        val buffer = ByteArray(4192)
-        var count : Int
+        // TODO: Should we check that the new copied folder parses ok before deleting old?
+        if (!oldSubFolder.delete())
+            break
 
+        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+        if (non_story_folders.contains(newSubFolder.name!!))
+            break   // don't process non story folders any more
 
-
-        var walkSource = sourceFile.walkTopDown()
-        var storyName = sourceFile.name
-        for (w in walkSource) {
-            var sourceSubPath = w.path.substring(sourceStr.length)
-            if (sourceSubPath.startsWith("/"))
-                sourceSubPath = sourceSubPath.substring(1)
-            var destFullPath = File(destFile.path, sourceSubPath)
-            if (w.isDirectory) {
-//                destFullPath.mkdirs()
-                //build the document tree if it is needed
-                var segments = sourceSubPath.split("/")
-                var uri = oldDocFolder.uri
-                try {
-                    for (i in 0..segments.size - 2) {
-                        //TODO make this faster.
-                        val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
-                        var isDirectory: Boolean
-                            // old way uses content resolver to test and create directories
-                        isDirectory = context.contentResolver.getType(newUri)?.
-                        contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
-                        if (!isDirectory)
-                            DocumentsContract.createDocument(context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
-                        uri = newUri    // next uri of path is one level down
-                    }
-                } catch (e: Exception){
-                    FirebaseCrashlytics.getInstance().recordException(e)
-                    return null
-                }
-            } else {
-//                destFullPath.writeText("test text here")
-                //w.copyTo(destFullPath)
-//                destFullPath.writeText("just testing again!")
-                do {
-                    if (storyRelPathExists(context, sourceSubPath, storyName)) continue    // added storyName to fix unzipping issue
-
-                    val ostream = getChildOutputStream(context, "$storyName/${sourceSubPath}") ?: continue
-
-                    // reading and writing
-                    val zis = w.inputStream()
-                    count = zis.read(buffer)
-                    try {
-                        while (count != -1) {
-                            baos.write(buffer, 0, count)
-                            val bytes = baos.toByteArray()
-                            ostream.write(bytes)
-                            baos.reset()
-                            count = zis.read(buffer, 0, 4192)
-                        }
-                    } catch (e: Exception) {
-                    }
-                    ostream.close()
-                    zis.close()
-                } while (false)
-
-
-
-
-
-            }
-        }
-
-
-
-//        if (!sourceFile.copyRecursively(destFile, true, {w, e -> myErrorAction(w, e)}))    // TODO: SET OVERWRITE = FALSE HERE!!!!
-//            break
-
-        return file
+        return newSubFolder // continue processing this copied Story folder
 
     } while (false)
 
-    return file
-}
-
-fun myErrorAction(file: File, e: IOException): OnErrorAction {
-
-    return OnErrorAction.SKIP
+    return null
 }
 
 fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<androidx.documentfile.provider.DocumentFile?>): String? {

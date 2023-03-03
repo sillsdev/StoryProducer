@@ -151,7 +151,6 @@ object Workspace {
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
-    var copyOldInternalStories = false
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -223,7 +222,7 @@ object Workspace {
         return ""   // Not enough space to use a folder automatically
     }
 
-    fun setupWorkspacePath(context: Context, uri: Uri) : Boolean {
+    fun setupWorkspacePath(context: Context, uri: Uri, fullInit: Boolean = true) : Boolean {
         if (uri.toString().isEmpty())
             return false
 
@@ -232,15 +231,18 @@ object Workspace {
             activeStory = emptyStory()
 
             // Remember previous workdocfile location - for story migration
-            previousWorkDocFile = workdocfile
+            if (!fullInit)
+                previousWorkDocFile = workdocfile
             // Initiate new workspace path
             workdocfile = getDocumentFileFromUri(context, uri)
 
             // Load the registration info
-            registration.load(context)
+            if (fullInit)
+                registration.load(context)
 
             // load in the Word Links database
-            importWordLinks(context)
+            if (fullInit)
+                importWordLinks(context)
 
             return true;
 
@@ -259,7 +261,7 @@ object Workspace {
         context.startActivity(openURL)
     }
 
-    private fun importWordLinks(context: Context) {
+    fun importWordLinks(context: Context) {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
         var csvFileName : String? = null  // csv file name if found
 
@@ -479,7 +481,7 @@ object Workspace {
             .run { this.plus(storyBloomFiles(this)) }
     }
 
-    private fun storyDirectories(): List<DocumentFile> {
+    fun storyDirectories(): List<DocumentFile> {
         // We don't want the videos and wordlinks folders included in the list of story folders
         val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
         return workdocfile.listFiles().filter {
@@ -487,16 +489,14 @@ object Workspace {
         }
     }
 
-    private fun oldStoryDirectories(current : List<DocumentFile>, migrate: Boolean): List<DocumentFile> {
+    // generates a list of old stories/folders to be copied (includes "videos" and "wordlinks" folders)
+    fun oldStoryDirectories(current : List<DocumentFile>, migrate: Boolean): List<DocumentFile> {
         // We don't want the videos and wordlinks folders included in the list of story folders
         var oldStoryDirsList : MutableList<DocumentFile> = ArrayList()
         if (!migrate)
             return oldStoryDirsList
 
-        if (previousWorkDocFile.uri.scheme != "file")
-            return oldStoryDirsList
-
-        val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
+        val non_story_folders = arrayOf("")//VIDEO_DIR, WORD_LINKS_DIR) // TODO: Allow copying of Videos and WordLinks for now
         val prevDocs = previousWorkDocFile.listFiles().filter {
             it.isDirectory && (!non_story_folders.contains(it.name))
         }

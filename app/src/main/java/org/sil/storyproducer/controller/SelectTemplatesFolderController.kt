@@ -24,21 +24,29 @@ class SelectTemplatesFolderController(
         val dialog = AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.migrate_stories_title))
             .setMessage(context.getString(R.string.migrate_stories_message))
+            .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
+                setupWorkspace(request, uri, true)
+            }
             .setNegativeButton(context.getString(R.string.no)) { _, _ ->
                 setupWorkspace(request, uri, false)
             }
-            .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
-                setupWorkspace(request, uri, true)
+            .setOnCancelListener() {
+                setupWorkspace(request, uri, false)
             }
             .create()
 
         dialog.show()
     }
+
     fun onFolderSelected(request: Int, result: Int, data: Intent?) {
         data?.data?.also { uri ->
             if (result == Activity.RESULT_OK) {
-                if (workspace.workdocfile.uri.scheme == "file" &&
-                    workspace.storyFilesToScanOrUnzip(true).isNotEmpty()) {
+                if (!workspace.setupWorkspacePath(context, uri, false))
+                    return
+                if (//workspace.workdocfile.uri.scheme == "file" && // TODO: Should we only migrate from internal folders?
+                        workspace.previousWorkDocFile.exists() &&
+                        workspace.previousWorkDocFile.uri != workspace.workdocfile.uri &&
+                        workspace.oldStoryDirectories(workspace.storyDirectories(), true).isNotEmpty()) {
                     showMigrateIntenalStoriesDialog(request, uri)
                 } else {
                     setupWorkspace(request, uri, false)
@@ -65,7 +73,7 @@ class SelectTemplatesFolderController(
             return true
 
         // always add demo when no installed stories or stories to unzip
-        if (Workspace.workdocfile.uri.scheme == "file" &&
+        if (Workspace.workdocfile.uri.scheme == "file" &&   // TODO: Should we only create a demo in internal folders?
                 workspace.storyFilesToScanOrUnzip().isEmpty())
             return true
 

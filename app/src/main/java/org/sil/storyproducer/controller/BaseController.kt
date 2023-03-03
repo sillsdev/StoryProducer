@@ -6,6 +6,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import org.sil.storyproducer.App
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 import timber.log.Timber
@@ -81,7 +82,10 @@ open class BaseController(
         Workspace.phases = Workspace.buildPhases()
         Workspace.activePhaseIndex = 0
 
+        Workspace.importWordLinks(App.appContext)   // import word links if just migrated
+
         view.hideReadingTemplatesDialog()
+
         onStoriesUpdated()
     }
 
