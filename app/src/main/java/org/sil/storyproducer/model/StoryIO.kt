@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.FileUtils
+import android.provider.DocumentsContract
+import androidx.core.net.toFile
 import androidx.documentfile.provider.DocumentFile
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.hbisoft.pickit.Utils.getRealPathFromURI_API19
@@ -228,6 +230,9 @@ fun isZipped(fileName: String?): Boolean {
 fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldDocFolder: DocumentFile): DocumentFile? {
 
     do {
+//        if (!Workspace.copyOldInternalStories)
+//            return file
+
         if (newWorkspaceFolder.uri == oldDocFolder.uri)
             return file
 
@@ -240,10 +245,10 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
         if (file.name?.isEmpty() ?: break)
             break;
 
-        if (isZipped(file.name))
+        if (workspaceRelPathExists(context, file.name!!))
             return file
 
-        if (workspaceRelPathExists(context, file.name!!))
+        if (isZipped(file.name))
             return file
 
         var sourceStr = getRealPathFromURI_API19(context, oldDocFolder.uri)
@@ -268,29 +273,44 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
 
 
         var walkSource = sourceFile.walkTopDown()
+        var storyName = sourceFile.name
         for (w in walkSource) {
             var sourceSubPath = w.path.substring(sourceStr.length)
             if (sourceSubPath.startsWith("/"))
                 sourceSubPath = sourceSubPath.substring(1)
             var destFullPath = File(destFile.path, sourceSubPath)
             if (w.isDirectory) {
-                destFullPath.mkdirs()
+//                destFullPath.mkdirs()
+                //build the document tree if it is needed
+                var segments = sourceSubPath.split("/")
+                var uri = oldDocFolder.uri
+                try {
+                    for (i in 0..segments.size - 2) {
+                        //TODO make this faster.
+                        val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+                        var isDirectory: Boolean
+                            // old way uses content resolver to test and create directories
+                        isDirectory = context.contentResolver.getType(newUri)?.
+                        contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
+                        if (!isDirectory)
+                            DocumentsContract.createDocument(context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+                        uri = newUri    // next uri of path is one level down
+                    }
+                } catch (e: Exception){
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                    return null
+                }
             } else {
 //                destFullPath.writeText("test text here")
                 //w.copyTo(destFullPath)
 //                destFullPath.writeText("just testing again!")
-
-                var f = w
-                var storyName = sourceFile.name
-
-//                for (f in fileHeaders){
                 do {
                     if (storyRelPathExists(context, sourceSubPath, storyName)) continue    // added storyName to fix unzipping issue
 
                     val ostream = getChildOutputStream(context, "$storyName/${sourceSubPath}") ?: continue
 
                     // reading and writing
-                    val zis = f.inputStream()
+                    val zis = w.inputStream()
                     count = zis.read(buffer)
                     try {
                         while (count != -1) {
@@ -315,7 +335,7 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
 
 
 
-//        if (!sourceFile.copyRecursively(destFile, true, {f, e -> myErrorAction(f, e)}))    // TODO: SET OVERWRITE = FALSE HERE!!!!
+//        if (!sourceFile.copyRecursively(destFile, true, {w, e -> myErrorAction(w, e)}))    // TODO: SET OVERWRITE = FALSE HERE!!!!
 //            break
 
         return file

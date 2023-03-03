@@ -23,15 +23,15 @@ open class BaseController(
         view.showCancellingReadingTemplatesDialog()
     }
 
-    fun updateStories() {
+    fun updateStories(migrate: Boolean = false) {
         Workspace.asyncAddedStories.clear() // used for adding stories asynchronously
 
-        val storyFiles = Workspace.storyFilesToScanOrUnzip()
+        val storyFiles = Workspace.storyFilesToScanOrUnzip(migrate)
 
         if (storyFiles.size > 0) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)
         } else {
-            onStoriesUpdated()
+            onLastStoryUpdated()
         }
     }
 

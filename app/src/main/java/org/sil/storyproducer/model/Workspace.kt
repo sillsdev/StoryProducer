@@ -151,6 +151,7 @@ object Workspace {
         if(activeStory.title == "") return null
         return activeStory.slides[activeSlideNum]
     }
+    var copyOldInternalStories = false
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -467,13 +468,13 @@ object Workspace {
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun storyFilesToScanOrUnzip(): List<DocumentFile> {
+    fun storyFilesToScanOrUnzip(migrate:Boolean = false): List<DocumentFile> {
         // made up of already installed stories +
         //      story archives downloaded in story template dir +
         //      story archives downloaded in external app storage download dir
         // while checking that the story does not already exist
         return storyDirectories()
-            .run { this.plus(oldStoryDirectories(this)) }
+            .run { this.plus(oldStoryDirectories(this, migrate)) }
             .run { this.plus(storyDownloadedBloomFiles(this)) }
             .run { this.plus(storyBloomFiles(this)) }
     }
@@ -486,13 +487,19 @@ object Workspace {
         }
     }
 
-    private fun oldStoryDirectories(current : List<DocumentFile>): List<DocumentFile> {
+    private fun oldStoryDirectories(current : List<DocumentFile>, migrate: Boolean): List<DocumentFile> {
         // We don't want the videos and wordlinks folders included in the list of story folders
+        var oldStoryDirsList : MutableList<DocumentFile> = ArrayList()
+        if (!migrate)
+            return oldStoryDirsList
+
+        if (previousWorkDocFile.uri.scheme != "file")
+            return oldStoryDirsList
+
         val non_story_folders = arrayOf(VIDEO_DIR, WORD_LINKS_DIR)
         val prevDocs = previousWorkDocFile.listFiles().filter {
             it.isDirectory && (!non_story_folders.contains(it.name))
         }
-        var oldStoryDirsList : MutableList<DocumentFile> = ArrayList()
         for (i in 0 until prevDocs?.size!!) {
             val copyOldDirName = prevDocs[i].name
             // don't add if already in the workspace

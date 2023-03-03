@@ -1,9 +1,11 @@
 package org.sil.storyproducer.controller
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.view.BaseActivityView
 
@@ -18,24 +20,44 @@ class SelectTemplatesFolderController(
         view.startActivityForResult(intent, request)
     }
 
+    private fun showMigrateIntenalStoriesDialog(request: Int, uri: Uri) {
+        val dialog = AlertDialog.Builder(context)
+            .setTitle(context.getString(R.string.migrate_stories_title))
+            .setMessage(context.getString(R.string.migrate_stories_message))
+            .setNegativeButton(context.getString(R.string.no)) { _, _ ->
+                setupWorkspace(request, uri, false)
+            }
+            .setPositiveButton(context.getString(R.string.yes)) { _, _ ->
+                setupWorkspace(request, uri, true)
+            }
+            .create()
+
+        dialog.show()
+    }
     fun onFolderSelected(request: Int, result: Int, data: Intent?) {
         data?.data?.also { uri ->
             if (result == Activity.RESULT_OK) {
-                setupWorkspace(request, uri)
+                if (workspace.workdocfile.uri.scheme == "file" &&
+                    workspace.storyFilesToScanOrUnzip(true).isNotEmpty()) {
+                    showMigrateIntenalStoriesDialog(request, uri)
+                } else {
+                    setupWorkspace(request, uri, false)
+                }
             }
         }
     }
 
-    internal fun setupWorkspace(request: Int, uri: Uri) {
+    internal fun setupWorkspace(request: Int, uri: Uri, migrate: Boolean = false) {
         view.takePersistableUriPermission(uri)
 
-        workspace.setupWorkspacePath(context, uri)
+        if (!workspace.setupWorkspacePath(context, uri))
+            return
 
         if (shouldAddDemoToWorkspace(request)) {
             workspace.addDemoToWorkspace(context)
         }
 
-        updateStories()  // always refresh list of stories
+        updateStories(migrate)  // always refresh list of stories
     }
 
     fun shouldAddDemoToWorkspace(request: Int): Boolean {
@@ -43,7 +65,8 @@ class SelectTemplatesFolderController(
             return true
 
         // always add demo when no installed stories or stories to unzip
-        if (workspace.storyFilesToScanOrUnzip().isEmpty())
+        if (Workspace.workdocfile.uri.scheme == "file" &&
+                workspace.storyFilesToScanOrUnzip().isEmpty())
             return true
 
         return false
