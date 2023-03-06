@@ -31,6 +31,9 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
                 tempVideos.add(paths[i])
             }
         }
+        // RK 2-13-23 - Added sort for longer lists
+        tempVideos.sortBy { it.toString() }
+
         videoPaths = tempVideos
         notifyDataSetChanged()
     }

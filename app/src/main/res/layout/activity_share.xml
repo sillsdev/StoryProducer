@@ -55,10 +55,15 @@
                 android:text="@string/no_videos"
                 android:textSize="@dimen/large_text" />
 
+             <!-- RK 02/09/23 - 
+               Issue #14
+               The list space has been expanded vertically to use the 
+               whole space in case the list is longer.
+                 -->
             <ListView
                 android:id="@+id/videos_list"
                 android:layout_width="match_parent"
-                android:layout_height="384dp">
+                android:layout_height="wrap_content">
 
             </ListView>
 
@@ -75,6 +80,7 @@
                 android:id="@+id/open_videos_path"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
                 android:layout_gravity="center_horizontal|center_vertical"
                 android:background="@drawable/button"
                 android:text="@string/view_video_folder_path" />
