@@ -47,6 +47,14 @@ Translate and produce stories (starting with templates in a major language made 
    to install the techteam25 Github in my Github account and then clone a local copy 
    on my PC.
    
+   github-desktop  is a useful application.  Many of the git operations can
+   be accessed through the UI rather than the command line.  I used the following
+   to install it on Ubuntu
+   
+        sudo wget https://github.com/shiftkey/desktop/releases/download/release-3.1.1-linux1/GitHubDesktop-linux-3.1.1-linux1.deb
+        sudo apt-get install gdebi-core 
+        sudo gdebi GitHubDesktop-linux-3.1.1-linux1.deb
+   
    [Adapted from Chris Hubbard [SIL] document and updated for Story Publisher and techteam25
    1. Clone Locally (this used SSH Keys to authenticate with git which is more convenient than using https and username/password)
 
