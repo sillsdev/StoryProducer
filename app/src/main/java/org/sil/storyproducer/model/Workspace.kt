@@ -222,6 +222,8 @@ object Workspace {
         return ""   // Not enough space to use a folder automatically
     }
 
+    // Sets up the new workspace document (SP Templates) folder
+    // fullInit=false when migrating (moving) old stories to the new templates folder
     fun setupWorkspacePath(context: Context, uri: Uri, fullInit: Boolean = true) : Boolean {
         if (uri.toString().isEmpty())
             return false
@@ -470,10 +472,12 @@ object Workspace {
         workdocfile = DocumentFile.fromFile(File(""))
     }
 
-    fun storyFilesToScanOrUnzip(migrate:Boolean = false): List<DocumentFile> {
-        // made up of already installed stories +
-        //      story archives downloaded in story template dir +
-        //      story archives downloaded in external app storage download dir
+    fun storyFilesToScanOrUnzipOrMove(migrate:Boolean = false): List<DocumentFile> {
+        // made up of:
+        //      already installed stories +
+        //      old stories that need to be migrated +
+        //      story archives downloaded in external app storage download dir +
+        //      story archives downloaded in story template dir
         // while checking that the story does not already exist
         return storyDirectories()
             .run { this.plus(oldStoryDirectories(this, migrate)) }
@@ -546,15 +550,19 @@ object Workspace {
                 ?.let { storyPath1 -> parseStoryIfPresent(context, storyPath1) }
                 ?.let { story -> migrateStory(context, story) }
         /*  Daniel March and BW figured this is what the lambdas are doing...
-        var unzipped = unzipIfZipped(context, storyPath, workdocfile.listFiles());
-        if(unzipped != null)
+        var OldStoryPath = copyOldStory(context, storyPath, workdocfile, previousWorkDocFile)
+        if (OldStoryPath != null)
         {
-            var pathUnzipped = pathOf(unzipped);
-            if(pathUnzipped != null)
+            var unzipped = unzipIfZipped(context, OldStoryPath, workdocfile.listFiles());
+            if(unzipped != null)
             {
-                var story = parseStoryIfPresent(context, pathUnzipped)
-                if (story != null)
-                    return migrateStory(context, story)
+                var pathUnzipped = pathOf(unzipped);
+                if(pathUnzipped != null)
+                {
+                    var story = parseStoryIfPresent(context, pathUnzipped)
+                    if (story != null)
+                        return migrateStory(context, story)
+                }
             }
         }
         return null

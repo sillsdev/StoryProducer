@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
+import org.sil.storyproducer.tools.file.isUriAutomaticallySelected
 import org.sil.storyproducer.view.BaseActivityView
 
 class SelectTemplatesFolderController(
@@ -20,6 +21,7 @@ class SelectTemplatesFolderController(
         view.startActivityForResult(intent, request)
     }
 
+    // show dialog to ask if user wants to migrate the old stories
     private fun showMigrateIntenalStoriesDialog(request: Int, uri: Uri) {
         val dialog = AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.migrate_stories_title))
@@ -43,11 +45,15 @@ class SelectTemplatesFolderController(
             if (result == Activity.RESULT_OK) {
                 if (!workspace.setupWorkspacePath(context, uri, false))
                     return
-                if (//workspace.workdocfile.uri.scheme == "file" && // TODO: Should we only migrate from internal folders?
+                if (        // (was) check that the old workspace was automatically selected before migrating
+                        //workspace.workdocfile.isUriAutomaticallySelected(uri) && // TODO: Should we only migrate from internal folders? (TBD)
+                            // check that there was an old workspace folder
                         workspace.previousWorkDocFile.exists() &&
+                            // check that a different workspace folder was selected
                         workspace.previousWorkDocFile.uri != workspace.workdocfile.uri &&
+                            // checks that there exist stories in the old folder that do not exist in the new selected folder
                         workspace.oldStoryDirectories(workspace.storyDirectories(), true).isNotEmpty()) {
-                    showMigrateIntenalStoriesDialog(request, uri)
+                    showMigrateIntenalStoriesDialog(request, uri)   // dialog calls setupWorkspace() appropriately
                 } else {
                     setupWorkspace(request, uri, false)
                 }
@@ -72,9 +78,9 @@ class SelectTemplatesFolderController(
         if (request == SELECT_TEMPLATES_FOLDER_AND_ADD_DEMO)
             return true
 
-        // always add demo when no installed stories or stories to unzip
-        if (Workspace.workdocfile.uri.scheme == "file" &&   // TODO: Should we only create a demo in internal folders?
-                workspace.storyFilesToScanOrUnzip().isEmpty())
+        // (was) 'always' add demo when no installed stories or stories to unzip
+        if (isUriAutomaticallySelected(Workspace.workdocfile.uri) &&   // TODO: Should we only create a demo in automatic folders? (TBD)
+                workspace.storyFilesToScanOrUnzipOrMove().isEmpty())
             return true
 
         return false

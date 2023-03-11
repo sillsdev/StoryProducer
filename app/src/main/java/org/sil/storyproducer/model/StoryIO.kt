@@ -13,7 +13,6 @@ import org.sil.storyproducer.tools.file.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -217,13 +216,16 @@ fun isZipped(fileName: String?): Boolean {
     } == true
 }
 // copy a file to the new location
-fun copySubFile(context: Context, subFile: String, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): Boolean {
+fun copySubFile(context: Context, subFile: String, newDocumentFolder: DocumentFile, oldDocumentFolder: DocumentFile): Boolean {
 
-    val oldDoc = oldWorkspaceFolder.findFile(subFile) ?: return false
+    val oldDoc = oldDocumentFolder.findFile(subFile) ?: return false
     if (!oldDoc.isFile)
         return false
 
-    val newDoc = newWorkspaceFolder.createFile(oldDoc.type!!, subFile) ?: return false
+    if (newDocumentFolder.findFile(subFile) != null)
+        return true // if file already exists ignore it but continue with migrating other stories
+
+    val newDoc = newDocumentFolder.createFile(oldDoc.type!!, subFile) ?: return false
 
     val buffer = ByteArray(1024 * 64)
     val outStream = context.contentResolver.openOutputStream(newDoc.uri) ?: return false
@@ -241,14 +243,14 @@ fun copySubFile(context: Context, subFile: String, newWorkspaceFolder: DocumentF
 }
 
 // Copy a sub-folder and content to a new folder location - this is done recursively
-fun copySubFolder(context: Context, subFolder: String, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): Boolean {
+fun copySubFolder(context: Context, subFolder: String, newDocumentFolder: DocumentFile, oldDocumentFolder: DocumentFile): Boolean {
 
-    val oldFolder = oldWorkspaceFolder.findFile(subFolder) ?: return false
+    val oldFolder = oldDocumentFolder.findFile(subFolder) ?: return false
     if (!oldFolder.isDirectory)
         return false
 
-    val newFolder = newWorkspaceFolder.findFile(subFolder) ?:
-                        newWorkspaceFolder.createDirectory(subFolder) ?:
+    val newFolder = newDocumentFolder.findFile(subFolder) ?:
+                        newDocumentFolder.createDirectory(subFolder) ?:
                         return false
 
     for (oldSubDoc in oldFolder.listFiles()) {
@@ -265,7 +267,7 @@ fun copySubFolder(context: Context, subFolder: String, newWorkspaceFolder: Docum
     return true
 }
 
-// Copy a sub-folder from the source templates folder and if ok return for further processing
+// Copy a Story/videos/wordlinks sub-folder from the source templates folder and if ok return for further processing
 fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: DocumentFile, oldWorkspaceFolder: DocumentFile): DocumentFile? {
 
     do {
@@ -293,9 +295,10 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
         if (isZipped(file.name))
             return file // The the Story archive zipped file must be for the unzipIfZipped() function
 
-        // TODO: Should we check that all sub-folders are valid Stories before copying them
+        // TODO: Should we check that all sub-folders are valid Stories before copying them (Yes)
+        // here is the main action - copy this subfolder now
         if (!copySubFolder(context, file.name!!, newWorkspaceFolder, oldWorkspaceFolder))
-            break
+            break   // copying story failed so no more processing if this 'file' parameter
 
         // get the copied subfolder as a DocumentFile
         val newSubFolder = newWorkspaceFolder.findFile(file.name!!) ?: break
@@ -305,7 +308,7 @@ fun copyOldStory(context: Context, file: DocumentFile, newWorkspaceFolder: Docum
         if (!oldSubFolder.isDirectory)
             break
 
-        // TODO: Should we check that the new copied folder parses ok before deleting old?
+        // TODO: Should we check that the new copied folder parses ok before deleting old? (yes)
         if (!oldSubFolder.delete())
             break
 

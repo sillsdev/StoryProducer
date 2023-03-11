@@ -110,7 +110,7 @@ class MainActivity : BaseActivity(), Serializable {
     // If only one or two stories are (auto) installed then display short
     // message to user to explain how to download more bloom templates
     private fun checkDownloadStoriesMessage() {
-        if (Workspace.storyFilesToScanOrUnzip().size <= 3) {
+        if (Workspace.storyFilesToScanOrUnzipOrMove().size <= 3) {
             val snackBar = Snackbar.make(
                     findViewById(R.id.drawer_layout),
                     R.string.more_story_templates,

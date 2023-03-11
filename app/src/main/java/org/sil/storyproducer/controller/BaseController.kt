@@ -27,7 +27,7 @@ open class BaseController(
     fun updateStories(migrate: Boolean = false) {
         Workspace.asyncAddedStories.clear() // used for adding stories asynchronously
 
-        val storyFiles = Workspace.storyFilesToScanOrUnzip(migrate)
+        val storyFiles = Workspace.storyFilesToScanOrUnzipOrMove(migrate)
 
         if (storyFiles.size > 0) {
             updateStoriesAsync(1, storyFiles.size, storyFiles)
