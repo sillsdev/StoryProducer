@@ -164,7 +164,7 @@ fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
     if (isUriAutomaticallySelected(uri)) {
         // for app-specific storage we need a file provider content: Uri
         return FileProvider.getUriForFile(App.Companion.appContext,
-            BuildConfig.APPLICATION_ID + ".fileprovider", File(uri.path!!))
+            BuildConfig.APPLICATION_ID + ".fileprovider", File(uri?.path!!))
     }
     return uri
 }
@@ -175,6 +175,24 @@ fun getStoryText(context: Context, relPath: String, dirRoot: String = Workspace.
         return iStream.reader().use {
             it.readText() }
     return null
+}
+
+fun getDocumentText(context: Context, fullDocumentPath: DocumentFile) : String? {
+    val iStream = getDocumentInputStream(context, fullDocumentPath)
+    if (iStream != null) {
+        val textRead = iStream.reader().use { it.readText() }
+        iStream.close()
+        return textRead
+    }
+    return null
+}
+
+fun getDocumentInputStream(context: Context, fullDocumentPath: DocumentFile) : InputStream? {
+    try {
+        return context.contentResolver.openInputStream(fullDocumentPath.uri)
+    } catch (e: java.io.IOException) {
+        return null;
+    }
 }
 
 fun getStoryChildInputStream(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : InputStream? {
@@ -218,7 +236,7 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     var childDocs: MutableList<String> = ArrayList()
-    if (Workspace.workdocfile.isUriAutomaticallySelected(uri))
+    if (isUriAutomaticallySelected(Workspace.workdocfile.uri))
     {
         // Use listFiles to find children in app-specific internal/external storage
         val parentDir = File(Workspace.workdocfile.uri.path, relPath)
@@ -304,7 +322,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
                 else -> "*/*"
             }
         }
-        if (fullisUriAutomaticallySelected(uri))
+        if (isUriAutomaticallySelected(fullUri))
             File(uri.path, segments.last()).createNewFile() // use File class to create the new file
         else
             DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())

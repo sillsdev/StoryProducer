@@ -500,10 +500,11 @@ object Workspace {
         if (!migrate)
             return oldStoryDirsList
 
-        val non_story_folders = arrayOf("")//VIDEO_DIR, WORD_LINKS_DIR) // TODO: Allow copying of Videos and WordLinks for now
+        // Select only sub-folders (directories) not sub-files
         val prevDocs = previousWorkDocFile.listFiles().filter {
-            it.isDirectory && (!non_story_folders.contains(it.name))
+            it.isDirectory
         }
+
         for (i in 0 until prevDocs?.size!!) {
             val copyOldDirName = prevDocs[i].name
             // don't add if already in the workspace
