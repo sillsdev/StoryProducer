@@ -7,7 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
-import org.sil.storyproducer.tools.file.isUriAutomaticallySelected
+import org.sil.storyproducer.tools.file.isUriAutomaticallyCreated
 import org.sil.storyproducer.view.BaseActivityView
 
 class SelectTemplatesFolderController(
@@ -53,7 +53,7 @@ class SelectTemplatesFolderController(
                             // check that a different workspace folder was selected AND
                         workspace.previousWorkDocFile.uri != workspace.workdocfile.uri &&
                             // check that the old workspace was automatically selected AND
-                        isUriAutomaticallySelected(workspace.previousWorkDocFile.uri) &&
+                        isUriAutomaticallyCreated(workspace.previousWorkDocFile.uri) &&
                             // check that there exist stories in the old folder that do not exist in the new selected folder
                         workspace.oldStoryDirectories(newStories, true).isNotEmpty()) {
                     showMigrateIntenalStoriesDialog(request, uri)   // dialog calls setupWorkspace() appropriately
@@ -82,7 +82,7 @@ class SelectTemplatesFolderController(
             return true
 
         // Add demo to automatically selected worksapce when no installed stories or stories to unzip or move
-        if (isUriAutomaticallySelected(Workspace.workdocfile.uri) &&
+        if (isUriAutomaticallyCreated(Workspace.workdocfile.uri) &&
                 workspace.storyFilesToScanOrUnzipOrMove().isEmpty())
             return true
 

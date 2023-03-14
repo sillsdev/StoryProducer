@@ -60,7 +60,7 @@ fun Story.toJson(context: Context){
     }
 }
 
-fun storyFromJson(context: Context, storyPath: DocumentFile, backup: Boolean = true): Story? {
+fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false): Story? {
 
     val storyFilePath = storyPath.findFile(PROJECT_DIR)
             ?.let { projDir -> projDir.findFile(PROJECT_FILE) }
@@ -103,7 +103,7 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, backup: Boolean = t
         // looking for "SP::")
         Timber.e("SP::(%s)", errInfo) // uses Kotlin Log class with severity level: Error
     }
-    if (!backup)
+    if (validateOnly)
         return null // return if no backup needed (just validating story)
 
     // if we get here we caught an exception and have exited from the catch clause
@@ -162,13 +162,13 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, backup: Boolean = t
 }
 
 fun isValidStory(context: Context, storyPath: DocumentFile) : Boolean {
-    var story = parseStoryIfPresent(context, storyPath, false)
+    var story = parseStoryIfPresent(context, storyPath, true)
     if (story == null)
         return false
     return true
 }
 
-fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, backup: Boolean = true): Story? {
+fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly: Boolean = false): Story? {
     var story: Story? = null
     //Check if path is path
     if(!storyPath.isDirectory) return null
@@ -176,7 +176,7 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, backup: Boole
     //make a project directory if there is none.
     if (storyPath.findFile(PROJECT_DIR) != null) {
         //parse the project file, if there is one.
-        story = storyFromJson(context, storyPath, backup)
+        story = storyFromJson(context, storyPath, validateOnly)
         //if there is a story from the file, do not try to read any templates, just return.
         if(story != null) return story
     }
@@ -196,7 +196,8 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, backup: Boole
     }
     //write the story (if it is not null) to json.
     if(story != null) {
-        story.toJson(context)
+        if (!validateOnly)
+            story.toJson(context)   // No need to write json if validating only
         return story
     }
     return null

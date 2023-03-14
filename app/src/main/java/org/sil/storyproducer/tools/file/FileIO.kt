@@ -129,7 +129,7 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 }
 
 fun workspaceUriPathExists(context: Context, uri: Uri) : Boolean {
-    if (isUriAutomaticallySelected(uri))
+    if (isUriAutomaticallyCreated(uri))
         return File(uri.path!!).exists()  // check app-specific storage for file
     else
         context.contentResolver.getType(uri) ?: return false
@@ -161,7 +161,7 @@ fun getWorkspaceUri(relPath: String) : Uri? {
 
 fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
     val uri = getWorkspaceUri(relPath)
-    if (isUriAutomaticallySelected(uri)) {
+    if (isUriAutomaticallyCreated(uri)) {
         // for app-specific storage we need a file provider content: Uri
         return FileProvider.getUriForFile(App.Companion.appContext,
             BuildConfig.APPLICATION_ID + ".fileprovider", File(uri?.path!!))
@@ -236,7 +236,7 @@ fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: 
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     var childDocs: MutableList<String> = ArrayList()
-    if (isUriAutomaticallySelected(Workspace.workdocfile.uri))
+    if (isUriAutomaticallyCreated(Workspace.workdocfile.uri))
     {
         // Use listFiles to find children in app-specific internal/external storage
         val parentDir = File(Workspace.workdocfile.uri.path, relPath)
@@ -288,7 +288,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
             //TODO make this faster.
             val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
             var isDirectory: Boolean
-            if (isUriAutomaticallySelected(uri)) {
+            if (isUriAutomaticallyCreated(uri)) {
                 // new app-specific storage uses File class to test and create directories
                 isDirectory = newUri.toFile().isDirectory // use File class to test app-specific storage
                 if (!isDirectory)
@@ -322,7 +322,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
                 else -> "*/*"
             }
         }
-        if (isUriAutomaticallySelected(fullUri))
+        if (isUriAutomaticallyCreated(fullUri))
             File(uri.path, segments.last()).createNewFile() // use File class to create the new file
         else
             DocumentsContract.createDocument(context.contentResolver,uri,mType,segments.last())
@@ -350,7 +350,7 @@ fun getChildInputStream(context: Context, relPath: String) : InputStream? {
 }
 
 fun deleteUriFile(context: Context, uri: Uri) : Boolean {
-    return if (isUriAutomaticallySelected(uri))
+    return if (isUriAutomaticallyCreated(uri))
         File(uri.path!!).delete()
     else
         DocumentsContract.deleteDocument(context.contentResolver, uri)
@@ -376,7 +376,7 @@ fun deleteWorkspaceFile(context: Context, relPath: String) : Boolean {
 fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
     // Get a document file from a file uri or from a user selected tree uri
     var docFile: DocumentFile?
-    if (isUriAutomaticallySelected(uri))
+    if (isUriAutomaticallyCreated(uri))
         docFile = DocumentFile.fromFile(File(uri.path!!)) // use the file uri from app-specific storage
     else
         docFile = DocumentFile.fromTreeUri(context, uri)  // use the content uri with user granted privileges
@@ -387,7 +387,7 @@ fun getDocumentFileFromUri(context: Context, uri: Uri) : DocumentFile {
 
 fun isUriStorageMounted(uri: Uri): Boolean {
     // Check a Uri to see if it is un-mounted auto-selected external storage
-    if (isUriAutomaticallySelected(uri) &&
+    if (isUriAutomaticallyCreated(uri) &&
         uri.path!!.isNotEmpty()) {
         if (uri.path != "/") {
             val wsStorageState =
@@ -410,7 +410,7 @@ fun isUriStorageMounted(uri: Uri): Boolean {
     return true
 }
 
-fun isUriAutomaticallySelected(uri: Uri?): Boolean {
+fun isUriAutomaticallyCreated(uri: Uri?): Boolean {
     // Check a Uri to see if was automatically selected as a workspace (templates) folder
     if (uri == null)
         return false
