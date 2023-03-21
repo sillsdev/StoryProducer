@@ -271,10 +271,10 @@ class BLDownloadActivity : AppCompatActivity() {
                     BLDataModel(
                         blItem.Title,
                         blItem.LangCode,
-                        if (blItem.Title == "001 The Widow’s Offering")
-                            R.drawable.temp_001_widdows_offering_thumbnail // TODO: example image - just testing appearance
-                        else
-                            R.drawable.temp_sp_logo_book,
+//                        if (blItem.Title == "001 The Widow’s Offering")
+//                            R.drawable.temp_001_widdows_offering_thumbnail // TODO: example image - just testing appearance
+//                        else
+                        R.drawable.temp_sp_logo_book,
                         blItem.BloomSourceURL,
                         isInWorkspace,      // makes it grayed out
                         isFileDownloaded,   // remember if already downloaded
