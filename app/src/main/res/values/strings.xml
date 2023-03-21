@@ -176,7 +176,7 @@
     <string name="learn_phase_overwrite">Are you sure you want to overwrite your current recording?</string>
 
     <!-- Translate + Revise Phase -->
-    <string name="translate_revise_playback_no_lwc_audio">Could not find narration audio</string>
+    <string name="translate_revise_playback_no_lwc_audio">Slide not translated - no narration audio in the local language</string>
     <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>
     <string name="translate_revise_play_narration_audio">Play narration audio</string>
 
