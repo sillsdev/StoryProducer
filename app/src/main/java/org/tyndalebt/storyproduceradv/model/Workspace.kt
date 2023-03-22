@@ -78,6 +78,9 @@ object Workspace {
     // parseLanguage is used to store the language folder name from the server to eventually be stored in the story.json file as it is parsed
     lateinit var parseLanguage: String
 
+
+    var isUnitTest = false  // it can be useful to know if this is a unit test.
+
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value

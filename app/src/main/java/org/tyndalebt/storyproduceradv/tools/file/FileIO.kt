@@ -170,7 +170,18 @@ fun getWordLinksChildOutputStream(context: Context, relPath: String, mimeType: S
 fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
     val uri = getStoryUri(relPath,dirRoot) ?: return false
-    context.contentResolver.getType(uri) ?: return false
+    var myGetType = context.contentResolver.getType(uri)
+    if ((myGetType == null) && Workspace.isUnitTest) 
+    {
+        // RK - 03-20-2023
+        // The unit tests use a ShadowContextResolver from the context
+        // which gives different result from resolver.getType()
+        // This fix is intended to compensate for that difference in the unit test
+        // See TestParsePhotoStory.parsePhotoStoryTest()
+        val file = File(uri.path)
+        return file.exists() && file.isDirectory()
+    }
+    myGetType ?: return false;
     return true
 }
 

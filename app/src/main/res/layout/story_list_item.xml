@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- RK 03-13-23
+     issue 96 - Story template titles and subtitles
+     not visible if too long.
+     Expanded min height for longer story titles
+-->
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="72dp">
+    android:minHeight="94dp">
 
     <ImageView
         android:id="@+id/story_list_image"

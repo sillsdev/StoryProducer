@@ -4,10 +4,14 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
-
+    <!-- RK 03/20/2023
+         Added a maxWidth specification in order to leave
+         room in the toolbar for the help button.
+      -->
     <TextView
         android:id="@+id/phaseNameBG"
         android:layout_width="wrap_content"
+        android:maxWidth = "135dp"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
