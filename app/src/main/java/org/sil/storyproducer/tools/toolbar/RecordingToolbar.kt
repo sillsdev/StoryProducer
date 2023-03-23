@@ -1,25 +1,35 @@
 package org.sil.storyproducer.tools.toolbar
 
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import androidx.preference.*
-import androidx.fragment.app.Fragment
+import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Space
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
+import androidx.preference.*
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.PhaseType
+import org.sil.storyproducer.model.WORD_LINKS_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.model.logging.saveLog
-import org.sil.storyproducer.tools.file.assignNewAudioRelPath
-import org.sil.storyproducer.tools.file.storyRelPathExists
+import org.sil.storyproducer.tools.file.*
 import org.sil.storyproducer.tools.media.AudioRecorder
 import org.sil.storyproducer.tools.media.AudioRecorderMP4
+import java.io.File
 
 /**
  * A class responsible for controlling the media and appearance of a recording toolbar.
@@ -38,7 +48,12 @@ import org.sil.storyproducer.tools.media.AudioRecorderMP4
  * this class and other classes that use it so as to limit coupling. This involves the
  * ToolbarMediaListener interface that other classes can extend.
  */
-open class RecordingToolbar : Fragment(){
+open class RecordingToolbar : Fragment() {
+
+    companion object {
+        const val REQUEST_CODE_AUDIO_EDIT = 151
+    }
+
     var rootView: LinearLayout? = null
     protected lateinit var appContext: Context
     protected lateinit var micButton: ImageButton
@@ -49,6 +64,9 @@ open class RecordingToolbar : Fragment(){
         get() {return voiceRecorder?.isRecording == true}
 
     private lateinit  var animationHandler: AnimationHandler
+
+    private var editActivityFile : File? = null // temp audio file being edited by external app
+    private var editActivityUri : Uri? = null   // Uri for sending to audio editing app
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -121,7 +139,7 @@ open class RecordingToolbar : Fragment(){
 
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
         showInheritedToolbarButtons()
-        
+
         toolbarMediaListener.onStoppedToolbarRecording()
     }
 
@@ -164,8 +182,22 @@ open class RecordingToolbar : Fragment(){
 
         micButton = toolbarButton(R.drawable.ic_mic_white_48dp, R.id.start_recording_button)
         rootView?.addView(micButton)
-        
+
         rootView?.addView(toolbarButtonSpace())
+    }
+
+    // returns true if a compatible audio editor is installed
+    protected fun canUseExternalAudioEditor() : Boolean
+    {
+        var mimeType = "audio/m4a"  // the recording format for SP
+        var internalEditFileUri = Uri.EMPTY
+
+        // create an intent to detect an installed app that can handle editing AAC audio files
+        val editIntent = Intent(Intent.ACTION_EDIT, internalEditFileUri)
+        editIntent.setDataAndType(internalEditFileUri, mimeType)
+        val packageManager = activity!!.packageManager
+        // return true if any installed app can edit AAC files
+        return editIntent.resolveActivity(packageManager) != null
     }
 
     protected fun toolbarButton(iconId: Int, buttonId: Int): ImageButton{
@@ -228,11 +260,124 @@ open class RecordingToolbar : Fragment(){
           }
     }
 
+    // gets the audio file Uri for the given story name in this phase of work
+    fun getStorySource(relPath: String,
+                       storyName: String = Workspace.activeStory.title) : Uri? {
+
+        if (Workspace.activePhase.phaseType == PhaseType.WORD_LINKS) {
+            return getStoryUri(relPath, WORD_LINKS_DIR)
+        } else {
+            return getStoryUri(relPath,storyName)
+        }
+    }
+
+    protected open fun editButtonOnClickListener(): View.OnClickListener{
+        return View.OnClickListener {
+
+            stopToolbarMedia()  // stop any current playback
+
+            var chosenFileSubPath = getChosenFilename() // sub path of current translation audio file
+            var chosenFileName = chosenFileSubPath.substringAfterLast('/')  // translation file name
+            var chosenFileUri = getStorySource(chosenFileSubPath)  // Path under Workspace
+
+            do {
+
+                if (chosenFileUri == null ||
+                    chosenFileSubPath.isEmpty() ||
+                    chosenFileName.isEmpty()) {
+                    Toast.makeText(appContext, R.string.recording_toolbar_no_recording, Toast.LENGTH_SHORT).show()
+                    break
+                }
+
+                val context = this.appContext
+                var mimeType = ""
+                if (chosenFileSubPath.substringAfterLast('.').equals("mp3", true))
+                    mimeType = "audio/mpeg"
+                else if (chosenFileSubPath.substringAfterLast('.').equals("m4a", true))
+                    mimeType = "audio/m4a"
+
+                if (mimeType.isEmpty())
+                    break   // unknown file type to try and edit - so exit
+
+                // get an audio file path that we can share with the editing app
+                // we cannot always pass a path to external public storage as
+                // the editing app may not have access to external public files
+                val internalDocsFolder =
+                    context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                val internalEditFile = File(internalDocsFolder?.path + "/${chosenFileName}")
+
+                // copy the file to 'internal' SP app storage area and grant write access to this file below
+                copyToFilesDir(context, chosenFileUri, internalEditFile)
+
+                // get file provider Uri for this internal edit file
+                val internalEditFileUri = FileProvider.getUriForFile(
+                    it.context, it.context.getApplicationContext()
+                        .getPackageName().toString() + ".fileprovider", internalEditFile
+                )
+
+                // create an intent for sharable edit file and set data, type and flags
+                val editIntent = Intent(Intent.ACTION_EDIT, internalEditFileUri)
+                editIntent.setDataAndType(internalEditFileUri, mimeType)
+                editIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
+                // grant access to all potential intent activities
+                val resInfoList = it.context.packageManager.queryIntentActivities(
+                                        editIntent, PackageManager.MATCH_DEFAULT_ONLY)
+                for (resolveInfo in resInfoList) {
+                    val packageName = resolveInfo.activityInfo.packageName
+                    it.context.grantUriPermission(packageName, internalEditFileUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION or
+                                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                }
+
+                // try and launch editor for our audio file
+                try {
+                    startActivityForResult(editIntent, REQUEST_CODE_AUDIO_EDIT)
+                    // remember file and Uri for processing the resultant edits in onActivityResult()
+                    editActivityFile = internalEditFile
+                    editActivityUri = chosenFileUri
+
+                } catch (e: ActivityNotFoundException) {
+                    // Define what your app should do if no activity can handle the intent.
+                    // TODO: Prompt user with a suggestion for a suitable audio editor here
+                    Log.e("editAudio", "intent error: ActivityNotFoundException")
+                }
+
+            } while (false)
+        }
+    }
+
     /*
      * Allows for disabling animations specifically when running tests, because the animations make
      * UI testing more difficult.
      */
     private fun isAnimationEnabled(): Boolean {
         return !PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(activity?.resources?.getString(org.sil.storyproducer.R.string.recording_toolbar_disable_animation), false)
+    }
+
+    override fun onActivityResult(request: Int, result: Int, data: Intent?) {
+        super.onActivityResult(request, result, data)
+
+        // check to see if this result is for the action edit we launched
+        if (request == REQUEST_CODE_AUDIO_EDIT) {
+            if (result == AppCompatActivity.RESULT_OK) {
+                if (editActivityFile != null && editActivityUri != null) {
+                    // copy the edited and saved over audio file back to original location
+                    // TODO: Maybe we should create a new translation file to store it
+                    copyFromFilesDir(this.appContext, editActivityFile!!, editActivityUri!!)
+                }
+            }
+            // tell to user if the edit went ahead ok or not
+            val editResultMsg = if (result == AppCompatActivity.RESULT_OK)
+                activity!!.getString(R.string.translation_updated)
+            else
+                activity!!.getString(R.string.translation_edit_cancelled)
+            Toast.makeText(context, editResultMsg, Toast.LENGTH_LONG).show()
+
+            editActivityFile?.delete()  // always delete action edit temp audio transfer file
+            editActivityFile = null     // File and Uri now no longer usable
+            editActivityUri = null
+        }
     }
 }

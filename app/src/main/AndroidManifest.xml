@@ -20,6 +20,7 @@
         android:roundIcon="@mipmap/logo_new_splash"
         android:theme="@style/AppTheme"
         tools:replace="android:icon,android:roundIcon">
+
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
             android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED" />
@@ -33,6 +34,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider> <!-- Pager Base -->
+
         <activity
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
@@ -45,7 +47,6 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Story List Page -->

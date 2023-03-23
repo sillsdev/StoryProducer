@@ -406,7 +406,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
         //copy file to internal files directory to perform the normal "File" operations on.
         val uri = getWorkspaceUri(file.name!!)
         if(uri != null && !dlFileExists) {
-            copyToFilesDir(context, uri!!, internalFile)
+            copyToFilesDir(context, uri, internalFile)
         }
 
         //Extract to files/unzip

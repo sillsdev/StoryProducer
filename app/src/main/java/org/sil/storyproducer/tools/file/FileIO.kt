@@ -50,11 +50,11 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
     }
 }
 
+// Copy from a source Uri stream to a File object
 fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
-        val ipfd = context.contentResolver.openFileDescriptor(
-                sourceUri, "r")
+        val ipfd = context.contentResolver.openFileDescriptor(sourceUri, "r")
         val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
         val oStream = destFile.outputStream()
         val bArray = ByteArray(100000)
@@ -68,6 +68,25 @@ fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
         // Found this typo bug which closed iStream.close() twice.  Change the second
         // "istream.close()" to "ostream.close()". Previously, for every file that was created,
         // the output stream hung around - not a good use of resources
+        oStream.close()
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+    }
+}
+
+// Copy a sourceFile file from a File object to the destination Uri
+fun copyFromFilesDir(context: Context, sourceFile: File, destUri: Uri){
+    try {
+        val opfd = context.contentResolver.openFileDescriptor(destUri, "w")
+        val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
+        val iStream = sourceFile.inputStream()
+        val bArray = ByteArray(100000)
+        var bytesRead = iStream.read(bArray)
+        while(bytesRead > 0){ //eof not reached
+            oStream.write(bArray,0,bytesRead)
+            bytesRead = iStream.read(bArray)
+        }
+        iStream.close()
         oStream.close()
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
@@ -414,7 +433,7 @@ fun isUriStorageMounted(uri: Uri): Boolean {
         uri.path!!.isNotEmpty()) {
         if (uri.path != "/") {
             val wsStorageState =
-                Environment.getExternalStorageState(File(uri.path));
+                Environment.getExternalStorageState(File(uri.path!!));
             if (wsStorageState != Environment.MEDIA_MOUNTED) {
                 return false
             }
