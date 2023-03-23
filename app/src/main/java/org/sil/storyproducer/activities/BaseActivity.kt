@@ -15,10 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import org.sil.storyproducer.R
-import org.sil.storyproducer.controller.BaseController
-import org.sil.storyproducer.controller.MainActivity
-import org.sil.storyproducer.controller.RegistrationActivity
-import org.sil.storyproducer.controller.SelectTemplatesFolderController
+import org.sil.storyproducer.controller.*
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.SELECT_TEMPLATES_FOLDER_REQUEST_CODES
 import org.sil.storyproducer.controller.SelectTemplatesFolderController.Companion.UPDATE_TEMPLATES_FOLDER
 import org.sil.storyproducer.controller.wordlink.WordLinksListActivity
@@ -201,11 +198,15 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
     fun showAboutDialog() {
         AlertDialog.Builder(this)
-                .setTitle(getString(R.string.about_title))
-                .setView(buildAboutDialogView())
-                .setPositiveButton(getString(R.string.ok), null)
-                .create()
-                .show()
+            .setTitle(getString(R.string.about_title))
+            .setView(buildAboutDialogView())
+            .setPositiveButton(getString(R.string.ok), null)
+            .create()
+            .show()
+    }
+
+    fun showDevSettings() {
+        startActivity(Intent(this,  SettingsActivity::class.java))
     }
 
     private fun buildAboutDialogView(): View {

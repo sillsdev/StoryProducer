@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
@@ -8,11 +9,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -31,6 +34,7 @@ import java.util.*
  */
 class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
+    val mContext = context
     var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + VIDEO_MP4_EXT
     val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT}
 
@@ -107,7 +111,10 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             Workspace.logEvent(context,"video_creation",params)
 
             //Make 3gp video before you delete the temp video - it's made from that.
-            if(mIncludePictures) make3GPVideo()
+            if (!SlideService(context).isVideoWideScreen()) {   // but not if doing wide screen
+                if(mIncludePictures)
+                    make3GPVideo()
+            }
 
             videoTempFile.delete()
 
@@ -200,8 +207,12 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                 // SP422 - DKH 5/6/2022 Enable images on all the slides to be swapped out via the camera tool
                 // Ken Burns effect is not yet implemented on local slides, ie, slides created
                 // with the camera tool
-                if(!(image.contains(slide.localSlideExtension))) {
-                    kbfx = KenBurnsEffect.fromSlide(slide)
+                if(!(image.contains(slide.localSlideExtension)) &&
+                        slide.startMotion != null &&
+                        slide.endMotion != null) {
+
+                    val videoRect = SlideService(mContext).getVideoScreenRect(true)
+                    kbfx = KenBurnsEffect.fromSlide(slide, videoRect.width(), videoRect.height())
                 }
             }
 
@@ -251,6 +262,30 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         }
     }
 
+    private fun generateVideoFormat(): MediaFormat? {
+        //If no video component, use null format.
+        val videoRect = SlideService(mContext).getVideoScreenRect(true)
+        val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC, videoRect.width(), videoRect.height())
+        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
+        videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
+        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)
+        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_MP4_IFRAME_INTERVAL)
+
+        return videoFormat
+    }
+
+    fun generateAudioFormat(): MediaFormat {
+
+        val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
+        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
+        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
+        audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
+        audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
+
+        return audioFormat
+    }
+
     companion object {
         private val TAG = "AutoStoryMaker"
 
@@ -281,31 +316,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 
-        private fun generateVideoFormat(): MediaFormat? {
-            //If no video component, use null format.
-
-            val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC,
-                    VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT)
-
-            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
-            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
-            videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
-            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)
-            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_MP4_IFRAME_INTERVAL)
-
-            return videoFormat
-        }
-
-        fun generateAudioFormat(): MediaFormat {
-
-            val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
-            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
-            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
-            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
-
-            return audioFormat
-        }
     }
 }
 

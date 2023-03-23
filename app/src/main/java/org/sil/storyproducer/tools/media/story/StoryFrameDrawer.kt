@@ -160,7 +160,14 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
         if(!bitmaps.containsKey(page.imRelPath)){
             val ds = getDownsample(context,page.imRelPath,mWidth*2, mHeight*2)
             downsamples[page.imRelPath] = ds
-            bitmaps[page.imRelPath] = SlideService(context).getImage(page.imRelPath, ds, true, Workspace.activeStory)
+            val newBitmap = SlideService(context).getImage(page.imRelPath, ds, true, Workspace.activeStory)
+            if (page.sType == SlideType.NUMBEREDPAGE &&
+                    page.kenBurnsEffect == null &&
+                    SlideService(context).shouldScaleForAspectRatio(
+                            newBitmap.width, newBitmap.height, SlideService(context).getVideoScreenRatio()))
+                bitmaps[page.imRelPath] = SlideService(context).scaleImage(newBitmap, mWidth, mHeight)
+            else
+                bitmaps[page.imRelPath] = newBitmap
         }
         val bitmap = bitmaps[page.imRelPath]
         val downSample = downsamples[page.imRelPath]!!

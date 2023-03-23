@@ -194,6 +194,9 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     showAboutDialog()
                     dismissNoDatabaseMsg()
                 }
+                R.id.nav_dev_settings -> {
+                    showDevSettings()
+                }
             }
 
             true
