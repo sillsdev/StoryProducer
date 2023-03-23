@@ -78,13 +78,63 @@ class KenBurnsEffect
 
 
     companion object {
-        fun fromSlide(slide: Slide) : KenBurnsEffect {
+
+        fun fromSlide(slide: Slide, screenWidth: Int, screenHeight: Int) : KenBurnsEffect {
+
             val imageDimensions = Rect(0, 0, slide.width, slide.height)
-            var start = slide.startMotion ?: imageDimensions
-            start = RectHelper.clip(start,imageDimensions)
-            var end = slide.endMotion ?: imageDimensions
-            end = RectHelper.clip(end,imageDimensions)
-            return KenBurnsEffect(start,end,slide.crop)
+//            var start = slide.startMotion ?: imageDimensions
+            var start = fromSlideRatio(slide, slide.startMotion, screenWidth, screenHeight)
+            start = RectHelper.clip(start, imageDimensions)
+
+            var end = fromSlideRatio(slide, slide.endMotion, screenWidth, screenHeight)
+//            var end = slide.endMotion ?: imageDimensions
+            end = RectHelper.clip(end, imageDimensions)
+
+            return KenBurnsEffect(start, end, slide.crop)
+
         }
+
+        // Adjusts Ken Burns Start or End rectangle to match screen size ratio
+        fun fromSlideRatio(slide: Slide, kenBurnsRect: Rect?, nScreenWidth: Int = 0, nScreenHeight: Int = 0) : Rect {
+
+            if (kenBurnsRect == null)
+                return Rect(0, 0, slide.width, slide.height)
+
+            val imageDimensions = Rect(0, 0, slide.width, slide.height)
+
+            val ratio = nScreenWidth.toFloat() / nScreenHeight.toFloat()
+            var newHeight = kenBurnsRect.bottom - kenBurnsRect.top
+            var newWidth = (newHeight * ratio).toInt()
+            if (newWidth > imageDimensions.width()) {
+                newWidth = imageDimensions.width()
+                newHeight = (newWidth / ratio).toInt()
+            }
+            if (kenBurnsRect.right - kenBurnsRect.left != newWidth) {
+                val midX = (kenBurnsRect.left + kenBurnsRect.right) / 2
+                kenBurnsRect.left = midX - newWidth/2
+                kenBurnsRect.right = midX + newWidth/2
+                if (kenBurnsRect.left < 0) {
+                    kenBurnsRect.right -= kenBurnsRect.left
+                    kenBurnsRect.left = 0
+                } else if (kenBurnsRect.right > imageDimensions.width()) {
+                    kenBurnsRect.left = imageDimensions.width() - (kenBurnsRect.right - kenBurnsRect.left)
+                    kenBurnsRect.right = kenBurnsRect.left + newWidth
+                }
+            }
+            if (kenBurnsRect.bottom - kenBurnsRect.top != newHeight) {
+                val midY = kenBurnsRect.top + (kenBurnsRect.bottom - kenBurnsRect.top) / 3  // mid value is now 1/3
+                kenBurnsRect.top = midY - newHeight/2
+                kenBurnsRect.bottom = midY + newHeight/2
+                if (kenBurnsRect.top < 0) {
+                    kenBurnsRect.bottom -= kenBurnsRect.top
+                    kenBurnsRect.top = 0
+                } else if (kenBurnsRect.bottom > imageDimensions.height()) {
+                    kenBurnsRect.top = imageDimensions.height() - (kenBurnsRect.bottom - kenBurnsRect.top)
+                    kenBurnsRect.bottom = kenBurnsRect.top + newHeight
+                }
+            }
+            return kenBurnsRect
+        }
+
     }
 }

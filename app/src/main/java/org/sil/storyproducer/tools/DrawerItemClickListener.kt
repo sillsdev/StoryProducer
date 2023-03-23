@@ -58,6 +58,9 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
             6 -> {
                 activity.showAboutDialog()
             }
+            7 -> {
+                activity.showDevSettings()
+            }
         }
     }
 }

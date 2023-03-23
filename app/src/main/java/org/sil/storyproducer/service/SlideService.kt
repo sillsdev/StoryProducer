@@ -1,12 +1,11 @@
 package org.sil.storyproducer.service
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import org.sil.storyproducer.R
-import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
+import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
 class SlideService(val context: Context) {
 
@@ -67,6 +66,89 @@ class SlideService(val context: Context) {
 
     fun genDefaultImage(): Bitmap {
         return BitmapFactory.decodeResource(context.resources, R.drawable.greybackground)
+    }
+
+    fun scaleImage(originalBitmap: Bitmap, width: Int, height: Int): Bitmap {
+
+        // Load the original bitmap from a file or resource
+        // Define the desired aspect ratio of the output bitmap
+        // Calculate the new width and height of the output bitmap
+        val originalWidth = originalBitmap.width
+        val originalHeight = originalBitmap.height
+        val originalAspectRatio = originalWidth.toFloat() / originalHeight.toFloat()
+        val newWidth: Int
+        val newHeight: Int
+        var imageScale = 1.0f
+        if (originalAspectRatio > desiredAspectRatio) {
+            // The original bitmap is wider than the desired aspect ratio, so we need to pad it vertically
+            imageScale = width.toFloat() / originalWidth.toFloat()
+            newWidth = (originalWidth * imageScale).toInt()
+            newHeight = ((originalWidth.toFloat() / desiredAspectRatio).toInt() * imageScale).toInt()
+        } else {
+            // The original bitmap is taller than the desired aspect ratio, so we need to pad it horizontally
+            imageScale = height.toFloat() / originalHeight.toFloat()
+            newWidth = ((originalHeight.toFloat() * desiredAspectRatio).toInt() * imageScale).toInt()
+            newHeight = (originalHeight * imageScale).toInt()
+        }
+
+        // Create a new bitmap with the desired aspect ratio and a transparent background
+        val newBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+        // Draw the original bitmap onto the new bitmap using a canvas
+        val canvas = Canvas(newBitmap)
+
+        val paint = Paint()
+        paint.color = Color.LTGRAY
+        paint.style = Paint.Style.FILL
+
+        canvas.drawRect(0f, 0f, newWidth.toFloat(), newHeight.toFloat(), paint)
+
+        val left = (newWidth - (originalWidth*imageScale)) / 2
+        val right = (newWidth + (originalWidth*imageScale)) / 2
+        val top = (newHeight - (originalHeight*imageScale)) / 2
+        val bottom = (newHeight + (originalHeight*imageScale)) / 2
+        canvas.drawBitmap(originalBitmap, null, Rect(left.toInt(), top.toInt(), right.toInt(), bottom.toInt()), null)
+
+        return newBitmap
+    }
+
+    fun shouldScaleForAspectRatio(width: Int, height: Int, desiredAspectRatio: Float): Boolean {
+
+        val actualAspectRatio = width.toFloat() / height.toFloat()
+        val percentDiff = if (actualAspectRatio / desiredAspectRatio >= 1.0f)
+            ((actualAspectRatio / desiredAspectRatio) - 1) * 100
+        else
+            ((desiredAspectRatio / actualAspectRatio) - 1) * 100
+        return percentDiff > maxAspectRatioError
+
+    }
+
+    fun isVideoWideScreen(): Boolean {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        return prefs.getBoolean("video_wide", false);
+    }
+
+    fun getVideoScreenRect(isMp4Video: Boolean): Rect {
+        if (isVideoWideScreen()) {
+            if (isMp4Video)
+                return Rect(0, 0, 1280, 720)
+            else
+                return Rect(0, 0, 176, 144) // 3gp widescreen not supported
+        } else {
+            if (isMp4Video)
+                return Rect(0, 0, 768, 576)
+            else
+                return Rect(0, 0, 176, 144)
+        }
+    }
+
+    fun getVideoScreenRatio(): Float {
+        val vidoRect = getVideoScreenRect(true)
+        return vidoRect.width().toFloat() / vidoRect.height().toFloat()
+    }
+
+    companion object {
+        const val maxAspectRatioError = 4.0f    // max 4% error
+        val desiredAspectRatio = AutoStoryMaker.getVideoScreenRatio()// 4f / 3f//16f / 9f // 4f/3f
     }
 
 }

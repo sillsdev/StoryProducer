@@ -3,9 +3,7 @@ package org.sil.storyproducer.controller.phase
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -30,6 +28,7 @@ import org.sil.storyproducer.tools.BitmapScaler
 import org.sil.storyproducer.tools.DrawerItemClickListener
 import org.sil.storyproducer.tools.PhaseGestureListener
 import org.sil.storyproducer.viewmodel.SlideViewModelBuilder
+import java.io.File
 import kotlin.math.max
 
 abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedListener {
@@ -276,16 +275,21 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         //scale down image to not crash phone from memory error from displaying too large an image
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
-        var height = phoneProperties.heightPixels
-        val scalingFactor = 0.4
-        height = (height * scalingFactor).toInt()
         val width = phoneProperties.widthPixels
+        val desiredAspectRatio = SlideService.desiredAspectRatio
+        val height = (width / desiredAspectRatio).toInt()
 
-        //scale bitmap
-        slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
+        if (slideService.shouldScaleForAspectRatio(slidePicture.width, slidePicture.height, desiredAspectRatio)) {
+            // Create a new bitmap with the desired aspect ratio
+            val newBitmap = slideService.scaleImage(slidePicture, width, height)
+            slidePicture = newBitmap.copy(Bitmap.Config.RGB_565, true)
+        } else {
+            // nearly the same ratio so use the current bitmap after centre crop
+             slidePicture = BitmapScaler.centerCrop(slidePicture, height, width)
+             slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
+        }
 
         //draw the text overlay
-        slidePicture = slidePicture.copy(Bitmap.Config.RGB_565, true)
         val canvas = Canvas(slidePicture)
         //only show the untranslated title in the Learn phase.
         val slideViewModel = SlideViewModelBuilder(Workspace.activeStory.slides[slideNum]).build()
@@ -301,7 +305,6 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
     }
 
     companion object {
-
         fun disableViewAndChildren(view: View) {
             view.isEnabled = false
             if (view is ViewGroup) {

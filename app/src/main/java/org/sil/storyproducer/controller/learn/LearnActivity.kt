@@ -7,6 +7,7 @@ import androidx.core.content.res.ResourcesCompat
 import android.view.View
 import android.widget.*
 import android.widget.SeekBar.OnSeekBarChangeListener
+import androidx.constraintlayout.widget.Guideline
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
 import org.sil.storyproducer.model.SLIDE_NUM
@@ -112,6 +113,10 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             }
         }
         videoSeekBar?.max = slideStartTimes.last()
+
+        // Adjust the Guideline control to scale the video view for 4:3 videos (also used for 16:9 videos)
+        findViewById<Guideline>(R.id.guideline)
+            ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
 
         invalidateOptionsMenu()
     }
