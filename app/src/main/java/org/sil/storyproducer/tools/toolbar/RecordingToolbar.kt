@@ -373,7 +373,7 @@ open class RecordingToolbar : Fragment() {
                 activity!!.getString(R.string.translation_updated)
             else
                 activity!!.getString(R.string.translation_edit_cancelled)
-            Toast.makeText(context, editResultMsg, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, editResultMsg, Toast.LENGTH_LONG).show()
 
             editActivityFile?.delete()  // always delete action edit temp audio transfer file
             editActivityFile = null     // File and Uri now no longer usable
