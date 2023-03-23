@@ -157,8 +157,9 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
         BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context,slide.imageFile,"image/*","r",storyPath.name!!), null, bmOptions)
         slide.height = bmOptions.outHeight
         slide.width = bmOptions.outWidth
-        slide.startMotion = Rect(0, 0, slide.width, slide.height)
-        slide.endMotion = Rect(0, 0, slide.width, slide.height)
+        // Now keeping default start and end Ken Burns motion settings null for enhanced default behaviour
+//        slide.startMotion = Rect(0, 0, slide.width, slide.height)
+//        slide.endMotion = Rect(0, 0, slide.width, slide.height)
 
         val mSR = reRect.find(image.attr("data-initialrect"))
         if(mSR != null) {

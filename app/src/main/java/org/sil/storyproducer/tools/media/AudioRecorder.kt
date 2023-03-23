@@ -70,7 +70,7 @@ abstract class AudioRecorder(val activity: Activity) {
 
 
             val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
-            val audioFormat = AutoStoryMaker.generateAudioFormat()
+            val audioFormat = AutoStoryMaker(context).generateAudioFormat()
             val pages: MutableList<StoryPage> = mutableListOf()
 
             var duration = MediaHelper.getAudioDuration(context, getStoryUri(orgAudioRelPath)!!)

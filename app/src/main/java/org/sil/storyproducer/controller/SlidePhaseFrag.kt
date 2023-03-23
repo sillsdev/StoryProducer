@@ -6,6 +6,7 @@ import android.text.SpannableStringBuilder
 import android.text.method.LinkMovementMethod
 import android.view.*
 import android.widget.*
+import androidx.constraintlayout.widget.Guideline
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.phase.PhaseBaseActivity
@@ -145,6 +146,10 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
      * @param slideImage    The ImageView that will contain the picture.
      */
     protected fun setPic(slideImage: ImageView) {
+
+        // Adjust the Guideline control to scale the video view for 4:3 videos (also used for 16:9 videos)
+        rootView?.findViewById<Guideline>(R.id.guideline)
+            ?.setGuidelineBegin((resources.displayMetrics.widthPixels.toFloat() / 4f * 3f).toInt())
 
         (activity as PhaseBaseActivity).setPic(slideImage, slideNum)
         //Set up the reference audio and slide number overlays

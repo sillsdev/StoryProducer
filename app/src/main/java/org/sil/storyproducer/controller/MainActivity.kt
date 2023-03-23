@@ -272,6 +272,9 @@ class MainActivity : BaseActivity(), Serializable {
             R.id.nav_about -> {
                 showAboutDialog()
             }
+            R.id.nav_dev_settings -> {
+                showDevSettings()
+            }
         }
 
         return true

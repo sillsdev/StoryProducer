@@ -27,6 +27,10 @@
         android:roundIcon="@mipmap/logo_new_splash"
         android:theme="@style/AppTheme"
         tools:replace="android:icon,android:roundIcon">
+        <activity
+            android:name=".controller.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
 
         <meta-data
             android:name="firebase_analytics_collection_deactivated"
@@ -41,19 +45,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider> <!-- Pager Base -->
-
         <activity
             android:name=".controller.pager.PagerBaseActivity"
             android:label="Pager Base"
             android:screenOrientation="portrait" /> <!-- Splash Screen -->
         <activity
             android:name=".controller.SplashScreenActivity"
+            android:exported="true"
             android:label="@string/title_activity_splash_screen"
             android:noHistory="true"
-            android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- Story List Page -->
