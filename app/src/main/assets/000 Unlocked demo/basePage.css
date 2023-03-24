@@ -3,6 +3,10 @@ body {
   line-height: 1.5;
   font-family: "Andika New Basic", Andika, "Andika Basic", "Gentium Basic", "Gentium Book Basic", "Doulos SIL", Sans-Serif;
 }
+textarea,
+.bloom-editable {
+  flex-direction: column;
+}
 .bloom-backgroundImage {
   background-size: contain;
   background-repeat: no-repeat;
@@ -12,6 +16,12 @@ body {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+.bloom-imageContainer img.bloom-imageObjectFit-cover {
+  object-fit: cover;
+}
+.bloom-imageContainer.hasOverlay > img[src="placeHolder.png"] {
+  display: none;
 }
 .bloom-imageContainer .bloom-imageDescription {
   display: none;
@@ -68,6 +78,10 @@ body {
 }
 .bloom-background-gray {
   background-color: hsl(0, 0%, 86%);
+}
+span.bloom-linebreak {
+  display: block;
+  text-indent: 0;
 }
 .bloom-page.Device16x9Portrait {
   min-width: 100mm;
@@ -179,6 +193,9 @@ body {
 .bloom-imageContainer:not(.hoverUp) .bloom-textOverPicture #formatButton {
   display: none;
 }
+.bloom-imageContainer:not(.hoverUp) .bloom-textOverPicture .bloom-imageContainer:after {
+  border: none;
+}
 .bloom-imageContainer.grabbable:not(.bloom-resizing),
 .bloom-imageContainer.grabbable:not(.bloom-resizing) .bloom-textOverPicture .bloom-translationGroup .bloom-editable.cke_editable {
   cursor: grab;
@@ -215,7 +232,6 @@ body {
 .bloom-imageContainer .bloom-textOverPicture {
   position: absolute;
   width: 140px;
-  height: 30px;
   min-width: 30px;
   min-height: 30px;
   border-radius: 3px;
@@ -236,6 +252,11 @@ body {
   z-index: 1002;
   opacity: 0;
 }
+.bloom-imageContainer .bloom-textOverPicture div:focus,
+.bloom-imageContainer .bloom-textOverPicture video:focus {
+  border: 1px solid #1d94a4;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px #1d94a4;
+}
 .bloom-imageContainer .bloom-textOverPicture .bloom-translationGroup {
   background: transparent;
   border: none;
@@ -254,10 +275,6 @@ body {
 }
 .bloom-imageContainer .bloom-textOverPicture .bloom-translationGroup .bloom-editable #formatButton:hover {
   background-color: white;
-}
-.bloom-imageContainer .bloom-textOverPicture .bloom-translationGroup .bloom-editable:focus {
-  border: 1px solid #1d94a4;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px #1d94a4;
 }
 .bloom-imageContainer .bloom-textOverPicture .bloom-translationGroup .bloom-editable[contentEditable="true"][data-languageTipContent]:not([data-languageTipContent=""]):after {
   display: none;
@@ -289,7 +306,7 @@ body {
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 8px #1d94a4;
 }
 .bloom-showImageDescriptions .bloom-textOverPicture {
-  display: none;
+  display: none !important;
 }
 [data-bubble] .bloom-dragHandle {
   right: calc(100% + 1.4px);
@@ -302,6 +319,47 @@ body {
 }
 [data-bubble*="caption"] [data-languageTipContent]:after {
   right: calc(100% + 2.8px) !important;
+}
+.bloom-fullBleed .bloom-imageContainer .bloom-textOverPicture[data-bubble*="`style`:`none`"] {
+  display: flex;
+  flex-direction: column;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]),
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) {
+  display: flex;
+  align-items: center;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-editable.bloom-visibility-code-on,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-editable.bloom-visibility-code-on,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-editable.bloom-visibility-user-on,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-editable.bloom-visibility-user-on {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: center;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-editable.bloom-visibility-code-on p,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-editable.bloom-visibility-code-on p,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-editable.bloom-visibility-user-on p,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-editable.bloom-visibility-user-on p {
+  flex-basis: 100%;
+  flex-grow: 0;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-vertical-align-top .bloom-editable,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-vertical-align-top .bloom-editable {
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-vertical-align-center .bloom-editable,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-vertical-align-center .bloom-editable {
+  align-items: center;
+  align-content: center;
+}
+.bloom-imageContainer .bloom-textOverPicture[data-bubble]:not([data-bubble*="`style`:`none`"]) .bloom-vertical-align-bottom .bloom-editable,
+.bloom-imageContainer .bloom-textOverPicture[data-bubble*="backgroundColors"]:not([data-bubble*="`backgroundColors`:[`transparent`]"]) .bloom-vertical-align-bottom .bloom-editable {
+  align-items: flex-end;
+  align-content: flex-end;
 }
 /*+init {*/
 * {
@@ -418,7 +476,6 @@ textarea,
   width: 100%;
   height: auto;
   flex-grow: 1;
-  flex-direction: column;
 }
 /* The following has been split out from the above rule because it should probably be removed,
     but at this point we are about to go release candidate with 3.1 so it will have to wait.
@@ -433,14 +490,12 @@ td {
   min-height: 1.8em;
   width: 100%;
 }
-span.bloom-linebreak {
-  display: block;
-  text-indent: 0;
-}
 div.bloom-page {
   display: block;
-  page-break-after: auto;
   background-color: white;
+}
+div.bloom-page:not(.bloom-templateMode) {
+  overflow: hidden;
 }
 div#bloomDataDiv {
   display: none;
@@ -450,6 +505,86 @@ div#bloomDataDiv {
 }
 .centerJustify {
   text-align: center;
+}
+.bloom-fullBleed .bloom-page {
+  transform-origin: top left;
+  transition: 0.5s ease-in-out;
+}
+.bloom-fullBleed .bloom-page.A5Portrait {
+  transform: translate(0, -1.25675676mm) scale(1.04054054);
+}
+.bloom-fullBleed .bloom-page.A5Landscape {
+  transform: translate(-1.25675676mm, 0) scale(1.04054054);
+}
+.bloom-fullBleed .bloom-page.A4Portrait {
+  transform: translate(0, -1.24285714mm) scale(1.02857143);
+}
+.bloom-fullBleed .bloom-page.A4Landscape {
+  transform: translate(-1.24285714mm, 0) scale(1.02857143);
+}
+.bloom-fullBleed .bloom-page.A3Portrait {
+  transform: translate(0, -1.24242424mm) scale(1.02020202);
+}
+.bloom-fullBleed .bloom-page.A3Landscape {
+  transform: translate(-1.24242424mm, 0) scale(1.02020202);
+}
+.bloom-fullBleed .bloom-page.USComicPortrait {
+  transform: translate(0, -0.06462636in) scale(1.03565592);
+}
+.bloom-mediaBox {
+  page-break-after: always;
+  overflow: hidden;
+}
+.bloom-mediaBox.A5Portrait {
+  width: 154mm;
+  height: 216mm;
+}
+.bloom-mediaBox.A5Landscape {
+  width: 216mm;
+  height: 154mm;
+}
+.bloom-mediaBox.A4Portrait {
+  width: 216mm;
+  height: 303mm;
+}
+.bloom-mediaBox.A4Landscape {
+  width: 303mm;
+  height: 216mm;
+}
+.bloom-mediaBox.A3Portrait {
+  width: 303mm;
+  height: 426mm;
+}
+.bloom-mediaBox.A3Landscape {
+  width: 426mm;
+  height: 303mm;
+}
+.bloom-mediaBox.Device16x9Portrait {
+  width: 100mm;
+  height: 177.77777778mm;
+}
+.bloom-mediaBox.Device16x9Landscape {
+  width: 177.77777778mm;
+  height: 100mm;
+}
+.bloom-mediaBox.USComicPortrait {
+  width: 6.86122047in;
+  height: 10.48622047in;
+}
+body.publishingWithoutFullBleed .bloom-mediaBox {
+  overflow: hidden;
+}
+body.publishingWithoutFullBleed .bloom-mediaBox.A5Portrait {
+  width: 148mm;
+  height: 210mm;
+}
+body.publishingWithoutFullBleed .bloom-mediaBox.A5Landscape {
+  width: 210mm;
+  height: 148mm;
+}
+body.publishingWithoutFullBleed .bloom-mediaBox.USComicPortrait {
+  width: 6.625in;
+  height: 10.25in;
 }
 /*Notes on wkhtmltopdf and page sizes: Set the border color of Div.Page in preview.css so you can see what the pdf is doing
 these should be 14.8, but wkhtmltopdf shinks it
@@ -480,8 +615,7 @@ Changes here generally require similar changes in EpubMaker.FixPictureSizes() an
   min-height: 250mm;
   max-height: 250mm;
 }
-.bloom-page.A4Landscape,
-.bloom-page.A4LandscapeSideBySide {
+.bloom-page.A4Landscape {
   min-width: 297mm;
   max-width: 297mm;
   min-height: 210mm;
@@ -577,6 +711,18 @@ Changes here generally require similar changes in EpubMaker.FixPictureSizes() an
   min-height: 8.5in;
   max-height: 8.5in;
 }
+.bloom-page.Cm13Landscape {
+  min-width: 130mm;
+  max-width: 130mm;
+  min-height: 130mm;
+  max-height: 130mm;
+}
+.bloom-page.USComicPortrait {
+  min-width: 6.625in;
+  max-width: 6.625in;
+  min-height: 10.25in;
+  max-height: 10.25in;
+}
 /*Margins*/
 .textWholePage .marginBox {
   position: absolute;
@@ -590,137 +736,81 @@ Changes here generally require similar changes in EpubMaker.FixPictureSizes() an
   height: 390mm;
   width: 257mm;
 }
-.A3Portrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 257mm;
-}
 .A3Landscape .marginBox {
   height: 267mm;
   width: 380mm;
-}
-.A3Landscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 380mm;
 }
 .A4Portrait .marginBox {
   height: 267mm;
   width: 170mm;
 }
-.A4Portrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 170mm;
-}
 .A4Landscape .marginBox {
   height: 180mm;
   width: 257mm;
-}
-.A4Landscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 257mm;
 }
 .A5Portrait .marginBox {
   height: 180mm;
   width: 108mm;
 }
-.A5Portrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 108mm;
-}
 .A5Landscape .marginBox {
   height: 118mm;
   width: 170mm;
-}
-.A5Landscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 170mm;
 }
 .A6Portrait .marginBox {
   height: 118mm;
   width: 65mm;
 }
-.A6Portrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 65mm;
-}
 .A6Landscape .marginBox {
   height: 75mm;
   width: 108mm;
-}
-.A6Landscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 108mm;
 }
 .B5Portrait .marginBox {
   height: 220mm;
   width: 136mm;
 }
-.B5Portrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 136mm;
-}
 .QuarterLetterPortrait .marginBox {
   height: 4.31889764in;
   width: 2.67519685in;
-}
-.QuarterLetterPortrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 2.67519685in;
 }
 .QuarterLetterLandscape .marginBox {
   height: 3.06889764in;
   width: 3.92519685in;
 }
-.QuarterLetterLandscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 3.92519685in;
-}
 .HalfLetterPortrait .marginBox {
   height: 7.31889764in;
   width: 3.92519685in;
 }
-.HalfLetterPortrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 3.92519685in;
+.HalfLetterLandscape .marginBox {
+  height: 4.31889764in;
+  width: 6.92519685in;
 }
 .LetterPortrait .marginBox {
   height: 9.81889764in;
   width: 6.92519685in;
 }
-.LetterPortrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 6.92519685in;
-}
 .LetterLandscape .marginBox {
   height: 7.31889764in;
   width: 9.42519685in;
-}
-.LetterLandscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 9.42519685in;
 }
 .HalfLegalPortrait .marginBox {
   height: 7.31889764in;
   width: 5.42519685in;
 }
-.HalfLegalPortrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 5.42519685in;
-}
 .LegalPortrait .marginBox {
   height: 12.81889764in;
   width: 6.92519685in;
-}
-.LegalPortrait .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 6.92519685in;
 }
 .LegalLandscape .marginBox {
   height: 7.31889764in;
   width: 12.42519685in;
 }
-.LegalLandscape .marginBox img {
-  /* BL-1022, BL-2353 Keeps regular thumb images from going too wide */
-  max-width: 12.42519685in;
+.Cm13Landscape .marginBox {
+  height: 100mm;
+  width: 90mm;
+}
+.USComicPortrait .marginBox {
+  height: 9.06889764in;
+  width: 5.05019685in;
 }
 :not(.calendarFold) :not(.outsideFrontCover):not(.outsideBackCover):not(.screen-only).side-left .marginBox {
   left: 15mm;
@@ -890,8 +980,21 @@ div[data-book*="branding"] a:visited {
   z-index: 2;
   position: absolute;
 }
-.bloomPlayer-page .bloom-textOverPicture[data-bubble] {
-  height: auto !important;
+.no-margin-page::after,
+.comic::after {
+  /* Hide page number */
+  display: none;
+}
+.no-margin-page .marginBox img,
+.comic .marginBox img {
+  max-width: unset;
+}
+.no-margin-page .marginBox,
+.comic .marginBox {
+  left: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
 }
 body[data-bfhidepagenumbers*="allMedia"][data-bfhidepagenumbers*="allOrientations"]::after,
 body[data-bfhidepagenumbers*="print"][data-media*="print"][data-bfhidepagenumbers*="allOrientations"]::after,
@@ -1017,5 +1120,4 @@ body[data-bfnomargin*="epub"][data-media*="epub"][data-bfnomargin*="portrait"] .
 body[data-bfnomargin*="video"][data-media*="video"][data-bfnomargin*="portrait"] .bloom-page[class*="Portrait"] {
   border-bottom: solid green;
 }
-
-/*# sourceMappingURL=../../../output/browser/bookLayout/basePage.css.map */
+/*# sourceMappingURL=basePage.css.map */
