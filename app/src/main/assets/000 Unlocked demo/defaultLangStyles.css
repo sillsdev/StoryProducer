@@ -3,12 +3,12 @@
 
 .numberedPage::after
 {
- font-family: '';
+ font-family: 'Andika New Basic';
  direction: ltr;
 }
 
 [lang='en']
 {
- font-family: '';
+ font-family: 'Andika New Basic';
  direction: ltr;
 }

@@ -124,9 +124,6 @@ https://raw.github.com/shagstrom/split-pane/master/LICENSE
   bottom: 50%;
   border-bottom: 3px dashed transparent;
 }
-.origami-layout-mode .bloom-editable {
-  color: #ececec !important;
-}
 .origami-controls {
   position: absolute;
   top: 0;
@@ -222,26 +219,6 @@ https://raw.github.com/shagstrom/split-pane/master/LICENSE
   transition-duration: 0.5s;
   font-size: 12pt;
 }
-/*the commented line below would also add it to an empty bloom-content1 for re-entry to layout mode*/
-/*but that would be problematic/confusing in a multilingual context*/
-/*.origami-layout-mode .split-pane-component-inner .bloom-editable.bloom-content1:empty:before,*/
-.origami-layout-mode .split-pane-component-inner .textBox-identifier {
-  /*content: "Text Box";*/
-  color: #7e7e7e;
-  white-space: normal;
-  transition-property: font-size;
-  transition-duration: 0.5s;
-  text-align: center;
-  width: 100%;
-  position: absolute;
-  top: 45%;
-  z-index: 50000;
-}
-.origami-layout-mode .split-pane-component-inner .textBox-identifier .formatButton {
-  z-index: 60000;
-  padding-left: 10px;
-  display: inline-flex;
-}
 .container-selector-links {
   display: none;
 }
@@ -251,6 +228,8 @@ https://raw.github.com/shagstrom/split-pane/master/LICENSE
 .selector-links {
   top: 45%;
   text-align: center;
+}
+.selector-links a {
   z-index: 50000;
 }
 .selector-links div {
@@ -287,8 +266,37 @@ https://raw.github.com/shagstrom/split-pane/master/LICENSE
 .split-pane-component-inner[min-width~="250px"] .horizontal-adders {
   width: 100px;
 }
+.origami-layout-mode {
+  /*the commented line below would also add it to an empty bloom-content1 for re-entry to layout mode*/
+  /*but that would be problematic/confusing in a multilingual context*/
+  /*.origami-layout-mode .split-pane-component-inner .bloom-editable.bloom-content1:empty:before,*/
+  /* not setting z-index in the upper layer allows the adder buttons to be visible and active when the */
+  /* cursor is over the "Text Box" text, but not when it is over the .formatButton gearbox icon. (BL-9176) */
+}
+.origami-layout-mode .bloom-editable p {
+  color: #ececec !important;
+}
+.origami-layout-mode .bloom-editable p span {
+  background-color: unset !important;
+}
 .origami-layout-mode .origami-ui .adders {
   display: none;
+}
+.origami-layout-mode .split-pane-component-inner .textBox-identifier {
+  /*content: "Text Box";*/
+  color: #7e7e7e;
+  white-space: normal;
+  transition-property: font-size;
+  transition-duration: 0.5s;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: 45%;
+}
+.origami-layout-mode .split-pane-component-inner .textBox-identifier .formatButton {
+  z-index: 60000;
+  padding-left: 10px;
+  display: inline-flex;
 }
 
 /*# sourceMappingURL=../../../../output/browser/bookEdit/css/origami.css.map */
