@@ -276,7 +276,7 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
         val width = phoneProperties.widthPixels
-        val desiredAspectRatio = SlideService.desiredAspectRatio
+        val desiredAspectRatio = slideService.getVideoScreenRatio()
         val height = (width / desiredAspectRatio).toInt()
 
         if (slideService.shouldScaleForAspectRatio(slidePicture.width, slidePicture.height, desiredAspectRatio)) {

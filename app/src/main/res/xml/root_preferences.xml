@@ -1,0 +1,11 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/video_creation">
+
+        <SwitchPreferenceCompat
+            app:key="video_wide"
+            app:title="@string/video_wide_screen" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

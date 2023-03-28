@@ -2,12 +2,15 @@ package org.sil.storyproducer.service
 
 import android.content.Context
 import android.graphics.*
+import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
 class SlideService(val context: Context) {
+
+    val mContext = context
 
     fun getImage(slideNum: Int, sampleSize: Int, story: Story): Bitmap {
         if (shouldShowDefaultImage(slideNum, story)) {
@@ -79,6 +82,7 @@ class SlideService(val context: Context) {
         val newWidth: Int
         val newHeight: Int
         var imageScale = 1.0f
+        val desiredAspectRatio = getVideoScreenRatio()
         if (originalAspectRatio > desiredAspectRatio) {
             // The original bitmap is wider than the desired aspect ratio, so we need to pad it vertically
             imageScale = width.toFloat() / originalWidth.toFloat()
@@ -148,7 +152,6 @@ class SlideService(val context: Context) {
 
     companion object {
         const val maxAspectRatioError = 4.0f    // max 4% error
-        val desiredAspectRatio = AutoStoryMaker.getVideoScreenRatio()// 4f / 3f//16f / 9f // 4f/3f
     }
 
 }

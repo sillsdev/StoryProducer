@@ -1,6 +1,7 @@
 package org.sil.storyproducer.tools.media.story
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.media.MediaCodecInfo
 import android.media.MediaFormat
 import android.media.MediaMuxer
@@ -8,11 +9,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import com.arthenica.mobileffmpeg.Config
 import com.arthenica.mobileffmpeg.FFmpeg
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.R
+import org.sil.storyproducer.service.SlideService
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.MediaHelper
@@ -31,6 +34,7 @@ import java.util.*
  */
 class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
+    val mContext = context
     var videoRelPath: String = Workspace.activeStory.title.replace(' ', '_') + VIDEO_MP4_EXT
     val video3gpPath: String get(){return File(videoRelPath).nameWithoutExtension + VIDEO_3GP_EXT}
 
@@ -312,35 +316,6 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
         private val AUDIO_CHANNEL_COUNT = 1
         private val AUDIO_BIT_RATE = 64000
 
-        private fun generateVideoFormat(): MediaFormat? {
-            //If no video component, use null format.
-
-            val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC,
-                    VIDEO_MP4_WIDTH, VIDEO_MP4_HEIGHT)
-
-            videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
-            videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)
-            videoFormat.setInteger(MediaFormat.KEY_CAPTURE_RATE, VIDEO_MP4_FRAMERATE)
-            videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, VIDEO_MP4_BITRATE)
-            videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, VIDEO_MP4_IFRAME_INTERVAL)
-
-            return videoFormat
-        }
-
-        fun generateAudioFormat(): MediaFormat {
-
-            val audioFormat = MediaHelper.createFormat(AUDIO_MIME_TYPE)
-            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
-            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
-            audioFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, AUDIO_SAMPLE_RATE)
-            audioFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, AUDIO_CHANNEL_COUNT)
-
-            return audioFormat
-        }
-
-        fun getVideoScreenRatio(): Float {
-            return VIDEO_MP4_WIDTH.toFloat() / VIDEO_MP4_HEIGHT.toFloat()
-        }
     }
 }
 

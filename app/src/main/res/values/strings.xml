@@ -374,6 +374,15 @@
     <string name="bloom_xml_error">xml error</string>
     <string name="migrate_stories_title">Move current projects?</string>
     <string name="migrate_stories_message">Would you like to move your current projects to this folder? (recommended)</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
+    <!-- Preference Titles -->
+    <string name="video_creation">Video Creation</string>
+
+    <!-- Sync Preferences -->
+    <string name="video_wide_screen">Generate (16:9) Videos</string>
+
+    <!-- Settings -->
+    <string name="dev_settings">Developer Settings</string>
 
 </resources>
