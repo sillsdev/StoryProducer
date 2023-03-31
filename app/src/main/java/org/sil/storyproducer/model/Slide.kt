@@ -23,6 +23,7 @@ class Slide{
     var subtitle = ""
     var reference = ""
     var content = ""
+    var prevPageImageFile = ""
     var imageFile = ""
     var textFile = ""
 
