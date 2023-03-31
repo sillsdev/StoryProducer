@@ -73,7 +73,9 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         super.onResume()
 
         referenceAudioPlayer = AudioPlayer()
-        referenceAudioPlayer.setStorySource(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))
+        val refAudioFile = Workspace.activePhase.getReferenceAudioFile(slideNum)
+        if (refAudioFile.isNotEmpty())
+            referenceAudioPlayer.setStorySource(context!!, refAudioFile)
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)

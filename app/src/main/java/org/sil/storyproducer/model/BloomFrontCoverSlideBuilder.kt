@@ -32,7 +32,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
             content = buildTitleIdeas(frontCoverContent)
             narrationFile = buildNarrationFile(file, html, lang).orEmpty()
             reference = frontCoverContent.scriptureReference
-            parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file)
+            parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file, lang)
         }
     }
 

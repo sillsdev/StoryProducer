@@ -187,6 +187,8 @@ fun parseStoryIfPresent(context: Context, storyPath: DocumentFile, validateOnly:
         story = null
     }
     if(story == null){
+        if (validateOnly)
+            return null // no valid story.json
         try {
             story = parseBloomHTML(context, storyPath)
         } catch (e : Exception){

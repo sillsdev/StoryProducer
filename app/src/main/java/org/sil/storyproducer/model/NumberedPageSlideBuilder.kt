@@ -10,9 +10,12 @@ class NumberedPageSlideBuilder : SlideBuilder() {
         val slide = Slide()
         slide.slideType = SlideType.NUMBEREDPAGE
 
-        if (!parsePage(context, false, page, slide, file)) {
+        slide.prevPageImageFile = prevPageImage
+        if (!parsePage(context, false, page, slide, file, lang)) {
+            prevPageImage = slide.imageFile // no audio in this page but maybe an image file for next page
             return null
         }
+        prevPageImage = ""  // this pages image was used so not available to next page
 
         val bloomEditables = page.getElementsByAttributeValueContaining("class", BLOOM_TRANSLATION_GROUP)
                 .filter { !it.hasClass(BLOOM_IMAGE_DESCRIPTION) }
@@ -42,6 +45,7 @@ class NumberedPageSlideBuilder : SlideBuilder() {
         const val BLOOM_TRANSLATION_GROUP = "bloom-translationGroup"
         const val BLOOM_IMAGE_DESCRIPTION = "bloom-imageDescription"
 
+        var prevPageImage = ""
     }
 
 }

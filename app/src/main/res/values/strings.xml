@@ -380,7 +380,7 @@
     <string name="video_creation">Video Creation</string>
 
     <!-- Sync Preferences -->
-    <string name="video_wide_screen">Generate (16:9) Videos</string>
+    <string name="video_wide_screen">Generate Wide (16:9) MP4 Video</string>
 
     <!-- Settings -->
     <string name="dev_settings">Developer Settings</string>
