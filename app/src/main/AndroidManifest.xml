@@ -10,6 +10,13 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.EDIT" />
+            <data android:mimeType="audio/m4a" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
