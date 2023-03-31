@@ -3,15 +3,15 @@ package org.sil.storyproducer.model
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Rect
+import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import com.arthenica.mobileffmpeg.FFmpeg
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
-import org.sil.storyproducer.tools.file.getChildDocuments
-import org.sil.storyproducer.tools.file.getDocumentText
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
-import org.sil.storyproducer.tools.file.getText
+import org.sil.storyproducer.tools.file.*
+import java.io.File
 import java.util.*
 
 
@@ -99,7 +99,71 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     //narration
     if (slide.narrationFile.isEmpty()) {
         if (audios.size >= 1) {
-            slide.narrationFile = "audio/${audios[0].id()}.mp3"
+            if (audios.size > 1) {
+                // Using ffmpeg to concatenate multiple sentences in one page
+                // ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp3
+                // but first we need to copy the source audio files to internal storage
+                // so that ffmpeg can access them.
+                var totalInputAudioFiles = 0
+                for (i in 0 until audios.size) {
+                    if (audios[i].hasAttr("data-duration"))
+                        totalInputAudioFiles++
+                }
+                if (totalInputAudioFiles > 1) {
+                    var concatTempFolder = File(context.filesDir, "temp_concat")
+                    concatTempFolder.deleteRecursively()
+                    concatTempFolder.mkdirs()
+                    var concatTempFile = File(concatTempFolder,"temp_audio_concat_list.txt")
+                    var totalInputFiles = 0
+                    for (i in 0 until audios.size) {
+                        var audioStoryDoc = storyPath.findFile("audio")?.let {
+                            it.findFile("${audios[i].id()}.mp3")
+                        } ?: continue
+                        if (audioStoryDoc.exists() && audioStoryDoc.length() > 0) {
+                            val audioFileOut = File(concatTempFolder, "/${audios[i].id()}.mp3")
+                            copyToFilesDir(context, audioStoryDoc.uri, audioFileOut)
+                            if (audioFileOut.exists() && audioFileOut.length() > 0) {
+                                // escape any single quotes in file name
+                                val audioFileStrOut = audioFileOut.path.replace("'", "'\\''")
+                                // input file is a list of source files to concat starting with "file " and single quoted
+                                concatTempFile.appendText("file '${audioFileStrOut}'\n")
+                                totalInputFiles++
+                            }
+                        }
+                    }
+                    if (totalInputFiles > 0) {
+                        var ffmpegArgs: MutableList<String> = mutableListOf()
+                        ffmpegArgs.add("-f")
+                        ffmpegArgs.add("concat")
+                        ffmpegArgs.add("-safe")
+                        ffmpegArgs.add("0")
+                        ffmpegArgs.add("-i")
+                        ffmpegArgs.add(concatTempFile.absolutePath)
+                        ffmpegArgs.add("-c")
+                        ffmpegArgs.add("copy")
+                        val concatTempOutputFileStr = "${concatTempFolder}/${audios[0].id()}_output.mp3"
+                        ffmpegArgs.add(concatTempOutputFileStr)
+                        FFmpeg.execute(ffmpegArgs.toTypedArray())
+                        Log.w("ParseBloom.parsePage", FFmpeg.getLastCommandOutput() ?: "No FFMPEG output")
+                        val audioStoryConcatDocFind = storyPath.findFile("audio")?.let {
+                            it.findFile("${audios[0].id()}_output.mp3") }
+                        if (audioStoryConcatDocFind != null)
+                            audioStoryConcatDocFind.delete()    // delete the output file if it already exists
+                        var audiostoryConcatDoc = storyPath.findFile("audio")?.let {
+                            it.createFile("audio/mpeg","${audios[0].id()}_output.mp3") }
+                        if (audiostoryConcatDoc != null) {
+                            // now copy the concatenated output file to the Story audio subfolder
+                            copyFromFilesDir(context, File(concatTempOutputFileStr), audiostoryConcatDoc.uri)
+                            slide.narrationFile = "audio/${audios[0].id()}_output.mp3"
+                        }
+                    }
+                    concatTempFolder.deleteRecursively()
+                }
+                if (totalInputAudioFiles == 1)
+                    slide.narrationFile = "audio/${audios[0].id()}.mp3"
+            } else {
+                slide.narrationFile = "audio/${audios[0].id()}.mp3"
+            }
         } else {
             return false
         }
