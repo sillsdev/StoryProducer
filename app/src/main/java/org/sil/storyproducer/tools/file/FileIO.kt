@@ -155,41 +155,18 @@ fun workspaceUriPathExists(context: Context, uri: Uri) : Boolean {
     return true
 }
 
-fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean {
+fun storyRelPathExists(context: Context, relPath: String, dirRoot: String = Workspace.activeDirRoot) : Boolean{
     if(relPath == "") return false
-    val storyDoc = getStoryDoc(relPath, dirRoot) ?: return false
-    return storyDoc.exists()
+    val uri = getStoryUri(relPath, dirRoot) ?: return false
+    return workspaceUriPathExists(context, uri)
 }
 
 fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
     if(relPath == "") return false
-    val wsDoc = getWorkspaceDoc(relPath) ?: return false
-    return wsDoc.exists()
+    //if we can get the type, it exists.
+    val uri: Uri = getWorkspaceUri(relPath) ?: return false
+    return workspaceUriPathExists(context, uri)
 }
-
-fun getRelPathDoc(rootDocument: DocumentFile, relPath: String): DocumentFile? {
-    var relDoc: DocumentFile = rootDocument
-    for (subFile in relPath.split('/')) {
-        relDoc = relDoc.findFile(subFile) ?: return null
-    }
-    return relDoc
-}
-
-fun getStoryDoc(relPath: String, dirRoot: String = Workspace.activeDirRoot) : DocumentFile? {
-    if (dirRoot == "") return null
-    var storyDoc = getRelPathDoc(Workspace.workdocfile, dirRoot) ?: return null
-    storyDoc = getRelPathDoc(storyDoc, relPath) ?: return null
-    return storyDoc
-}
-
-fun getWorkspaceDoc(relPath: String) : DocumentFile? {
-    if (relPath.isEmpty())
-        return null
-    val wsDoc = getRelPathDoc(Workspace.workdocfile, relPath) ?: return null
-    return wsDoc
-}
-
-
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
     if (dirRoot == "") return null
