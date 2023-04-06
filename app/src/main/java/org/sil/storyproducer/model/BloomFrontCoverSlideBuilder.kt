@@ -2,6 +2,7 @@ package org.sil.storyproducer.model
 
 import android.content.Context
 import androidx.documentfile.provider.DocumentFile
+import androidx.preference.PreferenceManager
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -65,6 +66,12 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
     }
 
     internal fun getContentLanguage(html: Document): String {
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        val altLwc = prefs.getString("bloom_alt_lwc", "")?.trim();
+        if (altLwc != null && altLwc.isNotEmpty())
+            return altLwc
+
         return bloomDataDiv(html)
                 ?.children()
                 ?.find { it.attr(DATA_BOOK) == CONTENT_LANGUAGE_1 }                         // <div data-book="contentLanguage1"

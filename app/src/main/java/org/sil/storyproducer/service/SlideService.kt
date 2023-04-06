@@ -6,7 +6,6 @@ import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.tools.file.getStoryChildInputStream
-import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 
 class SlideService(val context: Context) {
 
@@ -101,7 +100,17 @@ class SlideService(val context: Context) {
         val canvas = Canvas(newBitmap)
 
         val paint = Paint()
-        paint.color = Color.LTGRAY
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        val altBgImageColor = prefs.getString("bloom_bgimage_color", "")?.trim();
+        if (altBgImageColor != null && altBgImageColor.isNotEmpty()) {
+            try {
+                paint.color = Color.parseColor(altBgImageColor)
+            } catch (e: IllegalArgumentException) {
+                paint.color = Color.LTGRAY
+            }
+        }
+        else
+            paint.color = Color.LTGRAY
         paint.style = Paint.Style.FILL
 
         canvas.drawRect(0f, 0f, newWidth.toFloat(), newHeight.toFloat(), paint)
