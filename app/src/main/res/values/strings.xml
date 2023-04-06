@@ -378,9 +378,14 @@
 
     <!-- Preference Titles -->
     <string name="video_creation">Video Creation</string>
+    <string name="bloom_import">Bloom Import</string>
+    <string name="accuracy_check">Accuracy Check</string>
 
     <!-- Sync Preferences -->
     <string name="video_wide_screen">Generate Wide (16:9) MP4 Video</string>
+    <string name="bloom_import_alt_lwc">Alternate LWC</string>
+    <string name="bloom_import_bgimage_color">Background Image Color #</string>
+    <string name="accuracy_check_confirm_all">Confirm All Slides</string>
 
     <!-- Settings -->
     <string name="dev_settings">Developer Settings</string>

@@ -8,4 +8,24 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/bloom_import">
+
+        <EditTextPreference
+            app:key="bloom_alt_lwc"
+            app:title="@string/bloom_import_alt_lwc" />
+
+        <EditTextPreference
+            app:key="bloom_bgimage_color"
+            app:title="@string/bloom_import_bgimage_color" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/accuracy_check">
+
+        <SwitchPreferenceCompat
+            app:key="accuracy_confirm_all"
+            app:title="@string/accuracy_check_confirm_all" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

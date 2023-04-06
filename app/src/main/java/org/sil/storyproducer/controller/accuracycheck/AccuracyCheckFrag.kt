@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.preference.PreferenceManager
 import org.sil.storyproducer.R
 import org.sil.storyproducer.controller.SlidePhaseFrag
 import org.sil.storyproducer.controller.logging.LogListAdapter
@@ -32,6 +33,8 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         greenCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_green, null)
         grayCheckmark = VectorDrawableCompat.create(resources, R.drawable.ic_checkmark_gray, null)
+
+        checkAllMarked()
 
         return inflater.inflate(R.layout.fragment_accuracy_check, container, false)?.apply {
             this@AccuracyCheckFrag.rootView = this
@@ -140,12 +143,19 @@ class AccuracyCheckFrag : SlidePhaseFrag() {
      * @return true if all approved, otherwise false
      */
     private fun checkAllMarked(): Boolean {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        val confirmAll = prefs.getBoolean("accuracy_confirm_all", false);
         for (slide in Workspace.activeStory.slides) {
             if (!slide.isChecked && slide.slideType in
                     arrayOf(SlideType.FRONTCOVER,SlideType.NUMBEREDPAGE,SlideType.LOCALSONG)) {
-                return false
+                if (confirmAll)
+                    slide.isChecked = true
+                else
+                    return false
             }
         }
+        if (confirmAll)
+            Workspace.activeStory.isApproved = true
         return true
     }
 
