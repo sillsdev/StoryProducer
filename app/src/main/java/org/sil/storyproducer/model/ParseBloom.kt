@@ -300,7 +300,7 @@ fun parseImageFromElement(slide: Slide, frontCoverGraphicProvided: Boolean, imag
         if (imageFile == "") {
             val src = image.getElementsByAttribute("src")
             if (src.size >= 1)
-                imageFile = src[0].attr("src")
+                imageFile = Uri.decode(src[0].attr("src"))
         }
         return imageFile
     }
