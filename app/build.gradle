@@ -8,7 +8,7 @@ def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properti
 
 android {
     compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    buildToolsVersion '32.0.0'
     defaultConfig {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
