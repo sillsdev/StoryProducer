@@ -61,6 +61,8 @@ class TestParsePhotoStory {
     @Test
     fun parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideTitleFromCorrespondingTextFile() {
         val result = parseValidStory()
+        print(result)
+        Assert.assertNotNull(result)
 
         Assert.assertEquals("The Valid Story", result!!.slides[0].title)
     }
