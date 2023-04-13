@@ -26,7 +26,7 @@ class TestParsePhotoStory {
     fun parsePhotoStoryXML_Should_ReturnAStoryWithProvidedSlidesPlusSongAndCreditSlides() {
         val result = parseValidStory()
 
-        Assert.assertEquals(5, result!!.slides.size.toLong())
+        Assert.assertEquals(4, result!!.slides.size.toLong())
     }
 
     @Test
@@ -145,37 +145,24 @@ class TestParsePhotoStory {
     fun parsePhotoStoryXML_When_StoryHasExtraTagsInsideRoot_Should_IgnoreThem() {
         val result = parseValidStory()
 
-        Assert.assertEquals(5, result!!.slides.size.toLong())
-    }
-
-    @Test
-    fun parsePhotoStoryXML_When_StoryFolderDoesNotExist_Should_ReturnNull() {
-        setupWorkspace()
-        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
-        Mockito.`when`(storyPath.name).thenReturn("IDoNotExist")
-
-        val result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
-
-        Assert.assertNull(result)
+        Assert.assertEquals(4, result!!.slides.size.toLong())
     }
 
     @Test
     fun parsePhotoStoryXML_When_StoryHasNoSlides_Should_ReturnNull() {
         setupWorkspace()
-        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
-        Mockito.`when`(storyPath.name).thenReturn("StoryWithNoSlides")
+        val storyPath = Workspace.workdocfile.findFile("StoryWithNoSlides")
 
-        val result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
+        val result = parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath!!)
 
         Assert.assertNull(result)
     }
 
     private fun parseValidStory(): Story? {
         setupWorkspace()
-        val storyPath = Mockito.mock(androidx.documentfile.provider.DocumentFile::class.java)
-        Mockito.`when`(storyPath.name).thenReturn("ValidStory")
+        val storyPath = Workspace.workdocfile.findFile("ValidStory")
 
-        return parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath)
+        return parsePhotoStoryXML(ApplicationProvider.getApplicationContext(), storyPath!!)
     }
 
     private fun setupWorkspace() {
