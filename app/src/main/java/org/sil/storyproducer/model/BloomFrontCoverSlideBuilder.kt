@@ -71,7 +71,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
     internal fun getContentLanguage(html: Document): String {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        val altLwc = prefs.getString("bloom_alt_lwc", "")?.trim();
+        val altLwc = prefs?.getString("bloom_alt_lwc", "")?.trim();
         if (altLwc != null && altLwc.isNotEmpty())
             return altLwc
 

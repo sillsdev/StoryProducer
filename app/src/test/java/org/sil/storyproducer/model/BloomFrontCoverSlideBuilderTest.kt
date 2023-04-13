@@ -47,7 +47,8 @@ class BloomFrontCoverSlideBuilderTest {
             </body>
         """.trimIndent()
 
-        val slide = builder.build(context, file, Jsoup.parse(text))
+        val storyAudioMap : MutableMap<String, DocumentFile> = mutableMapOf()
+        val slide = builder.build(context, file, file, storyAudioMap, Jsoup.parse(text))
 
         assertEquals(
                 "Title ideas:\n" +
