@@ -3,7 +3,7 @@ package org.sil.storyproducer.test.model
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito
+// import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.sil.storyproducer.model.Story
 import org.sil.storyproducer.model.Workspace
@@ -23,7 +23,7 @@ class TestParsePhotoStory {
     }
 
     @Test
-    fun parsePhotoStoryXML_Should_ReturnAStoryWithProvidedSlidesPlusSongAndCreditSlides() {
+    fun parsePhotoStoryXML_Should_ReturnAStoryWithProvidedSlidesPlusSongSlide() {
         val result = parseValidStory()
 
         Assert.assertEquals(4, result!!.slides.size.toLong())
@@ -61,7 +61,6 @@ class TestParsePhotoStory {
     @Test
     fun parsePhotoStoryXML_When_ASlideHasAnImage_Should_GetSlideTitleFromCorrespondingTextFile() {
         val result = parseValidStory()
-        print(result)
         Assert.assertNotNull(result)
 
         Assert.assertEquals("The Valid Story", result!!.slides[0].title)

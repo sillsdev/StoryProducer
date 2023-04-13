@@ -82,7 +82,8 @@ class NumberedPageSlideBuilderTest {
             </div>
         """.trimIndent()
 
-        val slide = builder.build(context, file, Jsoup.parse(text), "tpi")
+        val storyAudioMap : MutableMap<String, DocumentFile> = mutableMapOf()
+        val slide = builder.build(context, file, file, storyAudioMap, Jsoup.parse(text), "tpi", true )
 
         Assert.assertEquals(
                 "Bipo, planti planti yia [ating 2700 yia i go pinis], wanpela man [poropet bilong Bikpela], nem bilong em Aisaia [Isaia] i autim wanpela tok em i kisim long God. Em i tok [na tu em i raitim],\n" +
