@@ -250,49 +250,54 @@ object Workspace {
             }
         }
         GlobalScope.launch {
-            var hasSentCatchupMessage = false
-            val reconnect: () -> Unit = {
-                hasSentCatchupMessage = false
-                val oldClient = messageClient
-                if (oldClient == null || !oldClient.isOpen) {
-                    oldClient?.close()
-                    Log.e("@pwhite", "Restarting websocket.")
-                    val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-                    newClient.connectBlocking()
-                    if (newClient.isOpen == false) {
-                        InternetConnection = false
-                    } else {
-                        InternetConnection = true
+            if (false) {
+                var hasSentCatchupMessage = false
+                val reconnect: () -> Unit = {
+                    hasSentCatchupMessage = false
+                    val oldClient = messageClient
+                    if (oldClient == null || !oldClient.isOpen) {
+                        oldClient?.close()
+                        Log.e("@pwhite", "Restarting websocket.")
+                        val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                        newClient.connectBlocking()
+                        if (newClient.isOpen == false) {
+                            InternetConnection = false
+                        } else {
+                            InternetConnection = true
+                        }
+                        messageClient = newClient
                     }
-                    messageClient = newClient
                 }
-            }
-            while (true) {
-                try {
-                    if (messageClient?.isOpen != true) {
+                while (true) {
+                    try {
+                        if (messageClient?.isOpen != true) {
+                            reconnect()
+                            delay(5000)
+                        }
+                        if (!hasSentCatchupMessage) {
+                            val js = JSONObject()
+                            js.put("type", "catchup")
+                            val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            js.put("since", df.format(lastReceivedTimeSent))
+                            messageClient!!.send(js.toString(2))
+                            hasSentCatchupMessage = true
+                        }
+                        val nextQueuedMessage = queuedMessages.peek()
+                        if (nextQueuedMessage != null) {
+                            val js = messageToJson(nextQueuedMessage)
+                            messageClient!!.send(js.toString(2))
+                            queuedMessages.remove()
+                        }
+                        delay(500) // pause 1/2 second between checks
+                    } catch (ex: Exception) {
+                        Log.e(
+                            "@pwhite",
+                            "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket."
+                        )
+                        ex.printStackTrace();
                         reconnect()
                         delay(5000)
                     }
-                    if (!hasSentCatchupMessage) {
-                        val js = JSONObject()
-                        js.put("type", "catchup")
-                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                        js.put("since", df.format(lastReceivedTimeSent))
-                        messageClient!!.send(js.toString(2))
-                        hasSentCatchupMessage = true
-                    }
-                    val nextQueuedMessage = queuedMessages.peek()
-                    if (nextQueuedMessage != null) {
-                        val js = messageToJson(nextQueuedMessage)
-                        messageClient!!.send(js.toString(2))
-                        queuedMessages.remove()
-                    }
-                    delay(500) // pause 1/2 second between checks
-                } catch (ex: Exception) {
-                    Log.e("@pwhite", "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket.")
-                    ex.printStackTrace();
-                    reconnect()
-                    delay(5000)
                 }
             }
         }
@@ -513,7 +518,7 @@ object Workspace {
         // During compile time, the file app/src/main/assets/wordlinks.csv is compiled into
         // the APK.  This routine extracts that file and places that file in the
         // Worklinks directory.
-        // This routine is called anytime a ".csv" file cannot be found in the workdlinks directory
+        // This routine is called anytime a ".csv" file cannot be found in the wordlinks directory
         val assetManager = context.assets
 
         try {
@@ -571,10 +576,12 @@ object Workspace {
                 ?.let { story -> migrateStory(context, story) }
     }
 
-    fun buildPhases(): List<Phase> {
+    fun buildPhases(context: Context): List<Phase> {
         //update phases based upon registration selection
+        val remoteString: String = context.getString(R.string.location_type_list_remote)
+
         return when(registration.getString("consultant_location_type")) {
-            "Remote" -> Phase.getRemotePhases()
+            remoteString -> Phase.getRemotePhases()
             else -> Phase.getLocalPhases()
         }
     }
@@ -732,5 +739,55 @@ object Workspace {
             }
             processStoryApproval()
         }
+    }
+
+    fun getLanguageCode(pChosenLanguage: String): String {
+        var Lang: String
+        if (pChosenLanguage == "Bislama") {
+            Lang = ""
+        } else if (pChosenLanguage == "French") {
+            Lang = "fr"
+        } else if (pChosenLanguage == "Indonesian") {
+            Lang = "id"
+        } else if (pChosenLanguage == "Khmer") {
+            Lang = ""
+        } else if (pChosenLanguage == "Portuguese") {
+            Lang = "por"
+        } else if (pChosenLanguage == "Spanish") {
+            Lang = "es"
+        } else if (pChosenLanguage == "Swahili") {
+            Lang = "sw"
+        } else if (pChosenLanguage == "Tok Pisin") {
+            Lang = "tpi"
+        } else if (pChosenLanguage == "") {
+            Lang = ""
+        }
+        else {   // English or not defined
+            Lang = "en"
+        }
+        return Lang
+    }
+
+    fun readFromFile(context: Context): String? {
+        var ret = ""
+        try {
+            val inputStream: InputStream = context.openFileInput("config.txt")
+            if (inputStream != null) {
+                val inputStreamReader = InputStreamReader(inputStream)
+                val bufferedReader = BufferedReader(inputStreamReader)
+                var receiveString: String? = ""
+                val stringBuilder = StringBuilder()
+                while (bufferedReader.readLine().also({ receiveString = it }) != null) {
+                    stringBuilder.append(receiveString)
+                }
+                inputStream.close()
+                ret = stringBuilder.toString()
+            }
+        } catch (e: FileNotFoundException) {
+            Log.e("login activity", "File not found: " + e.toString())
+        } catch (e: IOException) {
+            Log.e("login activity", "Can not read file: $e")
+        }
+        return ret
     }
 }

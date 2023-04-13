@@ -41,7 +41,7 @@ class ChooseLangActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        chosenLanguage = readFromFile(this)
+        chosenLanguage = Workspace.readFromFile(this)
         if (chosenLanguage != "" && !Workspace.isInitialized) {
             setLanguage(chosenLanguage!!)
             goToNextStep()
@@ -137,25 +137,10 @@ class ChooseLangActivity : BaseActivity() {
         return true
     }
 
-    public fun setLanguage(pChosenLanguage: String) {
-        if (pChosenLanguage == "Bislama") {
-        } else if (pChosenLanguage == "French") {
-            updateAppLanguage("fr")
-        } else if (pChosenLanguage == "Indonesian") {
-            updateAppLanguage("id")
-        } else if (pChosenLanguage == "Khmer") {
-        } else if (pChosenLanguage == "Portuguese") {
-            updateAppLanguage("por")
-        } else if (pChosenLanguage == "Spanish") {
-            updateAppLanguage("es")
-        } else if (pChosenLanguage == "Swahili") {
-            updateAppLanguage("sw")
-        } else if (pChosenLanguage == "Tok Pisin") {
-            updateAppLanguage("tpi")
-        } else if (pChosenLanguage == "") {
-        }
-        else {   // English or not defined
-            updateAppLanguage("en")
+    fun setLanguage(pChosenLanguage: String) {
+        val langCode: String = Workspace.getLanguageCode(pChosenLanguage)
+        if (langCode != "") {
+            updateAppLanguage(langCode)
         }
         writeToFile(pChosenLanguage, this)
     }
@@ -172,7 +157,7 @@ class ChooseLangActivity : BaseActivity() {
         val listTypeJson: HashMap<String, String> = HashMap()
         var TmpStr: String = ""
         try {
-            applicationContext.assets.open("$language.json").use { inputStream ->
+            applicationContext.assets.open("$language/strings.json").use { inputStream ->
                 val size: Int = inputStream.available()
                 val buffer = ByteArray(size)
                 inputStream.read(buffer)
@@ -213,28 +198,5 @@ class ChooseLangActivity : BaseActivity() {
         } catch (e: IOException) {
             Log.e("Exception", "File write failed: $e")
         }
-    }
-
-    private fun readFromFile(context: Context): String? {
-        var ret = ""
-        try {
-            val inputStream: InputStream = context.openFileInput("config.txt")
-            if (inputStream != null) {
-                val inputStreamReader = InputStreamReader(inputStream)
-                val bufferedReader = BufferedReader(inputStreamReader)
-                var receiveString: String? = ""
-                val stringBuilder = StringBuilder()
-                while (bufferedReader.readLine().also({ receiveString = it }) != null) {
-                    stringBuilder.append(receiveString)
-                }
-                inputStream.close()
-                ret = stringBuilder.toString()
-            }
-        } catch (e: FileNotFoundException) {
-            Log.e("login activity", "File not found: " + e.toString())
-        } catch (e: IOException) {
-            Log.e("login activity", "Can not read file: $e")
-        }
-        return ret
     }
 }

@@ -197,10 +197,10 @@ open class RegistrationActivity : AppCompatActivityMTT() {
         return when (item.itemId) {
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Phase(PhaseType.REGISTRATION).getDisplayName()} Help")
+                //alert.setTitle("${Phase(PhaseType.REGISTRATION).getLangDisplayName(this)} ${resources.getString(R.string.help)}\n")
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.REGISTRATION))
+                val iStream = Phase.openHelpDocFile(PhaseType.REGISTRATION, Workspace.activeStory.language,this)
                 val text = iStream.reader().use {
                     it.readText() }
 

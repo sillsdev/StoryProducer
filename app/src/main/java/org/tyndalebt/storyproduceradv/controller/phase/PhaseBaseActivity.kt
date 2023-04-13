@@ -199,10 +199,10 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
             }
             R.id.helpButton -> {
                 val alert = AlertDialog.Builder(this)
-                alert.setTitle("${Workspace.activePhase.getDisplayName()} Help")
+                //alert.setTitle("${Workspace.activePhase.getLangDisplayName(this)} ${resources.getString(R.string.help)}\n")
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(Workspace.activePhase.phaseType))
+                val iStream = Phase.openHelpDocFile(Workspace.activePhase.phaseType, Workspace.activeStory.language,this)
                 val text = iStream.reader().use {
                     it.readText() }
 

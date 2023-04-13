@@ -22,16 +22,20 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.tyndalebt.storyproduceradv.BuildConfig;
 import org.tyndalebt.storyproduceradv.R;
 
 import org.tyndalebt.storyproduceradv.controller.BaseController;
-import org.tyndalebt.storyproduceradv.controller.MainActivity;
 import org.tyndalebt.storyproduceradv.controller.adapter.DownloadAdapter;
 import org.tyndalebt.storyproduceradv.controller.adapter.DownloadDS;
 import org.tyndalebt.storyproduceradv.model.Workspace;
@@ -54,6 +58,7 @@ public class DownloadActivity extends BaseActivity {
     public Boolean firstPass;
     public String chosenLanguage;
     public String bloomFileContents;
+    ArrayList<HashMap<String, String>> formList = new ArrayList<HashMap<String, String>>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,7 @@ public class DownloadActivity extends BaseActivity {
         pText = (TextView) findViewById(R.id.pProgressText);
         pBar = (ProgressBar) findViewById(R.id.progressBar);
 
+        BuildNativeLanguageArray();
         at = new DownloadFileFromURL(this);
         at.progress_bar_type = this.progress_bar_type;
         file_url = BuildConfig.ROCC_URL_PREFIX + "/Files/Bloom/";
@@ -108,8 +114,11 @@ public class DownloadActivity extends BaseActivity {
         String tmp;
 
         for (idx = 0; idx < pList.length; idx++) {
-            if (folderExists(this, pURL[idx]) == false) {
+            if (!folderExists(this, pURL[idx])) {
                 tmp = at.removeExtension((pList[idx]));
+                if (pURL[idx].equals("Language")) {
+                    tmp = tmp + " / " + getNativeLangName(pList[idx]);
+                }
                 arrayList.add(new DownloadDS(tmp, pURL[idx], false));
             }
         }
@@ -117,6 +126,57 @@ public class DownloadActivity extends BaseActivity {
         pView.setAdapter(arrayAdapter);
 
         pDownloadImage.setOnClickListener(clickListener);
+    }
+
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getAssets().open("TemplateLanguages.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
+    }
+
+    public String getNativeLangName(String pLanguage) {
+        String nativeLang = null;
+
+        for (int i = 0; i < formList.size(); i++) {
+            if (formList.get(i).get("filename").equals(pLanguage)) {
+                nativeLang = formList.get(i).get("displayname");
+                break;
+            }
+        }
+        return nativeLang;
+    }
+
+    public void BuildNativeLanguageArray() {
+        try {
+            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            JSONArray m_jArry = obj.getJSONArray("language");
+            HashMap<String, String> m_li;
+
+            for (int i = 0; i < m_jArry.length(); i++) {
+                JSONObject jo_inside = m_jArry.getJSONObject(i);
+                String formula_value = jo_inside.getString("filename");
+                String url_value = jo_inside.getString("displayname");
+
+                //Add your values in your `ArrayList` as below:
+                m_li = new HashMap<String, String>();
+                m_li.put("filename", formula_value);
+                m_li.put("displayname", url_value);
+
+                formList.add(m_li);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     View.OnClickListener clickListener = new View.OnClickListener() {

@@ -10,6 +10,7 @@ import org.tyndalebt.storyproduceradv.controller.export.ShareActivity
 import org.tyndalebt.storyproduceradv.controller.learn.LearnActivity
 import org.tyndalebt.storyproduceradv.controller.pager.PagerBaseActivity
 import org.tyndalebt.storyproduceradv.controller.wordlink.WordLinksActivity
+import java.io.*
 
 /**
  * PhaseType enum used to track current phase
@@ -332,8 +333,23 @@ class Phase (val phaseType: PhaseType) {
          * get the filename for the HTML help doc
          * @return String
          */
-        fun getHelpDocFile(phase: PhaseType) : String {
-            return "${phase.name.toLowerCase()}.html"
+        fun getHelpDocFileLang(phase: PhaseType, Language: String) : String {
+            return "${Language}/${phase.name.toLowerCase()}.html"
+        }
+
+        fun openHelpDocFile(phase: PhaseType, Language: String, context: Context) : InputStream {
+            // If the language specific one is available, use it, other use default help file
+            val mLanguage = Workspace.readFromFile(context)
+            var mFileName = getHelpDocFileLang(phase, Workspace.getLanguageCode(mLanguage!!))
+
+            var iStream: InputStream
+            try {
+                iStream = context.assets.open(mFileName)
+            } catch (e: Exception) {
+                mFileName = getHelpDocFileLang(phase, "en")  // default to English
+                iStream = context.assets.open(mFileName)
+            }
+            return iStream
         }
 
         //Currently unused and non-functional

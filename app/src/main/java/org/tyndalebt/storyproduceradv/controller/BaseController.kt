@@ -87,7 +87,7 @@ open class BaseController(
 
     private fun onLastStoryUpdated() {
         Workspace.sortStoriesByTitle()
-        Workspace.phases = Workspace.buildPhases()
+        Workspace.phases = Workspace.buildPhases(context)
         Workspace.activePhaseIndex = 0
 
         view.hideReadingTemplatesDialog()

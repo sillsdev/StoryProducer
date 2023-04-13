@@ -36,9 +36,13 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
         int position=(Integer) v.getTag();
         Object object= getItem(position);
         DownloadDS dataModel=(DownloadDS) object;
+        // The chosenLanguage variable set below is coming directly from the display list. So,
+        //   if the order or format of the display list of languages changes, this code needs to change
+        //   to reflect chosenLanguage to be set to the English equivalent of the language only.
 
         if (dataModel.URL.equals("Language")) {  // first pass, now show stories for chosen language
-            dla.chosenLanguage = dataModel.fileName;
+            String DisplayLine[] = dataModel.fileName.split("/");
+            dla.chosenLanguage = DisplayLine[0].trim();
             dla.copyFile(DownloadActivity.BLOOM_LIST_FILE);
         } else {  // List of stories, toggle checkmark
             switch (v.getId()) {

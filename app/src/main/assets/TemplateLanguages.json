@@ -1,0 +1,40 @@
+{
+    "language":[
+        {
+            "filename": "Bislama",
+            "displayname": "Bislama"
+        },
+        {
+            "filename": "English",
+            "displayname": "English"
+        },
+        {
+            "filename": "French",
+            "displayname": "Français"
+        },
+        {
+            "filename": "Indonesian",
+            "displayname": "bahasa Indonesian"
+        },
+        {
+            "filename": "Khmer",
+            "displayname": "ខ្មែរ"
+        },
+        {
+            "filename": "Portuguese",
+            "displayname": "Português"
+        },
+        {
+            "filename": "Spanish",
+            "displayname": "Español"
+        },
+        {
+            "filename": "Swahili",
+            "displayname": "KiSwahili"
+        },
+        {
+            "filename": "Tok Pisin",
+            "displayname": "Tok Pisin"
+        }
+    ]
+}

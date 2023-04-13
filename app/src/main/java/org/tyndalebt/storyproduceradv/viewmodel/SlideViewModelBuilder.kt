@@ -48,7 +48,7 @@ class SlideViewModelBuilder(
         val fontSize : Int = when(slide.slideType){
             SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
             SlideType.LOCALCREDITS -> 0 // Not used, but needs to be here to cover reading of projects v3.0.2 & prior
-            SlideType.COPYRIGHT -> 12
+            SlideType.COPYRIGHT -> 8
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
         }
         val outlineShow : Boolean = when(slide.slideType){

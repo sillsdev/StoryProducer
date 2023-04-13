@@ -74,13 +74,13 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                 // Display help from the HTML file when the help button is clicked at the activity
                 // level.  Previously, a "NO Help Available" popup was displayed.
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.WORD_LINKS))
+                val iStream = Phase.openHelpDocFile(PhaseType.WORD_LINKS, Workspace.activeStory.language,this)
                 val text = iStream.reader().use {
                     it.readText() }
 
                 wv.loadDataWithBaseURL(null,text,"text/html",null,null)
                 val dialog = android.app.AlertDialog.Builder(this)
-                        .setTitle("Word Links Help")
+//                        .setTitle("Word Links Help")
                         .setView(wv)
                         .setNegativeButton("Close") { dialog, _ ->
                             dialog!!.dismiss()

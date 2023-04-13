@@ -37,11 +37,7 @@ import org.tyndalebt.storyproduceradv.model.Workspace
 import org.tyndalebt.storyproduceradv.tools.Network.ConnectivityStatus
 import org.tyndalebt.storyproduceradv.tools.Network.VolleySingleton
 import org.tyndalebt.storyproduceradv.tools.file.goToURL
-import java.io.IOException
 import java.io.Serializable
-import java.nio.charset.StandardCharsets
-import java.util.*
-import kotlin.collections.HashMap
 
 class MainActivity : BaseActivity(), Serializable {
 
@@ -136,13 +132,13 @@ class MainActivity : BaseActivity(), Serializable {
             R.id.helpButton -> {
 
                 val wv = WebView(this)
-                val iStream = assets.open(Phase.getHelpDocFile(PhaseType.STORY_LIST))
+                val iStream = Phase.openHelpDocFile(PhaseType.STORY_LIST, Workspace.activeStory.language,this)
                 val text = iStream.reader().use {
                         it.readText() }
 
-                wv.loadDataWithBaseURL(null,text,"text/html",null,null)
+                wv.loadDataWithBaseURL(null,text,"text/html", null,null)
                 val dialog = AlertDialog.Builder(this)
-                    .setTitle("Story List Help")
+//                    .setTitle("${resources.getString(R.string.title_activity_story_templates)} ${resources.getString(R.string.help)}\n")
                     .setView(wv)
                     .setNegativeButton("Close") { dialog, _ ->
                         dialog!!.dismiss()

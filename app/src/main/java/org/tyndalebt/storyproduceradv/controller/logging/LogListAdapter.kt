@@ -65,7 +65,7 @@ internal class LogListAdapter(private val context: Context, slide: Int) : BaseAd
 
         val entry = getItem(position)
         date.text = entry.dateTimeString
-        info.text = "${entry.phase.getDisplayName()} - ${entry.description}"
+        info.text = "${entry.phase.getLangDisplayName(this.context)} - ${entry.description}"
         cView.setBackgroundColor(ContextCompat.getColor(context, entry.phase.getColor()))
 
         return cView
