@@ -204,7 +204,8 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
     var firstInputAudioFile = ""
     for (i in 0 until audios.size) {
         if (//!audios[i].hasAttr("data-duration") ||
-                audios[i].attr("class").contains("ImageDescriptionEdit-style"))
+                audios[i].attr("class").contains("ImageDescriptionEdit-style") ||
+                audios[i].attr("class").contains("smallCoverCredits"))
             continue
         var audioStoryDoc = storyPath.findFile("audio")?.let {
             it.findFile("${audios[i].id()}.mp3")
@@ -227,7 +228,8 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
         var totalInputFiles = 0
         for (i in 0 until audios.size) {
             if (//!audios[i].hasAttr("data-duration") ||
-                    audios[i].attr("class").contains("ImageDescriptionEdit-style"))
+                    audios[i].attr("class").contains("ImageDescriptionEdit-style") ||
+                    audios[i].attr("class").contains("smallCoverCredits"))
                 continue
             var audioStoryDoc = storyPath.findFile("audio")?.let {
                 it.findFile("${audios[i].id()}.mp3")
