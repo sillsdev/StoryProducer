@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:541792654374:android:086bfc260a62a2475f82e7",
         "android_client_info": {
-          "package_name": "org.tyndalebt.storyproduceradv"
+          "package_name": "org.tyndalebt.storyproduceradv.debug"
         }
       },
       "oauth_client": [
