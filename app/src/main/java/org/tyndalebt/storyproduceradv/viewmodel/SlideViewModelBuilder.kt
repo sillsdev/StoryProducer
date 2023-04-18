@@ -46,7 +46,8 @@ class SlideViewModelBuilder(
             else -> TextOverlay(slide.translatedContent)
         }
         val fontSize : Int = when(slide.slideType){
-            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 32
+            // 4/18/23 TM - told to knock the text size down a couple notched to allow for long words - Hindi and such
+            SlideType.FRONTCOVER, SlideType.ENDPAGE -> 24
             SlideType.LOCALCREDITS -> 0 // Not used, but needs to be here to cover reading of projects v3.0.2 & prior
             SlideType.COPYRIGHT -> 8
             SlideType.NUMBEREDPAGE, SlideType.LOCALSONG, SlideType.NONE -> 12
