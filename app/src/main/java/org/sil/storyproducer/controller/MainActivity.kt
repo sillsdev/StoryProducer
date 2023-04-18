@@ -267,7 +267,10 @@ class MainActivity : BaseActivity(), Serializable {
                 showRegistration(false)
             }
             R.id.nav_bloom_templates -> {
-                showBLDownloadDialog();
+                showBLDownloadDialog(BLOOM_DL_TEMPLATES_ACTIVITY);
+            }
+            R.id.nav_bloom_featured -> {
+                showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
             }
             R.id.nav_about -> {
                 showAboutDialog()

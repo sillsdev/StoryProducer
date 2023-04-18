@@ -18,8 +18,6 @@ import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.controller.MainActivity
-import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.*
 import org.sil.storyproducer.model.PHASE
 import org.sil.storyproducer.model.WORD_LINKS_CLICKED_TERM
@@ -187,7 +185,11 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     showRegistration(true)
                 }
                 R.id.nav_bloom_templates -> {
-                    showBLDownloadDialog();
+                    showBLDownloadDialog(BLOOM_DL_TEMPLATES_ACTIVITY);
+                    this.finish()
+                }
+                R.id.nav_bloom_featured -> {
+                    showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
                     this.finish()
                 }
                 R.id.nav_about -> {

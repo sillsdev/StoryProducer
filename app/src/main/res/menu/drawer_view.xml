@@ -11,6 +11,9 @@
             android:id="@+id/nav_bloom_templates"
             android:title="@string/bloom_templates" />
         <item
+            android:id="@+id/nav_bloom_featured"
+            android:title="@string/bloom_featured" />
+        <item
             android:id="@+id/nav_word_link_list"
             android:title="@string/title_activity_wordlink_list" />
         <item

@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -18,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import org.sil.storyproducer.R
+import org.sil.storyproducer.activities.BaseActivity
 import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.databinding.ActivityBldownloadBinding
 import org.sil.storyproducer.model.BLBook
@@ -35,11 +35,15 @@ class BLDownloadActivity : AppCompatActivity() {
     // based on the example: https://www.tutorialspoint.com/how-to-register-a-broadcast-receiver-programmatically-in-android-using-kotlin
     // This sub class will act as a receiver for a message send by the DownloadManager used to download
     // stories in the background
-    class BLBroadCastReceiver : BroadcastReceiver() {
+    class BLBroadCastReceiver(bldata: ArrayList<BLDataModel>) : BroadcastReceiver() {
         companion object {
             private val TAG = "BLDownloadActivity.BLBroadCastReceiver"
         }
 
+        var data: ArrayList<BLDataModel>
+        init {
+            data = bldata
+        }
         // process a message from the DownloadManager to see if it has completed one of our story files
         override fun onReceive(context: Context?, intent: Intent?) {
             // check that we have received a download complete action
@@ -80,7 +84,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         lateinit var bldlActivity: BLDownloadActivity
         lateinit var adapter: RecyclerView.Adapter<BLCustomAdapter.BLViewHolder?>
-        var data: ArrayList<BLDataModel> = ArrayList()
+        var data: Array<ArrayList<BLDataModel>> = Array<ArrayList<BLDataModel>>(2) { ArrayList<BLDataModel>() }
         lateinit var recyclerView: RecyclerView
         lateinit var downloadManager: DownloadManager
     }
@@ -88,8 +92,9 @@ class BLDownloadActivity : AppCompatActivity() {
     lateinit var blOnClickListener: BLOnClickListener
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var binding: ActivityBldownloadBinding
-    private val blBroadCastReceiver: BroadcastReceiver = BLBroadCastReceiver()
+    private lateinit var blBroadCastReceiver: BroadcastReceiver
     private var blReceiverRegistered: Boolean = false
+    private var bldlActivityIndex: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +109,9 @@ class BLDownloadActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         binding.toolbar.title = title
 
+        bldlActivityIndex = intent.getIntExtra(BaseActivity.BLOOM_DL_ACTIVITY_INDEX, -1)
+        blBroadCastReceiver = BLBroadCastReceiver(data[bldlActivityIndex])
+
         downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
 
         // Add listener for when 'Floating Action Button' (FAB) Cloud download button is clicked
@@ -115,9 +123,9 @@ class BLDownloadActivity : AppCompatActivity() {
             var numAlreadyDownloaded = 0
             var numAlreadyInstalled = 0
             val fileDownloadDir = bloomSourceAutoDLDir()
-            for (i in 0 until data.size)
+            for (i in 0 until data[bldlActivityIndex].size)
             {
-                var dataItem = data.get(i)
+                var dataItem = data[bldlActivityIndex].get(i)
                 // Check if the file has already been downloaded or removed somehow since last checked
                 dataItem.isInBLDLDir = File(fileDownloadDir + "/" + dataItem.title + bloomSourceZipExt()).exists()
                 // find out which action(s) or message needs processing
@@ -208,7 +216,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // Get the definitive list of available Bloom Library story templates
         var lastItemClicked = -1    // last checked item - used for toggling
-        val blDataList = parseOPDSfile()
+        val blDataList = parseOPDSfile(bldlActivityIndex)
         if (blDataList != null)
         {
             onDownloadXmlBloomCatalogSuccess(false) // hide the loading messages
@@ -216,9 +224,9 @@ class BLDownloadActivity : AppCompatActivity() {
             lastItemClicked = blFindOrAddBookItems(blDataList)
         }
         // listen for clicks to check/uncheck item
-        blOnClickListener = BLOnClickListener(this, lastItemClicked)
+        blOnClickListener = BLOnClickListener(this, data[bldlActivityIndex], lastItemClicked)
 
-        adapter = BLCustomAdapter(data)
+        adapter = BLCustomAdapter(data[bldlActivityIndex])
         recyclerView.setAdapter(adapter)
     }
 
@@ -240,7 +248,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 File(fileDownloadDir + "/" + blItem.Title + bloomSourceZipExt()).exists()
             // Check if the title is already in the workspace
             val isInWorkspace = workspaceRelPathExists(this, blItem.Title)
-            val blItemFound = data.find { it -> it.title == blItem.Title }
+            val blItemFound = data[bldlActivityIndex].find { it -> it.title == blItem.Title }
             if (blItemFound != null) {
                 blItemFound.isInWorkspace = isInWorkspace
                 blItemFound.isInBLDLDir = isFileDownloaded
@@ -266,7 +274,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     lastItemCheckedTitle =
                         blItemFound.title    // make a note in case we need to uncheck it
             } else {   // we need to add this title to our data list
-                data.add(
+                data[bldlActivityIndex].add(
                     // Add a new data model item passing in the correct values to the constructor
                     BLDataModel(
                         blItem.Title,
@@ -287,7 +295,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         var lastItemClicked = -1
         if (lastItemCheckedTitle.isNotEmpty()) {
-            lastItemClicked = data.indexOfFirst { it -> it.title == lastItemCheckedTitle }
+            lastItemClicked = data[bldlActivityIndex].indexOfFirst { it -> it.title == lastItemCheckedTitle }
         }
         return lastItemClicked
     }
@@ -321,7 +329,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // if any downloaded files exists from a previous action, process them now
         var downloadDir = bloomSourceAutoDLDir()
-        var firstExists = data.indexOfFirst { it -> File(downloadDir + "/" + it.title + bloomSourceZipExt()).exists() }
+        var firstExists = data[bldlActivityIndex].indexOfFirst { it -> File(downloadDir + "/" + it.title + bloomSourceZipExt()).exists() }
         if (firstExists != -1) {
             // one or more files have been downloaded so install them
             if (MainActivity.mainActivity != null) {
@@ -341,7 +349,7 @@ class BLDownloadActivity : AppCompatActivity() {
     // then hide the loading messages
     fun onDownloadXmlBloomCatalogSuccess(loadBooks : Boolean = true) {
         if (loadBooks) {
-            var bookList = parseOPDSfile()
+            var bookList = parseOPDSfile(bldlActivityIndex)
             if (bookList != null) {
                 blFindOrAddBookItems(bookList)
             }
@@ -360,7 +368,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
 
     // Click listener for clicks on individual cards in the recycler list of BL downloads
-    class BLOnClickListener internal constructor(private val context: Context, var lastSelectedItem: Int = -1) : View.OnClickListener {
+    class BLOnClickListener internal constructor(private val context: Context, var bldata: ArrayList<BLDataModel>, var lastSelectedItem: Int = -1) : View.OnClickListener {
 
         // make true to allow multiple items to be checked for download
         var allowMultipleSelection: Boolean = false
@@ -384,7 +392,7 @@ class BLDownloadActivity : AppCompatActivity() {
         }
 
         private fun toggleSelected(i: Int) : Boolean {
-            var selectedDataItem = data.get(i)
+            var selectedDataItem = bldata.get(i)
             if (selectedDataItem.isEnabled)
                 selectedDataItem.isChecked = !selectedDataItem.isChecked   // toggle the checked state
 

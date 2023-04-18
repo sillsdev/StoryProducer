@@ -1,13 +1,11 @@
 package org.sil.storyproducer.tools
 
 import android.app.Activity
-import android.content.Intent
 import android.view.View
 import android.widget.AdapterView
 import androidx.drawerlayout.widget.DrawerLayout
 import org.sil.storyproducer.R
 import org.sil.storyproducer.activities.BaseActivity
-import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.model.Workspace
 
 class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.OnItemClickListener {
@@ -36,7 +34,10 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.showRegistration(true)
             }
             2 -> {
-                activity.showBLDownloadDialog()
+                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_TEMPLATES_ACTIVITY)
+            }
+            3 -> {
+                activity.showBLDownloadDialog(BaseActivity.BLOOM_DL_FEATURED_ACTIVITY)
             }
 //            3 -> {
 //                // DKH - 01/23/2022 Issue #571: Add a menu item for accessing templates from Google Drive
@@ -45,20 +46,20 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
 //                // open the URL in a new activity
 //                Workspace.startDownLoadMoreTemplatesActivity(activity)
 //            }
-            3 -> {
+            4 -> {
                 activity.showWordLinksList()
             }
-            4 -> {
+            5 -> {
                 activity.showSelectTemplatesFolderDialog()
             }
-            5 -> {
+            6 -> {
                 Workspace.addDemoToWorkspace(activity)
                 activity.controller.updateStories()  // refresh list of stories
             }
-            6 -> {
+            7 -> {
                 activity.showAboutDialog()
             }
-            7 -> {
+            8 -> {
                 activity.showDevSettings()
             }
         }

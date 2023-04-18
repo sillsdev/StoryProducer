@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.text.Html
 import android.text.Spanned
 import android.view.View
@@ -24,7 +23,6 @@ import org.sil.storyproducer.view.BaseActivityView
 import org.sil.storyproducer.controller.bldownload.BLDownloadActivity
 import org.sil.storyproducer.tools.file.isUriStorageMounted
 import timber.log.Timber
-import java.io.File
 
 open class BaseActivity : AppCompatActivity(), BaseActivityView {
 
@@ -33,6 +31,12 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
     private var readingTemplatesDialog: AlertDialog? = null
     private var cancellingReadingTemplatesDialog: AlertDialog? = null
     protected val subscriptions = CompositeDisposable()
+
+    companion object {
+        const val BLOOM_DL_TEMPLATES_ACTIVITY = 0
+        const val BLOOM_DL_FEATURED_ACTIVITY = 1
+        const val BLOOM_DL_ACTIVITY_INDEX = "BLDL_Activity_Index"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -218,8 +222,10 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
         }
     }
 
-    fun showBLDownloadDialog() {
-        startActivity(Intent(this, BLDownloadActivity::class.java))
+    fun showBLDownloadDialog(downloadIndex: Int) {
+        val bldlIntent = Intent(this, BLDownloadActivity::class.java)
+        bldlIntent.putExtra(BLOOM_DL_ACTIVITY_INDEX, downloadIndex)
+        startActivity(bldlIntent)
     }
 
 
