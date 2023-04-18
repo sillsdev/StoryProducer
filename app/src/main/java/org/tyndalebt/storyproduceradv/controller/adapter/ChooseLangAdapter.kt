@@ -10,6 +10,7 @@ import android.widget.CheckedTextView
 import org.tyndalebt.storyproduceradv.R
 import org.tyndalebt.storyproduceradv.activities.BaseActivity
 import org.tyndalebt.storyproduceradv.activities.ChooseLangActivity
+import org.tyndalebt.storyproduceradv.model.Workspace
 
 class ChooseLangAdapter(data: ArrayList<DownloadDS?>, var cla: ChooseLangActivity) :
     ArrayAdapter<DownloadDS?>(cla, R.layout.bloom_list_item, data), View.OnClickListener {
@@ -26,6 +27,9 @@ class ChooseLangAdapter(data: ArrayList<DownloadDS?>, var cla: ChooseLangActivit
         val dataModel = `object` as DownloadDS?
 
         cla.setLanguage(dataModel!!.URL) // language name in English
+        if (Workspace.isInitialized) {
+            Workspace.replaceImportWordLinks(cla)
+        }
         cla.goToNextStep()
     }
 

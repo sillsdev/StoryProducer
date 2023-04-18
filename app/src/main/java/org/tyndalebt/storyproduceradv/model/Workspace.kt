@@ -350,6 +350,11 @@ object Workspace {
         }
     }
 
+    fun replaceImportWordLinks(context: Context) {
+        var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
+        wordLinksDir!!.delete()
+        importWordLinks(context)
+    }
     private fun importWordLinks(context: Context) {
         var wordLinksDir = workdocfile.findFile(WORD_LINKS_DIR)
         var csvFileName : String? = null  // default is no csv file, later on, create one if none found
@@ -523,7 +528,9 @@ object Workspace {
 
         try {
             // open wordlinks.csv located in the APK
-            val instream = assetManager.open(csvFileName)
+            val langCode = readFromFile(context)
+            val shortCode = getLanguageCode(langCode!!)
+            val instream = assetManager.open(shortCode + "/" + csvFileName)
             // Create the worklinks.csv file in the wordlinks directory
             val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileName")
             val buffer = ByteArray(1024)
@@ -537,7 +544,6 @@ object Workspace {
         } catch (e: Exception) {
             Log.e("workspace", "Failed to copy wordlinks CSV asset file: $csvFileName", e)
         }
-
     }
     fun pathOf(name: String): DocumentFile? {
         return workdocfile.listFiles().find { it.name == name }
