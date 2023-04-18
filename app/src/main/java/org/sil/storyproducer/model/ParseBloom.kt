@@ -102,15 +102,13 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     //narration
     if (slide.narrationFile.isEmpty()) {
         if (audios.size >= 1) {
-            if (audios.size > 1) {
-                slide.narrationFile = parseAndConcatenatePageAudio(context, storyPath, lang, audios)
-            } else {
-                slide.narrationFile = "audio/${audios[0].id()}.mp3"
-            }
+            // find first or concatinate all audio sentenses into one narration audio file
+            slide.narrationFile = parseAndConcatenatePageAudio(context, storyPath, lang, audios)
         } else {
+            // no audio in this page but maybe an image file for next page
             val images = page.getElementsByAttributeValueContaining("class", "bloom-imageContainer")
             var imageFile = parseImageFromElement(slide, frontCoverGraphicProvided, images)
-            slide.imageFile = imageFile
+            slide.imageFile = imageFile // save this page's image file in case it is needed for the next page
             return false
         }
     }
