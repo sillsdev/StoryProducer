@@ -32,10 +32,11 @@ open class BLBookList(var dateUpdated: Date) {
     companion object {
 
         var booklistLoading = false
-        var booklist : List<BLBook>? = null
+        var booklist : Array<List<BLBook>?> = Array<List<BLBook>?>(2) { ArrayList<BLBook>() }
         private const val fallbackResourceBucket = "sil-storyproducer-resources"
         private const val fallbackResourceDomain = "s3.amazonaws.com"
-        private const val fallbackResourceKey = "bl1/bl_samples.xml"
+        private const val fallbackResourceKey0 = "bl1/bl_samples.xml"
+        private const val fallbackResourceKey1 = "bl1/bl_samples_feat.xml"
 
         const val WIFI = "Wi-Fi"
         const val ANY = "Any"
@@ -48,7 +49,9 @@ open class BLBookList(var dateUpdated: Date) {
         // The user's current network preference setting.
         var sPref: String? = ANY
 
-        private const val fallbackResourceAddr = "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey}"
+        private val fallbackResourceAddr: Array<String> = arrayOf<String>(
+                "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey0}",
+                "https://${fallbackResourceBucket}.${fallbackResourceDomain}/${fallbackResourceKey1}")
     }
 
     // We don't use namespaces
@@ -57,11 +60,15 @@ open class BLBookList(var dateUpdated: Date) {
 
     private val accessKey = "AWS_ACCESS_KEY_ID"
     private val secretKey = "AWS_SECRET_ACCESS_KEY"
-    private val resourceKey = "AWS_RESOURCE_KEY"
+    private val resourceKey0 = "AWS_RESOURCE_KEY0"
+    private val resourceKey1 = "AWS_RESOURCE_KEY1"
+    private val resourceKey: Array<String> = arrayOf(resourceKey0, resourceKey1)
     private val resourceBucket = "sil-storyproducer-resources"
     private val resourceDomain = "s3.amazonaws.com"
     private lateinit var requestDate: String
     private lateinit var authValue : String
+
+    var bldlActivityIndex: Int = -1
 
     //
     // xml parsing code methods below are adapted from: https://developer.android.com/training/basics/network-ops/xml
@@ -213,12 +220,12 @@ open class BLBookList(var dateUpdated: Date) {
     private fun loadXmlFromNetwork(urlString: String) {
 
         if (accessKey.compareTo("AWS_ACCESS_KEY_ID") == 0) {
-            booklist = downloadUrl(urlString)?.use { stream ->
+            booklist[bldlActivityIndex] = downloadUrl(urlString)?.use { stream ->
                 // Instantiate the fallback samples parser
                 parse(stream)
             } ?: emptyList()
         } else {
-            booklist = doAuthInBackground()?.use { stream ->
+            booklist[bldlActivityIndex] = doAuthInBackground()?.use { stream ->
                 // Instantiate the full catalog parser
                 parse(stream)
             } ?: emptyList()
@@ -257,7 +264,7 @@ open class BLBookList(var dateUpdated: Date) {
     }
 
     private fun createAuthValue()  {
-        val message = "GET\n\n\n${requestDate}\n/${resourceBucket}/${resourceKey}"
+        val message = "GET\n\n\n${requestDate}\n/${resourceBucket}/${resourceKey[bldlActivityIndex]}"
         val mac = Mac.getInstance("HmacSHA1")
         val secret = SecretKeySpec(secretKey.toByteArray(), "HmacSHA1")
         mac.init(secret)
@@ -267,7 +274,7 @@ open class BLBookList(var dateUpdated: Date) {
 
     private fun getCatalogStream(): InputStream? {
 
-        val url = URL("https://${resourceBucket}.${resourceDomain}/${resourceKey}")
+        val url = URL("https://${resourceBucket}.${resourceDomain}/${resourceKey[bldlActivityIndex]}")
         with(url.openConnection() as HttpURLConnection) {
             requestMethod = "GET"
             addRequestProperty("Date", requestDate)
@@ -307,12 +314,12 @@ open class BLBookList(var dateUpdated: Date) {
     }
 
     // Uses AsyncTask subclass to download the XML feed from bloom catalog url.
-    fun loadPage() {
-
+    fun loadPage(bldlActivityIndex: Int) {
+        this.bldlActivityIndex = bldlActivityIndex
         if (sPref.equals(ANY) && (wifiConnected || mobileConnected)) {
-            DownloadXmlTask().execute(fallbackResourceAddr)
+            DownloadXmlTask().execute(fallbackResourceAddr[bldlActivityIndex])
         } else if (sPref.equals(WIFI) && wifiConnected) {
-            DownloadXmlTask().execute(fallbackResourceAddr)
+            DownloadXmlTask().execute(fallbackResourceAddr[bldlActivityIndex])
         } else {
             // show error
         }
@@ -320,13 +327,13 @@ open class BLBookList(var dateUpdated: Date) {
 }
 
     // returns any existing book list - otherwise launches the network xml loading code
-fun parseOPDSfile(): MutableList<BLBook>? {
-    if (BLBookList.booklist?.isNotEmpty() == true) {
-        return (BLBookList.booklist as MutableList<BLBook>?)!!;
-    }
+fun parseOPDSfile(bldlActivityIndex: Int): MutableList<BLBook>? {
+        if (BLBookList.booklist[bldlActivityIndex]?.isNotEmpty() == true) {
+            return (BLBookList.booklist[bldlActivityIndex] as MutableList<BLBook>?)!!;
+        }
     if (!BLBookList.booklistLoading) {
         BLBookList.booklistLoading = true
-        BLBookList(Date()).loadPage()
+        BLBookList(Date()).loadPage(bldlActivityIndex)
     }
     return null
 }

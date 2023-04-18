@@ -12,11 +12,11 @@ import java.util.ArrayList
 
 // This class implements a RecyclerView.Adapter for the Bloom Library card list UI
 // The child class BLViewHolder is used to hold the UI widgets that make the card item
-class BLCustomAdapter(data: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLViewHolder?>() {
+class BLCustomAdapter(bldata: ArrayList<BLDataModel>) : RecyclerView.Adapter<BLViewHolder?>() {
     private val dataSet: ArrayList<BLDataModel>
 
     init {
-        dataSet = data
+        dataSet = bldata
     }
 
     class BLViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
