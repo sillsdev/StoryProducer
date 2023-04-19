@@ -19,7 +19,7 @@ class TranslateReviseFrag : MultiRecordFrag() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        setScriptureText(rootView!!.findViewById(R.id.fragment_scripture_text))
+        setScriptureText(null, rootView!!.findViewById(R.id.fragment_scripture_text))
         setReferenceText(rootView!!.findViewById(R.id.fragment_reference_text))
 
         return rootView
