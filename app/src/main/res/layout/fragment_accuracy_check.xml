@@ -53,20 +53,21 @@
 
     <TextView
         android:id="@+id/fragment_scripture_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_reference_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:background="@color/gray"
         android:text=""
         android:textSize="@dimen/text_body"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/fragment_reference_text"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_reference_text"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="HardcodedText" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
