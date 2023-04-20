@@ -42,12 +42,12 @@ android {
     }
     applicationVariants.all { variant ->
         variant.outputs.all {
-            def versionPart = variant.name;
+            def versionPart = variant.name
             if (variant.name != "debug") {
                 if (keystorePropertiesFile.isFile()) {
-                    versionPart = variant.versionName;
+                    versionPart = variant.versionName
                 } else {
-                    versionPart = versionPart + "-not-signed";
+                    versionPart = versionPart + "-not-signed"
                 }
             }
             outputFileName = "SP-${versionPart}.apk"
@@ -162,7 +162,14 @@ dependencies {
     // implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     // Issue 166, Cedarville pull #519
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    //  was told the following line was not supported.. replaced with the line below
+    //   but both of the two lines below that were also mentioned in the website
+    //   https://stackoverflow.com/questions/57655435/what-replaced-appcompat-v7-in-androidx
+    //implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    //implementation 'com.google.android.material:material:1.0.0'
+    //implementation 'androidx.cardview:cardview:1.0.0'
+
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
 
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
