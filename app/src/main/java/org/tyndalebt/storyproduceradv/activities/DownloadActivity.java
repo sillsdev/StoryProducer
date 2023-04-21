@@ -83,6 +83,8 @@ public class DownloadActivity extends BaseActivity {
         return true;
     }
 
+    // First build a list of distinct languages - use json file to show native versions of language
+    // Second pass, build list of story names that have the chosen language as the prefix
     public void buildBloomList(String pList[], String pURL[]) {
         setContentView(R.layout.bloom_list_container);
 
@@ -115,9 +117,13 @@ public class DownloadActivity extends BaseActivity {
 
         for (idx = 0; idx < pList.length; idx++) {
             if (!folderExists(this, pURL[idx])) {
-                tmp = at.removeExtension((pList[idx]));
                 if (pURL[idx].equals("Language")) {
-                    tmp = tmp + " / " + getNativeLangName(pList[idx]);
+                    tmp = getNativeLangName(pList[idx]);
+                    if (!isLanguageRoman(pList[idx])) {
+                        tmp = tmp + " / " + at.removeExtension(pList[idx]);
+                    }
+                } else {
+                    tmp = at.removeExtension(pList[idx]);
                 }
                 arrayList.add(new DownloadDS(tmp, pURL[idx], false));
             }
@@ -128,10 +134,10 @@ public class DownloadActivity extends BaseActivity {
         pDownloadImage.setOnClickListener(clickListener);
     }
 
-    public String loadJSONFromAsset() {
+    public String loadJSONFromAsset(String pFilename) {
         String json = null;
         try {
-            InputStream is = getAssets().open("TemplateLanguages.json");
+            InputStream is = getAssets().open(pFilename);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -156,9 +162,36 @@ public class DownloadActivity extends BaseActivity {
         return nativeLang;
     }
 
+    public String getEnglishLangName(String pLanguage) {
+        String englishLang = null;
+
+        for (int i = 0; i < formList.size(); i++) {
+            if (formList.get(i).get("displayname").equals(pLanguage)) {
+                englishLang = formList.get(i).get("filename");
+                break;
+            }
+        }
+        return englishLang;
+    }
+
+    public Boolean isLanguageRoman(String pLanguage) {
+        String nativeLang = null;
+
+        for (int i = 0; i < formList.size(); i++) {
+            if (formList.get(i).get("filename").equals(pLanguage)) {
+                if (formList.get(i).get("roman").equals("yes")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void BuildNativeLanguageArray() {
         try {
-            JSONObject obj = new JSONObject(loadJSONFromAsset());
+            JSONObject obj = new JSONObject(loadJSONFromAsset("TemplateLanguages.json"));
             JSONArray m_jArry = obj.getJSONArray("language");
             HashMap<String, String> m_li;
 
@@ -166,11 +199,13 @@ public class DownloadActivity extends BaseActivity {
                 JSONObject jo_inside = m_jArry.getJSONObject(i);
                 String formula_value = jo_inside.getString("filename");
                 String url_value = jo_inside.getString("displayname");
+                String roman_value = jo_inside.getString("roman");
 
                 //Add your values in your `ArrayList` as below:
                 m_li = new HashMap<String, String>();
                 m_li.put("filename", formula_value);
                 m_li.put("displayname", url_value);
+                m_li.put("roman", roman_value);
 
                 formList.add(m_li);
             }
@@ -236,14 +271,20 @@ public class DownloadActivity extends BaseActivity {
                 tmpNew = tmpNew + "%";
                 tmpInt = (int)tmpByte;
                 tmpNew = tmpNew + String.format("%02X", tmpInt);
-            }
-            else if (pSource.charAt(idx) == ' ') {
+            } else if (pSource.charAt(idx) == ' ') {
                 tmpNew = tmpNew + "%20";
+            } else if (pSource.charAt(idx) == '#') {
+                    tmpNew = tmpNew + "%23";
             } else {
                 tmpNew = tmpNew + pSource.charAt(idx);
             }
         }
         return tmpNew;
+    }
+
+    public void setChosenLanguage(String pNativeLanguage) {
+        String DisplayLine[] = pNativeLanguage.split("/");
+        this.chosenLanguage = getEnglishLangName(DisplayLine[0]);
     }
 
     public boolean copyFile(String outFile) {

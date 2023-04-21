@@ -41,8 +41,7 @@ public class DownloadAdapter extends ArrayAdapter<DownloadDS> implements View.On
         //   to reflect chosenLanguage to be set to the English equivalent of the language only.
 
         if (dataModel.URL.equals("Language")) {  // first pass, now show stories for chosen language
-            String DisplayLine[] = dataModel.fileName.split("/");
-            dla.chosenLanguage = DisplayLine[0].trim();
+            dla.setChosenLanguage(dataModel.fileName);
             dla.copyFile(DownloadActivity.BLOOM_LIST_FILE);
         } else {  // List of stories, toggle checkmark
             switch (v.getId()) {

@@ -2,38 +2,47 @@
     "language":[
         {
             "filename": "Bislama",
+            "roman": "yes",
             "displayname": "Bislama"
         },
         {
             "filename": "English",
+            "roman": "yes",
             "displayname": "English"
         },
         {
             "filename": "French",
+            "roman": "yes",
             "displayname": "Français"
         },
         {
             "filename": "Indonesian",
+            "roman": "yes",
             "displayname": "bahasa Indonesian"
         },
         {
             "filename": "Khmer",
+            "roman": "no",
             "displayname": "ខ្មែរ"
         },
         {
             "filename": "Portuguese",
+            "roman": "yes",
             "displayname": "Português"
         },
         {
             "filename": "Spanish",
+            "roman": "yes",
             "displayname": "Español"
         },
         {
             "filename": "Swahili",
+            "roman": "yes",
             "displayname": "KiSwahili"
         },
         {
             "filename": "Tok Pisin",
+            "roman": "yes",
             "displayname": "Tok Pisin"
         }
     ]
