@@ -50,6 +50,7 @@ class Story(var title: String, var slides: List<Slide>){
     var lastSlideNum: Int = 0
     var importAppVersion = ""
     var localCredits = ""
+    var lang = ""   // the language code used when parsing the Bloom html
 
     val inProgress: Boolean get() {
         for(slide in slides){
