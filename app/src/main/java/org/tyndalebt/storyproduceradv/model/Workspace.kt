@@ -250,54 +250,52 @@ object Workspace {
             }
         }
         GlobalScope.launch {
-            if (false) {
-                var hasSentCatchupMessage = false
-                val reconnect: () -> Unit = {
-                    hasSentCatchupMessage = false
-                    val oldClient = messageClient
-                    if (oldClient == null || !oldClient.isOpen) {
-                        oldClient?.close()
-                        Log.e("@pwhite", "Restarting websocket.")
-                        val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
-                        newClient.connectBlocking()
-                        if (newClient.isOpen == false) {
-                            InternetConnection = false
-                        } else {
-                            InternetConnection = true
-                        }
-                        messageClient = newClient
+            var hasSentCatchupMessage = false
+            val reconnect: () -> Unit = {
+                hasSentCatchupMessage = false
+                val oldClient = messageClient
+                if (oldClient == null || !oldClient.isOpen) {
+                    oldClient?.close()
+                    Log.e("@pwhite", "Restarting websocket.")
+                    val newClient = MessageWebSocketClient(URI(getRoccWebSocketsUrl(context)))
+                    newClient.connectBlocking()
+                    if (newClient.isOpen == false) {
+                        InternetConnection = false
+                    } else {
+                        InternetConnection = true
                     }
+                    messageClient = newClient
                 }
-                while (true) {
-                    try {
-                        if (messageClient?.isOpen != true) {
-                            reconnect()
-                            delay(5000)
-                        }
-                        if (!hasSentCatchupMessage) {
-                            val js = JSONObject()
-                            js.put("type", "catchup")
-                            val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                            js.put("since", df.format(lastReceivedTimeSent))
-                            messageClient!!.send(js.toString(2))
-                            hasSentCatchupMessage = true
-                        }
-                        val nextQueuedMessage = queuedMessages.peek()
-                        if (nextQueuedMessage != null) {
-                            val js = messageToJson(nextQueuedMessage)
-                            messageClient!!.send(js.toString(2))
-                            queuedMessages.remove()
-                        }
-                        delay(500) // pause 1/2 second between checks
-                    } catch (ex: Exception) {
-                        Log.e(
-                            "@pwhite",
-                            "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket."
-                        )
-                        ex.printStackTrace();
+            }
+            while (true) {
+                try {
+                    if (messageClient?.isOpen != true) {
                         reconnect()
                         delay(5000)
                     }
+                    if (!hasSentCatchupMessage) {
+                        val js = JSONObject()
+                        js.put("type", "catchup")
+                        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        js.put("since", df.format(lastReceivedTimeSent))
+                        messageClient!!.send(js.toString(2))
+                        hasSentCatchupMessage = true
+                    }
+                    val nextQueuedMessage = queuedMessages.peek()
+                    if (nextQueuedMessage != null) {
+                        val js = messageToJson(nextQueuedMessage)
+                        messageClient!!.send(js.toString(2))
+                        queuedMessages.remove()
+                    }
+                    delay(500) // pause 1/2 second between checks
+                } catch (ex: Exception) {
+                    Log.e(
+                        "@pwhite",
+                        "websocket iteration failed: ${ex} ${ex.message}. Closing old websocket."
+                    )
+                    ex.printStackTrace();
+                    reconnect()
+                    delay(5000)
                 }
             }
         }
