@@ -48,7 +48,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     } ?: return null
 
     val lang = frontCoverSlideBuilder.lang
-    story.lang = lang
+    story.langCode = lang
 
     var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")

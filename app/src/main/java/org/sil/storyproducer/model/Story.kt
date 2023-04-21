@@ -1,13 +1,8 @@
 package org.sil.storyproducer.model
 
 
-import android.os.Build
 import com.squareup.moshi.JsonClass
-import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.model.logging.LogEntry
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -50,7 +45,7 @@ class Story(var title: String, var slides: List<Slide>){
     var lastSlideNum: Int = 0
     var importAppVersion = ""
     var localCredits = ""
-    var lang = ""   // the language code used when parsing the Bloom html
+    var langCode = ""   // the language code used when parsing the Bloom html
 
     val inProgress: Boolean get() {
         for(slide in slides){
