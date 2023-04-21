@@ -75,6 +75,7 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
             //Use the "second" image, because the first is just for the title screen.
             holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
             holder.txtSubTitle.text = story.slides[0].subtitle
+            holder.txtLang.text = story.lang
         }
 
         return row
@@ -84,6 +85,7 @@ class ListAdapter(context: Context, private val resourceId: Int, private val sto
         var imgIcon: ImageView = view.findViewById(R.id.story_list_image)
         var txtTitle: TextView = view.findViewById(R.id.story_list_title)
         var txtSubTitle: TextView = view.findViewById(R.id.story_list_subtitle)
+        var txtLang: TextView = view.findViewById(R.id.story_list_lang)
     }
 
 }
