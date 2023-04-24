@@ -57,10 +57,10 @@ class DrawerItemClickListener(private val activity: BaseActivity) : AdapterView.
                 activity.controller.updateStories()  // refresh list of stories
             }
             7 -> {
-                activity.showAboutDialog()
+                activity.showDevSettings()
             }
             8 -> {
-                activity.showDevSettings()
+                activity.showAboutDialog()
             }
         }
     }

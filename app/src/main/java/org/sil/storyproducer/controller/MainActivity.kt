@@ -272,11 +272,11 @@ class MainActivity : BaseActivity(), Serializable {
             R.id.nav_bloom_featured -> {
                 showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
             }
-            R.id.nav_about -> {
-                showAboutDialog()
-            }
             R.id.nav_dev_settings -> {
                 showDevSettings()
+            }
+            R.id.nav_about -> {
+                showAboutDialog()
             }
         }
 

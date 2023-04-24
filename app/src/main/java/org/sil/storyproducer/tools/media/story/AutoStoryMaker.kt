@@ -67,13 +67,21 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             } else {
                 if (!mStoryMaker!!.isDone) {
                     //Still making main video
-                    return mStoryMaker!!.progress / 2
+                    return if (isVideoWidescreen)
+                            mStoryMaker!!.progress
+                        else
+                            mStoryMaker!!.progress / 2
                 }else {
                     //making 3gp video
-                    return 0.5 + time3GPms*1000.0/mStoryMaker!!.storyDuration / 2
+                    return if (isVideoWidescreen)
+                        mStoryMaker!!.progress
+                    else
+                        0.5 + time3GPms*1000.0/mStoryMaker!!.storyDuration / 2
                 }
             }
         }
+
+    val isVideoWidescreen = SlideService(context).isVideoWideScreen()
 
     override fun start() {
         val outputFormat = MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4
@@ -111,7 +119,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
             Workspace.logEvent(context,"video_creation",params)
 
             //Make 3gp video before you delete the temp video - it's made from that.
-            if (!SlideService(context).isVideoWideScreen()) {   // but not if doing wide screen
+            if (!isVideoWidescreen) {   // but not if doing wide screen
                 if(mIncludePictures)
                     make3GPVideo()
             }

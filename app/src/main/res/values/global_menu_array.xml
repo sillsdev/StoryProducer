@@ -8,7 +8,7 @@
         <item>@string/title_activity_wordlink_list</item>
         <item>@string/select_workspace_folder</item>
         <item>@string/copy_demo</item>
-        <item>@string/about</item>
         <item>@string/dev_settings</item>
+        <item>@string/about</item>
     </string-array>
 </resources>
