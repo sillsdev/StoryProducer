@@ -57,7 +57,7 @@ class BLDownloadActivity : AppCompatActivity() {
                 for (i in 0 until data.size) {
                     val model = data.get(i)
                     // Check if the file has already been downloaded or removed somehow since last checked
-                    model.isInBLDLDir = File(fileDownloadDir + "/" + model.title + bloomSourceZipExt()).exists()
+                    model.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(model.title) + bloomSourceZipExt()).exists()
                     if (model.isInBLDLDir && !model.isInWorkspace) {
                         recognisedDownloads++
                     }
@@ -80,6 +80,17 @@ class BLDownloadActivity : AppCompatActivity() {
     }
 
     companion object {
+        private fun convertToSafeFilename(downloadUri: String): String {
+            return downloadUri.replace('?', '_')
+                    .replace('/', '_')
+                    .replace('|', '_')
+                    .replace('\\', '_')
+                    .replace('*', '_')
+                    .replace('<', '_')
+                    .replace(':', '_')
+                    .replace('>', '_')
+        }
+
         private val TAG = "BLDownloadActivity"
 
         lateinit var bldlActivity: BLDownloadActivity
@@ -127,7 +138,7 @@ class BLDownloadActivity : AppCompatActivity() {
             {
                 var dataItem = data[bldlActivityIndex].get(i)
                 // Check if the file has already been downloaded or removed somehow since last checked
-                dataItem.isInBLDLDir = File(fileDownloadDir + "/" + dataItem.title + bloomSourceZipExt()).exists()
+                dataItem.isInBLDLDir = File(fileDownloadDir + "/" + convertToSafeFilename(dataItem.title) + bloomSourceZipExt()).exists()
                 // find out which action(s) or message needs processing
                 if (dataItem.isChecked && dataItem.isEnabled)
                 {
@@ -139,7 +150,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     request.setDescription(getString(R.string.bloom_lib_download))
 
                     val destDir = File(this.getExternalFilesDir(null), Environment.DIRECTORY_DOWNLOADS);
-                    val destFile = File(destDir, dataItem.title + bloomSourceZipExt())
+                    val destFile = File(destDir, convertToSafeFilename(dataItem.title) + bloomSourceZipExt())
                     request.setDestinationUri(Uri.fromFile(destFile))
 
                     request.setAllowedOverMetered(true)     // set here until we have a setting for it
@@ -245,9 +256,9 @@ class BLDownloadActivity : AppCompatActivity() {
             val blItem = blDataList[i]
             // Check if the file has already been downloaded
             val isFileDownloaded =
-                File(fileDownloadDir + "/" + blItem.Title + bloomSourceZipExt()).exists()
+                File(fileDownloadDir + "/" + convertToSafeFilename(blItem.Title) + bloomSourceZipExt()).exists()
             // Check if the title is already in the workspace
-            val isInWorkspace = workspaceRelPathExists(this, blItem.Title)
+            val isInWorkspace = workspaceRelPathExists(this, convertToSafeFilename(blItem.Title))
             val blItemFound = data[bldlActivityIndex].find { it -> it.title == blItem.Title }
             if (blItemFound != null) {
                 blItemFound.isInWorkspace = isInWorkspace
@@ -329,7 +340,7 @@ class BLDownloadActivity : AppCompatActivity() {
 
         // if any downloaded files exists from a previous action, process them now
         var downloadDir = bloomSourceAutoDLDir()
-        var firstExists = data[bldlActivityIndex].indexOfFirst { it -> File(downloadDir + "/" + it.title + bloomSourceZipExt()).exists() }
+        var firstExists = data[bldlActivityIndex].indexOfFirst { it -> File(downloadDir + "/" + convertToSafeFilename(it.title) + bloomSourceZipExt()).exists() }
         if (firstExists != -1) {
             // one or more files have been downloaded so install them
             if (MainActivity.mainActivity != null) {
