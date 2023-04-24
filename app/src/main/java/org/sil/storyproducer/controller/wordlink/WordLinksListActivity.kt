@@ -192,12 +192,12 @@ class WordLinksListActivity : BaseActivity(), SearchView.OnQueryTextListener {
                     showBLDownloadDialog(BLOOM_DL_FEATURED_ACTIVITY);
                     this.finish()
                 }
+                R.id.nav_settings -> {
+                    showSettings()
+                }
                 R.id.nav_about -> {
                     showAboutDialog()
                     dismissNoDatabaseMsg()
-                }
-                R.id.nav_dev_settings -> {
-                    showDevSettings()
                 }
             }
 
