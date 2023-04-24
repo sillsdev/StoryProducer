@@ -108,9 +108,8 @@
     <string name="stories_not_found_body">Now it\'s time to install some story templates.&lt;br/>
         Tap the menu in the upper left, then...&lt;br/>&lt;br/>
         To install the demo story, choose:&lt;br/>
-        &lt;b>&lt;font color=\"white\">Add Demo to Story List&lt;/font>&lt;/b>&lt;br/>&lt;br/>
-        If you are connected to the internet, you can get more stories by choosing:&lt;br/>
-        &lt;b>&lt;font color=\"rgb(255, 255, 255)\">Download Bloom Library Templates&lt;/font>&lt;/b>
+        &lt;b>&lt;font color="#ffffff">Add Demo to Story List&lt;/font>&lt;/b>&lt;br/>&lt;br/>
+        If you are connected to the internet, you can get more stories by choosing one of the &lt;b>&lt;font color="#ffffff">\'Download ...\'&lt;/font>&lt;/b> options.
         <!-- color white is not working -->
      </string>
     <string name="stories_not_found_in_progress">There are no stories in progress.</string>
@@ -308,7 +307,7 @@
     <string name="all_stories_tab">All Stories</string>
     <string name="in_progress_tab">In Progress</string>
     <string name="completed_tab">Completed</string>
-    <string name="more_story_templates"><b>Tip:</b>\nIf you are connected to the internet, you can add more story templates!\nTap the menu in the upper left, and choose:\n<b>Download Bloom Library Templates</b></string>
+    <string name="more_story_templates"><b>Tip:</b>\nIf you are connected to the internet, you can add more story templates!\nTap the menu in the upper left, and choose one of the <b>\'Download ...\'</b> actions.</string>
 
     <!-- Filter Toolbar -->
     <string name="film_toolbar">Film</string>
@@ -379,16 +378,21 @@
 
     <!-- Preference Titles -->
     <string name="video_creation">Video Creation</string>
-    <string name="bloom_import">Bloom Import</string>
+    <string name="bloom_import">Bloom Book Import</string>
     <string name="accuracy_check">Accuracy Check</string>
 
     <!-- Sync Preferences -->
-    <string name="video_wide_screen">Generate Wide (16:9) MP4 Video</string>
-    <string name="bloom_import_alt_lwc">Alternate LWC</string>
+    <string name="video_wide_screen">Generate Widescreen Video</string>
+    <string name="video_wide_screen_summary">Generate a 16:9 HD widescreen MP4 output video only.</string>
+    <string name="bloom_import_alt_lwc">Alternate Language</string>
+    <string name="bloom_import_alt_lwc_summary">Use this to specify which language code to use when importing a downloaded Bloom book. Only this language code will be imported into SP and the book must have content in that language. Leave this blank to import the book’s default language.</string>
     <string name="bloom_import_bgimage_color">Background Image Color #</string>
-    <string name="accuracy_check_confirm_all">Confirm All Slides</string>
+    <string name="bloom_import_bgimage_color_summary">Enter a background color to use for scaled images and videos here as a hex value or color name.</string>
+    <string name="accuracy_check_approve_all">Approve All Slides</string>
 
     <!-- Settings -->
-    <string name="dev_settings">Developer Settings</string>
+    <string name="settings">Settings</string>
+    <string name="settings_title"><font color="white"><b>Settings</b></font></string>
+    <string name="settings_experimental"><font color="#F6DDCC">These settings are experimental. Use with caution!</font></string>
 
 </resources>

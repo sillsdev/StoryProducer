@@ -209,7 +209,7 @@ open class BaseActivity : AppCompatActivity(), BaseActivityView {
             .show()
     }
 
-    fun showDevSettings() {
+    fun showSettings() {
         startActivity(Intent(this,  SettingsActivity::class.java))
     }
 

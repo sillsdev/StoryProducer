@@ -23,10 +23,10 @@
             android:id="@+id/nav_demo"
             android:title="@string/copy_demo" />
         <item
+            android:id="@+id/nav_settings"
+            android:title="@string/settings" />
+        <item
             android:id="@+id/nav_about"
             android:title="@string/about" />
-        <item
-            android:id="@+id/nav_dev_settings"
-            android:title="@string/dev_settings" />
     </group>
 </menu>

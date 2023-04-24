@@ -1,10 +1,24 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="settings_static_field_key"
+        android:persistent="false"
+        android:selectable="false"
+        android:summary="@string/settings_experimental"
+        android:title="@string/settings_title" />
 
     <PreferenceCategory app:title="@string/video_creation">
 
         <SwitchPreferenceCompat
             app:key="video_wide"
-            app:title="@string/video_wide_screen" />
+            app:title="@string/video_wide_screen"
+            app:summary="@string/video_wide_screen_summary"/>
+
+        <EditTextPreference
+            app:key="bloom_bgimage_color"
+            app:title="@string/bloom_import_bgimage_color"
+            app:summary="@string/bloom_import_bgimage_color_summary"/>
 
     </PreferenceCategory>
 
@@ -12,11 +26,8 @@
 
         <EditTextPreference
             app:key="bloom_alt_lwc"
-            app:title="@string/bloom_import_alt_lwc" />
-
-        <EditTextPreference
-            app:key="bloom_bgimage_color"
-            app:title="@string/bloom_import_bgimage_color" />
+            app:title="@string/bloom_import_alt_lwc"
+            app:summary="@string/bloom_import_alt_lwc_summary"/>
 
     </PreferenceCategory>
 
@@ -24,7 +35,7 @@
 
         <SwitchPreferenceCompat
             app:key="accuracy_confirm_all"
-            app:title="@string/accuracy_check_confirm_all" />
+            app:title="@string/accuracy_check_approve_all" />
 
     </PreferenceCategory>
 
