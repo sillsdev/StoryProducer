@@ -31,7 +31,8 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/accuracy_check">
+    <PreferenceCategory app:title="@string/accuracy_check"
+        app:isPreferenceVisible="false" >
 
         <SwitchPreferenceCompat
             app:key="accuracy_confirm_all"
