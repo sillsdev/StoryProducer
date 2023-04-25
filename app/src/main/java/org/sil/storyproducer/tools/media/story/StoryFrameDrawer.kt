@@ -164,8 +164,8 @@ internal class StoryFrameDrawer(private val context: Context, private val mVideo
             if (page.sType == SlideType.NUMBEREDPAGE &&
                     page.kenBurnsEffect == null &&
                     SlideService(context).shouldScaleForAspectRatio(
-                            newBitmap.width, newBitmap.height, SlideService(context).getVideoScreenRatio()))
-                bitmaps[page.imRelPath] = SlideService(context).scaleImage(newBitmap, mWidth, mHeight)
+                            newBitmap.width, newBitmap.height, SlideService(context).getVideoScreenRatio(true)))
+                bitmaps[page.imRelPath] = SlideService(context).scaleImage(newBitmap, mWidth, mHeight, true)
             else
                 bitmaps[page.imRelPath] = newBitmap
         }
