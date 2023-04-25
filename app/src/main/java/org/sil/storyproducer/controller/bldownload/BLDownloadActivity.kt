@@ -106,6 +106,7 @@ class BLDownloadActivity : AppCompatActivity() {
     private lateinit var blBroadCastReceiver: BroadcastReceiver
     private var blReceiverRegistered: Boolean = false
     private var bldlActivityIndex: Int = -1
+    private val bldlImageId = intArrayOf(R.drawable.temp_sp_logo_book, R.drawable.temp_bloom_logo_transparent)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -293,7 +294,7 @@ class BLDownloadActivity : AppCompatActivity() {
 //                        if (blItem.Title == "001 The Widow’s Offering")
 //                            R.drawable.temp_001_widdows_offering_thumbnail // TODO: example image - just testing appearance
 //                        else
-                        R.drawable.temp_sp_logo_book,
+                        bldlImageId[bldlActivityIndex],
                         blItem.BloomSourceURL,
                         isInWorkspace,      // makes it grayed out
                         isFileDownloaded,   // remember if already downloaded
