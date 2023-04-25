@@ -219,7 +219,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
                         slide.startMotion != null &&
                         slide.endMotion != null) {
 
-                    val videoRect = SlideService(mContext).getVideoScreenRect(true)
+                    val videoRect = SlideService(mContext).getVideoScreenRect(true, true)
                     kbfx = KenBurnsEffect.fromSlide(slide, videoRect.width(), videoRect.height())
                 }
             }
@@ -272,7 +272,7 @@ class AutoStoryMaker(private val context: Context) : Thread(), Closeable {
 
     private fun generateVideoFormat(): MediaFormat? {
         //If no video component, use null format.
-        val videoRect = SlideService(mContext).getVideoScreenRect(true)
+        val videoRect = SlideService(mContext).getVideoScreenRect(true, true)
         val videoFormat = MediaFormat.createVideoFormat(VIDEO_MP4_CODEC, videoRect.width(), videoRect.height())
         videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT,VIDEO_MP4_COLOR)
         videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, VIDEO_MP4_FRAMERATE)

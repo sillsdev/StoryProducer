@@ -276,12 +276,12 @@ abstract class PhaseBaseActivity : BaseActivity(), AdapterView.OnItemSelectedLis
         //Get the height of the phone.
         val phoneProperties = this.resources.displayMetrics
         val width = phoneProperties.widthPixels
-        val desiredAspectRatio = slideService.getVideoScreenRatio()
+        val desiredAspectRatio = slideService.getVideoScreenRatio(false)
         val height = (width / desiredAspectRatio).toInt()
 
         if (slideService.shouldScaleForAspectRatio(slidePicture.width, slidePicture.height, desiredAspectRatio)) {
             // Create a new bitmap with the desired aspect ratio
-            val newBitmap = slideService.scaleImage(slidePicture, width, height)
+            val newBitmap = slideService.scaleImage(slidePicture, width, height, false)
             slidePicture = newBitmap.copy(Bitmap.Config.RGB_565, true)
         } else {
             // nearly the same ratio so use the current bitmap after centre crop
