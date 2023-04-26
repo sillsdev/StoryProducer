@@ -70,7 +70,7 @@ class SlideService(val context: Context) {
         return BitmapFactory.decodeResource(context.resources, R.drawable.greybackground)
     }
 
-    fun scaleImage(originalBitmap: Bitmap, width: Int, height: Int, checkIfWideScreen: Boolean): Bitmap {
+    fun scaleImage(originalBitmap: Bitmap, width: Int, height: Int, useWidescreenSetting: Boolean): Bitmap {
 
         // Load the original bitmap from a file or resource
         // Define the desired aspect ratio of the output bitmap
@@ -81,7 +81,7 @@ class SlideService(val context: Context) {
         val newWidth: Int
         val newHeight: Int
         var imageScale = 1.0f
-        val desiredAspectRatio = getVideoScreenRatio(checkIfWideScreen)
+        val desiredAspectRatio = getVideoScreenRatio(useWidescreenSetting)
         if (originalAspectRatio > desiredAspectRatio) {
             // The original bitmap is wider than the desired aspect ratio, so we need to pad it vertically
             imageScale = width.toFloat() / originalWidth.toFloat()
@@ -140,8 +140,8 @@ class SlideService(val context: Context) {
         return prefs.getBoolean("video_wide", false);
     }
 
-    fun getVideoScreenRect(isMp4Video: Boolean, checkIfWideScreen: Boolean): Rect {
-        if (checkIfWideScreen && isVideoWideScreen()) {
+    fun getVideoScreenRect(isMp4Video: Boolean, useWidescreenSetting: Boolean): Rect {
+        if (useWidescreenSetting && isVideoWideScreen()) {
             if (isMp4Video)
                 return Rect(0, 0, 1280, 720)
             else
@@ -154,8 +154,8 @@ class SlideService(val context: Context) {
         }
     }
 
-    fun getVideoScreenRatio(checkIfWideScreen: Boolean): Float {
-        val vidoRect = getVideoScreenRect(true, checkIfWideScreen)
+    fun getVideoScreenRatio(useWidescreenSetting: Boolean): Float {
+        val vidoRect = getVideoScreenRect(true, useWidescreenSetting)
         return vidoRect.width().toFloat() / vidoRect.height().toFloat()
     }
 
