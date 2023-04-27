@@ -7,29 +7,61 @@ import org.sil.storyproducer.model.PhaseType
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.model.WORD_LINKS_DIR
+import java.io.File
 
 class AudioPlayer {
 
     private var mPlayer: MediaPlayer
     private var fileExists: Boolean = false
+    private var dummyPlayStartTime = 0L // the system time that playback started
+    private var dummyPausedPosition = 0L  // the delta play position when paused
     private var onCompletionListenerPersist: MediaPlayer.OnCompletionListener? = null
 
+    var isDummyAudio: Boolean = false    // when set a dummy 2s AudioPlayer object is defined
+        get() = isDummyAudioPrepared
+
+    private var isDummyAudioPlaying: Boolean = false    // simulated silent audio playback
+
+    private var isDummyAudioPrepared: Boolean = false   // set if ready to playback dummy audio
+
     var currentPosition: Int
-        get() =
-            try{ mPlayer.currentPosition
-            } catch (e : Exception){ 0 }
+        get() = if (isDummyAudio) { // check if this is a dummy object first
+            if (isDummyAudioPlaying) {  // if dummy is in simulated playback
+                var pos = System.currentTimeMillis() - dummyPlayStartTime // calc current position
+                if (pos > audioDurationInMilliseconds) {    // check if dummy 2s audio is finished
+                    stopAudio()                             // stop dummy playback
+                    dummyPausedPosition = dummyDurationInMilliseconds.toLong()    // set at end position
+                    pos = dummyPausedPosition
+                    onCompletionListenerPersist?.onCompletion(mPlayer)  // call completion callback
+                }
+                pos.toInt()   // return current position
+            }
+            else
+                dummyPausedPosition.toInt()  // return paused position
+        } else try {
+                mPlayer.currentPosition     // use real currentPosition
+            } catch (e : Exception) { 0 }   // or 0 on error
         set(value) {
-            try {
-                mPlayer.seekTo(value)
-            } catch (e : Exception) {}
-        }
+            if (isDummyAudio) { // calc dummy start time or paused position
+                if (isDummyAudioPlaying)
+                    dummyPlayStartTime = System.currentTimeMillis() - value
+                else
+                    dummyPausedPosition = value.toLong()
+            } else try {
+                    mPlayer.seekTo(value)   // use real seek
+                } catch (e : Exception) {}
+            }
+
 
     /**
      * returns the duration of the audio as an int in milliseconds
      * @return the duration of the audio as an int
      */
     val audioDurationInMilliseconds: Int
-        get() = mPlayer.duration
+        get() = if (isDummyAudio)
+            dummyDurationInMilliseconds // return dummy duration
+        else
+            mPlayer.duration            // return real duration
 
     /**
      * returns if the audio is being played or not
@@ -37,15 +69,17 @@ class AudioPlayer {
      */
     val isAudioPlaying: Boolean
         get() {
-            try {
-                return mPlayer.isPlaying
+            if (isDummyAudio)
+                return isDummyAudioPlaying  // return dummmy playing flag
+            else try {
+                return mPlayer.isPlaying    // return real isPlaying
             } catch (e: IllegalStateException) {
                 return false
             }
-
         }
 
     var isAudioPrepared: Boolean = false
+        get() = isDummyAudioPrepared || field
         private set
 
     /**
@@ -57,19 +91,28 @@ class AudioPlayer {
     }
 
     fun setSource(context: Context, uri: Uri) : Boolean {
-        try {
+        if (uri == Uri.fromFile(File(""))) {
+            // setup everything for a dummy playback:
+            fileExists = true
+            isAudioPrepared = false
+            isDummyAudioPrepared = true
+            dummyPausedPosition = 0
+        } else try {
+            // setup everything for a real audio playback
             mPlayer.release()
             mPlayer = MediaPlayer()
             mPlayer.setOnCompletionListener(onCompletionListenerPersist)
             mPlayer.setDataSource(context, uri)
             fileExists = true
             isAudioPrepared = true
+            isDummyAudioPrepared = false
             mPlayer.prepare()
             currentPosition = 0
         } catch (e: Exception) {
             //TODO maybe do something with this exception
             fileExists = false
             isAudioPrepared = false
+            isDummyAudioPrepared = false
         }
         return fileExists
     }
@@ -98,9 +141,17 @@ class AudioPlayer {
      * Pauses the audio if it is currently being played
      */
     fun pauseAudio() {
-        try {
+        if (isDummyAudio) {
+            if (isDummyAudioPlaying) {
+                // clear dummy playing flag:
+                isDummyAudioPlaying = false
+                // calc dummy position:
+                dummyPausedPosition = System.currentTimeMillis() - dummyPlayStartTime
+            }
+        }
+        else try {
             if(mPlayer.isPlaying)
-                mPlayer.pause()
+                mPlayer.pause() // do a real audio pause
         } catch (e: Exception) {}
     }
 
@@ -108,7 +159,15 @@ class AudioPlayer {
      * Resumes the audio from where it was last paused
      */
     fun resumeAudio() {
-        try {
+        if (isDummyAudio) {
+            if (!isDummyAudioPlaying) {
+                // set dummy playing flag:
+                isDummyAudioPlaying = true
+                // set dummy playback start time:
+                dummyPlayStartTime = System.currentTimeMillis() - dummyPausedPosition
+            }
+        }
+        else try {
             if(fileExists) {
                 mPlayer.start()
             }
@@ -120,7 +179,12 @@ class AudioPlayer {
      * Stops the audio if it is currently being played
      */
     fun stopAudio() {
-        try {
+        if (isDummyAudio) {
+            // clear dummy playing flag:
+            isDummyAudioPlaying = false
+            // reset dummy playback position:
+            dummyPausedPosition = 0
+        } else try {
             if(mPlayer.isPlaying) mPlayer.pause()
             if(currentPosition != 0) currentPosition = 0
         } catch (e: Exception) {}
@@ -130,7 +194,10 @@ class AudioPlayer {
      * Releases the MediaPlayer object after completion
      */
     fun release() {
+        isDummyAudioPrepared = false
         isAudioPrepared = false
+        isDummyAudioPlaying = false
+        dummyPausedPosition = 0L
         try {
             mPlayer.release()
         } catch (e : Exception) {}
@@ -142,7 +209,12 @@ class AudioPlayer {
      */
     fun seekTo(msec: Int) {
         if(!fileExists) return
-        mPlayer.seekTo(msec)
+        if (isDummyAudio) {
+            // set dummy playback position:
+            currentPosition = msec
+        }
+        else
+            mPlayer.seekTo(msec)    // do real seek
     }
 
     /**
@@ -159,11 +231,13 @@ class AudioPlayer {
      * @param volume the float for the volume from 0.0 to 1.0
      */
     fun setVolume(volume: Float) {
-        mPlayer.setVolume(volume, volume)
+        if (!isDummyAudio)  // set real volume only if not dummy
+            mPlayer.setVolume(volume, volume)
     }
 
     companion object {
 
         private val TAG = "AudioPlayer"
+        const val dummyDurationInMilliseconds = 2000
     }
 }

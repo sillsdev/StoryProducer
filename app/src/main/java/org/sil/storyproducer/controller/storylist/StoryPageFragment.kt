@@ -179,7 +179,7 @@ class ListAdapter(context: Context,
                 else -> holder.txtTitle.text = story.title + "   "  // add 3 spaces for uniqueness
             }
 
-            //TODO put th number 25 in some configuration.  What if the images are different sizes?
+            //TODO put th number 8 in some configuration.  What if the images are different sizes?
             //Use the "second" image, because the first is just for the title screen.
             holder.imgIcon.setImageBitmap(SlideService(context).getImage(1, 25, story))
             holder.txtSubTitle.text = story.slides[0].subtitle
