@@ -179,7 +179,8 @@
     <string name="translation_edit_cancelled">Audio edit cancelled</string>
 
     <!-- Translate + Revise Phase -->
-    <string name="translate_revise_playback_no_lwc_audio">Slide not translated - no narration audio in the local language</string>
+    <string name="translate_revise_playback_no_lwc_audio">No \'%1$s\' audio for this slide in the story template.</string>
+    <string name="other_playback_no_local_audio">Slide not translated - no narration audio in the local language.</string>
     <string name="translate_revise_playback_lwc_audio">Playing narration audio</string>
     <string name="translate_revise_play_narration_audio">Play narration audio</string>
 
