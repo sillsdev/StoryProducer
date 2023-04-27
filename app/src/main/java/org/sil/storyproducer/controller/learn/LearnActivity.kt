@@ -1,6 +1,7 @@
 package org.sil.storyproducer.controller.learn
 
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.core.content.res.ResourcesCompat
@@ -20,6 +21,7 @@ import org.sil.storyproducer.tools.file.storyRelPathExists
 import org.sil.storyproducer.tools.media.AudioPlayer
 import org.sil.storyproducer.tools.media.MediaHelper
 import org.sil.storyproducer.tools.toolbar.PlayBackRecordingToolbar
+import java.io.File
 import java.util.*
 import kotlin.math.min
 
@@ -105,8 +107,12 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
             //don't play the copyright slides.
             if (s.slideType in arrayOf(SlideType.FRONTCOVER, SlideType.NUMBEREDPAGE)) {
                 numOfSlides++
-                slideDurations.add((MediaHelper.getAudioDuration(this,
-                        getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
+                if (s.narrationFile.isNotEmpty()) {
+                    slideDurations.add((MediaHelper.getAudioDuration(this,
+                            getStoryUri(Story.getFilename(s.narrationFile))!!) / 1000).toInt())
+                } else {
+                    slideDurations.add(AudioPlayer.dummyDurationInMilliseconds) // Add a dummy 2s slide for missing audio message
+                }
                 slideStartTimes.add(slideStartTimes.last() + slideDurations.last())
             } else {
                 break
@@ -172,7 +178,11 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
                 if (i-1 != curPos || !narrationPlayer.isAudioPrepared) {
                     curPos = i-1
                     setPic(learnImageView!!, curPos)
-                    narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
+                    val narrationFile = Workspace.activeStory.slides[curPos].narrationFile
+                    if (narrationFile.isEmpty())
+                        narrationPlayer.setSource(this, Uri.fromFile(File(""))) // set empty source for dummy 2s audio playback
+                    else
+                        narrationPlayer.setStorySource(this, Workspace.activeStory.slides[curPos].narrationFile)
                 }
                 break
             }
@@ -264,6 +274,12 @@ class LearnActivity : PhaseBaseActivity(), PlayBackRecordingToolbar.ToolbarMedia
         narrationPlayer.setVolume(if (isVolumeOn) 1.0f else 0.0f) //set the volume on or off based on the boolean
         narrationPlayer.playAudio()
         playButton!!.setImageResource(R.drawable.ic_pause_white_48dp)
+        if (narrationPlayer.isDummyAudio) { // if this slide has dummy audio show missing audio message
+            Snackbar.make(findViewById(R.id.drawer_layout),
+                    getString(R.string.translate_revise_playback_no_lwc_audio, Workspace.activeStory.langCode),
+                                AudioPlayer.dummyDurationInMilliseconds.toInt() - 100)
+                    .setAction("Action", null).show()
+        }
     }
 
     /**
