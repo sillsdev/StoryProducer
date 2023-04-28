@@ -165,7 +165,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     private fun setReferenceAudioButton() {
         referencePlayButton!!.setOnClickListener {
             if (!storyRelPathExists(context!!,Workspace.activePhase.getReferenceAudioFile(slideNum))) {
-                //TODO make "no audio" string work for all phases
+                // Now using an appropriate "no audio" string for all phases
                 if (Workspace.activePhase.phaseType == PhaseType.TRANSLATE_REVISE)
                     Snackbar.make(rootView!!,
                             getString(R.string.translate_revise_playback_no_lwc_audio, Workspace.activeStory.langCode),
