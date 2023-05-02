@@ -106,7 +106,7 @@ class BLDownloadActivity : AppCompatActivity() {
     private lateinit var blBroadCastReceiver: BroadcastReceiver
     private var blReceiverRegistered: Boolean = false
     private var bldlActivityIndex: Int = -1
-    private val bldlImageId = intArrayOf(R.drawable.temp_sp_logo_book, R.drawable.temp_bloom_logo_transparent)
+    private val bldlImageId = intArrayOf(R.drawable.ic_launcher_foreground, R.drawable.temp_bloom_logo_transparent)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

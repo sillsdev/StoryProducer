@@ -15,10 +15,10 @@
             android:background="@color/lightGray"/>
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:layout_centerHorizontal="true"
-        android:src="@mipmap/logo_new_splash"
+        android:src="@drawable/sp_logo"
         android:layout_alignBottom="@+id/splash_center"
         android:contentDescription="@string/app_name" />
     <TextView
