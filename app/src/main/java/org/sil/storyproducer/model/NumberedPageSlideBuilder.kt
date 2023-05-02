@@ -22,6 +22,7 @@ class NumberedPageSlideBuilder : SlideBuilder() {
                 .map { it.getElementsByAttributeValueContaining("class", BLOOM_EDITABLE) }
                 .flatten()
                 .filter { it.attr(LANG) == lang }
+                .filter { textOf(it).isNotEmpty() }
 
         if (!bloomEditables.isEmpty()) {
             slide.content = textOf(bloomEditables.firstOrNull())
