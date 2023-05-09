@@ -89,6 +89,7 @@ class BLDownloadActivity : AppCompatActivity() {
                     .replace('<', '_')
                     .replace(':', '_')
                     .replace('>', '_')
+                    .replace('\n', '_')
         }
 
         private val TAG = "BLDownloadActivity"
