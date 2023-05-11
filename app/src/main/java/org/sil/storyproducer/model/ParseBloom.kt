@@ -270,7 +270,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
             if (audioStoryConcatDocFind != null)
                 audioStoryConcatDocFind.delete()    // delete the output file if it already exists
             var audiostoryConcatDoc = storyPath.findFile("audio")?.let {
-                it.createFile("audio/mpeg", "${audios[0].id()}_output.mp3")
+                it.createFile("", "${audios[0].id()}_output.mp3")
             }
             if (audiostoryConcatDoc != null) {
                 // now copy the concatenated output file to the Story audio subfolder

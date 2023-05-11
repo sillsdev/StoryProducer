@@ -247,7 +247,7 @@ fun copySubFile(context: Context, subFile: String, newDocumentFolder: DocumentFi
 
     try {
         // copy the file using a buffer here
-        val newDoc = newDocumentFolder.createFile(oldDoc.type!!, subFile) ?: return false
+        val newDoc = newDocumentFolder.createFile("", subFile) ?: return false
 
         val buffer = ByteArray(1024 * 64)
         val outStream = context.contentResolver.openOutputStream(newDoc.uri) ?: return false
