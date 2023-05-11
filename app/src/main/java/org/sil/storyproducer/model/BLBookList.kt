@@ -98,7 +98,9 @@ open class BLBookList(var dateUpdated: Date) {
             }
             // Starts by looking for the entry tag
             if (parser.name == "entry") {
-                entries.add(readEntry(parser))
+                val newEntry = readEntry(parser)
+                if (newEntry != null)
+                    entries.add(newEntry)
             } else {
                 skip(parser)
             }
@@ -109,7 +111,7 @@ open class BLBookList(var dateUpdated: Date) {
     // Parses the contents of an entry. If it encounters a title, language, or one of two link tags, hands them off
     // to their respective "read" methods for processing. Otherwise, skips the tag.
     @Throws(XmlPullParserException::class, IOException::class)
-    private fun readEntry(parser: XmlPullParser): BLBook {
+    private fun readEntry(parser: XmlPullParser): BLBook? {
         parser.require(XmlPullParser.START_TAG, ns, "entry")
         var title: String? = null
         var langCode = ""
@@ -138,7 +140,13 @@ open class BLBookList(var dateUpdated: Date) {
                 else -> skip(parser)
             }
         }
-        return BLBook(title!!, langCode!!, thumbLink!!, bookLink!!)
+        if (title == null || langCode == null || thumbLink == null || bookLink == null) {
+            return null
+        } else {
+            return BLBook(title!!, langCode!!, thumbLink!!, bookLink!!)
+        }
+
+
     }
 
     // Processes title tags in the feed.
