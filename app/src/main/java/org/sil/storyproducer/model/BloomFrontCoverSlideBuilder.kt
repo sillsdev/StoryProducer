@@ -14,26 +14,26 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
 
     var lang = "*"
 
-    fun build(context: Context, file: DocumentFile, html: Document): Slide? {
+    fun build(context: Context, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, html: Document): Slide? {
         this.context = context
         return html.getElementsByAttributeValueContaining(CLASS, OUTSIDE_FRONT_COVER).firstOrNull()?.let {
-            buildSlide(file, html, it)
+            buildSlide(storyPath, storyAudioPath, storyAudioMap, html, it)
         }
     }
 
-    private fun buildSlide(file: DocumentFile, html: Document, outsideFrontCover: Element): Slide {
+    private fun buildSlide(storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, html: Document, outsideFrontCover: Element): Slide {
         val slideSubtitle = buildSubtitle(outsideFrontCover).orEmpty()
         val slideContent = buildContent(html)
         lang = getContentLanguage(html)
-        val frontCoverContent = FrontCoverContent(slideContent, file.name.orEmpty(), slideSubtitle, lang)
+        val frontCoverContent = FrontCoverContent(slideContent, storyPath.name.orEmpty(), slideSubtitle, lang)
 
         return Slide().apply {
             slideType = SlideType.FRONTCOVER
             subtitle = slideSubtitle
             content = buildTitleIdeas(frontCoverContent)
-            narrationFile = buildNarrationFile(file, html, lang).orEmpty()
+            narrationFile = buildNarrationFile(storyPath, html, lang).orEmpty()
             reference = frontCoverContent.scriptureReference
-            parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, file, lang)
+            parsePage(context, frontCoverContent.graphic.startsWith("front"), outsideFrontCover, this, storyPath, storyAudioPath, storyAudioMap, lang)
         }
     }
 

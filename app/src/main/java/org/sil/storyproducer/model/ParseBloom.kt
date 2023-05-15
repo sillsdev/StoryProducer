@@ -27,7 +27,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
             continue
         if (f.endsWith(".html") || f.endsWith(".htm")){
             html_name = f
-            continue    // why continue and not break?
+            break
         }
     }
     if(html_name == "") return null
@@ -41,9 +41,22 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 
     val soup = Jsoup.parse(htmlText)
 
+    // Here we generate additional parameters to the Bloom HTML parsing methods.
+    // This is so that DocumentFile.listFiles() and DocumentFile.findFile() methods
+    // are called the minimum number of times as they are quite slow to use:
+    var storyAudioPath = storyPath.findFile("audio") ?: return null
+    var storyAudioFiles = storyAudioPath.listFiles()
+
+    // In addition storyAudioMap enables a faster access to individual
+    // audio DocumentFile instances in the "audio" subfolder:
+    var storyAudioMap : MutableMap<String, DocumentFile> = mutableMapOf()
+    for (storyAudioFile in storyAudioFiles) {
+        storyAudioMap[storyAudioFile.name!!] = storyAudioFile
+    }
+
     //add the title slide
     val frontCoverSlideBuilder = BloomFrontCoverSlideBuilder()
-    frontCoverSlideBuilder.build(context, storyPath, soup)?.also {
+    frontCoverSlideBuilder.build(context, storyPath, storyAudioPath, storyAudioMap, soup)?.also {
         slides.add(it)
     } ?: return null
 
@@ -54,11 +67,10 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
     NumberedPageSlideBuilder.prevPageImage = "" // no previous images
+
     for (page in pages) {
-        if (page.attr("class").contains("numberedPage")) {
-            NumberedPageSlideBuilder().build(context, storyPath, page, lang)?.also {
-                slides.add(it)
-            }
+        NumberedPageSlideBuilder().build(context, storyPath, storyAudioPath, storyAudioMap, page, lang)?.also {
+            slides.add(it)
         }
     }
 
@@ -94,7 +106,7 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
 //Image and transition pattern
 val reRect = "([0-9.]+) ([0-9.]+) ([0-9.]+) ([0-9.]+)".toRegex()
 
-fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Element, slide: Slide, storyPath: DocumentFile, lang: String): Boolean {
+fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Element, slide: Slide, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, lang: String): Boolean {
     val bmOptions = BitmapFactory.Options()
     bmOptions.inJustDecodeBounds = true
 
@@ -104,7 +116,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     if (slide.narrationFile.isEmpty()) {
         if (audios.size >= 1) {
             // find first or concatinate all audio sentenses into one narration audio file
-            slide.narrationFile = parseAndConcatenatePageAudio(context, storyPath, lang, audios)
+            slide.narrationFile = parseAndConcatenatePageAudio(context, storyAudioPath, storyAudioMap, lang, audios)
         } else {
             // no audio in this page but maybe an image file for next page
             val images = page.getElementsByAttributeValueContaining("class", "bloom-imageContainer")
@@ -193,7 +205,9 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     return true
 }
 
-fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang: String, audios: Elements): String {
+
+
+fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, lang: String, audios: Elements): String {
     // Using ffmpeg to concatenate multiple sentences in one page
     // ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp3
     // but first we need to copy the source audio files to internal storage
@@ -201,45 +215,37 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
     var narrationFile = ""
     var totalInputAudioFiles = 0
     var firstInputAudioFile = ""
+    var outputAudioFileName = ""
+    val audioConcatDocs : MutableList<DocumentFile> = ArrayList()
+
     for (i in 0 until audios.size) {
-        if (//!audios[i].hasAttr("data-duration") ||
-                audios[i].attr("class").contains("ImageDescriptionEdit-style") ||
+        if (audios[i].attr("class").contains("ImageDescriptionEdit-style") ||
                 audios[i].attr("class").contains("smallCoverCredits"))
             continue
-        var audioStoryDoc = storyPath.findFile("audio")?.let {
-            it.findFile("${audios[i].id()}.mp3")
-        } ?: continue
-        if (!audioStoryDoc.exists() || audioStoryDoc.length() <= 0)
-            continue
-        var audioLang = getAudioAncestorLang(audios[i])
+
+        val audioLang = getAudioAncestorLang(audios[i])
         if (audioLang.isNotEmpty() && lang.isNotEmpty() && audioLang != lang)
             continue
 
+        val searchAudioFile = "${audios[i].id()}.mp3"
+        val audioStoryDocFound = storyAudioMap[searchAudioFile] ?: continue
+        audioConcatDocs.add(audioStoryDocFound)
+        if (totalInputAudioFiles == 0) {
+            firstInputAudioFile = "audio/${searchAudioFile}"
+            outputAudioFileName = "${audios[i].id()}_output.mp3"
+        }
         totalInputAudioFiles++
-        if (firstInputAudioFile.isEmpty())
-            firstInputAudioFile = "audio/${audios[i].id()}.mp3"
     }
     if (totalInputAudioFiles > 1) {
-        var concatTempFolder = File(context.filesDir, "temp_concat")
+        val concatTempFolder = File(context.filesDir, "temp_concat")
         concatTempFolder.deleteRecursively()
         concatTempFolder.mkdirs()
-        var concatTempFile = File(concatTempFolder, "temp_audio_concat_list.txt")
+        val concatTempFile = File(concatTempFolder, "temp_audio_concat_list.txt")
         var totalInputFiles = 0
-        for (i in 0 until audios.size) {
-            if (//!audios[i].hasAttr("data-duration") ||
-                    audios[i].attr("class").contains("ImageDescriptionEdit-style") ||
-                    audios[i].attr("class").contains("smallCoverCredits"))
-                continue
-            var audioStoryDoc = storyPath.findFile("audio")?.let {
-                it.findFile("${audios[i].id()}.mp3")
-            } ?: continue
-            if (!audioStoryDoc.exists() || audioStoryDoc.length() <= 0)
-                continue
-            var audioLang = getAudioAncestorLang(audios[i])
-            if (audioLang.isNotEmpty() && lang.isNotEmpty() && audioLang != lang)
-                continue
-
-            val audioFileOut = File(concatTempFolder, "/${audios[i].id()}.mp3")
+        for (audioStoryDoc in audioConcatDocs) {
+            val audioFileOut = File(concatTempFolder, audioStoryDoc.name!!)
+            // Copy all the individual files to be concatenated to internal storage
+            // This is so that the FFmpeg extension can access all the input and output files
             copyToFilesDir(context, audioStoryDoc.uri, audioFileOut)
             if (audioFileOut.exists() && audioFileOut.length() > 0) {
                 // escape any single quotes in file name
@@ -250,7 +256,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
             }
         }
         if (totalInputFiles > 0) {
-            var ffmpegArgs: MutableList<String> = mutableListOf()
+            val ffmpegArgs: MutableList<String> = mutableListOf()
             ffmpegArgs.add("-f")
             ffmpegArgs.add("concat")
             ffmpegArgs.add("-safe")
@@ -259,29 +265,35 @@ fun parseAndConcatenatePageAudio(context: Context, storyPath: DocumentFile, lang
             ffmpegArgs.add(concatTempFile.absolutePath)
             ffmpegArgs.add("-c")
             ffmpegArgs.add("copy")
-            val concatTempOutputFileStr = "${concatTempFolder}/${audios[0].id()}_output.mp3"
+            val concatTempOutputFileStr = "${concatTempFolder.path}/${outputAudioFileName}"
             ffmpegArgs.add(concatTempOutputFileStr)
             FFmpeg.execute(ffmpegArgs.toTypedArray())
             Log.w("ParseBloom.parsePage", FFmpeg.getLastCommandOutput()
                     ?: "No FFMPEG output")
-            val audioStoryConcatDocFind = storyPath.findFile("audio")?.let {
-                it.findFile("${audios[0].id()}_output.mp3")
+
+            // search for the output file for all the concatenated files
+            val audioStoryConcatDocFind = storyAudioMap[outputAudioFileName]
+
+            // delete the output file if it already exists (prevents numbered versions being created)
+            if (audioStoryConcatDocFind != null) {
+                storyAudioMap.remove(outputAudioFileName)
+                audioStoryConcatDocFind.delete()
             }
-            if (audioStoryConcatDocFind != null)
-                audioStoryConcatDocFind.delete()    // delete the output file if it already exists
-            var audiostoryConcatDoc = storyPath.findFile("audio")?.let {
-                it.createFile("", "${audios[0].id()}_output.mp3")
-            }
-            if (audiostoryConcatDoc != null) {
-                // now copy the concatenated output file to the Story audio subfolder
-                copyFromFilesDir(context, File(concatTempOutputFileStr), audiostoryConcatDoc.uri)
-                narrationFile = "audio/${audios[0].id()}_output.mp3"
+
+            // create the concatination output file
+            val audioStoryConcatDoc = storyAudioPath.createFile("", outputAudioFileName)
+            if (audioStoryConcatDoc != null) {
+                // add the concatenated file to the map of "audio" sub-folder files
+                storyAudioMap[outputAudioFileName] = audioStoryConcatDoc
+                // now copy the concatenated output file to the Story 'audio' subfolder
+                copyFromFilesDir(context, File(concatTempOutputFileStr), audioStoryConcatDoc.uri)
+                narrationFile = "audio/${outputAudioFileName}"
             }
         }
         concatTempFolder.deleteRecursively()
-    }
-    if (totalInputAudioFiles == 1)
+    } else if (totalInputAudioFiles == 1) {
         narrationFile = firstInputAudioFile   // select the first valid audio filename
+    }
 
     return narrationFile
 }

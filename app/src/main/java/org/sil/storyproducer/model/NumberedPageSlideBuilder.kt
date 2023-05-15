@@ -6,12 +6,12 @@ import org.jsoup.nodes.Element
 
 class NumberedPageSlideBuilder : SlideBuilder() {
 
-    fun build(context: Context, file: DocumentFile, page: Element, lang: String): Slide? {
+    fun build(context: Context, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, page: Element, lang: String): Slide? {
         val slide = Slide()
         slide.slideType = SlideType.NUMBEREDPAGE
 
         slide.prevPageImageFile = prevPageImage
-        if (!parsePage(context, false, page, slide, file, lang)) {
+        if (!parsePage(context, false, page, slide, storyPath, storyAudioPath, storyAudioMap, lang)) {
             prevPageImage = slide.imageFile // no audio in this page but maybe an image file for next page
             return null
         }
