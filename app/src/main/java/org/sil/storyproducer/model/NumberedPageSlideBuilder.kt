@@ -25,8 +25,23 @@ class NumberedPageSlideBuilder : SlideBuilder() {
                 .filter { textOf(it).isNotEmpty() }
 
         if (!bloomEditables.isEmpty()) {
-            slide.content = textOf(bloomEditables.firstOrNull())
-            slide.reference = textOf(bloomEditables.getOrNull(1))
+            if (bloomEditables.size > 2) {
+                // probably not an SP authored bloom story so display each
+                // and every editable on a seperate line with no bold reference
+                slide.reference = ""
+                for (editable in bloomEditables) {
+                    val editableText = textOf(editable)
+                    if (editableText.isNotEmpty()) {
+                        if (slide.content.isNotEmpty())
+                            slide.content += "\n"
+                        slide.content += editableText
+                    }
+                }
+            } else {
+                // this is where SP authored bloom books should put them
+                slide.content = textOf(bloomEditables.firstOrNull())
+                slide.reference = textOf(bloomEditables.getOrNull(1))
+            }
         }
 
         return slide
