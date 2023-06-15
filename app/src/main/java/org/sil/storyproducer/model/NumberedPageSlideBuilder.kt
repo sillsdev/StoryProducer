@@ -6,7 +6,15 @@ import org.jsoup.nodes.Element
 
 class NumberedPageSlideBuilder : SlideBuilder() {
 
-    fun build(context: Context, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, page: Element, lang: String): Slide? {
+
+    fun build(context: Context,
+                storyPath: DocumentFile,
+                storyAudioPath: DocumentFile,
+                storyAudioMap: MutableMap<String, DocumentFile>,
+                page: Element,
+                lang: String,
+                isSPAuthored: Boolean): Slide? {
+
         val slide = Slide()
         slide.slideType = SlideType.NUMBEREDPAGE
 
@@ -25,9 +33,10 @@ class NumberedPageSlideBuilder : SlideBuilder() {
                 .filter { textOf(it).isNotEmpty() }
 
         if (!bloomEditables.isEmpty()) {
-            if (bloomEditables.size > 2) {
-                // probably not an SP authored bloom story so display each
-                // and every editable on a seperate line with no bold reference
+
+            if (!isSPAuthored) {
+                // Not an SP authored bloom story so display each and
+                // every editable on a seperate line with no bold reference
                 slide.reference = ""
                 for (editable in bloomEditables) {
                     val editableText = textOf(editable)

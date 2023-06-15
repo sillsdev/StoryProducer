@@ -63,13 +63,16 @@ fun parseBloomHTML(context: Context, storyPath: DocumentFile): Story? {
     val lang = frontCoverSlideBuilder.lang
     story.langCode = lang
 
+    val isSPAuthored = frontCoverSlideBuilder.isSPAuthored
+
     var slide = Slide()
     val pages = soup.getElementsByAttributeValueContaining("class","numberedPage")
     if(pages.size <= 2) return null
     NumberedPageSlideBuilder.prevPageImage = "" // no previous images
 
     for (page in pages) {
-        NumberedPageSlideBuilder().build(context, storyPath, storyAudioPath, storyAudioMap, page, lang)?.also {
+        NumberedPageSlideBuilder()
+                .build(context, storyPath, storyAudioPath, storyAudioMap, page, lang, isSPAuthored)?.also {
             slides.add(it)
         }
     }

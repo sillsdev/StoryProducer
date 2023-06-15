@@ -14,6 +14,8 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
 
     var lang = "*"
 
+    var isSPAuthored = false    // set to true if found to be a SP authored book
+
     fun build(context: Context, storyPath: DocumentFile, storyAudioPath: DocumentFile, storyAudioMap: MutableMap<String, DocumentFile>, html: Document): Slide? {
         this.context = context
         return html.getElementsByAttributeValueContaining(CLASS, OUTSIDE_FRONT_COVER).firstOrNull()?.let {
@@ -25,6 +27,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
         val slideSubtitle = buildSubtitle(outsideFrontCover).orEmpty()
         val slideContent = buildContent(html)
         lang = getContentLanguage(html)
+        isSPAuthored = getSPAuthored(html)
         val frontCoverContent = FrontCoverContent(slideContent, storyPath.name.orEmpty(), slideSubtitle, lang)
 
         return Slide().apply {
@@ -80,6 +83,13 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
                 ?: lang
     }
 
+    internal fun getSPAuthored(html: Document): Boolean {
+
+        return bloomDataDiv(html)
+                ?.children()
+                ?.find { it.attr(DATA_XMATTER_PAGE) == SP_CONFIG_PAGE } != null
+    }
+
     internal fun buildNarrationFile(file: DocumentFile, html: Document, lang: String): String? {
         return bloomDataDiv(html)
                 ?.children()
@@ -95,11 +105,13 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
 
         const val CLASS = "class"
         const val DATA_BOOK = "data-book"
+        const val DATA_XMATTER_PAGE = "data-xmatter-page"
         const val OUTSIDE_FRONT_COVER = "outsideFrontCover"
         const val SMALL_COVER_CREDITS = "smallCoverCredits"
         const val BLOOM_DATA_DIV = "bloomDataDiv"
         const val CONTENT_LANGUAGE_1 = "contentLanguage1"
         const val TITLE_IDEA_1 = "spTitleIdea1"
+        const val SP_CONFIG_PAGE = "spConfigurationPage"
 
     }
 
