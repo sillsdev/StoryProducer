@@ -11,7 +11,7 @@ class StoryTest {
     @Test
     fun testShortTitle() {
         val storyWithoutNumbers = Story("Creation", ArrayList())
-        assertEquals("Expected short title to return full title", "Creation", storyWithoutNumbers.shortTitle)
+        assertEquals("Expected short title to return full title", "Creation!", storyWithoutNumbers.shortTitle)
 
         val storyWithNumbers = Story("03 Fall", ArrayList())
         assertEquals("Expected short title to return title without numbers", "Fall", storyWithNumbers.shortTitle)
