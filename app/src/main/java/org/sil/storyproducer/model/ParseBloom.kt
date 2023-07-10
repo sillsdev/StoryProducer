@@ -172,7 +172,11 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
             imageFile = slide.prevPageImageFile
         if (imageFile.isNotEmpty()) {
             slide.imageFile = imageFile
-            BitmapFactory.decodeFileDescriptor(getStoryFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!), null, bmOptions)
+            val imagePfd = getStoryFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!)
+            if (imagePfd != null) {
+                BitmapFactory.decodeFileDescriptor(imagePfd.fileDescriptor, null, bmOptions)
+                imagePfd.close()
+            }
             slide.height = bmOptions.outHeight
             slide.width = bmOptions.outWidth
             // Now keeping default start and end Ken Burns motion settings null for enhanced default behaviour

@@ -5,6 +5,7 @@ import android.media.MediaCodec
 import android.media.MediaExtractor
 import android.media.MediaFormat
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.util.Log
 import org.sil.storyproducer.tools.file.getStoryFileDescriptor
 
@@ -30,6 +31,8 @@ class PipedMediaExtractor
 
     private var mExtractor: MediaExtractor? = null
 
+    private var mMediaInputPfd: ParcelFileDescriptor? = null
+
     private var mFormat: MediaFormat? = null
 
     private var mIsDone = false
@@ -43,7 +46,10 @@ class PipedMediaExtractor
         }
 
         mExtractor = MediaExtractor()
-        mExtractor!!.setDataSource(getStoryFileDescriptor(context, mPath,"","r")!!)
+        mMediaInputPfd = getStoryFileDescriptor(context, mPath,"","r")
+        if (mMediaInputPfd != null) {
+            mExtractor!!.setDataSource(mMediaInputPfd!!.fileDescriptor)
+        }
 
         var foundTrack = false
 
@@ -131,6 +137,8 @@ class PipedMediaExtractor
     }
 
     override fun close() {
+        if (mMediaInputPfd != null)
+            mMediaInputPfd!!.close()
         if (mExtractor != null) {
             mExtractor!!.release()
             mExtractor = null

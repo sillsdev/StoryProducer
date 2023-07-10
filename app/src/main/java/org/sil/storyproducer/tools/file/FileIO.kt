@@ -244,8 +244,8 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
     return oStream
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : FileDescriptor? {
-    return getStoryPFD(context,relPath,mimeType,mode,dirRoot)?.fileDescriptor
+fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
+    return getStoryPFD(context,relPath,mimeType,mode,dirRoot)
 }
 
 fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
