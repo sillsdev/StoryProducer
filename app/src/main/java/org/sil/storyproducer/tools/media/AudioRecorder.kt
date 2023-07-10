@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.media.MediaMuxer
 import android.media.MediaRecorder
 import android.net.Uri
+import android.os.ParcelFileDescriptor
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.util.Log
@@ -21,6 +22,7 @@ import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
+import java.io.FileDescriptor
 import java.io.IOException
 
 
@@ -96,8 +98,11 @@ abstract class AudioRecorder(val activity: Activity) {
 class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
+    private var mOutputFile : ParcelFileDescriptor? = null
 
     private fun initRecorder(){
+        if (mOutputFile != null)
+            mOutputFile?.close()
         mRecorder.release()
         mRecorder = MediaRecorder()
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -110,7 +115,10 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     override fun startNewRecording(relPath: String){
         initRecorder()
-        mRecorder.setOutputFile(getStoryFileDescriptor(activity, relPath,"","w"))
+        mOutputFile = getStoryFileDescriptor(activity, relPath,"","w")
+        if (mOutputFile == null)
+            return
+        mRecorder.setOutputFile(mOutputFile?.fileDescriptor)
         isRecording = true
         try{
             mRecorder.prepare()
@@ -129,6 +137,8 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
     override fun stop() {
         if(!isRecording) return
         try {
+            if (mOutputFile != null)
+                mOutputFile?.close()
             mRecorder.stop()
             mRecorder.reset()
             mRecorder.release()

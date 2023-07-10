@@ -40,6 +40,12 @@ class ParseBloomTest {
         Assert.assertEquals("000 Unlocked demo", result!!.title)
     }
 
+    @Test
+    fun parsed_SPAT_Should_get_ProvidedPagesPlusSong() {
+        Assert.assertEquals(8, result!!.slides.size.toLong())
+    }
+
+    // this test initialization code should only need to be called one
     private fun parse_SPAT_Story(): Story? {
         setupWorkspace()
         val storyPath = Workspace.workdocfile.findFile("000 Unlocked demo")
