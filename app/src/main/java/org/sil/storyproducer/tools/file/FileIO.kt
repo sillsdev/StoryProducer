@@ -171,11 +171,11 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
     if (dirRoot == "") return null
     return Uri.parse(Workspace.workdocfile.uri.toString() +
-            Uri.encode("/$dirRoot/$relPath"))
+            Uri.encode("${File.separator}$dirRoot${File.separator}$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
-    return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("/$relPath"))
+    return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("${File.separator}$relPath"))
 }
 
 fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
@@ -276,7 +276,7 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
                     DocumentsContract.getDocumentId(
                         Uri.parse(
                             Workspace.workdocfile.uri.toString() +
-                                    Uri.encode("/$relPath")
+                                    Uri.encode("${File.separator}$relPath")
                         )
                     )
                 ), arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
@@ -300,24 +300,30 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
 fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
     if (!Workspace.workdocfile.isDirectory) return null
     //build the document tree if it is needed
-    val segments = relPath.split("/")
+    val segments = relPath.split(File.separator)
     var uri = Workspace.workdocfile.uri
     try {
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
-            val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+            val newUri = Uri.parse(uri.toString() + Uri.encode("${File.separator}${segments[i]}"))
             var isDirectory: Boolean
             if (isUriAutomaticallyCreated(uri)) {
                 // new app-specific storage uses File class to test and create directories
                 isDirectory = newUri.toFile().isDirectory // use File class to test app-specific storage
-                if (!isDirectory)
+                if (!isDirectory) {
+                    if (!mode.contains("w"))
+                        return null
                     newUri.toFile().mkdirs()    // use File class to make directories
+                }
             } else {
                 // old way uses content resolver to test and create directories
                 isDirectory = context.contentResolver.getType(newUri)?.
                         contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
-                if (!isDirectory)
+                if (!isDirectory) {
+                    if (!mode.contains("w"))
+                        return null
                     DocumentsContract.createDocument(context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+                }
             }
             uri = newUri    // next uri of path is one level down
         }
@@ -326,9 +332,9 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         return null
     }
     //create the file if it is needed
-    val fullUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
+    val fullUri = Uri.parse(uri.toString() + Uri.encode("${File.separator}${segments.last()}"))
     //TODO replace with custom exists thing.
-    if (context.contentResolver.getType(fullUri) == null) {
+    if (!workspaceRelPathExists(context, relPath)) {
         //find the mime type by extension
         var mType = mimeType
         if(mType == "") {
@@ -355,7 +361,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
     val childUri = Uri.parse(Workspace.workdocfile.uri.toString() +
-            Uri.encode("/$relPath"))
+            Uri.encode("${File.separator}$relPath"))
     //check if the file exists by checking for permissions
     try {
         //TODO Why is DocumentsContract.isDocument not working right?

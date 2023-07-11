@@ -7,6 +7,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.sil.storyproducer.tools.file.storyRelPathExists
+import java.io.File
 
 class BloomFrontCoverSlideBuilder : SlideBuilder() {
 
@@ -97,7 +98,7 @@ class BloomFrontCoverSlideBuilder : SlideBuilder() {
                 ?.children()?.firstOrNull()                                                 // <p>
                 ?.children()?.firstOrNull()                                                 // <span>
                 ?.id()
-                ?.let { "audio/$it.mp3" }
+                ?.let { "audio${File.separator}$it.mp3" }
                 ?.let { if (storyRelPathExists(context, it, file.name.orEmpty())) it else null }
     }
 

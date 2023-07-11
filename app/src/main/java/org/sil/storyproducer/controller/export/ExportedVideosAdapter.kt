@@ -15,6 +15,7 @@ import org.sil.storyproducer.R
 import org.sil.storyproducer.model.VIDEO_DIR
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.getWorkspaceFileProviderUri
+import java.io.File
 import java.util.*
 
 
@@ -54,7 +55,7 @@ class ExportedVideosAdapter(private val context: Context, private val rvListener
         val path = videoPaths[position]
 
         //split the path so we can get just the file name witch will be used in the view
-        val splitPath = path.split("/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        val splitPath = path.split(File.separator.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val fileName = splitPath[splitPath.size - 1]
 
         //recreate the holder every time because the views are changing around

@@ -42,7 +42,8 @@ class ParseBloomTest {
 
     @Test
     fun parsed_SPAT_Should_get_ProvidedPagesPlusSong() {
-        Assert.assertEquals(8, result!!.slides.size.toLong())
+        // should be 9 slides 7 numbered 1 front cover and 1 copyright
+        Assert.assertEquals(9, result!!.slides.size.toLong())
     }
 
     // this test initialization code should only need to be called one
@@ -55,9 +56,9 @@ class ParseBloomTest {
     private fun setupWorkspace() {
         println(System.getProperty("user.dir"))
         // NB: Using the unlocked demo story for now but in the future we should probably have dedicated test templates under git
-        var df = androidx.documentfile.provider.DocumentFile.fromFile(File("app/src/main/assets"))
+        var df = androidx.documentfile.provider.DocumentFile.fromFile(File("app${File.separator}src${File.separator}main${File.separator}assets"))
         if(!df.isDirectory){
-            df = androidx.documentfile.provider.DocumentFile.fromFile(File("src/main/assets"))
+            df = androidx.documentfile.provider.DocumentFile.fromFile(File("src${File.separator}main${File.separator}assets"))
         }
         Workspace.workdocfile = df
     }
