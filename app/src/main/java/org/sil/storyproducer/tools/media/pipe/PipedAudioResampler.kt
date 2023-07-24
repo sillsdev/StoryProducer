@@ -131,7 +131,7 @@ class PipedAudioResampler
                 val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
                 val si = floor(fSample).toInt() * 2 + cChannel  // first index
                 val sw = fSample - floor(fSample) //weight of second term
-                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toShort()
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 2] * sw)).toInt().toShort()
             }
         } else if (mChannelCount == 1 && orgChannelCount == 2) {
             for (i in 0 until srcEnd) {
@@ -140,14 +140,14 @@ class PipedAudioResampler
                 val sw = fSample - floor(fSample) //weight of second term
                 srcBuffer[i] = (mVolumeModifier *
                         ((orgBuffer[si] + orgBuffer[si + 1]) * (1 - sw) +
-                                (orgBuffer[si + 2] + orgBuffer[si + 3]) * sw) * 0.5).toShort()
+                                (orgBuffer[si + 2] + orgBuffer[si + 3]) * sw) * 0.5).toInt().toShort()
             }
         } else if (mChannelCount == 2 && orgChannelCount == 1) {
             for (i in 0 until srcEnd step 2) {
                 val fSample = (relStartTime + (i / 2) * srMult) * ssrMult
                 val si = floor(fSample).toInt() // first index
                 val sw = fSample - si //weight of second term
-                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toInt().toShort()
                 srcBuffer[i + 1] = srcBuffer[i]
             }
         } else {//1,1
@@ -155,7 +155,7 @@ class PipedAudioResampler
                 val fSample = (relStartTime + i * srMult) * ssrMult
                 val si = floor(fSample).toInt() // first index
                 val sw = fSample - si //weight of second term
-                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toShort()
+                srcBuffer[i] = (mVolumeModifier * (orgBuffer[si] * (1 - sw) + orgBuffer[si + 1] * sw)).toInt().toShort()
             }
         }
         return true

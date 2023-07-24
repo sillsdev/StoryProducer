@@ -324,7 +324,7 @@ class PipedAudioConcatenator
             val fadeInEnd = min(srcEnd, srcPos + ((fadeInEndTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
             val fadeInMult: Float = (1.0 / fadeInSamples).toFloat()
             for (index in srcPos until fadeInEnd) {
-                srcBuffer[index] = (srcBuffer[index] * (fadeInSamplesAtPos + index) * fadeInMult).toShort()
+                srcBuffer[index] = (srcBuffer[index] * (fadeInSamplesAtPos + index) * fadeInMult).toInt().toShort()
             }
 
             val fadeOutStartTime = sourceEnd - mFadeOutUs
@@ -332,7 +332,7 @@ class PipedAudioConcatenator
             val fadeOutPos = max(srcPos, srcPos + ((fadeOutStartTime - mSeekTime) * mSampleRate / 1000000.0).toInt())
             val fadeOutMult: Float = (1.0 / fadeOutSamples).toFloat()
             for (index in fadeOutPos until srcEnd) {
-                srcBuffer[index] = (srcBuffer[index] * (fadeOutSamplesToEnd - index) * fadeOutMult).toShort()
+                srcBuffer[index] = (srcBuffer[index] * (fadeOutSamplesToEnd - index) * fadeOutMult).toInt().toShort()
             }
 
 
@@ -370,7 +370,7 @@ class PipedAudioConcatenator
 
         if(mSourceVolume != 1.0f)
             srcBuffer.sliceArray(srcPos..srcEnd).forEachIndexed {
-                index, sh -> srcBuffer[index] = (sh*mSourceVolume).toShort() }
+                index, sh -> srcBuffer[index] = (sh*mSourceVolume).toInt().toShort() }
 
         //Release buffer since data was copied.
         mSource!!.releaseBuffer(buffer)
