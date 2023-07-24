@@ -139,12 +139,17 @@ dependencies {
     implementation 'net.lingala.zip4j:zip4j:2.3.1'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.4.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
+    implementation 'com.squareup.moshi:moshi:1.14.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.moshi:moshi-kotlin:1.14.0'
+
     // DKH - 08/26/2021 Added by Cedarville for Wordlinks
     // implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     // Issue 166, Cedarville pull #519
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
 
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.6.0'
     testImplementation 'junit:junit:4.12'
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'org.robolectric:robolectric:4.9.2'
