@@ -64,7 +64,7 @@ object Workspace {
     var workdocfile = DocumentFile.fromFile(File(""))
         set(value) {
             field = value
-            prefs?.edit()?.putString("workspace", field.uri.toString())?.apply()
+            prefs?.edit()?.putString("workspace", getWinCompatUriString(field.uri.toString()))?.apply()
         }
     val Stories: MutableList<Story> = mutableListOf()   // the main list of Stories
     val asyncAddedStories: MutableList<Story> = mutableListOf() // Used for adding Stories in a background thread

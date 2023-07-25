@@ -17,7 +17,7 @@ import java.io.File
 class TestParsePhotoStory {
     @Test
     fun parsePhotoStoryXML_Should_ReturnAStory() {
-        println(System.getProperty("user.dir"))
+        //println(System.getProperty("user.dir"))
         val result = parseValidStory()
         Assert.assertEquals(Story::class.java, result!!.javaClass)
     }

@@ -7,7 +7,7 @@
 /captures
 *debug*
 *release*
-
+app/src/test/test_data
 # The instructions in README.md for building a locally signed APK include 
 # putting these files in the root directory. We don't want them checked in.
 /keystore.properties
