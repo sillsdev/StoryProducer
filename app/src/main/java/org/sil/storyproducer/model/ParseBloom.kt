@@ -10,6 +10,7 @@ import com.arthenica.mobileffmpeg.FFmpeg
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import org.sil.storyproducer.App
 import org.sil.storyproducer.BuildConfig
 import org.sil.storyproducer.R
 import org.sil.storyproducer.tools.file.*
@@ -172,7 +173,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
             imageFile = slide.prevPageImageFile
         if (imageFile.isNotEmpty()) {
             slide.imageFile = imageFile
-            val imagePfd = getStoryFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!)
+            val imagePfd = getStoryParcelFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!)
             if (imagePfd != null) {
                 BitmapFactory.decodeFileDescriptor(imagePfd.fileDescriptor, null, bmOptions)
                 imagePfd.close()
@@ -274,7 +275,12 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
             ffmpegArgs.add("copy")
             val concatTempOutputFileStr = "${concatTempFolder.path}/${outputAudioFileName}"
             ffmpegArgs.add(concatTempOutputFileStr)
-            FFmpeg.execute(ffmpegArgs.toTypedArray())
+            if (App.isRoboUnitTest()) {
+                // ffmpeg is not available on roboelectric native environments
+                File(concatTempOutputFileStr).writeText("Dummy concatenated MP3 file")
+            } else {
+                FFmpeg.execute(ffmpegArgs.toTypedArray())
+            }
             Log.w("ParseBloom.parsePage", FFmpeg.getLastCommandOutput()
                     ?: "No FFMPEG output")
 
@@ -287,7 +293,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
                 audioStoryConcatDocFind.delete()
             }
 
-            // create the concatination output file
+            // create the concatenation output file
             val audioStoryConcatDoc = storyAudioPath.createFile("", outputAudioFileName)
             if (audioStoryConcatDoc != null) {
                 // add the concatenated file to the map of "audio" sub-folder files

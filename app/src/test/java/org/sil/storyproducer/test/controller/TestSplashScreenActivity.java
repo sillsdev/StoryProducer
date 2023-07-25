@@ -20,23 +20,23 @@ import org.sil.storyproducer.model.Workspace;
 public class TestSplashScreenActivity {
     // @Test
     public void OnCreate_When_RegistrationIsIncomplete_Should_StartRegistrationActivity() {
-//        Workspace.INSTANCE.getRegistration().setComplete(false);
-//        SplashScreenActivity splashScreenActivity = Robolectric.buildActivity(SplashScreenActivity.class).create().get();
-//
-//        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-//
-//        Intent startedActivity = Shadows.shadowOf(splashScreenActivity).peekNextStartedActivityForResult().intent;
-//        Assert.assertEquals(RegistrationActivity.class.getName(), startedActivity.getComponent().getClassName());
+        Workspace.INSTANCE.getRegistration().setComplete(false);
+        SplashScreenActivity splashScreenActivity = Robolectric.buildActivity(SplashScreenActivity.class).create().get();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Intent startedActivity = Shadows.shadowOf(splashScreenActivity).peekNextStartedActivityForResult().intent;
+        Assert.assertEquals(RegistrationActivity.class.getName(), startedActivity.getComponent().getClassName());
     }
 
     // @Test
     public void OnCreate_When_RegistrationIsComplete_Should_StartMainActivity() {
-//        Workspace.INSTANCE.getRegistration().setComplete(true);
-//        SplashScreenActivity splashScreenActivity = Robolectric.buildActivity(SplashScreenActivity.class).create().get();
-//
-//        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-//
-//        Intent startedActivity = Shadows.shadowOf(splashScreenActivity).peekNextStartedActivityForResult().intent;
-//        Assert.assertEquals(MainActivity.class.getName(), startedActivity.getComponent().getClassName());
+        Workspace.INSTANCE.getRegistration().setComplete(true);
+        SplashScreenActivity splashScreenActivity = Robolectric.buildActivity(SplashScreenActivity.class).create().get();
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        Intent startedActivity = Shadows.shadowOf(splashScreenActivity).peekNextStartedActivityForResult().intent;
+        Assert.assertEquals(MainActivity.class.getName(), startedActivity.getComponent().getClassName());
     }
 }

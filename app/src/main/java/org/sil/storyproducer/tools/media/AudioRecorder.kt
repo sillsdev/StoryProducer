@@ -16,13 +16,12 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.R
 import org.sil.storyproducer.model.Workspace
 import org.sil.storyproducer.tools.file.copyToWorkspacePath
-import org.sil.storyproducer.tools.file.getStoryFileDescriptor
+import org.sil.storyproducer.tools.file.getStoryParcelFileDescriptor
 import org.sil.storyproducer.tools.file.getStoryUri
 import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
-import java.io.FileDescriptor
 import java.io.IOException
 
 
@@ -98,11 +97,11 @@ abstract class AudioRecorder(val activity: Activity) {
 class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     private var mRecorder = MediaRecorder()
-    private var mOutputFile : ParcelFileDescriptor? = null
+    private var mRecorderOutputPfd : ParcelFileDescriptor? = null
 
     private fun initRecorder(){
-        if (mOutputFile != null)
-            mOutputFile?.close()
+        if (mRecorderOutputPfd != null)
+            mRecorderOutputPfd?.close()
         mRecorder.release()
         mRecorder = MediaRecorder()
         mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -115,10 +114,10 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
 
     override fun startNewRecording(relPath: String){
         initRecorder()
-        mOutputFile = getStoryFileDescriptor(activity, relPath,"","w")
-        if (mOutputFile == null)
+        mRecorderOutputPfd = getStoryParcelFileDescriptor(activity, relPath,"","w")
+        if (mRecorderOutputPfd == null)
             return
-        mRecorder.setOutputFile(mOutputFile?.fileDescriptor)
+        mRecorder.setOutputFile(mRecorderOutputPfd?.fileDescriptor)
         isRecording = true
         try{
             mRecorder.prepare()
@@ -137,8 +136,8 @@ class AudioRecorderMP4(activity: Activity) : AudioRecorder(activity) {
     override fun stop() {
         if(!isRecording) return
         try {
-            if (mOutputFile != null)
-                mOutputFile?.close()
+            if (mRecorderOutputPfd != null)
+                mRecorderOutputPfd?.close()
             mRecorder.stop()
             mRecorder.reset()
             mRecorder.release()

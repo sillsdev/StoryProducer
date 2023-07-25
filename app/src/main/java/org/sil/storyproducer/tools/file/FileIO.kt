@@ -170,12 +170,12 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
     if (dirRoot == "") return null
-    return Uri.parse(Workspace.workdocfile.uri.toString() +
+    return Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
             Uri.encode("/$dirRoot/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
-    return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("/$relPath"))
+    return Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) + Uri.encode("/$relPath"))
 }
 
 fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
@@ -244,13 +244,22 @@ fun getChildOutputStream(context: Context, relPath: String, mimeType: String = "
     return oStream
 }
 
-fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
+fun getStoryParcelFileDescriptor(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
     return getStoryPFD(context,relPath,mimeType,mode,dirRoot)
 }
 
 fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
     if (dirRoot == "") return null
     return getPFD(context, "$dirRoot/$relPath", mimeType, mode)
+}
+
+fun getWinCompatUriString(winUriStr: String) : String {
+    // On Windows the encoded C:\ is replaced with root '/' and every encoded path separator
+    // '\' is replaced with '/'.  This allows the Uri.parse() function to create a usable
+    // Uri on Windows and makes it compatible with StoryProducer file handling.
+    // NB: On Android/macOS/Linux the C:\ or '\' will not be found in the file path
+    // so this function will never do anything on those platforms.
+    return winUriStr.replace("C%3A%5C", "/").replace("%5C", "/")
 }
 
 fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
@@ -275,7 +284,7 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
                     Workspace.workdocfile.uri,
                     DocumentsContract.getDocumentId(
                         Uri.parse(
-                            Workspace.workdocfile.uri.toString() +
+                                getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
                                     Uri.encode("/$relPath")
                         )
                     )
@@ -301,23 +310,29 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
     if (!Workspace.workdocfile.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split("/")
-    var uri = Workspace.workdocfile.uri
+    var uri = Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()))
     try {
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
-            val newUri = Uri.parse(uri.toString() + Uri.encode("/${segments[i]}"))
+            val newUri = Uri.parse(getWinCompatUriString(uri.toString()) + Uri.encode("/${segments[i]}"))
             var isDirectory: Boolean
             if (isUriAutomaticallyCreated(uri)) {
                 // new app-specific storage uses File class to test and create directories
                 isDirectory = newUri.toFile().isDirectory // use File class to test app-specific storage
-                if (!isDirectory)
+                if (!isDirectory) {
+                    if (!mode.contains("w"))
+                        return null
                     newUri.toFile().mkdirs()    // use File class to make directories
+                }
             } else {
                 // old way uses content resolver to test and create directories
                 isDirectory = context.contentResolver.getType(newUri)?.
                         contains(DocumentsContract.Document.MIME_TYPE_DIR) ?: false
-                if (!isDirectory)
+                if (!isDirectory) {
+                    if (!mode.contains("w"))
+                        return null
                     DocumentsContract.createDocument(context.contentResolver, uri, DocumentsContract.Document.MIME_TYPE_DIR, segments[i])
+                }
             }
             uri = newUri    // next uri of path is one level down
         }
@@ -326,9 +341,9 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         return null
     }
     //create the file if it is needed
-    val fullUri = Uri.parse(uri.toString() + Uri.encode("/${segments.last()}"))
+    val fullUri = Uri.parse(getWinCompatUriString(uri.toString()) + Uri.encode("/${segments.last()}"))
     //TODO replace with custom exists thing.
-    if (context.contentResolver.getType(fullUri) == null) {
+    if (!workspaceRelPathExists(context, relPath)) {
         //find the mime type by extension
         var mType = mimeType
         if(mType == "") {
@@ -354,7 +369,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
-    val childUri = Uri.parse(Workspace.workdocfile.uri.toString() +
+    val childUri = Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
             Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
@@ -433,6 +448,8 @@ fun isUriAutomaticallyCreated(uri: Uri?): Boolean {
     // Check a Uri to see if was automatically selected as a workspace (templates) folder
     if (uri == null)
         return false
+    if (uri.toString().startsWith("file://C%3A%5C"))
+        return false;   // must be running Windows unit tests (only works on C:)
     return uri.scheme == "file"
 }
 
