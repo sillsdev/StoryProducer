@@ -56,9 +56,9 @@ class ParseBloomTest {
     private fun setupWorkspace() {
         println(System.getProperty("user.dir"))
         // NB: Using the unlocked demo story for now but in the future we should probably have dedicated test templates under git
-        var df = androidx.documentfile.provider.DocumentFile.fromFile(File("app${File.separator}src${File.separator}main${File.separator}assets"))
+        var df = androidx.documentfile.provider.DocumentFile.fromFile(File("app/src/main/assets"))
         if(!df.isDirectory){
-            df = androidx.documentfile.provider.DocumentFile.fromFile(File("src${File.separator}main${File.separator}assets"))
+            df = androidx.documentfile.provider.DocumentFile.fromFile(File("src/main/assets"))
         }
         Workspace.workdocfile = df
     }

@@ -48,7 +48,7 @@ class PipedMediaExtractor
         mExtractor = MediaExtractor()
         mMediaInputPfd = getStoryFileDescriptor(context, mPath,"","r")
         if (mMediaInputPfd != null) {
-            mExtractor!!.setDataSource(mMediaInputPfd!!.fileDescriptor)
+            mExtractor!!.setDataSource(mMediaInputPfd?.fileDescriptor!!)
         }
 
         var foundTrack = false

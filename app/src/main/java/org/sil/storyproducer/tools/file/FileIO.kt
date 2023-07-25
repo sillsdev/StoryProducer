@@ -170,12 +170,12 @@ fun workspaceRelPathExists(context: Context, relPath: String) : Boolean{
 
 fun getStoryUri(relPath: String, dirRoot: String = Workspace.activeDirRoot) : Uri? {
     if (dirRoot == "") return null
-    return Uri.parse(Workspace.workdocfile.uri.toString() +
-            Uri.encode("${File.separator}$dirRoot${File.separator}$relPath"))
+    return Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
+            Uri.encode("/$dirRoot/$relPath"))
 }
 
 fun getWorkspaceUri(relPath: String) : Uri? {
-    return Uri.parse(Workspace.workdocfile.uri.toString() + Uri.encode("${File.separator}$relPath"))
+    return Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) + Uri.encode("/$relPath"))
 }
 
 fun getWorkspaceFileProviderUri(relPath: String) : Uri? {
@@ -248,6 +248,10 @@ fun getStoryFileDescriptor(context: Context, relPath: String, mimeType: String =
     return getStoryPFD(context,relPath,mimeType,mode,dirRoot)
 }
 
+fun getStoryInputStream(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : InputStream? {
+    return ParcelFileDescriptor.AutoCloseInputStream(getStoryPFD(context,relPath,mimeType,mode,dirRoot)!!)
+}
+
 fun getStoryPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r", dirRoot: String = Workspace.activeDirRoot) : ParcelFileDescriptor? {
     if (dirRoot == "") return null
     return getPFD(context, "$dirRoot/$relPath", mimeType, mode)
@@ -275,8 +279,8 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
                     Workspace.workdocfile.uri,
                     DocumentsContract.getDocumentId(
                         Uri.parse(
-                            Workspace.workdocfile.uri.toString() +
-                                    Uri.encode("${File.separator}$relPath")
+                                getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
+                                    Uri.encode("/$relPath")
                         )
                     )
                 ), arrayOf(DocumentsContract.Document.COLUMN_DISPLAY_NAME),
@@ -297,15 +301,19 @@ fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
     return childDocs
 }
 
+fun getWinCompatUriString(winUriStr: String) : String {
+    return winUriStr.replace("C%3A%5C", "/").replace("%5C", "/")
+}
+
 fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
     if (!Workspace.workdocfile.isDirectory) return null
     //build the document tree if it is needed
     val segments = relPath.split(File.separator)
-    var uri = Workspace.workdocfile.uri
+    var uri = Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()))
     try {
         for (i in 0..segments.size - 2) {
             //TODO make this faster.
-            val newUri = Uri.parse(uri.toString() + Uri.encode("${File.separator}${segments[i]}"))
+            val newUri = Uri.parse(getWinCompatUriString(uri.toString()) + Uri.encode("/${segments[i]}"))
             var isDirectory: Boolean
             if (isUriAutomaticallyCreated(uri)) {
                 // new app-specific storage uses File class to test and create directories
@@ -332,7 +340,7 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
         return null
     }
     //create the file if it is needed
-    val fullUri = Uri.parse(uri.toString() + Uri.encode("${File.separator}${segments.last()}"))
+    val fullUri = Uri.parse(getWinCompatUriString(uri.toString()) + Uri.encode("/${segments.last()}"))
     //TODO replace with custom exists thing.
     if (!workspaceRelPathExists(context, relPath)) {
         //find the mime type by extension
@@ -360,8 +368,8 @@ fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: Strin
 }
 
 fun getChildInputStream(context: Context, relPath: String) : InputStream? {
-    val childUri = Uri.parse(Workspace.workdocfile.uri.toString() +
-            Uri.encode("${File.separator}$relPath"))
+    val childUri = Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()) +
+            Uri.encode("/$relPath"))
     //check if the file exists by checking for permissions
     try {
         //TODO Why is DocumentsContract.isDocument not working right?

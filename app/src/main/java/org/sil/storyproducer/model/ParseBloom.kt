@@ -171,10 +171,10 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
             imageFile = slide.prevPageImageFile
         if (imageFile.isNotEmpty()) {
             slide.imageFile = imageFile
-            val imagePfd = getStoryFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!)
-            if (imagePfd != null) {
-                BitmapFactory.decodeFileDescriptor(imagePfd.fileDescriptor, null, bmOptions)
-                imagePfd.close()
+            val imagePfdInStream = getStoryFileDescriptor(context, slide.imageFile, "image/*", "r", storyPath.name!!)
+            if (imagePfdInStream != null) {
+                BitmapFactory.decodeFileDescriptor(imagePfdInStream.fileDescriptor, null, bmOptions)
+//                imagePfdInStream.close()
             }
             slide.height = bmOptions.outHeight
             slide.width = bmOptions.outWidth

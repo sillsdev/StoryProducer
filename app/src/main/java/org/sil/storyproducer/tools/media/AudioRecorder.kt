@@ -22,7 +22,6 @@ import org.sil.storyproducer.tools.media.story.AutoStoryMaker
 import org.sil.storyproducer.tools.media.story.StoryMaker
 import org.sil.storyproducer.tools.media.story.StoryPage
 import java.io.File
-import java.io.FileDescriptor
 import java.io.IOException
 
 
