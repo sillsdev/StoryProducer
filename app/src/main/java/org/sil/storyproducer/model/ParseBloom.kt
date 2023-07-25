@@ -139,7 +139,7 @@ fun parsePage(context: Context, frontCoverGraphicProvided: Boolean, page: Elemen
     //soundtrack
     val soundtrack = page.getElementsByAttribute("data-backgroundaudio")
     if (soundtrack.size >= 1) {
-        slide.musicFile = "audio${File.separator}${soundtrack[0].attr("data-backgroundaudio")}"
+        slide.musicFile = "audio/${soundtrack[0].attr("data-backgroundaudio")}"
         // DKH - 07/23/2021
         // Issue #585: SP fails to read new templates made with Story Producer Template Maker
         // The attr method on class Node (ie, soundtrack[0] object) does not return a null but either
@@ -237,7 +237,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
         val audioStoryDocFound = storyAudioMap[searchAudioFile] ?: continue
         audioConcatDocs.add(audioStoryDocFound)
         if (totalInputAudioFiles == 0) {
-            firstInputAudioFile = "audio${File.separator}${searchAudioFile}"
+            firstInputAudioFile = "audio/${searchAudioFile}"
             outputAudioFileName = "${audios[i].id()}_output.mp3"
         }
         totalInputAudioFiles++
@@ -271,7 +271,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
             ffmpegArgs.add(concatTempFile.absolutePath)
             ffmpegArgs.add("-c")
             ffmpegArgs.add("copy")
-            val concatTempOutputFileStr = "${concatTempFolder.path}${File.separator}${outputAudioFileName}"
+            val concatTempOutputFileStr = "${concatTempFolder.path}/${outputAudioFileName}"
             ffmpegArgs.add(concatTempOutputFileStr)
             FFmpeg.execute(ffmpegArgs.toTypedArray())
             Log.w("ParseBloom.parsePage", FFmpeg.getLastCommandOutput()
@@ -293,7 +293,7 @@ fun parseAndConcatenatePageAudio(context: Context, storyAudioPath: DocumentFile,
                 storyAudioMap[outputAudioFileName] = audioStoryConcatDoc
                 // now copy the concatenated output file to the Story 'audio' subfolder
                 copyFromFilesDir(context, File(concatTempOutputFileStr), audioStoryConcatDoc.uri)
-                narrationFile = "audio${File.separator}${outputAudioFileName}"
+                narrationFile = "audio/${outputAudioFileName}"
             }
         }
         concatTempFolder.deleteRecursively()

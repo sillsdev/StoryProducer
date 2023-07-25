@@ -26,7 +26,7 @@ fun Story.toJson(context: Context){
     storyToJasonAppVersionName = BuildConfig.VERSION_NAME  // should be a string, eg: 3.0.5.debug
     storyToJasonTimeStamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Date()) // eg: 2021-06-04 15:07:03
 
-    val filePath = "$PROJECT_DIR${File.separator}$PROJECT_FILE" // location of file
+    val filePath = "$PROJECT_DIR/$PROJECT_FILE" // location of file
     val moshi = Moshi
             .Builder()
             .add(RectAdapter())
@@ -71,7 +71,7 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boole
                 ?: return null
     if (!storyFilePath.isFile)
         return null
-    val filePath = "$PROJECT_DIR${File.separator}$PROJECT_FILE"  // location of file
+    val filePath = "$PROJECT_DIR/$PROJECT_FILE"  // location of file
     var fileContents: String? = null
 
     try {
@@ -119,7 +119,7 @@ fun storyFromJson(context: Context, storyPath: DocumentFile, validateOnly: Boole
     // create a backup file name  with a time stamp
     // example file name: storyWithParseErr_2021-06-03-14-11-26.json
     var backupFileName =
-            "project${File.separator}storyWithParseErr_" +  //location under directory root (eg "002 Lost Coin" )
+            "project/storyWithParseErr_" +  //location under directory root (eg "002 Lost Coin" )
                     SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(Date()) +
                     ".json"
 
@@ -400,8 +400,8 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
 
     var unzippedOk = false  // only delete file if it can be unzipped (installed) ok
     val storyName = file.name!!.substringBeforeLast(".","")
-    val internalFile = File("${context.filesDir}${File.separator}${file.name!!}")
-    var dlFileStr = bloomSourceAutoDLDir() + File.separator + file.name
+    val internalFile = File("${context.filesDir}/${file.name!!}")
+    var dlFileStr = bloomSourceAutoDLDir() + "/" + file.name
     var dlFile = File(dlFileStr)
     var dlFileExists = dlFile.exists()
     var zipFile : ZipFile
@@ -435,7 +435,7 @@ fun unzipIfZipped(context: Context, file: DocumentFile, existingFolders: Array<D
 
             if (storyRelPathExists(context, f.fileName, storyName)) continue    // added storyName to fix unzipping issue
 
-            val ostream = getChildOutputStream(context, "$storyName${File.separator}${f.fileName}") ?: continue
+            val ostream = getChildOutputStream(context, "$storyName/${f.fileName}") ?: continue
 
             // reading and writing
             val zis = zipFile.getInputStream(f)

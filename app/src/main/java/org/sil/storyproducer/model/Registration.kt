@@ -22,7 +22,7 @@ class Registration{
     // gets the String from a text file in internal storage or null if error
     private fun getInternalText(context: Context, relPath: String) : String? {
         try {
-            val iInternalStreamPath = "${context.filesDir}${File.separator}$relPath";
+            val iInternalStreamPath = "${context.filesDir}/$relPath";
             val iInternalStream = File(iInternalStreamPath).inputStream()
             val internalFileText = iInternalStream.reader().use {it.readText()}
             if (internalFileText.isNotEmpty())
@@ -36,7 +36,7 @@ class Registration{
     // returns an output file stream to a file in internal storage or null if error
     private fun getInternalOutputStream(context: Context, relPath: String) : OutputStream? {
         try {
-            val iInternalStreamPath = "${context.filesDir}${File.separator}$relPath";
+            val iInternalStreamPath = "${context.filesDir}/$relPath";
             val iInternalOFile = File(iInternalStreamPath)
             val iInternalOStream = FileOutputStream(iInternalOFile, false)  // false = don't append
             return iInternalOStream;

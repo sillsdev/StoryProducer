@@ -94,7 +94,7 @@ abstract class PhaseTestBase {
                 Assert.fail("Failed to find story directory: " + sharedBase.getStoryDirectory())
             } catch (e: Exception) {
                 Assert.fail("Failed to create directory: " +
-                        sharedBase.getStoryDirectory() + File.separator +
+                        sharedBase.getStoryDirectory() + "/" +
                         Constants.dirNameForUserUpdatesToStory)
             }
         }

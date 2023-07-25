@@ -146,7 +146,7 @@ fun createRecordingCombinedName() : String {
         //just one file.  Overwrite when you re-record.
         PhaseType.LEARN,
         PhaseType.WHOLE_STORY -> {
-            "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR${File.separator}${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
+            "${Workspace.activePhase.getDirectorySafeName()}|$PROJECT_DIR/${Workspace.activePhase.getFileSafeName()}$AUDIO_EXT"
         }
         //Make new files every time.  Don't append.
         PhaseType.TRANSLATE_REVISE,
@@ -175,7 +175,7 @@ fun createRecordingCombinedName() : String {
 
             // create the combined string of display name and audio file location
             val currentDateTimeStr = SimpleDateFormat("yyyyMMdd-HHmmss.SSS").format(Date())
-            "${displayName}|${Workspace.activeDir}${File.separator}${Workspace.activeFilenameRoot}_${currentDateTimeStr}$AUDIO_EXT"
+            "${displayName}|${Workspace.activeDir}/${Workspace.activeFilenameRoot}_${currentDateTimeStr}$AUDIO_EXT"
         }
         else -> {""}
     }

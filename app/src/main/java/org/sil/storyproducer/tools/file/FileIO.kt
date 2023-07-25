@@ -308,7 +308,7 @@ fun getWinCompatUriString(winUriStr: String) : String {
 fun getPFD(context: Context, relPath: String, mimeType: String = "", mode: String = "r") : ParcelFileDescriptor? {
     if (!Workspace.workdocfile.isDirectory) return null
     //build the document tree if it is needed
-    val segments = relPath.split(File.separator)
+    val segments = relPath.split("/")
     var uri = Uri.parse(getWinCompatUriString(Workspace.workdocfile.uri.toString()))
     try {
         for (i in 0..segments.size - 2) {

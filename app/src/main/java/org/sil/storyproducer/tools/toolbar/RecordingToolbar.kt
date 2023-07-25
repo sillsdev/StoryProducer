@@ -304,7 +304,7 @@ open class RecordingToolbar : Fragment() {
                 // the editing app may not have access to external public files
                 val internalDocsFolder =
                     context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-                val internalEditFile = File(internalDocsFolder?.path + "${File.separator}${chosenFileName}")
+                val internalEditFile = File(internalDocsFolder?.path + "/${chosenFileName}")
 
                 // copy the file to 'internal' SP app storage area and grant write access to this file below
                 copyToFilesDir(context, chosenFileUri, internalEditFile)

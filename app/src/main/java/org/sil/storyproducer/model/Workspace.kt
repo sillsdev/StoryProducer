@@ -406,18 +406,18 @@ object Workspace {
                 files = assetManager.list(DEMO_FOLDER)!!.toMutableList()
                 files.remove(PROJECT_DIR)
                 files.remove(AUDIO_FOLDER)
-                files.add("$PROJECT_DIR${File.separator}$PROJECT_FILE")
-                audiofiles = assetManager.list("$DEMO_FOLDER${File.separator}$AUDIO_FOLDER")!!.toList()
+                files.add("$PROJECT_DIR/$PROJECT_FILE")
+                audiofiles = assetManager.list("$DEMO_FOLDER/$AUDIO_FOLDER")!!.toList()
                 for(filename in audiofiles)
-                    files.add("$AUDIO_FOLDER${File.separator}$filename")
+                    files.add("$AUDIO_FOLDER/$filename")
             } catch (e: IOException) {
                 Log.e("workspace", "SP::Failed to get demo assets.", e)
                 return
             }
             for (filename in files) {
                 try {
-                    val instream = assetManager.open("$DEMO_FOLDER${File.separator}$filename")
-                    val outstream = getChildOutputStream(context, "$DEMO_FOLDER${File.separator}$filename")
+                    val instream = assetManager.open("$DEMO_FOLDER/$filename")
+                    val outstream = getChildOutputStream(context, "$DEMO_FOLDER/$filename")
                     val buffer = ByteArray(1024)
                     var read: Int
                     while (instream.read(buffer).also { read = it } != -1) {
@@ -450,7 +450,7 @@ object Workspace {
             // open wordlinks.csv located in the APK
             val instream = assetManager.open(csvFileNameForSelectedLWC)
             // Create the worklinks.csv file in the wordlinks directory
-            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR${File.separator}$csvFileNameForSelectedLWC")
+            val outstream = getChildOutputStream(context, "$WORD_LINKS_DIR/$csvFileNameForSelectedLWC")
             val buffer = ByteArray(1024)
             var read: Int
             // copy input to output 1024 bytes at a time
@@ -580,7 +580,7 @@ object Workspace {
 
     fun deleteVideo(context: Context, path: String){
         activeStory.outputVideos.remove(path)
-        deleteWorkspaceFile(context, "$VIDEO_DIR${File.separator}$path")
+        deleteWorkspaceFile(context, "$VIDEO_DIR/$path")
     }
 
     fun isLocalCreditsChanged(context: Context) : Boolean {
