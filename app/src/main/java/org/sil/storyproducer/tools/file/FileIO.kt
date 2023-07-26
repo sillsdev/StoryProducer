@@ -51,45 +51,55 @@ fun copyToWorkspacePath(context: Context, sourceUri: Uri, destRelPath: String){
 }
 
 // Copy from a source Uri stream to a File object
-fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File){
+fun copyToFilesDir(context: Context, sourceUri: Uri, destFile: File) {
+
+    var ipfd: ParcelFileDescriptor? = null
+    var iStream: FileInputStream? = null
+    var oStream: FileOutputStream? = null
+
     try {
         //TODO Why is DocumentsContract.isDocument not working right?
-        val ipfd = context.contentResolver.openFileDescriptor(sourceUri, "r")
-        val iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
-        val oStream = destFile.outputStream()
+        ipfd = context.contentResolver.openFileDescriptor(sourceUri, "r")
+        iStream = ParcelFileDescriptor.AutoCloseInputStream(ipfd)
+        oStream = destFile.outputStream()
         val bArray = ByteArray(100000)
         var bytesRead = iStream.read(bArray)
-        while(bytesRead > 0){ //eof not reached
-            oStream.write(bArray,0,bytesRead)
+        while(bytesRead > 0){ // eof not reached
+            oStream.write(bArray, 0, bytesRead)
             bytesRead = iStream.read(bArray)
         }
-        iStream.close()
-        // 10/04/2021 - DKH: Espresso test fail for Android 10 and 11 #594
-        // Found this typo bug which closed iStream.close() twice.  Change the second
-        // "istream.close()" to "ostream.close()". Previously, for every file that was created,
-        // the output stream hung around - not a good use of resources
-        oStream.close()
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
+    } finally {
+        ipfd?.close()
+        iStream?.close()
+        oStream?.close()
     }
 }
 
 // Copy a sourceFile file from a File object to the destination Uri
-fun copyFromFilesDir(context: Context, sourceFile: File, destUri: Uri){
+fun copyFromFilesDir(context: Context, sourceFile: File, destUri: Uri) {
+
+    var opfd: ParcelFileDescriptor? = null
+    var iStream: FileInputStream? = null
+    var oStream: FileOutputStream? = null
+
     try {
-        val opfd = context.contentResolver.openFileDescriptor(destUri, "w")
-        val oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
-        val iStream = sourceFile.inputStream()
+        opfd = context.contentResolver.openFileDescriptor(destUri, "w")
+        oStream = ParcelFileDescriptor.AutoCloseOutputStream(opfd)
+        iStream = sourceFile.inputStream()
         val bArray = ByteArray(100000)
         var bytesRead = iStream.read(bArray)
-        while(bytesRead > 0){ //eof not reached
-            oStream.write(bArray,0,bytesRead)
+        while(bytesRead > 0){ // eof not reached
+            oStream.write(bArray, 0, bytesRead)
             bytesRead = iStream.read(bArray)
         }
-        iStream.close()
-        oStream.close()
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
+    } finally {
+        opfd?.close()
+        iStream?.close()
+        oStream?.close()
     }
 }
 
@@ -262,7 +272,7 @@ fun getWinCompatUriString(winUriStr: String) : String {
     return winUriStr.replace("C%3A%5C", "/").replace("%5C", "/")
 }
 
-fun getChildDocuments(context: Context,relPath: String) : MutableList<String>{
+fun getChildDocuments(context: Context, relPath: String) : MutableList<String>{
     var childDocs: MutableList<String> = ArrayList()
     if (isUriAutomaticallyCreated(Workspace.workdocfile.uri))
     {
@@ -448,8 +458,6 @@ fun isUriAutomaticallyCreated(uri: Uri?): Boolean {
     // Check a Uri to see if was automatically selected as a workspace (templates) folder
     if (uri == null)
         return false
-    if (uri.toString().startsWith("file://C%3A%5C"))
-        return false;   // must be running Windows unit tests (only works on C:)
     return uri.scheme == "file"
 }
 
