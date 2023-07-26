@@ -52,7 +52,7 @@ class ParseBloomTest {
         Assert.assertEquals(9, result!!.slides.size.toLong())
     }
 
-    // this test initialization code should only need to be called one
+    // this test initialization code should only need to be called once
     private fun parse_SPAT_Story(): Story? {
         setupWorkspace()
         val storyPath = Workspace.workdocfile.findFile("000 Unlocked demo")

@@ -36,7 +36,7 @@ class ParseBloomTBTest {
     }
 
 //    @Test
-    fun parsed_BTB_Should_get_isSPAuthored_True() {
+    fun parsed_BTB_Should_get_isSPAuthored_False() {
         // This currently cannot be tested as isSPAuthored has not been added as a member of the Story class
         // Assert.assertTrue(result!!.???)
     }
@@ -51,7 +51,7 @@ class ParseBloomTBTest {
         Assert.assertEquals(18, result!!.slides.size.toLong())
     }
 
-    // this test initialization code should only need to be called one
+    // this test initialization code should only need to be called once
     private fun parse_BTB_Story(): Story? {
         setupWorkspace()
         // NB: This story is currently not under git to save space.  Please download from: https://bloomlibrary.org/book/XV844n7KiK
