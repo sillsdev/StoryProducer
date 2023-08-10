@@ -20,7 +20,7 @@ object Constants {
     const val durationToWaitForVideoExport: Long = 200000
     const val intervalToWaitBetweenCheckingForVideoExport: Long = 1000
 
-    const val durationToWaitWhenSwipingBetweenSlides: Long = 200 //Swipe.FAST = 100 * 2
+    const val durationToWaitWhenSwipingBetweenSlides: Long = 400 //Swipe.FAST = 100 * 2
     // 09/17/2021 - DKH: Update for Testing Abstraction #566
     // numberOfTimesToSwipeWhenApprovingAllSlides is very story template specific,
     //  eg, Lost Coin only has 6 slides.  Other stories with different slide counts will not work
@@ -33,7 +33,7 @@ object Constants {
     // Scoped storage is backward compatible with Android 9 and lower
     const val workspaceDirectory = "SPWorkspace"        // compatible with scoped storage
     const val exportedVideosDirectory = "videos"        // compatible with scoped storage
-    const val dirNameForUserUpdatesToStory = "story"    // compatible with scoped storage
+    const val dirNameForUserUpdatesToStory = "project"    // compatible with scoped storage
 
     val resources: Resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
 

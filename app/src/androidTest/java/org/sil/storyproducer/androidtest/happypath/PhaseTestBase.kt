@@ -1,20 +1,25 @@
 package org.sil.storyproducer.androidtest.happypath
 
-import android.os.Build
 import android.view.View
 import android.widget.ImageButton
+import androidx.core.view.GravityCompat
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.contrib.DrawerActions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.rule.GrantPermissionRule
 import org.hamcrest.CoreMatchers
-import org.junit.*
-import org.sil.storyproducer.androidtest.happypath.base.SharedBase
+import org.junit.Assert
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
 import org.sil.storyproducer.R
+import org.sil.storyproducer.androidtest.happypath.base.SharedBase
 import org.sil.storyproducer.androidtest.utilities.*
+import org.sil.storyproducer.controller.MainActivity
 import org.sil.storyproducer.controller.RegistrationActivity
 import org.sil.storyproducer.model.Workspace
-import java.io.File
+
 // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
 // This class was refactored to accommodate scoped storage introduced in Android 10
 // For Android 10 and subsequent Android versions, an App (ie, Story Producer)
@@ -42,7 +47,11 @@ abstract class PhaseTestBase {
 
     @Rule
     @JvmField
-    val mActivityTestRule = androidx.test.rule.ActivityTestRule(RegistrationActivity::class.java, false, false)
+    val mActivityTestRule = androidx.test.rule.ActivityTestRule(MainActivity::class.java, false, false)
+
+    @Rule
+    @JvmField
+    val mActivityRegistrationRule = androidx.test.rule.ActivityTestRule(RegistrationActivity::class.java, false, false)
 
     @Rule
     @JvmField
@@ -53,14 +62,38 @@ abstract class PhaseTestBase {
         //        @JvmStatic
         @BeforeClass
         fun revertWorkspaceToCleanState(sharedBase: SharedBase) {
+
             if(!Constants.workspaceIsInitialized) {
                 WorkspaceSetter.setWorkspaceSoOtherTestsRunCorrectly()
+
+                // deletes 'project' sub-folder with story.json project
+                // so that a clean test story is loaded from the html file
+                copyFreshTestStoryToWorkspace(sharedBase)
+
+                // Selects the 'Add Demo to Story List' nav-drawer command
+                // so that all stories are re-loaded to a fresh state
+                selectAddDemoStory()
+
+                // set initialized flag so that we only load one
+                // fresh test story per unit test run.
                 Constants.workspaceIsInitialized = true
             }
+
             // 10/23/2021 - DKH: Update for "Espresso test fail for Android 10 and 11" Issue #594
             // checkSDCardType() - Deleted this for Android 10 scoped storage updates
-            copyFreshTestStoryToWorkspace(sharedBase)
-            deleteExportedVideos()
+
+            deleteExportedVideos()  // delete videos for each test group
+        }
+
+        // Selects the 'Add Demo to Story List' drawer command
+        private fun selectAddDemoStory() {
+            Thread.sleep(1000)
+            // open the drawer menu
+            Espresso.onView(ViewMatchers.withId(R.id.drawer_layout)).perform(DrawerActions.open(GravityCompat.START))
+            Thread.sleep(500)
+            // click on add demo story to list command
+            Espresso.onView(ViewMatchers.withId(R.id.nav_demo)).perform(ViewActions.click())
+            Thread.sleep(2000)  // give it time to reload all stories
         }
 
         private fun copyFreshTestStoryToWorkspace(sharedBase: SharedBase) {
@@ -128,6 +161,7 @@ abstract class PhaseTestBase {
 
     private fun launchActivityAndBypassWorkspacePicker() {
         mActivityTestRule.launchActivity(null)
+        Thread.sleep(1000)
     }
 
     protected fun approveSlides() {
