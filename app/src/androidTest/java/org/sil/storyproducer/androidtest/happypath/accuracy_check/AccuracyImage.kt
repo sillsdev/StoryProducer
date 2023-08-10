@@ -37,7 +37,7 @@ class AccuracyImage : ImageBase() {
     }
 
     @Test
-    fun passwordConfirmationPopupShouldBehaveCorrectly() {
-        base.passwordConfirmationPopupShouldBehaveCorrectly()
+    fun approvalConfirmationPopupShouldBehaveCorrectly() {
+        base.approvalConfirmationPopupShouldBehaveCorrectly()
     }
 }

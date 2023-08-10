@@ -27,11 +27,16 @@ class RegistrationActivityTest : PhaseTestBase() {
     @Before
     fun setup() {
         revertWorkspaceToCleanState(base)
+
+        // launch the registration dialog so it can be tested to be dismissed
+        mActivityRegistrationRule.launchActivity(null)
+        Thread.sleep(1000)
     }
 
     @Test
     fun should_beAbleToSkipRegistration() {
         PhaseNavigator.skipRegistration()
+        Thread.sleep(1000)
         onView(withText(containsString(base.getStoryName()))).check(matches(isDisplayed()))
     }
 

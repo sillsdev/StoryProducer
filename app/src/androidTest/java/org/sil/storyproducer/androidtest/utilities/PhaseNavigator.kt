@@ -14,8 +14,11 @@ import java.lang.RuntimeException
 
 object PhaseNavigator {
     fun selectPhase(phaseTitle: String) {
+        Thread.sleep(500)
         onView(ViewMatchers.withId(R.id.toolbar)).perform(ViewActions.click())
+        Thread.sleep(500)
         Espresso.onData(CoreMatchers.allOf(CoreMatchers.`is`(CoreMatchers.instanceOf(String::class.java)), CoreMatchers.`is`(phaseTitle))).perform(ViewActions.click())
+        Thread.sleep(500)
     }
 
     fun navigateFromRegistrationScreenToPhase(phaseName: String, sharedBase: SharedBase) {

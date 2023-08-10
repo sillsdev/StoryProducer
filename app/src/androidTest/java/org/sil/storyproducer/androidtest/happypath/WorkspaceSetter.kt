@@ -135,6 +135,7 @@ class WorkspaceSetter {
             prefs?.edit()?.putString("workspace", "")?.apply()
 
             launchStoryProducerApp(device)
+            Thread.sleep(1000)
             selectStoryProducerWorkspace(device)
         }
 

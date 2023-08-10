@@ -48,9 +48,9 @@ class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase
         Assert.assertEquals(originalApprovalState, approvalStateAfterSecondClickOnCheckmark)
     }
 
-    fun passwordConfirmationPopupShouldBehaveCorrectly() {
+    fun approvalConfirmationPopupShouldBehaveCorrectly() {
         swipeThroughAndApproveAllSlides()
-        typePasswordAndClickSubmit()
+        typeYesToContinueAccuracyConfirmation()
         shouldNowBeOnVoiceStudioPhase()
     }
 
@@ -66,10 +66,12 @@ class AccuracyPhaseBase(sharedBase: SharedBase) : PlayerPhaseTestBase(sharedBase
         pressCheckmarkButton()
     }
 
-    private fun typePasswordAndClickSubmit() {
+    private fun typeYesToContinueAccuracyConfirmation() {
         Thread.sleep(200)
-        onView(allOf(withId(R.id.password_text_field), isDisplayed())).perform(clearText()).perform(typeText("appr00ved"))
-        onView(withText("SUBMIT")).perform(click())
+//        onView(allOf(withId(R.id.password_text_field), isDisplayed())).perform(clearText()).perform(typeText("appr00ved"))
+//        onView(withText("SUBMIT")).perform(click())
+        // just confirm yes to new dialog
+        onView(withText("YES")).perform(click())
         Thread.sleep(1000)
     }
 
