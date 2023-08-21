@@ -44,17 +44,21 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
 
         updateLocalCredits.perform(click())
         onView(withId(R.id.edit_text_input)).perform(replaceText(""))
-        saveButton.perform(click())
         Thread.sleep(500)
+        saveButton.perform(click())
+        Thread.sleep(500)//1500)
 
         // Ensure that the local credits can't be erased
         assert(credits == Workspace.activeStory.localCredits)
+        Thread.sleep(500)
 
         updateLocalCredits.perform(click())
         // Update the text to newText
-        onView(withId(R.id.edit_text_input)).perform(replaceText(newText))
-        saveButton.perform(click())
         Thread.sleep(500)
+        onView(withId(R.id.edit_text_input)).perform(replaceText(newText))
+        Thread.sleep(500)
+        saveButton.perform(click())
+        Thread.sleep(500)//1500)
 
         assert(Workspace.activeStory.localCredits == newText)
     }
