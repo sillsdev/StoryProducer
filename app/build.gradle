@@ -7,12 +7,12 @@ apply plugin: 'com.google.gms.google-services'
 def keystorePropertiesFile = new File(rootProject.projectDir, 'keystore.properties')
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion '32.0.0'
     defaultConfig {
         applicationId "org.sil.storyproducer"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 32
         versionName '4.0.3'
         vectorDrawables.useSupportLibrary = true
