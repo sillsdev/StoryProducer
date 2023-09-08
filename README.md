@@ -1,10 +1,10 @@
 # Story Producer (SP app)
 
-Purpose: to enable end users to translate still-picture audio-video stories with community help, then dramatize, publish and digitally share new local language videos. 
+Purpose: to enable end users to orally translate still-picture audio-narrated stories with community help, then dramatize, publish and digitally share new local language videos. 
 
-End users and target audience: speakers of (minority) languages, some of whom are bilingual in a major language
+End users and target audience: speakers of (minority) languages, some of whom are bilingual in a major language.
 
-End recipients: members of local language communities
+End recipients of videos produced: members of local language communities
 
 Developers:  
    * Original vision and design by Robin Rempel, while with SIL
@@ -12,8 +12,8 @@ Developers:
    * Software engineers for Prototype app: LeTourneau University students (Jordan Skomer, Hannah Brown, Caleb Phillips)
    * Software engineers for v1.2: Cedarville University students (Noah Bragg, Grant Dennison, Robert Jacubec, Andrew Lockridge, Michael Baxter and Abigail Riffle guided by Dr. Seth Hamman)
    * Software engineers for Remote Oral Consultant Checker website and app v1.4 and v2.0: Cedarville University students (Blake Lasky, Daniel Weaver, Ann Costantino and Brendon Burns guided by Dr. Seth Hamman)
-   * Software engineer for v2.3-2.5: John Lambert
-   * Software engineers for Remote Oral Consultant Checker website and app v2.3 and testing frameworks: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
+   * Software engineer for app v2.3(MVP)-2.5: John Lambert
+   * Software engineers for app v2.3 and testing frameworks and Remote Oral Consultant Checker website: Cedarville Univesity students (Aaron Cannon, Justin Stallard, Jonny Taylor, Ben Ratkey, Lindsey Carroll, Nathan Herr)
    * Software engineers for Film Producer: Cedarville Univesity students (Donald Shade,...)
    * Software engineer for v3.0.2: Chad Dalton
    * Software engineers for filtered story list, Film Producer, extensive refactoring based on v3.02: Cedarville Univesity students (Jake Allinson, Nathan ONeel, Clare)
@@ -54,17 +54,19 @@ save in the root directory.
 * run `gradle clean assembleRelease`
 
 ## Installing the application
+
 * Minimum Requirements:  
     * Android 5.x.x
     * 2+GB RAM is needed to create the longer/larger videos
     * an average of 500 MB storage must be available per story template one wishes to create; it is suggested to put templates on an SD card
     * an (Android) file manager
-* Typical Install: 
-    * [Install from Google Play Store](https://play.google.com/store/apps/details?id=org.sil.storyproducer)
-    * Use the Unlocked Demo story to test drive Story Producer
-    * Use "Download Bible Story Templates" on the app menu to install Bible story templates corrected and vetted by SIL.
+* **Typical Install**: 
+    * [Install Story Producer app from Google Play Store](https://play.google.com/store/apps/details?id=org.sil.storyproducer)
+    * In the app, tap the Unlocked Demo story to begin a test drive of Story Producer.
+    * Use "Download Bible Story Templates" (on the app menu) to install Bible story templates (corrected and vetted by SIL).
+    * Please send your User Registration (also on the app menu).<br><br>
 * Manual or offline install: 
-    * If you uninstall a version of the app that is pre-2.3, deleting the app will delete all the template folders and any work you did on the translations.  After 2.3, the data is stored in a different location and nothing is lost.
+    * If you uninstall a version of the app that is v3.3 or later, deleting the app may delete all the template folders and any work you did on the translations.  However, when you manually 'Select SP Templates Folder' (recommended), the data is stored in a "user-owned" location and nothing is lost when you unistall the app.
     * Enable a manual install of apk file: 
         * Settings(gear icon) -> Security -> (scroll down) Enable "Unknown sources"; disable "Verify apps"
     * Insert SD card if desired
@@ -72,12 +74,13 @@ save in the root directory.
     * Connect to your device via USB (it will show as a drive on your computer)
         * If it does not show up as a drive, swipe down from the top.  You should see a notification: USB for charging.  Touch it.  Select USB for file transfer.
     * Download StoryProducer_v[most recent version].apk and copy the file onto your phone or tablet. Use your file manager on your Android device to open the apk and install it onto your device.
-    * Download the .bloom template files (https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing) to your computer.
+    * Download .bloom template files from [Story Producer Resources](https://drive.google.com/drive/folders/1CxpggJUJ6QPnNgb3Veh9r7SWiLfPKCDj?usp=sharing) (these templates are corrected and vetted by SIL) to your computer. 
     * Copy the the .bloom files to your SD card.  The standard folder there is **\[SDCARD]/SP Templates**
     * Open Story Producer and select the folder "SP Templates" which is the folder that all the templates are in.
-    * After the app scans the templates, continue with registration and use the app!
+    * Continue with User Registration and test drive.
 
 ## Unit Tests
+
 #### Organization
 * All unit tests are located in the `app\src\test\java\org\sil\storyproducer\test` directory.
 * Test files are named for the class that they test, plus the word "Test" prepended.
@@ -101,6 +104,7 @@ save in the root directory.
 *Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
 
 ## Espresso Tests (UI Tests)
+
 #### Organization
 * All Espresso tests are located in the `app\src\androidTest\java\org\sil\storyproducer` directory.
 * Folders in the Espresso test directory should roughly correspond to the screen and/or features they exercise.
@@ -132,4 +136,5 @@ The Espresso tests make a couple of assumptions about the state of the emulator/
 *Note:* If no tests appear in the "Run" window, you may need to toggle the visibility of passing tests. Currently, the toggle button looks like green checkmark inside of a circle.
 
 ## Word Links (WL)
+
 * WLs are imported in the workspace, wordlinks/wordlinks.csv is read from the workspace path
