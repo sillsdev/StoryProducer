@@ -15,7 +15,6 @@ import org.sil.storyproducer.androidtest.happypath.translate_revise.TranslatePha
 import org.sil.storyproducer.androidtest.utilities.Constants
 import org.sil.storyproducer.androidtest.utilities.PhaseNavigator
 import org.sil.storyproducer.model.Workspace
-import java.io.File
 import java.util.*
 
 class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBase) {
@@ -100,14 +99,18 @@ class FinalizePhaseBase(sharedBase: SharedBase) : SwipablePhaseTestBase(sharedBa
 
     private fun waitForVideoToExist(videoTitle: String, timeout: Long) {
         val startTime = System.currentTimeMillis()
-        var foundTheVideo = false
+        var foundTheMp4Video = false
+        var foundThe3gpVideo = false
         var exceededTheTimeout = false
-        while (!foundTheVideo && !exceededTheTimeout) {
-            foundTheVideo = doesVideoFileExist(videoTitle,".mp4")
+        while ((!foundTheMp4Video || !foundThe3gpVideo) && !exceededTheTimeout) {
+            foundTheMp4Video = doesVideoFileExist(videoTitle,".mp4")
+            foundThe3gpVideo = doesVideoFileExist(videoTitle,".3gp")
             exceededTheTimeout = System.currentTimeMillis() - startTime > timeout
             Thread.sleep(Constants.intervalToWaitBetweenCheckingForVideoExport)
         }
-        if (!foundTheVideo) {
+        // sleep so we can see it
+        Thread.sleep(1000)
+        if (!foundTheMp4Video || !foundThe3gpVideo) {
             Assert.fail("Gave up expecting to find an exported video file after waiting " + timeout.toString() + "ms.")
         }
     }
