@@ -79,6 +79,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
 
         referenceAudioPlayer.onPlayBackStop(MediaPlayer.OnCompletionListener {
             referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+            referencePlayButton!!.contentDescription = getString(R.string.rec_toolbar_play_recording_button)
             referenceAudioPlayer.stopAudio()
         })
 
@@ -112,6 +113,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                 wasAudioPlaying = referenceAudioPlayer.isAudioPlaying
                 referenceAudioPlayer.pauseAudio()
                 referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+                referencePlayButton!!.contentDescription = getString(R.string.rec_toolbar_play_recording_button)
             }
             override fun onProgressChanged(sBar: SeekBar, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -140,6 +142,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
         super.setUserVisibleHint(isVisibleToUser)
         referenceAudioPlayer.stopAudio()
         referencePlayButton?.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+        referencePlayButton?.contentDescription = getString(R.string.rec_toolbar_play_recording_button)
     }
 
     /**
@@ -185,6 +188,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
                     referenceAudioPlayer.resumeAudio()
 
                     referencePlayButton!!.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                    referencePlayButton!!.contentDescription = getString(R.string.rec_toolbar_pause_recording_button)
                     Toast.makeText(context, R.string.translate_revise_playback_lwc_audio, Toast.LENGTH_SHORT).show()
                     when(Workspace.activePhase.phaseType){
                         PhaseType.TRANSLATE_REVISE -> saveLog(activity!!.getString(R.string.LWC_PLAYBACK))
@@ -199,6 +203,7 @@ abstract class SlidePhaseFrag : androidx.fragment.app.Fragment() {
     protected fun stopSlidePlayBack() {
         referenceAudioPlayer.pauseAudio()
         referencePlayButton!!.setBackgroundResource(R.drawable.ic_play_arrow_white_36dp)
+        referencePlayButton!!.contentDescription = getString(R.string.rec_toolbar_play_recording_button)
     }
 
     open fun onStartedSlidePlayBack() {}

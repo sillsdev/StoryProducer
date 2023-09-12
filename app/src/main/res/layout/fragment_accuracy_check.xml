@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="610px" />
+        app:layout_constraintGuide_begin="610px" /><!-- keep as px as changed programmatically (search: R.id.guideline) -->
 
     <TextView
         android:id="@+id/fragment_reference_text"
@@ -80,7 +80,8 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/concheck_checkmark_button"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/accuracy_check_show_log_fab" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/concheck_checkmark_button"
@@ -93,6 +94,7 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/concheck_logs_button" />
+        app:layout_constraintStart_toEndOf="@+id/concheck_logs_button"
+        android:contentDescription="@string/accuracy_check_confirm_translation_fab" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

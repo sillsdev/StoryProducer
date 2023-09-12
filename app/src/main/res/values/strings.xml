@@ -28,8 +28,6 @@
 
     <string name="story_picture">story picture</string>
     <string name="stage_locked">stage locked</string>
-    <string name="edit_image">edit image</string>
-    <string name="edit_text">edit text</string>
 
     <!-- Phases -->
     <string name="registration_title">Registration</string>
@@ -395,5 +393,29 @@
     <string name="settings">Settings</string>
     <string name="settings_title"><font color="white"><b>Settings</b></font></string>
     <string name="settings_experimental"><font color="#F6DDCC">These settings are experimental. Use with caution!</font></string>
+
+    <!-- Content Descriptions -->
+    <string name="edit_image">Edit slide image</string>
+    <string name="edit_text">Edit slide text</string>
+
+    <string name="bldl_start_template_download_fab">Start template download</string>
+    <string name="accuracy_check_show_log_fab">Show history log</string>
+    <string name="accuracy_check_confirm_translation_fab">Confirm accurately translated</string>
+    <string name="slide_text_edit">Editing text for this slide</string>
+    <string name="story_local_credits_edit">Editing local credits for this story</string>
+    <string name="community_recordings_list">Community recordings list</string>
+    <string name="video_seek_bar">Video seek bar</string>
+    <string name="rec_toolbar_stop_button">Stop recording</string>
+    <string name="rec_toolbar_send_button">Send audio</string>
+    <string name="rec_toolbar_play_recording_button">Play recording</string>
+    <string name="rec_toolbar_edit_recording_button">Edit recording</string>
+    <string name="rec_toolbar_start_recording_button">Start recording</string>
+    <string name="rec_toolbar_append_recording_button">Append recording</string>
+    <string name="rec_toolbar_pause_recording_button">Pause recording</string>
+
+    <string name="rec_toolbar_play_playlist_button">Play playlist</string>
+    <string name="multi_record_up_button">Up recordings</string>
+
+
 
 </resources>

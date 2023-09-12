@@ -60,9 +60,11 @@ class WordLinksRecordingToolbar : MultiRecordRecordingToolbar() {
     private fun setWordLinksMultiRecordIcon(state: Int){
         if(state == STATE_EXPANDED){
             multiRecordButton.setBackgroundResource(R.drawable.ic_keyboard_arrow_up_white_48dp)
+            multiRecordButton.contentDescription = getString(R.string.multi_record_up_button)
         }
         else if(state == STATE_COLLAPSED){
             multiRecordButton.setBackgroundResource(R.drawable.ic_playlist_play_white_48dp)
+            multiRecordButton.contentDescription = getString(R.string.rec_toolbar_play_playlist_button)
         }
     }
 

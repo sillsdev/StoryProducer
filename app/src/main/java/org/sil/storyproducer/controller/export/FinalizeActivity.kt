@@ -242,6 +242,7 @@ class FinalizeActivity : PhaseBaseActivity() {
             if(!buttonLocked) {
                 val editText = EditText(this)
                 editText.id = R.id.edit_text_input
+                editText.contentDescription = R.string.story_local_credits_edit.toString()
 
                 // Programmatically set layout properties for edit text field
                 val params = ViewGroup.LayoutParams(

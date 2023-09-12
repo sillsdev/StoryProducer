@@ -38,12 +38,12 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()
 
-        checkButton = toolbarButton(R.drawable.ic_stop_white_48dp, R.id.finish_recording_button)
+        checkButton = toolbarButton(R.drawable.ic_stop_white_48dp, R.id.finish_recording_button, R.string.rec_toolbar_stop_button)
         rootView?.addView(checkButton)
         
         rootView?.addView(toolbarButtonSpace())
 
-        sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1)
+        sendAudioButton = toolbarButton(R.drawable.ic_send_audio_48dp, -1, R.string.rec_toolbar_send_button)
         if(enableSendAudioButton) {
             rootView?.addView(sendAudioButton)
             
@@ -98,6 +98,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
                 }
 
                 micButton.setBackgroundResource(R.drawable.ic_mic_plus_48dp)
+                micButton.contentDescription = getString(R.string.rec_toolbar_append_recording_button)
             } else {
                 if (isAppendingOn) {
                     recordAudio(audioTempName)
@@ -106,6 +107,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
                 }
 
                 micButton.setBackgroundResource(R.drawable.ic_pause_white_48dp)
+                micButton.contentDescription = getString(R.string.rec_toolbar_pause_recording_button)
                 checkButton.visibility = View.VISIBLE
             }
         }
@@ -127,6 +129,7 @@ class VoiceStudioRecordingToolbar: MultiRecordRecordingToolbar() {
             isAppendingOn = false
 
             micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+            micButton.contentDescription = getString(R.string.rec_toolbar_start_recording_button)
 
             checkButton.visibility = View.INVISIBLE
             sendAudioButton.visibility = View.VISIBLE
