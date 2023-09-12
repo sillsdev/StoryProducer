@@ -138,6 +138,7 @@ open class RecordingToolbar : Fragment() {
         animationHandler.stopAnimation()
 
         micButton.setBackgroundResource(R.drawable.ic_mic_white_48dp)
+        micButton.contentDescription = getString(R.string.rec_toolbar_start_recording_button)
         showInheritedToolbarButtons()
 
         toolbarMediaListener.onStoppedToolbarRecording()
@@ -160,6 +161,7 @@ open class RecordingToolbar : Fragment() {
         }
 
         micButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
+        micButton.contentDescription = getString(R.string.rec_toolbar_stop_button)
         hideInheritedToolbarButtons()
     }
 
@@ -180,7 +182,7 @@ open class RecordingToolbar : Fragment() {
 
         rootView?.addView(toolbarButtonSpace())
 
-        micButton = toolbarButton(R.drawable.ic_mic_white_48dp, R.id.start_recording_button)
+        micButton = toolbarButton(R.drawable.ic_mic_white_48dp, R.id.start_recording_button, R.string.rec_toolbar_start_recording_button)
         rootView?.addView(micButton)
 
         rootView?.addView(toolbarButtonSpace())
@@ -200,13 +202,14 @@ open class RecordingToolbar : Fragment() {
         return editIntent.resolveActivity(packageManager) != null
     }
 
-    protected fun toolbarButton(iconId: Int, buttonId: Int): ImageButton{
+    protected fun toolbarButton(iconId: Int, buttonId: Int, resId: Int): ImageButton{
         val layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-        val toolbarButton = ImageButton(appContext)
-        toolbarButton.setBackgroundResource(iconId)
-        toolbarButton.layoutParams = layoutParams
-        toolbarButton.id = buttonId
-        return toolbarButton
+        val toolbarButtonRet = ImageButton(appContext)
+        toolbarButtonRet.setBackgroundResource(iconId)
+        toolbarButtonRet.layoutParams = layoutParams
+        toolbarButtonRet.id = buttonId
+        toolbarButtonRet.contentDescription = getString(resId)
+        return toolbarButtonRet
     }
 
     protected fun toolbarButtonSpace(): Space{

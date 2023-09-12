@@ -82,6 +82,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
         audioPlayer.stopAudio()
 
         playButton.setBackgroundResource(R.drawable.ic_play_arrow_white_48dp)
+        playButton.contentDescription = getString(R.string.rec_toolbar_play_recording_button)
 
         (toolbarMediaListener as ToolbarMediaListener).onStoppedToolbarPlayBack()
     }
@@ -89,14 +90,14 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
     override fun setupToolbarButtons() {
         super.setupToolbarButtons()
 
-        playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, R.id.play_recording_button)
+        playButton = toolbarButton(R.drawable.ic_play_arrow_white_48dp, R.id.play_recording_button, R.string.rec_toolbar_play_recording_button)
         rootView?.addView(playButton)
         
         rootView?.addView(toolbarButtonSpace())
 
         if (canUseExternalAudioEditor()) {
             // Add edit button and spacer to playback recording toolbar if usable
-            editButton = toolbarButton(R.drawable.ic_edit_white_48dp, R.id.edit_recording_button)
+            editButton = toolbarButton(R.drawable.ic_edit_white_48dp, R.id.edit_recording_button, R.string.rec_toolbar_edit_recording_button)
             rootView?.addView(editButton)
             rootView?.addView(toolbarButtonSpace())
         }
@@ -155,6 +156,7 @@ open class PlayBackRecordingToolbar: RecordingToolbar() {
                     audioPlayer.playAudio()
 
                     playButton.setBackgroundResource(R.drawable.ic_stop_white_48dp)
+                    playButton.contentDescription = getString(R.string.rec_toolbar_stop_button)
                     
                     //TODO: make this logging more robust and encapsulated
                     when (Workspace.activePhase.phaseType){

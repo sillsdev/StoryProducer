@@ -12,9 +12,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.Guideline
 import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import org.sil.storyproducer.BuildConfig
@@ -95,6 +92,7 @@ abstract class MultiRecordFrag : SlidePhaseFrag(), PlayBackRecordingToolbar.Tool
             editFab?.setOnClickListener {
                 val editText = EditText(context)
                 editText.id = R.id.edit_text_input
+                editText.contentDescription = R.string.slide_text_edit.toString()
 
                 // Programmatically set layout properties for edit text field
                 val params = ViewGroup.LayoutParams(
