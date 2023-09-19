@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
@@ -481,10 +482,14 @@ open class RegistrationActivity : AppCompatActivity() {
             if (sectionView.visibility == View.GONE) {
                 sectionView.visibility = View.VISIBLE
                 headerView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.primary, null))
+                if (headerView is TextView)
+                    headerView.setTextColor(Color.WHITE)
                 toggleKeyboard(SHOW_KEYBOARD, sectionView)
             } else {
                 sectionView.visibility = View.GONE
                 headerView.setBackgroundColor(ResourcesCompat.getColor(resources, R.color.black_semi_transparent, null))
+                if (headerView is TextView)
+                    headerView.setTextColor(Color.LTGRAY)
                 toggleKeyboard(CLOSE_KEYBOARD, sectionView)
             }
         }
