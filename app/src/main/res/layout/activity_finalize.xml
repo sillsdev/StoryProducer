@@ -88,6 +88,7 @@
             android:hint="@string/Text_In_Filename_Placeholder"
             android:inputType="textMultiLine|textCapWords"
             android:maxLines="4"
+            android:minHeight="48dp"
             android:importantForAutofill="no" />
 
         <TextView
@@ -102,12 +103,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:minHeight="48dp"
             android:text="@string/export_include_soundtrack" />
 
         <CheckBox
             android:id="@+id/checkbox_export_song"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/export_include_song" />
 
         <CheckBox
@@ -115,6 +118,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:minHeight="48dp"
             android:text="@string/export_include_pictures" />
 
         <CheckBox
@@ -122,12 +126,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:checked="true"
+            android:minHeight="48dp"
             android:text="@string/export_include_KBFX" />
 
         <CheckBox
             android:id="@+id/checkbox_export_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="@string/export_include_text" />
 
         <LinearLayout
