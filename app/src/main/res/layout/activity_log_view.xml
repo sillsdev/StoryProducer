@@ -35,11 +35,12 @@
             android:orientation="horizontal"
             android:baselineAligned="false"
             android:layout_width="match_parent"
-            android:layout_height="55dp">
+            android:layout_height="55dp"
+            android:minHeight="55dp" >
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
@@ -49,7 +50,7 @@
                 <CheckBox
                     android:id="@+id/LearnCheckBox"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
                     android:layout_gravity="center"
                     android:checked="true"
                     android:text="@string/learn_title" />
@@ -57,7 +58,7 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_weight="1"
                 android:background="@color/translate_revise_phase"
                 android:paddingStart="5dp"
@@ -67,7 +68,7 @@
                 <CheckBox
                     android:id="@+id/DraftCheckBox"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
                     android:layout_gravity="center"
                     android:checked="true"
                     android:text="@string/translate_revise_title" />
@@ -75,7 +76,7 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="fill_parent"
                 android:layout_weight="0.85"
                 android:background="@color/community_work_phase"
                 android:paddingStart="5dp"
@@ -85,7 +86,7 @@
                 <CheckBox
                     android:id="@+id/CommunityCheckCheckBox"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
                     android:layout_gravity="center"
                     android:checked="true"
                     android:text="@string/community_work_title" />
