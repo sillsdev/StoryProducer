@@ -210,7 +210,7 @@ open class RegistrationActivity : AppCompatActivity() {
     private fun addEthnologueQuestion() {
         val questionButton = findViewById<Button>(R.id.ethnologue_question_button)
         questionButton.setOnClickListener {
-            val url = "https://www.ethnologue.com/browse"
+            val url = "https://www.ethnologue.com/browse/names"
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(url)
             startActivity(intent)
